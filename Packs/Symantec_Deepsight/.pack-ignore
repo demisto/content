@@ -1,5 +1,5 @@
 [file:AccentureDeepsight.yml]
-ignore=IN144,IN145,BA124
+ignore=IN144,BA124
 
 [file:AccentureDeepsight_image.png]
 ignore=IM111

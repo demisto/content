@@ -1,9 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # type: ignore
+# mypy: ignore-errors
 import json
 import re
-from typing import Dict, Tuple, Callable
+from collections.abc import Callable
 import copy
 
 ''' CONSTANTS'''
@@ -114,7 +115,7 @@ class FortiSIEMClient(BaseClient):
         return format_resp_xml_to_dict(response.text)
 
     def cmdb_devices_list_request(self, include_ip_list: list, exclude_ip_list: list, include_ip_range: str,
-                                  exclude_ip_rage: str) -> Dict[str, Any]:
+                                  exclude_ip_rage: str) -> dict[str, Any]:
         """
         List CMDB devices. The request considerate either the ip_list or the ip_range for both:
             include/exclude options.
@@ -135,7 +136,7 @@ class FortiSIEMClient(BaseClient):
         response = self._http_request('GET', 'cmdbDeviceInfo/devices', params=params, resp_type='xml')
         return format_resp_xml_to_dict(response.text)
 
-    def cmdb_device_get_request(self, ip_address: str) -> Dict[str, Any]:
+    def cmdb_device_get_request(self, ip_address: str) -> dict[str, Any]:
         """
         Get full information about the specified device.
 
@@ -150,7 +151,7 @@ class FortiSIEMClient(BaseClient):
 
         return format_resp_xml_to_dict(response.text)
 
-    def monitored_organizations_list_request(self) -> Dict[str, Any]:
+    def monitored_organizations_list_request(self) -> dict[str, Any]:
         """
         List monitored organizations.
 
@@ -162,7 +163,7 @@ class FortiSIEMClient(BaseClient):
         return format_resp_xml_to_dict(response.text)
 
     def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int,
-                                start: int = 0) -> Dict[str, Any]:
+                                start: int = 0) -> dict[str, Any]:
         """
         Fetch incident request. Please note that the API request retrieve all the incidents which occurred in
         the specified time interval.
@@ -205,7 +206,7 @@ class FortiSIEMClient(BaseClient):
         response = self._http_request('POST', 'incident/external', json_data=data)
         return response
 
-    def events_list_request(self, size: int, incident_id: str) -> Dict[str, Any]:
+    def events_list_request(self, size: int, incident_id: str) -> dict[str, Any]:
         """
         List triggered events by the specified incident ID.
 
@@ -248,7 +249,7 @@ class FortiSIEMClient(BaseClient):
 
         return response
 
-    def watchlist_get_by_id_request(self, watchlist_id: str) -> Dict[str, Any]:
+    def watchlist_get_by_id_request(self, watchlist_id: str) -> dict[str, Any]:
         """
         Get Watchlist by the specified Watchlist ID.
         Args:
@@ -261,7 +262,7 @@ class FortiSIEMClient(BaseClient):
 
         return response
 
-    def watchlist_get_by_entry_id_request(self, entry_id: str) -> Dict[str, Any]:
+    def watchlist_get_by_entry_id_request(self, entry_id: str) -> dict[str, Any]:
         """
         Get Watchlist by the specified entry ID.
         Args:
@@ -279,7 +280,7 @@ class FortiSIEMClient(BaseClient):
                               value_type: str, age_out: str,
                               inclusive: bool, entry_value: str, entry_age_out: str, count: int,
                               first_seen: int, last_seen: int,
-                              triggering_rules: list) -> Dict[str, Any]:
+                              triggering_rules: list) -> dict[str, Any]:
         """
         Create new Watchlist group with an Entry(optional).
         Args:
@@ -317,7 +318,7 @@ class FortiSIEMClient(BaseClient):
     def watchlist_entry_add_request(self, watchlist_id: str, value: str, inclusive: bool, count: int,
                                     triggering_rules: List[str], age_out: str, last_seen: int, first_seen: int,
                                     data_creation_type: str, description: str,
-                                    disable_age_out: bool) -> Dict[str, Any]:
+                                    disable_age_out: bool) -> dict[str, Any]:
         """
         Add new Entry to Watchlist group.
 
@@ -346,7 +347,7 @@ class FortiSIEMClient(BaseClient):
 
         return response
 
-    def watchlist_entry_update_request(self, entry_id: str, value: str, **kwargs) -> Dict[str, Any]:
+    def watchlist_entry_update_request(self, entry_id: str, value: str, **kwargs) -> dict[str, Any]:
         """
         Update the specified Entry. The request overrides the current attributes of the Entry.
 
@@ -357,13 +358,13 @@ class FortiSIEMClient(BaseClient):
         Returns:
             Dict[str, Any]: API response from FortiSIEM.
         """
-        data = remove_empty_elements({key: value for key, value in kwargs.items()})
+        data = remove_empty_elements(dict(kwargs.items()))
         data['id'] = entry_id
         data['entryValue'] = value
         response = self._http_request('POST', 'watchlist/entry/save', json_data=data)
         return response
 
-    def watchlist_entry_delete_request(self, entry_id: int) -> Dict[str, Any]:
+    def watchlist_entry_delete_request(self, entry_id: int) -> dict[str, Any]:
         """
         Delete entry by the specified entry ID.
         Args:
@@ -376,7 +377,7 @@ class FortiSIEMClient(BaseClient):
 
         return response
 
-    def watchlist_delete_request(self, watchlist_id: int) -> Dict[str, Any]:
+    def watchlist_delete_request(self, watchlist_id: int) -> dict[str, Any]:
         """
         Delete Watchlist by the specified Watchlist ID.
         Args:
@@ -390,7 +391,7 @@ class FortiSIEMClient(BaseClient):
 
         return response
 
-    def watchlist_entry_get_request(self, entry_id: str) -> Dict[str, Any]:
+    def watchlist_entry_get_request(self, entry_id: str) -> dict[str, Any]:
         """
         Get Entry by the specified ID.
         Args:
@@ -405,7 +406,7 @@ class FortiSIEMClient(BaseClient):
         return response
 
 
-def search_events_with_polling_command(client: FortiSIEMClient, args: Dict[str, Any], cmd: str,
+def search_events_with_polling_command(client: FortiSIEMClient, args: dict[str, Any], cmd: str,
                                        search_command: Callable,
                                        status_command: Callable, results_command: Callable) -> CommandResults:
     """
@@ -466,7 +467,7 @@ def search_events_with_polling_command(client: FortiSIEMClient, args: Dict[str, 
     return command_results
 
 
-def events_search_init_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def events_search_init_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Initiate search query on events.
     Args:
@@ -499,7 +500,7 @@ def events_search_init_command(client: FortiSIEMClient, args: Dict[str, Any]) ->
     return command_results
 
 
-def events_search_status_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def events_search_status_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Get the status of the search query on events.
     Args:
@@ -526,7 +527,7 @@ def events_search_status_command(client: FortiSIEMClient, args: Dict[str, Any]) 
     return command_results
 
 
-def events_search_results_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def events_search_results_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Get the search query results.
     Args:
@@ -558,7 +559,7 @@ def events_search_results_command(client: FortiSIEMClient, args: Dict[str, Any])
     return command_results
 
 
-def cmdb_devices_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def cmdb_devices_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     List CMDB devices.
     Args:
@@ -597,7 +598,7 @@ def cmdb_devices_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> 
     return command_results
 
 
-def cmdb_device_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
+def cmdb_device_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get CMDB device.
     Args:
@@ -635,7 +636,7 @@ def cmdb_device_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Li
     return command_results_list
 
 
-def monitored_organizations_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def monitored_organizations_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     List monitored organizations.
     Args:
@@ -665,7 +666,7 @@ def monitored_organizations_list_command(client: FortiSIEMClient, args: Dict[str
     return command_results
 
 
-def incident_update_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def incident_update_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Update the specified Incident.
     Args:
@@ -693,7 +694,7 @@ def incident_update_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Co
     return command_results
 
 
-def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def events_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     List events by incident.
     Args:
@@ -725,7 +726,7 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def watchlist_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def watchlist_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     List Watchlists.
     Args:
@@ -758,7 +759,7 @@ def watchlist_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
+def watchlist_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get Watchlist.
     Args:
@@ -832,7 +833,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
     return command_results_list
 
 
-def watchlist_add_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def watchlist_add_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Add new Watchlist group.
     Args:
@@ -881,7 +882,7 @@ def watchlist_add_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def watchlist_entry_add_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def watchlist_entry_add_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Add Entry tp Watchlist group.
     Args:
@@ -902,7 +903,7 @@ def watchlist_entry_add_command(client: FortiSIEMClient, args: Dict[str, Any]) -
     data_creation_type = args.get('data_creation_type')
     description = args.get('description')
     validate_add_watchlist_args(first_seen, last_seen)
-    disable_age_out = False if age_out else True
+    disable_age_out = not age_out
     response = client.watchlist_entry_add_request(watchlist_id, value, inclusive, count,
                                                   triggering_rules,
                                                   age_out, last_seen, first_seen,
@@ -914,7 +915,7 @@ def watchlist_entry_add_command(client: FortiSIEMClient, args: Dict[str, Any]) -
     return command_results
 
 
-def watchlist_entry_update_command(client: FortiSIEMClient, args: Dict[str, Any]) -> CommandResults:
+def watchlist_entry_update_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
     """
     Update the specified entry.
     Args:
@@ -959,7 +960,7 @@ def watchlist_entry_update_command(client: FortiSIEMClient, args: Dict[str, Any]
     return command_results
 
 
-def watchlist_delete_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
+def watchlist_delete_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
     """
     Delete Watchlists.
     Args:
@@ -987,7 +988,7 @@ def watchlist_delete_command(client: FortiSIEMClient, args: Dict[str, Any]) -> L
     return command_results_list
 
 
-def watchlist_entry_delete_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
+def watchlist_entry_delete_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
     """
     Delete Entries.
     Args:
@@ -1014,7 +1015,7 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: Dict[str, Any]
 
 
 def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, status_list: List[str],
-                    fetch_with_events: bool, max_events_fetch: int, last_run: Dict[str, Any]) -> tuple:
+                    fetch_with_events: bool, max_events_fetch: int, last_run: dict[str, Any]) -> tuple:
     """
     Fetch incidents. May fetch also the triggered events of each incident if requested.
     Args:
@@ -1075,7 +1076,7 @@ def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int
     return formatted_events
 
 
-def watchlist_entry_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
+def watchlist_entry_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
     """
     Update the specified entry.
     Args:
@@ -1159,7 +1160,7 @@ def build_query_xml(constraint: str, from_time: int, to_time: int, extend_data: 
     return json2xml(json.dumps(payload))
 
 
-def build_constraint_from_args(args: Dict[str, Any]):
+def build_constraint_from_args(args: dict[str, Any]):
     keys_to_remove = {
         "query", "from_time", "to_time", "limit", "page", "polling", "interval_in_seconds", "timeout_in_seconds",
         "extended_data"
@@ -1171,13 +1172,13 @@ def build_constraint_from_args(args: Dict[str, Any]):
     res_list = []
     for key in args:
         if 'IpAddr' not in key:
-            res_list.append('{} = "{}"'.format(key, args[key]))
+            res_list.append(f'{key} = "{args[key]}"')
         else:
-            res_list.append("{} = {}".format(key, args[key]))
+            res_list.append(f"{key} = {args[key]}")
     return " AND ".join(res_list)
 
 
-def format_search_events_results(response: Dict[str, Any], limit: int) -> tuple:
+def format_search_events_results(response: dict[str, Any], limit: int) -> tuple:
     """
     Format the output of the search events results command.
     Args:
@@ -1228,7 +1229,7 @@ def format_readable_output_header(base_header: str, limit: int, page: int = None
     return base_header
 
 
-def format_resp_xml_to_dict(xml_resp_str: str) -> Dict[str, Any]:
+def format_resp_xml_to_dict(xml_resp_str: str) -> dict[str, Any]:
     """
     Format XML response to python dict object.
     Args:
@@ -1296,8 +1297,8 @@ def build_ip_set(ip_addresses: List[str]) -> str:
     return ','.join(filter(None, ip_addresses))
 
 
-def format_list_commands_output(response: Dict[str, Any], default_dict_keys: List[str],
-                                page_number: int, limit: int) -> Tuple[list, int]:
+def format_list_commands_output(response: dict[str, Any], default_dict_keys: List[str],
+                                page_number: int, limit: int) -> tuple[list, int]:
     """
     Formatting list commands outputs.
     Args:
@@ -1319,7 +1320,7 @@ def format_list_commands_output(response: Dict[str, Any], default_dict_keys: Lis
     return output_entities[from_index:to_index], total_pages
 
 
-def format_organizations_output(response: Dict[str, Any], page_number: int, limit: int) -> Tuple[list, int]:
+def format_organizations_output(response: dict[str, Any], page_number: int, limit: int) -> tuple[list, int]:
     """
     Formatting list organizations command outputs.
     Args:
@@ -1381,7 +1382,7 @@ def format_update_incident_readable_output(incident_id: str, response: str) -> s
     return f"Failed to update The incident: {incident_id}."
 
 
-def format_watchlist_output(response: Dict[str, Any], failure_message: str = None, page: int = None, limit: int = None):
+def format_watchlist_output(response: dict[str, Any], failure_message: str = None, page: int = None, limit: int = None):
     """
     Format output for Watchlists commands.
     Args:
@@ -1407,7 +1408,7 @@ def format_watchlist_output(response: Dict[str, Any], failure_message: str = Non
     return outputs, total_results
 
 
-def format_message_delete_watchlist(watchlist_id: int, response: Dict[str, Any]) -> str:
+def format_message_delete_watchlist(watchlist_id: int, response: dict[str, Any]) -> str:
     """
     Format readable output message for watchlist delete command.
     Args:
@@ -1425,7 +1426,7 @@ def format_message_delete_watchlist(watchlist_id: int, response: Dict[str, Any])
     raise ValueError(f'Failed to delete Watchlist group: {watchlist_id}.')
 
 
-def format_message_delete_entry(entry_id: int, response: Dict[str, Any]) -> str:
+def format_message_delete_entry(entry_id: int, response: dict[str, Any]) -> str:
     """
     Format readable output message for entry delete command.
     Args:
@@ -1454,12 +1455,11 @@ def validate_add_watchlist_args(first_seen: int, last_seen: int) -> None:
         None
     """
 
-    if first_seen and last_seen:
-        if first_seen > last_seen:
-            raise ValueError('first seen argument cannot be after last seen argument.')
+    if first_seen and last_seen and first_seen > last_seen:
+        raise ValueError('first seen argument cannot be after last seen argument.')
 
 
-def convert_date_to_timestamp(date_arg: datetime) -> int:
+def convert_date_to_timestamp(date_arg: datetime) -> int | None:
     """
     convert datetime object to timestamp.
 
@@ -1470,9 +1470,10 @@ def convert_date_to_timestamp(date_arg: datetime) -> int:
     """
     if date_arg:
         return date_to_timestamp(date_arg)
+    return None
 
 
-def format_add_watchlist_entry_message(watchlist_id: str, entry_id: str, response: Dict[str, Any]) -> str:
+def format_add_watchlist_entry_message(watchlist_id: str, entry_id: str, response: dict[str, Any]) -> str:
     """
     Format readable output message for add entry command.
 
@@ -1489,7 +1490,7 @@ def format_add_watchlist_entry_message(watchlist_id: str, entry_id: str, respons
     return f"Successfully added Entry: {entry_id} to Watchlist: {watchlist_id}."
 
 
-def format_update_watchlist_entry_header(entry_id: str, response: Dict[str, Any]) -> str:
+def format_update_watchlist_entry_header(entry_id: str, response: dict[str, Any]) -> str:
     """
     Format readable output header for update entry command.
     Args:
@@ -1506,7 +1507,7 @@ def format_update_watchlist_entry_header(entry_id: str, response: Dict[str, Any]
 
 def fetch_relevant_incidents(client: FortiSIEMClient,
                              status: List[int], time_from: int, time_to: int,
-                             last_run: Dict[str, Any], max_fetch: int) -> List[dict]:
+                             last_run: dict[str, Any], max_fetch: int) -> List[dict]:
     """
     Fetch relevant incidents. The API retrieves the incidents which occurred during the given time interval.
     Since we are interested in create time, a pagination mechanism is implemented here. inorder to retreive the
@@ -1576,7 +1577,7 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
     return relevant_incidents
 
 
-def format_nested_incident_attribute(attribute_value: str) -> tuple:
+def format_nested_incident_attribute(attribute_value: str | None) -> tuple:
     """
     Format nested attributes to be readable. For example:
     for the attribute_value "srcIpAddr:192.168.1.1,",
@@ -1587,6 +1588,9 @@ def format_nested_incident_attribute(attribute_value: str) -> tuple:
     Returns:
         tuple: attribute key & value.
     """
+    if not attribute_value:
+        return None, None
+
     try:
         if attribute_value:
             attribute_parts = attribute_value.split(":")
@@ -1595,7 +1599,7 @@ def format_nested_incident_attribute(attribute_value: str) -> tuple:
         return None, None
 
 
-def format_integer_field_to_verbal(incident: Dict[str, Any]) -> Dict[str, Any]:
+def format_integer_field_to_verbal(incident: dict[str, Any]) -> dict[str, Any]:
     """
     Format some of the ENUM fields of incident to verbal.
     Args:
@@ -1685,10 +1689,9 @@ def validate_fetch_params(max_fetch: int, max_events_fetch: int, fetch_events: b
 
     if max_fetch > MAX_FETCH:
         return_error(f"The Maximum number of incidents per fetch should not exceed {MAX_FETCH}.")
-    if fetch_events:
-        if max_events_fetch > MAX_EVENTS_FETCH:
-            return_error(
-                f"The Maximum number of events for each incident per fetch should not exceed {MAX_EVENTS_FETCH}.")
+    if fetch_events and max_events_fetch > MAX_EVENTS_FETCH:
+        return_error(
+            f"The Maximum number of events for each incident per fetch should not exceed {MAX_EVENTS_FETCH}.")
     if not status_filter_list:
         return_error("Status filtering for fetch incidents should be provided.")
 
@@ -1703,11 +1706,11 @@ def convert_verbal_status_filtering_to_numeric(verbal_status_list: List[str]) ->
     """
     status_set = set(verbal_status_list)
     if ALL_STATUS_FILTER in status_set:
-        return [numeric_status for numeric_status in INCIDENT_STATUS_INT_VERBAL_MAPPING.keys()]
+        return list(INCIDENT_STATUS_INT_VERBAL_MAPPING.keys())
     return [INCIDENT_STATUS_VALUE_MAPPING[verbal_status] for verbal_status in verbal_status_list]
 
 
-def format_list_events_output(response: Dict[str, Any], incident_id: str, page: int, limit: int) -> list:
+def format_list_events_output(response: dict[str, Any], incident_id: str, page: int, limit: int) -> list:
     """
     Format event list command output.
     Args:
@@ -1774,7 +1777,7 @@ def datetime_to_age_out_in_days(age_out_date: datetime) -> str:
     return None
 
 
-def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict]):
+def update_last_run_obj(last_run: dict[str, Any], formatted_incidents: List[dict]):
     cur_last_incident: dict = formatted_incidents[-1]
     cur_last_incident_create_time = cur_last_incident.get('incidentFirstSeen')
     cur_incidents_id: list = [incident.get('incidentId') for incident in formatted_incidents]
@@ -1793,8 +1796,8 @@ def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url = params.get('url')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)

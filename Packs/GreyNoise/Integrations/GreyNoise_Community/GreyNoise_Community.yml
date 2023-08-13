@@ -7,7 +7,6 @@ configuration:
   name: integrationReliability
   defaultvalue: C - Fairly reliable
   type: 15
-  required: false
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -16,6 +15,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -24,13 +24,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 - display: API Key
   name: api_key
   required: true
@@ -38,13 +38,9 @@ configuration:
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
-  scan and attack traffic. With this integration, users can contextualize existing
-  alerts, filter false-positives, identify compromised devices, and track emerging
-  threats. This Integration is design specifically for GreyNoise Community users and
-  only provides the subset of intel available via the GreyNoise Community API.
+  required: false
+description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. This Integration is design specifically for GreyNoise Community users and only provides the subset of intel available via the GreyNoise Community API.
 display: GreyNoise Community
 name: GreyNoise Community
 script:
@@ -55,10 +51,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Gathers information on the IP from the GreyNoise Community API.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -109,11 +102,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.63695
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/greynoise:1.0.0.66584
   runonce: false
   script: '-'
   subtype: python3

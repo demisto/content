@@ -401,7 +401,7 @@ def formatEvents(r_json):
     return newData
 
 
-def getFirstFetch(first_fetch_str) -> dict[str, Any]:
+def getFirstFetch(first_fetch_str):
 
     if not first_fetch_str or not first_fetch_str.strip():
         first_fetch_str = "7 days"

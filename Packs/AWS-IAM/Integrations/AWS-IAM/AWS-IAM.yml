@@ -8,14 +8,14 @@ commonfields:
 configuration:
 - display: Role Arn
   name: roleArn
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Role Session Name
   name: roleSessionName
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -37,101 +37,80 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Access Key
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Key
   section: Connect
+  required: false
 - display: Access Key
   name: access_key
-  required: false
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
   name: timeout
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   defaultvalue: '5'
   display: Retries
   name: retries
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Identity and Access Management (IAM)
 display: AWS - Identity and Access Management
 name: AWS - IAM
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the user to create.
-      isArray: false
+    - description: The name of the user to create.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The path for the user name. This parameter is optional. If it is not included, it defaults to a slash (/).
-      isArray: false
+    - description: The path for the user name. This parameter is optional. If it is not included, it defaults to a slash (/).
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new IAM user for your AWS account.
-    execution: false
     name: aws-iam-create-user
     outputs:
     - contextPath: AWS.IAM.Users.UserName
@@ -150,33 +129,16 @@ script:
       description: The path to the user.
       type: string
   - arguments:
-    - default: false
-      description: The name of the user to get information about.
-      isArray: false
+    - description: The name of the user to get information about.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
-    execution: false
     name: aws-iam-get-user
     outputs:
     - contextPath: AWS.IAM.Users.UserName
@@ -198,27 +160,13 @@ script:
       description: The date and time,  when the user's password was last used to sign in to an AWS website.
       type: date
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the IAM users, returns all users in the AWS account.
-    execution: false
     name: aws-iam-list-users
     outputs:
     - contextPath: AWS.IAM.Users.UserName
@@ -240,154 +188,67 @@ script:
       description: The date and time when the password was last used.
       type: date
   - arguments:
-    - default: false
-      description: Name of the user to update.
-      isArray: false
+    - description: Name of the user to update.
       name: oldUserName
       required: true
-      secret: false
-    - default: false
-      description: New name for the user. Include this parameter only if you're changing the user's name.
-      isArray: false
+    - description: New name for the user. Include this parameter only if you're changing the user's name.
       name: newUserName
-      required: false
-      secret: false
-    - default: false
-      description: New path for the IAM user. Include this parameter only if you're changing the user's path.
-      isArray: false
+    - description: New path for the IAM user. Include this parameter only if you're changing the user's path.
       name: newPath
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the name and/or the path of the specified IAM user.
-    execution: false
     name: aws-iam-update-user
   - arguments:
-    - default: false
-      description: The name of the user to delete.
-      isArray: false
+    - description: The name of the user to delete.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified IAM user. The user must not belong to any groups or have any access keys, signing certificates, or attached policies.
-    execution: false
     name: aws-iam-delete-user
   - arguments:
-    - default: false
-      description: The name of the user whose password you want to update.
-      isArray: false
+    - description: The name of the user whose password you want to update.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The new password for the specified IAM user.
-      isArray: false
+    - description: The new password for the specified IAM user.
       name: newPassword
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Allows this new password to be used only once by requiring the specified IAM user to set a new password on next sign-in.
-      isArray: false
       name: passwordResetRequired
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Changes the password for the specified IAM user.
-    execution: false
     name: aws-iam-update-login-profile
   - arguments:
-    - default: false
-      description: The name of the group to create. Do not include the path in this value.
-      isArray: false
+    - description: The name of the group to create. Do not include the path in this value.
       name: groupName
-      required: false
-      secret: false
-    - default: false
-      description: The path to the group.
-      isArray: false
+    - description: The path to the group.
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new iam group.
-    execution: false
     name: aws-iam-create-group
     outputs:
     - contextPath: AWS.IAM.Groups.GroupName
@@ -406,27 +267,13 @@ script:
       description: The path to the group.
       type: string
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all the IAM groups in the AWS account
-    execution: false
     name: aws-iam-list-groups
     outputs:
     - contextPath: AWS.IAM.Groups.GroupName
@@ -445,33 +292,16 @@ script:
       description: The path to the group.
       type: string
   - arguments:
-    - default: false
-      description: The name of the user to list groups for.
-      isArray: false
+    - description: The name of the user to list groups for.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the IAM groups that the specified IAM user belongs to.
-    execution: false
     name: aws-iam-list-groups-for-user
     outputs:
     - contextPath: AWS.IAM.Users.Groups.GroupName
@@ -490,68 +320,30 @@ script:
       description: The path to the group.
       type: string
   - arguments:
-    - default: false
-      description: The name of the user to add.
-      isArray: false
+    - description: The name of the user to add.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The name of the group to update.
-      isArray: false
+    - description: The name of the group to update.
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Adds the specified user to the specified group.
-    execution: false
     name: aws-iam-add-user-to-group
   - arguments:
-    - default: false
-      description: The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used.
-      isArray: false
+    - description: The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used.
       name: userName
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new AWS secret access key and corresponding AWS access key ID for the specified user. The default status for new keys is Active .
-    execution: false
     name: aws-iam-create-access-key
     outputs:
     - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
@@ -567,78 +359,37 @@ script:
       description: The date when the access key was created.
       type: date
   - arguments:
-    - default: false
-      description: The name of the user whose key you want to update. If username is not provided, the account name configured in your integration will be used.
-      isArray: false
+    - description: The name of the user whose key you want to update. If username is not provided, the account name configured in your integration will be used.
       name: userName
-      required: false
-      secret: false
-    - default: false
-      description: The access key ID of the secret access key you want to update.
-      isArray: false
+    - description: The access key ID of the secret access key you want to update.
       name: accessKeyId
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status you want to assign to the secret access key. Active means that the key can be used for API calls to AWS, while Inactive means that the key cannot be used.
-      isArray: false
       name: status
       predefined:
       - Active
       - Inactive
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's key as part of a key rotation workflow.
-    execution: false
     name: aws-iam-update-access-key
   - arguments:
-    - default: false
-      description: The name of the user.
-      isArray: false
+    - description: The name of the user.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about the access key IDs associated with the specified IAM user.
-    execution: false
     name: aws-iam-list-access-keys-for-user
     outputs:
     - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
@@ -655,49 +406,27 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: All
       description: The scope to use for filtering the results. To list only AWS managed policies, set Scope to AWS. To list only the customer managed policies in your AWS account, set Scope to Local.
-      isArray: false
       name: scope
       predefined:
       - All
       - AWS
       - Local
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: A flag to filter the results to only the attached policies.  When OnlyAttached is true , the returned list contains only the policies that are attached to an IAM user, group, or role. When OnlyAttached is false , or when the parameter is not included, all policies are returned.
-      isArray: false
       name: onlyAttached
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all the managed policies that are available in your AWS account, including your own customer-defined managed policies and all AWS managed policies.
-    execution: false
     name: aws-iam-list-policies
     outputs:
     - contextPath: AWS.IAM.Policies.PolicyName
@@ -728,27 +457,13 @@ script:
       description: The number of entities (users, groups, and roles) that the policy is attached to.
       type: number
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all IAM roles
-    execution: false
     name: aws-iam-list-roles
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName
@@ -777,285 +492,127 @@ script:
       type: number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The Type of IAM Entity
-      isArray: false
       name: type
       predefined:
       - User
       - Group
       - Role
       required: true
-      secret: false
-    - default: false
-      description: The name (friendly name, not ARN) of the IAM Entity to attach the policy to.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the IAM Entity to attach the policy to.
       name: entityName
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy you want to attach.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy you want to attach.
       name: policyArn
-      required: false
-      secret: false
-    deprecated: false
     description: Attaches the specified managed policy to the specified IAM Entity.
-    execution: false
     name: aws-iam-attach-policy
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: IAM Entity Type
-      isArray: false
       name: type
       predefined:
       - User
       - Group
       - Role
       required: true
-      secret: false
-    - default: false
-      description: The name (friendly name, not ARN) of the IAM Entity to detach the policy from.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the IAM Entity to detach the policy from.
       name: entityName
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy you want to detach.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy you want to detach.
       name: policyArn
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Removes the specified managed policy from the specified IAM Entity.
-    execution: false
     name: aws-iam-detach-policy
   - arguments:
-    - default: false
-      description: The name of the user whose password you want to delete.
-      isArray: false
+    - description: The name of the user whose password you want to delete.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
-    execution: false
     name: aws-iam-delete-login-profile
   - arguments:
-    - default: false
-      description: The name of the IAM group to delete.
-      isArray: false
+    - description: The name of the IAM group to delete.
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified IAM group. The group must not contain any users or have any attached policies.
-    execution: false
     name: aws-iam-delete-group
   - arguments:
-    - default: false
-      description: The name of the user to remove.
-      isArray: false
+    - description: The name of the user to remove.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The name of the group to update.
-      isArray: false
+    - description: The name of the group to update.
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Removes the specified user from the specified group.
-    execution: false
     name: aws-iam-remove-user-from-group
   - arguments:
-    - default: false
-      description: The name of the IAM user to create a password for. The user must already exist.
-      isArray: false
+    - description: The name of the IAM user to create a password for. The user must already exist.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: The new password for the user.
-      isArray: false
+    - description: The new password for the user.
       name: password
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether the user is required to set a new password on next sign-in.
-      isArray: false
       name: passwordResetRequired
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a password for the specified user, giving the user the ability to access AWS services through the AWS Management Console.
-    execution: false
     name: aws-iam-create-login-profile
   - arguments:
-    - default: false
-      description: The name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used.
-      isArray: false
+    - description: The name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used.
       name: userName
-      required: false
-      secret: false
-    - default: false
-      description: The access key ID for the access key ID and secret access key you want to delete.
-      isArray: false
+    - description: The access key ID for the access key ID and secret access key you want to delete.
       name: AccessKeyId
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the access key pair associated with the specified IAM user.
-    execution: false
     name: aws-iam-delete-access-key
   - arguments:
-    - default: false
-      description: The name of the instance profile to create.
-      isArray: false
+    - description: The name of the instance profile to create.
       name: instanceProfileName
       required: true
-      secret: false
-    - default: false
-      description: The path to the instance profile.
-      isArray: false
+    - description: The path to the instance profile.
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new instance profile.
-    execution: false
     name: aws-iam-create-instance-profile
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1074,56 +631,25 @@ script:
       description: The date when the instance profile was created.
       type: date
   - arguments:
-    - default: false
-      description: The name of the instance profile to delete.
-      isArray: false
+    - description: The name of the instance profile to delete.
       name: instanceProfileName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified instance profile. The instance profile must not have an associated role.
-    execution: false
     name: aws-iam-delete-instance-profile
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all the instance profiles tin your AWS account.
-    execution: false
     name: aws-iam-list-instance-profiles
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1166,39 +692,19 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The name of the instance profile to update.
-      isArray: false
+    - description: The name of the instance profile to update.
       name: instanceProfileName
       required: true
-      secret: false
-    - default: false
-      description: The name of the role to add.
-      isArray: false
+    - description: The name of the role to add.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Adds the specified IAM role to the specified instance profile. An instance profile can contain only one role, and this limit cannot be increased. You can remove the existing role and then add a different role to an instance profile.
-    execution: false
     name: aws-iam-add-role-to-instance-profile
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1241,39 +747,19 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The name of the instance profile to update.
-      isArray: false
+    - description: The name of the instance profile to update.
       name: instanceProfileName
       required: true
-      secret: false
-    - default: false
-      description: The name of the role to remove.
-      isArray: false
+    - description: The name of the role to remove.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Removes the specified IAM role from the specified EC2 instance profile.
-    execution: false
     name: aws-iam-remove-role-from-instance-profile
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1316,33 +802,16 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The name of the role to list instance profiles for.
-      isArray: false
+    - description: The name of the role to list instance profiles for.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the instance profiles that have the specified associated IAM role.
-    execution: false
     name: aws-iam-list-instance-profiles-for-role
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1385,33 +854,16 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The name of the instance profile to get information about.
-      isArray: false
+    - description: The name of the instance profile to get information about.
       name: instanceProfileName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information about the specified instance profile.
-    execution: false
     name: aws-iam-get-instance-profile
     outputs:
     - contextPath: AWS.IAM.InstanceProfiles.Path
@@ -1454,33 +906,16 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The name of the IAM role to get information about.
-      isArray: false
+    - description: The name of the IAM role to get information about.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information about the specified role.
-    execution: false
     name: aws-iam-get-role
     outputs:
     - contextPath: AWS.IAM.Roles.Path
@@ -1514,86 +949,37 @@ script:
       description: The tag value.
       type: string
   - arguments:
-    - default: false
-      description: The name of the role to delete.
-      isArray: false
+    - description: The name of the role to delete.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified role. The role must not have any policies attached.
-    execution: false
     name: aws-iam-delete-role
   - arguments:
-    - default: false
-      description: The name of the role to create.
-      isArray: false
+    - description: The name of the role to create.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The trust relationship policy document that grants an entity permission to assume the role.
-      isArray: false
+    - description: The trust relationship policy document that grants an entity permission to assume the role.
       name: assumeRolePolicyDocument
       required: true
-      secret: false
-    - default: false
-      description: The path to the role.
-      isArray: false
+    - description: The path to the role.
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: A description of the role.
-      isArray: false
+    - description: A description of the role.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
-      isArray: false
+    - description: The maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
       name: maxSessionDuration
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new role for your AWS account.
-    execution: false
     name: aws-iam-create-role
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName
@@ -1621,49 +1007,22 @@ script:
       description: The maximum session duration (in seconds) for the specified role.
       type: number
   - arguments:
-    - default: false
-      description: The friendly name of the policy.
-      isArray: false
+    - description: The friendly name of the policy.
       name: policyName
       required: true
-      secret: false
-    - default: false
-      description: The JSON policy document that you want to use as the content for the new policy.
-      isArray: false
+    - description: The JSON policy document that you want to use as the content for the new policy.
       name: policyDocument
       required: true
-      secret: false
-    - default: false
-      description: The path for the policy.
-      isArray: false
+    - description: The path for the policy.
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: A friendly description of the policy.
-      isArray: false
+    - description: A friendly description of the policy.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new managed policy for your AWS account.  This operation creates a policy version with a version identifier of v1 and sets v1 as the policy's default version.
     execution: true
     name: aws-iam-create-policy
@@ -1702,76 +1061,37 @@ script:
       description: The date and time, in ISO 8601 date-time format , when the policy was last updated.
       type: date
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy you want to delete.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy you want to delete.
       name: policyArn
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified managed policy.  Before you can delete a managed policy, you must first detach the policy from all users, groups, and roles that it is attached to. In addition you must delete all the policy's versions.
     execution: true
     name: aws-iam-delete-policy
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy to which you want to add a new version.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy to which you want to add a new version.
       name: policyArn
       required: true
-      secret: false
-    - default: false
-      description: The JSON policy document that you want to use as the content for this new version of the policy.
-      isArray: false
+    - description: The JSON policy document that you want to use as the content for this new version of the policy.
       name: policyDocument
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether to set this version as the policy's default version.
-      isArray: false
       name: setAsDefault
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new version of the specified managed policy. To update a managed policy, you create a new policy version. A managed policy can have up to five versions. If the policy has five versions, you must delete an existing version using DeletePolicyVersion before you create a new version.  Optionally, you can set the new version as the policy's default version. The default version is the version that is in effect for the IAM users, groups, and roles to which the policy is attached.
     execution: true
     name: aws-iam-create-policy-version
@@ -1789,50 +1109,26 @@ script:
       description: The date and time, in ISO 8601 date-time format , when the policy version was created.
       type: string
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy from which you want to delete a version.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy from which you want to delete a version.
       name: policyArn
       required: true
-      secret: false
-    - default: false
-      description: The policy version to delete.
-      isArray: false
+    - description: The policy version to delete.
       name: versionId
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified version from the specified managed policy.  You cannot delete the default version from a policy using this API. To delete the default version from a policy, use DeletePolicy . To find out which version of a policy is marked as the default version, use ListPolicyVersions .
     execution: true
     name: aws-iam-delete-policy-version
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy for which you want the versions.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy for which you want the versions.
       name: policyArn
       required: true
-      secret: false
-    deprecated: false
     description: Lists information about the versions of the specified managed policy, including the version that is currently set as the policy's default version.
-    execution: false
     name: aws-iam-list-policy-versions
     outputs:
     - contextPath: AWS.IAM.Policies.Versions.Document
@@ -1848,39 +1144,19 @@ script:
       description: The date and time, in ISO 8601 date-time format , when the policy version was created.
       type: date
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the managed policy that you want information about.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the managed policy that you want information about.
       name: policyArn
       required: true
-      secret: false
-    - default: false
-      description: Identifies the policy version to retrieve.
-      isArray: false
+    - description: Identifies the policy version to retrieve.
       name: versionId
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves information about the specified version of the specified managed policy, including the policy document.
-    execution: false
     name: aws-iam-get-policy-version
     outputs:
     - contextPath: AWS.IAM.Policies.Versions.Document
@@ -1896,241 +1172,133 @@ script:
       description: The date and time, in ISO 8601 date-time format , when the policy version was created.
       type: Unknown
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the IAM policy whose default version you want to set.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the IAM policy whose default version you want to set.
       name: policyArn
       required: true
-      secret: false
-    - default: false
-      description: The version of the policy to set as the default (operative) version.
-      isArray: false
+    - description: The version of the policy to set as the default (operative) version.
       name: versionId
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Sets the specified version of the specified policy as the policy's default (operative) version.  This operation affects all users, groups, and roles that the policy is attached to.
     execution: true
     name: aws-iam-set-default-policy-version
   - arguments:
-    - default: false
-      description: The account alias to create.
-      isArray: false
+    - description: The account alias to create.
       name: accountAlias
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an alias for your AWS account.
     execution: true
     name: aws-iam-create-account-alias
   - arguments:
-    - default: false
-      description: The name of the account alias to delete.
-      isArray: false
+    - description: The name of the account alias to delete.
       name: accountAlias
       required: true
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified AWS account alias.
     execution: true
     name: aws-iam-delete-account-alias
-  - deprecated: false
-    description: Get AWS account's password policy
-    execution: false
+  - description: Get AWS account's password policy
     name: aws-iam-get-account-password-policy
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy
       description: Account's password policy.
       type: Unknown
   - arguments:
-    - default: false
-      description: The minimum number of characters allowed in an IAM user password.
-      isArray: false
+    - description: The minimum number of characters allowed in an IAM user password.
       name: minimumPasswordLength
       predefined:
       - ''
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
-      isArray: false
       name: requireSymbols
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
-      isArray: false
       name: requireNumbers
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
-      isArray: false
       name: requireUppercaseCharacters
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
-      isArray: false
       name: requireLowercaseCharacters
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
-      isArray: false
       name: allowUsersToChangePassword
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The number of days that an IAM user password is valid.
-      isArray: false
+    - description: The number of days that an IAM user password is valid.
       name: maxPasswordAge
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: Specifies the number of previous passwords that IAM users are prevented from reusing.
-      isArray: false
+    - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
       name: passwordReusePrevention
       predefined:
       - ''
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
-      isArray: false
       name: hardExpiry
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Create/update password policy
     execution: true
     name: aws-iam-update-account-password-policy
   - arguments:
-    - default: false
-      description: The name of the role to list policies for.
-      isArray: false
+    - description: The name of the role to list policies for.
       name: roleName
       required: true
-      secret: false
-    deprecated: false
     description: Lists the names of the inline policies that are embedded in the specified IAM role.
-    execution: false
     name: aws-iam-list-role-policies
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName.Policies
       description: A list of policy names.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the role associated with the policy.
-      isArray: false
+    - description: The name of the role associated with the policy.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: The name of the policy document to get.
-      isArray: false
+    - description: The name of the policy document to get.
       name: policyName
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the specified inline policy document that is embedded with the specified IAM role.
-    execution: false
     name: aws-iam-get-role-policy
     outputs:
     - contextPath: AWS.IAM.Roles.PolicyDocument
       description: The policy document.
       type: string
   - arguments:
-    - default: false
-      description: The Amazon Resource Name (ARN) of the managed policy that you want information about.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the managed policy that you want information about.
       name: policyArn
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves information about the specified managed policy, including the policy's default version and the total number of IAM users, groups, and roles to which the policy is attached.
-    execution: false
     name: aws-iam-get-policy
     outputs:
     - contextPath: AWS.IAM.Policy.PolicyName
@@ -2149,40 +1317,19 @@ script:
       description: A friendly description of the policy.
       type: string
   - arguments:
-    - default: false
-      description: The name (friendly name, not ARN) of the user to list attached policies for.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the user to list attached policies for.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: Number of results to display.
+    - description: Number of results to display.
       defaultValue: '50'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-      isArray: false
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Number of results per page to display.
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Starting item of the next page to view. Retrieved from a previous run of the command (InlinePoliciesMarker).
-      isArray: false
+    - description: Starting item of the next page to view. Retrieved from a previous run of the command (InlinePoliciesMarker).
       name: marker
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the names of the inline policies embedded in the specified IAM user.
-    execution: false
     name: aws-iam-list-user-policies
     outputs:
     - contextPath: AWS.IAM.UserPolicies.UserName
@@ -2195,40 +1342,19 @@ script:
       description: First element of next page of items.
       type: String
   - arguments:
-    - default: false
-      description: The name (friendly name, not ARN) of the user to list attached policies for.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the user to list attached policies for.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: Number of results to display.
+    - description: Number of results to display.
       defaultValue: '50'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-      isArray: false
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Number of results per page to display.
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker).
-      isArray: false
+    - description: Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker).
       name: marker
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all managed policies that are attached to the specified IAM user.
-    execution: false
     name: aws-iam-list-attached-user-policies
     outputs:
     - contextPath: AWS.IAM.AttachedUserPolicies.UserName
@@ -2244,40 +1370,19 @@ script:
       description: First element of next page of items.
       type: String
   - arguments:
-    - default: false
-      description: The name (friendly name, not ARN) of the group to list attached policies for.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the group to list attached policies for.
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: Number of results to display.
+    - description: Number of results to display.
       defaultValue: '50'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-      isArray: false
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Number of results per page to display.
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker).
-      isArray: false
+    - description: Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker).
       name: marker
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all managed policies that are attached to the specified IAM group.
-    execution: false
     name: aws-iam-list-attached-group-policies
     outputs:
     - contextPath: AWS.IAM.AttachedGroupPolicies.GroupName
@@ -2293,15 +1398,10 @@ script:
       description: First element of next page of items.
       type: String
   - arguments:
-    - default: false
-      description: The name (friendly name, not ARN) of the user to list attached policies for.
-      isArray: false
+    - description: The name (friendly name, not ARN) of the user to list attached policies for.
       name: userName
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the user login profile information for AWS management consle
-    execution: false
     name: aws-iam-get-user-login-profile
     outputs:
     - contextPath: AWS.IAM.Users.LoginProfile.CreateDate
@@ -2311,152 +1411,86 @@ script:
       description: Specifies whether the user is required to set a new password on next sign-in.
       type: Boolean
   - arguments:
-    - default: false
-      description: The policy document. You must provide policies in JSON format in IAM.
-      isArray: false
+    - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
       required: true
-      secret: false
-    - default: false
-      description: The name of the policy document.
-      isArray: false
+    - description: The name of the policy document.
       name: policyName
       required: true
-      secret: false
-    - default: false
-      description: The name of the role to associate the policy with.
-      isArray: false
+    - description: The name of the role to associate the policy with.
       name: roleName
       required: true
-      secret: false
-    deprecated: false
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
-    execution: false
     name: aws-iam-put-role-policy
   - arguments:
-    - default: false
-      description: The policy document. You must provide policies in JSON format in IAM.
-      isArray: false
+    - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
       required: true
-      secret: false
-    - default: false
-      description: The name of the policy document.
-      isArray: false
+    - description: The name of the policy document.
       name: policyName
       required: true
-      secret: false
-    - default: false
-      description: The name of the user to associate the policy with.
-      isArray: false
+    - description: The name of the user to associate the policy with.
       name: userName
       required: true
-      secret: false
-    deprecated: false
     description: Adds or updates an inline policy document that is embedded in the specified IAM user.
-    execution: false
     name: aws-iam-put-user-policy
   - arguments:
-    - default: false
-      description: The policy document. You must provide policies in JSON format in IAM.
-      isArray: false
+    - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
       required: true
-      secret: false
-    - default: false
-      description: The name of the policy document.
-      isArray: false
+    - description: The name of the policy document.
       name: policyName
       required: true
-      secret: false
-    - default: false
-      description: The name of the group to associate the policy with.
-      isArray: false
+    - description: The name of the group to associate the policy with.
       name: groupName
       required: true
-      secret: false
-    deprecated: false
     description: Adds or updates an inline policy document that is embedded in the specified IAM group.
-    execution: false
     name: aws-iam-put-group-policy
   - arguments:
-    - default: false
-      description: The name of the IAM role to which you want to add tags.
-      isArray: false
+    - description: The name of the IAM role to which you want to add tags.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
-    execution: false
     name: aws-iam-tag-role
   - arguments:
-    - default: false
-      description: The name of the IAM user to which you want to add tags.
-      isArray: false
+    - description: The name of the IAM user to which you want to add tags.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
       isArray: true
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Adds one or more tags to an IAM user. If a tag with the same key name already exists, then that tag is overwritten with the new value.
-    execution: false
     name: aws-iam-tag-user
   - arguments:
-    - default: false
-      description: The name of the IAM role to which you want to untag.
-      isArray: false
+    - description: The name of the IAM role to which you want to untag.
       name: userName
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of tag keys.
+    - description: A comma-separated list of tag keys.
       isArray: true
       name: tagKeys
       required: true
-      secret: false
-    deprecated: false
     description: Removes the specified tags from the user.
-    execution: false
     name: aws-iam-untag-user
   - arguments:
-    - default: false
-      description: The name of the IAM role to which you want to untag.
-      isArray: false
+    - description: The name of the IAM role to which you want to untag.
       name: roleName
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of tag keys.
+    - description: A comma-separated list of tag keys.
       isArray: true
       name: tagKeys
       required: true
-      secret: false
-    deprecated: false
     description: Removes the specified tags from the role.
-    execution: false
     name: aws-iam-untag-role
   - arguments:
-    - default: false
-      description: The identifier of an access key.
-      isArray: false
+    - description: The identifier of an access key.
       name: accessKeyId
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and region that were specified in the last request made with that key.
-    execution: false
     name: aws-iam-get-access-key-last-used
     outputs:
     - contextPath: AWS.IAM.AccessKey.ID
@@ -2474,11 +1508,7 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.64385
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/boto3py3:1.0.0.67319
   runonce: false
   script: '-'
   subtype: python3

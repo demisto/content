@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import time
 
 
-
 def parseSepAvDef(s, res):
     import re
     VERSIONS_REGEX = r'([^ ]*) [^\d]*(\d*)'

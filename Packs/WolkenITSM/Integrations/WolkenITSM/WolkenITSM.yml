@@ -27,18 +27,17 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Refresh Token
   name: Refresh Token
   required: true
   type: 4
-description: Use The Wolken IT Service Management (ITSM) solution to modernize the
-  way you manage and deliver services to your users.
+description: Use The Wolken IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: Wolken ITSM
 name: Wolken ITSM
 script:
@@ -119,9 +118,7 @@ script:
       description: ""
       type: String
   - arguments: []
-    description: Use to get access token and save it in integration context . Refresh
-      Token saved in integration context will be used to create new access token after
-      expiration.
+    description: Use to get access token and save it in integration context . Refresh Token saved in integration context will be used to create new access token after expiration.
     name: wolken-get-access-token
     outputs:
     - contextPath: Wolken.Token.access_token

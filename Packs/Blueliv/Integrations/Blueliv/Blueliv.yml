@@ -10,14 +10,14 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: false
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_token
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -28,22 +28,16 @@ name: Blueliv_Beta
 script:
   commands:
   - description: Data set collection that gives the latest STIX Indicators about bot ips gathered by Blueliv.
-    execution: false
     name: blueliv-get-botips-feed
   - description: Data set collection that gives the latest STIX Indicators about known malicious servers gathered by Blueliv.
-    execution: false
     name: blueliv-get-crimeservers-feed
   - description: Data set collection that gives the latest STIX Indicators about malware hashes gathered and analyzed by Blueliv.
-    execution: false
     name: blueliv-get-malware-feed
   - description: Data set collection that gives the latest STIX Indicators about attacking IPs gathered and analyzed by Blueliv.
-    execution: false
     name: blueliv-get-attackingips-feed
   - description: 'Data related to the number of hacktivism tweets recently created. Blueliv provides two types of feeds: the first one contains the most popular hacktivism hashtags and the second one contains the countries where more number of hacktivism tweets are coming from.'
-    execution: false
     name: blueliv-get-hacktivism-feed
   dockerimage: demisto/blueliv:1.0.0.52588
-  isfetch: false
   runonce: false
   script: ''
   type: python

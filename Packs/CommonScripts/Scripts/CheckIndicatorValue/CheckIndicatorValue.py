@@ -5,7 +5,6 @@ import urllib.parse
 from typing import Any, Dict, Optional
 
 
-
 def exists_indicator(indicator: str) -> bool:
     if contents := execute_command('getIndicator', {'value': indicator}):
         if len(contents) > 0 and contents[0].get('value') in [indicator]:

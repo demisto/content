@@ -5,7 +5,6 @@ import hashlib
 from hashlib import blake2b
 
 
-
 def create_hash(text, hashtype):
     """Create a hash from a given input and return it as a context outputs
 

@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import copy
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -58,7 +59,8 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-sql",
         )
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -616,13 +618,6 @@ def complete_auth(client: Client) -> CommandResults:  # pragma: no cover
 
 
 @logger
-def reset_auth(client: Client) -> CommandResults:  # pragma: no cover
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
-
-
-@logger
 def test_module(client):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -641,6 +636,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Azure Managed Identities':
         client.ms_client.get_access_token()
         return 'ok'
+    return None
 
 
 def command_with_multiple_resource_group_name(client: Client, args: Dict, command: str, resource_group_name: List) -> List:
@@ -722,7 +718,7 @@ def main() -> None:
             return_results(complete_auth(client))
 
         elif command == 'azure-sql-auth-reset':
-            return_results(reset_auth(client))
+            return_results(reset_auth())
 
         elif command == 'azure-sql-auth-test':
             return_results(test_connection(client))
@@ -740,8 +736,6 @@ def main() -> None:
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 

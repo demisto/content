@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import dateutil.parser
 
 
-
 def get_incident_ids() -> list:
     """
     Gets all the campaign incident ids.

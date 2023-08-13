@@ -1,5 +1,5 @@
 [file:CybersixgillActionableAlerts.yml]
-ignore=IN145,IN126
+ignore=IN126
 
 [file:CybersixgillActionableAlerts_image.png]
 ignore=IM111
@@ -19,3 +19,5 @@ ignore=IF115
 [file:CybersixgillActionableAlertStatusUpdate.yml]
 ignore=BA124
 
+[known_words]
+Cybersixgill

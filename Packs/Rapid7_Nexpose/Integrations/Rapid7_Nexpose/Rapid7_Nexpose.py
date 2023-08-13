@@ -8,7 +8,6 @@ from time import strptime, struct_time
 from typing import overload
 
 
-
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
 DEFAULT_PAGE_SIZE = 50  # Default page size to use

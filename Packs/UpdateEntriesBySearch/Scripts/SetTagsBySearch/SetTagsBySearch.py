@@ -5,7 +5,6 @@ import re
 from typing import Any, Dict, Iterator, List, Tuple
 
 
-
 def to_string(value: Any) -> Optional[str]:
     if isinstance(value, (List, Dict)) or value is None:
         return None

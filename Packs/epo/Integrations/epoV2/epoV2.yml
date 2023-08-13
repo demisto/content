@@ -24,23 +24,23 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to McAfee ePO API (in seconds), the max timeout allowed is 300s.
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 script:
   commands:
   - name: epo-help
@@ -478,7 +478,6 @@ script:
   - name: epo-list-tag
     arguments:
     - name: searchText
-      required: false
       description: List tags that contain the searchText in their name field.
     description: List tags that contain the searchText. If no searchText is specified, list all tags available in the ePO system.
     outputs:
@@ -545,7 +544,6 @@ script:
   - name: epo-find-client-task
     arguments:
     - name: searchText
-      required: false
       description: List client tasks that contains the searchText in their name field.
     outputs:
     - contextPath: McAfee.ePO.ClientTask.objectId
@@ -570,7 +568,6 @@ script:
   - name: epo-find-policy
     arguments:
     - name: searchText
-      required: false
       description: List policies that contains the searchText in their name field. If no searchText is specified, list all policies in the ePO system.
     description: Finds policy.
   - name: epo-assign-policy-to-group
@@ -585,7 +582,6 @@ script:
       required: true
       description: Object ID (as returned by policy.find).
     - name: resetInheritance
-      required: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -607,7 +603,6 @@ script:
       required: true
       description: Object ID (as returned by policy.find).
     - name: resetInheritance
-      required: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -617,7 +612,6 @@ script:
   - name: epo-list-issues
     arguments:
     - name: id
-      required: false
       description: The ID of the issue to display.
     description: List the issue for the ID that is specified. If no ID is specified, list all issues in the McAfee ePO system.
     outputs:
@@ -699,10 +693,8 @@ script:
       required: true
       description: Issue description.
     - name: type
-      required: false
       description: Issue type.
     - name: state
-      required: false
       description: Issue state.
       auto: PREDEFINED
       predefined:
@@ -714,7 +706,6 @@ script:
       - "TICKETED"
       - "TICKET_PENDING"
     - name: priority
-      required: false
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -725,7 +716,6 @@ script:
       - "HIGHEST"
       description: Issue priority.
     - name: severity
-      required: false
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -736,7 +726,6 @@ script:
       - "HIGHEST"
       description: Issue severity.
     - name: resolution
-      required: false
       auto: PREDEFINED
       predefined:
       - "NONE"
@@ -745,19 +734,14 @@ script:
       - "WILLNOTFIX"
       description: Issue resolution.
     - name: due
-      required: false
       description: Due date of the issue in the format yyyy-mm-dd hh:mm:ss.
     - name: assignee_name
-      required: false
       description: Name of the user assigned to the issue.
     - name: ticketServerName
-      required: false
       description: Ticket server name of the issue.
     - name: ticketId
-      required: false
       description: Ticket ID of the issue.
     - name: properties
-      required: false
       description: Properties of the issue.
     outputs:
     - contextPath: McAfee.ePO.Issue.id
@@ -782,7 +766,6 @@ script:
       required: true
       description: Description of the issue to update.
     - name: state
-      required: false
       description: State of the issue to update.
       auto: PREDEFINED
       predefined:
@@ -794,7 +777,6 @@ script:
       - "TICKETED"
       - "TICKET_PENDING"
     - name: priority
-      required: false
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -805,7 +787,6 @@ script:
       - "HIGHEST"
       description: Priority of the issue to update.
     - name: severity
-      required: false
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -816,7 +797,6 @@ script:
       - "HIGHEST"
       description: Severity of the issue to update.
     - name: resolution
-      required: false
       auto: PREDEFINED
       predefined:
       - "NONE"
@@ -825,26 +805,17 @@ script:
       - "WILLNOTFIX"
       description: Resolution of the issue to update.
     - name: due
-      required: false
       description: Due date of the issue to update.
     - name: assignee_name
-      required: false
       description: Name of the user assigned to the issue.
     - name: ticketServerName
-      required: false
       description: Ticket server name of the issue.
     - name: ticketId
-      required: false
       description: Ticket ID of the issue.
     - name: properties
-      required: false
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

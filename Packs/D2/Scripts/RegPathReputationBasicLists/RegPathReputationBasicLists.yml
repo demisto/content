@@ -16,7 +16,6 @@ args:
   required: true
   description: Registry path to be checked
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - RegPathReputationBasicLists_test

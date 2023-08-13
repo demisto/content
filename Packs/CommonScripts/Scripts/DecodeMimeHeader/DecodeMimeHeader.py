@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from email.header import decode_header
 
 
-
 def decode(s):
     dh = decode_header(s.strip())
     default_charset = 'ASCII'

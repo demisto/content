@@ -20,11 +20,9 @@ args:
   - "All files"
   - "Outer file"
   - "Inner file"
-- required: false
-  name: forced_encoding
+- name: forced_encoding
   description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'. Relevant to msg files only.
-- required: false
-  name: default_encoding
+- name: default_encoding
   description: Use only the default encoding when parsing the message with the detected encoding fails, e.g 'utf-8'. Relevant to msg files only.
 comment: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
 commonfields:
@@ -103,7 +101,6 @@ outputs:
   description: The format of the email if available
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -116,4 +113,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.64190
+dockerimage: demisto/parse-emails:1.0.0.67069

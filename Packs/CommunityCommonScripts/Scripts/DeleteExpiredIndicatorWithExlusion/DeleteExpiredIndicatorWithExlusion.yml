@@ -9,7 +9,6 @@ comment: deletes expired indicators.
 enabled: true
 name: delete_expired_indicator_with_exlusion
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

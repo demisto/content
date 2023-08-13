@@ -143,6 +143,12 @@ To setup the mirroring follow these instructions:
 
 * `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any future mapper.
 
+### Fetch Behavior vs Mirroring
+
+Note: All incidents, including those with a "resolved" status, will be fetched into Cortex XSOAR as "active" incidents to enable the execution of our automations. However, the original resolved status of the incidents will be preserved in the incident details. If you prefer to keep certain incidents closed, you can utilize the "Incident Statuses to Fetch" filter during the configuration stage and choose not to import those specific incidents. Alternatively, you can utilize pre-processing rules to define specific types of incidents to be imported as closed.
+
+Regarding mirroring, if you have already imported an incident and the mirroring feature is enabled, changing the incident's status to resolved on the Cortex XDR platform will trigger the mirroring process, resulting in the closure of the incident in Cortex XSOAR.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -917,7 +923,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
+| status | A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated. | Optional |
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names.<br/>Example: dist_name1,dist_name2. | Optional | 
 | ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 

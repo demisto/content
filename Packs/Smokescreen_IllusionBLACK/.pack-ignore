@@ -1,20 +1,8 @@
-[file:incidentfield-IllusionBLACK_Attacker_ID.json]
-ignore=IF107
-
-[file:incidentfield-IllusionBLACK_Threat_Parse.json]
-ignore=IF107
-
-[file:incidentfield-IllusionBLACK_Attack_Type.json]
-ignore=IF107
-
 [file:incidentfield-IllusionBLACK_Events.json]
-ignore=,IF100,IF107
-
-[file:incidentfield-IllusionBLACK_Decoy_ID.json]
-ignore=IF107
+ignore=IF100
 
 [file:Smokescreen_IllusionBLACK.yml]
-ignore=IN126,BA108,BA109,IN145
+ignore=IN126,BA108,BA109
 
 [file:layoutscontainer-IllusionBLACK.json]
 ignore=BA101
@@ -22,9 +10,9 @@ ignore=BA101
 [file:classifier-mapper-incoming-Smokescreen_IllusionBLACK.json]
 ignore=BA101
 
-
 [file:Smokescreen_IllusionBLACK_image.png]
 ignore=IM111
 
 [file:classifier-Smokescreen_IllusionBLACK.json]
 ignore=BA101
+

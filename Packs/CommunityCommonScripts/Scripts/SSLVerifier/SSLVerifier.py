@@ -6,7 +6,6 @@ import ssl
 from datetime import datetime
 
 
-
 def results_return(command: str, item: dict):
     results = CommandResults(
         outputs_prefix=f'SSLVerifier.{command}',

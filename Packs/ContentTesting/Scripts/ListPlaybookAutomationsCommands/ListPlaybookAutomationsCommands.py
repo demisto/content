@@ -5,7 +5,6 @@ import uuid
 from typing import Dict
 
 
-
 def GetAutomationName(id):
     results = demisto.executeCommand("demisto-api-post", {
         "uri": f"/automation/load/{id}"

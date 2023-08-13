@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 HOST_FIELDS = [
     'KLHST_WKS_FQDN',

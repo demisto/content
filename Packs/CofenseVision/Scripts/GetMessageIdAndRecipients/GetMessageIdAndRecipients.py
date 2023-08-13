@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict, List
 
 
-
 def main():
     try:
         args: Dict = demisto.args()

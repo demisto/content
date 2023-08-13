@@ -13,14 +13,13 @@ comment: This script takes in a list of numbers that represent Azure priorities 
 commonfields:
   id: AzureFindAvailableNSGPriorities
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: AzureFindAvailableNSGPriorities
 outputs:
 - contextPath: AvailableAzureNSGPriorities
   description: List of numbers that represent available Azure NSG priorities
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

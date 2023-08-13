@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-
 def execute_ssh_command():
     """Execute the `ssh` command to get the server logs and return the result to the war room.
     """

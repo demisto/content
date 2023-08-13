@@ -5,7 +5,6 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 
-
 TITLE_THRESHOLD = 4
 
 

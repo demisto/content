@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import ast
 
 
-
 def test_module(client, base_url):
     params = {'name': 'paloaltonetworks.com',
               'type': 'A'}
