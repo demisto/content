@@ -1,5 +1,4 @@
 import pytest
-import demistomock as demisto
 
 
 @pytest.mark.parametrize(
