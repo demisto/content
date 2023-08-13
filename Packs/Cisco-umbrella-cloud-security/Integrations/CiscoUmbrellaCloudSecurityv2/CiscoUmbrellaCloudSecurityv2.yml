@@ -466,7 +466,7 @@ script:
     name: umbrella-search-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id
-      description: ID of domain within destination list
+      description: ID of domain within the destination list.
       type: number
     - contextPath: Umbrella.Destinations.destination
       description: Domain within destination list
