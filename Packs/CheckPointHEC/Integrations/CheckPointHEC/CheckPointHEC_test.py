@@ -14,7 +14,22 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_generate_signature():
+def test_generate_signature_with_request_string():
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+    assert client._generate_signature(
+        f"{'0' * 8}-{'0' * 4}-{'0' * 4}-{'0' * 4}-{'0' * 12}",
+        '2023-08-13T19:08:35.263817',
+        '/v1.0/soar/test'
+    ) == '66968b7de6a44c879eedc2a426ec76c254c203d60ce746236645b52b5b5dcddb'
+
+
+def test_generate_signature_with_no_request_string():
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -47,6 +62,26 @@ def test_token_header(mocker):
 
     client._get_headers(auth=False)
     get_token.assert_called_once()
+
+
+def test_get_token(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    _token = 'super token'
+    mocker.patch.object(
+        Client,
+        '_http_request',
+        return_value=_token
+    )
+
+    token = client._get_token()
+    assert token == _token
 
 
 def test_test_module(mocker):
