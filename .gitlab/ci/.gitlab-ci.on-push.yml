@@ -416,7 +416,11 @@ jobs-done-check-on-push:
     - gke
 
 update-dependencies-changes:
+  tags:
+    - gke
   stage: post-build-scripts
+  extends:
+    - .default-job-settings
   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
   when: always
   script:

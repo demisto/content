@@ -11,6 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 PACKS_DEPENDENCIES_FILENAME = "packs_dependencies.json"
 DIFF_FILENAME = "packs_dependencies_diff.json"
 DEPENDENCIES_FIELDS = ["dependencies", "allLevelDependencies"]
+ARTIFACTS_DIR_LOCATION = "/builds/xsoar/content"
 
 
 logging_setup(logger.DEBUG)
@@ -86,22 +87,19 @@ def compare(previous: dict, current: dict) -> dict:
 
 
 def get_diff(args: Namespace) -> dict:  # pragma: no cover
-    packs_dependencies_filepath = Path(args.artifacts_folder) / PACKS_DEPENDENCIES_FILENAME
-    gitlab_client = GitlabClient(args.gitlab_token)
     logger.info(
-        f"Comparing {packs_dependencies_filepath=} of current branch "
+        f"Comparing {PACKS_DEPENDENCIES_FILENAME} of current branch "
         f"and master branch (commit: {args.master_sha})"
     )
+    absolute_artifacts_folder = Path(args.artifacts_folder)
+    relative_artifacts_folder = absolute_artifacts_folder.relative_to(ARTIFACTS_DIR_LOCATION)
+    gitlab_client = GitlabClient(args.gitlab_token)
     previous = gitlab_client.get_packs_dependencies_json(
         args.master_sha,
         args.job_name,
-        packs_dependencies_filepath.relative_to("/builds/xsoar/content"),  # todo
+        relative_artifacts_folder / PACKS_DEPENDENCIES_FILENAME,
     )
-    current = json.loads(packs_dependencies_filepath.read_text())
-    if not previous or not current:
-        raise Exception(
-            f"One of current/previous was not loaded: {len(previous)} {len(current)}"
-        )
+    current = json.loads((absolute_artifacts_folder / PACKS_DEPENDENCIES_FILENAME).read_text())
     return compare(previous, current)
 
 
