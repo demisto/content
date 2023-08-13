@@ -60,7 +60,7 @@ script:
       description: A destination may be a domain, URL, or IP address.
     - type: String
       contextPath: Umbrella.Destinations.type
-      description: The unique ID of the destination.
+      description: The type of destination within the destination list.
     - type: String
       contextPath: Umbrella.Destinations.comment
       description: A comment about the destination.
