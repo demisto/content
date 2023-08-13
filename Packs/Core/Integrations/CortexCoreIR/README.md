@@ -98,7 +98,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | limit | Maximum number of endpoints to return per page. The default and maximum is 30. Default is 30. | Optional | 
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
-| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
+| status | A comma-separated list of endpoints statuses to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional |
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional |
 
 #### Context Output

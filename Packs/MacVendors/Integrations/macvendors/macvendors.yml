@@ -22,14 +22,17 @@ configuration:
   defaultvalue:
   type: 4
   additionalinfo: No API key is required for up to 1,000 requests per day at 1 request per second. For higher limits, please use an API key.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 description: >
   Query MAC Vendors for vendor names when providing a MAC address.
 

@@ -25,14 +25,16 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### asm-list-external-service
+
 ***
 Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
-
 
 #### Base Command
 
 `asm-list-external-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,8 +42,7 @@ Get a list of all your external services filtered by business units, externally 
 | ip_address | IP address on which to search. | Optional | 
 | domain | Domain on which to search. | Optional | 
 | is_active | Whether the service is active. Possible values are: yes, no. | Optional | 
-| discovery_type | How the service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
-
+| discovery_type | How service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
 
 #### Context Output
 
@@ -51,7 +52,7 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.ExternalService.service_name | String | Name of the external service. | 
 | ASM.ExternalService.service_type | String | Type of the external service. | 
 | ASM.ExternalService.ip_address | String | IP address of the external service. | 
-| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. | 
+| ASM.ExternalService.externally_detected_providers | String | Providers of external service. | 
 | ASM.ExternalService.is_active | String | Whether the external service is active. | 
 | ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
 | ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
@@ -192,19 +193,19 @@ Get a list of all your external services filtered by business units, externally 
 
 
 ### asm-get-external-service
+
 ***
 Get service details according to the service ID.
-
 
 #### Base Command
 
 `asm-get-external-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | service_id | A string representing the service ID you want to get details for. | Required | 
-
 
 #### Context Output
 
@@ -1063,26 +1064,29 @@ Get internet exposure asset details according to the asset ID.
 
 
 ### asm-list-alerts
+
 ***
 Get a list of all your ASM alerts filtered by alert IDs, severity and/or creation time. Can also sort by creation time or severity. Maximum result limit is 100 assets.
-
 
 #### Base Command
 
 `asm-list-alerts`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
-| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational). | Optional | 
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
-
+| **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| alert_id_list | Comma-separated list of integers of the alert ID.                                                                                                                                                                                                           | Optional | 
+| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).                                                                                                                                            | Optional | 
+| tags | Comma-separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                                                                                             | Optional | 
+| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| business_units_list | Comma-separated list of strings of the business units.                                                                                                                                                                                                      | Optional | 
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                          | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                           | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
+| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                              | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                             | Optional | 
 
 #### Context Output
 
@@ -1430,3 +1434,395 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 >| NOT_AVAILABLE | N/A | NO_HOST | 231 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452808759 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452808759, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240725450 | 1659455267908 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 >| NOT_AVAILABLE | N/A | NO_HOST | 33 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452809020 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452809020, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240426055 | 1659455246812 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 
+
+### asm-list-attack-surface-rules
+
+***
+Fetches attack surface rules related to how Cortex Xpanse does assessment.
+
+#### Base Command
+
+`asm-list-attack-surface-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enabled_status | Enablement status to search rules with. Valid values are  "On" and "Off". | Optional | 
+| category | Comma-separated list of strings attack surface rule categories. | Optional | 
+| priority | Comma-separated list of strings attack surface rule priorities. | Optional | 
+| attack_surface_rule_ids | Comma-separated list of strings attack surface rule IDs. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.AttackSurfaceRules.priority | unknown | Priority level for the different rules. Low, Medium, High, Critical. | 
+| ASM.AttackSurfaceRules.attack_surface_rule_name | unknown | Name of the attack surface rule. | 
+| ASM.AttackSurfaceRules.attack_surface_rule_id | unknown | ID of the attack surface rule. | 
+| ASM.AttackSurfaceRules.description | unknown | Description of the attack surface rule. | 
+| ASM.AttackSurfaceRules.category | unknown | Category of the attack surface rule. | 
+| ASM.AttackSurfaceRules.remediation_guidance | unknown | Guidance for how to address various ASM risks. | 
+| ASM.AttackSurfaceRules.enabled_status | unknown | Enablement status of the attack surface rule. | 
+| ASM.AttackSurfaceRules.created | unknown | Creation date of the attack surface rule. | 
+| ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. | 
+
+#### Command example
+```!asm-list-attack-surface-rules enabled_status=On limit=1```
+#### Context Example
+```json
+{
+    "ASM": {
+        "AttackSurfaceRules": {
+            "attack_surface_rule_id": "VMwareVRealizeAutomationAppliance",
+            "attack_surface_rule_name": "VMware vRealize Automation Appliance",
+            "category": "Attack Surface Reduction",
+            "created": 1688836450000,
+            "description": "VMware vRealize Automation, formerly vCloud Automation Center, is a software product that offers multivendor and multicloud support. It allows for IT infrastructure personalization and resource provisioning and configuration, and it automates application delivery and container management. This issue identifies the web login interface for VMware vRealize Automation Appliance.",
+            "enabled_status": "On",
+            "knowledge_base_link": null,
+            "modified": 1688074708000,
+            "modified_by": null,
+            "priority": "High",
+            "remediation_guidance": "Due to the network access provided by VMware vRealize Automation, it is recommended for instances of VMware vRealize Automation to not be accessible to the public Internet unless there is a business need.\nXpanse recommends working to identify the asset owner and collaborating with them to remove the asset from the internet."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Attack Surface Rules
+>|Attack Surface Rule Id|Attack Surface Rule Name|Category|Created|Description|Enabled Status|Modified|Priority|Remediation Guidance|
+>|---|---|---|---|---|---|---|---|---|
+>| VMwareVRealizeAutomationAppliance | VMware vRealize Automation Appliance | Attack Surface Reduction | 1688836450000 | VMware vRealize Automation, formerly vCloud Automation Center, is a software product that offers multivendor and multicloud support. It allows for IT infrastructure personalization and resource provisioning and configuration, and it automates application delivery and container management. This issue identifies the web login interface for VMware vRealize Automation Appliance. | On | 1688074708000 | High | Due to the network access provided by VMware vRealize Automation, it is recommended for instances of VMware vRealize Automation to not be accessible to the public Internet unless there is a business need.<br>Xpanse recommends working to identify the asset owner and collaborating with them to remove the asset from the internet. |
+
+### asm-tag-asset-assign
+
+***
+Assigns tags to a list of assets.
+
+#### Base Command
+
+`asm-tag-asset-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asm_id_list | Comma-separated list of asset IDs to add tags to. | Required | 
+| tags | The name of the tags to apply to supplied assets. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!asm-tag-asset-assign tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "TagAssignment": "Assignment operation: succeeded"
+    }
+}
+```
+
+#### Human Readable Output
+```Assignment operation: succeeded```
+
+### asm-tag-asset-remove
+
+***
+Removes tags from a list of assets.
+
+#### Base Command
+
+`asm-tag-asset-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asm_id_list | Comma-separated list of asset IDs to remove tags from. | Optional | 
+| tags | The name of the tags to remove from supplied assets. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!asm-tag-asset-remove tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "TagRemoval": "Removal operation: succeeded"
+    }
+}
+```
+
+#### Human Readable Output
+```Removal operation: succeeded```
+
+### asm-tag-range-assign
+
+***
+Assigns tags to a list of IP ranges.
+
+#### Base Command
+
+`asm-tag-range-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range_id_list | Comma-separated list of range IDs to add tags to. | Optional | 
+| tags | The name of the tags to apply to supplied assets. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!asm-tag-range-assign range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "TagAssignment": "Assignment operation: succeeded"
+    }
+}
+```
+
+#### Human Readable Output
+```Assignment operation: succeeded```
+
+### asm-tag-range-remove
+
+***
+Removes tags from a list of IP ranges.
+
+#### Base Command
+
+`asm-tag-range-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range_id_list | Comma-separated list of range IDs to remove tags from. | Optional | 
+| tags | The name of the tags to remove from supplied IP ranges. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!asm-tag-range-remove range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "TagRemoval": "Removal operation: succeeded"
+    }
+}
+```
+
+#### Human Readable Output
+```Removal operation: succeeded```
+
+### asm-list-incidents
+
+***
+Fetches ASM incidents that match provided filters. Incidents are an aggregation of related alerts. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API.
+
+#### Base Command
+
+`asm-list-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id_list | Incident IDs to filter on. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API. | Optional | 
+| description | String to search for within the incident description field. | Optional | 
+| status | Status to search incidents for. Possible values are: new, under_investigation, resolved. | Optional | 
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
+| sort_by_severity | Sorts returned incidents by the severity of the incident. | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.Incident.alert_count | Number | Number of alerts included in the incident. | 
+| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled. | 
+| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user. | 
+| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user. | 
+| ASM.Incident.creation_time | Date | Creation timestamp. | 
+| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts. | 
+| ASM.Incident.description | String | Description of the incident. | 
+| ASM.Incident.high_severity_alert_count | Number | Number of high alerts. | 
+| ASM.Incident.incident_id | String | ID of the incident. | 
+| ASM.Incident.incident_name | Unknown | Incident name. | 
+| ASM.Incident.incident_sources | String | Incident source. | 
+| ASM.Incident.low_severity_alert_count | Number | Number of low alerts. | 
+| ASM.Incident.manual_severity | Unknown | Severity override. | 
+| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts. | 
+| ASM.Incident.modification_time | Date | Modification timestamp. | 
+| ASM.Incident.notes | Unknown | Incident notes. | 
+| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time. | 
+| ASM.Incident.resolve_comment | Unknown | Resolution comment \(optional\). | 
+| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp. | 
+| ASM.Incident.severity | String | Severity of the incident. | 
+| ASM.Incident.starred | Boolean | Whether the incident has been starred. | 
+| ASM.Incident.status | String | Status of the incident. | 
+| ASM.Incident.tags | String | Tags on the incident. | 
+| ASM.Incident.xdr_url | String | Link to navigate to the incident. | 
+| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. | 
+
+#### Command example
+```!asm-list-incidents limit=1 status=new```
+#### Context Example
+```json
+{
+    "ASM": {
+        "Incident": {
+            "aggregated_score": null,
+            "alert_categories": null,
+            "alert_count": 1,
+            "alerts_grouping_status": "Enabled",
+            "assigned_user_mail": null,
+            "assigned_user_pretty_name": null,
+            "creation_time": 1688837015292,
+            "critical_severity_alert_count": 0,
+            "description": "'Insecure Communication Protocol at example.com:443'",
+            "detection_time": null,
+            "high_severity_alert_count": 0,
+            "host_count": 1,
+            "hosts": [
+                "1.1.1.1:null"
+            ],
+            "incident_id": "5508",
+            "incident_name": null,
+            "incident_sources": [
+                "ASM"
+            ],
+            "low_severity_alert_count": 0,
+            "manual_description": null,
+            "manual_score": null,
+            "manual_severity": null,
+            "med_severity_alert_count": 1,
+            "modification_time": 1688837015292,
+            "notes": null,
+            "original_tags": [],
+            "resolve_comment": null,
+            "resolved_timestamp": null,
+            "rule_based_score": null,
+            "severity": "medium",
+            "starred": false,
+            "status": "new",
+            "tags": [
+                "AR:Registered to You",
+                "IPR:Test IP"
+            ],
+            "user_count": 0,
+            "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5508",
+            "xpanse_risk_score": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>### ASM Incidents
+>|Alert Count|Alerts Grouping Status|Creation Time|Critical Severity Alert Count|Description|High Severity Alert Count|Host Count| Hosts        |Incident Id|Incident Sources|Low Severity Alert Count|Med Severity Alert Count|Modification Time|Severity|Starred|Status|Tags|User Count|Xdr Url|
+>|---|---|---|---|---|---|---|--------------|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | Enabled | 1688837015292 | 0 | 'Insecure Communication Protocol at example.com:443' | 0 | 1 | 1.1.1.1:null | 5508 | ASM | 0 | 1 | 1688837015292 | medium | false | new | AR:Registered to You,<br>IPR:Test IP | 0 | https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5508 |
+
+
+### asm-update-incident
+
+***
+Updates a given incident. Can be used to modify the status, severity, assignee, or add comments.
+
+#### Base Command
+
+`asm-update-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | ID of the incident to modify. | Required | 
+| alert_id | Used for scoping updates such as comments to the alert level. | Optional | 
+| assigned_user_mail | Email address of the user to assign incident to. This user must exist within your Expander instance. | Optional | 
+| manual_severity | Administrator-defined severity for the incident. | Optional | 
+| status | Incident status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| resolve_comment | Optional resolution comment when resolving the incident. | Optional | 
+| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.IncidentUpdate | unknown | Whether the incident update was successful. | 
+
+
+#### Command example
+```!asm-update-incident incident_id="3674" alert_id="4372" comment="this is an xsoar test"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "IncidentUpdate": "Update operation successful: true"
+    }
+}
+```
+
+#### Human Readable Output
+```Update operation successful: true```
+
+
+### asm-update-alerts
+
+***
+Updates the state of one or more alerts.
+
+#### Base Command
+
+`asm-update-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
+| status | Updated alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.UpdatedAlerts | unknown | IDs of the updated alerts. |
+
+#### Command example
+```!asm-update-alerts alert_id_list=602 status=new```
+#### Context Example
+```json
+{
+    "ASM": {
+        "UpdatedAlerts": [602]
+    }
+}
+```
+
+#### Human Readable Output
+```Updated alerts: [602]```

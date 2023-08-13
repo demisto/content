@@ -11,19 +11,23 @@ configuration:
   defaultvalue: ""
   type: 0
   hidden: true
+  required: false
 - display: API key
   name: apikey
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - display: API ID
   name: creds
   type: 9
   displaypassword: API key
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 script:
   script: ''
   type: javascript

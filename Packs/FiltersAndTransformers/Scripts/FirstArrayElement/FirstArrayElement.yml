@@ -18,7 +18,7 @@ args:
   description: An array for which to return the first element.
   isArray: true
 scripttarget: 0
-dockerimage: demisto/python3:3.10.11.61265
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
 - No test - unit test

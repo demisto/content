@@ -17,6 +17,7 @@ configuration:
   display: Trust any certificate (not secure)
   name: secure
   type: 8
+  required: false
 description: FortiSandbox integration is used to submit files to FortiSandbox for malware analysis and retrieving the report of the analysis. It can also provide file rating based on hashes for already scanned files.
 display: FortiSandbox
 name: FortiSandbox

@@ -28,4 +28,4 @@ runas: DBotWeakRole
 tests:
 - Impossible Traveler - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.12.63474

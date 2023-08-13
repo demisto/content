@@ -1,28 +1,29 @@
 id: Azure NSG - Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Azure NSG - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ace8381d-7903-42b4-84f0-92c1e65571c7
+    taskid: b8515cf4-fc0c-449a-8e4c-ee36d5e60705
     type: start
     task:
-      id: ace8381d-7903-42b4-84f0-92c1e65571c7
+      id: b8515cf4-fc0c-449a-8e4c-ee36d5e60705
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -30,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8bd2fbdf-dc35-477d-81c1-5548dc87a310
+    taskid: ca97be63-c409-422d-8fc4-39dffac81ced
     type: regular
     task:
-      id: 8bd2fbdf-dc35-477d-81c1-5548dc87a310
+      id: ca97be63-c409-422d-8fc4-39dffac81ced
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -49,16 +52,13 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -66,12 +66,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 934800e8-693d-4e7b-825b-37abb24a7e57
+    taskid: 8879b988-c435-484a-8a6a-52a73b2fb9e0
     type: regular
     task:
-      id: 934800e8-693d-4e7b-825b-37abb24a7e57
+      id: 8879b988-c435-484a-8a6a-52a73b2fb9e0
       version: -1
       name: List Rules
       description: List all rules of a certain securtity group
@@ -86,11 +88,12 @@ tasks:
       security_group_name:
         simple: alerts-nsg
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
@@ -98,12 +101,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d9622833-e8de-4bce-8c5c-2659827ed43f
+    taskid: 4d82d026-a654-43ab-819f-c4e6b247ef4b
     type: condition
     task:
-      id: d9622833-e8de-4bce-8c5c-2659827ed43f
+      id: 4d82d026-a654-43ab-819f-c4e6b247ef4b
       version: -1
       name: Check if rule exists
       type: condition
@@ -126,11 +131,12 @@ tasks:
           right:
             value:
               simple: DemistoRule
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 895
         }
       }
     note: false
@@ -138,12 +144,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: feef6d74-c157-44e8-8e7f-e070c1c890ca
+    taskid: 2a1162b9-7680-401a-8f0d-47e893abc424
     type: regular
     task:
-      id: feef6d74-c157-44e8-8e7f-e070c1c890ca
+      id: 2a1162b9-7680-401a-8f0d-47e893abc424
       version: -1
       name: Delete Rule
       description: Delete a security rule
@@ -160,11 +168,12 @@ tasks:
       security_rule_name:
         simple: DemistoRule
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
@@ -172,12 +181,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: bb7c8e1e-f614-45d7-8f3e-a6a86688678a
+    taskid: 05bf4408-4200-4e63-8134-dfb00e8eb830
     type: regular
     task:
-      id: bb7c8e1e-f614-45d7-8f3e-a6a86688678a
+      id: 05bf4408-4200-4e63-8134-dfb00e8eb830
       version: -1
       name: Create Rule
       description: Create a security rule
@@ -191,13 +202,10 @@ tasks:
     scriptarguments:
       action:
         simple: Allow
-      description: {}
       destination:
         simple: 2.2.2.2
-      destination_ports: {}
       direction:
         simple: Inbound
-      priority: {}
       protocol:
         simple: Any
       security_group_name:
@@ -206,13 +214,13 @@ tasks:
         simple: DemistoRule
       source:
         simple: 1.1.1.1
-      source_ports: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false
@@ -220,12 +228,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 8b597e5e-6732-4017-8ada-c940febc5083
+    taskid: 9844a088-e5d2-468a-8e09-ff203f61d3b0
     type: regular
     task:
-      id: 8b597e5e-6732-4017-8ada-c940febc5083
+      id: 9844a088-e5d2-468a-8e09-ff203f61d3b0
       version: -1
       name: Update Rule
       description: Update a security rule. If one does not exist, it'll be created.
@@ -237,27 +247,21 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      action: {}
-      description: {}
-      destination: {}
-      destination_ports: {}
-      direction: {}
       priority:
         simple: "1234"
-      protocol: {}
       security_group_name:
         simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
-      source: {}
       source_ports:
         simple: 8080,9000,15-20
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1595
         }
       }
     note: false
@@ -265,12 +269,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1c442370-4e30-4d3a-87a3-2c8a984115fb
+    taskid: 64507131-431c-4841-864b-b6ad6ad413bf
     type: regular
     task:
-      id: 1c442370-4e30-4d3a-87a3-2c8a984115fb
+      id: 64507131-431c-4841-864b-b6ad6ad413bf
       version: -1
       name: Get Rule
       description: Get a specific rule
@@ -287,11 +293,12 @@ tasks:
       security_rule_name:
         simple: DemistoRule
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1975
+          "y": 1945
         }
       }
     note: false
@@ -299,12 +306,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a2f463ca-8454-44fc-8786-ef4439f544dc
+    taskid: e8f6a851-77e8-4640-8413-e67667470106
     type: regular
     task:
-      id: a2f463ca-8454-44fc-8786-ef4439f544dc
+      id: e8f6a851-77e8-4640-8413-e67667470106
       version: -1
       name: Delete rule
       description: Delete a security rule
@@ -314,18 +323,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     scriptarguments:
       security_group_name:
         simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2150
+          "y": 2120
         }
       }
     note: false
@@ -333,12 +343,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0b5f28fa-f468-4afa-8816-152ab323fb9a
+    taskid: 0fbb126e-7912-427b-851c-331dbe189681
     type: regular
     task:
-      id: 0b5f28fa-f468-4afa-8816-152ab323fb9a
+      id: 0fbb126e-7912-427b-851c-331dbe189681
       version: -1
       name: List security groups
       description: List all network security groups
@@ -350,11 +362,12 @@ tasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -362,12 +375,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b85c0c02-79ba-4b2c-8d21-c5002bce10f5
+    taskid: d4cd8082-45f1-40a5-8e6e-2704754a4264
     type: condition
     task:
-      id: b85c0c02-79ba-4b2c-8d21-c5002bce10f5
+      id: d4cd8082-45f1-40a5-8e6e-2704754a4264
       version: -1
       name: Check alerts-nsg is a security group
       type: condition
@@ -388,11 +403,12 @@ tasks:
           right:
             value:
               simple: alerts-nsg
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 545
         }
       }
     note: false
@@ -400,12 +416,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 771f23bd-b068-4ef0-8f93-a22783b4f73c
+    taskid: a6d8bf7b-63e8-4683-82f1-ad6f791cc82b
     type: condition
     task:
-      id: 771f23bd-b068-4ef0-8f93-a22783b4f73c
+      id: a6d8bf7b-63e8-4683-82f1-ad6f791cc82b
       version: -1
       name: Check outputs
       type: condition
@@ -442,11 +460,12 @@ tasks:
           right:
             value:
               simple: 2.2.2.2
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1420
         }
       }
     note: false
@@ -454,12 +473,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
+    taskid: 04ab1516-a105-4ed9-8d30-fb4918a911a9
     type: condition
     task:
-      id: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
+      id: 04ab1516-a105-4ed9-8d30-fb4918a911a9
       version: -1
       name: Check Outputs
       type: condition
@@ -496,11 +517,12 @@ tasks:
           right:
             value:
               simple: 15-20
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1770
         }
       }
     note: false
@@ -508,24 +530,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 73061b32-2792-4cf8-890b-fb0a56c5cf02
+    taskid: b3ef3a1a-31d9-4c90-84d1-e8a998db26c2
     type: title
     task:
-      id: 73061b32-2792-4cf8-890b-fb0a56c5cf02
+      id: b3ef3a1a-31d9-4c90-84d1-e8a998db26c2
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2325
+          "y": 2995
         }
       }
     note: false
@@ -533,25 +557,171 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 46c010da-2ac2-4400-8546-17a073e91d08
+    type: regular
+    task:
+      id: 46c010da-2ac2-4400-8546-17a073e91d08
+      version: -1
+      name: azure-nsg-subscriptions-list
+      description: Gets all subscriptions for a tenant.
+      script: '|||azure-nsg-subscriptions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5ac7e0cd-5564-4854-8952-f16c9d3fe05c
+    type: condition
+    task:
+      id: 5ac7e0cd-5564-4854-8952-f16c9d3fe05c
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureNSG.Subscription
+                accessor: displayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 64ae7986-0e18-4e2b-8a98-72d660b89a24
+    type: regular
+    task:
+      id: 64ae7986-0e18-4e2b-8a98-72d660b89a24
+      version: -1
+      name: azure-nsg-resource-group-list
+      description: Gets all resource groups for a subscription.
+      script: '|||azure-nsg-resource-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 534c955c-0122-44e1-878e-3f1349ca3de1
+    type: condition
+    task:
+      id: 534c955c-0122-44e1-878e-3f1349ca3de1
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureNSG.ResourceGroup
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2325,
+        "height": 3010,
         "width": 492.5,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
 inputs:
 - key: ""
   value:
-    simple: גגכ
+    simple: ""
   required: false
-  description: ""
-  playbookInputQuery:
+  description: Test Azure Network Security Groups commands.
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
-description: ''
+

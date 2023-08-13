@@ -19,9 +19,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Incident data source
   name: fetch_incidents_type
   defaultvalue: incidents
@@ -30,25 +32,31 @@ configuration:
   - incidents
   - events
   - incidentevents
+  required: false
 - display: Maximum number of events per fetch.
   name: max_fetch
   defaultvalue: "50"
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   defaultvalue: ""
   name: incidentType
   type: 13
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Maximum is 30 days.
   name: first_fetch
   defaultvalue: 7 days
   type: 0
+  required: false
 - display: Query string for fetch incidents. For example - "updated>='2020-06-06T15:39:55.616Z' and updated<'2020-08-07T00:00:00.000Z' "
   defaultvalue: ""
   name: fetch_incidents_query
   type: 0
+  required: false
 script:
   script: ''
   type: javascript

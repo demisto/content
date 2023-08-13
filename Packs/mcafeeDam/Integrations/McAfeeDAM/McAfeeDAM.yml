@@ -20,20 +20,25 @@ configuration:
   name: batchSize
   defaultvalue: "10"
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Validate ceritifacte
   name: secure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule
   name: ruleName
   defaultvalue: ""
   type: 0
+  required: false
 script:
   script: ''
   type: javascript

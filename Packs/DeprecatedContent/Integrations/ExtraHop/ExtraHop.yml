@@ -18,10 +18,12 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 description: Deprecated. We recommend using ExtraHop Reveal(x) instead. ExtraHop performs real-time stream analysis of the packets that carry data across a network.
 display: ExtraHop (Deprecated)
 name: ExtraHop

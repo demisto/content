@@ -13,6 +13,12 @@ configuration:
   hiddenusername: true
   required: true
   type: 9
+- displaypassword: Trigger Token
+  additionalinfo: The trigger token to run pipelines. For more info see https://docs.gitlab.com/ee/ci/triggers
+  name: trigger_token
+  hiddenusername: true
+  required: false
+  type: 9
 - display: Project ID
   additionalinfo: The project ID, it can be found under the project name.
   name: project_id
@@ -21,9 +27,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Integration to GitLab API
 display: GitLab v2
 name: GitLabv2
@@ -3258,11 +3266,72 @@ script:
     - contextPath: GitLab.Artifact.artifact_data
       description: Data of the artifact requested.
       type: String
+  - name: gitlab-trigger-pipeline
+    arguments:
+    - description: Project ID on which to run the pipeline.
+      name: project_id
+    - description: The branch on which to run the pipeline. Default is 'master'.
+      name: ref_branch
+    - description: JSON containing the pipeline variables.
+      name: trigger_variables
+    description: Triggers a GitLab pipeline on a selected project and branch.
+    outputs:
+    - contextPath: GitLab.Pipeline.id
+      description: Pipeline ID.
+      type: Number
+    - contextPath: GitLab.Pipeline.project_id
+      description: Project ID that the pipeline belongs to.
+      type: Number
+    - contextPath: GitLab.Pipeline.status
+      description: Status of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.ref
+      description: Reference of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.sha
+      description: SHA of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.created_at
+      description: Time when the pipeline was created.
+      type: Date
+    - contextPath: GitLab.Pipeline.updated_at
+      description: Time when the pipeline was last updated.
+      type: Date
+    - contextPath: GitLab.Pipeline.started_at
+      description: Time when the pipeline was started.
+      type: Date
+    - contextPath: GitLab.Pipeline.finished_at
+      description: Time when the pipeline was finished.
+      type: Date
+    - contextPath: GitLab.Pipeline.duration
+      description: Duration of the pipeline in seconds.
+      type: Number
+    - contextPath: GitLab.Pipeline.web_url
+      description: Web URL of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username that triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of the user who triggered the pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered the pipeline.
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.5.0
 tests:
 - Test-GitLab-v2

@@ -15,12 +15,15 @@ configuration:
   name: instance_endpoint
   type: 0
   additionalinfo: https://<yoursubdomain>.<deployment>.sumologic.com
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Access ID
   name: access_id
   type: 0
@@ -33,24 +36,29 @@ configuration:
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
+  required: false
 - display: Fetch Limit
   name: max_fetch
   defaultvalue: "20"
   type: 0
   additionalinfo: Fetch limit must not be greater than 200
+  required: false
 - display: Override default fetch query
   name: fetch_query
   type: 0
   additionalinfo: Default fetch query is status:in("new", "inprogress")
+  required: false
 - display: First fetch time
   name: first_fetch
   defaultvalue: 1 day
   type: 0
+  required: false
 - display: Pull associated Sumo Logic Signals as Incidents
   additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
   defaultvalue: "false"
   name: pull_signals
   type: 8
+  required: false
 - display: Incident Mirroring Direction
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM).'
   defaultvalue: None
@@ -62,6 +70,7 @@ configuration:
   - Incoming And Outgoing
   type: 15
   section: Collect
+  required: false
 - display: Close Mirrored XSOAR Incident
   additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
@@ -69,6 +78,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Close Mirrored Sumo Logic Insight
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Sumo Logic SIEM.
   defaultvalue: 'false'
@@ -76,11 +86,13 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Override Record Summary Fields
   name: record_summary_fields
   defaultvalue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
   type: 0
   additionalinfo: Record Summary Fields included when fetching Insights
+  required: false
 script:
   script: ''
   type: python
@@ -847,7 +859,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

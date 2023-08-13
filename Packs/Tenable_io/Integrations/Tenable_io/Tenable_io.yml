@@ -12,24 +12,30 @@ configuration:
   name: access-key
   type: 4
   hidden: true
+  required: false
 - displaypassword: Access key
   name: credentials_access_key
   hiddenusername: true
   type: 9
+  required: false
 - display: Secret key
   name: secret-key
   type: 4
   hidden: true
+  required: false
 - displaypassword: secret key
   name: credentials_secret_key
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable.io
 name: Tenable.io

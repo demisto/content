@@ -14,6 +14,7 @@ configuration:
   displaypassword: API KEY
   hiddenusername: true
   section: Connect
+  required: false
 - display: API KEY
   name: apikey
   defaultvalue: ''
@@ -21,6 +22,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Good Reputation (Percentage)
   name: good
   defaultvalue: '10'
@@ -57,11 +59,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: C - Fairly reliable
   name: integrationReliability
   display: 'Source Reliability'
@@ -76,6 +80,7 @@ configuration:
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
+  required: false
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
@@ -87,12 +92,14 @@ configuration:
   - suddenDeath
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Collect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -1632,7 +1639,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   subtype: python3
 fromversion: 5.0.0

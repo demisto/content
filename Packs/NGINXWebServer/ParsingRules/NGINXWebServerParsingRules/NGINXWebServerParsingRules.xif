@@ -1,5 +1,7 @@
 [INGEST:vendor="nginx", product="nginx", target_dataset="nginx_nginx_raw", no_hit=keep]
-alter
+// Support only date time of format: dd/MMM/yyyy:hh:mm:ss [+|-]nnnn or format: yyyy/MM/dd hh:mm:ss. For example: "18/Jul/2021:10:00:00 +0000" or "2020/01/19 10:00:00".
+filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]" or _raw_log ~= "\d{4,}/\d{2}/\d{2}\s*\d{2}:\d{2}:\d{2}"
+| alter
     tmp_date_part1 = arraystring(regextract(_raw_log, "\d{4}\/\d{2}\/\d{2}"), ""),
     tmp_time_part1 = arraystring(regextract(_raw_log, "\s(\d{2}\:\d{2}\:\d{2})\s"), ""),
     tmp_date_part2 = arraystring(regextract(_raw_log, "\[(\d{2}\/\w{3}\/\d{4})\:"), ""),

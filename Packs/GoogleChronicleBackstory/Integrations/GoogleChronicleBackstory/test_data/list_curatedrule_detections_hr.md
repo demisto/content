@@ -1,0 +1,8 @@
+### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__GlobalSSHKeys_Added)
+|Detection ID|Description|Detection Type|Detection Time|Events|Alert State|Detection Severity|Detection Risk-Score|
+|---|---|---|---|---|---|---|---|
+| [de_50fd0957-0959-0000-d556-c6f8000016b1](https://dummy-chronicle/alert?alertId=de_50fd0957-0959-0000-d556-c6f8000016b1) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
+| [de_662d8ff5-8eea-deb8-274e-f3410c7b935a](https://dummy-chronicle/alert?alertId=de_662d8ff5-8eea-deb8-274e-f3410c7b935a) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
+
+View all Curated Detections for this rule in Chronicle by clicking on GCP Secret Manager Mass Deletion and to view individual detection in Chronicle click on its respective Detection ID.
+Maximum number of detections specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as next_page_token.

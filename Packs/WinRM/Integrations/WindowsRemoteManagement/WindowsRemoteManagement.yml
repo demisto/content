@@ -25,6 +25,7 @@ configuration:
   name: realm
   type: 0
   additionalinfo: Default realm to use for Kerberos based authentication
+  required: false
 - display: Decode codec (default is utf_8)
   name: decode
   defaultvalue: utf_8
@@ -116,6 +117,7 @@ configuration:
   - utf_7
   - utf_8
   additionalinfo: Decode codec to use when decoding command outputs (defaults to 'utf_8')
+  required: false
 script:
   script: ''
   type: python

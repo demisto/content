@@ -6,9 +6,11 @@ configuration:
 - display: Role Arn
   name: roleArn
   type: 0
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -31,27 +33,34 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   type: 0
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
+  required: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: AWS Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect. Network Firewall uses rules that are compatible with Suricata, a free, open source intrusion detection system (IDS) engine.
 display: AWS Network Firewall
 name: AWS Network Firewall

@@ -19,47 +19,56 @@ configuration:
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
   section: Collect
   defaultvalue: "label:Inbox"
+  required: false
 - display: Events user key
   name: queryUserKey
   type: 0
   additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
   section: Collect
   advanced: true
+  required: false
 - display: Immutable Google Apps ID
   additionalinfo: See the Help tab for details on the Immutable Google Apps ID.
   name: gappsID
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 1 days
   display: First fetch timestamp, in days.
   name: fetch_time
   type: 0
   section: Collect
+  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
   defaultvalue: "50"
   section: Collect
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
+  required: false
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -1641,7 +1650,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.64634
+  dockerimage: demisto/google-api-py3:1.0.0.64930
   isfetch: true
   runonce: false
   script: '-'

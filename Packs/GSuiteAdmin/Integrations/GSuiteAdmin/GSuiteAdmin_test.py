@@ -612,6 +612,28 @@ def test_gsuite_token_revoke_command_success(mocker_http_request, gsuite_client)
 
 
 @patch(MOCKER_HTTP_METHOD)
+def test_gsuite_user_signout_command_success(mocker_http_request, gsuite_client):
+    """
+    Scenario: User signout  command successful execution.
+
+    Given:
+    - Working API integration and correct parameters
+
+    When:
+    - Calling command method gsuite_token_revoke_command.
+
+    Then:
+    - Ensure expected human readable output is being set.
+    """
+
+    mocker_http_request.return_value = {}
+
+    from GSuiteAdmin import user_signout_command
+    response = user_signout_command(gsuite_client, {'user_key': 'USER_KEY'})
+    assert response.readable_output == HR_MESSAGES['USER_SIGNOUT_SESSIONS'].format('USER_KEY')
+
+
+@patch(MOCKER_HTTP_METHOD)
 def test_gsuite_token_revoke_command_failure(mocker_http_request, gsuite_client):
     """
     Scenario: Token revoke command failure.

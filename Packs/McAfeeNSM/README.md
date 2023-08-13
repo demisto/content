@@ -58,6 +58,9 @@ By default, on Fault and IPS events (syslog) do not have an event time. To add a
 2. In Message Preference, click edit and add to the end of the message ``` at  $IV_FAULT_TIME$```.
 3. Click **Save**.
 
+Note:
+In order to parse the timestamp correctly, make sure to configure the logs to be sent in a UTC timezone (timestamp ends with UTC).
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 

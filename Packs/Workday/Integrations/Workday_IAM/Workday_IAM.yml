@@ -6,6 +6,7 @@ configuration:
 - display: Username
   name: credentials
   type: 9
+  required: false
 - display: Workday Report URL
   name: report_url
   required: true
@@ -14,35 +15,44 @@ configuration:
   display: Fetch Limit (Recommended less than 200)
   name: max_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: IAM Sync User - Workday
   display: Mapper (incoming)
   name: mapper_in
   type: 0
+  required: false
 - defaultvalue: 'true'
   display: Sync user profiles on first run
   name: first_run
   type: 8
+  required: false
 - additionalinfo: If checked, the fetch incidents command will sample (at most) five incidents. Use only to sample incidents for classification & mapping.
   defaultvalue: 'false'
   display: Fetch Samples
   name: fetch_samples
   type: 8
+  required: false
 - defaultvalue: '%m/%d/%Y'
   display: Date Format in Workday Report
   name: workday_date_format
   type: 0
+  required: false
 - additionalinfo: Select the field that determines when to trigger a termination incident for deactivated employees.
   defaultvalue: Termination_Date
   display: Deactivation date field
@@ -51,19 +61,23 @@ configuration:
   - Termination_Date
   - Last_Day_of_Work
   type: 15
+  required: false
 - additionalinfo: Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR, and the users in the applications, created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately.
   display: Number of days before hire date to sync hires
   name: days_before_hire_to_sync
   type: 0
+  required: false
 - additionalinfo: Determines when to enable the Active Directory accounts of employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower, or equal to, the value in the *Number of days before hire date to sync hires* parameter.
   display: Number of days before hire date to enable Active Directory account
   name: days_before_hire_to_enable_ad
   type: 0
+  required: false
 - additionalinfo: Events will be fetched only for User Profiles with a Source Priority value less than or equal to the value of this parameter.
   defaultvalue: '1'
   display: Source Priority Level
   name: source_priority
   type: 0
+  required: false
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM

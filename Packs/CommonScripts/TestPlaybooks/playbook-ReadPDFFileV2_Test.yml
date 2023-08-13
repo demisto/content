@@ -373,7 +373,7 @@ tasks:
       saveAsFile:
         simple: "yes"
       url:
-        simple: https://github.com/demisto/content/raw/b65ded3ca7213c08e44f548288f58147ee89025b/Scripts/ReadPDFFileV2/test_data/Docker-Cookbook.pdf
+        simple: https://github.com/demisto/content/raw/b65ded3ca7213c08e44f548288f58147ee89025b/Scripts/ReadPDFFileV2/test_data/text-with-images.pdf
     separatecontext: false
     view: |-
       {
