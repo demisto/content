@@ -20,7 +20,6 @@ install_logging("find_pack_dependencies_changes.log", logger=logger)
 def parse_args() -> Namespace:
     options = ArgumentParser()
     options.add_argument('--gitlab-token', required=True, help='A GitLab API token')
-    options.add_argument('--github-token', required=True, help='A GitHub API token')
     options.add_argument('--master-sha', required=True, help='master branch commit SHA')
     options.add_argument('--job-name', required=True, help='The job name to take the artifact from')
     options.add_argument('--artifacts-folder', required=True, help='Artifacts folder to write the output to')
@@ -94,7 +93,6 @@ def get_diff(args: Namespace) -> dict:  # pragma: no cover
         args.job_name,
         packs_dependencies_filepath,
     )
-    
     current = json.loads(packs_dependencies_filepath.read_text())
     return compare(previous, current)
 

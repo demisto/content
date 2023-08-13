@@ -1,6 +1,7 @@
 import Tests.scripts.update_pack_dependencies_changes_in_pr as script_module
 import pytest
 
+
 def test_get_summary() -> None:
     """
     Given: Mock diff data of a single marketplace.
