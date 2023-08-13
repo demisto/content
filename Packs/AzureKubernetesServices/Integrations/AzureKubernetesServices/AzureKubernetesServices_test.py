@@ -40,7 +40,7 @@ def test_clusters_list(client, requests_mock):
         f'{client.ms_client._base_url}/providers/Microsoft.ContainerService/managedClusters?api-version={API_VERSION}',
         json=api_response,
     )
-    result = clusters_list(client=client)
+    result = clusters_list(client=client, args={'subscription_id': subscription_id}, params={})
     assert result.outputs == api_response.get('value')
 
 
@@ -77,7 +77,10 @@ def test_clusters_addon_update(client, requests_mock):
             'resource_name': resource_name,
             'location': location,
             'monitoring_agent_enabled': 'true',
-        }
+            'resource_group_name': resource_group_name,
+            'subscription_id': subscription_id
+        },
+        params={}
     )
     assert requests_mock.request_history[1].json() == {
         'location': location,

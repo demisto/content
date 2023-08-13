@@ -1,15 +1,3 @@
 [known_words]
 ReversingLabs
 TitaniumCloud
-
-[file:file_reputation_context.json]
-ignore=BA102
-
-[file:rha1_analytics_context.json]
-ignore=BA102
-
-[file:av_scanners_context.json]
-ignore=BA102
-
-[file:file_analysis_context.json]
-ignore=BA102

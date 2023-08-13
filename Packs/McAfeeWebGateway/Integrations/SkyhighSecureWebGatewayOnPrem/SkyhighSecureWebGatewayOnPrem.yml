@@ -8,7 +8,8 @@ configuration:
   name: url
   required: true
   type: 0
-- name: credentials
+- display: Username
+  name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
@@ -229,7 +230,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

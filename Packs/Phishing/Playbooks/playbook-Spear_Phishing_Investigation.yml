@@ -385,8 +385,7 @@ tasks:
     scriptarguments:
       emailkeywordsfound:
         complex:
-          root: MatchRegex
-          accessor: results
+          root: KeyWordsFound
     separatecontext: false
     continueonerrortype: ""
     view: |-

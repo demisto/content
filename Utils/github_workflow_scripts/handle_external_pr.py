@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 import json
 import os
-
 from pathlib import Path
-
 import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
 
-from utils import get_env_var, timestamped_print, Checkout
+
+from utils import (
+    get_env_var,
+    timestamped_print,
+    Checkout,
+    load_json,
+    get_content_reviewers,
+    CONTENT_ROLES_PATH
+)
 from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-
-# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
-SECURITY_REVIEWER = "efelmandar"
-REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
@@ -43,7 +45,8 @@ SECURITY_CONTENT_ITEMS = [
     "IndicatorTypes",
     "IndicatorFields",
     "Layouts",
-    "Classifiers"
+    "Classifiers",
+    "Wizards"
 ]
 
 
@@ -258,15 +261,22 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    # assign reviewers / request review from
-    content_reviewer = determine_reviewer(REVIEWERS, content_repo)
+    # Parse PR reviewers from JSON and assign them
+    # Exit if JSON doesn't exist or not parsable
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+
+    print(f"Content Reviewers: {','.join(content_reviewers)}")
+    print(f"Security Reviewer: {security_reviewer}")
+
+    content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
-        reviewers.append(SECURITY_REVIEWER)
-        pr.add_to_assignees(SECURITY_REVIEWER)
+        reviewers.append(security_reviewer)
+        pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
     pr.create_review_request(reviewers=reviewers)

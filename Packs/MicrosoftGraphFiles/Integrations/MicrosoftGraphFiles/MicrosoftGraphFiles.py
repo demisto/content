@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 """ IMPORTS """
 import urllib3
@@ -116,7 +117,9 @@ class MsGraphClient:
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph)
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="msgraph-files",
+        )
 
     def list_sharepoint_sites(self, keyword):
         """
@@ -295,7 +298,7 @@ class MsGraphClient:
         try:
             response = requests.put(url=upload_url, data=chunk_data, headers=headers)
         except Exception as e:
-            raise(e)
+            raise (e)
         return response
 
     def upload_file_with_upload_session(self, upload_url: str, file_data: bytes, file_size: int) -> dict:
@@ -405,7 +408,7 @@ class MsGraphClient:
         """
         file_path = demisto.getFilePath(entry_id).get("path")
 
-        if "drives" == object_type:
+        if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
 
         elif object_type in ["groups", "users", "sites"]:
@@ -568,10 +571,7 @@ def list_sharepoint_sites_command(client: MsGraphClient, args):
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    if args.get('keyword'):
-        keyword = args.get('keyword')
-    else:
-        keyword = '*'
+    keyword = args.get("keyword") if args.get("keyword") else "*"
     result = client.list_sharepoint_sites(keyword)
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
@@ -864,15 +864,14 @@ def main():
             return_outputs(*list_drives_in_site_command(client, demisto.args()))
         elif demisto.command() == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, demisto.args()))
-
+        elif demisto.command() == "msgraph-files-auth-reset":
+            return_results(reset_auth())
     # Log exceptions
     except Exception as err:
         return_error(
             f"Failed to execute {demisto.command()} command. Error: {str(err)}", err
         )
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
