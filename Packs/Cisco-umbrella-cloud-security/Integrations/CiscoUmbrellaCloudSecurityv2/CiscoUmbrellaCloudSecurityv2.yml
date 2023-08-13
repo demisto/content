@@ -412,7 +412,7 @@ script:
     - contextPath: Umbrella.Destinations.type
       description: Type of destination within the destination list.
     - contextPath: Umbrella.Destinations.createdAt
-      description: When the domain within destination list was created
+      description: The date and time when the domain within the destination list was created.
     - contextPath: Umbrella.Destinations.comment
       description: Comment associated with domain within destination list
   - arguments:
