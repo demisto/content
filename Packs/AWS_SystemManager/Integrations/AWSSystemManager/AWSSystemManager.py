@@ -2,11 +2,13 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from AWSApiModule import *
-from mypy_boto3_ssm.client import SSMClient, Exceptions
+# from mypy_boto3_ssm.client import SSMClient, Exceptions
+
+
 # from mypy_boto3_ssm.type_defs import (
-# AddTagsToResourceRequestRequestTypeDef,
-# GetInventoryRequestRequestTypeDef,
-# InventoryResultEntityTypeDef
+#     AddTagsToResourceRequestRequestTypeDef,
+#     GetInventoryRequestRequestTypeDef,
+#     InventoryResultEntityTypeDef,
 #     ListInventoryEntriesRequestRequestTypeDef,
 #     ListAssociationsRequestRequestTypeDef,
 # )
@@ -75,9 +77,9 @@ def add_tags_to_resource_command(
 
 
 def get_inventory_command(
-    aws_client: SSMClient, args: dict[str, Any]
+    aws_client, args: dict[str, Any]
 ) -> list[CommandResults]:
-    def _parse_entities(entities) -> list[Optional[dict[str, str]]]:
+    def _parse_entities(entities) -> list[dict[str, str]]:
         """
         Parses a list of entities and returns a list of dictionaries containing relevant information.
 
@@ -85,20 +87,11 @@ def get_inventory_command(
             entities: A list of entities to parse.
 
         Returns:
-            A list of dictionaries containing the following keys:
-            - "Id": The ID of the entity.
-            - "Instance Id": The ID of the instance.
-            - "Computer Name": The name of the computer.
-            - "Platform Type": The type of platform.
-            - "Platform Name": The name of the platform.
-            - "Agent version": The version of the agent.
-            - "IP address": The IP address of the instance.
-            - "Resource Type": The type of resource.
-
+            list of dict containing relevant information.
         """
         parsed_entities = []
         for entity in entities:
-            entity_content: list[dict[str, str]] = entity.get("Data", {}).get("AWS:InstanceInformation", {}).get("Content", [{}])
+            entity_content = entity.get("Data", {}).get("AWS:InstanceInformation", {}).get("Content", [{}])
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
                 parsed_entity.update({
@@ -114,26 +107,27 @@ def get_inventory_command(
         return parsed_entities
 
     headers = ["Id", "Instance Id", "Computer Name", "Platform Type",
-               "Platform Name", "Agent version", "IP address", "Resource Type",]
+               "Platform Name", "Agent version", "IP address", "Resource Type"]
     kwargs = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     if next_token := args.get("next_token"):
         kwargs["NextToken"] = next_token
-    try:
-        response = aws_client.get_inventory(**kwargs)
-    except Exceptions.InvalidNextToken as e:
-        raise DemistoException(
-            f"Invalid next token: {e}, Note: if the command allin the context data in the key AWS.SSM.InventoryNextToken .")
-    entities = response.get("Entities", [])
 
+    response = aws_client.get_inventory(**kwargs)
+    # except InvalidNextToken as e:
+    #     raise DemistoException(
+    #         f"Invalid next token. If the command has already been run, "
+    #         f"the next token exists in the context data in the key AWS.SSM.InventoryNextToken. :{e}."
+    #     )
+    entities = response.get("Entities", [])
     command_results = []
     if next_token := response.get("NextToken"):
         command_results.append(
             CommandResults(
                 outputs_prefix="AWS.SSM.InventoryNextToken",
                 outputs=next_token,
-                readable_output=f"{next_token=} please run the command again to get more results.",
+                readable_output=f"For more results rerun the command with {next_token=}.",
             )
         )
 

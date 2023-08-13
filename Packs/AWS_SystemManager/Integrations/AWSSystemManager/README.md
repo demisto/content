@@ -47,30 +47,90 @@ For example, Key=Owner,Value=SysAdmin.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes.<br/>Must specify the name of the managed node in the following format: mi-ID_number. For example, ``mi-1a2b3c4d5e6f``. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde. (for more example see in the table below.) | Required | 
+| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes.<br/>Must specify the name of the managed node in the following format: mi-ID_number ``. For example, ``mi-1a2b3c4d5e6f. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
+| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README). | Required | 
 | tag_key | The name of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 | tag_value | The value of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
-
-
-### resource_id Argument Example
-
-|**ResourceType**|**ResourceID**|
-|---|---|---|---|---|---|
-| MaintenanceWindow | mw-012345abcde |
-| PatchBaseline | pb-012345abcde |
-| ManagedInstance | mi-012345abcde |
-| Automation | example-c160-4567-8519-012345abcde |
-| Document | Use the name of the resource. If you’re tagging a shared document, you must use the full ARN of the document.|
-| Parameter| Use the name of the resource. If you’re tagging a shared document, you must use the full ARN of the document.|
-| OpsMetadata | `ResourceID` is created from the strings that come after the word `opsmetadata` in the ARN. For example, an OpsMetadata object with an ARN of `arn:aws:ssm:us-east-2:1234567890:opsmetadata/aws/ssm/MyGroup/appmanager` has a `ResourceID` of either `aws/ssm/MyGroup/appmanager` or `/aws/ssm/MyGroup/appmanager`.|
-
 
 #### Context Output
 
 There is no context output for this command.
+### aws-ssm-inventory-get
+
+***
+Query inventory information. This includes managed node status, such as Stopped or Terminated.
+
+#### Base Command
+
+`aws-ssm-inventory-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.InventoryNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.Inventory.Entities | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
+| AWS.SSM.Inventory.Entities.Id | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
+| AWS.SSM.Inventory.Entities.Data.TypeName | String | The name of the inventory result item type. | 
+| AWS.SSM.Inventory.Entities.Data.SchemaVersion | String | The schema version for the inventory result item. | 
+| AWS.SSM.Inventory.Entities.Data.CaptureTime | String | The time inventory item data was captured. | 
+| AWS.SSM.Inventory.Entities.Data.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
+
 #### Command example
-```!aws-ssm-tag-add resource_id="test_id" resource_type=Document tag_key=test_key tag_value=test_value```
+```!aws-ssm-inventory-get limit=2```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Inventory": [
+            {
+                "Id": "i-test_1",
+                "Data": {}
+            },
+            {
+                "Id": "i-test_2",
+                "Data": {
+                    "AWS:InstanceInformation": {
+                        "TypeName": "AWS:InstanceInformation",
+                        "SchemaVersion": "1.0",
+                        "CaptureTime": "2023-07-25T16:02:02Z",
+                        "Content": [
+                            {
+                                "AgentType": "amazon-ssm-agent",
+                                "AgentVersion": "agent_version",
+                                "ComputerName": "computer_name",
+                                "InstanceId": "i-test_2",
+                                "InstanceStatus": "Stopped",
+                                "IpAddress": "ip_address",
+                                "PlatformName": "Ubuntu",
+                                "PlatformType": "Linux",
+                                "PlatformVersion": "20.04",
+                                "ResourceType": "resource_type"
+                            }
+                        ]
+                    }
+                }
+            },
+            ],
+            "InventoryNextToken": "test"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->Tags added to resource test_id successfully.
+>### AWS SSM Inventory
+>|Id|Instance Id|Computer Name|Platform Type|Platform Name|Agent version|IP address|Resource Type|
+>|---|---|---|---|---|---|---|---|
+>| i-test1 |  |  |  |  |  |  |  |
+>| i-test2 | i-test2 | computer_name | Linux | Ubuntu | agent_version | ip_address | resource_type |
+
