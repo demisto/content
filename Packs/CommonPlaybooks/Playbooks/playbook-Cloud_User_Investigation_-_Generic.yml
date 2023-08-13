@@ -499,13 +499,13 @@ inputs:
   value:
     simple: "20"
   required: false
-  description: The threshold number of failed login by the user. required to determine how many failed logon event count as suspicious events.
+  description: The threshold number of failed logons by the user. Required to determine how many failed logon events count as suspicious events.
   playbookInputQuery:
 - key: MfaAttemptThreshold
   value:
     simple: "10"
   required: false
-  description: The threshold number of MFA failed login by the user. required to determine how many MFA failed logon event count as suspicious events.
+  description: The threshold number of MFA failed logon by the user. Required to determine how many MFA failed logon events count as suspicious events.
   playbookInputQuery:
 - key: AwsTimeSearchFrom
   value:
@@ -531,52 +531,52 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: AwsMFAConfigCount
-  description: Count of MFA config performed by the user in the AWS environment.
+  description: The number of MFA configurations performed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsUserRoleChnagesCount
-  description: Count of the user roles that were changed by the user in the AWS environment.
+  description: The number of user roles that were changed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsSuspiciousActivitiesCount
-  description: Count of the suspicious activities performed by the user in the AWS environment.
+  description: The number of suspicious activities performed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsScriptBasedUserAgentCount
-  description: Count of Script-based user agent usages by the user in the AWS environment.
+  description: The number of script-based user agent usages by the user in the AWS environment.
   type: unknown
 - contextPath: AwsAccessKeyActivitiesCount
-  description: Count of access key activities performed by the user in the AWS environment.
+  description: The number of access key activities performed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsSecurityChangesCount
-  description: Count of the security rules that were changed by the user in the AWS environment.
+  description: The number of security rules that were changed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsAdminActivitiesCount
-  description: Count of administrative activities performed by the user in the AWS environment.
+  description: The number of administrative activities performed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsApiAccessDeniedCount
-  description: Count of Api access denied by the user in the AWS environment.
+  description: The number of API accesses denied by the user in the AWS environment.
   type: unknown
 - contextPath: AwsFailedLogonCount
-  description: Count of failed logins by the user in the AWS environment.
+  description: The number of failed logins by the user in the AWS environment.
   type: unknown
 - contextPath: GcpAnomalousNetworkTraffic
   description: Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
   type: unknown
 - contextPath: GcpSuspiciousApiUsage
-  description: Determines whether there are event of suspicious Api usage by the user in the GCP environment.
+  description: Determines whether there are events of suspicious API usage by the user in the GCP environment.
   type: unknown
 - contextPath: GcpFailLogonCount
-  description: Count of failed logins by the user in the GCP environment.
+  description: The number of failed logins by the user in the GCP environment.
   type: unknown
 - contextPath: GsuiteFailLogonCount
-  description: Count of failed logins by the user in the G Suite environment.
+  description: The number of failed logins by the user in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUnusualLoginAllowedCount
-  description: Count of unusual logins performed by the user and allowed in the G Suite environment.
+  description: The number of unusual logins performed by the user and allowed in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUnusualLoginBlockedCount
-  description: Count of unusual logins performed by the user and blocked in the G Suite environment.
+  description: The number of unusual logins performed by the user and blocked in the G Suite environment.
   type: unknown
 - contextPath: GsuiteSuspiciousLoginCount
-  description: Count of the suspicious logon performed by the user in the G Suite environment.
+  description: The number of suspicious logins performed by the user in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUserPasswordLeaked
   description: Determines whether user's password was leaked in the G Suite environment.
@@ -591,19 +591,19 @@ outputs:
   description: Security rules that were changed by the user in the Azure environment.
   type: unknown
 - contextPath: AzureUnsuccessSecurityRulesChangeEvents
-  description: An unsuccessful attempts to change security rules by the user in the Azure environment.
+  description: Unsuccessful attempts to change security rules by the user in the Azure environment.
   type: unknown
 - contextPath: AzureFailLoginCount
-  description: Count of failed logins by the user in the Azure environment.
+  description: The number of failed logins by the user in the Azure environment.
   type: unknown
 - contextPath: AzureFailLoginMFACount
-  description: Count of failed logins by the user using MFA in the Azure environment.
+  description: The number of failed logins by the user using MFA in the Azure environment.
   type: unknown
 - contextPath: AzureAnomaliesEvents
-  description: Anomalies Events on the user in the Azure environment.
+  description: Anomaly events on the user in the Azure environment.
   type: unknown
 - contextPath: AzureRiskyUserCount
-  description: Count the events where the user was defined as a risky user  in the Azure environment.
+  description: The number of events where the user was defined as a risky user in the Azure environment.
   type: unknown
 - contextPath: AzureUncommonCountryLogonEvents
   description: Uncommon country logon events by the user in the Azure environment.
@@ -612,31 +612,31 @@ outputs:
   description: Uncommon volume events by the user in the Azure environment.
   type: unknown
 - contextPath: AzureUncommonActivitiesEvents
-  description: Uncommon activities events by the user in the Azure environment.
+  description: Uncommon activity events by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureScriptBasedUserAgentCount
-  description: Count of Script-based user agent usages by the user in the Azure environment.
+  description: The number of script-based user agent usages by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureAdminActivitiesCount
-  description: Count of administrative activities performed by the user in the Azure environment.
+  description: The number of administrative activities performed by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureSecurityRulesChangeCount
-  description: Count of the security rules that were changed by the user in the Azure environment.
+  description: The number of security rules that were changed by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
-  description: count of unsuccessful attempts to change security rules by the user in the Azure environment.
+  description: The number of unsuccessful attempts to change security rules by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureAnomaliesCount
-  description: Count of anomalies Events on the user in the Azure environment.
+  description: The number of anomaly events on the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureUncommonCountryLogonCount
-  description: Count of uncommon country logon events by the user in the Azure environment.
+  description: The number of uncommon country logon events by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureUncommonVolumeCount
-  description: Count of uncommon volume events by the user in the Azure environment.
+  description: The number of uncommon volume events by the user in the Azure environment.
   type: unknown
 - contextPath: CountAzureEvents.AzureUncommonActivitiesCount
-  description: Count of uncommon activities events by the user in the Azure environment.
+  description: The number of uncommon activity events by the user in the Azure environment.
   type: unknown
 tests:
 - No tests (auto formatted)

@@ -40,13 +40,13 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | GcpAnomalousNetworkTraffic | Determines whether there are events of anomalous network traffic performed by the user in the GCP environment. | unknown |
-| GcpSuspiciousApiUsage | Determines whether there are event of suspicious Api usage by the user in the GCP environment. | unknown |
-| GcpFailLogonCount | Count of failed logins by the user in the GCP environment. | unknown |
-| GsuiteFailLogonCount | Count of failed logins by the user in the G Suite environment. | unknown |
-| GsuiteUnusualLoginAllowedCount | Count of unusual logins performed by the user and allowed in the G Suite environment. | unknown |
-| GsuiteUnusualLoginBlockedCount | Count of unusual logins performed by the user and blocked in the G Suite environment. | unknown |
-| GsuiteSuspiciousLoginCount | Count of the suspicious logon performed by the user in the G Suite environment. | unknown |
-| GsuiteUserPasswordLeaked | Determines whether user's password was leaked in the G Suite environment. | unknown |
+| GcpSuspiciousApiUsage | Determines whether there are events of suspicious API usage by the user in the GCP environment. | unknown |
+| GcpFailLogonCount | The number of failed logins by the user in the GCP environment. | unknown |
+| GsuiteFailLogonCount | The number of failed logins by the user in the G Suite environment. | unknown |
+| GsuiteUnusualLoginAllowedCount | The number of unusual logins performed by the user and allowed in the G Suite environment. | unknown |
+| GsuiteUnusualLoginBlockedCount | The number of unusual logins performed by the user and blocked in the G Suite environment. | unknown |
+| GsuiteSuspiciousLoginCount | The number of suspicious logons performed by the user in the G Suite environment. | unknown |
+| GsuiteUserPasswordLeaked | Determines whether the user's password was leaked in the G Suite environment. | unknown |
 
 ## Playbook Image
 
