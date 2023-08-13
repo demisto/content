@@ -111,72 +111,6 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 49ba907d-1814-40b1-8d34-c27a4f488de1
-    type: playbook
-    task:
-      id: 49ba907d-1814-40b1-8d34-c27a4f488de1
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Ids:
-        complex:
-          root: TenableIO.Scan
-          accessor: Id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: scanId
-      PollingCommandName:
-        simple: tenable-io-get-scan-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: |
-          TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 545
         }
       }
@@ -202,7 +136,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -224,7 +158,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 590,
         "width": 380,
         "x": 50,
         "y": 50
