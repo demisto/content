@@ -162,12 +162,13 @@ class GithubPullRequest(GithubClient):
 
         if section_name:
             append = False
-            tags_template = "<!-- {section} - START -->\n{text}\n<!-- {section} - END -->"
-            replace_pattern = tags_template.format(section=section_name, text="(.*?)")
-            if re.match(replace_pattern, current_comment):
-                updated_comment = re.sub(replace_pattern, current_comment, comment)
+            start_tag = f"<!-- {section_name} - START -->\n"
+            end_tag = f"\n<!-- {section_name} - END -->"
+            replace_pattern = f"({start_tag})(.*?)({end_tag})"
+            if re.search(replace_pattern, current_comment, re.DOTALL):
+                updated_comment = re.sub(replace_pattern, fr"\1{comment}\3", current_comment, count=1, flags=re.DOTALL)
             else:
-                comment = tags_template.format(section=section_name, text=comment)
+                comment = f"{start_tag}{comment}{end_tag}"
                 append = True
         if append:
             updated_comment = f"{self.data.get('body')}\n{comment}"
