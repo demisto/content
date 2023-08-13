@@ -63,7 +63,7 @@ class GithubClient:
             url_suffix="/graphql",
             json_data={"query": query, "variables": variables},
         )
-        if res.get("errors"):
+        if res and res.get("errors"):
             self.handle_error("\n".join([e.get("message") for e in res["errors"]]))
         return res
 
@@ -138,36 +138,36 @@ class GithubPullRequest(GithubClient):
         self,
         comment: str,
         append: bool = False,
-        comment_tag: str | None = None,
+        section_name: str | None = None,
     ) -> dict | None:
         """Edits the first comment (AKA "body") of the pull request.
 
         Args:
             comment (string): The comment text.
             append (bool, default: False): Whether to append to or override the existing comment.
-            comment_tag (str | None): If provided, tries to find existing text wrapped by comment tags
-                                      and replace it with `comment` value.
-                                      If the comment tags do not exist, appends `comment` surrounded by them.
-                                      
-                                      Example:
-                                        body = "Hello, <!-- COMMENT_TAG - START -->world<!-- COMMENT_TAG - END -->!"
-                                        comment = "bye"
-                                        comment_tag = "COMMENT_TAG"
-                                        Results to:
-                                            "Hello, <!-- COMMENT_TAG - START -->bye<!-- COMMENT_TAG - END -->!"
+            section_name (str | None): If provided, tries to find existing text wrapped by the section tags
+                                       and if exists, replaces it with `comment` value. Otherwise, appends
+                                       `comment` to the PR comment in a new section (i.e., wrapped by the tags).
+
+                                       Example:
+                                       body = "Hello, <!-- SECTION - START -->\nworld<!-- SECTION - END -->!"
+                                       comment = "bye"
+                                       section_name = "SECTION"
+                                       Results to:
+                                           "Hello, <!-- SECTION - START -->\nbye<!-- SECTION - END -->!"
         """
         logging.info(f"Editing comment of pull request #{self.data.get('number')}")
-        current_comment = self.data.get("body")
+        current_comment = self.data.get("body") or ""
         updated_comment = comment
 
-        if comment_tag:
+        if section_name:
             append = False
-            tags_template = "<!-- {comment_tag} - START -->\n{comment}\n<!-- {comment_tag} - END -->"
-            replace_pattern = tags_template.format(comment_tag=comment_tag, comment="(.*?)")
+            tags_template = "<!-- {section} - START -->\n{text}\n<!-- {section} - END -->"
+            replace_pattern = tags_template.format(section=section_name, text="(.*?)")
             if re.match(replace_pattern, current_comment):
                 updated_comment = re.sub(replace_pattern, current_comment, comment)
             else:
-                comment = tags_template.format(comment_tag=comment_tag, comment=comment)
+                comment = tags_template.format(section=section_name, text=comment)
                 append = True
         if append:
             updated_comment = f"{self.data.get('body')}\n{comment}"

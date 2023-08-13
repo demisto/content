@@ -10,8 +10,9 @@ from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DEPENDENCIES_FILENAME = "packs_dependencies.json"
 DIFF_FILENAME = "packs_dependencies_diff.json"
-DEPENDENCIES_FIELDS = ["dependencies", "allLevelDependencies"]
 ARTIFACTS_DIR_LOCATION = "/builds/xsoar/content"
+
+DEPENDENCIES_FIELDS = ["dependencies", "allLevelDependencies"]
 
 
 logging_setup(logger.DEBUG)
