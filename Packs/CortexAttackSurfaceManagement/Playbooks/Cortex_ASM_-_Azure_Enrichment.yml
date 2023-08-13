@@ -226,7 +226,7 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         complex:
           root: Account
@@ -368,7 +368,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Azure-NSG
       val2:
@@ -419,7 +419,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Azure-RG
       val2:
@@ -464,7 +464,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Azure-NIC
       val2:
@@ -515,7 +515,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Azure-Compute-ID
       val2:
@@ -560,7 +560,7 @@ tasks:
       gridfield:
         simple: asmprivateip
       keys:
-        simple: IP,Source
+        simple: ip,source
       val1:
         complex:
           root: Azure.Network.Interfaces.IPConfigurations
@@ -665,7 +665,7 @@ tasks:
       gridfield:
         simple: asmcloud
       keys:
-        simple: Provider,Organization,Project,Region,Other
+        simple: provider,organization,project,region,other
       val1:
         simple: Azure
       val2:
@@ -727,7 +727,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Azure-Compute-Name
       val2:
