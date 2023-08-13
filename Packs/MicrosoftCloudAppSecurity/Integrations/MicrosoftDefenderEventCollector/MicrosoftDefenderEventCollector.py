@@ -222,6 +222,7 @@ class DefenderAuthenticator(BaseModel):
                     verify=self.verify,
                     self_deployed=True,
                     azure_cloud=azure_cloud,
+                    command_prefix="microsoft-defender-cloud-apps",
                 )
 
             token = self.ms_client.get_access_token()
