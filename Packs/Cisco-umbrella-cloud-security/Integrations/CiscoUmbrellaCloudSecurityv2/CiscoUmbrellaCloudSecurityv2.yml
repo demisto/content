@@ -380,7 +380,7 @@ script:
       description: List of destination lists in an organization.
       type: Unknown
   - arguments:
-    - description: Optional organization ID. If not provided, will use the one provided in the integration configuration
+    - description: Optional organization ID. If not provided, will use the one provided in the integration configuration.
       name: orgId
     - description: Destination list ID
       name: destId
