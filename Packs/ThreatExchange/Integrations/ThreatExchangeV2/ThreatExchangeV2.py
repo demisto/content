@@ -617,7 +617,8 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
-    share_level = args.get('share_level')
+    share_level = args.get('share_level', params.get('share_level', 'RED'))
+    demisto.debug(f'Setting share level to {share_level}')
     results: List[CommandResults] = list()
 
     for domain in domains:
@@ -695,7 +696,8 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
-    share_level = args.get('share_level')
+    share_level = args.get('share_level', params.get('share_level', 'RED'))
+    demisto.debug(f'Setting share level to {share_level}')
     results: List[CommandResults] = list()
     for url in urls:
         try:

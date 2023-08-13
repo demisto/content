@@ -38,6 +38,17 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: A designation of how the indicator may be shared based on the US-CERT's Traffic Light Protocol.
+  defaultvalue: RED
+  display: Share Level Type
+  name: share_level
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -264,7 +275,6 @@ script:
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
     - auto: PREDEFINED
-      defaultValue: RED
       description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       name: share_level
       predefined:
@@ -369,7 +379,6 @@ script:
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
     - auto: PREDEFINED
-      defaultValue: RED
       description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       name: share_level
       predefined:
