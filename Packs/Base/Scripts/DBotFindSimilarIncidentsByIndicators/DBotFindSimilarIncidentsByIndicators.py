@@ -483,8 +483,8 @@ def get_ids_condition_clause(incident_ids):
 
 
 def get_incidents_filtered_from_query(incident_ids, query):
-    ids_condition = get_ids_condition_clause
-    query += " AND %s" % ids_condition
+    ids_condition_clause = get_ids_condition_clause(incident_ids)
+    query += " AND %s" % ids_condition_clause
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
         'populateFields': 'id'
