@@ -11,7 +11,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Azure Log Analytics
+Azure Log Analytics
 
 ### Scripts
 
@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* azure-log-analytics-execute-query
+azure-log-analytics-execute-query
 
 ## Playbook Inputs
 
@@ -30,8 +30,8 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | Username | The username to investigate. | avishai@demistodev.onmicrosoft.com | Optional |
 | AzureSearchTime | The Search Time for the Azure Log Analytics search query. Default value: ago\(1d\) | ago(7d) | Optional |
-| failedLogonThreshold | The threshold number of failed login by the user. required to determine how many failed logon event count as suspicious events. | 20 | Optional |
-| MfaAttemptThreshold | The threshold number of MFA failed login by the user. required to determine how many MFA failed logon event count as suspicious events. | 10 | Optional |
+| failedLogonThreshold | The threshold number of failed logins by the user. Required to determine how many failed logon events count as suspicious events. | 20 | Optional |
+| MfaAttemptThreshold | The threshold number of MFA failed logons by the user. Required to determine how many MFA failed logon events count as suspicious events. | 10 | Optional |
 
 ## Playbook Outputs
 
