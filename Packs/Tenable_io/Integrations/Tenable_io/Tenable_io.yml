@@ -1268,7 +1268,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.68300
+  dockerimage: demisto/python3:3.10.12.68714
 tests:
 - Tenable.io test
 fromversion: 5.0.0
