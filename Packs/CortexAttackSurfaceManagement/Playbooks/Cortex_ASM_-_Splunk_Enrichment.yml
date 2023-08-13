@@ -316,7 +316,7 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         complex:
           root: ${

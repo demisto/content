@@ -315,10 +315,10 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
                     "rowPos": 13,
                     "columnPos": 1,
                     "tableColumns": [
-                        "Action",
-                        "ActionTimestamp",
-                        "Outcome",
-                        "OutcomeTimestamp",
+                        "action",
+                        "actiontimestamp",
+                        "outcome",
+                        "outcometimestamp",
                     ],
                     "classes": "striped stackable",
                 },
@@ -596,20 +596,20 @@ def optional_report_fields(placeholder: int, optional_order: list, args: dict) -
             "header": "Notifications Sent",
             "description": "This section contains the notification sent from the playbook (email or ticketing system).",
             "columns": [
-                "Type",
-                "Value",
-                "URL",
-                "Timestamp"
+                "type",
+                "value",
+                "url",
+                "timestamp"
             ]
         },
         "asm_data_collection": {
             "header": "Data Collected from Owner",
             "description": "This section contains information on the data collection task completed in the playbook.",
             "columns": [
-                "Options",
-                "Selected",
-                "Answerer",
-                "Timestamp"
+                "options",
+                "selected",
+                "answerer",
+                "timestamp"
             ]
         },
         "asm_system_ids": {
@@ -617,9 +617,9 @@ def optional_report_fields(placeholder: int, optional_order: list, args: dict) -
             "description": "This section contains any related system records from other IT/Security systems"
                            "as well as links where available.",
             "columns": [
-                "Type",
-                "ID",
-                "Link"
+                "type",
+                "id",
+                "link"
             ]
         },
         "asm_tags": {
@@ -627,20 +627,20 @@ def optional_report_fields(placeholder: int, optional_order: list, args: dict) -
             "description": "Any related tags or labels found in other IT/Security systems during "
                            "the investigation are recorded here.",
             "columns": [
-                "Key",
-                "Value",
-                "Source"
+                "key",
+                "value",
+                "source"
             ]
         },
         "asm_cloud": {
             "header": "Cloud Asset Information",
             "description": "Any additional cloud details discovered during the investigation are lists in this section.",
             "columns": [
-                "Provider",
-                "Organization",
-                "Project",
-                "Region",
-                "Other"
+                "provider",
+                "organization",
+                "project",
+                "region",
+                "other"
             ]
         },
         "asm_private_ip": {
@@ -648,18 +648,18 @@ def optional_report_fields(placeholder: int, optional_order: list, args: dict) -
             "description": "Any identified private IP addresses that are known to be related to "
                            "the asset being investigated are recorded here.",
             "columns": [
-                "Source",
-                "IP"
+                "source",
+                "ip"
             ]
         },
         "asm_service_owner": {
             "header": "Service Owner Information",
             "description": "This section contains all potential service owners identified during the investigation.",
             "columns": [
-                "Name",
-                "Email",
-                "Source",
-                "Timestamp"
+                "name",
+                "email",
+                "source",
+                "timestamp"
             ]
         },
     }

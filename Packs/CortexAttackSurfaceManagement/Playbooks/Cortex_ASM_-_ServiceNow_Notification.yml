@@ -195,7 +195,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,URL,Timestamp
+        simple: type,value,url,timestamp
       val1:
         simple: ServiceNow
       val2:

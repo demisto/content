@@ -90,7 +90,7 @@ tasks:
       gridfield:
         simple: asmprivateip
       keys:
-        simple: IP,Source
+        simple: ip,source
       val1:
         complex:
           root: AWS.EC2.Instances.NetworkInterfaces
@@ -291,7 +291,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: AWS-VPC
       val2:
@@ -338,7 +338,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: AWS-SG
       val2:
@@ -385,7 +385,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: AWS-NET
       val2:
@@ -432,7 +432,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: AWS-NIC
       val2:
@@ -479,7 +479,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: AWS-EC2
       val2:
@@ -557,7 +557,7 @@ tasks:
       gridfield:
         simple: asmcloud
       keys:
-        simple: Provider,Organization,Project,Region,Other
+        simple: provider,organization,project,region,other
       val1:
         simple: AWS
       val2:
@@ -645,7 +645,7 @@ tasks:
       gridfield:
         simple: asmtags
       keys:
-        simple: Key,Value,Source
+        simple: key,value,source
       val1:
         complex:
           root: AWS.EC2.Instances.Tags
@@ -880,7 +880,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: S3-BucketName
       val2:
