@@ -307,7 +307,7 @@ script:
     name: akamai-create-group
   - arguments:
     - defaultValue: US
-      description: Country.
+      description: The country code (two letter format) for the country where your organization is located.
       name: country
       required: true
       type: textArea
@@ -373,7 +373,7 @@ script:
       name: org_name
       required: true
       type: textArea
-    - description: The organization country.
+    - description: The organization country name.
       name: org_country
       required: true
       type: textArea
@@ -1348,7 +1348,7 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
-  dockerimage: demisto/akamai:1.0.0.62965
+  dockerimage: demisto/akamai:1.0.0.65229
   script: ''
   subtype: python3
   type: python

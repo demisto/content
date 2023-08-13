@@ -6,12 +6,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* IP Enrichment - Generic v2
+* Account Enrichment - Generic v2.1
 * Domain Enrichment - Generic v2
 * URL Enrichment - Generic v2
-* IP Enrichment - Generic v2
-* File Reputation
 * Get prevalence for IOCs
-* Account Enrichment - Generic v2.1
+* File Reputation
 
 ### Integrations
 
@@ -24,8 +24,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* wildfire-report
 * wildfire-get-verdict
+* wildfire-report
 
 ## Playbook Inputs
 
@@ -47,6 +47,7 @@ This playbook does not use any integrations.
 | ProcessName | The process name to run the prevalence check. |  | Optional |
 | RegistryKey | The registry key to run the prevalence check. The input registry value must be provided as well. |  | Optional |
 | RegistryValue | The registry value to run prevalence check. The input registry key must be provided as well. |  | Optional |
+| UseReputationCommand | Set 'True' to use the reputation commands \(\!ip, \!domain, \!url\) to enrich the IP, URL, and domain. | True | Optional |
 
 ## Playbook Outputs
 

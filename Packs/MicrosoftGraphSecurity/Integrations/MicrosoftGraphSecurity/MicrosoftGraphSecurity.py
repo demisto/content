@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 from CommonServerUserPython import *
 
-from typing import Dict, List, Any
+from typing import Any
+from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -46,10 +47,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     time_to = args.get('time_to')
     filter_query = args.get('filter')
     page = args.get('page')
-    if (is_fetch and args.get('page_size')) or not is_fetch:
-        page_size = int(args.get('page_size', 50))
-    else:
-        page_size = 0
+    page_size = int(args.get('page_size', 50)) if is_fetch and args.get('page_size') or not is_fetch else 0
     filters = []
     params: dict[str, str] = {}
     if last_modified:
@@ -72,7 +70,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     if page and page_size:
         page = int(page)
         page = page * page_size
-        if API_VER == API_V1 and API_V1_PAGE_LIMIT < page:
+        if API_VER == API_V1 and page > API_V1_PAGE_LIMIT:
             raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
                                    f" {API_V1_PAGE_LIMIT}")
         params['$skip'] = page
@@ -98,7 +96,7 @@ def create_data_to_update(args):
     if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
         raise DemistoException(f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
                                f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
-    data: Dict[str, Any] = {}
+    data: dict[str, Any] = {}
     if API_VER == API_V1:
         vendor_information = args.get('vendor_information')
         provider_information = args.get('provider_information')
@@ -112,7 +110,7 @@ def create_data_to_update(args):
         data['assignedTo'] = assigned_to
     for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
         if val := args.get(relevant_args_key):
-            if 'tags' == relevant_args_key or 'comments' == relevant_args_key:
+            if relevant_args_key == 'tags' or relevant_args_key == 'comments':
                 data[relevant_data_key] = [val]
             else:
                 data[relevant_data_key] = val
@@ -179,7 +177,9 @@ class MsGraphClient:
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph)
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix=APP_NAME,
+        )
         if api_version == API_V1:
             global CMD_URL, API_VER
             API_VER = API_V1
@@ -265,11 +265,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     last_run = demisto.getLastRun()
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    if not last_run:  # if first time running
-        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
-    else:
-        new_last_run = last_run
-    demisto_incidents: List = list()
+    new_last_run = last_run if last_run else {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    demisto_incidents: list = []
     time_from = new_last_run.get('time')
     time_to = datetime.now().strftime(timestamp_format)
 
@@ -375,7 +372,7 @@ def get_alert_details_command(client: MsGraphClient, args):
             validate_fields_list(fields_list)
         else:
             fields_list = []
-        show_all_fields = True if 'All' in fields_list else False
+        show_all_fields = 'All' in fields_list
 
         basic_properties_title = 'Basic Properties'
         basic_properties = {
@@ -599,7 +596,7 @@ def update_alert_command(client: MsGraphClient, args):
     human_readable = f'Alert {alert_id} has been successfully updated.'
     if status and API_VER == API_V1 and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
-Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
+Microsoft Graph Security API integrated applications but not reflected in the provider`s management experience.\n \
         For more details, see the \
 [Microsoft documentation](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts)'
     return human_readable, ec, context
@@ -765,6 +762,8 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
+        elif command == "ms-graph-security-auth-reset":
+            return_results(reset_auth())
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
@@ -772,8 +771,6 @@ def main():
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

@@ -666,7 +666,7 @@ script:
     - contextPath: Trustwave.Asset.uri
       description: 'URI of the asset.'
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
   isfetch: true
   script: ''
   subtype: python3

@@ -1,0 +1,373 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Commvault Suspicious File Activity Remediation
+inputs: []
+name: Commvault Suspicious File Activity Remediation
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 13701ff0-9384-4f99-8d39-f1e2159cf433
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 13701ff0-9384-4f99-8d39-f1e2159cf433
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    defaultassigneecomplex:
+      simple: admin
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CommvaultSecurityIQ
+      description: Disables data aging on CS
+      id: a9450044-0590-46d4-8fff-e5e41af55ea8
+      iscommand: true
+      name: Disabling Data Aging
+      script: CommvaultSecurityIQ|||commvault-security-set-disable-data-aging
+      tags:
+      - DisableDataAging
+      type: regular
+      version: -1
+    taskid: a9450044-0590-46d4-8fff-e5e41af55ea8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    defaultassigneecomplex:
+      simple: admin
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Safe:
+      - "6"
+      Unsafe:
+      - "4"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Mark the incident safe or unsafe
+      id: 238e349a-32c2-4c82-86c5-738b81ef172f
+      iscommand: false
+      name: Mark the incident safe or unsafe.
+      type: condition
+      version: -1
+    taskid: 238e349a-32c2-4c82-86c5-738b81ef172f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: ${incident.closeNotes} ${incident.compliancenotes}
+      id:
+        complex:
+          accessor: id
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 5f002927-648f-47d4-850b-7652a68c8b5f
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 5f002927-648f-47d4-850b-7652a68c8b5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Disable data aging on client {incident.commvaultoriginatingclient}
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "1"
+    note: true
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Disable data aging on client {incident.commvaultoriginatingclient}
+      id: 852d421b-c9a3-4b35-894a-82d691fa66cf
+      iscommand: false
+      name: Disable data aging
+      type: condition
+      version: -1
+    taskid: 852d421b-c9a3-4b35-894a-82d691fa66cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      assignBy:
+        simple: random
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: ecfdb9ea-c0de-4af9-8a7d-f2fccd7bcb19
+      iscommand: false
+      name: Assign an analyst
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: ecfdb9ea-c0de-4af9-8a7d-f2fccd7bcb19
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: This is a false positive alert. No further action needed.
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 119b6a0c-dd0f-401d-8a7b-c89c4bcc22a0
+      iscommand: true
+      name: Set close notes
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 119b6a0c-dd0f-401d-8a7b-c89c4bcc22a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Suspicious activity found on ${incident.commvaultoriginatingclient}.
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 63419462-c4d2-42fb-849a-de67a5af65c3
+      iscommand: true
+      name: Set Close notes
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 63419462-c4d2-42fb-849a-de67a5af65c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Disabled Data Aging on the client
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 60ac5611-c679-473b-83dc-344abf205337
+      iscommand: true
+      name: Set Close notes
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 60ac5611-c679-473b-83dc-344abf205337
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_Unsafe": 0.84
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+description: Playbook to disable data-aging on commvault client when a threat is detected.

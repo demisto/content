@@ -1,6 +1,13 @@
 {
-    "CONTRIBUTION_REVIEWERS": ["mmhw", "maimorag", "anas-yousef"],
+    "CONTRIBUTION_REVIEWERS": [
+        "mmhw",
+        "maimorag",
+        "anas-yousef"
+    ],
     "CONTRIBUTION_TL": "dorschw",
     "CONTRIBUTION_SECURITY_REVIEWER": "efelmandar",
-    "ON_CALL_DEVS": []
+    "ON_CALL_DEVS": [
+        "epintzov",
+        "mlainer"
+    ]
 }

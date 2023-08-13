@@ -2347,7 +2347,11 @@ script:
     - contextPath: AzureSentinel.ResourceGroup.properties
       description: The properties of the resource group.
       type: dictionary
-  dockerimage: demisto/crypto:1.0.0.63672
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-sentinel-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   isfetch: true
   runonce: false
   script: '-'
