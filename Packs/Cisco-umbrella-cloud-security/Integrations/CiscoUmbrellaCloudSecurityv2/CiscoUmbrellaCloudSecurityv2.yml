@@ -269,7 +269,7 @@ script:
       required: true
       isArray: false
     - name: destinations
-      description: Comma separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
+      description: Comma-separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
       required: false
       isArray: true
     - name: destinations_comment
