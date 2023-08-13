@@ -20,7 +20,11 @@ from unittest.mock import patch
         "StringB": "test",
         "SimilarityScore": 0.7272727272727273,
     }),
-    ("foo", "bar", 0.1, {}),
+    ("foo", "bar", 0.1, {
+        "StringA": "foo",
+        "StringB": "bar",
+        "SimilarityScore": 0.0,
+    }),
 ])
 def test_string_similarity(first_string, second_string, similarity_threshold, expected_result, mocker):
     try:
