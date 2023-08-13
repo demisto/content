@@ -434,7 +434,7 @@ def convert_to_dict(arr: list):
     return new_dict
 
 
-def fetch_incidents(client: Client) -> None:
+def fetch_incidents(client: Client) -> str:
     params = demisto.params()
     tags = params.get('tags', '')
     if tags == 'None':
@@ -462,6 +462,7 @@ def fetch_incidents(client: Client) -> None:
     set_last = get_last_run_time(response, last_run)
     demisto.debug(f'Setting last run to: {set_last}')
     demisto.setLastRun({'last': set_last})
+    return set_last
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover

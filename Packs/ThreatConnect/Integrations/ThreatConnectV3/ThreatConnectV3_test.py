@@ -53,10 +53,28 @@ def test_get_last_run_no_groups():
     assert get_last_run_time([], '2022-07-04T12:35:33') == '2022-07-04T12:35:33'
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_incidents_first_run(mocker):
+    """
+    Given:
+        - getLastRun is empty (first run)
+    When:
+        - calling fetch_events
+    Then:
+        - Validate that the last run is set properly
+    """
+    import ThreatConnectV3
     mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(dateparser, 'parse', return_value=dateparser.parse('2022-08-04T12:35:33'))
-    fetch_incidents(client)
+    mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=[])
+    assert fetch_incidents(client) == '2022-08-04T12:35:33'
+
+
+def test_fetch_incidents_not_first_run(mocker, groups_fixture):
+    import ThreatConnectV3
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last': '2021-08-04T12:35:33'})
+    mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=groups_fixture)
+    assert fetch_incidents(client) == '2022-09-06T12:36:33'
+
 
 def test_create_context():  # type: ignore # noqa
     indicators = [{
