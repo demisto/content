@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate file - CrowdStrike Falcon Sandbox v2
-description: Detonates a File using CrowdStrike Falcon.
+description: Detonates a File using CrowdStrike Falcon sandbox.
 starttaskid: "0"
 tasks:
   "0":

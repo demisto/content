@@ -1,4 +1,4 @@
-Detonates a File using CrowdStrike Falcon.
+Detonates a File using CrowdStrike Falcon sandbox.
 
 ## Dependencies
 
@@ -18,8 +18,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* cs-falcon-sandbox-submit-sample
 * cs-falcon-sandbox-scan
+* cs-falcon-sandbox-submit-sample
 
 ## Playbook Inputs
 
