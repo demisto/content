@@ -165,8 +165,8 @@ class Client(BaseClient):
 
 
 def test_module(client: Client):
-    client.test_api()
-    demisto.results('ok')
+    result = client.test_api()
+    return 'ok' if result.get('ok') else 'error'
 
 
 def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
@@ -311,7 +311,7 @@ def main() -> None:  # pragma: no cover
     try:
         command = demisto.command()
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
         elif command == 'fetch-incidents':
             args = demisto.args()
             first_fetch = params.get('first_fetch')

@@ -13,7 +13,7 @@ def main():  # pragma: no cover
         custom_fields = demisto.incident()['CustomFields']
         result = get_scan_info(custom_fields['checkpointhecentity'])
         scan_info = result[0]['Contents']
-        demisto.results({
+        return_results({
             'ContentsFormat': EntryFormat.JSON,
             'Type': EntryType.NOTE,
             'Contents': json.dumps(scan_info)

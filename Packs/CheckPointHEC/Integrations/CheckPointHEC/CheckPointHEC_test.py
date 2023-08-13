@@ -1,15 +1,31 @@
 import json
+
 import pytest
 
 import demistomock as demisto
 from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_email_info,
                            checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action,
-                           checkpointhec_get_action_result, checkpointhec_send_notification, test_module as check_module)
+                           checkpointhec_get_action_result, checkpointhec_send_notification,
+                           test_module as check_module)
 
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_generate_signature():
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+    assert client._generate_signature(
+        f"{'0' * 8}-{'0' * 4}-{'0' * 4}-{'0' * 4}-{'0' * 12}",
+        '2023-08-13T19:08:35.263817'
+    ) == 'ac07ea6ddd026cbbfad8751d45d6e9e1823bc03e227eeb117976834391b629b8'
 
 
 def test_token_header(mocker):
@@ -48,11 +64,10 @@ def test_test_module(mocker):
         'test_api',
         return_value=mock_response,
     )
-    demisto_results = mocker.patch.object(demisto, 'results')
 
-    check_module(client)
+    result = check_module(client)
     test_api.assert_called_once()
-    demisto_results.assert_called_once_with('ok')
+    assert result == 'ok'
 
 
 def test_fetch_incidents(mocker):

@@ -33,7 +33,7 @@ def main():  # pragma: no cover
         custom_fields = demisto.incident()['CustomFields']
         result = get_email_info(custom_fields['checkpointhecentity'])
         email_info = result[0]['Contents']
-        demisto.results({
+        return_results({
             'ContentsFormat': EntryFormat.MARKDOWN,
             'Type': EntryType.NOTE,
             'Contents': dict_to_md(email_info),
