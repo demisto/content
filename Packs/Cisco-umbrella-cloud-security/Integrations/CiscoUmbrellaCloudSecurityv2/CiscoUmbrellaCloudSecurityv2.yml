@@ -47,7 +47,7 @@ script:
       required: false
       isArray: false
     - name: limit
-      description: The number of items per page. Minimum 1; Default 50.
+      description: The number of items per page. Minimum 1.
       required: false
       isArray: false
       defaultValue: '50'
