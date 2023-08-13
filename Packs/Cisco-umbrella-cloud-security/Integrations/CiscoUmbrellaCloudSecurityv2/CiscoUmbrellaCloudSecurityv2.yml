@@ -27,7 +27,7 @@ script:
     description: Get destinations within a destination list. A destination is a URL, IP or fully qualified domain name.
     arguments:
     - name: destination_list_id
-      description: The ID of the destination list. Destination Lists can be fetched with `umbrella-destination-lists-list`
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
       isArray: false
     - name: destination_ids
