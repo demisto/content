@@ -1,28 +1,28 @@
 id: whois_test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: whois_test
+description: This is a test playbook for Whois. It will retrieve details for google.com/uk/in and confirm the domain name is the same.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e6ecf69e-6c89-4888-8372-dd3f08ac6829
+    taskid: 38e83dd9-a684-4ef8-83b0-0e0280959752
     type: start
     task:
-      id: e6ecf69e-6c89-4888-8372-dd3f08ac6829
+      id: 38e83dd9-a684-4ef8-83b0-0e0280959752
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "8"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -33,84 +33,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: e80e8fc4-a4aa-46fb-80d8-9bb556c06875
+    taskid: fdaeab03-c966-4191-80ad-9e794d65b279
     type: regular
     task:
-      id: e80e8fc4-a4aa-46fb-80d8-9bb556c06875
-      version: -1
-      name: domain
-      description: Provides data enrichment for domains.
-      script: Whois|||domain
-      type: regular
-      iscommand: true
-      brand: Whois
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      domain:
-        simple: paloaltonetworks.com
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 90fd0ad7-0fda-4ace-807e-abf00a86efc2
-    type: regular
-    task:
-      id: 90fd0ad7-0fda-4ace-807e-abf00a86efc2
-      version: -1
-      name: ip
-      description: Provides data enrichment for ips.
-      script: Whois|||ip
-      type: regular
-      iscommand: true
-      brand: Whois
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      ip:
-        simple: 1.1.1.1
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: f8e00785-487b-4eb6-820d-dedde632e77a
-    type: regular
-    task:
-      id: f8e00785-487b-4eb6-820d-dedde632e77a
+      id: fdaeab03-c966-4191-80ad-9e794d65b279
       version: -1
       name: whois
       description: Provides data enrichment for domains.
@@ -120,206 +49,15 @@ tasks:
       brand: Whois
     nexttasks:
       '#none#':
-      - "12"
-    scriptarguments:
-      query:
-        simple: paloaltonetworks.com
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: c9d51c00-e15c-4956-8daa-43b624c09817
-    type: regular
-    task:
-      id: c9d51c00-e15c-4956-8daa-43b624c09817
-      version: -1
-      name: Close
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 664075e0-65cb-48a9-8f2c-17cd69f07352
-    type: regular
-    task:
-      id: 664075e0-65cb-48a9-8f2c-17cd69f07352
-      version: -1
-      name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
       - "2"
     scriptarguments:
-      all:
-        simple: "yes"
+      query:
+        simple: google.co.uk
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 7c2acdb6-025b-412d-8e7b-5e01b480de9d
-    type: condition
-    task:
-      id: 7c2acdb6-025b-412d-8e7b-5e01b480de9d
-      version: -1
-      name: Verify Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: Domain.Whois.Raw.[0]
-            iscontext: true
-          right:
-            value:
-              simple: PALOALTONETWORKS.COM
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: c0f0a317-f911-423f-8127-c0d756536cb7
-    type: condition
-    task:
-      id: c0f0a317-f911-423f-8127-c0d756536cb7
-      version: -1
-      name: Verify Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: IP.Address
-            iscontext: true
-          right:
-            value:
-              simple: 1.1.1.1
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 6823d02c-67f2-4e5a-8d94-2f22ab30a802
-    type: condition
-    task:
-      id: 6823d02c-67f2-4e5a-8d94-2f22ab30a802
-      version: -1
-      name: Verify Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: Domain.Whois.Raw.[0]
-            iscontext: true
-          right:
-            value:
-              simple: PALOALTONETWORKS.COM
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -334,32 +72,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: d020d51b-edec-4dda-8808-ecc1d95523b9
-    type: regular
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: 0c318443-01c5-43fa-857f-b7b6eadf1c91
+    type: condition
     task:
-      id: d020d51b-edec-4dda-8808-ecc1d95523b9
+      id: 0c318443-01c5-43fa-857f-b7b6eadf1c91
       version: -1
-      name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
+      name: Check results
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
     separatecontext: false
-    continueonerrortype: ""
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: google.co.uk
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
     view: |-
       {
         "position": {
@@ -374,13 +123,714 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: f16da63f-4c99-454e-8a07-bd459b5bca7c
+    type: regular
+    task:
+      id: f16da63f-4c99-454e-8a07-bd459b5bca7c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "4":
+    id: "4"
+    taskid: c01f66cb-51ca-4b85-8818-7cb3cae52eb9
+    type: regular
+    task:
+      id: c01f66cb-51ca-4b85-8818-7cb3cae52eb9
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: 80d995c8-4f0b-455e-801f-0647b625e65d
+    type: regular
+    task:
+      id: 80d995c8-4f0b-455e-801f-0647b625e65d
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: a46b4fed-c9cd-4260-8ce9-7820d65521ec
+    type: regular
+    task:
+      id: a46b4fed-c9cd-4260-8ce9-7820d65521ec
+      version: -1
+      name: whois
+      description: Provides data enrichment for domains.
+      script: Whois|||whois
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        simple: google.com
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "7":
+    id: "7"
+    taskid: 620ad6b2-181e-4615-89e7-ba2678523532
+    type: condition
+    task:
+      id: 620ad6b2-181e-4615-89e7-ba2678523532
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: de926ac0-7651-4bd1-8903-50cbe901ed11
+    type: regular
+    task:
+      id: de926ac0-7651-4bd1-8903-50cbe901ed11
+      version: -1
+      name: Sleep
+      description: Sleep for 5 seconds, due to whois rate limit
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: adb1db20-3516-410b-886c-cc20ae72249f
+    type: regular
+    task:
+      id: adb1db20-3516-410b-886c-cc20ae72249f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "10":
+    id: "10"
+    taskid: 2de6e026-18c5-41f9-8ceb-8977ecc72c5e
+    type: regular
+    task:
+      id: 2de6e026-18c5-41f9-8ceb-8977ecc72c5e
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domain:
+        simple: google.com
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: f5707afe-0987-4900-84e5-0fa83195fc9d
+    type: condition
+    task:
+      id: f5707afe-0987-4900-84e5-0fa83195fc9d
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.ExpirationDate
+            iscontext: true
+          right:
+            value:
+              simple: 13-09-2028
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "12":
+    id: "12"
+    taskid: a3530a04-8734-4307-8fa6-b06722bfcf22
+    type: regular
+    task:
+      id: a3530a04-8734-4307-8fa6-b06722bfcf22
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "13":
+    id: "13"
+    taskid: 535591d1-4a1d-4f66-86fd-c7f29626cc0e
+    type: regular
+    task:
+      id: 535591d1-4a1d-4f66-86fd-c7f29626cc0e
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        simple: google.co.uk
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "14":
+    id: "14"
+    taskid: 2270fbd9-fd1b-4dd8-82de-86b523b17447
+    type: condition
+    task:
+      id: 2270fbd9-fd1b-4dd8-82de-86b523b17447
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: google.co.uk
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "15":
+    id: "15"
+    taskid: 1ceae365-e868-4565-89bf-5b36e6a03c3d
+    type: regular
+    task:
+      id: 1ceae365-e868-4565-89bf-5b36e6a03c3d
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "16":
+    id: "16"
+    taskid: 27d25271-e55c-4732-862b-e10b908aae44
+    type: regular
+    task:
+      id: 27d25271-e55c-4732-862b-e10b908aae44
+      version: -1
+      name: ip
+      description: Provides data enrichment for ips.
+      script: Whois|||ip
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "17":
+    id: "17"
+    taskid: c275e0a4-0c4f-42d2-8bb8-ad7426c3ec43
+    type: condition
+    task:
+      id: c275e0a4-0c4f-42d2-8bb8-ad7426c3ec43
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Whois.IP.query
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Organization.Name
+            iscontext: true
+          right:
+            value:
+              simple: LVLT-GOGL-8-8-8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: 768da15b-3206-4f20-8793-2d55dd87e4d8
+    type: title
+    task:
+      id: 768da15b-3206-4f20-8793-2d55dd87e4d8
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "19":
+    id: "19"
+    taskid: 8f5bffad-29ac-463a-8375-c7319f24d64b
+    type: regular
+    task:
+      id: 8f5bffad-29ac-463a-8375-c7319f24d64b
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      domain:
+        simple: google.in
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "20":
+    id: "20"
+    taskid: 9eff428c-db35-4878-851d-809d085ce016
+    type: condition
+    task:
+      id: 9eff428c-db35-4878-851d-809d085ce016
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
-        "width": 810,
+        "height": 3695,
+        "width": 760,
         "x": 50,
         "y": 50
       }
