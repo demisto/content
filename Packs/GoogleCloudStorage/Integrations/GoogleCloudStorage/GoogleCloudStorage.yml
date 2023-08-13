@@ -88,6 +88,16 @@ script:
       - private
       - projectPrivate
       - publicRead
+    - defaultValue: US
+      description: The location of the bucket, The default value is US.
+      name: location
+    - auto: PREDEFINED
+      description: Whether the bucket is configured to allow only IAM, The default value is false.
+      name: uniform_bucket_level_access
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
     description: Creates a new bucket.
     name: gcs-create-bucket
   - arguments:
@@ -374,7 +384,7 @@ script:
       required: true
     description: Removes an entity from an object's Access Control List.
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.63865
+  dockerimage: demisto/google-cloud-storage:1.0.0.68936
   runonce: false
   script: '-'
   type: python
