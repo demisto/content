@@ -3890,16 +3890,23 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
+            if e is not None and e.res.status_code == 500 and 'No identity threat' in str(e):
+                raise DemistoException(f'Please confirm the module is enabled. Full error message: {e}') from e
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
-                raise DemistoException(error_message)
+                raise DemistoException(error_message) from e
             raise
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs = get_func().get('reply', [])[:list_limit]
 
+        try:
+            outputs = get_func().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            if e is not None and e.res.status_code == 500 and 'No identity threat' in str(e):
+                raise DemistoException(f'Please confirm the module is enabled. Full error message: {e}') from e
+            raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
     readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)

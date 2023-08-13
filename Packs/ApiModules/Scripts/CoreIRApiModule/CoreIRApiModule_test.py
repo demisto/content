@@ -6,6 +6,7 @@ import zipfile
 from typing import Any
 
 import pytest
+from pytest_mock import MockerFixture
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
@@ -3237,30 +3238,43 @@ def test_list_risky_users_or_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "command ,id_",
+    "type_, args, api_function,error_message, expected_error_message",
     [
-        ('user', "user_id"),
-        ('host', "host_id"),
+        ('user', {"user_id": 'test'}, "risk_score_user_or_host", "id 'test' was not found",
+         "Error: id test was not found. Full error message: id 'test' was not found"),
+        ('host', {"host_id": 'test'}, "risk_score_user_or_host", "id 'test' was not found",
+         "Error: id test was not found. Full error message: id 'test' was not found"),
+        ('user', {"user_id": 'test'}, "risk_score_user_or_host", "No identity threat",
+         "Please confirm the module is enabled. Full error message: No identity threat"),
+        ('host', {"host_id": 'test'}, "risk_score_user_or_host", "No identity threat",
+         "Please confirm the module is enabled. Full error message: No identity threat"),
+        ('user', {}, "list_risky_users", "No identity threat",
+         "Please confirm the module is enabled. Full error message: No identity threat"),
+        ('host', {}, "list_risky_hosts", "No identity threat",
+         "Please confirm the module is enabled. Full error message: No identity threat"),
     ],
 )
 def test_list_risky_users_hosts_command_raise_exception(
-    mocker, command: str, id_: str
+    mocker: MockerFixture, type_: str, args: dict, api_function: str, error_message: str, expected_error_message: str
 ):
     """
-    Test case to verify if the 'list_risky_users_or_host_command' function raises the expected exception.
+    Given:
+        mocker (MockerFixture): The pytest mocker fixture for creating mock objects.
+        type_ (str): The type of entity, either 'user' or 'host', for which the command is being tested.
+        args (dict): A dictionary of arguments to be passed to the command function.
+        api_function (str): The name of the API function being tested.
+        error_message (str): The error message that the mocked API function should raise.
+        expected_error_message (str): The expected error message that the test should match with the raised exception.
 
-    Args:
-        mocker (Any): The mocker object to patch the 'risk_score_user_or_host' method.
-        command (str): The command to be tested ('user' or 'host').
-        id_ (str): The ID parameter for the command.
+    When:
+        the 'list_risky_users_or_host_command' function is called with the provided parameters.
 
-    Raises:
-        DemistoException: If the expected exception is not raised or the error message doesn't match.
+    Then:
+        For each parameter set provided in the test cases, this test ensures that calling the 'list_risky_users_or_host_command'
+        function with the given parameters results in an exception being raised, and the raised exception message matches
+        the 'expected_error_message'.
 
-    Returns:
-        None
     """
-
     client = CoreClient(
         base_url="test",
         headers={},
@@ -3272,16 +3286,16 @@ def test_list_risky_users_hosts_command_raise_exception(
 
     mocker.patch.object(
         client,
-        "risk_score_user_or_host",
+        api_function,
         side_effect=DemistoException(
-            message="id 'test' was not found", res=MockException(500)
+            message=error_message, res=MockException(500)
         ),
     )
     with pytest.raises(
         DemistoException,
-        match="Error: id test was not found. Full error message: id 'test' was not found"
+        match=expected_error_message
     ):
-        list_risky_users_or_host_command(client, command, {id_: "test"})
+        list_risky_users_or_host_command(client, type_, args)
 
 
 def test_list_user_groups_command(mocker):
