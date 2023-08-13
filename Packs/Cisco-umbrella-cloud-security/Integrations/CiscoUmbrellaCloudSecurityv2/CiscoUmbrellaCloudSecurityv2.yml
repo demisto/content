@@ -390,7 +390,7 @@ script:
       name: domains
       required: true
     - defaultValue: Added from XSOAR
-      description: Note on what the domain is or why it is being added
+      description: Note on what the domain is or why it is being added.
       name: comment
     deprecated: true
     description: Adds domains to given destination list
