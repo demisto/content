@@ -1,3 +1,4 @@
+import re
 import requests
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -57,11 +58,14 @@ class GithubClient:
         query: str,
         variables: dict | None = None,
     ) -> dict | None:
-        return self.http_request(
+        res = self.http_request(
             "POST",
             url_suffix="/graphql",
             json_data={"query": query, "variables": variables},
         )
+        if res.get("errors"):
+            self.handle_error("\n".join([e.get("message") for e in res["errors"]]))
+        return res
 
     def search_pulls(
         self,
@@ -133,26 +137,48 @@ class GithubPullRequest(GithubClient):
     def edit_comment(
         self,
         comment: str,
-        append: bool = True,
-    ) -> None:
+        append: bool = False,
+        comment_tag: str | None = None,
+    ) -> dict | None:
         """Edits the first comment (AKA "body") of the pull request.
 
         Args:
             comment (string): The comment text.
-            pull_request (dict): The pull request data ().
-            append (bool, default: True): Whether to append to or override the existing comment.
+            append (bool, default: False): Whether to append to or override the existing comment.
+            comment_tag (str | None): If provided, tries to find existing text wrapped by comment tags
+                                      and replace it with `comment` value.
+                                      If the comment tags do not exist, appends `comment` surrounded by them.
+                                      
+                                      Example:
+                                        body = "Hello, <!-- COMMENT_TAG - START -->world<!-- COMMENT_TAG - END -->!"
+                                        comment = "bye"
+                                        comment_tag = "COMMENT_TAG"
+                                        Results to:
+                                            "Hello, <!-- COMMENT_TAG - START -->bye<!-- COMMENT_TAG - END -->!"
         """
         logging.info(f"Editing comment of pull request #{self.data.get('number')}")
+        current_comment = self.data.get("body")
+        updated_comment = comment
+
+        if comment_tag:
+            append = False
+            tags_template = "<!-- {comment_tag} - START -->\n{comment}\n<!-- {comment_tag} - END -->"
+            replace_pattern = tags_template.format(comment_tag=comment_tag, comment="(.*?)")
+            if re.match(replace_pattern, current_comment):
+                updated_comment = re.sub(replace_pattern, current_comment, comment)
+            else:
+                comment = tags_template.format(comment_tag=comment_tag, comment=comment)
+                append = True
         if append:
-            comment = f"{self.data.get('body')}\n{comment}"
-        self.graphql(
+            updated_comment = f"{self.data.get('body')}\n{comment}"
+        return self.graphql(
             query="""
                 mutation UpdateComment($nodeId: ID!, $comment: String!) {
-                    updateIssueComment(input: {
-                        id: $nodeId,
+                    updatePullRequest(input: {
+                        pullRequestId: $nodeId,
                         body: $comment
                     }) {
-                        issueComment {
+                        pullRequest {
                             lastEditedAt
                         }
                     }
@@ -160,6 +186,6 @@ class GithubPullRequest(GithubClient):
             """,
             variables={
                 "nodeId": self.data.get("node_id"),
-                "comment": comment,
+                "comment": updated_comment,
             },
         )

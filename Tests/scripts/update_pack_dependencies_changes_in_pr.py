@@ -132,8 +132,9 @@ def main():  # pragma: no cover
         fail_on_error=True,
     )
 
-    pull_request.add_comment(
-        format_summaries_to_single_comment(summaries)
+    pull_request.edit_comment(
+        format_summaries_to_single_comment(summaries),
+        comment_tag="Packs dependencies diff",
     )
 
 
