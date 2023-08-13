@@ -478,7 +478,7 @@ script:
       description: Date and time when the domain within the destination list was created.
       type: date
     - contextPath: Umbrella.Destinations.comment
-      description: Comment associated with domain within destination list
+      description: Comment associated with the domain within the destination list.
       type: string
   script: ''
   type: python
