@@ -79,7 +79,7 @@ script:
       required: true
       isArray: false
     - name: comment
-      description: A comment about all the inserted destinations. 
+      description: A comment about all the inserted destinations.
       required: false
       isArray: false
       defaultValue: Added from XSOAR
@@ -273,7 +273,7 @@ script:
       required: false
       isArray: true
     - name: destinations_comment
-      description: A comment about all the inserted destinations. 
+      description: A comment about all the inserted destinations.
       required: false
       isArray: false
       defaultValue: Added from XSOAR
@@ -457,7 +457,7 @@ script:
     - description: Destination list ID to get domains from. Use the umbrella-get-destination-lists command to get the list ID.
       name: destId
       required: true
-    - description: Domains to search for in a destination list.
+    - description: Comma-separated list of domains to search for in a destination list.
       isArray: true
       name: domains
       required: true
