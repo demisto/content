@@ -102,4 +102,3 @@ def test_get_ids_condition_clause(incident_ids, expected_result):
     from DBotFindSimilarIncidentsByIndicators import get_ids_condition_clause
     result = get_ids_condition_clause(incident_ids)
     assert expected_result == result
-
