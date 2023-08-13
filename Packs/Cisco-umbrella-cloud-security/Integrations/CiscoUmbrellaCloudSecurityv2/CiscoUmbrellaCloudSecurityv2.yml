@@ -233,7 +233,7 @@ script:
       description: The total number of IP addresses in a destination list. IP addresses are part of the total number of destinations in a destination list.
     - type: Number
       contextPath: Umbrella.DestinationLists.meta.urlCount
-      description: The total number of URLs in a destination list. Urls are part of the total number of destinations in a destination list.
+      description: The total number of URLs in a destination list. URLs are part of the total number of destinations in a destination list.
     - type: Number
       contextPath: Umbrella.DestinationLists.meta.applicationCount
       description: The total number or applications in a destination list. Applications are part of the total number of destinations in a destination list.
