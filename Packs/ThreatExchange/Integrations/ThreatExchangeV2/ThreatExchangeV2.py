@@ -5,7 +5,6 @@ API Documentation:
 """
 
 import collections
-from typing import Tuple
 import urllib3
 from CommonServerUserPython import *  # noqa
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -353,7 +352,7 @@ def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> int:
     return score
 
 
-def calculate_engines(reputation_data: List) -> Tuple[int, int]:
+def calculate_engines(reputation_data: List) -> tuple[int, int]:
     """
     Calculates the number of engines that scanned the indicator, and how many of them are positive
      - i.e returned malicious status.
@@ -436,7 +435,7 @@ def convert_string_to_epoch_time(date: Optional[str], arg_name: Optional[str] = 
             return int(epoch_time)
         else:  # date was given in a wrong format
             if arg_name:
-                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, date))
+                raise ValueError(f'Invalid date: "{arg_name}"="{date}"')
 
     return None
 
@@ -469,7 +468,7 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
 
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
@@ -541,7 +540,7 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
 
     for file in files:
         if get_hash_type(file) not in ('sha256', 'sha1', 'md5'):  # check file's validity
@@ -619,7 +618,7 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     reliability = params.get('feedReliability')
     share_level = args.get('share_level', params.get('share_level', 'RED'))
     demisto.debug(f'Setting share level to {share_level}')
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
 
     for domain in domains:
         try:
@@ -698,7 +697,7 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     reliability = params.get('feedReliability')
     share_level = args.get('share_level', params.get('share_level', 'RED'))
     demisto.debug(f'Setting share level to {share_level}')
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for url in urls:
         try:
             raw_response = client.url(url, since, until, share_level, limit)
