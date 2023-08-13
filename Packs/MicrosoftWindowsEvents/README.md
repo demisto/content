@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 Notes: 
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
- - The pack currently supports the following data source: "Security" and "System".
+ - The pack currently supports the following data sources: "Security" and "System".
 
 To view logs only from the Windows Event log, apply the following filter to the datamodel query: *| filter xdm.observer.type="Microsoft-Windows-Security-\*" or xdm.event.type="System"*
 
@@ -50,4 +50,4 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 
 **Note:** You can customize what will be collected by removing the "name" and "ignore_older" lines of the specific event type.
 
-5. Press **Create** to save the new template.
+5. Click **Create** to save the new template.
