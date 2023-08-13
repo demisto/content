@@ -370,7 +370,7 @@ script:
       required: true
       isArray: false
   - arguments:
-    - description: Organization ID
+    - description: Organization ID.
       name: orgId
     deprecated: true
     description: Gets all destination lists in organization
