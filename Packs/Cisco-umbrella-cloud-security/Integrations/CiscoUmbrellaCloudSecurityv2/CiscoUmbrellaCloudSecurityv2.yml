@@ -318,7 +318,7 @@ script:
     description: Edit a destination list. A list of destinations (for example, domain name or URL) to which you can block or allow access.
     arguments:
     - name: destination_list_id
-      description: The ID of the destination list. Destination Lists can be fetched with `umbrella-destination-lists-list`
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
       isArray: false
     - name: name
