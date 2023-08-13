@@ -533,7 +533,7 @@ outputs:
 - contextPath: AwsMFAConfigCount
   description: The number of MFA configurations performed by the user in the AWS environment.
   type: unknown
-- contextPath: AwsUserRoleChnagesCount
+- contextPath: AwsUserRoleChangesCount
   description: The number of user roles that were changed by the user in the AWS environment.
   type: unknown
 - contextPath: AwsSuspiciousActivitiesCount

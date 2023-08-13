@@ -11,17 +11,17 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-AWS - CloudTrail
+* AWS - CloudTrail
 
 ### Scripts
 
-* LoadJSON
-* GetTime
 * Set
+* GetTime
+* LoadJSON
 
 ### Commands
 
-aws-cloudtrail-lookup-events
+* aws-cloudtrail-lookup-events
 
 ## Playbook Inputs
 
@@ -39,7 +39,7 @@ aws-cloudtrail-lookup-events
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | AwsMFAConfigCount | The number of MFA configurations performed by the user in the AWS environment. | unknown |
-| AwsUserRoleChnagesCount | The number of user roles that were changed by the user in the AWS environment. | unknown |
+| AwsUserRoleChangesCount | The number of user roles that were changed by the user in the AWS environment. | unknown |
 | AwsSuspiciousActivitiesCount | The number of suspicious activities performed by the user in the AWS environment. | unknown |
 | AwsScriptBasedUserAgentCount | The number of script-based user agent usages by the user in the AWS environment. | unknown |
 | AwsAccessKeyActivitiesCount | The number of access key activities performed by the user in the AWS environment. | unknown |
