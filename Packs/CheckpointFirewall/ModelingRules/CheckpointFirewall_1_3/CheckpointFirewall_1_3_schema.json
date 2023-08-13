@@ -100,9 +100,53 @@
         "type": "int",
         "is_array": false
     },
-    "outzone": {
+    "cn1": {
+        "type": "int",
+        "is_array": false
+    },
+    "cn2": {
+        "type": "int",
+        "is_array": false
+    },
+    "cn3": {
+        "type": "int",
+        "is_array": false
+    },
+    "cs3": {
         "type": "string",
         "is_array": false
+    },
+    "msg": {
+        "type": "string",
+        "is_array": false
+    },
+    "in": {
+        "type": "int",
+        "is_array": false
+    },
+    "out": {
+        "type": "int",
+        "is_array": false
+    },
+      "ifname": {
+        "type": "string",
+        "is_array": false
+    },
+      "origin": {
+        "type": "string",
+        "is_array": false
+    },
+      "action_reason": {
+        "type": "string",
+        "is_array": false
+    },
+      "client_outbound_packets": {
+      "type": "int",
+      "is_array": false
+    },
+      "server_outbound_packets": {
+      "type": "int",
+      "is_array": false
     }
   },
   "check_point_url_filtering_raw": {
