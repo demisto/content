@@ -1018,8 +1018,6 @@ def create_alert_comment_command(client: MsGraphClient, args):
 def create_ediscovery_case_command(client: MsGraphClient, args: dict):
     """
     """
-    demisto.debug(demisto.params())
-
     res = client.create_edsicovery_case(args.get('display_name'), args.get('description'), args.get('external_id'))
     return ediscovery_cases_command_results([res], res)
 
@@ -1198,7 +1196,7 @@ def list_ediscovery_search_command(client: MsGraphClient, args):
 
 def test_auth_code_command(client: MsGraphClient, args):
     """
-    Called to test authorization code flow (since integration context cant be accessed during te1st1_module)
+    Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
 
