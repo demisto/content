@@ -472,7 +472,7 @@ script:
       description: Domain within destination list
       type: string
     - contextPath: Umbrella.Destinations.type
-      description: Type of destination within destination list
+      description: Type of destination within the destination list.
       type: string
     - contextPath: Umbrella.Destinations.createdAt
       description: When the domain within destination list was created
