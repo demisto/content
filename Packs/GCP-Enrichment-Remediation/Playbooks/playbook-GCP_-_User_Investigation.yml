@@ -1169,25 +1169,25 @@ outputs:
   description: Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
   type: unknown
 - contextPath: GcpSuspiciousApiUsage
-  description: Determines whether there are event of suspicious Api usage by the user in the GCP environment.
+  description: Determines whether there are events of suspicious API usage by the user in the GCP environment.
   type: unknown
 - contextPath: GcpFailLogonCount
-  description: Count of failed logins by the user in the GCP environment.
+  description: The number of failed logins by the user in the GCP environment.
   type: unknown
 - contextPath: GsuiteFailLogonCount
-  description: Count of failed logins by the user in the G Suite environment.
+  description: The number of failed logins by the user in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUnusualLoginAllowedCount
-  description: Count of unusual logins performed by the user and allowed in the G Suite environment.
+  description: The number of unusual logins performed by the user and allowed in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUnusualLoginBlockedCount
-  description: Count of unusual logins performed by the user and blocked in the G Suite environment.
+  description: The number of unusual logins performed by the user and blocked in the G Suite environment.
   type: unknown
 - contextPath: GsuiteSuspiciousLoginCount
-  description: Count of the suspicious logon performed by the user in the G Suite environment.
+  description: The number of suspicious logons performed by the user in the G Suite environment.
   type: unknown
 - contextPath: GsuiteUserPasswordLeaked
-  description: Determines whether user's password was leaked in the G Suite environment.
+  description: Determines whether the user's password was leaked in the G Suite environment.
   type: unknown
 tests:
 - No tests (auto formatted)
