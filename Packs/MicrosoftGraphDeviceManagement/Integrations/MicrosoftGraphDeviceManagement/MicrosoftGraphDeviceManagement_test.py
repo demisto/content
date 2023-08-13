@@ -3,14 +3,14 @@ import json
 from CommonServerPython import DemistoException
 from MicrosoftGraphDeviceManagement import MsGraphClient, build_device_object, try_parse_integer, find_managed_devices_command
 
-with open('test_data/raw_device.json', 'r') as json_file:
+with open('test_data/raw_device.json') as json_file:
     data: dict = json.load(json_file)
     raw_device = data.get('value')
 
-with open('test_data/device_hr.json', 'r') as json_file:
+with open('test_data/device_hr.json') as json_file:
     device_hr: dict = json.load(json_file)
 
-with open('test_data/device.json', 'r') as json_file:
+with open('test_data/device.json') as json_file:
     device: dict = json.load(json_file)
 
 
@@ -28,7 +28,7 @@ def test_try_parse_integer():
 def test_find_managed_devices_command(mocker):
     args = {'device_name': 'Managed Device Name value'}
 
-    with open('test_data/raw_device.json', 'r') as json_file:
+    with open('test_data/raw_device.json') as json_file:
         data: dict = json.load(json_file)
         raw_device = [data.get('value')]
 
