@@ -1,8 +1,7 @@
 id: AWS - User Investigation
 version: -1
 name: AWS - User Investigation
-description: |
-  This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail.
+description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n-Failed login attempt\n-Suspicious activities \n-API Access denied\n-Administrative user activities\n-Security rules and policies changes\n-Access keys and access token activities\n-Script-based user agent usage\n-User role changes activities\n-MFA device changes activities\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -262,7 +261,7 @@ tasks:
       id: db70a4ed-7f97-4a5e-847f-544c05584d94
       version: -1
       name: 'API Access denied Count '
-      description: Set a value in context under the key you entered.
+      description: Set the `access denied` API calls if it exists.
       scriptName: Set
       type: regular
       iscommand: false
@@ -383,7 +382,10 @@ tasks:
       id: 5eeb31d6-8b7d-4301-8230-b91158122a71
       version: -1
       name: 'Set Administrative User Activities Count '
-      description: Set a value in context under the key you entered.
+      description: |-
+        Set the administrative activities performed by the user if it exists.
+        The task set the following activities:
+        ResetAccountPassword ,CreateUser ,DeleteUser ,AddUserToGroup ,RemoveUserFromGroup ,EnableUser ,DisableUser ,CreateGroup ,DeleteGroup ,UpdateGroup ,UpdateUser ,CreateRole ,DeleteRole ,UpdateRole ,ActivateUser ,ActivateUsers.
       scriptName: Set
       type: regular
       iscommand: false
@@ -560,7 +562,10 @@ tasks:
       id: e6dc04b1-a814-4b96-8490-b3abeb0fb356
       version: -1
       name: Security rules and policies were changed
-      description: Set a value in context under the key you entered.
+      description: |-
+        Set the security rules and policy changes made by the user if they exist.
+        The task set the following activities:
+        CreatePolicy ,DeletePolicy ,UpdatePolicy ,CreateAccessPolicy ,DeleteAccessPolicy ,UpdateAccessPolicy ,CreateFirewall ,DeleteFirewall ,CreateFirewallRule ,DeleteFirewallRule ,UpdateFirewallRule ,CreateFirewallPolicy ,UpdateFirewallPolicy ,DeleteFirewallPolicy.
       scriptName: Set
       type: regular
       iscommand: false
@@ -617,7 +622,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: CreateAccessPolicy
+                  simple: UpdateAccessPolicy
               ignorecase: true
             - operator: isEqualString
               left:
@@ -626,7 +631,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: CreateAccessPolicy
+                  simple: DeleteAccessPolicy
               ignorecase: true
             - operator: isEqualString
               left:
@@ -757,8 +762,11 @@ tasks:
     task:
       id: f3211bb9-1f9b-4b60-8c8c-2b8afa8b16c7
       version: -1
-      name: Access Keys  and Access Token activities
-      description: Set a value in context under the key you entered.
+      name: Access Keys and Access Token activities
+      description: |-
+        Set the access keys and access token activities performed by the user if it exists.
+        The task set the following activities:
+        CreateAccessKey ,DeleteAccessKey ,UpdateAccessKey ,CreateApiKey ,DeleteApiKey ,UpdateApiKey ,CreateKeyPair ,DeleteKeyPair ,CreateKey ,DeleteKey ,DeleteSSHPublicKey ,CreateCliToken ,CreateToken ,DeleteOAuthToken ,CreateEnrollmentToken.
       scriptName: Set
       type: regular
       iscommand: false
@@ -996,7 +1004,7 @@ tasks:
       id: 2c26000e-beeb-4d19-880e-5f417fbdcdf0
       version: -1
       name: Failed logon attempt
-      description: Set a value in context under the key you entered.
+      description: Set the console failed logon performed by the user if it exists.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1117,7 +1125,10 @@ tasks:
       id: d2a5d9c4-fda6-47bf-8505-002fbb79b918
       version: -1
       name: 'Script-based User Agent '
-      description: Set a value in context under the key you entered.
+      description: |-
+        Set the script-based user agent used by the user if it exists.
+        The task set the following script-based user agents :
+        Jakarta Commons-HttpClient ,Python-urllib ,Wget ,curl.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1225,7 +1236,10 @@ tasks:
       id: 3ea2ac79-77fd-4cea-8942-240abd7b46fe
       version: -1
       name: Suspicious Activities
-      description: Set a value in context under the key you entered.
+      description: |-
+        Set the suspicious activities performed by the user if it exists.
+        The task set the following activities:
+        DeleteAlert ,DeleteAlarms ,DeleteCertificate ,DeleteCACertificate ,DeleteCertificateAuthority, DeleteLoggingConfiguration, DeleteWatchlist, StopLogging ,UpdateLoggingConfiguration, DeleteUser.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1394,7 +1408,10 @@ tasks:
       id: 9830080e-0e31-4cfe-8deb-5ef4677e6951
       version: -1
       name: User Role Changes
-      description: Set a value in context under the key you entered.
+      description: |-
+        Set the user role changes made by the user if they exist.
+        The task set the following activities:
+        AttachRolePolicy ,DetachRolePolicy ,DeleteRolePolicy.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1462,7 +1479,7 @@ tasks:
       id: 93659738-177b-492a-86d0-6d98c044ffef
       version: -1
       name: User MFA Device Changes
-      description: Set a value in context under the key you entered.
+      description: Set the MFA device change event if performed by the user, if it exists.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1635,7 +1652,7 @@ inputs:
 - key: Username
   value: {}
   required: false
-  description: The username to investigate.
+  description: "The username to investigate. \nPlease enter the user's email."
   playbookInputQuery:
 - key: AwsTimeSearchFrom
   value:
