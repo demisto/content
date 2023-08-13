@@ -90,20 +90,18 @@ def get_diff(args: Namespace) -> dict:  # pragma: no cover
     gitlab_client = GitlabClient(args.gitlab_token)
     logger.info(
         f"Comparing {packs_dependencies_filepath=} of current branch "
-        f"and master (commit {args.master_sha})"
+        f"and master branch (commit: {args.master_sha})"
     )
     previous = gitlab_client.get_packs_dependencies_json(
         args.master_sha,
         args.job_name,
-        packs_dependencies_filepath,
+        packs_dependencies_filepath.relative_to("/builds/xsoar/content"),  # todo
     )
     current = json.loads(packs_dependencies_filepath.read_text())
     if not previous or not current:
         raise Exception(
             f"One of current/previous was not loaded: {len(previous)} {len(current)}"
         )
-    if current == previous:
-        logger.info("They are equal?")
     return compare(previous, current)
 
 
