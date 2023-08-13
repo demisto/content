@@ -1,6 +1,7 @@
 commonfields:
   id: OPSWAT-Metadefender V2
   version: -1
+  sortvalues: []
 name: OPSWAT-Metadefender V2
 display: OPSWAT-Metadefender v2
 category: Data Enrichment & Threat Intelligence
@@ -12,13 +13,20 @@ configuration:
   required: true
 - display: API Key - Needed in cloud based solutions
   name: api_key
+  defaultvalue: ""
   type: 4
+  hidden: true
   required: false
-- name: cloud
+- name: api_key_creds
+  type: 9
+  displaypassword: API Key - Needed in cloud based solutions
+  hiddenusername: true
+  required: false
+- display: Cloud based
+  name: cloud
   type: 8
-  required: false
   defaultvalue: 'false'
-  display: Cloud based
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -29,13 +37,14 @@ configuration:
   required: false
 - display: The high threshold
   name: highPercnt
+  defaultvalue: '66'
   type: 0
   required: false
-  defaultvalue: '66'
-- display: The low threshold
+- defaultvalue: '34'
+  display: The low threshold
   name: lowPercnt
-  defaultvalue: '34'
   type: 0
+
   required: false
 script:
   script: ''
