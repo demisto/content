@@ -210,7 +210,7 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
             'commands': commands_lst,
             'success': not std_error_str
         }]
-        readable_output = tableToMarkdown(f'Commands {commands_lst} Outputs', outputs, removeNull=True)
+        readable_output = tableToMarkdown(f'Output for {commands_for_exec}', outputs, removeNull=True)
     else:
         outputs = None
         readable_output = f'### Executed {commands_for_exec} successfully without any outputs.'
