@@ -628,7 +628,7 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
             err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
-            readable_output = f'Processing domain: "{domain}" resulted in an exception. See logs for the exact error.'
+            readable_output = f'Processing domain "{domain}" resulted in an exception. See logs for the exact error.'
             result = CommandResults(
                 outputs={},
                 readable_output=readable_output,
@@ -706,7 +706,7 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
             err_msg = f'Could not process URL: "{url}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
-            readable_output = f'Processing URL: "{url}" resulted in an exception. See logs for the exact error.'
+            readable_output = f'Processing URL "{url}" resulted in an exception. See logs for the exact error.'
             result = CommandResults(
                 outputs={},
                 readable_output=readable_output,
