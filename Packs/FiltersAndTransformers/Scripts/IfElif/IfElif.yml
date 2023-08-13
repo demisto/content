@@ -11,7 +11,7 @@ comment: A transformer for if-elif-else logic.
 enabled: true
 args:
 - name: value
-  description: 
+  description:
   required: true
 - name: conditions
   description: |-
@@ -21,8 +21,8 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.12.68714
 runas: DBotWeakRole
-fromversion: 5.0.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

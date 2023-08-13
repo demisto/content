@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Callable
+from collections.abc import Callable
 from functools import reduce
 import json
 import ast
@@ -39,7 +39,7 @@ operator_functions: dict[type, Callable] = {
 def get_value(node):
 
     match type(node):
-        
+
         # objects:
         case ast.Constant:
             return node.value
@@ -93,8 +93,12 @@ def get_from_context(keys: re.Match) -> str:
 
 
 def load_conditions(args: dict) -> list:  # TEST
+    '''
+    Replace #{...}'s with the string representation of the corresponding value in CONTEXT
+    and "#VALUE" with the args['value'] and load the resulting json.
+    '''
     conditions = args['conditions']
-    conditions = conditions.replace('#VALUE', json.dumps(args['value']))  # how does value appear?
+    conditions = conditions.replace('#VALUE', json.dumps(args['value']))
     conditions = re.compile('#{([\s\S]+?)}').sub(get_from_context, conditions)
     return json.loads(conditions)
 
