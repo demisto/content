@@ -1,5 +1,5 @@
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities
+You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
 ### Important
 1. eDiscovery commands only support the `Delegated (work or school account)` (Authorization Code Flow) permission type.
 2. When using Authorization Code Flow, the connection should be tested using the `!msg-auth-test` command.
