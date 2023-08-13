@@ -452,7 +452,7 @@ script:
     - contextPath: Umbrella.Destinations.comment
       description: Comment associated with the domain within the destination list.
   - arguments:
-    - description: Optional orgId, by default uses the one set in the instance configuration
+    - description: Optional organization ID. By default, uses the one set in the instance configuration.
       name: orgId
     - description: Destination list ID to get domains from. Use umbrella-get-destination-lists to get the list ID
       name: destId
