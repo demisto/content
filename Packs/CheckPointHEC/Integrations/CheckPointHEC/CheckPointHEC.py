@@ -189,12 +189,12 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
             'severity': int(event.get('severity')),
             'dbotMirrorId': event_id,
             'CustomFields': {
-                'cphecfarm': event.get('farm'),
-                'cpheccustomer': event.get('customerId'),
-                'cphecsaas': event.get('saas'),
-                'cphecentity': event.get('entityId'),
-                'cphectype': threat_type,
-                'cphecreported': False,
+                'checkpointhecfarm': event.get('farm'),
+                'checkpointheccustomer': event.get('customerId'),
+                'checkpointhecsaas': event.get('saas'),
+                'checkpointhecentity': event.get('entityId'),
+                'checkpointhectype': threat_type,
+                'checkpointhecreported': False,
                 'state': event.get('state'),  # From CommonTypes Pack
             },
         })

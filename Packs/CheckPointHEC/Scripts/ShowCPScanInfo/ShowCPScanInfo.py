@@ -11,7 +11,7 @@ def get_scan_info(entity: str):
 def main():  # pragma: no cover
     try:
         custom_fields = demisto.incident()['CustomFields']
-        result = get_scan_info(custom_fields['cphecentity'])
+        result = get_scan_info(custom_fields['checkpointhecentity'])
         scan_info = result[0]['Contents']
         demisto.results({
             'ContentsFormat': EntryFormat.JSON,

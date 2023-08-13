@@ -36,12 +36,12 @@ def main():  # pragma: no cover
         custom_fields = demisto.incident()['CustomFields']
         sender = subject = ''
         if by_sender:
-            sender = custom_fields.get('cphecemailsender')
+            sender = custom_fields.get('checkpointhecemailsender')
         if by_subject:
-            subject = custom_fields.get('cphecemailsubject')
+            subject = custom_fields.get('checkpointhecemailsubject')
 
-        farm = custom_fields.get('cphecfarm')
-        customer = custom_fields.get('cphecfarm')
+        farm = custom_fields.get('checkpointhecfarm')
+        customer = custom_fields.get('checkpointheccustomer')
         return_results(
             search_and_quarantine(farm, customer, date_range, sender, subject)
         )

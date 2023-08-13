@@ -11,8 +11,8 @@ def get_email_info(entity: str):
         "setIncident",
         {
             'customFields': json.dumps({
-                'cphecemailsender': email_info['fromEmail'],
-                'cphecemailsubject': email_info['subject']
+                'checkpointhecemailsender': email_info['fromEmail'],
+                'checkpointhecemailsubject': email_info['subject']
             })
         }
     )
@@ -31,7 +31,7 @@ def dict_to_md(info: dict) -> str:
 def main():  # pragma: no cover
     try:
         custom_fields = demisto.incident()['CustomFields']
-        result = get_email_info(custom_fields['cphecentity'])
+        result = get_email_info(custom_fields['checkpointhecentity'])
         email_info = result[0]['Contents']
         demisto.results({
             'ContentsFormat': EntryFormat.MARKDOWN,

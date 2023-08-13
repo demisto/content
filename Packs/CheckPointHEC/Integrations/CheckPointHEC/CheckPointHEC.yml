@@ -147,11 +147,32 @@ script:
     - contextPath: CheckPointHEC.Entity.isQuarantined
       description: Email has been quarantined.
       type: Boolean
+    - contextPath: CheckPointHEC.Entity.isQuarantineNotification
+      description: Email is a notification of another quarantined email.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestored
+      description: Email is restored from quarantine.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestoreRequested
+      description: Email is a request to restore.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestoreDeclined
+      description: Email is a declined restore request.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.saasSpamVerdict
+      description: Spam verdict.
+      type: String
+    - contextPath: CheckPointHEC.Entity.SpfResult
+      description: Sender Policy Framework check result.
+      type: String
+    - contextPath: CheckPointHEC.Entity.restoreRequestTime
+      description: Restore request datetime in iso 8601 format.
+      type: String
   - name: checkpointhec-get-email-info
     arguments:
-      - name: entity
-        description: Email entity id
-        required: true
+    - name: entity
+      description: Email entity id
+      required: true
     description: Retrieve specific email entity
     outputs:
     - contextPath: CheckPointHEC.Email.fromEmail

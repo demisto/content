@@ -15,7 +15,7 @@ def send_action_and_update_incident(farm: str, customer: str, entity: str, actio
         "setIncident",
         {
             'customFields': json.dumps({
-                'cphectask': result[0]['Contents']['task']
+                'checkpointhectask': result[0]['Contents']['task']
             })
         }
     )

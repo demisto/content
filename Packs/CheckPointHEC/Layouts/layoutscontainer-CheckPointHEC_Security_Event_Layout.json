@@ -21,7 +21,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "cphecfarm",
+								"fieldId": "checkpointheccustomer",
 								"height": 53,
 								"id": "bc5fbb10-362e-11ee-b944-c7997e9b1fa5",
 								"index": 0,
@@ -31,7 +31,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "cpheccustomer",
+								"fieldId": "checkpointheccustomer",
 								"height": 53,
 								"id": "e7844fa0-30a1-11ee-a2f1-bb0fdfd31f7a",
 								"index": 1,
@@ -41,7 +41,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "cphecsaas",
+								"fieldId": "checkpointhecsaas",
 								"height": 53,
 								"id": "ec22de00-30a1-11ee-a2f1-bb0fdfd31f7a",
 								"index": 2,
@@ -51,7 +51,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "cphectype",
+								"fieldId": "checkpointhectype",
 								"height": 53,
 								"id": "f6421d60-30a1-11ee-a2f1-bb0fdfd31f7a",
 								"index": 3,
@@ -106,13 +106,13 @@
 										"simple": "quarantine"
 									},
 									"customer": {
-										"simple": "${incident.cpheccustomer}"
+										"simple": "${incident.checkpointheccustomer}"
 									},
 									"entity": {
-										"simple": "${incident.cphecentity}"
+										"simple": "${incident.checkpointhecentity}"
 									},
 									"farm": {
-										"simple": "${incident.cphecfarm}"
+										"simple": "${incident.checkpointheccustomer}"
 									}
 								},
 								"buttonClass": "warning",
@@ -145,7 +145,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "cphectask"
+													"simple": "checkpointhectask"
 												}
 											},
 											"operator": "isEmpty",
@@ -169,13 +169,13 @@
 										"simple": "restore"
 									},
 									"customer": {
-										"simple": "${incident.cpheccustomer}"
+										"simple": "${incident.checkpointheccustomer}"
 									},
 									"entity": {
-										"simple": "${incident.cphecentity}"
+										"simple": "${incident.checkpointhecentity}"
 									},
 									"farm": {
-										"simple": "${incident.cphecfarm}"
+										"simple": "${incident.checkpointheccustomer}"
 									}
 								},
 								"buttonClass": "success",
@@ -208,7 +208,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "cphectask"
+													"simple": "checkpointhectask"
 												}
 											},
 											"operator": "isEmpty",
@@ -229,13 +229,13 @@
 							{
 								"args": {
 									"customer": {
-										"simple": "${incident.cpheccustomer}"
+										"simple": "${incident.checkpointheccustomer}"
 									},
 									"farm": {
-										"simple": "${incident.cphecfarm}"
+										"simple": "${incident.checkpointheccustomer}"
 									},
 									"task": {
-										"simple": "${incident.cphectask}"
+										"simple": "${incident.checkpointhectask}"
 									}
 								},
 								"buttonClass": "primary",
@@ -248,7 +248,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "cphectask"
+													"simple": "checkpointhectask"
 												}
 											},
 											"operator": "isNotEmpty",
@@ -276,7 +276,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "cphecreported"
+													"simple": "checkpointhecreported"
 												}
 											},
 											"operator": "isTrue",
@@ -296,7 +296,7 @@
 							{
 								"args": {
 									"entity": {
-										"simple": "${incident.cphecentity}"
+										"simple": "${incident.checkpointhecentity}"
 									}
 								},
 								"buttonClass": "error",
@@ -309,7 +309,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "cphecreported"
+													"simple": "checkpointhecreported"
 												}
 											},
 											"operator": "isFalse",

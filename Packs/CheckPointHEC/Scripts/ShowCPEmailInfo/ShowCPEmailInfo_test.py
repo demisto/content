@@ -26,8 +26,8 @@ def test_get_email_info(mocker):
     result = get_email_info('0000')
     email_info = result[0]['Contents']
     custom_fields = json.dumps({
-        'cphecemailsender': email_info['fromEmail'],
-        'cphecemailsubject': email_info['subject']
+        'checkpointhecemailsender': email_info['fromEmail'],
+        'checkpointhecemailsubject': email_info['subject']
     })
     assert result == [{'Contents': mock_response['responseData'][0]['entityPayload']}]
     assert mocked_ec.call_args_list[1][0][0] == 'setIncident'

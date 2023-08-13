@@ -74,6 +74,13 @@ Retrieve specific entity
 | CheckPointHEC.Entity.isInternal | Boolean | Email is from same organization. | 
 | CheckPointHEC.Entity.isOutgoing | Boolean | Email is to an external organization. | 
 | CheckPointHEC.Entity.isQuarantined | Boolean | Email has been quarantined. | 
+| CheckPointHEC.Entity.isQuarantineNotification | Boolean | Email is a notification of another quarantined email. | 
+| CheckPointHEC.Entity.isRestored | Boolean | Email is restored from quarantine. | 
+| CheckPointHEC.Entity.isRestoreRequested | Boolean | Email is a request to restore. | 
+| CheckPointHEC.Entity.isRestoreDeclined | Boolean | Email is a declined restore request. | 
+| CheckPointHEC.Entity.saasSpamVerdict | String | Spam verdict. | 
+| CheckPointHEC.Entity.SpfResult | String | Sender Policy Framework check result. | 
+| CheckPointHEC.Entity.restoreRequestTime | String | Restore request datetime in iso 8601 format. | 
 
 ### checkpointhec-get-email-info
 
