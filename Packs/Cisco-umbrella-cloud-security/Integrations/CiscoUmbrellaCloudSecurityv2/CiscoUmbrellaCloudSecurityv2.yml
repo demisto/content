@@ -393,7 +393,7 @@ script:
       description: Note on what the domain is or why it is being added.
       name: comment
     deprecated: true
-    description: Adds domains to given destination list
+    description: Adds domains to the given destination list.
     name: umbrella-add-domain
   - arguments:
     - description: Optional orgId, by default uses the one set in the instance configuration
