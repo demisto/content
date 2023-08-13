@@ -28,7 +28,7 @@ API_TOKEN = PARAMS.get('apitoken_creds', {}).get('password') or PARAMS.get('APIT
 BASE_URL = PARAMS.get('baseURL')
 USE_SSL = not PARAMS.get('insecure', False)
 DEFAULT_HEADERS = {
-    'Authorization': 'Bearer {}'.format(API_TOKEN),
+    'Authorization': f'Bearer {API_TOKEN}',
     'Accept': 'application/json'
 }
 SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0))
@@ -128,9 +128,9 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
     if data_list and isinstance(data_list, list):
         data_list = json.dumps(data_list)
     if params_dict:
-        req_params.update(params_dict)
+        req_params |= params_dict
     url = BASE_URL + api_endpoint
-    LOG('running %s request with url=%s\tparams=%s\tdata=%s' % (method, url, json.dumps(req_params), data_list))
+    LOG(f'running {method} request with url={url}\tparams={json.dumps(req_params)}\tdata={data_list}')
     try:
         res = requests.request(
             method,
@@ -153,23 +153,23 @@ def format_string_to_table_header_format(string):
     # example: "one_two" to "One Two"
     if type(string) in STRING_TYPES:
         return " ".join(word.capitalize() for word in string.replace("_", " ").split())
-    else:
-        return_error('The key is not a string: {}'.format(string))
+    return_error(f'The key is not a string: {string}')
+    return None
 
 
 def format_string_to_context_key_format(string):
     # example: "one_two" to "OneTwo"
     if type(string) in STRING_TYPES:
         return "".join(word.capitalize() for word in string.split('_'))
-    else:
-        return_error('The key is not a string: {}'.format(string))
+    return_error(f'The key is not a string: {string}')
+    return None
 
 
 def date_to_timestamp_func(date):
     # this helper function tries to parse a date time string according to a specific format
     # if it fails, it will just output the original value
     try:
-        ts = datetime.strptime(date[0:16], '%Y-%m-%dT%H:%M')
+        ts = datetime.strptime(date[:16], '%Y-%m-%dT%H:%M')
     except ValueError:
         pass
     else:
@@ -211,21 +211,19 @@ def securerank_to_dbotscore(sr):
 
 def get_co_occurences(domain):
     # Build & Send request
-    endpoint_url = '/recommendations/name/' + domain + '.json'
+    endpoint_url = f'/recommendations/name/{domain}.json'
     res_co_occurences = http_request(endpoint_url)
 
     # Assign and validate response
     co_occurences = res_co_occurences.get('pfs2', [])
     if not res_co_occurences['found'] or not co_occurences:
         return False
-    table_co_occurences = []
+    table_co_occurences: list[dict] = []
 
-    for co_occurence in co_occurences:
-        table_co_occurences.append({
-            'Name': co_occurence[0],
-            'Score': co_occurence[1]
-        })
-
+    table_co_occurences.extend(
+        {'Name': co_occurence[0], 'Score': co_occurence[1]}
+        for co_occurence in co_occurences
+    )
     return table_co_occurences
 
 
@@ -247,7 +245,6 @@ def get_domain_categorization_command():
     contents = []  # type: ignore
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     # Fetch data
@@ -264,9 +261,8 @@ def get_domain_categorization_command():
             'Malware Categories': 'No Security Categories Were Found'
         }
 
-        if categorization:
-            if categorization.get('status'):
-                contents['Status'] = categorization['status']  # type: ignore
+        if categorization and categorization.get('status'):
+            contents['Status'] = categorization['status']  # type: ignore
         if categorization.get('content_categories'):
             content_categories = ",".join(categorization['content_categories'])
             contents['Content Categories'] = content_categories  # type: ignore
@@ -283,21 +279,23 @@ def get_domain_categorization_command():
 
         context[outputPaths['domain']] = domain_context
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Categorization:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Categorization:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_categorization(domain):
     # Build & Send request
-    endpoint_url = '/domains/categorization/' + domain + '?showLabels'
+    endpoint_url = f'/domains/categorization/{domain}?showLabels'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -312,7 +310,6 @@ def get_domain_search_command():
     contents = []  # type: ignore
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     regex = demisto.args()['regex']
     start = demisto.args().get('start', '')
@@ -351,23 +348,25 @@ def get_domain_search_command():
 
         context[outputPaths['domain']] = domain_context
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Search Results:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Search Results:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_search(regex, start):
     # Build & Send request
     matches = {}  # type: ignore
     start = "".join(start.split()) if start else '-31days'
-    endpoint_url = '/search/' + regex
+    endpoint_url = f'/search/{regex}'
     params = {
         'start': start,
         'includecategory': 'true'
@@ -383,43 +382,42 @@ def get_domain_search(regex, start):
 
 def get_domain_co_occurrences_command():
     # Initialize
-    contents = []
+    contents:list = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     # Fetch data
     occurrences = get_domain_co_occurrences(domain)
     if occurrences:
         # Process response - build context and markdown table
-        for occurrence in occurrences:
-            contents.append({
-                'Name': occurrence[0],
-                'Score': occurrence[1]
-            })
-
+        contents.extend(
+            {'Name': occurrence[0], 'Score': occurrence[1]}
+            for occurrence in occurrences
+        )
         if contents:
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'CoOccurrences': contents
             }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Co-occurrences:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Co-occurrences:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_co_occurrences(domain):
     # Build & Send request
-    endpoint_url = '/recommendations/name/' + domain + '.json'
+    endpoint_url = f'/recommendations/name/{domain}.json'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -431,22 +429,19 @@ def get_domain_co_occurrences(domain):
 
 def get_domain_related_command():
     # Initialize
-    contents = []
+    contents: list[dict] = []
     context = {}  # type: ignore
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     # Fetch data
     related_list = get_domain_related(domain)
     if related_list:
         # Process response - build context and markdown table
-        for related in related_list:
-            contents.append({
-                'Name': related[0],
-                'Score': related[1]
-            })
-
+        contents.extend(
+            {'Name': related[0], 'Score': related[1]}
+            for related in related_list
+        )
         context = {}
         if contents:
             context[outputPaths['domain']] = {
@@ -454,21 +449,23 @@ def get_domain_related_command():
                 'Related': contents
             }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Related Domains:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Related Domains:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_related(domain):
     # Build & Send request
-    endpoint_url = '/links/name/' + domain + '.json'
+    endpoint_url = f'/links/name/{domain}.json'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -483,7 +480,6 @@ def get_domain_security_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
@@ -543,21 +539,23 @@ def get_domain_security_command():
             'Reliability': reliability
 
         }
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Domain Security Info:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Domain Security Info:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_security(domain):
     # Build & Send request
-    endpoint_url = '/security/name/' + domain + '.json'
+    endpoint_url = f'/security/name/{domain}.json'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -571,7 +569,6 @@ def get_domain_dns_history_command():
     contents = {}  # type: ignore
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     # Fetch data
@@ -601,22 +598,24 @@ def get_domain_dns_history_command():
             'DNSHistory': dns_history_context
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('DNS History:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'DNS History:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_dns_history(domain):
     # this command return 2 entries - but the context update is done with the 2nd entry
     # Build & Send request
-    endpoint_url = '/dnsdb/name/a/' + domain + '.json'
+    endpoint_url = f'/dnsdb/name/a/{domain}.json'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -633,7 +632,6 @@ def get_ip_dns_history_command():
     # Initialize
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     ip = demisto.args()['ip']
     limit = int(demisto.args().get('limit'))
@@ -649,15 +647,16 @@ def get_ip_dns_history_command():
 
         if limit:
             response = response[:limit]
-        for item in response:
-            response_contents.append({
+        response_contents.extend(
+            {
                 'RR': item['rr'],
                 'TTL': item['ttl'],
                 'Class': item['class'],
                 'Type': item['type'],
-                'Name': item['name']
-            })
-
+                'Name': item['name'],
+            }
+            for item in response
+        )
         features_context = {}
         for key in IP_DNS_FEATURE_INFO:
             # table_key = format_string_to_table_header_format(key)
@@ -673,23 +672,24 @@ def get_ip_dns_history_command():
             }
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [response_contents, features_contents],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('RRS:', response_contents, headers) + tableToMarkdown('Features:',
-                                                                                               features_contents,
-                                                                                               headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': [response_contents, features_contents],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'RRS:', response_contents, headers
+            )
+            + tableToMarkdown('Features:', features_contents, headers),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_ip_dns_history(ip):
     # Build & Send request
-    endpoint_url = '/dnsdb/ip/a/' + ip + '.json'
+    endpoint_url = f'/dnsdb/ip/a/{ip}.json'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -705,7 +705,6 @@ def get_ip_malicious_domains_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     context_dbotscore = []
     # Get vars
     ip = demisto.args()['ip']
@@ -714,13 +713,15 @@ def get_ip_malicious_domains_command():
     if res:
         # Process response - build context and markdown table
         for domain in res:
-            contents.append({
-                'Name': domain['name'],
-                'Malicious': {
-                    'Vendor': 'Cisco Umbrella Investigate',
-                    'Description': 'For IP ' + ip
+            contents.append(
+                {
+                    'Name': domain['name'],
+                    'Malicious': {
+                        'Vendor': 'Cisco Umbrella Investigate',
+                        'Description': f'For IP {ip}',
+                    },
                 }
-            })
+            )
             context_dbotscore.append({
                 'Indicator': domain['name'],
                 'Type': 'domain',
@@ -733,21 +734,23 @@ def get_ip_malicious_domains_command():
             context[outputPaths['domain']] = contents
             context[outputPaths['dbotscore']] = context_dbotscore
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Malicious Domains:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Malicious Domains:', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_ip_malicious_domains(ip):
     # Build & Send request
-    endpoint_url = '/ips/' + ip + '/latest_domains'
+    endpoint_url = f'/ips/{ip}/latest_domains'
     res = http_request(endpoint_url)
 
     # Validate and assign response
@@ -858,10 +861,17 @@ def get_domain_command():
             })
 
             # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
-            readable_domain_reputation = tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain,
-                                                         contents, headers)
-            readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-                                             date_fields=["Last Retrieved"])
+            readable_domain_reputation = tableToMarkdown(
+                f'"Umbrella Investigate" Domain Reputation for: {domain}',
+                contents,
+                headers,
+            )
+            readable_whois = tableToMarkdown(
+                f'"Umbrella Investigate" WHOIS Record Data for: {domain}',
+                whois,
+                headers,
+                date_fields=["Last Retrieved"],
+            )
             readable_name_servers = tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
             readable_emails = tableToMarkdown('Emails:', emails, ['Emails'])
             readable_domain = tableToMarkdown('Domain Categorization:', domain_categorization_table, headers)
@@ -918,7 +928,6 @@ def get_related_domains_command():
     # Initialize
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     is_co_occurences = bool(strtobool(demisto.args().get('coOccurences', False)))
     domain = extract_domain_name(demisto.args()['domain'])
@@ -929,24 +938,24 @@ def get_related_domains_command():
     co_occurences_md = ''
     if related_domains:
         # Process response - build context and markdown table
-        for related_domain in related_domains:
-            contents_related_domains.append({
-                'Name': related_domain[0],
-                'Score': related_domain[1]
-            })
-
-        if related_domains:
-            context['Umbrella.RelatedDomains(val.Domain && val.Domain == obj.Domain)'] = {
-                'Data': contents_related_domains,
-                'Domain': domain
-            }
+        contents_related_domains.extend(
+            {'Name': related_domain[0], 'Score': related_domain[1]}
+            for related_domain in related_domains
+        )
+        context['Umbrella.RelatedDomains(val.Domain && val.Domain == obj.Domain)'] = {
+            'Data': contents_related_domains,
+            'Domain': domain
+        }
 
         # Create another request in case co_occurences flag is raised, add the results with the main request
         if is_co_occurences:
             contents_co_occurences = get_co_occurences(domain)
             if contents_co_occurences:
-                co_occurences_md = tableToMarkdown('"Umbrella Investigate" Domain Co-occurences for: ' + domain,
-                                                   contents_co_occurences, headers)
+                co_occurences_md = tableToMarkdown(
+                    f'"Umbrella Investigate" Domain Co-occurences for: {domain}',
+                    contents_co_occurences,
+                    headers,
+                )
                 if related_domains:
                     context['Umbrella.CoOccurences(val.Domain && val.Domain == obj.Domain)'] = {
                         'Domain': domain,
@@ -958,23 +967,27 @@ def get_related_domains_command():
                         'Domain': domain
                     }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [contents_related_domains, contents_co_occurences],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Related Domains for a Domain: ',
-                                         contents_related_domains, headers) + co_occurences_md,
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': [contents_related_domains, contents_co_occurences],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                '"Umbrella Investigate" Related Domains for a Domain: ',
+                contents_related_domains,
+                headers,
+            )
+            + co_occurences_md,
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_related_domains(domain, is_co_occurences):
     # Main Request
     # Build & Send request
-    endpoint_url = '/links/name/' + domain + '.json'
+    endpoint_url = f'/links/name/{domain}.json'
     res_related_domains = http_request(endpoint_url)
 
     # Assign and validate response
@@ -989,7 +1002,6 @@ def get_domain_classifiers_command():
     contents = {}
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     # Fetch data
@@ -1013,21 +1025,25 @@ def get_domain_classifiers_command():
                 'Domain': domain
             }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Classifiers: ' + domain, contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Domain Classifiers: {domain}',
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_classifiers(domain):
     # Build & Send request
-    endpoint_url = '/url/' + domain + '/classifiers'
+    endpoint_url = f'/url/{domain}/classifiers'
     res = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1041,7 +1057,6 @@ def get_domain_query_volume_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     queries_context = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
@@ -1051,7 +1066,7 @@ def get_domain_query_volume_command():
     limit = int(demisto.args().get('limit'))
 
     # validation and user input conversion
-    if match != 'all' and match != 'exact' and match != 'component':
+    if match not in ('all', 'exact', 'component'):
         return_error('Not a valid type. Valid options are all, exact, or component.')
 
     # Fetch data
@@ -1088,18 +1103,24 @@ def get_domain_query_volume_command():
             }
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(
-            '"Umbrella Investigate" Domain Volume: ' + domain + '\nStart Date ' + timestamp_to_date(
-                start_date) + ' - Stop Date ' + timestamp_to_date(stop_date), contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Domain Volume: {domain}'
+                + '\nStart Date '
+                + timestamp_to_date(start_date)
+                + ' - Stop Date '
+                + timestamp_to_date(stop_date),
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
@@ -1113,7 +1134,7 @@ def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
         'stop': stop_ts,
         'match': match
     }
-    endpoint_url = '/domains/volume/' + domain
+    endpoint_url = f'/domains/volume/{domain}'
     res = http_request(endpoint_url, params)
 
     # Assign and validate response
@@ -1129,7 +1150,6 @@ def get_domain_details_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
@@ -1173,27 +1193,31 @@ def get_domain_details_command():
                     'Reliability': reliability
                 }
                 if dbotscore == 3:
-                    context[outputPaths['domain']] = {}
-                    context[outputPaths['domain']]['Malicious'] = {
-                        'Vendor': 'Cisco Umbrella Investigate',
-                        'Description': 'Malicious domain found via get-domain-details'
+                    context[outputPaths['domain']] = {
+                        'Malicious': {
+                            'Vendor': 'Cisco Umbrella Investigate',
+                            'Description': 'Malicious domain found via get-domain-details',
+                        }
                     }
-
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Reputation: ' + domain, contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Domain Reputation: {domain}',
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_details(domain):
     # Build & Send request
-    endpoint_url = '/security/name/' + domain
+    endpoint_url = f'/security/name/{domain}'
     res = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1207,7 +1231,6 @@ def get_domains_for_email_registrar_command():
     contents = []  # type: ignore
     context = {}
     headers = []  # type: ignore
-    results = []
     markdown = ''
     # Get vars
     emails = argToList(demisto.args()['emails'])
@@ -1217,22 +1240,20 @@ def get_domains_for_email_registrar_command():
     # user input validation
     if not isinstance(emails, list):
         return_error('Emails list is not formatted correctly, please try again.')
-    if sort:
-        if sort != 'created' and sort != 'updated':
-            return_error('The parameter sort accept only these values: created/updated/expired.')
+    if sort and sort not in ('created', 'updated'):
+        return_error('The parameter sort accept only these values: created/updated/expired.')
     for email in emails:
         if not re.match(emailRegex, email):
-            return_error('The provided email is not valid: ' + email)
+            return_error(f'The provided email is not valid: {email}')
     # Fetch data
     res = get_domains_for_email_registrar(emails, offset, sort, limit)
     if res:
         # Process response - build context and markdown table
         domains = []  # type: ignore
         for email in emails:
-            domains_contents = []
-            emails_contents = []  # type: ignore
-            domains_list = []
-            emails_context = []
+            domains_contents: list[dict] = []
+            emails_contents: list[dict] = [] 
+            domains_list: list = []
             # get the entry that matches the provided emails each time
             email_res = res[email]
             domains = email_res.get('domains', [])
@@ -1240,28 +1261,35 @@ def get_domains_for_email_registrar_command():
                 continue
 
             # going over all the domains associated with this email, making POST request to get each categorization
-            for domain in domains:
-                domains_list.append(domain['domain'])
+            domains_list.extend(domain['domain'] for domain in domains)
             domains_info = get_domains_categorization(domains_list)
             if domains_info:
-                for domain in domains:
-                    domains_contents.append({
+                domains_contents.extend(
+                    {
                         'Name': domain['domain'],
-                        'Security Categories': domains_info[domain['domain']]['security_categories'],
-                        'Content Categories': domains_info[domain['domain']]['content_categories'],
-                        'Is Current': domain['current']
-                    })
-
-            # each email has its own data + associated domains attached
-            emails_context.append({
-                'TotalResults': email_res['totalResults'],
-                'MoreDataAvailable': email_res['moreDataAvailable'],
-                'ResultLimit': email_res['limit'],
-                'Domains': domains_contents
-            })
+                        'Security Categories': domains_info[domain['domain']][
+                            'security_categories'
+                        ],
+                        'Content Categories': domains_info[domain['domain']][
+                            'content_categories'
+                        ],
+                        'Is Current': domain['current'],
+                    }
+                    for domain in domains
+                )
+            emails_context = [
+                {
+                    'TotalResults': email_res['totalResults'],
+                    'MoreDataAvailable': email_res['moreDataAvailable'],
+                    'ResultLimit': email_res['limit'],
+                    'Domains': domains_contents,
+                }
+            ]
             # each email represented by 2 tables
             # Build Output
-            markdown = markdown + tableToMarkdown('Domains Associated with: ' + email, domains_contents, headers)
+            markdown = markdown + tableToMarkdown(
+                f'Domains Associated with: {email}', domains_contents, headers
+            )
             contents.extend((emails_contents, domains_contents))
 
         context['Umbrella.AssociatedDomains(val.Email && val.Email == obj.Email)'] = {
@@ -1270,18 +1298,20 @@ def get_domains_for_email_registrar_command():
         }
 
     if not markdown:
-        markdown = tableToMarkdown('Domains Associated with: ' + email, domains_contents, headers)
+        markdown = tableToMarkdown(
+            f'Domains Associated with: {email}', domains_contents, headers
+        )
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': markdown,
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': markdown,
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domains_for_email_registrar(emails, offset, sort, limit):
@@ -1289,7 +1319,7 @@ def get_domains_for_email_registrar(emails, offset, sort, limit):
     params = {}  # type: ignore
     # single email has different api call over multiple emails
     if len(emails) == 1:
-        endpoint_url = '/whois/emails/' + emails[0]
+        endpoint_url = f'/whois/emails/{emails[0]}'
         if sort or limit or offset:
             params = {
                 'sortField': sort,
@@ -1323,7 +1353,6 @@ def get_domains_for_nameserver_command():
     contents = []  # type: ignore
     context = {}
     headers = []  # type: ignore
-    results = []
     markdown = ''
     # Get vars
     nameservers = argToList(demisto.args()['nameservers'])
@@ -1333,23 +1362,21 @@ def get_domains_for_nameserver_command():
     # user input validation
     if not isinstance(nameservers, list):
         return_error('Name Servers list is not formatted correctly, please try again.')
-    if sort:
-        if sort != 'created' and sort != 'updated':
-            return_error('The parameter sort accept only these values: created/updated')
+    if sort and sort != 'created' and sort != 'updated':
+        return_error('The parameter sort accept only these values: created/updated')
     for nameserver in nameservers:
         if re.match('^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$',
                     nameserver) is None:
-            return_error('The provided name server is not valid: ' + nameserver)
+            return_error(f'The provided name server is not valid: {nameserver}')
     # Fetch data
     res = get_domains_for_nameserver(nameservers, offset, sort, limit)
     if res:
         # Process response - build context and markdown table
         domains = []  # type: ignore
         for nameserver in nameservers:
-            domains_contents = []
+            domains_contents:list[dict] = []
             nameservers_contents = []  # type: ignore
-            domains_list = []
-            nameservers_context = []
+            domains_list: list = []
             # get the entry that matches the provided nameservers each time
             nameserver_res = res[nameserver]
             domains = nameserver_res.get('domains', [])
@@ -1357,28 +1384,37 @@ def get_domains_for_nameserver_command():
                 continue
 
             # going over the domains associated with this nameserver, making POST request to get each categorization
-            for domain in domains:
-                domains_list.append(domain['domain'])
+            domains_list.extend(domain['domain'] for domain in domains)
             domains_info = get_domains_categorization(domains_list)
             if domains_info:
-                for domain in domains:
-                    domains_contents.append({
+                domains_contents.extend(
+                    {
                         'Name': domain['domain'],
-                        'Security Categories': domains_info[domain['domain']]['security_categories'],
-                        'Content Categories': domains_info[domain['domain']]['content_categories'],
-                        'Is Current': domain['current']
-                    })
-
-            # each nameserver has its own data + associated domains attached
-            nameservers_context.append({
-                'TotalResults': nameserver_res['totalResults'],
-                'MoreDataAvailable': nameserver_res['moreDataAvailable'],
-                'ResultLimit': nameserver_res['limit'],
-                'Domains': domains_contents
-            })
+                        'Security Categories': domains_info[domain['domain']][
+                            'security_categories'
+                        ],
+                        'Content Categories': domains_info[domain['domain']][
+                            'content_categories'
+                        ],
+                        'Is Current': domain['current'],
+                    }
+                    for domain in domains
+                )
+            nameservers_context = [
+                {
+                    'TotalResults': nameserver_res['totalResults'],
+                    'MoreDataAvailable': nameserver_res['moreDataAvailable'],
+                    'ResultLimit': nameserver_res['limit'],
+                    'Domains': domains_contents,
+                }
+            ]
             # each nameserver represented by 2 tables
             # Build Output
-            markdown = markdown + tableToMarkdown('Domains Associated with: ' + nameserver, domains_contents, headers)
+            markdown = markdown + tableToMarkdown(
+                f'Domains Associated with: {nameserver}',
+                domains_contents,
+                headers,
+            )
             contents.extend((nameservers_contents, domains_contents))
 
         context['Umbrella.AssociatedDomains(val.Nameserver && val.Nameserver == obj.Nameserver)'] = {
@@ -1387,18 +1423,20 @@ def get_domains_for_nameserver_command():
         }
 
     if not markdown:
-        markdown = tableToMarkdown('Domains Associated with: ' + nameserver, domains_contents, headers)
+        markdown = tableToMarkdown(
+            f'Domains Associated with: {nameserver}', domains_contents, headers
+        )
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': markdown,
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': markdown,
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domains_for_nameserver(nameservers, offset, sort, limit):
@@ -1406,7 +1444,7 @@ def get_domains_for_nameserver(nameservers, offset, sort, limit):
     params = {}  # type: ignore
     # single name server has different api call over multiple name servers
     if len(nameservers) == 1:
-        endpoint_url = '/whois/nameservers/' + nameservers[0]
+        endpoint_url = f'/whois/nameservers/{nameservers[0]}'
         if sort or limit or offset:
             params = {
                 'sortField': sort,
@@ -1438,7 +1476,6 @@ def get_whois_for_domain_command():
     # Initialize
     context = {}
     headers = []  # type: ignore
-    results = []
     contents_nameserver = {}  # type: ignore
     contents_email = {}  # type: ignore
     table_whois = {}
@@ -1508,10 +1545,7 @@ def get_whois_for_domain_command():
             contents_nameserver = {'Nameservers': nameservers}
             contents_email = {'Emails': emails}
 
-            whois.update({
-                'Nameservers': nameservers,
-                'Emails': emails
-            })
+            whois |= {'Nameservers': nameservers, 'Emails': emails}
             context['Domain.Umbrella.Whois(val.Name && val.Name == obj.Name)'] = whois
             execution_metrics.success += 1
     except RequestException as r:
@@ -1527,12 +1561,15 @@ def get_whois_for_domain_command():
     readable_name_servers = tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
     readable_email = tableToMarkdown('Email Addresses: ', contents_email, headers)
 
-    results.append(
+    results = [
         CommandResults(
             raw_response=[table_whois, contents_nameserver, contents_email],
             outputs=context,
-            readable_output=readable_whois + readable_name_servers + readable_email
-        ))
+            readable_output=readable_whois
+            + readable_name_servers
+            + readable_email,
+        )
+    ]
     results = append_metrics(execution_metrics, results)
 
     return results
@@ -1540,7 +1577,7 @@ def get_whois_for_domain_command():
 
 def get_whois_for_domain(domain):
     # Build & Send request
-    endpoint_url = '/whois/' + domain
+    endpoint_url = f'/whois/{domain}'
     res = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1554,7 +1591,6 @@ def get_malicious_domains_for_ip_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     context_dbotscore = []
     context_malicious = []
     # Get vars
@@ -1563,9 +1599,8 @@ def get_malicious_domains_for_ip_command():
     res = get_malicious_domains_for_ip(ip)
     if res:
         # Process response - build context and markdown table
-        domains = []
-        for item in res:
-            domains.append(item['name'])
+        domains:list = []
+        domains.extend(item['name'] for item in res)
         domains = get_domains_categorization(domains)
         domains_context = []
         if domains:
@@ -1587,13 +1622,15 @@ def get_malicious_domains_for_ip_command():
                     'Score': 3,
                     'Reliability': reliability
                 })
-                context_malicious.append({
-                    'Name': domain,
-                    'Malicious': {
-                        'Vendor': 'Cisco Umbrella Investigate',
-                        'Description': 'For IP ' + ip
+                context_malicious.append(
+                    {
+                        'Name': domain,
+                        'Malicious': {
+                            'Vendor': 'Cisco Umbrella Investigate',
+                            'Description': f'For IP {ip}',
+                        },
                     }
-                })
+                )
 
         context['Umbrella.MaliciousDomains(val.IP && val.IP == obj.IP)'] = {
             'IP': ip,
@@ -1602,22 +1639,25 @@ def get_malicious_domains_for_ip_command():
         context[outputPaths['domain']] = context_malicious  # type: ignore
         context[outputPaths['dbotscore']] = context_dbotscore  # type: ignore
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Malicious Domains for an IP: ' + ip, contents,
-                                         headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Malicious Domains for an IP: {ip}',
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_malicious_domains_for_ip(ip):
     # Build & Send request
-    endpoint_url = '/ips/' + ip + '/latest_domains'
+    endpoint_url = f'/ips/{ip}/latest_domains'
     res = http_request(endpoint_url)
     # Assign and validate response
     if not res:
@@ -1630,7 +1670,6 @@ def get_domain_using_regex_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     title_contents = []  # type: ignore
     # Get vars
     regex = demisto.args()['expression']
@@ -1669,17 +1708,21 @@ def get_domain_using_regex_command():
             'Data': domain_context
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [title_contents, contents],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Pattern Search for: ' + regex, title_contents,
-                                         headers) + tableToMarkdown('Matches: ', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': [title_contents, contents],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Domain Pattern Search for: {regex}',
+                title_contents,
+                headers,
+            )
+            + tableToMarkdown('Matches: ', contents, headers),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_using_regex(regex, start, is_include_category, stop, limit, node_type):
@@ -1693,7 +1736,7 @@ def get_domain_using_regex(regex, start, is_include_category, stop, limit, node_
     }
 
     # Build & Send request
-    endpoint_url = '/search/' + regex
+    endpoint_url = f'/search/{regex}'
     res = http_request(endpoint_url, params)
     # Assign and validate response
     results = res.get('totalResults', 0)
@@ -1707,7 +1750,6 @@ def get_domain_timeline_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
     if re.match('[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*', domain) is None:
@@ -1736,21 +1778,25 @@ def get_domain_timeline_command():
             'Data': timeline_context
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Timeline: ' + domain, contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" Domain Timeline: {domain}',
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_domain_timeline(domain):
     # Build & Send request
-    endpoint_url = '/timeline/' + domain
+    endpoint_url = f'/timeline/{domain}'
     timeline = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1764,7 +1810,6 @@ def get_ip_timeline_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     ip = demisto.args()['ip']
     is_valid = is_ip_valid(ip)
@@ -1794,21 +1839,23 @@ def get_ip_timeline_command():
             'Data': timeline_context
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" IP Timeline: ' + ip, contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" IP Timeline: {ip}', contents, headers
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_ip_timeline(ip):
     # Build & Send request
-    endpoint_url = '/timeline/' + ip
+    endpoint_url = f'/timeline/{ip}'
     timeline = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1822,7 +1869,6 @@ def get_url_timeline_command():
     contents = []
     context = {}
     headers = []  # type: ignore
-    results = []
     # Get vars
     url = demisto.args()['url']
     parsed_url = urlparse(url)
@@ -1852,16 +1898,20 @@ def get_url_timeline_command():
             'Data': timeline_context
         }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" URL Timeline: ' + url, contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    return [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                f'"Umbrella Investigate" URL Timeline: {url}',
+                contents,
+                headers,
+            ),
+            'EntryContext': context,
+        }
+    ]
 
 
 def get_url_timeline(url):
@@ -1869,7 +1919,7 @@ def get_url_timeline(url):
     encoded_url = urllib.parse.quote_plus(url.encode('utf-8'))
 
     # Build & Send request
-    endpoint_url = '/timeline/' + encoded_url
+    endpoint_url = f'/timeline/{encoded_url}'
     timeline = http_request(endpoint_url)
 
     # Assign and validate response
@@ -1891,27 +1941,46 @@ def main() -> None:
             http_request('/domains/categorization/google.com?showLabels')
             demisto.results('ok')
             sys.exit(0)
-        elif demisto.command() == 'investigate-umbrella-domain-categorization' or demisto.command() == \
-                'umbrella-domain-categorization':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-categorization',
+            'umbrella-domain-categorization',
+        ]:
             demisto.results(get_domain_categorization_command())
-        elif demisto.command() == 'investigate-umbrella-domain-search' or demisto.command() == 'umbrella-domain-search':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-search',
+            'umbrella-domain-search',
+        ]:
             demisto.results(get_domain_search_command())
-        elif demisto.command() == 'investigate-umbrella-domain-co-occurrences' or demisto.command() == \
-                'umbrella-domain-co-occurrences':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-co-occurrences',
+            'umbrella-domain-co-occurrences',
+        ]:
             demisto.results(get_domain_co_occurrences_command())
-        elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-related',
+            'umbrella-domain-related',
+        ]:
             demisto.results(get_domain_related_command())
-        elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-security',
+            'umbrella-domain-security',
+        ]:
             demisto.results(get_domain_security_command())
-        elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == \
-                'umbrella-domain-dns-history':
+        elif demisto.command() in [
+            'investigate-umbrella-domain-dns-history',
+            'umbrella-domain-dns-history',
+        ]:
             demisto.results(get_domain_dns_history_command())
-        elif demisto.command() == 'investigate-umbrella-ip-dns-history' or demisto.command() == 'umbrella-ip-dns-history':
+        elif demisto.command() in [
+            'investigate-umbrella-ip-dns-history',
+            'umbrella-ip-dns-history',
+        ]:
             demisto.results(get_ip_dns_history_command())
-        elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == \
-                'umbrella-ip-malicious-domains':
+        elif demisto.command() in [
+            'investigate-umbrella-ip-malicious-domains',
+            'umbrella-ip-malicious-domains',
+        ]:
             demisto.results(get_ip_malicious_domains_command())
-        # new-commands:
         elif demisto.command() == 'domain':
             return_results(get_domain_command())
         elif demisto.command() == 'umbrella-get-related-domains':
