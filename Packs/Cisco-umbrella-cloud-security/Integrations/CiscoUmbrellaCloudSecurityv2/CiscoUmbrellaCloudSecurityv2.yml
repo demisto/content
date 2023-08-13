@@ -373,7 +373,7 @@ script:
     - description: Organization ID.
       name: orgId
     deprecated: true
-    description: Gets all destination lists in organization
+    description: Gets all destination lists in an organization.
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
