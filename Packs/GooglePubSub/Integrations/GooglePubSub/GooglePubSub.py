@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
-from typing import Tuple, Optional
 import traceback
 import dateparser
 import httplib2
@@ -183,7 +182,8 @@ class PubSubClient(BaseGoogleClient):
         """Create a subscription body"""
         if push_endpoint or push_attributes:
             push_config = assign_params(
-                pushEndpoint=push_endpoint, attributes=push_attributes,
+                pushEndpoint=push_endpoint,
+                attributes=push_attributes,
             )
         else:
             push_config = None
@@ -464,7 +464,7 @@ class PubSubClient(BaseGoogleClient):
         :param page_size: Max number of results
         :param page_token: Next page token as returned from the API.
         :return: Snapshot list
-            """
+        """
         return (
             self.service.projects()
             .snapshots()
@@ -544,10 +544,13 @@ def init_google_client(
     :return:
     """
     try:
-        service_account_json = json.loads(str(
-            credentials.get('password')
-            if isinstance(credentials, dict)
-            else service_account_json))
+        service_account_json = json.loads(
+            str(
+                credentials.get("password")
+                if isinstance(credentials, dict)
+                else service_account_json
+            )
+        )
         client = PubSubClient(
             default_project=default_project,
             default_subscription=default_subscription,
@@ -614,7 +617,7 @@ def convert_datetime_to_iso_str(publish_time):
         return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
+def attribute_pairs_to_dict(attrs_str: str | None, delim_char: str = ","):
     """
     Transforms a string of multiple inputs to a dictionary list
 
@@ -665,7 +668,7 @@ def topics_list_command(
     project_id: str,
     page_size: str = None,
     page_token: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get topics list by project_id
     Requires one of the following OAuth scopes:
@@ -701,7 +704,7 @@ def publish_message_command(
     data: str = None,
     attributes: str = None,
     delim_char_attributes: str = ",",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Publishes message in the topic
     Requires one of the following OAuth scopes:
@@ -755,7 +758,7 @@ def get_publish_body(message_attributes, message_data, delim_char):
     message = {}
     if message_data:
         # convert to base64 string
-        message["data"] = base64.b64encode(message_data.encode("utf8")).decode('utf8')
+        message["data"] = base64.b64encode(message_data.encode("utf8")).decode("utf8")
     if message_attributes:
         message["attributes"] = attribute_pairs_to_dict(message_attributes, delim_char)
     body = {"messages": [message]}
@@ -768,7 +771,7 @@ def pull_messages_command(
     project_id: str,
     max_messages: str = None,
     ack: str = None,
-) -> Tuple[str, dict, list]:
+) -> tuple[str, dict, list]:
     """
     Pulls messages from the subscription
     Requires one of the following OAuth scopes:
@@ -801,8 +804,11 @@ def pull_messages_command(
 
 
 def ack_messages_command(
-    client: PubSubClient, ack_ids: str, subscription_id: str, project_id: str,
-) -> Tuple[str, dict, list]:
+    client: PubSubClient,
+    ack_ids: str,
+    subscription_id: str,
+    project_id: str,
+) -> tuple[str, dict, list]:
     """
     ACKs previously pulled messages using ack Ids
     Requires one of the following OAuth scopes:
@@ -844,7 +850,7 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
                 decoded_data = base64.b64decode(decoded_data).decode("utf-8")
             except Exception as e:
                 # display message with b64 value
-                demisto.debug(f'Unable to encode {decoded_data}:\n{e}')
+                demisto.debug(f"Unable to encode {decoded_data}:\n{e}")
                 pass
 
             msg["data"] = decoded_data
@@ -863,7 +869,7 @@ def subscriptions_list_command(
     page_size: str = None,
     page_token: str = None,
     topic_id: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
@@ -914,7 +920,7 @@ def subscriptions_list_command(
 
 def get_subscription_command(
     client: PubSubClient, subscription_id: str, project_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
@@ -950,7 +956,7 @@ def create_subscription_command(
     message_retention_duration: str = "",
     labels: str = "",
     expiration_ttl: str = "",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a subscription
     Requires one of the following OAuth scopes:
@@ -1011,7 +1017,7 @@ def update_subscription_command(
     message_retention_duration: str = "",
     labels: str = "",
     expiration_ttl: str = "",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a subscription
     Requires one of the following OAuth scopes:
@@ -1068,7 +1074,7 @@ def create_topic_command(
     allowed_persistence_regions: str = "",
     kms_key_name: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a topic
     :param client: PubSub client instance
@@ -1093,7 +1099,7 @@ def create_topic_command(
 
 def delete_topic_command(
     client: PubSubClient, project_id: str, topic_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Delete a topic
     :param client: PubSub client instance
@@ -1115,7 +1121,7 @@ def update_topic_command(
     allowed_persistence_regions: str = "",
     kms_key_name: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a topic
     :param client: PubSub client instance
@@ -1145,7 +1151,7 @@ def seek_message_command(
     subscription_id: str,
     time_string: str = None,
     snapshot: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get topics list by project_id
     Requires one of the following OAuth scopes:
@@ -1180,7 +1186,7 @@ def snapshot_list_command(
     topic_id: str = None,
     page_size: str = None,
     page_token: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get snapshots list by project_id or topic_id
     Requires one of the following OAuth scopes:
@@ -1219,7 +1225,7 @@ def snapshot_create_command(
     subscription_id: str,
     snapshot_id: str,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Create a snapshot
     Requires one of the following OAuth scopes:
@@ -1256,7 +1262,7 @@ def snapshot_update_command(
     update_mask: str,
     expire_time: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Updates a snapshot
     Requires one of the following OAuth scopes:
@@ -1283,15 +1289,13 @@ def snapshot_update_command(
     readable_output = tableToMarkdown(
         title, raw_snapshot, headerTransform=pascalToSpace
     )
-    outputs = {
-        "GoogleCloudPubSubSnapshots(val && val.name === obj.name)": raw_snapshot
-    }
+    outputs = {"GoogleCloudPubSubSnapshots(val && val.name === obj.name)": raw_snapshot}
     return readable_output, outputs, raw_snapshot
 
 
 def snapshot_delete_command(
     client: PubSubClient, project_id: str, snapshot_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Delete a topic
     :param client: PubSub client instance
