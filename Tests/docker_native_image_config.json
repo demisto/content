@@ -161,7 +161,7 @@
         },
         {
             "id":"SlackV3",
-            "reason":"Issue: CIAC-CIAC-7854",
+            "reason":"Issue: CIAC-7854",
             "ignored_native_images":[
                 "native:8.3"
             ]
