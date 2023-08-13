@@ -13,8 +13,10 @@ from git import Repo
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 
+DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
+
 # override print so we have a timestamp with each print
 org_print = print
 CallArgs = Iterable[tuple[Any] | tuple[Any, dict]]
@@ -114,15 +116,15 @@ class Checkout:  # pragma: no cover
             url = f"https://github.com/{fork_owner}/{repo_name}"
             try:
                 self.repo.create_remote(name=forked_remote_name, url=url)
-                print(f'Successfully created remote {forked_remote_name} for repo {url}')
+                print(f'Successfully created remote {forked_remote_name} for repo {url}')  # noqa: T201
             except Exception as error:
-                print(f'could not create remote from {url}, {error=}')
+                print(f'could not create remote from {url}, {error=}')  # noqa: T201
                 # handle the case where the name of the forked repo is not content
                 if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
                     try:
                         payload = json.loads(github_event_path)
                     except ValueError:
-                        print('failed to load GITHUB_EVENT_PATH')
+                        print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
                         raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
                     # forked repo name includes fork_owner + repo name, for example foo/content.
                     forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
@@ -145,13 +147,13 @@ class Checkout:  # pragma: no cover
     def __enter__(self):
         """Checks out the given branch"""
         self.repo.git.checkout(self.branch_to_checkout)
-        print(f'Checked out to branch {self.branch_to_checkout}')
+        print(f'Checked out to branch {self.branch_to_checkout}')  # noqa: T201
         return self
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
         self.repo.git.checkout(self._original_branch)
-        print(f"Checked out to original branch {self._original_branch}")
+        print(f"Checked out to original branch {self._original_branch}")  # noqa: T201
 
 
 class ChangeCWD:
@@ -188,18 +190,35 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
         security_reviewer: str = content_roles[CONTRIBUTION_SECURITY_REVIEWER_KEY]
 
         if not isinstance(contribution_reviewers, list):
-            print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")
+            print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")  # noqa: T201
             sys.exit(1)
 
         if not isinstance(security_reviewer, str) or not security_reviewer:
-            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")
+            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")  # noqa: T201
             sys.exit(1)
 
         if not contribution_reviewers or not security_reviewer:
-            print("No contribution or  reviewers")
+            print("No contribution or  reviewers")  # noqa: T201
             sys.exit(1)
 
         return contribution_reviewers, security_reviewer
     except KeyError as ke:
-        print(f"Error parsing reviewers: {str(ke)}.")
+        print(f"Error parsing reviewers: {str(ke)}.")  # noqa: T201
         sys.exit(1)
+
+
+def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
+    """
+    Retrieve the doc reviewer from content roles JSON/`dict`.
+
+    Args:
+        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
+
+    Return:
+        - `str` of document reviewer GitHub username.
+        If there's an error in retrieving the tech writer/doc reviewer, we raise a `ValueError`
+    """
+
+    if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
+        raise ValueError("Cannot get doc reviewer")
+    return reviewer
