@@ -408,7 +408,7 @@ script:
     - contextPath: Umbrella.Destinations.id
       description: ID of the domain within the destination list.
     - contextPath: Umbrella.Destinations.destination
-      description: Domain within destination list
+      description: Domain within the destination list.
     - contextPath: Umbrella.Destinations.type
       description: Type of destination within destination list
     - contextPath: Umbrella.Destinations.createdAt
