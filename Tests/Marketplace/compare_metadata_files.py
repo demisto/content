@@ -14,6 +14,7 @@ IGNORE_FIELDS = [
     'fromversion',
     'deprecated',
     'updated',
+    'created',
 ]
 
 
@@ -98,8 +99,11 @@ def main():
             continue
 
         new_pack_dir = f"{options.uploaded_packs}/{pack_dir_name}"
-        with ZipFile(pack_dir) as pack_dir_zip:
-            pack_dir_zip.extractall(new_pack_dir)
+        try:
+            with ZipFile(pack_dir) as pack_dir_zip:
+                pack_dir_zip.extractall(new_pack_dir)
+        except Exception as e:
+            logging.info(f"Pack '{pack_dir_name}' is not a zip\n{e}")
 
         existing_metadata = read_metadata(f"{new_pack_dir}/metadata.json")
         new_metadata = read_metadata(f"content_packs/{pack_dir_name}/metadata.json")
