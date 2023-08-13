@@ -35,7 +35,7 @@ script:
       required: false
       isArray: true
     - name: destinations
-      description: Comma separated list of destinations to retrieve, a destination may be a domain, URL, or IP address.
+      description: Comma-separated list of destinations to retrieve, a destination may be a domain, URL, or IP address.
       required: false
       isArray: true
     - name: page
