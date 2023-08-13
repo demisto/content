@@ -27,6 +27,7 @@ def stringSimilarity(first_string: str, second_string: str, similarity_threshold
     """
 
     similarity_ratio = difflib.SequenceMatcher(None, first_string, second_string).ratio()
+    results = {}
     if similarity_ratio >= float(similarity_threshold):
         results = {
             "StringA": first_string,
