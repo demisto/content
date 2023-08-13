@@ -294,7 +294,9 @@ def get_sanitization_result_command():
     scan_id = demisto.args()['id']
     res = get_scan_result(scan_id)
     # Check the scan report whether there is a sanitized file.
-    if 'process_info' in res and 'post_processing' in res['process_info'] and 'actions_ran' in res['process_info']['post_processing'] and res['process_info']['post_processing']['actions_ran'] == "Sanitized":
+    if 'process_info' in res and 'post_processing' in res['process_info'] and \
+        'actions_ran' in res['process_info']['post_processing'] and \
+            res['process_info']['post_processing']['actions_ran'] == "Sanitized":
         if 'converted_destination' in res['process_info']['post_processing']:
             sanitized_file_name = res['process_info']['post_processing']['converted_destination']
         else:
