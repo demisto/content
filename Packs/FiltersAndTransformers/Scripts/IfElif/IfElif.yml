@@ -7,15 +7,17 @@ type: python
 tags:
 - transformer
 - general
-comment: A transformer for if-elseif-else logic.
+comment: A transformer for if-elif-else logic.
 enabled: true
 args:
+- name: value
+  description: 
+  required: true
 - name: conditions
   description: |-
     A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".
     The last value can be any valid JSON object.
   required: true
-  default: true
 scripttarget: 0
 subtype: python3
 runonce: false

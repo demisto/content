@@ -1,10 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
+from typing import Callable
 from functools import reduce
 import json
 import ast
 import re
 
+CONTEXT = demisto.context()
 
 boolean_keywords = {
     'true': True,
@@ -13,7 +15,7 @@ boolean_keywords = {
 }
 
 
-operator_functions = {
+operator_functions: dict[type, Callable] = {
     # comparison operators:
     ast.Eq: lambda x, y: x == y,
     ast.NotEq: lambda x, y: x != y,
@@ -37,6 +39,8 @@ operator_functions = {
 def get_value(node):
 
     match type(node):
+        
+        # objects:
         case ast.Constant:
             return node.value
         case ast.List:
@@ -51,12 +55,14 @@ def get_value(node):
         case ast.Compare:
             left = get_value(node.left)
             return all(
-                operator_functions[type(op)](left, left := get_value(right))
-                for op, right in zip(node.ops, node.comparators))
+                operator_functions[type(op)](left, left := get_value(right))  # noqa: F841
+                for op, right in zip(node.ops, node.comparators)
+            )
         case ast.BoolOp:
             return reduce(
-                operator_functions[type(node.op)],  # check
-                map(get_value, node.values))
+                operator_functions[type(node.op)],
+                map(get_value, node.values)
+            )
         case ast.UnaryOp:
             return operator_functions[type(node.op)](get_value(node.operand))
 
@@ -74,7 +80,7 @@ def parse_boolean_expression(expression: str) -> bool:
 
 
 def get_from_context(keys: str) -> str:
-    return repr(dict_safe_get(demisto.context(), keys.split('.')))
+    return repr(dict_safe_get(CONTEXT, keys.split('.')))
 
 
 def load_conditions(args: dict) -> list:  # TEST
@@ -96,7 +102,7 @@ def main():
                 for condition in conditions
                 if parse_boolean_expression(condition['condition'])
             ),
-            default['else']
+            default
         )
 
         return_results(result)
