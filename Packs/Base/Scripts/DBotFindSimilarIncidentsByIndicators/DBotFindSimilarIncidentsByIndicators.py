@@ -478,8 +478,7 @@ def get_incidents_ids_related_to_indicators(indicators, query):
 
 def get_incidents_filtered_from_query(incident_ids, query):
     if incident_ids:
-        incident_ids = [f'incident.id:{inc_id}' for inc_id in incident_ids]
-        ids_condition = "(" + " OR ".join(incident_ids) + ")"
+        ids_condition = "incident.id:(" + " ".join(incident_ids) + ")"
     else:
         ids_condition = ""
     query += " AND %s" % ids_condition
