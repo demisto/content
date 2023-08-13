@@ -483,9 +483,8 @@ script:
       name: kv_store_collection_name
       required: true
     - description: |
-        A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address.
+        A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address. If no value is specified, the KVStore collection config will be used.
       name: supported_fields
-      required: true
     - default: true
       defaultValue: search
       description: The name of the Splunk application that contains the KV store collection. The default is "search".

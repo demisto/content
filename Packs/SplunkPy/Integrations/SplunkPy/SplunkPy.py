@@ -2444,7 +2444,15 @@ def kv_store_collection_config(service: client.Service, args: dict) -> CommandRe
 def kv_store_collection_create_transform(service: client.Service, args: dict) -> CommandResults:
     # app = service.namespace['app']
     collection_name = args['kv_store_collection_name']
-    fields = args['supported_fields']
+    fields = args.get('supported_fields')
+    if not fields:
+        kv_store = service.kvstore[collection_name]
+        default_keys = get_keys_and_types(kv_store).keys()
+        if not default_keys:
+            raise DemistoException('Please provide supported_fields or run first splunk-kv-store-collection-config')
+        default_keys = (key.replace('field.', '') for key in default_keys)
+        fields = f"_key,{','.join(default_keys)}"
+
     transforms = service.confs["transforms"]
     params = {
         "external_type": "kvstore",
