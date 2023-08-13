@@ -217,7 +217,7 @@ tasks:
       id: 23cde925-a031-4457-8bbd-1b96f438d390
       version: -1
       name: Load alerts JSON
-      description: Loads a json from string input, and returns a json object result
+      description: Loads a JSON from a string input, and returns a JSON object result.
       scriptName: LoadJSON
       type: regular
       iscommand: false
