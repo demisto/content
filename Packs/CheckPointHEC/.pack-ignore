@@ -1,3 +1,6 @@
+[file:incidentfield-CheckPointHEC_Farm.json]
+ignore=IF113
+
 [file:incidentfield-CheckPointHEC_Email_Sender.json]
 ignore=IF113
 

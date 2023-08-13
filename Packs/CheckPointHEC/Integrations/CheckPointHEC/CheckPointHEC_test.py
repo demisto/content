@@ -64,7 +64,7 @@ def test_token_header(mocker):
     get_token.assert_called_once()
 
 
-def test_get_token(mocker):
+def test_get_token_empty(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -84,6 +84,27 @@ def test_get_token(mocker):
     assert token == _token
 
 
+def test_get_token_existing(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    _token = 'super token'
+    mocker.patch.object(
+        Client,
+        '_http_request',
+        return_value=_token
+    )
+
+    client.token = 'nice token'
+    token = client._get_token()
+    assert token != _token
+
+
 def test_test_module(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
@@ -96,7 +117,7 @@ def test_test_module(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
     test_api = mocker.patch.object(
         Client,
-        'test_api',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -117,7 +138,7 @@ def test_fetch_incidents(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-query_events.json')
     query_events = mocker.patch.object(
         Client,
-        'query_events',
+        '_call_api',
         return_value=mock_response,
     )
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
@@ -139,7 +160,7 @@ def test_checkpointhec_get_entity_success(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
     get_entity = mocker.patch.object(
         Client,
-        'get_entity',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -159,7 +180,7 @@ def test_checkpointhec_get_entity_fail(mocker):
 
     mocker.patch.object(
         Client,
-        'get_entity',
+        '_call_api',
         return_value={'responseData': []}
     )
 
@@ -180,7 +201,7 @@ def test_checkpointhec_get_email_info_success(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
     get_entity = mocker.patch.object(
         Client,
-        'get_email',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -200,7 +221,7 @@ def test_checkpointhec_get_email_info_fail(mocker):
 
     mocker.patch.object(
         Client,
-        'get_email',
+        '_call_api',
         return_value={'responseData': []}
     )
 
@@ -221,7 +242,7 @@ def test_checkpointhec_get_scan_info_success(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
     get_entity = mocker.patch.object(
         Client,
-        'get_entity',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -241,7 +262,7 @@ def test_checkpointhec_get_scan_info_fail(mocker):
 
     mocker.patch.object(
         Client,
-        'get_entity',
+        '_call_api',
         return_value={'responseData': []}
     )
 
@@ -262,7 +283,7 @@ def test_checkpointhec_search_emails(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-search_emails.json')
     search_emails = mocker.patch.object(
         Client,
-        'search_emails',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -284,7 +305,7 @@ def test_checkpointhec_send_action(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-send_action.json')
     send_action = mocker.patch.object(
         Client,
-        'send_action',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -307,7 +328,7 @@ def test_checkpointhec_get_action_result(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-get_action_result.json')
     get_task = mocker.patch.object(
         Client,
-        'get_task',
+        '_call_api',
         return_value=mock_response,
     )
 
@@ -328,7 +349,7 @@ def test_send_notification(mocker):
     mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
     get_task = mocker.patch.object(
         Client,
-        'send_notification',
+        '_call_api',
         return_value=mock_response,
     )
 
