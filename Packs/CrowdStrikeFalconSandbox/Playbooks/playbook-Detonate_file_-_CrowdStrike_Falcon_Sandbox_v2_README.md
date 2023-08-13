@@ -18,8 +18,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* cs-falcon-sandbox-scan
 * cs-falcon-sandbox-submit-sample
+* cs-falcon-sandbox-scan
 
 ## Playbook Inputs
 
@@ -28,7 +28,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | The file object of the file to detonate. | File | Optional |
-| EnvironmentID | The environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command. | 100 | Optional |
+| EnvironmentID | The environment ID where the file should be submitted. To retrieve all available IDs, please execute the crowdstrike-get-environments command. | 100 | Optional |
 
 ## Playbook Outputs
 

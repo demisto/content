@@ -137,7 +137,7 @@ tasks:
       id: 97fec2dc-7fc7-49c6-80e4-e8a96e9adc4a
       version: -1
       name: Initiate sandbox scan
-      description: Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
+      description: Retrieve summary information for an MD5, SHA1, or SHA256 and view all reports generated for any environment ID.
       script: '|||cs-falcon-sandbox-scan'
       type: regular
       iscommand: true
@@ -387,7 +387,7 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: The environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
+  description: The environment ID where the file should be submitted. To retrieve all available IDs, please execute the crowdstrike-get-environments command.
   playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
