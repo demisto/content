@@ -382,7 +382,7 @@ script:
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided in the integration configuration.
       name: orgId
-    - description: Destination list ID
+    - description: Destination list ID.
       name: destId
       required: true
     - description: 'List of domains to add to destination list (Format: domain1.com,domain2.com)'
