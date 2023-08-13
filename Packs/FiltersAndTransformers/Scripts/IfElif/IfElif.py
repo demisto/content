@@ -79,15 +79,23 @@ def parse_boolean_expression(expression: str) -> bool:
         raise SyntaxError(f'Cannot parse expression: {expression}')
 
 
-def get_from_context(keys: str) -> str:
-    return repr(dict_safe_get(CONTEXT, keys.split('.')))
+def get_from_context(keys: re.Match) -> str:
+    context_keys = (
+        (
+            int(idx[1])
+            if (idx := re.fullmatch('\[([0-9]+)\]', key))
+            else key
+        )
+        for key in keys[1].split('.')
+    )
+    value = dict_safe_get(CONTEXT, context_keys)
+    return json.dumps(value)
 
 
 def load_conditions(args: dict) -> list:  # TEST
     conditions = args['conditions']
-    conditions = conditions.replace('#VALUE', repr(args['value']))
-    for match in set(re.findall(r'#{[\s\S]+?}', conditions)):
-        conditions.replace(match, get_from_context(match[2:-1]))
+    conditions = conditions.replace('#VALUE', json.dumps(args['value']))  # how does value appear?
+    conditions = re.compile('#{([\s\S]+?)}').sub(get_from_context, conditions)
     return json.loads(conditions)
 
 
@@ -107,8 +115,8 @@ def main():
 
         return_results(result)
 
-    except Exception:
-        return_error('Error in If-Elif Transformer. Make sure you entered the values correctly.')
+    except Exception as e:
+        return_error(f'Error in If-Elif Transformer: {e}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
