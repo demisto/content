@@ -793,41 +793,38 @@ script:
         required: true
         isArray: false
     outputs:
-      - type: Number
-        contextPath: AzureDevOps.PullRequestReviewer.count
-        description: Count of reviewers.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.reviewerUrl
+        contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
         description: URL to retrieve information about this identity.
       - type: Number
-        contextPath: AzureDevOps.PullRequestReviewer.value.vote
+        contextPath: AzureDevOps.PullRequestReviewer.vote
         description: Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.hasDeclined
+        contextPath: AzureDevOps.PullRequestReviewer.hasDeclined
         description: Whether the pull request has been declined.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.isRequired
+        contextPath: AzureDevOps.PullRequestReviewer.isRequired
         description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.isFlagged
+        contextPath: AzureDevOps.PullRequestReviewer.isFlagged
         description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.displayName
+        contextPath: AzureDevOps.PullRequestReviewer.displayName
         description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.url
+        contextPath: AzureDevOps.PullRequestReviewer.url
         description: REST URL for this resource.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value._links.avatar.href
+        contextPath: AzureDevOps.PullRequestReviewer._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.id
+        contextPath: AzureDevOps.PullRequestReviewer.id
         description: Pull-request reviewers IDs.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.uniqueName
+        contextPath: AzureDevOps.PullRequestReviewer.uniqueName
         description: The reviewers user name.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.imageUrl
+        contextPath: AzureDevOps.PullRequestReviewer.imageUrl
         description: Link to the reviewers user image.
   - name: azure-devops-pull-request-reviewer-add
     description: Add a reviewer to a pull request.
@@ -915,35 +912,32 @@ script:
         description: The number of results to retrieve. Minimum value is 1.
         name: limit
     outputs:
-      - type: Number
-        contextPath: AzureDevOps.Commit.count
-        description: Count of commits.
       - type: String
-        contextPath: AzureDevOps.Commit.value.commitId
+        contextPath: AzureDevOps.Commit.commitId
         description: ID (SHA-1) of the commit.
       - type: String
-        contextPath: AzureDevOps.Commit.value.author.name
+        contextPath: AzureDevOps.Commit.author.name
         description: Name of the commit author.
       - type: String
-        contextPath: AzureDevOps.Commit.value.author.email
+        contextPath: AzureDevOps.Commit.author.email
         description: Email address of the commit author.
       - type: Date
-        contextPath: AzureDevOps.Commit.value.author.date
+        contextPath: AzureDevOps.Commit.author.date
         description: Date of the commit operation.
       - type: String
-        contextPath: AzureDevOps.Commit.value.committer.name
+        contextPath: AzureDevOps.Commit.committer.name
         description: Name of the commit committer.
       - type: String
-        contextPath: AzureDevOps.Commit.value.committer.email
+        contextPath: AzureDevOps.Commit.committer.email
         description: Email address of the commit committer.
       - type: Date
-        contextPath: AzureDevOps.Commit.value.committer.date
+        contextPath: AzureDevOps.Commit.committer.date
         description: Date of the commit operation.
       - type: String
-        contextPath: AzureDevOps.Commit.value.comment
+        contextPath: AzureDevOps.Commit.comment
         description: Comment or message of the commit.
       - type: String
-        contextPath: AzureDevOps.Commit.value.url
+        contextPath: AzureDevOps.Commit.url
         description: REST URL for this resource.
   - name: azure-devops-commit-list
     description: Retrieve git commits for a project.
@@ -967,41 +961,38 @@ script:
         description: The page number of the results to retrieve. Minimum value is 1.
         name: page
     outputs:
-      - type: Number
-        contextPath: AzureDevOps.Commit.count
-        description: Count of commits.
       - type: String
-        contextPath: AzureDevOps.Commit.value.commitId
+        contextPath: AzureDevOps.Commit.commitId
         description: ID (SHA-1) of the commit.
       - type: String
-        contextPath: AzureDevOps.Commit.value.author.name
+        contextPath: AzureDevOps.Commit.author.name
         description: Name of the commit author.
       - type: String
-        contextPath: AzureDevOps.Commit.value.author.email
+        contextPath: AzureDevOps.Commit.author.email
         description: Email address of the commit author.
       - type: Date
-        contextPath: AzureDevOps.Commit.value.author.date
+        contextPath: AzureDevOps.Commit.author.date
         description: Date of the commit operation.
       - type: String
-        contextPath: AzureDevOps.Commit.value.committer.name
+        contextPath: AzureDevOps.Commit.committer.name
         description: Name of the commit committer.
       - type: String
-        contextPath: AzureDevOps.Commit.value.committer.email
+        contextPath: AzureDevOps.Commit.committer.email
         description: Email address of the commit committer.
       - type: Date
-        contextPath: AzureDevOps.Commit.value.committer.date
+        contextPath: AzureDevOps.Commit.committer.date
         description: Date of the commit operation.
       - type: String
-        contextPath: AzureDevOps.Commit.value.comment
+        contextPath: AzureDevOps.Commit.comment
         description: Comment or message of the commit.
       - type: Number
-        contextPath: AzureDevOps.Commit.value.changeCounts
+        contextPath: AzureDevOps.Commit.changeCounts
         description: Counts of the types of changes (edits, deletes, etc.) included with the commit.
       - type: String
-        contextPath: AzureDevOps.Commit.value.url
+        contextPath: AzureDevOps.Commit.url
         description: REST URL for this resource.
       - type: String
-        contextPath: AzureDevOps.Commit.value.remoteUrl
+        contextPath: AzureDevOps.Commit.remoteUrl
         description: Remote URL path to the commit.
   - name: azure-devops-commit-get
     description: Retrieve a particular commit.
@@ -2215,29 +2206,26 @@ script:
           - 'OneLevel'
           - 'Full'
     outputs:
-      - type: Number
-        contextPath: AzureDevOps.File.count
-        description: Count of files.
       - type: String
-        contextPath: AzureDevOps.File.value.objectId
+        contextPath: AzureDevOps.File.objectId
         description: The file object ID.
       - type: String
-        contextPath: AzureDevOps.File.value.gitObjectType
+        contextPath: AzureDevOps.File.gitObjectType
         description: The file git object type.
       - type: String
-        contextPath: AzureDevOps.File.value.commitId
+        contextPath: AzureDevOps.File.commitId
         description: ID (SHA-1) of the file commit.
       - type: String
-        contextPath: AzureDevOps.File.value.path
+        contextPath: AzureDevOps.File.path
         description: The file's path.
       - type: Boolean
-        contextPath: AzureDevOps.File.value.isFolder
+        contextPath: AzureDevOps.File.isFolder
         description: If the item is folder or not.
       - type: String
-        contextPath: AzureDevOps.File.value.contentMetadata.fileName
+        contextPath: AzureDevOps.File.contentMetadata.fileName
         description: The file name.
       - type: String
-        contextPath: AzureDevOps.File.value.url
+        contextPath: AzureDevOps.File.url
         description: URL link to the item.
   - name: azure-devops-file-get
     description: Getting the content file.
@@ -2723,182 +2711,179 @@ script:
         contextPath: AzureDevOps.PullRequestThread.value.pullRequestThreadContext
         description: Extended context information unique to pull requests.
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.id
+        contextPath: AzureDevOps.PullRequestThread.id
         description: The ID of the pull request.
       - type: Date
-        contextPath: AzureDevOps.PullRequestThread.value.publishedDate
+        contextPath: AzureDevOps.PullRequestThread.publishedDate
         description: The date the thread was published.
       - type: Date
-        contextPath: AzureDevOps.PullRequestThread.value.lastUpdatedDate
+        contextPath: AzureDevOps.PullRequestThread.lastUpdatedDate
         description: Last update date.
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.comments.id
+        contextPath: AzureDevOps.PullRequestThread.comments.id
         description: The ID of the comments.
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.comments.parentCommentId
+        contextPath: AzureDevOps.PullRequestThread.comments.parentCommentId
         description: An enumeration of the parent commit IDs for this commit.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.displayName
+        contextPath: AzureDevOps.PullRequestThread.comments.author.displayName
         description: The display name of the comments creator.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.url
+        contextPath: AzureDevOps.PullRequestThread.comments.author.url
         description: URL to retrieve information about this identity.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author._links.avatar.href
+        contextPath: AzureDevOps.PullRequestThread.comments.author._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.id
+        contextPath: AzureDevOps.PullRequestThread.comments.author.id
         description: The ID of the thread author.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.uniqueName
+        contextPath: AzureDevOps.PullRequestThread.comments.author.uniqueName
         description: The unique name of the thread author.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.imageUrl
+        contextPath: AzureDevOps.PullRequestThread.comments.author.imageUrl
         description: Link to the thread author user image.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.author.descriptor
+        contextPath: AzureDevOps.PullRequestThread.comments.author.descriptor
         description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.content
+        contextPath: AzureDevOps.PullRequestThread.comments.content
         description: The comments content.
       - type: Date
-        contextPath: AzureDevOps.PullRequestThread.value.comments.publishedDate
+        contextPath: AzureDevOps.PullRequestThread.comments.publishedDate
         description: The date the comments were published.
       - type: Date
-        contextPath: AzureDevOps.PullRequestThread.value.comments.lastUpdatedDate
+        contextPath: AzureDevOps.PullRequestThread.comments.lastUpdatedDate
         description: Last update date.
       - type: Date
-        contextPath: AzureDevOps.PullRequestThread.value.comments.lastContentUpdatedDate
+        contextPath: AzureDevOps.PullRequestThread.comments.lastContentUpdatedDate
         description: The date the comment's content was last updated.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments.commentType
+        contextPath: AzureDevOps.PullRequestThread.comments.commentType
         description: The comment type at the time of creation.
       - type: Unknown
-        contextPath: AzureDevOps.PullRequestThread.value.comments.usersLiked
+        contextPath: AzureDevOps.PullRequestThread.comments.usersLiked
         description: A list of the users who have liked this comment.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments._links.self.href
+        contextPath: AzureDevOps.PullRequestThread.comments._links.self.href
         description: A collection of related REST reference links.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments._links.repository.href
+        contextPath: AzureDevOps.PullRequestThread.comments._links.repository.href
         description: Link to the repository where the comments are.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments._links.threads.href
+        contextPath: AzureDevOps.PullRequestThread.comments._links.threads.href
         description: Link to the threads.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.comments._links.pullRequests.href
+        contextPath: AzureDevOps.PullRequestThread.comments._links.pullRequests.href
         description: Link to the pull request.
       - type: Unknown
-        contextPath: AzureDevOps.PullRequestThread.value.threadContext
+        contextPath: AzureDevOps.PullRequestThread.threadContext
         description: Extended context information unique to pull requests.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewThreadType.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$type
         description: The type of the code review thread.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewThreadType.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$value
         description: The content in the code review thread.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumAdded.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$type
         description: A number (Int32).
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumAdded.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$value
         description: Number of code reviewers updated the pull request.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumChanged.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$type
         description: A number (Int32).
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumChanged.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$value
         description: Number of code reviewers changed the pull request.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumDeclined.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$type
         description: A number (Int32).
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumDeclined.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$value
         description: Number of code reviewers declined the pull request.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumRemoved.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$type
         description: A number (Int32).
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumRemoved.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$value
         description: Number of code reviewers are removed.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedAddedIdentity.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$type
         description: A number (Int32).
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedAddedIdentity.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$value
         description: Number of code reviewers added identity.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedByIdentity.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$type
         description: A number (Int32).
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedByIdentity.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$value
         description: Number of code reviewers updated by identity.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.displayName
+        contextPath: AzureDevOps.PullRequestThread.identities.1.displayName
         description: The display name of the pull request thread creator.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.url
+        contextPath: AzureDevOps.PullRequestThread.identities.1.url
         description: Link to the the pull request thread creator.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1._links.avatar.href
+        contextPath: AzureDevOps.PullRequestThread.identities.1._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.id
+        contextPath: AzureDevOps.PullRequestThread.identities.1.id
         description: The ID of the pull request thread creator.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.uniqueName
+        contextPath: AzureDevOps.PullRequestThread.identities.1.uniqueName
         description: The user name of the pull request thread creator.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.imageUrl
+        contextPath: AzureDevOps.PullRequestThread.identities.1.imageUrl
         description: Link to the pull request thread creator user image.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.identities.1.descriptor
+        contextPath: AzureDevOps.PullRequestThread.identities.1.descriptor
         description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestThread.value.isDeleted
+        contextPath: AzureDevOps.PullRequestThread.isDeleted
         description: Specify if the thread is deleted which happens when all comments are deleted.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value._links.self.href
+        contextPath: AzureDevOps.PullRequestThread._links.self.href
         description: Link to the thread.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value._links.repository.href
+        contextPath: AzureDevOps.PullRequestThread._links.repository.href
         description: Link to the repository.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedToRequired.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$type
         description: A number (Int32).
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedToRequired.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$value
         description: Number of code reviewers were changed to required.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedIdentity.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$type
         description: A number (Int32).
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedIdentity.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$value
         description: Number of code reviewers changed the identity.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.status
+        contextPath: AzureDevOps.PullRequestThread.status
         description: The status of the comment thread.
       - type: Unknown
-        contextPath: AzureDevOps.PullRequestThread.value.properties
+        contextPath: AzureDevOps.PullRequestThread.properties
         description: Properties associated with the thread as a collection of key-value pairs.
       - type: Unknown
-        contextPath: AzureDevOps.PullRequestThread.value.identities
+        contextPath: AzureDevOps.PullRequestThread.identities
         description: Set of identities related to this thread.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type
         description: A number (Int32).
       - type: Number
-        contextPath: AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value
         description: Supports markdown number.
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type
+        contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type
         description: A number (Int32).
       - type: String
-        contextPath: AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value
+        contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value
         description: The unique ID of the Team Foundation.
-      - type: Number
-        contextPath: AzureDevOps.PullRequestThread.count
-        description: The number of threads in the pull request.
   - name: azure-devops-project-team-list
     description: Get a list of teams.
     arguments:
@@ -2912,29 +2897,26 @@ script:
         isArray: false
     outputs:
       - type: String
-        contextPath: AzureDevOps.Team.value.id
+        contextPath: AzureDevOps.Team.id
         description: Team (Identity) Guid. A Team Foundation ID.
       - type: String
-        contextPath: AzureDevOps.Team.value.name
+        contextPath: AzureDevOps.Team.name
         description: Team name.
       - type: String
-        contextPath: AzureDevOps.Team.value.url
+        contextPath: AzureDevOps.Team.url
         description: Team REST API Url.
       - type: String
-        contextPath: AzureDevOps.Team.value.description
+        contextPath: AzureDevOps.Team.description
         description: Team description.
       - type: String
-        contextPath: AzureDevOps.Team.value.identityUrl
+        contextPath: AzureDevOps.Team.identityUrl
         description: Identity REST API Url to this team.
       - type: String
-        contextPath: AzureDevOps.Team.value.projectName
+        contextPath: AzureDevOps.Team.projectName
         description: The project name.
       - type: String
-        contextPath: AzureDevOps.Team.value.projectId
+        contextPath: AzureDevOps.Team.projectId
         description: The project ID.
-      - type: Number
-        contextPath: AzureDevOps.Team.count
-        description: The count of properties in the collection.
   - name: azure-devops-team-member-list
     description: Get a list of members for a specific team.
     arguments:
@@ -2958,32 +2940,29 @@ script:
         name: limit
     outputs:
       - type: Boolean
-        contextPath: AzureDevOps.TeamMember.value.isTeamAdmin
+        contextPath: AzureDevOps.TeamMember.isTeamAdmin
         description: if the member is the team admin.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.displayName
+        contextPath: AzureDevOps.TeamMember.identity.displayName
         description: The display name of the team member.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.url
+        contextPath: AzureDevOps.TeamMember.identity.url
         description: URL to retrieve information about this member.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity._links.avatar.href
+        contextPath: AzureDevOps.TeamMember.identity._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.id
+        contextPath: AzureDevOps.TeamMember.identity.id
         description: ID of the team member.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.uniqueName
+        contextPath: AzureDevOps.TeamMember.identity.uniqueName
         description: The unique name of team member.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.imageUrl
+        contextPath: AzureDevOps.TeamMember.identity.imageUrl
         description: Link to the team member image.
       - type: String
-        contextPath: AzureDevOps.TeamMember.value.identity.descriptor
+        contextPath: AzureDevOps.TeamMember.identity.descriptor
         description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
-      - type: Number
-        contextPath: AzureDevOps.TeamMember.count
-        description: Count of the team members.
   - name: azure-devops-blob-zip-get
     description: Get a single blob.
     arguments:

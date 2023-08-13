@@ -1878,7 +1878,7 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
         missing_arguments.append("project")
 
     if missing_arguments:
-        raise DemistoException(PARAMETERS_ERROR_MSG.format(args=", ".join(missing_arguments)))
+        raise DemistoException(PARAMETERS_ERROR_MSG.format(arguments=", ".join(missing_arguments)))
 
     return OrgRepoProject(organization=organization, repository=repository_id, project=project)
 
@@ -1904,7 +1904,7 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.PullRequestReviewer',
         outputs_key_field='displayName',
-        outputs=response,
+        outputs=response["value"],
         raw_response=response
     )
 
@@ -1957,7 +1957,7 @@ def pull_request_commit_list_command(client: Client, args: Dict[str, Any], organ
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.Commit',
-        outputs=response,
+        outputs=response.get('value'),
         raw_response=response
     )
 
@@ -1981,7 +1981,7 @@ def commit_list_command(client: Client, args: Dict[str, Any], organization: Opti
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.Commit',
-        outputs=response,
+        outputs=response.get('value'),
         raw_response=response
     )
 
@@ -2200,7 +2200,7 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.File',
-        outputs=response,
+        outputs=response.get("value"),
         raw_response=response
     )
 
@@ -2238,6 +2238,7 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_r
     """
     branch_list = branch_list_command(client, args, org_repo_project_tuple.repository, org_repo_project_tuple.project)
     for branch in branch_list.outputs:
+        # two places call this function, one has reference_branch_name as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("reference_branch_name", args.get("branch_name"))):
             return branch.get("objectId")
 
@@ -2254,6 +2255,14 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
         args["branch_id"] = mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple)
 
     response = client.branch_create_request(org_repo_project_tuple, args=args)
+
+    # For deleting this redundant file, we re-set the reference to be itself in case the new branch came from a reference branch.
+    if args.get("reference_branch_name"):
+        args["reference_branch_name"] = args["branch_name"]
+
+    # Delete the file was created for the new branch.
+    file_delete_command(client=client, args=args, organization=org_repo_project_tuple.organization,
+                        repository_id=org_repo_project_tuple.repository, project=org_repo_project_tuple.project)
 
     readable_output = f'Branch {response.get("refUpdates", [])[0].get("name")} was created successfully by' \
                       f' {response.get("pushedBy", {}).get("displayName")}.'
@@ -2340,7 +2349,7 @@ def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organ
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.PullRequestThread',
-        outputs=response,
+        outputs=response.get("value"),
         raw_response=response
     )
 
@@ -2367,7 +2376,7 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.Team',
-        outputs=response,
+        outputs=response.get("value"),
         raw_response=response
     )
 
@@ -2403,7 +2412,7 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.TeamMember',
-        outputs=response,
+        outputs=response.get("value"),
         raw_response=response
     )
 

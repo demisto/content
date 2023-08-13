@@ -21,7 +21,7 @@
     "refUpdates": [
         {
             "repositoryId": "",
-            "name": "refs/heads/xsoar",
+            "name": "refs/heads/main",
             "oldObjectId": "0000000000000000000000000000000000000000",
             "newObjectId": ""
         }

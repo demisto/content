@@ -200,7 +200,8 @@ def test_azure_devops_pull_request_create_command(requests_mock):
                                                   'target_branch': 'main',
                                                   'title': 'test-title',
                                                   'description': 'test-description',
-                                                  'reviewers_ids': '2'})
+                                                  'reviewers_ids': '2'},
+                                         project=project, repository=repository_id)
 
     assert len(result.outputs) == 21
     assert result.outputs_prefix == 'AzureDevOps.PullRequest'
@@ -286,7 +287,8 @@ def test_azure_devops_pull_request_update_command(requests_mock):
                                                   'repository_id': repository_id,
                                                   'pull_request_id': pull_request_id,
                                                   'title': 'new-title'
-                                                  })
+                                                  },
+                                         project=project, repository=repository_id)
 
     assert len(result.outputs) == 21
     assert result.outputs_prefix == 'AzureDevOps.PullRequest'
@@ -334,7 +336,8 @@ def test_azure_devops_pull_request_list_command(requests_mock):
 
     result = pull_requests_list_command(client, {'project': project,
                                                  'repository': repository
-                                                 })
+                                                 },
+                                        project=project, repository=repository)
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'AzureDevOps.PullRequest'
@@ -865,7 +868,7 @@ def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_req
     assert result.readable_output.startswith("### Reviewers List")
     # PR does not exist
     if pull_request_id == '42':
-        assert 'The requested pull request was not found.' in result.outputs.get("message")
+        assert 'The requested pull request was not found.' in result.raw_response.get("message")
 
 @pytest.mark.parametrize('args, organization, expected_result',
                          [({'organization_name': 'OVERRIDE'}, 'TEST', 'OVERRIDE'),
@@ -891,7 +894,9 @@ def test_organization_repository_project_preprocess_function(args, organization,
     repository = 'TEST'
 
     try:
-        organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository, project)
+        organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository, project,
+                                                                                          is_organization_required=True,
+                                                                                          is_repository_id_required=True)
     except DemistoException:
         assert expected_result == 'ERROR'
     else:
@@ -910,7 +915,7 @@ def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_r
      - Ensure outputs_prefix and readable_output are set up right
      - Ensure informative message when pull_request_id does not exist
     """
-    from AzureDevOps import Client, pull_request_reviewer_create_command
+    from AzureDevOps import Client, pull_request_reviewer_add_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -933,7 +938,7 @@ def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_r
         proxy=False,
         auth_type='Device Code')
 
-    result = pull_request_reviewer_create_command(client, {'pull_request_id': pull_request_id,
+    result = pull_request_reviewer_add_command(client, {'pull_request_id': pull_request_id,
                                                            'reviewer_user_id': reviewer_user_id},
                                                   ORGANIZATION, repository, project)
     if pull_request_id == '42':
@@ -982,7 +987,7 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id, mock_r
                                               ORGANIZATION, repository, project)
     if pull_request_id == '42':
         # PR does not exist
-        assert 'The requested pull request was not found.' in result.outputs.get("message")
+        assert 'The requested pull request was not found.' in result.raw_response.get("message")
     else:
         assert result.readable_output.startswith('### Commits List')
         assert result.outputs_prefix == 'AzureDevOps.Commit'
@@ -1215,10 +1220,15 @@ def test_file_create_command(requests_mock):
     project = 'test'
     repository = 'xsoar'
 
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+    url_1 = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
 
-    mock_response = json.loads(load_mock_response('file.json'))
-    requests_mock.post(url, json=mock_response)
+    mock_response_1 = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url_1, json=mock_response_1)
+
+    url_2 = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/refs'
+
+    mock_response_2 = json.loads(load_mock_response('branch_list.json'))
+    requests_mock.get(url_2, json=mock_response_2)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1228,14 +1238,15 @@ def test_file_create_command(requests_mock):
         auth_type='Device Code')
 
     args = {"branch_id": "111",
-            "branch_name": "Test",
+            "branch_name": "refs/heads/main",
             "commit_comment": "Test 5.",
             "file_content": "# Tasks\\n\\n* Item 1\\n* Item 2",
             "file_path": "/test_5.md"
             }
     result = file_create_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('Commit "Test 5." was created and pushed successfully by "" to branch "Test".')
+    assert result.readable_output.startswith\
+        ('Commit "Test 5." was created and pushed successfully by "" to branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 
@@ -1319,10 +1330,15 @@ def test_file_update_command(requests_mock):
     project = 'test'
     repository = 'xsoar'
 
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+    url_1 = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
 
-    mock_response = json.loads(load_mock_response('file.json'))
-    requests_mock.post(url, json=mock_response)
+    mock_response_1 = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url_1, json=mock_response_1)
+
+    url_2 = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/refs'
+
+    mock_response_2 = json.loads(load_mock_response('branch_list.json'))
+    requests_mock.get(url_2, json=mock_response_2)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1332,14 +1348,14 @@ def test_file_update_command(requests_mock):
         auth_type='Device Code')
 
     args = {"branch_id": "111",
-            "branch_name": "Test",
+            "branch_name": "refs/heads/main",
             "commit_comment": "Test 5.",
             "file_content": "UPTADE",
             "file_path": "/test_5.md"
             }
     result = file_update_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('Commit "Test 5." was updated successfully by "" in branch "Test".')
+    assert result.readable_output.startswith('Commit "Test 5." was updated successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 def test_file_delete_command(requests_mock):
@@ -1360,10 +1376,15 @@ def test_file_delete_command(requests_mock):
     project = 'test'
     repository = 'xsoar'
 
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+    url_1 = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
 
-    mock_response = json.loads(load_mock_response('file.json'))
-    requests_mock.post(url, json=mock_response)
+    mock_response_1 = json.loads(load_mock_response('file.json'))
+    requests_mock.post(url_1, json=mock_response_1)
+
+    url_2 = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/refs'
+
+    mock_response_2 = json.loads(load_mock_response('branch_list.json'))
+    requests_mock.get(url_2, json=mock_response_2)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1373,13 +1394,13 @@ def test_file_delete_command(requests_mock):
         auth_type='Device Code')
 
     args = {"branch_id": "111",
-            "branch_name": "Test",
+            "branch_name": "refs/heads/main",
             "commit_comment": "Test 5.",
             "file_path": "/test_5.md"
             }
     result = file_delete_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "Test".')
+    assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 def test_file_list_command(requests_mock):
@@ -1400,10 +1421,15 @@ def test_file_list_command(requests_mock):
     project = 'test'
     repository = 'xsoar'
 
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/items'
+    url_1 = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/items'
 
-    mock_response = json.loads(load_mock_response('file_list.json'))
-    requests_mock.get(url, json=mock_response)
+    mock_response_1 = json.loads(load_mock_response('file_list.json'))
+    requests_mock.get(url_1, json=mock_response_1)
+
+    url_2 = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/refs'
+
+    mock_response_2 = json.loads(load_mock_response('branch_list.json'))
+    requests_mock.get(url_2, json=mock_response_2)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1412,12 +1438,13 @@ def test_file_list_command(requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    args = {"branch_name": "Test",
+    args = {"branch_name": "refs/heads/main",
             "recursion_level": "OneLevel",
             }
     result = file_list_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|\n|---|---|\n| / |  |\n| /.github |  |')
+    assert result.readable_output.startswith\
+        ('### Files\n|File Name(s)|Object ID|Commit ID|\n|---|---|---|\n| / |  |  |\n| /.github |  |  |\n')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 
@@ -1478,10 +1505,15 @@ def test_branch_create_command(requests_mock):
     project = 'test'
     repository = 'xsoar'
 
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
+    url_1 = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/pushes'
 
-    mock_response = json.loads(load_mock_response('branch_create.json'))
-    requests_mock.post(url, json=mock_response)
+    mock_response_1 = json.loads(load_mock_response('branch_create.json'))
+    requests_mock.post(url_1, json=mock_response_1)
+
+    url_2 = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/refs'
+
+    mock_response_2 = json.loads(load_mock_response('branch_list.json'))
+    requests_mock.get(url_2, json=mock_response_2)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1490,13 +1522,13 @@ def test_branch_create_command(requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    args = {"branch_name": "refs/heads/master",
+    args = {"branch_name": "refs/heads/main",
             "file_path": "Test",
             "commit_comment": "Initial commit",
             }
     result = branch_create_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('Branch refs/heads/xsoar was created successfully by XXXXXX.')
+    assert result.readable_output.startswith('Branch refs/heads/main was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.Branch'
 
 def test_pull_request_thread_create_command(requests_mock):
@@ -1682,7 +1714,8 @@ def test_team_member_list_command(requests_mock):
 
     result = team_member_list_command(client, {"team_id": "zzz"}, ORGANIZATION, project)
 
-    assert result.readable_output.startswith('### Team Members\n|Name|\n|---|\n| XXX |\n| YYY |')
+    assert result.readable_output.startswith\
+        ('### Team Members\n|Name|Unique Name|User ID|\n|---|---|---|\n| XXX |  |  |\n| YYY |  |  |')
     assert result.outputs_prefix == 'AzureDevOps.TeamMember'
 
 def test_blob_zip_get_command(mocker, requests_mock):
