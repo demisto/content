@@ -52,8 +52,6 @@ tasks:
     scriptarguments:
       domain:
         simple: paloaltonetworks.com
-      recursive:
-        simple: "false"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -126,8 +124,6 @@ tasks:
     scriptarguments:
       query:
         simple: paloaltonetworks.com
-      recursive:
-        simple: "false"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
