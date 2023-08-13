@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.0.0 of CheckPointHEC
+This integration was integrated and tested with version 1.0.3 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
 
@@ -10,15 +10,15 @@ This integration was integrated and tested with version 1.0.0 of CheckPointHEC
     | **Parameter** | **Required** |
     | --- | --- |
     | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) | True |
-    | Fetch incidents |  |
-    | Incident type |  |
-    | Maximum number of incidents per fetch |  |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Maximum number of incidents per fetch | False |
     | Client ID | True |
     | Client Secret | True |
-    | First fetch time |  |
-    | Trust any certificate (not secure) |  |
-    | Use system proxy settings |  |
-    | Incidents Fetch Interval |  |
+    | First fetch time | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Incidents Fetch Interval | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -74,10 +74,168 @@ Retrieve specific entity
 | CheckPointHEC.Entity.isInternal | Boolean | Email is from same organization. | 
 | CheckPointHEC.Entity.isOutgoing | Boolean | Email is to an external organization. | 
 | CheckPointHEC.Entity.isQuarantined | Boolean | Email has been quarantined. | 
-| CheckPointHEC.Entity.isQuarantineNotification | Boolean | Email is a notification of another quarantined email. | 
-| CheckPointHEC.Entity.isRestored | Boolean | Email is restored from quarantine. | 
-| CheckPointHEC.Entity.isRestoreRequested | Boolean | Email is a request to restore. | 
-| CheckPointHEC.Entity.isRestoreDeclined | Boolean | Email is a declined restore request. | 
-| CheckPointHEC.Entity.saasSpamVerdict | String | Spam verdict. | 
-| CheckPointHEC.Entity.SpfResult | String | Sender Policy Framework check result. | 
-| CheckPointHEC.Entity.restoreRequestTime | String | Restore request datetime in iso 8601 format. | 
+
+### checkpointhec-get-email-info
+
+***
+Retrieve specific email entity
+
+#### Base Command
+
+`checkpointhec-get-email-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity | Email entity id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.Email.fromEmail | String | Email sender. | 
+| CheckPointHEC.Email.to | unknown | Email main recipients. | 
+| CheckPointHEC.Email.replyToEmail | String | Email reply. | 
+| CheckPointHEC.Email.replyToNickname | String | Email reply nickname. | 
+| CheckPointHEC.Email.recipients | unknown | Recipient email addresses. | 
+| CheckPointHEC.Email.subject | String | Email subject. | 
+| CheckPointHEC.Email.cc | unknown | Email carbon copy recipients. | 
+| CheckPointHEC.Email.bcc | unknown | Email blind carbon copy recipients. | 
+| CheckPointHEC.Email.isRead | Boolean | Email has been read. | 
+| CheckPointHEC.Email.received | String | Datetime email was received in iso 8601 format. | 
+| CheckPointHEC.Email.isDeleted | Boolean | Email has been deleted. | 
+| CheckPointHEC.Email.isIncoming | Boolean | Email is from external organization. | 
+| CheckPointHEC.Email.isOutgoing | Boolean | Email is to an external organization. | 
+| CheckPointHEC.Email.internetMessageId | String | Email message id in internet. | 
+| CheckPointHEC.Email.isUserExposed | Boolean | Email reached user inbox | 
+
+### checkpointhec-get-scan-info
+
+***
+Retrieve specific email scan with positive threats
+
+#### Base Command
+
+`checkpointhec-get-scan-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity | Scanned entity id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.ScanResult.ap | unknown | Anti-phishing scan results | 
+| CheckPointHEC.ScanResult.dlp | unknown | Data Loss Prevention scan results | 
+| CheckPointHEC.ScanResult.clicktimeProtection | unknown | Click Time Protection scan results | 
+| CheckPointHEC.ScanResult.shadowIt | unknown | Shadow IT scan results | 
+| CheckPointHEC.ScanResult.av | unknown | Antivirus scan results | 
+
+### checkpointhec-search-emails
+
+***
+Get email ids with same sender and/or subject
+
+#### Base Command
+
+`checkpointhec-search-emails`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| date_range | Range to search for emails. | Required | 
+| sender | Search emails with this sender. | Optional | 
+| subject | Search emails with this subject. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.SearchResult.ids | unknown | List of email ids returned by the search | 
+
+### checkpointhec-send-action
+
+***
+Quarantine or restore an email
+
+#### Base Command
+
+`checkpointhec-send-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| farm | Customer farm. | Required | 
+| customer | Customer portal name. | Required | 
+| entity | Email id to apply action over. | Required | 
+| action | Action to perform (quarantine or restore). Possible values are: quarantine, restore. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.Task.task | String | Task id of the sent action | 
+
+### checkpointhec-get-action-result
+
+***
+Get task info related to a sent action
+
+#### Base Command
+
+`checkpointhec-get-action-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| farm | Customer farm. | Required | 
+| customer | Customer portal name. | Required | 
+| task | Task id to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.ActionResult.actions | unknown | Action information for each sent entity | 
+| CheckPointHEC.ActionResult.created | String | Date when action was created in iso 8601 format | 
+| CheckPointHEC.ActionResult.customer | String | Customer portal name | 
+| CheckPointHEC.ActionResult.failed | Number | Number of failed actions | 
+| CheckPointHEC.ActionResult.id | Number | Action task id | 
+| CheckPointHEC.ActionResult.name | String | Action name | 
+| CheckPointHEC.ActionResult.owner | String | Action owner | 
+| CheckPointHEC.ActionResult.progress | Number | Number of actions in progress | 
+| CheckPointHEC.ActionResult.sequential | Boolean | Actions are in sequence | 
+| CheckPointHEC.ActionResult.status | String | Action status | 
+| CheckPointHEC.ActionResult.succeed | Number | Number of succeed actions | 
+| CheckPointHEC.ActionResult.total | Number | Total of actions | 
+| CheckPointHEC.ActionResult.type | String | Action internal name | 
+| CheckPointHEC.ActionResult.updated | String | Date when action last updated in iso 8601 format | 
+
+### checkpointhec-send-notification
+
+***
+Send notification about user exposition for the specific entity to the list of emails
+
+#### Base Command
+
+`checkpointhec-send-notification`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity | Email entity id. | Required | 
+| emails | List of emails to send notification. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.Notification.ok | Boolean | Result of the operation. | 
