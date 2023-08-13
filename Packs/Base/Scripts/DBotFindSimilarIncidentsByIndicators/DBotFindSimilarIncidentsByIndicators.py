@@ -287,7 +287,7 @@ def return_outputs_custom(readable_output, outputs=None):
         "Contents": outputs,
         "EntryContext": outputs,
     }
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def return_no_mututal_indicators_found_entry():
@@ -384,8 +384,9 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
 def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
-    return_outputs(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
+    return CommandResults(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
                    raw_response={})
+
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
@@ -426,7 +427,7 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
+    return CommandResults(readable_output=tableToMarkdown("Actual Incident", incident_json,
                                                    col_incident))
 
 
@@ -552,7 +553,7 @@ def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: O
     }
     if tag is not None:
         return_entry["Tags"] = [tag]
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def main():
