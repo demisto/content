@@ -402,7 +402,7 @@ script:
       name: destId
       required: true
     deprecated: true
-    description: Gets the domains listed in a destination list
+    description: Gets the domains listed in a destination list.
     name: umbrella-get-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id
