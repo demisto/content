@@ -1444,7 +1444,8 @@ def test_file_list_command(requests_mock):
     result = file_list_command(client, args, ORGANIZATION, repository, project)
 
     assert result.readable_output.startswith\
-        ('### Files\n|File Name(s)|Object ID|Commit ID|\n|---|---|---|\n| / |  |  |\n| /.github |  |  |\n')
+        ('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n|---|---|---|---|---|\n| / |  |  | tree | true |\n'
+         '| /.github |  |  | tree | true |\n')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 

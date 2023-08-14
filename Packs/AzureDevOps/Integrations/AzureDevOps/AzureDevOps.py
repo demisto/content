@@ -2196,8 +2196,10 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
 
     response = client.file_list_request(org_repo_project_tuple, args=args)
 
-    mapping = {"path": "File Name(s)", "objectId": "Object ID", "commitId": "Commit ID"}
-    readable_output = tableToMarkdown('Files', response.get("value"), headers=["path", "objectId", "commitId"],
+    mapping = {"path": "File Name(s)", "objectId": "Object ID", "commitId": "Commit ID", "gitObjectType": "Object Type",
+               "isFolder": "Is Folder"}
+    readable_output = tableToMarkdown('Files', response.get("value"), headers=["path", "objectId", "commitId", "gitObjectType",
+                                                                               "isFolder"],
                                       headerTransform=lambda header: mapping.get(header, header))
 
     return CommandResults(
