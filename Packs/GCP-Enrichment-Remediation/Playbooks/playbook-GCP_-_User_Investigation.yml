@@ -362,7 +362,7 @@ tasks:
     task:
       id: 3a68adeb-b97e-4308-8ad8-0e64b816b2ad
       version: -1
-      name: Multiple failed login attempts  by the service account
+      name: Multiple failed login attempts by the service account
       description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
       script: '|||gcp-logging-log-entries-list'
       type: regular
