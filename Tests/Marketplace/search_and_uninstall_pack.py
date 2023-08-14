@@ -5,7 +5,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 from time import sleep
-from typing import Callable
+from collections.abc import Callable
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
@@ -19,10 +19,10 @@ from Tests.scripts.utils.log_util import install_logging
 ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
 
 
-def general_retries_request(client: demisto_client,
-
+def generic_retries_request(client: demisto_client,
                             retries_message: str,
                             exception_message: str,
+                            try_message: str,
                             path: str,
                             method: str,
                             request_timeout: int | None = None,
@@ -35,7 +35,7 @@ def general_retries_request(client: demisto_client,
     try:
         for attempt in range(attempts_count - 1, -1, -1):
             try:
-                logging.info(f"Getting installation/update status, Attempt: {attempts_count - attempt}/{attempts_count}")
+                logging.info(f"{try_message}, Attempt: {attempts_count - attempt}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
                                                                                      method=method,
@@ -101,9 +101,10 @@ def check_if_pack_still_installed(client: demisto_client,
             return True, None
         return False, None
 
-    return general_retries_request(client=client,
+    return generic_retries_request(client=client,
                                    retries_message="Failed to get all installed packs.",
                                    exception_message="Failed to get installed packs.",
+                                   try_message=f"Checking if pack {pack_id} is still installed",
                                    path='/contentpacks/metadata/installed',
                                    method='GET',
                                    attempts_count=attempts_count,
@@ -190,10 +191,11 @@ def get_updating_status(client: demisto_client,
         logging.info(f"Got updating status: {updating_status}")
         return True, updating_status
 
-    return general_retries_request(client=client,
+    return generic_retries_request(client=client,
                                    success_handler=success_handler,
                                    retries_message="Failed to get installation/update status",
                                    exception_message="he request to get update status has failed",
+                                   try_message="Getting installation/update status",
                                    path='/content/updating',
                                    method='GET',
                                    attempts_count=attempts_count,
@@ -264,13 +266,15 @@ def uninstall_pack(client: demisto_client,
                     "Failed to wait for the server to exit installation/updating status"
                 ) from ex
         still_installed, _ = check_if_pack_still_installed(client=client,
-                                                        pack_id=pack_id)
+                                                           pack_id=pack_id)
         if not still_installed:
             return True, None
+        return None
 
-    return general_retries_request(client=client,
-                                   retries_message='Failed to uninstall pack: {pack_id}',
+    return generic_retries_request(client=client,
+                                   retries_message=f'Failed to uninstall pack: {pack_id}',
                                    exception_message='The request to uninstall packs has failed.',
+                                   try_message=f'Uninstalling pack {pack_id}',
                                    path=f'/contentpacks/installed/{pack_id}',
                                    method='DELETE',
                                    attempts_count=attempts_count,
