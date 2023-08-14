@@ -488,7 +488,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
-                (indicator_proxysg_category in request_axrgs.category_attribute or len(request_args.category_attribute) == 0):
+                (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
             # handle indicators in multiple categories
             if isinstance(indicator_proxysg_category, list):
                 for category in indicator_proxysg_category:
