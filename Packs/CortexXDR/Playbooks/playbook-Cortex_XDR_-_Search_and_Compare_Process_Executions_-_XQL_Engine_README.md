@@ -34,7 +34,7 @@ xdr-xql-generic-query
 | --- | --- | --- | --- |
 | Processes | Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:<br/>-value: \*process name\*<br/>-commands: \*command-line arguments\* |  | Optional |
 | HuntingTimeFrame | Time in relative date or range format \(for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 \+02:00 and 2021-02-01 12:34:56 \+02:00"\). The default is the last 24 hours. | 7 days | Optional |
-| StringSimilarityThreshold | StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold. | 0.5 | Optional |
+| StringSimilarityThreshold | StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold. | 0.5 | Optional |
 
 ## Playbook Outputs
 

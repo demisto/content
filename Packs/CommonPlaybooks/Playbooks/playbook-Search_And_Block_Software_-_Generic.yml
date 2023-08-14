@@ -288,7 +288,7 @@ tasks:
       id: 6c6d4e63-db04-452b-8862-29e7093753f5
       version: -1
       name: MDE - Search And Block Software
-      description: This playbook will search a  file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can than choose the files he wishes to block.
+      description: This playbook will search a file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can then choose the files to block.
       playbookName: MDE - Search And Block Software
       type: playbook
       iscommand: false

@@ -1,4 +1,4 @@
-This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+This playbook is a generic playbook that receives a process name and a command-line argument. It uses the "Microsoft Defender For Endpoint" integration to search for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
 Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
 - value: *process name*

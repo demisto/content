@@ -1,4 +1,4 @@
-This playbook will search a  file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can than choose the files he wishes to block.
+This playbook will search a file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can then choose the files to block.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 
@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Filename | File name to search |  | Optional |
+| Filename | File name to search. |  | Optional |
 | TimeFrame | Time in relative date or range format \(for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 \+02:00 and 2021-02-01 12:34:56 \+02:00"\). The default is the last 24 hours. |  | Optional |
 | Defender Indicator Title | The indicator alert title in Defender. | XSOAR Software Block | Optional |
 | Indicator Expiration | DateTime string indicating when the indicator expires. Format: \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). |  | Optional |
