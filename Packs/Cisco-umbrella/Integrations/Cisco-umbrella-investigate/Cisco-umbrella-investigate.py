@@ -207,14 +207,15 @@ def securerank_to_dbotscore(sr:Optional[int]) -> int:
     return 0 
 
 def domain_securerank_to_dbotscore(secure_rank:Optional[int], security_rank_2:int) -> int:
-    if secure_rank == -1:
-        return Common.DBotScore.BAD
-    if secure_rank == 1:
-        return Common.DBotScore.GOOD
-    if secure_rank == 0:
-        return securerank_to_dbotscore(security_rank_2)
-    
-    raise ValueError(f"unexpected secure_rank value {secure_rank} (expected 0,1 or -1)")
+    match secure_rank:
+        case -1:
+            return Common.DBotScore.BAD
+        case 1:
+            return Common.DBotScore.GOOD
+        case 0:
+            return securerank_to_dbotscore(security_rank_2)
+        case _ :
+            raise ValueError(f"unexpected secure_rank value {secure_rank} (expected 0,1 or -1)")
     
 
 ''' INTERNAL FUNCTIONS '''
