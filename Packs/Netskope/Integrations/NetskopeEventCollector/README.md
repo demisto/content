@@ -17,13 +17,17 @@
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Events Limitation
+
 The first fetch is limited to the last 50,000 events (for each event type) due to API limitation.
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### netskope-get-events
+
 ***
 Returns events extracted from SaaS traffic and or logs.
 
@@ -31,6 +35,7 @@ Returns events extracted from SaaS traffic and or logs.
 #### Base Command
 
 `netskope-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,9 +47,13 @@ Returns events extracted from SaaS traffic and or logs.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!netskope-get-events limit=1```
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -265,6 +274,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Events List:
+
 >|Id|Timestamp|Type|Access Method|App|Traffic Type|
 >|---|---|---|---|---|---|
 >| 23a372c433381a6a11798123 | 2022-07-17T23:48:52.000Z | nspolicy | API Connector | Microsoft Office 365 Sharepoint Online | CloudApp |
