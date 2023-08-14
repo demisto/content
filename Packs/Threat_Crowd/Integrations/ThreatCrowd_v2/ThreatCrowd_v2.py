@@ -10,7 +10,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
-# test RNs
+
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability,
                  entry_limit: int):
