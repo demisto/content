@@ -409,7 +409,7 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
 
 
 def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str],
-                            from_date: str) -> None:
+                            from_date: str) -> CommandResults:
     """
     Display current incident
     :param incident_df: DataFrame of incident
@@ -427,7 +427,7 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
+    return CommandResults(readable_output=tableToMarkdown("Actual Incident", incident_json,
                                                    col_incident))
 
 
@@ -615,7 +615,8 @@ def main():
     incident_found_bool = (len(similar_incidents) > 0)
 
     if show_actual_incident == 'True':
-        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        command_results = display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        return_results(command_results)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
