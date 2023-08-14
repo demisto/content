@@ -564,7 +564,7 @@ class Client:
 
     def file_list_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
 
-        params = {"api-version": 7.0, "versionDescriptor.version": args["branch_name"],
+        params = {"api-version": 7.0, "versionDescriptor.version": args["branch_name"].split('/')[-1],
                   "versionDescriptor.versionType": "branch", "recursionLevel": args["recursion_level"],
                   "includeContentMetadata": True}
 
