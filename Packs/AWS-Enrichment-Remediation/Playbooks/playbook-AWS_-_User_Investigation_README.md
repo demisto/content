@@ -1,7 +1,7 @@
 This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:
 - Failed login attempt
 - Suspicious activities 
-- API Access denied
+- API access denied
 - Administrative user activities
 - Security rules and policies changes
 - Access keys and access token activities
@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - CloudTrail
+AWS - CloudTrail
 
 ### Scripts
 
@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* aws-cloudtrail-lookup-events
+aws-cloudtrail-lookup-events
 
 ## Playbook Inputs
 

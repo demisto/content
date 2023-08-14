@@ -1,7 +1,7 @@
 id: AWS - User Investigation
 version: -1
 name: AWS - User Investigation
-description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n- Failed login attempt\n- Suspicious activities \n- API Access denied\n- Administrative user activities\n- Security rules and policies changes\n- Access keys and access token activities\n- Script-based user agent usage\n- User role changes activities\n- MFA device changes activities\n"
+description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n- Failed login attempt\n- Suspicious activities \n- API access denied\n- Administrative user activities\n- Security rules and policies changes\n- Access keys and access token activities\n- Script-based user agent usage\n- User role changes activities\n- MFA device changes activities\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
     task:
       id: e0e47d55-d099-4e4e-8a63-b950e8e06ca0
       version: -1
-      name: Is AWS CloudTrail enabled and the user name is defined?
+      name: Is AWS CloudTrail enabled and is the user name defined?
       description: Checks if the AWS CloudTrail integration is enabled.
       type: condition
       iscommand: false
@@ -261,7 +261,7 @@ tasks:
       id: db70a4ed-7f97-4a5e-847f-544c05584d94
       version: -1
       name: 'API Access denied Count '
-      description: Set the `access denied` API calls if it exists.
+      description: Set the `access denied` API calls, if it exists.
       scriptName: Set
       type: regular
       iscommand: false
@@ -383,9 +383,9 @@ tasks:
       version: -1
       name: 'Set Administrative User Activities Count '
       description: |-
-        Set the administrative activities performed by the user if it exists.
-        The task set the following activities:
-        ResetAccountPassword ,CreateUser ,DeleteUser ,AddUserToGroup ,RemoveUserFromGroup ,EnableUser ,DisableUser ,CreateGroup ,DeleteGroup ,UpdateGroup ,UpdateUser ,CreateRole ,DeleteRole ,UpdateRole ,ActivateUser ,ActivateUsers.
+        Set the administrative activities performed by the user, if it exists.
+        The task sets the following activities:
+        ResetAccountPassword, CreateUser, DeleteUser, AddUserToGroup, RemoveUserFromGroup, EnableUser, DisableUser, CreateGroup, DeleteGroup, UpdateGroup, UpdateUser, CreateRole, DeleteRole, UpdateRole, ActivateUser, ActivateUsers.
       scriptName: Set
       type: regular
       iscommand: false
@@ -564,8 +564,8 @@ tasks:
       name: Security rules and policies were changed
       description: |-
         Set the security rules and policy changes made by the user if they exist.
-        The task set the following activities:
-        CreatePolicy ,DeletePolicy ,UpdatePolicy ,CreateAccessPolicy ,DeleteAccessPolicy ,UpdateAccessPolicy ,CreateFirewall ,DeleteFirewall ,CreateFirewallRule ,DeleteFirewallRule ,UpdateFirewallRule ,CreateFirewallPolicy ,UpdateFirewallPolicy ,DeleteFirewallPolicy.
+        The task sets the following activities:
+        CreatePolicy, DeletePolicy, UpdatePolicy, CreateAccessPolicy, DeleteAccessPolicy, UpdateAccessPolicy, CreateFirewall, DeleteFirewall, CreateFirewallRule, DeleteFirewallRule, UpdateFirewallRule, CreateFirewallPolicy, UpdateFirewallPolicy, DeleteFirewallPolicy.
       scriptName: Set
       type: regular
       iscommand: false
@@ -764,9 +764,9 @@ tasks:
       version: -1
       name: Access Keys and Access Token activities
       description: |-
-        Set the access keys and access token activities performed by the user if it exists.
-        The task set the following activities:
-        CreateAccessKey ,DeleteAccessKey ,UpdateAccessKey ,CreateApiKey ,DeleteApiKey ,UpdateApiKey ,CreateKeyPair ,DeleteKeyPair ,CreateKey ,DeleteKey ,DeleteSSHPublicKey ,CreateCliToken ,CreateToken ,DeleteOAuthToken ,CreateEnrollmentToken.
+        Set the access keys and access token activities performed by the user, if it exists.
+        The task sets the following activities:
+        CreateAccessKey, DeleteAccessKey, UpdateAccessKey, CreateApiKey, DeleteApiKey, UpdateApiKey, CreateKeyPair, DeleteKeyPair, CreateKey, DeleteKey, DeleteSSHPublicKey, CreateCliToken, CreateToken, DeleteOAuthToken, CreateEnrollmentToken.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1004,7 +1004,7 @@ tasks:
       id: 2c26000e-beeb-4d19-880e-5f417fbdcdf0
       version: -1
       name: Failed logon attempt
-      description: Set the console failed logon performed by the user if it exists.
+      description: Set the console failed logon performed by the user, if it exists.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1126,9 +1126,9 @@ tasks:
       version: -1
       name: 'Script-based User Agent '
       description: |-
-        Set the script-based user agent used by the user if it exists.
-        The task set the following script-based user agents :
-        Jakarta Commons-HttpClient ,Python-urllib ,Wget ,curl.
+        Set the script-based user agent used by the user, if it exists.
+        The task sets the following script-based user agents :
+        Jakarta Commons-HttpClient, Python-urllib, Wget, curl.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1237,7 +1237,7 @@ tasks:
       version: -1
       name: Suspicious Activities
       description: |-
-        Set the suspicious activities performed by the user if it exists.
+        Set the suspicious activities performed by the user, if it exists.
         The task set the following activities:
         DeleteAlert ,DeleteAlarms ,DeleteCertificate ,DeleteCACertificate ,DeleteCertificateAuthority, DeleteLoggingConfiguration, DeleteWatchlist, StopLogging ,UpdateLoggingConfiguration, DeleteUser.
       scriptName: Set
@@ -1410,8 +1410,8 @@ tasks:
       name: User Role Changes
       description: |-
         Set the user role changes made by the user if they exist.
-        The task set the following activities:
-        AttachRolePolicy ,DetachRolePolicy ,DeleteRolePolicy.
+        The task sets the following activities:
+        AttachRolePolicy, DetachRolePolicy, DeleteRolePolicy.
       scriptName: Set
       type: regular
       iscommand: false

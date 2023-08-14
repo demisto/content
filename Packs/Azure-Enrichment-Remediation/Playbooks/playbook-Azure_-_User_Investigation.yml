@@ -8,7 +8,7 @@ description: |-
   - Security rules and policies changes
   - Failed login attempt
   - MFA failed login attempt
-  - Login attempt from an uncommon country.
+  - Login attempt from an uncommon country
   - Anomalies activities
   - Risky users
   - Uncommon high volume of actions
@@ -120,7 +120,7 @@ tasks:
     task:
       id: c793822a-6a73-4cef-87b4-cf6363c0b4ac
       version: -1
-      name: ' Logon attempt from uncommon country'
+      name: 'Logon attempt from uncommon country'
       description: Executes an Analytics query for data.
       script: Azure Log Analytics|||azure-log-analytics-execute-query
       type: regular
