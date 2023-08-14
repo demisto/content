@@ -3890,7 +3890,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
-            if e is not None and and e.res and e.res.status_code == 500 and 'No identity threat' in str(e):
+            if e is not None and e.res and e.res.status_code == 500 and 'No identity threat' in str(e):
                 raise DemistoException(f'Please confirm the module is enabled. Full error message: {e}') from e
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 raise DemistoException(error_message) from e
