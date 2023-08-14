@@ -18,6 +18,8 @@ args:
     A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".
     The last value can be any valid JSON object.
   required: true
+- name: flags
+  description: Control regular expression behavior.
 scripttarget: 0
 subtype: python3
 runonce: false

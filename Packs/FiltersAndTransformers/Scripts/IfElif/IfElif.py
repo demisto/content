@@ -80,19 +80,11 @@ def parse_boolean_expression(expression: str) -> bool:
 
 
 def get_from_context(keys: re.Match) -> str:
-    context_keys = (
-        (
-            int(idx[1])
-            if (idx := re.fullmatch('\[([0-9]+)\]', key))
-            else key
-        )
-        for key in keys[1].split('.')
-    )
-    value = dict_safe_get(CONTEXT, context_keys)
-    return json.dumps(value)
+    context_obj = demisto.dt(CONTEXT, keys)
+    return json.dumps(context_obj)
 
 
-def load_conditions(args: dict) -> list:  # TEST
+def load_conditions(args: dict) -> list:
     '''
     Replace #{...}'s with the string representation of the corresponding value in CONTEXT
     and "#VALUE" with the args['value'] and load the resulting json.
