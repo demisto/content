@@ -1368,10 +1368,7 @@ IDENTITY = {
 
 def test_get_cim_mapping_field_command(mocker):
     """ Scenario: When the mapping is based on Splunk CIM. """
-    mocker.patch.object(demisto, 'results')
-    splunk.get_cim_mapping_field_command()
-    fields = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
+    fields = splunk.get_cim_mapping_field_command()
     assert fields == {
         'Notable Data': NOTABLE,
         'Drilldown Data': DRILLDOWN,

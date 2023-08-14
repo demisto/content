@@ -1198,7 +1198,7 @@ def reset_enriching_fetch_mechanism():
             del integration_context[field]
     set_integration_context(integration_context)
     demisto.setLastRun({})
-    demisto.results("Enriching fetch mechanism was reset successfully.")
+    return "Enriching fetch mechanism was reset successfully."
 
 
 # =========== Enriching Fetch Mechanism ===========
@@ -1464,7 +1464,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
             continue
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
-    demisto.results(types_map)
+    return types_map
 
 
 def get_cim_mapping_field_command():
@@ -1615,14 +1615,12 @@ def get_cim_mapping_field_command():
         }
     }
 
-    fields = {
+    return {
         'Notable Data': notable,
         'Drilldown Data': drilldown,
         'Asset Data': asset,
         'Identity Data': identity
     }
-
-    demisto.results(fields)
 
 
 # =========== Mapping Mechanism ===========
@@ -2138,16 +2136,10 @@ def splunk_job_create_command(service: client.Service, args: dict):
     }
     search_job = service.jobs.create(query, **search_kwargs)
 
-    entry_context = {
-        'Splunk.Job': search_job.sid
-    }
-    demisto.results(
-        {
-            "Type": 1,
-            "ContentsFormat": formats['text'],
-            "Contents": f"Splunk Job created with SID: {search_job.sid}",
-            "EntryContext": entry_context,
-        }
+    return CommandResults(
+        outputs_prefix='Splunk',
+        readable_output=f"Splunk Job created with SID: {search_job.sid}",
+        outputs={'Job': search_job.sid}
     )
 
 
@@ -2160,18 +2152,21 @@ def splunk_results_command(service: client.Service, args: dict):
     except HTTPError as error:
         msg = error.message if hasattr(error, 'message') else str(error)
         if error.status == 404:
-            demisto.results(f"Found no job for sid: {sid}")
+            return f"Found no job for sid: {sid}"
         else:
             return_error(msg, error)
     else:
         for result in results.JSONResultsReader(job.results(count=limit, output_mode=OUTPUT_MODE_JSON)):
             if isinstance(result, results.Message):
-                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+                res.append({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
                 # Normal events are returned as dicts
                 res.append(result)
-
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        return_results(CommandResults(
+            raw_response=json.dumps(res),
+            content_format=EntryFormat.JSON,
+        ))
+        # demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
 def parse_time_to_minutes():
@@ -2712,11 +2707,11 @@ def main():  # pragma: no cover
         test_module(service, params)
         demisto.results('ok')
     elif command == 'splunk-reset-enriching-fetch-mechanism':
-        reset_enriching_fetch_mechanism()
+        return_results(reset_enriching_fetch_mechanism())
     elif command == 'splunk-search':
         return_results(splunk_search_command(service, args))
     elif command == 'splunk-job-create':
-        splunk_job_create_command(service, args)
+        return_results(splunk_job_create_command(service, args))
     elif command == 'splunk-results':
         splunk_results_command(service, args)
     elif command == 'splunk-get-indexes':
@@ -2760,9 +2755,9 @@ def main():  # pragma: no cover
 
     elif command == 'get-mapping-fields':
         if argToBoolean(params.get('use_cim', False)):
-            get_cim_mapping_field_command()
+            return_results(get_cim_mapping_field_command())
         else:
-            get_mapping_fields_command(service, mapper, params)
+            return_results(get_mapping_fields_command(service, mapper, params))
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=args,
