@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-### pack version: 1.2.0
+
+
 
 
 import json
@@ -41,7 +42,7 @@ class Client(BaseClient):
         else:  # standard api.openai.com
             self.headers["Authorization"] = f"Bearer {self.api_key}"
 
-    def completions(self, prompt: str, model: str = "text-davinci-003", temperature: float = 0.2,
+    def completions(self, prompt: str, model: str = "text-davinci-003", temperature: float = 0.7,
                     max_tokens: int = 256, top_p: float = 1, frequency_penalty: int = 0,
                     presence_penalty: int = 0, best_of: int = 1, stop: str = None) -> dict:
         """
@@ -205,15 +206,18 @@ def load_unstructured_file(entry_id: str, text_splitter: RecursiveCharacterTextS
     """
     file = demisto.getFilePath(entry_id)
     file_path = file.get('path')
-    with open(file_path, 'r') as f:
+    file_ext = file.get('name').split('.')[-1]
+    file_ext = f".{file_ext}"
+    with open(file_path, 'rb') as f:
         contents = f.read()
-    with NamedTemporaryFile() as tmp:
+    with NamedTemporaryFile(suffix=file_ext) as tmp:
         tmp.write(contents)
-    # https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/unstructured_file
-    loader = UnstructuredFileLoader(tmp.name)
-    document = loader.load()
-    docs = text_splitter.split_documents(document)
-    return docs
+        tmp.seek(0)
+        # https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/unstructured_file
+        loader = UnstructuredFileLoader(tmp.name)
+        document = loader.load()
+        docs = text_splitter.split_documents(document)
+        return docs
 
 
 ''' COMMAND FUNCTIONS '''
@@ -270,7 +274,7 @@ def completions_command(client: Client, args: dict) -> CommandResults:
         raise ValueError('No prompt argument was provided')
 
     model = args.get('model', 'text-davinci-003')
-    temperature = args.get('temperature', 0.2)
+    temperature = args.get('temperature', 0.7)
     max_tokens = args.get('max_tokens', 256)
     top_p = args.get('top_p', 1)
     frequency_penalty = args.get('frequency_penalty',0)
@@ -484,3 +488,4 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
