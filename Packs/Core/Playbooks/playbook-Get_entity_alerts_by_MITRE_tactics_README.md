@@ -15,7 +15,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
+* SearchAlertsV2
 
 ### Commands
 
