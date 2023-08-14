@@ -1,8 +1,8 @@
 This playbook is a generic playbook that receives a process name and a command-line argument. It uses the "Microsoft Defender For Endpoint" integration to search for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
-Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-- value: *process name*
--commands: *command-line arguments*
+Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+-  value: *process name*
+- commands: *command-line arguments*
 
 ## Dependencies
 
@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 
@@ -24,7 +24,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* microsoft-atp-advanced-hunting
+microsoft-atp-advanced-hunting
 
 ## Playbook Inputs
 
@@ -34,7 +34,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | Processes |  |  | Optional |
 | HuntingTimeFrame | Time in relative date or range format \(for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 \+02:00 and 2021-02-01 12:34:56 \+02:00"\). The default is the last 24 hours. | 7 days | Optional |
-| StringSimilarityThreshold | StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold. | 0.5 | Optional |
+| StringSimilarityThreshold | StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold. | 0.5 | Optional |
 
 ## Playbook Outputs
 

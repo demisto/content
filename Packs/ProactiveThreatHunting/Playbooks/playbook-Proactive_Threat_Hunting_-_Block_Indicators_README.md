@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
+Block Indicators - Generic v3
 
 ### Integrations
 

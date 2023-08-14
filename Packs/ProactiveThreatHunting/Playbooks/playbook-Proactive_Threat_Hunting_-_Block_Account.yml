@@ -42,7 +42,7 @@ tasks:
       id: 4bacea38-fadc-400b-896a-4b1e17995274
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -151,7 +151,7 @@ tasks:
       id: 4a3f5cba-3a8d-442a-8845-2b09eb8408f1
       version: -1
       name: Has account to block?
-      description: Checks if the is an account to block
+      description: Checks if there is an account to block.
       type: condition
       iscommand: false
       brand: ""
@@ -269,7 +269,7 @@ tasks:
       id: 790a758e-3bd7-412b-8b50-56a16abe34bc
       version: -1
       name: Executed from freestyle hunt?
-      description: Checks if the playbook was executed from "Freestyle hunt" tab
+      description: Checks if the playbook was executed from the "Freestyle hunt" tab.
       type: condition
       iscommand: false
       brand: ""
