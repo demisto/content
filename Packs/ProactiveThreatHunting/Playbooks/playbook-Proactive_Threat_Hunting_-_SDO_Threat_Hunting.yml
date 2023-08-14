@@ -646,7 +646,7 @@ tasks:
       id: 9303894e-5d31-4a4f-8ad4-a1d0eda0abb4
       version: -1
       name: Set StringSimilarity Results To Layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -897,7 +897,7 @@ tasks:
       id: d3a8c367-09c0-4f90-824c-b5e05c72a371
       version: -1
       name: Print hunt executed message to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -907,7 +907,7 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: 'The threat hunting seesion has been executed. To view the outcomes, kindly navigate to the SDO Hunting Session tab. IMPORTANT: You will receive a notification in this section once the hunting session is finished and an "Investigation & Response" tab will be display with further steps that can be taken.'
+        simple: 'The threat hunting seesion has been executed. To view the outcomes, kindly navigate to the SDO Hunting Session tab. IMPORTANT: You will receive a notification in this section once the hunting session is finished and an "Investigation & Response" tab will display with further steps that can be taken.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1106,7 +1106,7 @@ tasks:
       id: b92ba575-6cb0-4d98-8927-caff7321c37a
       version: -1
       name: Print Hunt Completed To Notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -1116,7 +1116,7 @@ tasks:
       - "5"
     scriptarguments:
       value:
-        simple: The threat hunting session completed. The hunting session results is displayed in SDO Hunting Session tab. Navigate to "Investigation & Response" tab for further post-hunting actions.
+        simple: The threat hunting session completed. The hunting session results is displayed in the SDO Hunting Session tab. Navigate to "Investigation & Response" tab for further post-hunting actions.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1188,15 +1188,15 @@ tasks:
       version: -1
       name: Search and Compare Process Executions - Generic
       description: |-
-        This playbook is a generic playbook that receives process name and command-line argument and search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
+        This playbook is a generic playbook that receives a process name and a command-line argument. It searches for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
 
         - Cortex XDR XQL Engine
         - Cortex XDR IR(Search executions inside XDR alerts)
         - Microsoft Defender For Endpoint
 
-        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-        -value: *process name*
-        -commands: *command-line arguments*
+        Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        - commands: *command-line arguments*
       playbookName: Search and Compare Process Executions - Generic
       type: playbook
       iscommand: false
@@ -1243,7 +1243,7 @@ tasks:
       id: aa9071c9-8926-4ae8-82f6-a5253cf91ee1
       version: -1
       name: Set suspicious executions to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
