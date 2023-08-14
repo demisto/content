@@ -2701,6 +2701,26 @@ script:
       predefined:
       - "true"
       - "false"
+  - name: google-drive-file-modify-label
+    description: Modify labels to file.
+    arguments:
+      - name: file_id
+        description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+      - name: user_id
+        description: The user's primary email address
+      - name: label_id
+        description: The label id to set for the file
+      - name: field_id
+        description: the field id of the label to set
+      - name: selection_label_id
+        description: the label id to set for the field
+      - auto: PREDEFINED
+        defaultValue: "false"
+        description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+        name: remove_label
+        predefined:
+          - "true"
+          - "false"
   dockerimage: demisto/googleapi-python3:1.0.0.66918
   isfetch: true
   runonce: false

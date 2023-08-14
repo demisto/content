@@ -39,6 +39,7 @@ HR_MESSAGES: dict[str, str] = {
     'EXCEPTION_LIST_GENERIC': 'Exception searching for {}: {}',
 
     'EXCEPTION_GENERIC': 'Exception handling a {} request: {}',
+    'MODIFY_LABEL_SUCCESS': 'Modify label successfully assigned to {}.',
 }
 
 SCOPES: dict[str, list[str]] = {
@@ -98,6 +99,11 @@ COMMAND_SCOPES: dict[str, list[str]] = {
     'FILE_PERMISSIONS_CRUD': [
         'https://www.googleapis.com/auth/drive',
         'https://www.googleapis.com/auth/drive.file',
+    ],
+
+    'MODIFY_LABELS_PERMISSIONS_CRUD': [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.labels',
     ]
 
 }
@@ -120,6 +126,7 @@ URL_SUFFIX: dict[str, str] = {
     'FILE_PERMISSION_CREATE': 'drive/v3/files/{}/permissions',
     'FILE_PERMISSION_UPDATE': 'drive/v3/files/{}/permissions/{}',
     'FILE_PERMISSION_DELETE': 'drive/v3/files/{}/permissions/{}',
+    'FILE_MODIFY_LABEL': 'drive/v3/files/{}/modifyLabels',
 }
 
 OUTPUT_PREFIX: dict[str, str] = {
@@ -1196,6 +1203,45 @@ def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) 
     return handle_response_file_single(file, args)
 
 
+def modify_label_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    modify_label_request_res = prepare_file_modify_labels_request(
+        client, args, scopes=COMMAND_SCOPES['MODIFY_LABELS_PERMISSIONS_CRUD'])
+    http_request_params = modify_label_request_res['http_request_params']
+
+    url_suffix = URL_SUFFIX['FILE_MODIFY_LABEL'].format(args.get('file_id'))
+    body_request = {
+        "kind": "drive#modifyLabelsRequest",
+        "labelModifications": [
+            {
+                "fieldModifications": [
+                    {
+                        "kind": "drive#labelFieldModification",
+                        "fieldId": args.get('field_id'),
+                        "setSelectionValues": [
+                            args.get('selection_label_id')
+                        ]
+                    }
+                ],
+                "kind": "drive#labelModification",
+                "labelId": args.get('label_id'),
+                "removeLabel": args.get('remove_label', False)
+            }
+        ]
+    }
+
+    response = client.http_request(url_suffix=url_suffix, method='POST', params=http_request_params, body=body_request)
+
+    table_hr_md = tableToMarkdown(HR_MESSAGES['MODIFY_LABEL_SUCCESS'].format(args.get('file_id')),
+                                  response,
+                                  headerTransform=pascalToSpace,
+                                  removeNull=False)
+
+    return CommandResults(
+        outputs=response,
+        readable_output=table_hr_md,
+    )
+
+
 @logger
 def file_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     """
@@ -1310,6 +1356,22 @@ def prepare_file_permission_request(client: 'GSuiteClient', args: dict[str, str]
         supportsAllDrives=args.get('supports_all_drives'),
         fields='*',
         useDomainAdminAccess=('true' if argToBoolean(args.get('use_domain_admin_access', 'false')) else 'false')
+    )
+
+    return {
+        'client': client,
+        'http_request_params': http_request_params,
+        'user_id': user_id,
+    }
+
+
+def prepare_file_modify_labels_request(client: 'GSuiteClient', args: dict[str, str], scopes: list[str]) -> dict[str, Any]:
+    # user_id can be overridden in the args
+    user_id = args.get('user_id') or client.user_id
+    client.set_authorized_http(scopes=scopes, subject=user_id)
+    # Prepare generic HTTP request params
+    http_request_params: dict[str, str] = assign_params(
+        fileId=args.get('file_id')
     )
 
     return {
@@ -1675,6 +1737,7 @@ def main() -> None:
         'google-drive-file-permission-create': file_permission_create_command,
         'google-drive-file-permission-update': file_permission_update_command,
         'google-drive-file-permission-delete': file_permission_delete_command,
+        'google-drive-file-modify-label': modify_label_command,
     }
     command = demisto.command()
 
