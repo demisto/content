@@ -125,7 +125,7 @@ def main():
                 for condition in conditions
                 if parse_boolean_expression(condition['condition'])
             ),
-            default,
+            default['else'],
         )
 
         return_results(result)
