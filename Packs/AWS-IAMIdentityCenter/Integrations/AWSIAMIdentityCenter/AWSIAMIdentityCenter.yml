@@ -1,10 +1,10 @@
+commonfields:
+  id: AWS - IAM Identity Center
+  version: -1
 category: IT Services
 sectionOrder:
 - Connect
 - Collect
-commonfields:
-  id: AWS - IAM Identity Center
-  version: -1
 configuration:
 - display: Role Arn
   name: roleArn
@@ -73,8 +73,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.
- defaultvalue: '5'
+- additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  defaultvalue: '5'
   display: Retries
   name: retries
   type: 0
@@ -97,18 +97,7 @@ configuration:
   name: IdentityStoreId
   required: true
   type: 4
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: fc025940-2fe4-4adc-80c9-9ad7d8eb7bcd
-    packName: AWS - IAM Identity Center Contribution Pack
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
-description: Amazon Web Services IAM Identity Center
+description: Amazon Web Services IAM Identity Center.
 display: AWS - IAM Identity Center
 name: AWS - IAM Identity Center
 script:
@@ -144,10 +133,10 @@ script:
       description: The stable and unique string identifying the user.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.Email
-      description: The user email address
+      description: The user email address.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.DisplayName
-      description: The user display name in AWS IAM IdentityCenter
+      description: The user display name in AWS IAM IdentityCenter.
   - arguments: []
     description: Lists the IAM users, returns all users in the AWS account.
     name: aws-iam-identitycenter-list-users
@@ -159,7 +148,7 @@ script:
       description: The stable and unique string identifying the user.
       type: string
   - arguments: []
-    description: Lists all the IAM groups in the AWS account
+    description: Lists all the IAM groups in the AWS account.
     name: aws-iam-identitycenter-list-groups
     outputs:
     - contextPath: AWS.IAM.IdentityCenter.Groups.GroupName
@@ -179,7 +168,7 @@ script:
       description: The friendly name that identifies the group.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupId
-      description: The stable and unique string identifying the group
+      description: The stable and unique string identifying the group.
       type: string
   - arguments:
     - description: The name of the user to add.
@@ -196,10 +185,10 @@ script:
     description: The name of the group to search.
     name: aws-iam-identitycenter-get-group
   - arguments:
-    - description: Username that will be removed from all groups
+    - description: Username that will be removed from all groups.
       name: userName
       required: true
-    description: This will remove the entered user from all groups/memberships
+    description: This will remove the entered user from all groups/memberships.
     name: aws-iam-identitycenter-remove-user-from-all-groups
   - arguments:
     - name: emailAddress
@@ -212,9 +201,9 @@ script:
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.DisplayName
       type: string
-    description: This will get user information using email address
+    description: This will get user information using email address.
     name: aws-iam-identitycenter-get-user-by-email
- dockerimage: demisto/boto3py3:1.0.0.65194
+  dockerimage: demisto/boto3py3:1.0.0.65194
   runonce: false
   script: ''
   subtype: python3
