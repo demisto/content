@@ -1127,7 +1127,7 @@ script:
       - status
     - name: sortOrder
       description: |
-        A comma-separated list of direction(s) in which to sort the fields defined by "sortFields".
+        A comma-separated list of directions in which to sort the fields defined by "sortFields".
         If multiple directions are chosen, they will be sequentially matched with "sortFields".
         If only one direction is chosen it will be used to sort all values in "sortFields".
         For example:
@@ -1194,6 +1194,7 @@ script:
     - name: historyUuid
       description: The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs.
     - name: format
+      required: true
       description: |
         The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.
          For scans that are older than 35 days, only the Nessus and CSV formats are supported.
