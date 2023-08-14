@@ -2240,8 +2240,8 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_r
     """
     branch_list = branch_list_command(client, args, org_repo_project_tuple.repository, org_repo_project_tuple.project)
     for branch in branch_list.outputs:
-        # two places call this function, one has reference_branch_name as an argument, the other has branch_name
-        if branch.get("name").endswith(args.get("reference_branch_name", args.get("branch_name"))):
+        # two places call this function, one has target_ref as an argument, the other has branch_name
+        if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
             return branch.get("objectId")
 
 
@@ -2252,15 +2252,15 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
-    # convert reference_branch_name to branch id
-    if args.get("reference_branch_name"):
+    # convert target_ref to branch id
+    if args.get("target_ref"):
         args["branch_id"] = mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple)
 
     response = client.branch_create_request(org_repo_project_tuple, args=args)
 
     # For deleting this redundant file, we re-set the reference to be itself in case the new branch came from a reference branch.
-    if args.get("reference_branch_name"):
-        args["reference_branch_name"] = args["branch_name"]
+    if args.get("target_ref"):
+        args["target_ref"] = args["branch_name"]
 
     # Delete the file was created for the new branch.
     file_delete_command(client=client, args=args, organization=org_repo_project_tuple.organization,
