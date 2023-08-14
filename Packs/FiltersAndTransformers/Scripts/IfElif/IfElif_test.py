@@ -1,3 +1,4 @@
+import demistomock as demisto
 import pytest
 
 
@@ -68,9 +69,11 @@ def test_load_conditions(mocker):
     """
     import IfElif
 
-    args = {'conditions': '{"key1": #{a.b.[0].c}, "key2": #{a.b.[1].c}, "key3": #VALUE}', 'value': 'value3'}
-    IfElif.CONTEXT = {'a': {'b': [{'c': 'value1'}, {'c': 'value2'}]}}
+    IfElif.CONTEXT = {}
+    args = {'conditions': '{"key1": #{a.b.[0].c}, "key2": #VALUE}', 'value': 'value2'}
+    dt = mocker.patch.object(demisto, 'dt', return_value='value1')
 
     result = IfElif.load_conditions(args)
 
-    assert result == {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+    assert result == {'key1': 'value1', 'key2': 'value2'}
+    dt.assert_called_with({}, 'a.b.[0].c')

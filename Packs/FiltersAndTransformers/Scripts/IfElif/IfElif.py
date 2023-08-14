@@ -80,7 +80,7 @@ def parse_boolean_expression(expression: str) -> bool:
 
 
 def get_from_context(keys: re.Match) -> str:
-    context_obj = demisto.dt(CONTEXT, keys)
+    context_obj = demisto.dt(CONTEXT, keys[1])
     return json.dumps(context_obj)
 
 
