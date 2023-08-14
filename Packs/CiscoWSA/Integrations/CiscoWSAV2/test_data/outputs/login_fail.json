@@ -1,0 +1,7 @@
+{
+    "error": {
+        "message": "Incorrect padding in the input.",
+        "code": "401",
+        "explanation": "401 = No permission -- see authorization schemes."
+    }
+}

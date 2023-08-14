@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-import requests
+import urllib3
 from typing import Dict
 
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -31,6 +31,7 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
+DATETIME_SETTINGS = settings = {'TIMEZONE': 'Z', 'RETURN_AS_TIMEZONE_AWARE': True}
 
 ''' CLIENT CLASS '''
 
@@ -178,14 +179,14 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: new indicators
 
     """
-    start_date = arg_to_datetime(last_run)
+    start_date = arg_to_datetime(last_run, settings=DATETIME_SETTINGS)
 
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = arg_to_datetime('90 days ago')
+        earliest_fetch = arg_to_datetime('90 days ago', settings=DATETIME_SETTINGS)
         start_date = max(earliest_fetch, start_date)  # type:ignore
-        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
+        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit, "last_updated": "asc"}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
@@ -215,15 +216,14 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f'{indicator_type}List', [])
     if len(indicators_list) < limit:
-        last_run = last_run_dict.get(indicator_type + 'Last', first_fetch)
+        last_run = last_run_dict.get(f'{indicator_type}Last', first_fetch)
         new_indicators_list = get_new_indicators(client, last_run, indicator_type, limit)
         indicators_list += new_indicators_list
 
     if indicators_list:
         new_indicators_list = indicators_list[:limit]
         last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
-        date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
-        last_run_dict[indicator_type + 'LastFetch'] = new_indicators_list[-1][date_key]
+        last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1]['last_updated']
 
         if update_context:
             demisto.setLastRun(last_run_dict)
@@ -402,7 +402,9 @@ def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
               'firstseenbysource': raw_indicator.get('first_seen'),
               'lastseenbysource': raw_indicator.get('last_seen'),
               'stixid': raw_indicator.get('id'),
-              'trafficlightprotocol': client.tlp_color
+              'trafficlightprotocol': client.tlp_color,
+              'tags': [industry.get('name') for industry in  # type: ignore
+                       raw_indicator.get('industries', [])] + client.tags
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values

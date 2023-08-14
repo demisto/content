@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: https://management.azure.com
   display: Microsoft Azure Management URL
   name: server_url
-  required: false
   type: 0
+  required: false
 - display: Tenant ID (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
@@ -18,51 +18,30 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. Unified security management and advanced threat protection across hybrid cloud workloads.
 display: Azure Security Center (Deprecated)
 name: Azure Security Center
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
-      isArray: false
+    - description: The name of the resource group within the user's subscription. The name is case insensitive.
       name: resource_group_name
-      required: false
-      secret: false
-    - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-location-list' command to get the ascLocation. This command requires the resourceGroupName argument.
-      isArray: false
+    - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-location-list' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
-      required: false
-      secret: false
-    - default: false
-      description: OData filter
-      isArray: false
+    - description: OData filter
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: OData select
-      isArray: false
+    - description: OData select
       name: select
-      required: false
-      secret: false
-    - default: false
-      description: OData expand
-      isArray: false
+    - description: OData expand
       name: expand
-      required: false
-      secret: false
     deprecated: true
     description: Lists alerts for the subscription according to the specified filters.
-    execution: false
     name: azure-sc-list-alert
     outputs:
     - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
@@ -84,34 +63,21 @@ script:
       description: Alert ID
       type: string
   - arguments:
-    - default: false
-      description: Resource group name
-      isArray: false
+    - description: Resource group name
       name: resource_group_name
       required: true
-      secret: false
     - default: true
       defaultValue: current
       description: Name of the Advanced Threat Detection setting, default is 'current'.
-      isArray: false
       name: setting_name
-      required: false
-      secret: false
-    - default: false
-      description: Storage name in your Azure account
-      isArray: false
+    - description: Storage name in your Azure account
       name: storage_account
       required: true
-      secret: false
-    - default: false
-      description: Indicates whether Advanced Threat Protection is enabled.
-      isArray: false
+    - description: Indicates whether Advanced Threat Protection is enabled.
       name: is_enabled
       required: true
-      secret: false
     deprecated: true
     description: Updates Advanced Threat Detection settings.
-    execution: false
     name: azure-sc-update-atp
     outputs:
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
@@ -124,28 +90,17 @@ script:
       description: Indicates whether Advanced Threat Protection is enabled
       type: string
   - arguments:
-    - default: false
-      description: Name of the resource group.
-      isArray: false
+    - description: Name of the resource group.
       name: resource_group_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: current
+    - defaultValue: current
       description: Name of Advanced Threat Detection setting, default setting's name is 'current'.
-      isArray: false
       name: setting_name
-      required: false
-      secret: false
-    - default: false
-      description: Name of a storage in your azure account.
-      isArray: false
+    - description: Name of a storage in your azure account.
       name: storage_account
       required: true
-      secret: false
     deprecated: true
     description: Returns the Advanced Threat Protection setting.
-    execution: false
     name: azure-sc-get-atp
     outputs:
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
@@ -161,19 +116,13 @@ script:
     - default: true
       defaultValue: default
       description: Name of the auto provisioning setting, default setting's name is 'default'
-      isArray: false
       name: setting_name
       required: true
-      secret: false
-    - default: false
-      description: Describes the type of security agent provisioning action to take (On or Off)
-      isArray: false
+    - description: Describes the type of security agent provisioning action to take (On or Off)
       name: auto_provision
       required: true
-      secret: false
     deprecated: true
     description: Updates a specific auto provisioning setting.
-    execution: false
     name: azure-sc-update-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
@@ -186,16 +135,12 @@ script:
       description: Setting resource ID
       type: string
   - arguments:
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the auto provisioning setting
-      isArray: false
       name: setting_name
       required: true
-      secret: false
     deprecated: true
     description: Returns details of a specific auto provisioning setting.
-    execution: false
     name: azure-sc-get-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
@@ -209,7 +154,6 @@ script:
       type: string
   - deprecated: true
     description: Lists auto provisioning settings in the subscription.
-    execution: false
     name: azure-sc-list-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
@@ -222,21 +166,12 @@ script:
       description: Setting resource ID
       type: string
   - arguments:
-    - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
-      isArray: false
+    - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       name: asc_location
-      required: false
-      secret: false
-    - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
-      isArray: false
+    - description: The name of the resource group within the user's subscription. The name is case insensitive.
       name: resource_group_name
-      required: false
-      secret: false
     deprecated: true
     description: Lists all policies for protecting resources using Just-in-Time access control.
-    execution: false
     name: azure-sc-list-jit
     outputs:
     - contextPath: AzureSecurityCenter.JITPolicy.Name
@@ -253,7 +188,6 @@ script:
       type: string
   - deprecated: true
     description: Lists all the storage accounts available under the subscription.
-    execution: false
     name: azure-sc-list-storage
     outputs:
     - contextPath: AzureSecurityCenter.Storage.Name
@@ -265,9 +199,6 @@ script:
     - contextPath: AzureSecurityCenter.Storage.Location
       description: The geo-location where the resource resides
       type: string
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

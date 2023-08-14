@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71394f2c-bc76-4885-8bab-b55ce0094789
+    taskid: c32e9f85-c5d6-4969-84f6-611c9eb31deb
     type: start
     task:
-      id: 71394f2c-bc76-4885-8bab-b55ce0094789
+      id: c32e9f85-c5d6-4969-84f6-611c9eb31deb
       version: -1
       name: ""
       iscommand: false
@@ -19,26 +19,31 @@ tasks:
       '#none#':
       - "15"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": -460
+          "x": 50,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: be00a185-8d20-4e46-8012-4ae44b3687fc
+    taskid: 40ccdd7f-657f-4e3a-8175-2897acf56ae3
     type: regular
     task:
-      id: be00a185-8d20-4e46-8012-4ae44b3687fc
+      id: 40ccdd7f-657f-4e3a-8175-2897acf56ae3
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
-      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
-      script: '|||extrahop-track-ticket'
+      description: Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
+      script: '|||extrahop-ticket-track'
       type: regular
       iscommand: true
       brand: ""
@@ -48,8 +53,8 @@ tasks:
     scriptarguments:
       detection_id:
         complex:
-          root: foundIncidents
-          accessor: CustomFields.detectionid
+          root: foundIncidents.CustomFields
+          accessor: extrahoprevealxdetectionid
       incident_close_reason:
         complex:
           root: foundIncidents
@@ -66,24 +71,31 @@ tasks:
         complex:
           root: foundIncidents
           accessor: status
-    continueonerror: true
+          transformers:
+          - operator: Stringify
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1110
+          "x": 275,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f4953d89-2219-4d74-8acf-d819728d0ac9
+    taskid: fa03567c-6392-4cc7-8680-f921f6d30cd6
     type: title
     task:
-      id: f4953d89-2219-4d74-8acf-d819728d0ac9
+      id: fa03567c-6392-4cc7-8680-f921f6d30cd6
       version: -1
       name: Done
       type: title
@@ -91,22 +103,27 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 1640
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6f9852cc-7a6e-4d2f-8bef-86fb205e5408
+    taskid: f4ae0133-9254-4fd5-85e5-b628daf79ad4
     type: regular
     task:
-      id: 6f9852cc-7a6e-4d2f-8bef-86fb205e5408
+      id: f4ae0133-9254-4fd5-85e5-b628daf79ad4
       version: -1
       name: Mark the incident as tracked
       description: Update the incident to reflect the Detection Ticketed status.
@@ -118,133 +135,32 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
       detectionticketed:
         simple: "true"
-      detectionupdatetime: {}
-      detectionurl: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
       id:
         simple: ${ExtraHop.TicketId}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      participants: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      rawparticipants: {}
-      replacePlaybook: {}
-      riskscore: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      telephoneno: {}
-      type: {}
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 600
+          "x": 387.5,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 695438ce-bf6a-43e8-8d73-3b314c1ea1e5
+    taskid: 4e043cd5-ca08-4500-8ed1-a3eef80a8448
     type: regular
     task:
-      id: 695438ce-bf6a-43e8-8d73-3b314c1ea1e5
+      id: 4e043cd5-ca08-4500-8ed1-a3eef80a8448
       version: -1
       name: Search for any untracked ExtraHop Detections
       description: Searches Demisto incidents for any ExtraHop Detections that are untracked.
@@ -256,43 +172,30 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      details: {}
-      fromclosedate: {}
-      fromdate: {}
-      fromduedate: {}
-      id: {}
-      level: {}
-      name: {}
-      notstatus: {}
-      owner: {}
-      page: {}
       query:
         simple: type:"ExtraHop Detection" and incident.detectionticketed:F and incident.created:>="1 day ago"
-      reason: {}
-      size: {}
-      sort: {}
-      status: {}
-      toclosedate: {}
-      todate: {}
-      toduedate: {}
-      type: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 770
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 75eb04ec-c770-4120-8d70-56513ce2201b
+    taskid: b54776a0-8d9b-4a37-8b6b-36eb9948b504
     type: regular
     task:
-      id: 75eb04ec-c770-4120-8d70-56513ce2201b
+      id: b54776a0-8d9b-4a37-8b6b-36eb9948b504
       version: -1
       name: Mark the incident as tracked
       description: Update the incident to reflect the Detection Ticketed status.
@@ -304,137 +207,36 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
       detectionticketed:
         simple: "true"
-      detectionupdatetime: {}
-      detectionurl: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
       id:
         simple: ${ExtraHop.TicketId}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      participants: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      rawparticipants: {}
-      replacePlaybook: {}
-      riskscore: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      telephoneno: {}
-      type: {}
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1465
+          "x": 387.5,
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 50b89e52-0733-477b-8929-8b595f704ca4
+    taskid: 20bc01cd-bfd5-4f76-8c88-270140929579
     type: regular
     task:
-      id: 50b89e52-0733-477b-8929-8b595f704ca4
+      id: 20bc01cd-bfd5-4f76-8c88-270140929579
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
-      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
-      script: '|||extrahop-track-ticket'
+      description: Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
+      script: '|||extrahop-ticket-track'
       type: regular
       iscommand: true
       brand: ""
@@ -443,7 +245,7 @@ tasks:
       - "11"
     scriptarguments:
       detection_id:
-        simple: ${incident.detectionid}
+        simple: ${incident.extrahoprevealxdetectionid}
       incident_close_reason:
         simple: ${incident.closeReason}
       incident_id:
@@ -451,25 +253,34 @@ tasks:
       incident_owner:
         simple: ${incident.owner}
       incident_status:
-        simple: ${incident.status}
-    continueonerror: true
+        complex:
+          root: incident
+          accessor: status
+          transformers:
+          - operator: Stringify
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 230
+          "x": 275,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 40271f8c-840d-4e71-86c5-57a28bc24aea
+    taskid: b0a3a2ba-8e90-40f7-8dd4-86a281893adc
     type: condition
     task:
-      id: 40271f8c-840d-4e71-86c5-57a28bc24aea
+      id: b0a3a2ba-8e90-40f7-8dd4-86a281893adc
       version: -1
       name: Are the required fields present?
       description: Checks if the required detection and incident IDs are present.
@@ -490,27 +301,34 @@ tasks:
             value:
               simple: incident.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.detectionid
+              simple: incident.extrahoprevealxdetectionid
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 50
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 76071ff8-9c4d-494d-8b73-aa4368199fb5
+    taskid: a8a35406-21b2-420e-82e1-85d1ee65b75e
     type: condition
     task:
-      id: 76071ff8-9c4d-494d-8b73-aa4368199fb5
+      id: a8a35406-21b2-420e-82e1-85d1ee65b75e
       version: -1
       name: Were there any incidents found?
       description: Checks if there were any untracked ExtraHop Detections found.
@@ -531,22 +349,27 @@ tasks:
             value:
               simple: foundIncidents.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 930
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e553a569-662c-460e-87f0-f69efaf2901a
+    taskid: 48811fa6-a5da-47bf-8216-c4eaeb2e1d16
     type: condition
     task:
-      id: e553a569-662c-460e-87f0-f69efaf2901a
+      id: 48811fa6-a5da-47bf-8216-c4eaeb2e1d16
       version: -1
       name: Was the incident successfully tracked?
       description: Check if the ticket tracking was successful.
@@ -567,22 +390,27 @@ tasks:
             value:
               simple: ExtraHop.TicketId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 390
+          "x": 275,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 624c3b07-31d8-45ca-8f6f-332974515fef
+    taskid: fdfeff4c-8830-4994-829b-0709ebd34050
     type: condition
     task:
-      id: 624c3b07-31d8-45ca-8f6f-332974515fef
+      id: fdfeff4c-8830-4994-829b-0709ebd34050
       version: -1
       name: Was the incident successfully tracked?
       description: Check if the ticket tracking was successful.
@@ -603,22 +431,27 @@ tasks:
             value:
               simple: ExtraHop.TicketId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1275
+          "x": 275,
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1619242b-d813-4dfb-8801-cd45a61906f3
+    taskid: f44226e0-a8f2-436e-88a2-a22bf62a9096
     type: regular
     task:
-      id: 1619242b-d813-4dfb-8801-cd45a61906f3
+      id: f44226e0-a8f2-436e-88a2-a22bf62a9096
       version: -1
       name: Assign an ExtraHop analyst to the incident
       description: Assign an analyst randomly from the pool of users with the ExtraHop role.
@@ -630,32 +463,34 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      assignBy: {}
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
       roles:
         simple: ExtraHop
-      username: {}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": -110
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: dffb9228-cc49-4adf-88f5-13001f85ba70
+    taskid: 4894eced-2f61-44f8-8404-7ca6665e3d2d
     type: condition
     task:
-      id: dffb9228-cc49-4adf-88f5-13001f85ba70
+      id: 4894eced-2f61-44f8-8404-7ca6665e3d2d
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
       description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
@@ -676,7 +511,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: brand
+                  simple: modules.brand
                 iscontext: true
               right:
                 value:
@@ -684,22 +519,27 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: state
+                  simple: modules.state
                 iscontext: true
               right:
                 value:
                   simple: active
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": -320
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -716,10 +556,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2165,
-        "width": 970,
-        "x": -100,
-        "y": -460
+        "height": 2135,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -729,7 +569,8 @@ inputs:
     simple: "false"
   required: false
   description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
 tests:
-- ExtraHop_v2-Test
+- No tests (auto formatted)
+fromversion: 6.5.0

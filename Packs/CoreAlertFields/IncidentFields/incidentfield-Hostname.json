@@ -2,6 +2,7 @@
     "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "hostname",
+    "prettyName": "Host",
     "closeForm": false,
     "content": true,
     "description": "The hostname of the endpoint or server on which this alert triggered. The hostname is generally available for XDR agent alerts or alerts that are stitched with EDR data. When the hostname is unknown, this field is blank.",

@@ -42,6 +42,7 @@ outputs:
 - contextPath: ScheduledEntries.schedule.HumanCron
   description: Entry schedule settings
 scripttarget: 0
-runonce: false
 sensitive: true
 fromversion: 5.0.0
+tests:
+- TestShowScheduledEntries

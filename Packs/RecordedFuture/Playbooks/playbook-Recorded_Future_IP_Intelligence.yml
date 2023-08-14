@@ -158,7 +158,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Recorded Future
+                        simple: Recorded Future v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -243,7 +243,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.IP.concatRules}
       value:
-        simple: ${RecordedFuture.IP.name}
+        simple: ${inputs.IP}
     separatecontext: false
     view: |-
       {

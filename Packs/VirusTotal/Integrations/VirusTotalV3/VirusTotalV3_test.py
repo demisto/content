@@ -365,3 +365,46 @@ def test_url_command_success(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+
+
+def test_private_file_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private file
+
+    When:
+    - Running the !vt-privatescanning-file command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from VirusTotalV3 import private_file_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
+    mocker.patch.object(demisto, 'args',
+                        return_value={'file': sha256})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(
+        params=params
+    )
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/private_file.json')
+    expected_results = util_load_json('test_data/private_file_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/files/{sha256}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = private_file_command(
+        client=client,
+        args=demisto.args(),
+    )
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results

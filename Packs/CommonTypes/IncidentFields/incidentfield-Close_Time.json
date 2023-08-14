@@ -8,7 +8,8 @@
         "Qradar Generic",
         "Guardicore Incident",
         "Saas Security Incident",
-        "Exabeam Incident"
+        "Exabeam Incident",
+        "Graph Security Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

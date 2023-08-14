@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import gzip
 import hashlib
@@ -5,13 +7,11 @@ import secrets
 import string
 from typing import Any, Dict, Tuple
 
-import requests
+import urllib3
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -351,7 +351,8 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     time_frame = args.get('time_frame')
     if time_frame:
         data['request_data']['timeframe'] = convert_timeframe_string_to_json(time_frame)
-    tenant_ids = argToList(args.get('tenant_ids'))
+    # The arg is called 'tenant_id', but to avoid BC we will also support 'tenant_ids'.
+    tenant_ids = argToList(args.get('tenant_id') or args.get('tenant_ids'))
     if tenant_ids:
         data['request_data']['tenants'] = tenant_ids
     # call the client function and get the raw response

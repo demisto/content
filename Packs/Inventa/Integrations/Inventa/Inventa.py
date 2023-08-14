@@ -7,10 +7,10 @@ from CommonServerPython import *  # noqa: F401
 
 import traceback
 from typing import Any, Dict
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

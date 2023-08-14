@@ -1,0 +1,17 @@
+{
+    "raw_user_data": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users", "value": [
+        {"businessPhones": [], "displayName": "Graph Test", "givenName": null, "jobTitle": "Test",
+         "mail": "Test@demistodev.onmicrosoft.com", "mobilePhone": null, "officeLocation": null, "preferredLanguage": null,
+         "surname": null, "userPrincipalName": "0e3f5d4140cc4448a857e565a4d228e1@demistodev.onmicrosoft.com",
+         "id": "5bfe522c-d817-4ea8-b52c-cc959e10e623"},
+        {"businessPhones": ["0525555555"], "displayName": "Test Graph 2", "givenName": "Test",
+         "jobTitle": "Staff Software Developer", "mail": "test2@demistodev.onmicrosoft.com", "mobilePhone": "0525555555",
+         "officeLocation": null, "preferredLanguage": null, "surname": null,
+         "userPrincipalName": "test2@demistodev.onmicrosoft.com", "id": "00df702c-cdae-460d-a442-46db6cecca29"}]},
+    "expected_ec": {"MsGraph.User(val.ID && val.ID === obj.ID)": [
+        {"Name": "Graph Test", "Title": "Test", "Email": "Test@demistodev.onmicrosoft.com",
+         "ID": "5bfe522c-d817-4ea8-b52c-cc959e10e623"},
+        {"Name": "Test Graph 2", "Title": "Staff Software Developer", "Email": "test2@demistodev.onmicrosoft.com",
+         "ID": "00df702c-cdae-460d-a442-46db6cecca29"}]},
+    "expected_hr": "### Microsoft Graph Users\n|Name|Title|Email|ID|\n|---|---|---|---|\n| Graph Test | Test | Test@demistodev.onmicrosoft.com | 5bfe522c-d817-4ea8-b52c-cc959e10e623 |\n| Test Graph 2 | Staff Software Developer | test2@demistodev.onmicrosoft.com | 00df702c-cdae-460d-a442-46db6cecca29 |\n"
+}

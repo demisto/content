@@ -1,22 +1,28 @@
-Initiates a new script execution of shell commands.
+Deprecated. Use the `xdr-script-commands-execute` command instead. Initiates a new script execution of shell commands.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Cortex XDR - Check Action Status
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-get-script-execution-results
+
 * xdr-run-script-execute-commands
+* xdr-get-script-execution-results
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -27,9 +33,12 @@ This playbook does not use any scripts.
 | polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Cortex XDR - Execute commands](https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Execute_commands.png)
+
+![Cortex XDR - Execute commands](../doc_files/Cortex_XDR_-_Execute_commands.png)

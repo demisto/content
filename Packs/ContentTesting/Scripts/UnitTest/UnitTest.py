@@ -1,8 +1,7 @@
-import io
-import uuid
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import io
+import uuid
 
 
 def GetAutomationId(name):
@@ -15,8 +14,7 @@ def GetAutomationId(name):
 def GetPlaybookId(name):
     playbook = demisto.executeCommand("demisto-api-post", {
         'uri': "/playbook/search",
-        "body":
-            {'query': "name:" + name}
+        "body": {"query": "name:" + f'"{name}"'}
     })[0]['Contents']['response']['playbooks']
     if playbook is None:
         return "-1"
@@ -27,10 +25,10 @@ def GetPlaybookId(name):
 def RunUTResults(args):
     try:
         # Set up the task arguments
-        scriptid = GetAutomationId("UnitTestResults")
         addafter = args['addafter']
         incid = args['incid']
         gridfld = args['gridfield']
+        scriptid = GetAutomationId("UnitTestResults")
         newargs = {
             'cmds': {'simple': ",".join(args['cmds'])},
             'tasks': {'simple': ",".join(args['tasks'])},
@@ -94,7 +92,7 @@ def RunUTResults(args):
                             'invId': incid,
                             'inTaskID': task_id,
                             'version': -1,
-                            'args': {},
+                            'args': newargs,
                             'loopArgs': {}
                         },
                         'playbooksdebuginfo': {},

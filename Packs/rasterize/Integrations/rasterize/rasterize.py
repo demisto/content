@@ -236,7 +236,7 @@ def quit_driver_and_display_and_reap_children(driver, display):
             demisto.error(f"Failed to stop display. Error: {edr}. Trace: {traceback.format_exc()}")
 
         zombies, ps_out = find_zombie_processes()
-        if zombies:
+        if zombies:  # pragma: no cover
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
             for pid in zombies:
                 waitres = os.waitpid(int(pid), os.WNOHANG)[1]

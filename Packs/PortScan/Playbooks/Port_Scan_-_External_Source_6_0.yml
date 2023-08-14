@@ -520,7 +520,7 @@ tasks:
       '#default#':
       - "52"
       "yes":
-      - "51"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -573,78 +573,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "51":
-    id: "51"
-    taskid: 1c6c9b96-d952-4e62-843e-f462f8213999
-    type: playbook
-    task:
-      id: 1c6c9b96-d952-4e62-843e-f462f8213999
-      version: -1
-      name: PAN-OS - Block Domain - External Dynamic List
-      description: |-
-        This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
-        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook
-        (otherwise the list will be configured), and adds the input Domains to the relevant lists.
-      playbookName: PAN-OS - Block Domain - External Dynamic List
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "57"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      Domain:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Domain
-              ignorecase: true
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      DomainListName:
-        simple: Demisto Remediation - Domain EDL
-      pre-post-rulebase:
-        simple: pre-rulebase
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "52":
     id: "52"
     taskid: 82f7571d-ccdd-4bec-871b-f2a2a948bc50
@@ -813,7 +741,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "57":
     id: "57"
     taskid: f57c255a-834b-43cd-8374-16a4e9920a22

@@ -1,0 +1,38 @@
+[
+        {
+            "id": "1",
+            "target_type": "url",
+            "target_value": "https://twitter.com/",
+            "comment": "Allow List for API testing"
+        },
+        {
+            "id": "2",
+            "target_type": "ip",
+            "target_value": "8.8.8.8",
+            "comment": "Allow IP List for API testing"
+        },
+        {
+            "id": "3",
+            "target_type": "ip",
+            "target_value": "8.8.8.8",
+            "comment": "Allow IP List for API testing"
+        },
+        {
+            "id": "4",
+            "target_type": "url",
+            "target_value": "https://twitter.com/",
+            "comment": "Allow List for API testing"
+        },
+        {
+            "id": "5",
+            "target_type": "ip",
+            "target_value": "8.8.8.8",
+            "comment": "Allow IP List for API testing"
+        },
+        {
+            "id": "6",
+            "target_type": "ip",
+            "target_value": "8.8.8.8",
+            "comment": "Allow IP List for API testing"
+        }
+]

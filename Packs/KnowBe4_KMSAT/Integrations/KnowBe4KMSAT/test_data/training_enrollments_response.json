@@ -1,0 +1,74 @@
+[
+    {
+        "enrollment_id": 1425526,
+        "content_type": "Uploaded Policy",
+        "module_name": "Acceptable Use Policy",
+        "user": {
+            "id": 796742,
+            "first_name": "Sarah",
+            "last_name": "Thomas",
+            "email":"example1@kb4-demo.com"
+        },
+        "campaign_name": "New Employee Policies",
+        "enrollment_date": "2019-04-02T15:02:38.000Z",
+        "start_date": "2019-04-02T15:02:38.000Z",
+        "completion_date": "2019-04-02T15:02:38.000Z",
+        "status": "Passed",
+        "time_spent": 2340,
+        "policy_acknowledged": false
+    },
+    {
+        "enrollment_id": 452825870,
+        "content_type": "Store Purchase",
+        "module_name": "An Introduction to the General Data Protection Regulation (GDPR)",
+        "user": {
+            "id": 79783396,
+            "first_name": "Aaron",
+            "last_name": "Anderson",
+            "email": "admin@kb4-demo.com"
+        },
+        "campaign_name": "Sales Ongoing Campaign",
+        "enrollment_date": "2019-08-14T06:42:00.000Z",
+        "start_date": "2019-01-25T06:53:51.000Z",
+        "completion_date": "2019-01-25T06:53:51.000Z",
+        "status": "Passed",
+        "time_spent": 0,
+        "policy_acknowledged": false
+    },
+    {
+        "enrollment_id": 452825871,
+        "content_type": "Uploaded Policy",
+        "module_name": "Employee Policy",
+        "user": {
+            "id": 7978339432,
+            "first_name": "Bill",
+            "last_name": "Murray",
+            "email": "b_murray@kb4-demo.com"
+        },
+        "campaign_name": "Sales Ongoing Campaign",
+        "enrollment_date": "2019-08-14T06:42:00.000Z",
+        "start_date": "2019-01-25T10:02:51.000Z",
+        "completion_date": null,
+        "status": "In Progress",
+        "time_spent": 20,
+        "policy_acknowledged": false
+    },
+    {
+        "enrollment_id": 452825873,
+        "content_type": "Store Purchase",
+        "module_name": "Privacy Edition Season 1: Ep 03 - Once More Unto the Breach (Retention & Disposal)",
+        "user": {
+            "id": 7978339322,
+            "first_name": "Don",
+            "last_name": "Juan",
+            "email": "d_juan@kb4-demo.com"
+        },
+        "campaign_name": "2022 Security Awareness Initiative",
+        "enrollment_date": "2019-01-16T06:42:00.000Z",
+        "start_date": null,
+        "completion_date": null,
+        "status": "Not Started",
+        "time_spent": 0,
+        "policy_acknowledged": false
+    }
+]

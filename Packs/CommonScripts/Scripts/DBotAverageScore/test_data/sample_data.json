@@ -1,0 +1,40 @@
+{
+    "context_data": [
+    {"Indicator": "192.0.2.0", "Reliability": "A - Completely reliable", "Score": 1, "Vendor": "Vendor1"},
+    {"Indicator": "192.0.2.0", "Reliability": "B - Usually reliable", "Score": 2, "Vendor": "Vendor2"},
+    {"Indicator": "192.0.2.0", "Reliability": "C - Fairly reliable", "Score": 3, "Vendor": "Vendor3"},
+
+    {"Indicator": "192.0.2.1", "Reliability": "A - Completely reliable", "Score": 0, "Vendor": "Vendor1"},
+    {"Indicator": "192.0.2.1", "Reliability": "B - Usually reliable", "Score": 0, "Vendor": "Vendor2"},
+    {"Indicator": "192.0.2.1", "Reliability": "C - Fairly reliable", "Score": 0, "Vendor": "Vendor3"},
+
+    {"Indicator": "192.0.2.2", "Reliability": "A - Completely reliable", "Score": 1, "Vendor": "Vendor1"},
+    {"Indicator": "192.0.2.2", "Reliability": "B - Usually reliable", "Score": 1, "Vendor": "Vendor2"},
+    {"Indicator": "192.0.2.2", "Reliability": "C - Fairly reliable", "Score": 0, "Vendor": "Vendor3"},
+    {"Indicator": "192.0.2.2", "Reliability": "D - Not usually reliable", "Score": 0, "Vendor": "Vendor4"},
+
+    {"Indicator": "192.0.2.3", "Reliability": "A - Completely reliable", "Score": 1, "Vendor": "Vendor1"},
+    {"Indicator": "192.0.2.3", "Reliability": "B - Usually reliable", "Score": 2, "Vendor": "Vendor2"},
+    {"Indicator": "192.0.2.3", "Reliability": "C - Fairly reliable", "Score": 3, "Vendor": "Vendor3"},
+    {"Indicator": "192.0.2.3", "Reliability": "D - Not usually reliable", "Score": 4, "Vendor": "Vendor4"}
+    ],
+    "expected_context_output": [
+        {
+            "Indicator": "192.0.2.0",
+            "Score": 2.0
+        },
+        {
+            "Indicator": "192.0.2.1",
+            "Score": 0
+        },
+        {
+            "Indicator": "192.0.2.2",
+            "Score": 1.0
+        },
+        {
+            "Indicator": "192.0.2.3",
+            "Score": 2.5
+        }
+    ],
+    "expected_readable_output": "### DBot Average Scores\n|Indicator|Score|\n|---|---|\n| 192.0.2.0 | 2.0 |\n| 192.0.2.1 | 0 |\n| 192.0.2.2 | 1.0 |\n| 192.0.2.3 | 2.5 |\n"
+}

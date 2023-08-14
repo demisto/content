@@ -2094,8 +2094,10 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         date_format=DATETIME_FORMAT_MILISECONDS,
     )
 
-    demisto.debug(f"fetching incidents between {start_time=}, {end_time=}")
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
     start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
+
+    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=}')
 
     incident_type = argToList(args.get('incident_type'))
     priority = argToList(args.get('priority'))
@@ -2106,7 +2108,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
             "status": status,
             "incidentType": incident_type,
             "priority": priority,
-            "startedDate": [
+            "createdAt": [
                 start_time_as_milisecound,
                 end_time_as_milisecound
             ],
@@ -2117,9 +2119,11 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         "offset": 0,
         "length": last_run.get('limit') or limit
     }
+    demisto.debug(f'The query for fetch: {q}')
 
     resp = client.get_incidents(q)
     incidents_res: List[dict] = resp.get('incidents', [])
+    demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2127,6 +2131,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         fetch_limit=limit,
         id_field='incidentId'
     )
+    demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
     incidents: List[dict] = []
     for incident in incidents_filtered:

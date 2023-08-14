@@ -106,7 +106,6 @@ def test_convert_to_incident(mail_string, mail_date):
     from MailListenerV2 import Email
     email = Email(mail_string, False, False, 0)
     incident = email.convert_to_incident()
-    assert incident['attachment'] == []
     assert incident['occurred'] == mail_date
     assert incident['details'] == email.text or email.html
     assert incident['name'] == email.subject
@@ -114,74 +113,76 @@ def test_convert_to_incident(mail_string, mail_date):
 
 @pytest.mark.parametrize(
     'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    # noqa: E501
     [
         (
-            datetime(year=2020, month=10, day=1),
-            False,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'FROM',
-                'domain2.com',
-                'FROM',
-                'test1.com',
-                'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                False,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'FROM',
+                    'domain2.com',
+                    'FROM',
+                    'test1.com',
+                    'FROM',
+                    'test1@mail.com',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            datetime(year=2020, month=10, day=1),
-            True,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'HEADER',
-                'FROM',
-                'domain2.com',
-                'HEADER',
-                'FROM',
-                'test1.com',
-                'HEADER',
-                'FROM',
-                'test1@mail.com',
-                'HEADER',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                True,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'HEADER',
+                    'FROM',
+                    'domain2.com',
+                    'HEADER',
+                    'FROM',
+                    'test1.com',
+                    'HEADER',
+                    'FROM',
+                    'test1@mail.com',
+                    'HEADER',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            None,
-            '',
-            [],
-            [],
-            1,
-            [
-                'UID',
-                '1:*'
-            ]
+                None,  # noqa: E126
+                '',  # noqa: E126
+                [],
+                [],
+                1,
+                [
+                    'UID',
+                    '1:*'
+                ]
         )
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from,
+        expected_query
 ):
     """
     Given:
@@ -231,7 +232,7 @@ def mock_email():
         return email
 
 
-@pytest.mark.parametrize('src_data, expected', [({1: {b'RFC822': r'C:\User\u'.encode('utf-8')}}, br'C:\User\u'),
+@pytest.mark.parametrize('src_data, expected', [({1: {b'RFC822': br'C:\User\u'}}, br'C:\User\u'),
                                                 ({2: {b'RFC822': br'C:\User\u'}}, br'C:\User\u')])
 def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     """
@@ -254,3 +255,293 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
     assert mail_mocker.call_args[0][0] == expected
+
+
+def test_get_eml_attachments():
+    from MailListenerV2 import Email
+    import email
+    # Test an email with a PNG attachment
+    with open(
+            'test_data/eml-with-jpeg.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res == []
+    # Test an email with EML attachment
+    with open(
+            'test_data/eml-with-eml-with-attachment.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res[0]['filename'] == 'Test with an image.eml'
+
+
+@pytest.mark.parametrize('cert_and_key', [
+    # - cert and key are in the integration instance parameters
+    # - private key is OpenSSL format
+    # *** The cert and key below are not used in the real services, and only used for testing.
+    ({
+        'password': '-----BEGIN CERTIFICATE----- '\
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
+                    'OzZEXmZyHr121wY= '\
+                    '-----END CERTIFICATE----- '\
+                    '-----BEGIN EC PRIVATE KEY----- '\
+                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '\
+                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '\
+                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '\
+                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+                    '-----END EC PRIVATE KEY-----'
+    }
+    ),
+    # - cert and key are in the Certificate section of the Credentials
+    # - private key is OpenSSL format
+    # *** The cert and key below are not used in the real services, and only used for testing.
+    ({
+        'credentials': {
+            'sshkey': '''
+-----BEGIN CERTIFICATE-----
+MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN
+BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw
+NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu
+dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD
+TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE
+gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6
+N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs
+8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr
+BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y
+KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6
+iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG
+Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ
+AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve
+ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM
+05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J
+ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe
+TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z
+R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN
+l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+
+OzZEXmZyHr121wY=
+-----END CERTIFICATE-----
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v
+OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy
+5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ
+f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
+-----END EC PRIVATE KEY-----
+'''
+        }
+    }
+    ),
+    # - cert and key are in the integration instance parameters
+    # - private key is PKCS#8 PEM
+    # *** The cert and key below are not used in the real services, and only used for testing.
+    ({
+        'password': '-----BEGIN CERTIFICATE----- '\
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
+                    'OzZEXmZyHr121wY= '\
+                    '-----END CERTIFICATE----- '\
+                    '-----BEGIN PRIVATE KEY----- '\
+                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '\
+                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '\
+                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '\
+                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+                    '-----END PRIVATE KEY-----'
+    }
+    ),
+    # - cert and key are in the Certificate secion of the Credentials
+    # - private key is PKCS#8 PEM
+    # *** The cert and key below are not used in the real services, and only used for testing.
+    ({
+        'credentials': {
+            'sshkey': '''
+-----BEGIN CERTIFICATE-----
+MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN
+BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw
+NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu
+dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD
+TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE
+gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6
+N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs
+8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr
+BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y
+KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6
+iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG
+Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ
+AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve
+ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM
+05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J
+ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe
+TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z
+R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN
+l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+
+OzZEXmZyHr121wY=
+-----END CERTIFICATE-----
+-----BEGIN PRIVATE KEY-----
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA
+47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO
+kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx
+dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
+-----END PRIVATE KEY-----
+'''
+        }
+    }
+    )
+])
+def test_load_client_cert_and_key(mocker, cert_and_key):
+    """
+    Given:
+        Client cetifcates and private keys from the integration's parameters
+    When:
+        Authenticating the client using SSL client certificate authentication
+    Then:
+        1. Validate that the SSLContext object, that is used for authentication,
+        is given the correct file that holds the certificates
+        2. The function 'load_client_cert_and_key' returns True, inidicating that we are using
+        SSL client certificate authentication
+    """
+    from MailListenerV2 import load_client_cert_and_key
+    import ssl
+    import tempfile
+
+    params = {
+        'clientCertAndKey': cert_and_key
+    }
+
+    named_temporary_file_mocker = mocker.patch('MailListenerV2.NamedTemporaryFile',
+                                               return_value=tempfile.NamedTemporaryFile(mode='w'))
+    ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
+    ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    load_cert_chain_mocker = mocker.patch.object(ssl_ctx, 'load_cert_chain')
+    assert (load_client_cert_and_key(ssl_ctx, params) is True)
+    assert load_cert_chain_mocker.call_args_list[0][1].get('certfile') == named_temporary_file_mocker.return_value.name
+
+
+def test_load_empty_client_cert_and_key_():
+    """
+    Given:
+        Client cetifcates and private keys are not configured in the integration's parameters
+    When:
+        Authenticating the client
+    Then:
+        The function 'load_client_cert_and_key' returns False, inidicating that we are not
+        using SSL client certificate authentication
+    """
+    from MailListenerV2 import load_client_cert_and_key
+    import ssl
+
+    # - No certificates and private keys
+    params: dict[str, dict] = {
+        'clientCertAndKey': {
+        }
+    }
+
+    ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
+    ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    assert (load_client_cert_and_key(ssl_ctx, params) is False)
+
+
+@pytest.mark.parametrize('input_credentials, output_credentials', [
+    # No credentials
+    (None, None),
+
+    # 1 credential
+    (
+        '-----BEGIN CERTIFICATE----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END CERTIFICATE-----',
+
+        '''-----BEGIN CERTIFICATE-----
+LINE1
+LINE2
+-----END CERTIFICATE-----'''
+    ),
+    # 2 credentials
+    (
+        '-----BEGIN CERTIFICATE----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END CERTIFICATE----- '
+        '-----BEGIN EC PRIVATE KEY----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END EC PRIVATE KEY-----',
+
+        '''-----BEGIN CERTIFICATE-----
+LINE1
+LINE2
+-----END CERTIFICATE-----
+-----BEGIN EC PRIVATE KEY-----
+LINE1
+LINE2
+-----END EC PRIVATE KEY-----'''
+    ),
+    # credentials with human readable text
+    (
+        'text1 '
+        'text2 '
+        '-----BEGIN EC PRIVATE KEY----- '
+        'LINE1 '
+        'LINE2 '
+        '-----END EC PRIVATE KEY----- '
+        'text1 '
+        'text2',
+
+        '''text1 text2
+-----BEGIN EC PRIVATE KEY-----
+LINE1
+LINE2
+-----END EC PRIVATE KEY-----
+text1 text2'''
+    ),
+])
+def test_replace_spaces_in_credentials(input_credentials, output_credentials):
+    """
+    Given:
+        Client cetifcates and private keys
+    When:
+        Authenticating the client
+    Then:
+        Check that the spaces in the credentials are replaced with new lines if they are in the correct format.
+    """
+    from MailListenerV2 import replace_spaces_in_credentials
+    import json
+
+    assert (json.dumps(replace_spaces_in_credentials(input_credentials)) == json.dumps(output_credentials))

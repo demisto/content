@@ -1,0 +1,17 @@
+{
+    "name": "Post Quantum Crypto Hunting by Palo Alto Networks",
+    "description": "Search for the use of Post Quantum Crypo (PQC) on your network with PAN-OS Vulnerability Signatures using XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Eric Partington",
+    "url": "",
+    "email": "",
+    "created": "2023-04-05T15:05:50Z",
+    "categories": ["Network Security"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ]
+}

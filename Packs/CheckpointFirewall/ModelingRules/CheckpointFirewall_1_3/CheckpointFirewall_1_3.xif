@@ -30,7 +30,8 @@ alter application = if(app = null or app="Unknown Protocol", service_id, app)
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
     xdm.target.port = dpt,
-    xdm.target.zone = outzone;
+    xdm.target.zone = outzone,
+    xdm.observer.version = cefDeviceVersion;
 
 [MODEL: dataset ="check_point_url_filtering_raw"]
 alter application = if(app = null or app="Unknown Protocol", service_id, app)
@@ -133,12 +134,12 @@ alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
     xdm.event.id = loguid,
     xdm.event.type = cefDeviceEventClassId,
     xdm.auth.auth_method = cs5,
-    xdm.event.outcome = auth_status_temp,
+    xdm.event.outcome = if(auth_status_temp = "Failed Log In", XDM_CONST.OUTCOME_FAILED, auth_status_temp = "Log In", XDM_CONST.OUTCOME_SUCCESS,  auth_status_temp = "Successful Login", XDM_CONST.OUTCOME_SUCCESS, auth_status_temp = "Failed Login", XDM_CONST.OUTCOME_FAILED, auth_status_temp = null, null, to_string(auth_status_temp)),
     xdm.event.outcome_reason = reason,
     xdm.source.ipv4 = ipv4src,
     xdm.source.ipv6 = ipv6src,
     xdm.source.user.username = suser,
-    xdm.source.user.user_type = cs3,
+    xdm.source.user.user_type = if(cs3 in("user"),XDM_CONST.USER_TYPE_REGULAR,cs3 in("machine") ,XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,to_string(cs3)),
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
     xdm.target.user.username = duser;

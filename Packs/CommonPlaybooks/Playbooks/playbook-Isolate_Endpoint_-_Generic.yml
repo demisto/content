@@ -1,10 +1,8 @@
 id: Isolate Endpoint - Generic
 version: -1
 name: Isolate Endpoint - Generic
-description: |-
-  This playbook isolates a given endpoint using the following integrations:
-  - Carbon Black Enterprise Response
-  - Palo Alto Networks Traps
+deprecated: true
+description: Deprecated. Use the "Isolate Endpoint - Generic V2" playbook instead.
 starttaskid: "0"
 tasks:
   "0":

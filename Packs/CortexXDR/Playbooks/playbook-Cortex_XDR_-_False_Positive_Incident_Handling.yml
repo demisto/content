@@ -373,7 +373,9 @@ tasks:
     quietmode: 0
     scriptarguments:
       indicatorsValues:
-        simple: ${Indicators to block.Questions.0}
+        complex:
+          root: Indicators to Allow.Answers
+          accessor: "0"
       tags:
         complex:
           root: inputs.AllowTag
@@ -382,13 +384,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.indicators
-      id: 977b11e5-5eea-4b7c-8ce4-0020377ce048
+      id: 01a2d4df-321d-437f-8e07-b59639450be1
       iscommand: true
       name: Tag Indicators
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: 977b11e5-5eea-4b7c-8ce4-0020377ce048
+    taskid: 01a2d4df-321d-437f-8e07-b59639450be1
     timertriggers: []
     type: regular
     view: |-
@@ -530,19 +532,21 @@ tasks:
       comment:
         simple: 'Added by Cortex XSOAR - Incident #${incident.id}'
       hash_list:
-        simple: ${Indicators to Allow.Answers.0}
+        complex:
+          root: Indicators to Allow.Answers
+          accessor: "0"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Adds requested files to allow list if they are not already on block list or allow list.
-      id: 5ee3c4f2-ab41-4ec6-8024-e700be553e37
+      id: e1ac8f05-10d6-4c66-8ceb-ec8285087e3a
       iscommand: true
       name: Create IOCs in Cortex XDR - Approved Hashes
       script: '|||xdr-allowlist-files'
       type: regular
       version: -1
-    taskid: 5ee3c4f2-ab41-4ec6-8024-e700be553e37
+    taskid: e1ac8f05-10d6-4c66-8ceb-ec8285087e3a
     timertriggers: []
     type: regular
     view: |-
@@ -614,3 +618,5 @@ fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook handles false-positive incident closures for Cortex XDR - Malware investigation.
+contentitemexportablefields:
+  contentitemfields: {}

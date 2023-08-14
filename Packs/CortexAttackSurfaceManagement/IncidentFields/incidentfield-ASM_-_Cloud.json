@@ -79,7 +79,7 @@
     "description": "Information on cloud assets",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmcloud",
     "isReadOnly": false,
     "locked": false,

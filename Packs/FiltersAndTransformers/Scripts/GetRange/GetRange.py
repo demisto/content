@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
-import demistomock as demisto
-from CommonServerPython import *
 
 
 def get_range_command(indexes: List[str], val: List[Any]) -> List[Any]:

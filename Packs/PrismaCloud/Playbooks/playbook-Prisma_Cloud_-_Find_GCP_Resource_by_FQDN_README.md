@@ -11,7 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 This playbook does not use any scripts.

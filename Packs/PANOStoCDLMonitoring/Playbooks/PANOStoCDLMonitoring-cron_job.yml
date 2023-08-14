@@ -205,7 +205,7 @@ tasks:
           \ the last 12 hours:\n${CDL.monitoring.FirewallsWithLogsSent}\n\nCould you\
           \ please investigate this connectivity issue? Incident ${CreatedIncidentID}\
           \ has been created in your XSOAR instance. \nYou may refer to this documentation\
-          \ for further details: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html\n\
+          \ for further details: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started\n\
           \nBest regards,\nDBot"
       cc: {}
       htmlBody:
@@ -214,7 +214,7 @@ tasks:
           <p>${CDL.monitoring.FirewallsWithoutLogsSent}</p>
 
           <p>Could you please investigate this connectivity issue? <br>
-          Incident <a href="${ServerURL.URL}//#/Custom/caseinfoid/${CreatedIncidentID}">${CreatedIncidentID}</a> has been created in your XSOAR instance. You may refer to this documentation for further details: <a href="https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html">Cortex Data Lake Starting Guide</a></p>
+          Incident <a href="${ServerURL.URL}//#/Custom/caseinfoid/${CreatedIncidentID}">${CreatedIncidentID}</a> has been created in your XSOAR instance. You may refer to this documentation for further details: <a href="https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started">Cortex Data Lake Starting Guide</a></p>
           <p>Best regards,<br>DBot</p>
       raw_message: {}
       replyTo: {}
@@ -2261,7 +2261,7 @@ tasks:
           \ Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FirewallsWithoutLogsSent}\n\
           \nAn email has been sent to ${inputs.email_notification} for notification.\
           \ \n\nCould you please investigate this connectivity issue? You may refer\
-          \ to this documentation for further details: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html\n\
+          \ to this documentation for further details: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started\n\
           \nThanks,\nDBot.\n"
       detectedexternalhosts: {}
       detectedexternalips: {}

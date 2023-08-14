@@ -1,0 +1,44 @@
+{
+    "campaign_id": 4261,
+    "name": "Annual Training",
+    "groups": [
+        {
+            "group_id": 0,
+            "name": "All Users"
+        }
+    ],
+    "status": "Completed",
+    "content": [
+        [
+            {
+                "store_purchase_id": 7,
+                "content_type": "Store Purchase",
+                "name": "2019 Security Awareness Training",
+                "description": "A comprehensive overview of best practices...",
+                "type": "Training Module",
+                "duration": 42,
+                "retired": false,
+                "retirement_date": null,
+                "publish_date": "2019-04-02T15:02:38.000Z",
+                "publisher": "KnowBe4",
+                "purchase_date": "2019-04-02T15:02:38.000Z",
+                "policy_url": "https://www.yourcompany.com/employees/acceptableusepolicy.html"
+            },
+            {
+                "policy_id": 142,
+                "content_type": "Uploaded Policy",
+                "name": "Security Awareness Policy",
+                "minimum_time": 3,
+                "default_language": "en-us",
+                "published": true
+            }
+        ]
+    ],
+    "duration_type": "Specific End Date",
+    "start_date": "2019-04-02T15:02:38.000Z",
+    "end_date": "2019-04-02T15:02:38.000Z",
+    "relative_duration": "string",
+    "auto_enroll": true,
+    "allow_multiple_enrollments": false,
+    "completion_percentage": 0
+}

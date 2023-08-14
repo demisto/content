@@ -2,9 +2,9 @@ commonfields:
   id: Vectra v2
   version: -1
 name: Vectra v2
-display: Vectra v2
+display: Vectra v2 (Deprecated)
 category: Network Security
-description: Automated attacker behavior analytics
+description: Deprecated. Use Vectra Detect instead.
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: server
@@ -19,33 +19,33 @@ configuration:
 - defaultvalue: 7 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: first_fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '0'
   display: Fetch only Detections with greater/equal Certainty score
   name: c_score_gte
-  required: false
   type: 0
+  required: false
 - defaultvalue: '0'
   display: Fetch Detections with a threat score greater than or equal to
   name: t_score_gte
-  required: false
   type: 0
+  required: false
 - display: 'Fetch only Detections with matching State '
   name: state
   defaultvalue: all
   type: 15
-  required: false
   options:
   - all
   - ignored
   - active
   - inactive
+  required: false
 - defaultvalue: '20'
   display: The number of results returned in each fetch
   name: fetch_size
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -172,6 +172,7 @@ script:
     - contextPath: Vectra.Detection.SourceAccount
       description: 'A dictionary with fields that describe the Account from which the detection originates.'
     description: Returns a list of detection objects, which contain all the information related to security events detected on the network.
+    deprecated: true
   - name: vectra-get-hosts
     arguments:
     - name: host_id
@@ -244,6 +245,7 @@ script:
       description: 'ID of the host.'
       type: Number
     description: Returns host information, which includes data that correlates the host data to detected security events.
+    deprecated: true
   - name: vectra-triage
     arguments: []
     outputs:
@@ -280,6 +282,7 @@ script:
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service.
     description: The rules branch can be used to retrieve a listing of configured Triage rules
+    deprecated: true
   - name: vectra-get-host-by-id
     arguments:
     - name: host_id
@@ -287,6 +290,7 @@ script:
       default: true
       description: The ID of the required host. Can be retrieved from the vectra-get-hosts command.
     description: Returns a host by ID.
+    deprecated: true
   - name: vectra-get-detection-by-id
     arguments:
     - name: detection_id
@@ -294,6 +298,7 @@ script:
       default: true
       description: The ID of the required detection. Can be retrieve from the vectra-get-detections command.
     description: Returns detections by detection ID.
+    deprecated: true
   - name: vectra-get-users
     description: Retrieves the current list of Users
     arguments:
@@ -307,6 +312,7 @@ script:
       description: 'Filter by authentication profile (LDAP or TACACS only).'
     - name: last_login_gte
       description: 'Filters for users that have logged in since the given timestamp.'
+    deprecated: true
   - name: vectra-get-proxies
     arguments:
     - name: proxy_id
@@ -328,6 +334,7 @@ script:
       description: 'The proxy IP address.'
       type: String
     description: Retrieves the current list of proxy IP addresses, or single proxy IP address by proxy ID.
+    deprecated: true
   - name: vectra-get-threatfeed
     arguments:
     - name: threatfeed_id
@@ -352,6 +359,7 @@ script:
       description: 'The ID of the ThreatFeed.'
       type: String
     description: Retrieves the current list of all ThreatFeeds, or single ThreatFeed by ThreatFeed ID.
+    deprecated: true
   - name: vectra-search
     arguments:
     - name: query_string
@@ -367,8 +375,10 @@ script:
     - name: page_size
       description: 'Number of results returned per page. The default page_size is 50, max. is 5000.'
     description: "Runs an advanced search on hosts and detections."
+    deprecated: true
   isfetch: true
   dockerimage: demisto/python3:3.10.1.26972
 tests:
-- No test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

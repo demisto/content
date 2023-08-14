@@ -4,7 +4,10 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib.parse
+import urllib3
+import urllib
+
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = None
@@ -60,7 +63,8 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    response = SESSION.request(method, url, data=data, params=params, files=files, headers=HEADERS)  # type: ignore
+    response = SESSION.request(method, url, data=data, params=params, files=files,
+                               headers=HEADERS)  # type: ignore
 
     # handle request failure
     if response.status_code not in {200}:
@@ -250,10 +254,8 @@ def create_ticket():
 
 
 def get_ticket_request(ticket_id):
-    suffix_url = 'ticket/{}/show'.format(ticket_id)
-    raw_ticket = http_request('GET', suffix_url)
-
-    return raw_ticket
+    suffix_url = f'ticket/{ticket_id}/show'
+    return http_request('GET', suffix_url)
 
 
 def fix_query_suffix(query):
@@ -428,10 +430,8 @@ def close_ticket():
 
 
 def edit_ticket_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/edit'.format(ticket_id)
-    edited_ticket = http_request('POST', suffix_url, data=encoded)
-
-    return edited_ticket
+    suffix_url = f'ticket/{ticket_id}/edit'
+    return http_request('POST', suffix_url, data=encoded)
 
 
 def edit_ticket():
@@ -477,16 +477,16 @@ def edit_ticket():
 
     customfields = demisto.args().get('customfields')
     if customfields:
+        arguments_given = True
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
             key = 'CF-{}: '.format(cf[:equal_index])
             value = cf[equal_index + 1:]
-            content = content + key + value + '\n'
+            content += '\n' + key + value
 
     if arguments_given:
-        encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
-        edited_ticket = edit_ticket_request(ticket_id, encoded)
+        edited_ticket = edit_ticket_request(ticket_id, f"content={urllib.parse.quote_plus(content)}")
         if "200 Ok" in edited_ticket.text:
             ticket_context = ({
                 'ID': ticket_id,
@@ -814,10 +814,9 @@ def add_comment_attachment(ticket_id, encoded, files_data):
 
 def add_comment():
     ticket_id = demisto.args().get('ticket-id')
-    text = demisto.args().get('text')
     content = 'Action: comment\n'
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
+    if text := demisto.args().get('text'):
+        content += f'\nText: {text}'
     attachments = demisto.args().get('attachment', '')
     files_data = {}
     if attachments:
@@ -832,7 +831,7 @@ def add_comment():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             content += 'Attachment: {}\n'.format(file_name)
 
-    encoded = "content=" + urllib.parse.quote_plus(content)
+    encoded = f"content={urllib.parse.quote_plus(content)}"
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
@@ -855,12 +854,10 @@ def add_reply_request(ticket_id, encoded):
 def add_reply():
     ticket_id = demisto.args().get('ticket-id')
     content = 'Action: comment\n'
-    text = demisto.args().get('text')
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
-    cc = demisto.args().get('cc')
-    if cc:
-        content += '\nCc: ' + cc
+    if (text := demisto.args().get('text')):
+        content += f'\nText: {text}'
+    if (cc := demisto.args().get('cc')):
+        content += f'\nCc: {cc}'
     try:
         encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
@@ -912,17 +909,14 @@ def fetch_incidents():
 def main():
     handle_proxy()
 
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
     params = demisto.params()
 
     ''' GLOBAL VARS '''
     global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
     SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
         '/') else params.get('server', '')
-    USERNAME = params.get('credentials').get('identifier', '')
-    PASSWORD = params.get('credentials').get('password', '')
+    USERNAME = params.get('credentials', {}).get('identifier', '')
+    PASSWORD = params.get('credentials', {}).get('password', '')
     BASE_URL = urljoin(SERVER, '/REST/1.0/')
     USE_SSL = not params.get('unsecure', False)
     FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1

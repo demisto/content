@@ -1,0 +1,159 @@
+id: Create XSOAR Incident Flow List
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Create XSOAR Incident Flow List
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 107a8439-fa83-4073-80f3-706f00b0031a
+    type: start
+    task:
+      id: 107a8439-fa83-4073-80f3-706f00b0031a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9856d0d1-79d2-45a6-849d-ac5019506120
+    type: regular
+    task:
+      id: 9856d0d1-79d2-45a6-849d-ac5019506120
+      version: -1
+      name: Setting the list as an html
+      description: send HTTP POST request
+      script: '|||core-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "XSOARIncidentFlow",
+              "version": -1,
+              "name": "XSOARIncidentFlow",
+              "type": "html"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9f610338-87ca-4058-8591-3ed3d7da1e6e
+    type: regular
+    task:
+      id: 9f610338-87ca-4058-8591-3ed3d7da1e6e
+      version: -1
+      name: Creating the actual list
+      scriptName: CreateXSOARIncidentFlowList
+      type: regular
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c0309e8f-1c05-47f4-86fb-e3ef56883439
+    type: title
+    task:
+      id: c0309e8f-1c05-47f4-86fb-e3ef56883439
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 760,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This playbooks creates the html process flow list'

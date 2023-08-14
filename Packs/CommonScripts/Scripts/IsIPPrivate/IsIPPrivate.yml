@@ -1,0 +1,41 @@
+commonfields:
+  id: IsIPPrivate
+  version: -1
+name: IsIPPrivate
+script: ''
+type: python
+tags: []
+comment: |-
+  The script takes one or more IP addresses and checks whether they're in the private IP ranges defined in the PrivateIPsListName argument. By default, the PrivateIPsListName argument will use the Cortex XSOAR list called "PrivateIPs".
+  The list can be modified, and by default uses the ranges defined by the Internet Assigned Numbers Authority (IANA). The following are the default CIDR ranges for private IPv4 addresses:
+  - 10.0.0.0/8 (range: 10.0.0.0 to 10.255.255.255)
+  - 172.16.0.0/12 (range: 172.16.0.0 to 172.31.255.255)
+  - 192.168.0.0/16 (range: 192.168.0.0 to 192.168.255.255)
+  In addition to ranges, it's also possible to add specific IP addresses to the list. You may also tag IPs or IP ranges by adding a comma after the IP or range, and then adding the tag that you want to tag the corresponding IP indicators with.
+enabled: true
+args:
+- name: PrivateIPsListName
+  description: The name of the Cortex XSOAR list that holds the private IP ranges or specific IPs in the organization. If no list is specified, the script will use the ranges defined by the IANA, which are 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.
+  defaultValue: PrivateIPs
+- name: IPAddresses
+  required: true
+  description: An IPv4 address or a list of addresses to check for being private or public, against the specified list of private ranges.
+  isArray: true
+outputs:
+- contextPath: IP.Address
+  description: The IPv4 Address.
+  type: string
+- contextPath: IP.Private
+  description: Whether the IP address is private or public, according to the ranges defined in the Cortex XSOAR list, which is provided in the PrivateIPRangeList argument.
+  type: boolean
+- contextPath: IP.Tag
+  description: Any tags that were added to the indicator. The tags are added by this script if they were specified for the IP or IP range in the Cortex XSOAR list.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+tests:
+- IsIPPrivate - Test

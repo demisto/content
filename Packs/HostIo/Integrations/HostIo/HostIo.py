@@ -177,7 +177,9 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
-    api_key = params.get('token')
+    api_key = params.get('credentials_token', {}).get('password') or params.get('token')
+    if not api_key:
+        return_error('API Key must be provided.')
     base_url = urljoin(params['url'], '/api')
 
     verify_certificate = not params.get('insecure', False)

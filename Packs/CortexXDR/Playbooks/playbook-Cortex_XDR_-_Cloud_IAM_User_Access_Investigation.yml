@@ -1,0 +1,872 @@
+id: Cortex XDR - Cloud IAM User Access Investigation
+version: -1
+name: Cortex XDR - Cloud IAM User Access Investigation
+description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9455cb69-b1ad-4c8c-8815-91c6e7f96a10
+    type: start
+    task:
+      id: 9455cb69-b1ad-4c8c-8815-91c6e7f96a10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 307cc28e-ca4e-4793-83e5-862475661d63
+    type: title
+    task:
+      id: 307cc28e-ca4e-4793-83e5-862475661d63
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "11"
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 906e18b4-0d76-4b7e-860f-7f3dba7ce7e4
+    type: regular
+    task:
+      id: 906e18b4-0d76-4b7e-860f-7f3dba7ce7e4
+      version: -1
+      name: IP Enrichment
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: caller_ip
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Source IP
+      output:
+        complex:
+          root: inputs.ExternalIP
+    - incidentfield: Detected User
+      output:
+        complex:
+          root: inputs.Username
+    - incidentfield: Destination Hostname
+      output:
+        complex:
+          root: inputs.Hostname
+    - incidentfield: Alert Name
+      output:
+        complex:
+          root: inputs.Alert_Name
+    - incidentfield: Description
+      output:
+        complex:
+          root: inputs.AlertDescription
+    - incidentfield: ASN
+      output:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ExternalIP
+                iscontext: true
+          accessor: ASN
+    - incidentfield: IP Reputation
+      output:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ExternalIP
+                iscontext: true
+          accessor: Score
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 47daf361-6f62-4183-8bbd-37602dded39a
+    type: condition
+    task:
+      id: 47daf361-6f62-4183-8bbd-37602dded39a
+      version: -1
+      name: malicious?
+      description: Check if the alert is malicious according to the IP DBot score or if there is an API call from a Tor exit node.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alertJson
+                accessor: alert_name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious API call from a Tor exit node
+          ignorecase: true
+        - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b17705e9-b1ad-475d-87e6-c0974d5fc8fa
+    type: condition
+    task:
+      id: b17705e9-b1ad-475d-87e6-c0974d5fc8fa
+      version: -1
+      name: Decision making - true/false-positive alert
+      description: Based on the collected data investigation, is it a true positive event?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Based on the collected data investigation, is it a true positive event?
+      body:
+        simple: Based on the collected data investigation, is it a true positive event?
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4b87a31c-f367-4ab6-8ac7-3f9a2f3d179a
+    type: title
+    task:
+      id: 4b87a31c-f367-4ab6-8ac7-3f9a2f3d179a
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 89e1b907-b4c4-4dfa-8579-17969e71e1a2
+    type: playbook
+    task:
+      id: 89e1b907-b4c4-4dfa-8579-17969e71e1a2
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        complex:
+          root: inputs.AWS-userRemediationType
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        complex:
+          root: inputs.Azure-userRemediationType
+      GCP-accessKeyRemediationType:
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        complex:
+          root: inputs.GCP-userRemediationType
+      accessKeyId:
+        complex:
+          root: alertJson.raw_abioc.event._aws_specific_fields
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      cloudProvider:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: cloud_provider
+      region:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: region
+      resourceGroup:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: referenced_resource
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "5"
+      resourceName:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: referenced_resource
+      resourceZone:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: zone
+      username:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: identity_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 46d8a585-dbc1-44b6-8653-6ad06f7f1976
+    type: title
+    task:
+      id: 46d8a585-dbc1-44b6-8653-6ad06f7f1976
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4de4fb9a-ee3d-49dd-86f4-62f4d42061ec
+    type: playbook
+    task:
+      id: 4de4fb9a-ee3d-49dd-86f4-62f4d42061ec
+      version: -1
+      name: Cloud IAM Enrichment - Generic
+      description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+      playbookName: Cloud IAM Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      GCPProjectName:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: project
+      cloudIdentityType:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: identity_type
+      cloudProvider:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: cloud_provider
+      username:
+        complex:
+          root: alertJson.raw_abioc.event
+          accessor: identity_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d121fca8-3d36-47c8-8fec-4767e752b0cb
+    type: regular
+    task:
+      id: d121fca8-3d36-47c8-8fec-4767e752b0cb
+      version: -1
+      name: Investigate collected data
+      description: |2-
+         To determine if this is a true positive event,  review the operations performed by the access key and the user in the recent time frame.
+        Search for the following items:
+        Investigate the operation performed by the access key and examine the executed operations, by who it was executed, on which resource, and the operation status.
+        Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
+        Look at any persistence, for example - a new user creation or key, etc.
+        Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
+        Look at any lateral movement operations. For example, an operation can be = AsumeRole.
+        As an extra validation step, it is recommended to query the user and/or the user’s manager regarding the investigated suspicious activity.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 13af30d6-2052-4b3f-8765-7dc9ab9d3909
+    type: title
+    task:
+      id: 13af30d6-2052-4b3f-8765-7dc9ab9d3909
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c6f2ad53-aa37-479d-89ee-6488d9c5bd66
+    type: playbook
+    task:
+      id: c6f2ad53-aa37-479d-89ee-6488d9c5bd66
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations.) For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b94798dd-a0f6-48a8-8af0-ac25845e6cda
+    type: title
+    task:
+      id: b94798dd-a0f6-48a8-8af0-ac25845e6cda
+      version: -1
+      name: Remediation Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 68003c98-7022-48d9-866b-7322df1e8294
+    type: regular
+    task:
+      id: 68003c98-7022-48d9-866b-7322df1e8294
+      version: -1
+      name: Fetch alert extra data
+      description: Returns information about each alert ID.
+      script: '|||xdr-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: inputs.alert_id
+      extend-context:
+        simple: alertData=
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b99832fa-cba5-4dd2-8e30-9e04ad5e70bc
+    type: regular
+    task:
+      id: b99832fa-cba5-4dd2-8e30-9e04ad5e70bc
+      version: -1
+      name: Load alert JSON
+      description: Loads a JSON from the string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      extend-context:
+        simple: alertJson=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: alertData.alerts.[0]
+          accessor: original_alert_json
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 47a8da82-dab8-4479-88b2-cb441115e42f
+    type: regular
+    task:
+      id: 47a8da82-dab8-4479-88b2-cb441115e42f
+      version: -1
+      name: Set incident type
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      type:
+        simple: Cortex XDR - XCLOUD
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_8_yes": 0.38,
+      "7_10_No": 0.12,
+      "7_8_Yes": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2115,
+        "width": 1200,
+        "x": 40,
+        "y": -390
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value: {}
+  required: false
+  description: The alert ID.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for deleting the user's access key.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For deleting the user's access key.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value:
+    simple: Revoke
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

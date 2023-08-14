@@ -1,5 +1,6 @@
 Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
-This integration was integrated and tested with version 6.2.0 of Arkime
+This integration was integrated and tested with version 3.4.1 (API v3) of Arkime. 
+For older versions, see the Moloch pack (deprecated). 
 
 ## Configure Arkime on Cortex XSOAR
 

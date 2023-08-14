@@ -1,2 +1,9 @@
 [file:IntSight.yml]
 ignore=IN126
+
+[known_words]
+CVEs
+MSSP
+Deprecated
+IntSights
+ThreatCommand

@@ -7,9 +7,10 @@ from typing import Dict, List, Callable, Tuple
 import traceback
 import requests
 import json
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 MAX_API_COUNT: int = 100000

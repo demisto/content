@@ -39,6 +39,7 @@ def test_create_context():  # type: ignore # noqa
     }]
     res = ({'TC.Indicator(val.ID && val.ID === obj.ID)': [{'Confidence': 32,
                                                            'CreateDate': '2021-12-09T12:57:18Z',
+                                                           'Description': None,
                                                            'ID': 40435508,
                                                            'LastModified': '2022-07-26T13:51:49Z',
                                                            'Name': 'http://yourwebsite.com/opcache.php',
@@ -53,6 +54,7 @@ def test_create_context():  # type: ignore # noqa
                                                                      'Vendor': 'ThreatConnect'}}]},
            [{'Confidence': 32,
              'CreateDate': '2021-12-09T12:57:18Z',
+             'Description': None,
              'ID': 40435508,
              'LastModified': '2022-07-26T13:51:49Z',
              'Name': 'http://yourwebsite.com/opcache.php',

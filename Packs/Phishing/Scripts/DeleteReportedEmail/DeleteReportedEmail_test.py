@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import CommonServerPython
 from DeleteReportedEmail import *
 import DeleteReportedEmail
@@ -50,7 +52,7 @@ SEARCH_ARGS = {
     'user-id': 'user_id'
 }
 
-MISSING_EMAIL_ERROR_MSG = 'Email was not found in the mailbox. It is possible that the email was already deleted manually.'
+MISSING_EMAIL_ERROR_MSG = 'Email not found in mailbox. It may have been manually deleted.'
 
 WAS_EMAIL_DELETED_EXPECTED_RESULTS = [([], ('Skipped', MISSING_EMAIL_ERROR_MSG)),
                                       ([{'message_id': 'message-id', 'result': 'Success'}], ('Success', ''))]
@@ -67,7 +69,6 @@ def test_get_deletion_args(integration_name):
     Then:
     return the suitable deletion args
     """
-
     with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
     assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == ARGS_FUNC[integration_name](search_results, SEARCH_ARGS)
@@ -226,11 +227,12 @@ ADDED_SEARCH_ARGS = {
     'MicrosoftGraphMail': {'user_id': 'reportedemailto',
                            'odata': '"$filter=internetMessageId eq \'reportedemailmessageid\'"'},
     'SecurityAndCompliance': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
+    'SecurityAndComplianceV2': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
 }
 
 
 @pytest.mark.parametrize('brand', ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                                   'SecurityAndCompliance'])
+                                   'SecurityAndCompliance', 'SecurityAndComplianceV2'])
 def test_search_args(mocker, brand):
     """
 
@@ -242,10 +244,10 @@ def test_search_args(mocker, brand):
             Return the suitable search args
 
     """
-    import DeleteReportedEmail
     INCIDENT_INFO = {
         'CustomFields':
             {
+                'reportedemailorigin': 'Attached',
                 'reportedemailmessageid': 'reportedemailmessageid',
                 'reportedemailto': 'reportedemailto',
                 'emaildeletetype': 'emaildeletetype',
@@ -259,6 +261,30 @@ def test_search_args(mocker, brand):
     current_search_args = GENERAL_SEARCH_ARGS.copy()
     current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
     assert get_search_args({}) == current_search_args
+
+    # Test 'email_origin' is 'none' exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields']["reportedemailorigin"] = "None"
+    with pytest.raises(ValueError) as e:
+        get_search_args({})
+    assert "'Reported Email Origin' field could not be found" in str(e.value)
+
+    # Test missing message id exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields'].pop("reportedemailmessageid")
+    with pytest.raises(ValueError) as e:
+        get_search_args({})
+    assert "'Reported Email Message ID' field could not be found" in str(e.value)
+
+    # Test missing user id exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields'].pop("reportedemailto")
+    with pytest.raises(ValueError) as e:
+        get_search_args({})
+    assert "'Reported Email To' field could not be found" in str(e.value)
 
 
 def test_schedule_next_command(mocker):

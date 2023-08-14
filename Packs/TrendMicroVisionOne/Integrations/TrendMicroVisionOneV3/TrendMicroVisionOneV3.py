@@ -1,6 +1,6 @@
-"""IMPORTS"""
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa: F401
+"""IMPORTS"""
 from CommonServerUserPython import *  # noqa: F401
 
 import base64
@@ -453,7 +453,6 @@ class Client(BaseClient):
         return results
 
     def lookup_type(self, param: Any) -> str:
-
         # Regex expression for validating IPv4
         regex = (
             "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"
@@ -463,10 +462,10 @@ class Client(BaseClient):
         )
 
         # Regex expression for validating IPv6
-        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" + "([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating MacAddress
-        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" "([0-9A-Fa-f]{2})"
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" + "([0-9A-Fa-f]{2})"
 
         # Regex expression for validating agentGuid
         regex3 = (
@@ -499,6 +498,21 @@ class Client(BaseClient):
         # Otherwise use hostname type
         return "endpointName"
 
+    def get_paginated_results(self, response, headers) -> list:
+        """
+        Get the paginated results after initial API call
+        :return: additional items list using skipToken.
+        :rtype: ``list``
+        """
+        url = response.get("nextLink", "")
+        results = []
+        while url:
+            req = urllib.request.Request(url=url, headers=headers)
+            resp = json.loads(urllib.request.urlopen(req).read())
+            url = resp.get("nextLink", "")
+            results += resp["items"]
+        return results
+
     def exception_list_count(self) -> int:
         """
         Gets the count of object present in exception list
@@ -506,10 +520,17 @@ class Client(BaseClient):
         :return: number of exception object.
         :rtype: ``int``
         """
-        response = self.http_request(GET, ADD_OBJECT_TO_EXCEPTION_LIST)
-        list_of_exception = response.get("items")
-        exception_count = len(list_of_exception)
-        return exception_count
+        token = self.api_key
+        headers = {"Authorization": "Bearer " + token}
+        query_params = {"top": 200}
+        response = self.http_request(
+            GET, ADD_OBJECT_TO_EXCEPTION_LIST, params=query_params, headers=headers
+        )
+        exception_count = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += exception_count
+        return len(final_results)
 
     def suspicious_list_count(self) -> int:
         """
@@ -517,14 +538,21 @@ class Client(BaseClient):
         :return: number of suspicious object.
         :rtype: ``int``
         """
-        response = self.http_request(GET, ADD_OBJECT_TO_SUSPICIOUS_LIST)
-        list_of_exception = response.get("items")
-        suspicious_count = len(list_of_exception)
-        return suspicious_count
+        token = self.api_key
+        headers = {"Authorization": "Bearer " + token}
+        query_params = {"top": 200}
+        response = self.http_request(
+            GET, ADD_OBJECT_TO_SUSPICIOUS_LIST, params=query_params, headers=headers
+        )
+        suspicious_count = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += suspicious_count
+        return len(final_results)
 
     def get_workbench_histories(
         self, start, end, dateTimeTarget, orderBy, investigationStatus
-    ) -> str:
+    ) -> list:
         if not check_datetime_aware(start):
             start = start.astimezone()
         if not check_datetime_aware(end):
@@ -551,8 +579,12 @@ class Client(BaseClient):
 
         response = self.http_request(
             GET, WORKBENCH_HISTORIES, params=query_params, headers=headers
-        ).get("items")
-        return response
+        )
+        additional_alerts = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += additional_alerts
+        return final_results
 
     def incident_severity_to_dbot_score(self, severity: str):
         """
@@ -805,38 +837,33 @@ def get_endpoint_info(
     response = client.http_request(
         GET, GET_ENDPOINT_INFO_ENDPOINT, params=query_params, headers=headers
     )
-
-    endpoint_info = response.get("items", [])
-    if not endpoint_info:
+    additional_endpoints = client.get_paginated_results(response, headers)
+    final_results = []
+    final_results += response.get("items", [])
+    final_results += additional_endpoints
+    if not final_results:
         return_error("No endpoint found for the query provided.")
-
-    message = {
+    endpoint_data = {
         "status": "success",
-        "logonAccount": response.get("items", [])[0]
-        .get("loginAccount", "")
-        .get("value", ""),
-        "hostname": response.get("items", [])[0]
-        .get("endpointName", "")
-        .get("value", ""),
-        "macAddr": response.get("items", [])[0].get("macAddress", {}).get("value", ""),
-        "ip": response.get("items", [])[0].get("ip", {}).get("value", [])[0],
-        "osName": response.get("items", [])[0].get("osName", ""),
-        "osVersion": response.get("items", [])[0].get("osVersion", ""),
-        "osDescription": response.get("items", [])[0].get("osDescription", ""),
-        "productCode": response.get("items", [])[0].get("productCode", ""),
-        "agentGuid": response.get("items", [])[0].get("agentGuid", ""),
-        "installedProductCodes": response.get("items", [])[0].get(
-            "installedProductCodes", []
-        )[0],
+        "logonAccount": final_results[0].get("loginAccount", "").get("value", ""),
+        "hostname": final_results[0].get("endpointName", "").get("value", ""),
+        "macAddr": final_results[0].get("macAddress", {}).get("value", ""),
+        "ip": final_results[0].get("ip", {}).get("value", [])[0],
+        "osName": final_results[0].get("osName", ""),
+        "osVersion": final_results[0].get("osVersion", ""),
+        "osDescription": final_results[0].get("osDescription", ""),
+        "productCode": final_results[0].get("productCode", ""),
+        "agentGuid": final_results[0].get("agentGuid", ""),
+        "installedProductCodes": final_results[0].get("installedProductCodes", [])[0],
     }
 
     results = CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ENDPOINT_INFO_COMMAND], message, removeNull=True
+            table_name[GET_ENDPOINT_INFO_COMMAND], endpoint_data, removeNull=True
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
-        outputs_key_field="message",
-        outputs=message,
+        outputs_key_field="hostname",
+        outputs=endpoint_data,
     )
     return results
 
@@ -1320,7 +1347,10 @@ def delete_from_suspicious_list(
     body = [{f"{field}": value}]
     query_params: Dict[str, Any] = {}
     response = client.http_request(
-        POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, params=query_params, data=json.dumps(body)
+        POST,
+        DELETE_OBJECT_FROM_SUSPICIOUS_LIST,
+        params=query_params,
+        data=json.dumps(body),
     )
     status_code = response[0]["status"]
     suspicious_list = client.suspicious_list_count()
@@ -1899,7 +1929,7 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     return results
 
 
-def main():
+def main():  # pragma: no cover
     try:
         """GLOBAL VARS"""
         params = demisto.params()

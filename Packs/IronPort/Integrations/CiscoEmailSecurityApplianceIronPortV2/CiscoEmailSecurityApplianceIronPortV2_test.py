@@ -1,9 +1,9 @@
 import json
 import os
-from typing import Any, Dict, List
+from typing import Any
 import pytest
 from unittest.mock import patch
-
+from freezegun import freeze_time
 
 """MOCK PARAMETERS"""
 CREDENTIALS = "credentials"
@@ -25,7 +25,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     with open(
-        os.path.join("test_data/outputs", file_name), mode="r", encoding="utf-8"
+        os.path.join("test_data/outputs", file_name), encoding="utf-8"
     ) as mock_file:
         return json.loads(mock_file.read())
 
@@ -35,12 +35,16 @@ def mock_access_token(client):
 
 
 @pytest.fixture(autouse=True)
-@patch("CiscoEmailSecurityApplianceIronPortV2.Client.handle_request_headers", mock_access_token)
+@patch(
+    "CiscoEmailSecurityApplianceIronPortV2.Client.handle_request_headers",
+    mock_access_token,
+)
 def mock_client():
     """
     Mock client
     """
     from CiscoEmailSecurityApplianceIronPortV2 import Client
+
     return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
 
 
@@ -78,7 +82,7 @@ def mock_client():
 )
 def test_spam_quarantine_message_search_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_outputs_len: int,
     expected_message_id: int,
     requests_mock,
@@ -97,7 +101,9 @@ def test_spam_quarantine_message_search_command(
      - Ensure number of items is correct.
      - Validate outputs' fields.
     """
-    from CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_search_command
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        spam_quarantine_message_search_command,
+    )
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -123,7 +129,7 @@ def test_spam_quarantine_message_search_command(
 )
 def test_spam_quarantine_message_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_message_id: int,
     requests_mock,
     mock_client,
@@ -140,7 +146,9 @@ def test_spam_quarantine_message_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_get_command
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        spam_quarantine_message_get_command,
+    )
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages/details"
@@ -165,10 +173,10 @@ def test_spam_quarantine_message_get_command(
 )
 def test_spam_quarantine_message_release_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_message: str,
     requests_mock,
-    mock_client
+    mock_client,
 ):
     """
     Scenario: Spam quarantine message release.
@@ -181,7 +189,9 @@ def test_spam_quarantine_message_release_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_release_command
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        spam_quarantine_message_release_command,
+    )
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -211,7 +221,7 @@ def test_spam_quarantine_message_release_command(
 )
 def test_spam_quarantine_message_delete_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_message_first_id: str,
     expected_message_second_id: str,
     requests_mock,
@@ -228,7 +238,9 @@ def test_spam_quarantine_message_delete_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_delete_command
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        spam_quarantine_message_delete_command,
+    )
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -266,7 +278,7 @@ def test_spam_quarantine_message_delete_command(
 )
 def test_list_entry_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_outputs_len: int,
     expected_recipient_address: str,
     requests_mock,
@@ -315,7 +327,7 @@ def test_list_entry_get_command(
     ],
 )
 def test_list_entry_add_command(
-    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
+    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry add.
@@ -354,7 +366,7 @@ def test_list_entry_add_command(
     ],
 )
 def test_list_entry_append_command(
-    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
+    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry append.
@@ -393,7 +405,7 @@ def test_list_entry_append_command(
     ],
 )
 def test_list_entry_edit_command(
-    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
+    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry edit.
@@ -431,7 +443,7 @@ def test_list_entry_edit_command(
     ],
 )
 def test_list_entry_delete_command(
-    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
+    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry delete.
@@ -487,10 +499,10 @@ def test_list_entry_delete_command(
 )
 def test_message_search_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_outputs_len: int,
-    expected_message_id: List[int],
-    expected_recipients: List[str],
+    expected_message_id: list[int],
+    expected_recipients: list[str],
     requests_mock,
     mock_client,
 ):
@@ -540,9 +552,9 @@ def test_message_search_command(
 )
 def test_message_details_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
-    expected_message_id: List[int],
-    expected_recipients: List[str],
+    command_arguments: dict[str, Any],
+    expected_message_id: list[int],
+    expected_recipients: list[str],
     expected_summary_len: int,
     requests_mock,
     mock_client,
@@ -591,9 +603,9 @@ def test_message_details_get_command(
 )
 def test_message_amp_details_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
-    expected_message_id: List[int],
-    expected_recipients: List[str],
+    command_arguments: dict[str, Any],
+    expected_message_id: list[int],
+    expected_recipients: list[str],
     expected_amp_summary_len: int,
     requests_mock,
     mock_client,
@@ -642,9 +654,9 @@ def test_message_amp_details_get_command(
 )
 def test_message_dlp_details_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
-    expected_message_id: List[int],
-    expected_recipients: List[str],
+    command_arguments: dict[str, Any],
+    expected_message_id: list[int],
+    expected_recipients: list[str],
     expected_dlp_policy: str,
     requests_mock,
     mock_client,
@@ -693,9 +705,9 @@ def test_message_dlp_details_get_command(
 )
 def test_message_url_details_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
-    expected_message_id: List[int],
-    expected_recipients: List[str],
+    command_arguments: dict[str, Any],
+    expected_message_id: list[int],
+    expected_recipients: list[str],
     expected_url_summary_len: int,
     requests_mock,
     mock_client,
@@ -744,7 +756,7 @@ def test_message_url_details_get_command(
 )
 def test_message_report_get_command(
     response_file_name: str,
-    command_arguments: Dict[str, Any],
+    command_arguments: dict[str, Any],
     expected_type: str,
     expected_results_len: int,
     requests_mock,
@@ -789,8 +801,7 @@ def test_message_report_get_command(
     ],
 )
 def test_format_number_list_argument(
-    number_list_argument: str,
-    expected_result: List[int]
+    number_list_argument: str, expected_result: list[int]
 ):
     """
     Scenario: Format number list argument.
@@ -818,8 +829,7 @@ def test_format_number_list_argument(
     ],
 )
 def test_format_custom_query_args(
-    custom_query_argument: str,
-    expected_result: Dict[str, Any]
+    custom_query_argument: str, expected_result: dict[str, Any]
 ):
     """
     Scenario: Format custom query arguments for tracking message advanced filters.
@@ -835,3 +845,97 @@ def test_format_custom_query_args(
     result = format_custom_query_args(custom_query_argument)
 
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "timestamp,output_format,expected_result",
+    [
+        ("07 Sep 2022 09:08:03 (GMT)", "%Y-%m-%dT%H:%M:%SZ", "2022-09-07T09:08:03Z"),
+        (
+            "24 Apr 2023 10:14:50 (GMT -05:00)",
+            "%Y-%m-%dT%H:%M:00.000Z",
+            "2023-04-24T15:14:00.000Z",
+        ),
+        (
+            "24 Apr 2023 10:14:50 (GMT-06:00)",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "2023-04-24T16:14:50Z",
+        ),
+        (
+            "24 Apr 2023 10:14:50 (GMT +01:00)",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "2023-04-24T09:14:50Z",
+        ),
+        (None, "%Y-%m-%dT%H:%M:%SZ", None),
+    ],
+)
+def test_format_timestamp(timestamp, output_format, expected_result):
+    """
+    Given:
+     - timestamps strings.
+    When:
+     - format_timestamp function called.
+    Then:
+     - Ensure result is correct.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import format_timestamp
+
+    result = format_timestamp(timestamp, output_format)
+
+    assert result == expected_result
+
+
+data_test_fetch_incidents = [
+    ({}, 0, {}),
+    ({}, 1, {"last_minute_incident_ids": [1], "start_time": "2023-06-29T00:00:00Z"}),
+    ({}, 2, {"last_minute_incident_ids": [1, 2], "start_time": "2023-06-29T00:00:00Z"}),
+    (
+        {"last_minute_incident_ids": [1, 2]},
+        2,
+        {"offset": 2, "last_minute_incident_ids": [1, 2]},
+    ),
+    (
+        {"last_minute_incident_ids": [1, 2], "offset": 2},
+        2,
+        {"last_minute_incident_ids": [1, 2], "offset": 4},
+    ),
+    (
+        {"last_minute_incident_ids": [3, 2], "offset": 2},
+        1,
+        {"last_minute_incident_ids": [3, 2, 1], "start_time": "2023-06-29T00:00:00Z"},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "previous_run, fetch_size, expected_last_run", data_test_fetch_incidents
+)
+@freeze_time("2023-06-29T00:00:00Z")
+def test_fetch_incidents(
+    mock_client, mocker, previous_run, fetch_size, expected_last_run
+):
+    from CiscoEmailSecurityApplianceIronPortV2 import fetch_incidents
+
+    mocker.patch.object(
+        mock_client,
+        "spam_quarantine_message_search_request",
+        return_value={
+            "data": [
+                {"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)
+            ]
+        },
+    )
+    incidents = [{"mid": i + 1} for i in range(fetch_size)]
+    mocker.patch.object(
+        mock_client,
+        "spam_quarantine_message_get_request",
+        new=lambda *_a, **_b: {"data": incidents.pop(0)},
+    )
+
+    _, last_run = fetch_incidents(
+        mock_client,
+        max_fetch=2,
+        first_fetch="1 day",
+        last_run=previous_run,
+    )
+    assert last_run == expected_last_run

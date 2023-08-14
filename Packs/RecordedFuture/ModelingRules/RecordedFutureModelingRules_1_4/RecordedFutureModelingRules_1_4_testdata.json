@@ -1,0 +1,55 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "9f7a7ee0-dbfd-4596-bf2f-196d23a9218e",
+            "vendor": "recorded",
+            "product": "future_intelligence_cloud",
+            "dataset": "recorded_future_intelligence_cloud_raw",
+            "event_data": {
+                "review": {
+                    "assignee": null,
+                    "statusDate": "2023-02-20T05:05:00.115Z",
+                    "statusInPortal": "Pending",
+                    "status": "pending",
+                    "noteDate": null,
+                    "statusChangeBy": "a1b2c3@integration.recordedfuture.com",
+                    "noteAuthor": null,
+                    "note": null
+                },
+                "url": "https://app.recordedfuture.com/live/sc/notification/?id=333333",
+                "rule": {
+                    "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?rule=rule",
+                    "owner_id": "uhash:123456",
+                    "owner_name": "Palo Alto Networks - Partner",
+                    "id": "444444",
+                    "organisation_name": "Palo Alto Networks - Partner",
+                    "organisation_id": "uhash:456789",
+                    "owner_organisation_details": {
+                        "organisations": [
+                            {
+                                "organisation_id": "uhash:123456",
+                                "organisation_name": "Palo Alto Networks - Partner"
+                            }
+                        ],
+                        "enterprise_id": "uhash:456789",
+                        "enterprise_name": "Palo Alto Networks - Partner"
+                    },
+                    "name": "Vulnerability Intelligence from Insikt Group"
+                },
+                "triggered": "2023-02-20T05:04:19.601Z",
+                "id": "333333",
+                "title": "Vulnerability Intelligence from Insikt Group - 11 new references in 11 documents",
+                "type": "REFERENCE"
+            },
+            "expected_values": {
+                "xdm.event.type": "REFERENCE",
+                "xdm.event.id": "444444",
+                "xdm.source.user.username": "Palo Alto Networks - Partner",
+                "xdm.source.user.identifier": "uhash:123456",
+                "xdm.event.description": null,
+                "xdm.source.user.ou": "Palo Alto Networks - Partner",
+                "xdm.event.operation_sub_type": "Vulnerability Intelligence from Insikt Group"
+            }
+        }
+    ]
+}

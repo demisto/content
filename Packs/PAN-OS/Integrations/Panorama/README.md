@@ -1,7 +1,7 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 
 This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
+This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx of Palo Alto Firewall and Palo Alto Panorama.
 
 
 ## Use Cases
@@ -55,7 +55,8 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
@@ -65,6 +66,8 @@ The queries that will be included during the fetch are decided according to the 
 ##### Log Type Query
 - Each log type has its own query field in the instance configuration.
 - Note that the default query values has some example text in it, make sure to enter a valid query.
+- Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. 
+For example: "and (device_name eq dummy_device)".
 
 ##### Log Type Query Examples
 
@@ -97,14 +100,14 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
 | vsys | Vsys - Firewall instances only | False |
-| template | Template - Panorama instances only | False |
+| template | Template - Panorama instances only | False |****
 | use_url_filtering | Use URL Filtering for auto enrichment | False |
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | First fetch timestamp  | First fetch time interval | False |
 | Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
-| Log Type | Log Types incidents to fetch | False |
+| Log Type | Log Types incidents to fetch | False |****
 | Traffic Log Type Query | Traffic Query for fetch incidents | False |
 | Threat Log Type Query | Threat Query for fetch incidents | False |
 | URL Log Type Query | URL Query for fetch incidents | False |
@@ -298,35 +301,36 @@ After you successfully execute a command, a DBot message appears in the War Room
 80. [Gets information about available PAN-OS licenses and their statuses: panorama-get-licenses](#pan-os-get-licenses)
 81. [Gets information for the specified security profile: panorama-get-security-profiles](#pan-os-get-security-profiles)
 82. [Apply a security profile to specific rules or rules with a specific tag: panorama-apply-security-profile](#pan-os-apply-security-profile)
-83. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](#pan-os-get-ssl-decryption-rules)
-84. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](#pan-os-get-wildfire-configuration)
-85. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](#pan-os-url-filtering-block-default-categories)
-86. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](#pan-os-get-anti-spyware-best-practice)
-87. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](#pan-os-get-file-blocking-best-practice)
-88. [Get anti-virus best practices: panorama-get-antivirus-best-practice](#pan-os-get-antivirus-best-practice)
-89. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](#pan-os-get-vulnerability-protection-best-practice)
-90. [View WildFire best practices: panorama-get-wildfire-best-practice](#pan-os-get-wildfire-best-practice)
-91. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](#pan-os-get-url-filtering-best-practice)
-92. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](#pan-os-enforce-wildfire-best-practice)
-93. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](#pan-os-create-antivirus-best-practice-profile)
-94. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](#pan-os-create-anti-spyware-best-practice-profile)
-95. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](#pan-os-create-vulnerability-best-practice-profile)
-96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#pan-os-create-url-filtering-best-practice-profile)
-97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#pan-os-create-file-blocking-best-practice-profile)
-98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#pan-os-create-wildfire-best-practice-profile)
-99. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
-100. [Shows the zones configuration.](#pan-os-show-zones-config)
-101. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
-102. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
-103. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
-104. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
-105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
-106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
-107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
-108. [Download the running configuration](#pan-os-get-running-config)
-109. [Download the merged configuration](#pan-os-get-merged-config)
-110. [Create Nat-rule](#pan-os-create-nat-rule)
-111. [Create PBF-rule](#pan-os-create-pbf-rule)
+83. [Removes a security profile to specific rules or rules with a specific tag](#pan-os-remove-security-profile)
+84. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](#pan-os-get-ssl-decryption-rules)
+85. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](#pan-os-get-wildfire-configuration)
+86. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](#pan-os-url-filtering-block-default-categories)
+87. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](#pan-os-get-anti-spyware-best-practice)
+88. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](#pan-os-get-file-blocking-best-practice)
+89. [Get anti-virus best practices: panorama-get-antivirus-best-practice](#pan-os-get-antivirus-best-practice)
+90. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](#pan-os-get-vulnerability-protection-best-practice)
+91. [View WildFire best practices: panorama-get-wildfire-best-practice](#pan-os-get-wildfire-best-practice)
+92. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](#pan-os-get-url-filtering-best-practice)
+93. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](#pan-os-enforce-wildfire-best-practice)
+94. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](#pan-os-create-antivirus-best-practice-profile)
+95. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](#pan-os-create-anti-spyware-best-practice-profile)
+96. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](#pan-os-create-vulnerability-best-practice-profile)
+97. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#pan-os-create-url-filtering-best-practice-profile)
+98. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#pan-os-create-file-blocking-best-practice-profile)
+99. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#pan-os-create-wildfire-best-practice-profile)
+100. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
+101. [Shows the zones configuration.](#pan-os-show-zones-config)
+102. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
+103. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
+104. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
+105. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
+106. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
+107. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
+108. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+109. [Download the running configuration](#pan-os-get-running-config)
+110. [Download the merged configuration](#pan-os-get-merged-config)
+111. [Create Nat-rule](#pan-os-create-nat-rule)
+112. [Create PBF-rule](#pan-os-create-pbf-rule)
 
 
 
@@ -724,6 +728,7 @@ Creates an address object.
 | ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
 | device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag               | The tag for the new address. | Optional | 
+| create_tag        | Whether to create the tag if it does not exist. | Optional | 
 
 
 #### Context Output
@@ -736,7 +741,7 @@ Creates an address object.
 | Panorama.Addresses.IP_Netmask | string | Address IP Netmask. | 
 | Panorama.Addresses.IP_Range | string | Address IP range. | 
 | Panorama.Addresses.DeviceGroup | String | Device group for the address \(Panorama instances\). | 
-| Panorama.Addresses.Tag | String | Address tag. | 
+| Panorama.Addresses.Tags | String | Address tags. | 
 
 
 #### Command Example
@@ -827,7 +832,7 @@ Returns a list of address groups.
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.Addresses | String | Static Address group addresses. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tag. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -952,7 +957,7 @@ Creates a static or dynamic address group.
 | Panorama.AddressGroups.Addresses | string | Static Address group list of addresses. | 
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tags. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -2311,7 +2316,7 @@ Creates a policy rule.
 | service | A comma-separated list of service object names for the rule. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
 | application | A comma-separated list of application object names for the rule. | Optional | 
-| source_user | Source user for the rule to create. | Optional | 
+| source_user | A comma-separated list of source users for the rule to create. | Optional | 
 | pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
 | log_forwarding | Log forwarding profile. | Optional | 
@@ -2561,21 +2566,33 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| predefined        | Whether to list predefined applications or not. | Optional | 
-| device-group      | The device group for which to return applications. | Optional |
+| --- | --- | --- |
+| predefined | Whether to list predefined applications. Possible values are: true, false. Default is false. | Optional | 
+| device-group | The device group for which to return applications. | Optional | 
+| name_match | When specified, the results returned in the list are limited to applications whose names match the specified string. | Optional | 
+| name_contain | When specified, the results returned in the list are limited to applications whose names contain the specified string. | Optional | 
+| risk | The application risk (1 to 5). Possible values are: 1, 2, 3, 4, 5. | Optional | 
+| category | The application category. Possible values are: collaboration, business-systems, networking, media. | Optional | 
+| sub_category | The application sub-category. | Optional | 
+| technology | The application technology. Possible values are: browser-based, client-server, network-protocol, peer-to-peer. | Optional | 
+| characteristics | A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the applications to return. Default is 50. | Optional | 
+| page | The page at which to start listing applications. Must be a positive number. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Applications.Name | string | Application name. | 
-| Panorama.Applications.Id | number | Application ID. | 
-| Panorama.Applications.Category | string | Application category. | 
-| Panorama.Applications.SubCategory | string | Application sub-category. | 
-| Panorama.Applications.Technology | string | Application technology. | 
-| Panorama.Applications.Risk | number | Application risk \(1 to 5\). | 
-| Panorama.Applications.Description | string | Application description. | 
+| Panorama.Applications.Name | string | The application name. | 
+| Panorama.Applications.Id | number | The application ID. | 
+| Panorama.Applications.Category | string | The application category. | 
+| Panorama.Applications.SubCategory | string | The application sub-category. | 
+| Panorama.Applications.Technology | string | The application technology. | 
+| Panorama.Applications.Risk | number | The application risk \(1 to 5\). | 
+| Panorama.Applications.Description | string | The application description. | 
+| Panorama.Applications.Characteristics | string | The application characteristics. | 
 
 
 #### Command Example
@@ -2712,10 +2729,28 @@ Returns the push status for a configuration.
 ***
 Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
 
+When trying to retrieve threat-PCAPs of a firewall through a panorama instance, be sure to forward the log containing the threat PCAP file from the firewall to the panorama instance. 
+
+For more information follow instructions from [here](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-log-collection/configure-log-forwarding-to-panorama).
+
 
 #### Base Command
 
 `pan-os-get-pcap`
+
+
+#### PCAPs api docs
+You can find information about required/optional arguments for each pcap type here:
+
+![filter pcap api](../../doc_files/fliter-pcap-api.png)
+
+![dlp pcap api](../../doc_files/dlp-pcap-api.png)
+
+![application pcap api](../../doc_files/application-pcap-api.png)
+
+![threat pcap api](../../doc_files/threat-pcap-api.png)
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2755,7 +2790,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 ### pan-os-list-pcaps
 ***
-Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
+Returns a list of all PCAP files by PCAP type. **Not available for threat PCAPs.**
 
 #### Base Command
 
@@ -3012,45 +3047,73 @@ Deprecated. Retrieves traffic log query data by job id.
 #### Command Example
 ```!pan-os-get-traffic-logs job_id="1865"```
 
-
 ### pan-os-list-rules
-***
-Returns a list of predefined Security Rules.
 
+***
+Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
 
 #### Base Command
 
 `pan-os-list-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | Tag for which to filter the rules. | Optional | 
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
-
+| tag | The tag to filter the rules. | Optional | 
+| tags | A comma-separated list of tags by which to filter the rules. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no. | Optional | 
+| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop. | Optional | 
+| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.SecurityRule.Name | String | Rule name. | 
-| Panorama.SecurityRule.Action | String | Action for the rule. | 
-| Panorama.SecurityRule.Location | String | Rule location. | 
-| Panorama.SecurityRule.Category | String | Rule category. | 
-| Panorama.SecurityRule.Application | String | Application for the rule. | 
-| Panorama.SecurityRule.Destination | String | Destination address. | 
-| Panorama.SecurityRule.From | String | Rule from. | 
-| Panorama.SecurityRule.Service | String | Service for the rule. | 
-| Panorama.SecurityRule.To | String | Rule to. | 
-| Panorama.SecurityRule.Source | String | Source address. | 
-| Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
-| Panorama.SecurityRules.Tags | String | Rule tags. | 
-
+| Panorama.SecurityRule.Location | String | The location of the security rule. | 
+| Panorama.SecurityRule.NegateDestination | String | Indicates whether the destination is negated in the security rule. | 
+| Panorama.SecurityRule.Disabled | String | Indicates whether the security rule is disabled. | 
+| Panorama.SecurityRule.ICMPUnreachable | String | Specifies the behavior for ICMP unreachable messages. | 
+| Panorama.SecurityRule.Description | String | The description of the security rule. | 
+| Panorama.SecurityRule.GroupTag | String | The group tag of the security rule. | 
+| Panorama.SecurityRule.LogForwardingProfile | String | The log forwarding profile applied to the security rule. | 
+| Panorama.SecurityRule.NegateSource | String | Indicates whether the source is negated in the security rule. | 
+| Panorama.SecurityRule.SecurityProfileGroup | String | The security profile group assigned to the security rule. | 
+| Panorama.SecurityRule.SecurityProfile.url-filtering | String | The security profile setting for url-filtering in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.data-filtering | String | The security profile setting for data-filtering in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.file-blocking | String | The security profile setting for file-blocking in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.virus | String | The security profile setting for viruses in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.spyware | String | The security profile setting for spyware in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.vulnerability | String | The security profile setting for vulnerability in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.wildfire-analysis | String | The security profile setting for wildfire-analysis in the security rule. || Panorama.SecurityRule.Target.devices | String | The devices targeted by the security rule. | 
+| Panorama.SecurityRule.Target.negate | String | Indicates whether the target is negated in the security rule. | 
+| Panorama.SecurityRule.Name | String | The name of the security rule. | 
+| Panorama.SecurityRule.From | String | The source zone of the security rule. | 
+| Panorama.SecurityRule.DestinationDevice | String | The destination device of the security rule. | 
+| Panorama.SecurityRule.Action | String | The action taken by the security rule. | 
+| Panorama.SecurityRule.SourceDevice | String | The source device of the security rule. | 
+| Panorama.SecurityRule.Tags | String | The tags associated with the security rule. | 
+| Panorama.SecurityRule.SourceUser | String | The source user of the security rule. | 
+| Panorama.SecurityRule.Application | String | The application used in the security rule. | 
+| Panorama.SecurityRule.Service | String | The service used in the security rule. | 
+| Panorama.SecurityRule.To | String | The destination zone of the security rule. | 
+| Panorama.SecurityRule.Source | String | The source address of the security rule. | 
+| Panorama.SecurityRule.CustomUrlCategory | String | The custom URL category targeted by the security rule. | 
+| Panorama.SecurityRule.Destination | String | The destination address of the security rule. | 
+| Panorama.SecurityRule.Options.LogAtSessionStart | String | Indicates whether the session start is logged. | 
+| Panorama.SecurityRule.Options.LogForwarding | String | Indicates whether log forwarding is enabled for the security rule. | 
+| Panorama.SecurityRule.Options.Schedule | String | The schedule applied to the security rule. | 
+| Panorama.SecurityRule.Options.QoSMarking | String | The QoS marking applied to the security rule. | 
+| Panorama.SecurityRule.Options.DisableServerResponseInspection | String | Specifies whether to disable server response inspection for the security rule. | 
+| Panorama.SecurityRule.DeviceGroup | String | The device group of the security rule \(Panorama instances only\). | 
+| Panorama.SecurityRule.Type | String | Represents the type of the security rule \(e.g., pre-rule, post-rule, intra-zone, inter-zone\). | 
 
 #### Command Example
-```!pan-os-list-rules```
+```!pan-os-list-rules pre_post=“pre-rulebase”```
 
 #### Context Example
 ```json
@@ -3058,68 +3121,134 @@ Returns a list of predefined Security Rules.
     "Panorama": {
         "SecurityRule": [
             {
+                "DeviceGroup": "TestDevice",
+                "Location": "TestDevice",
+                "NegateDestination": "",
+                "Disabled": "no",
+                "ICMPUnreachable": "",
+                "Description": "",
+                "GroupTag": "",
+                "LogForwardingProfile": "",
+                "NegateSource": "",
+                "SecurityProfileGroup": "TestGroup",
+                "SecurityProfile": {
+                    "url-filtering": "",
+                    "data-filtering": "",
+                    "file-blocking": "",
+                    "vulnerability": "",
+                    "wildfire-analysis": "",
+                    "spyware": "",
+                    "virus": ""
+                },
+                "Target": {
+                    "devices": "007051000185487",
+                    "negate": "no"
+                },
+                "Name": "block rule",
+                "Type": "",
+                "From": [
+                    "TestName",
+                    "TestName2"
+                ],
+                "DestinationDevice": "any",
                 "Action": "drop",
-                "Application": "fortnite",
-                "Destination": "any",
-                "From": "any",
-                "Name": "demisto-7b6dc6e6",
-                "Service": "any",
-                "Source": "any",
-                "To": "any"
+                "SourceDevice": "any",
+                "Tags": [
+                    "TestTag1",
+                    "TestTag2",
+                    "TestTag3"
+                ],
+                "SourceUser": "any",
+                "Application": [
+                    "cortex-xdr",
+                    "jira",
+                    "zoom"
+                ],
+                "Service": "application-default",
+                "To": [
+                    "TestName",
+                    "TestName2"
+                ],
+                "Source": [
+                    "1.1.1.1",
+                    "8.8.4.4",
+                    "8.8.8.8"
+                ],
+                "CustomUrlCategory": [
+                    "abortion",
+                    "adult",
+                    "alcohol-and-tobacco",
+                    "hacking"
+                ],
+                "Destination": [
+                    "1.1.1.1",
+                    "8.8.8.8"
+                ],
+                "Options": {
+                    "LogAtSessionStart": "",
+                    "LogForwarding": "",
+                    "Schedule": "",
+                    "QoSMarking": "",
+                    "DisableServerResponseInspection": ""
+                }
             },
             {
-                "Action": "drop",
-                "Application": "fortnite",
-                "Destination": "any",
-                "From": "any",
-                "Name": "demisto-125e5985",
-                "Service": "any",
-                "Source": "any",
-                "To": "any"
-            },
-            {
-                "Action": {
-                    "#text": "drop",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
+                "DeviceGroup": "TestDevice",
+                "Location": "TestDevice",
+                "NegateDestination": "",
+                "Disabled": "",
+                "ICMPUnreachable": "yes",
+                "Description": "bbbbbbbbbb",
+                "GroupTag": "TestGroupTag",
+                "LogForwardingProfile": "Log forwarding for SA",
+                "NegateSource": "",
+                "SecurityProfileGroup": "",
+                "SecurityProfile": {
+                    "url-filtering": "default",
+                    "spyware": "testing",
+                    "virus": "default",
+                    "data-filtering": "",
+                    "file-blocking": "",
+                    "vulnerability": "",
+                    "wildfire-analysis": ""
                 },
-                "Application": {
-                    "#text": "fortnite",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
+                "Target": {
+                    "devices": [
+                        "007051000185487",
+                        "007051000188986"
+                    ],
+                    "negate": "no"
                 },
-                "Destination": {
-                    "#text": "any",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
-                },
-                "From": {
-                    "#text": "any",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
-                },
-                "Name": "demisto-9c9ed15a",
-                "Service": {
-                    "#text": "any",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
-                },
-                "Source": {
-                    "#text": "any",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
-                },
-                "To": {
-                    "#text": "any",
-                    "@admin": "api",
-                    "@dirtyId": "2986",
-                    "@time": "2020/10/13 05:00:06"
+                "Name": "jl-test-1",
+                "Type": "intrazone",
+                "From": "internal",
+                "DestinationDevice": "bad nam",
+                "Action": "reset-server",
+                "SourceDevice": "good name",
+                "Tags": [
+                    "APIiiiiii",
+                    "test2shared"
+                ],
+                "SourceUser": "me",
+                "Application": "8x8",
+                "Service": [
+                    "new group",
+                    "service-http",
+                    "service-https"
+                ],
+                "To": "internal",
+                "Source": "1.1.1.1",
+                "CustomUrlCategory": [
+                    "alcohol-and-tobacco",
+                    "auctions"
+                ],
+                "Destination": "my_shared_address_object_test",
+                "Options": {
+                    "LogAtSessionStart": "yes",
+                    "LogForwarding": "Log forwarding for SA",
+                    "Schedule": "test-schedule",
+                    "QoSMarking": "ip-precedence",
+                    "DisableServerResponseInspection": "yes"
                 }
             }
         ]
@@ -3129,13 +3258,11 @@ Returns a list of predefined Security Rules.
 
 #### Human Readable Output
 
->### Security Rules:
->|Name|Action|From|To|Service|
->|---|---|---|---|---|
->| demisto-7b6dc6e6 | drop | any | any | any |
->| demisto-125e5985 | drop | any | any | any |
->| demisto-9c9ed15a | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: drop | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any |
-
+### Security Rules:
+|Name|Location|Tags|Type|Source Zone|Source Address|Source User|Source Device|Destination Zone|Destination Address|Destination Device|Application|Service|Url Category|Action|Profiles|Profile Group|Options|Target|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| block rule | TestDevice | TestTag1,<br>TestTag2,<br>TestTag3 |  | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.4.4,<br>8.8.8.8 | any | any | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.8.8 | any | cortex-xdr,<br>jira,<br>zoom | application-default | abortion,<br>adult,<br>alcohol-and-tobacco,<br>hacking | drop | url-filtering:<br>data-filtering:<br>file-blocking:<br>virus:<br>spyware:<br>vulnerability:<br>wildfire-analysis: | TestGroup | LogAtSessionStart: <br>LogForwarding:<br>Schedule:<br>QoSMarking:<br>DisableServerResponseInspection: | devices: 007051000185487<br>negate: no |
+| jl-test-1 | TestDevice | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>data-filtering:<br>file-blocking:<br>virus: default<br>spyware: testing<br>vulnerability:<br>wildfire-analysis: |  | LogAtSessionStart: yes<br>LogForwarding: Log forwarding for SA<br>Schedule: test-schedule<br>QoSMarking: ip-precedence<br>DisableServerResponseInspection: yes | devices: 007051000185487,<br>007051000188986<br>negate: no |
 
 ### pan-os-query-logs
 ***
@@ -4276,8 +4403,28 @@ There is no context output for this command.
 ```!pan-os-apply-security-profile profile_name=test profile_type=spyware rule_name=rule1 pre_post="pre-rulebase" ```
 
 #### Human Readable Output
->The profile test has been applied to the rule rule1
+>The profile spyware = test has been applied to the rule rule1
 
+### pan-os-remove-security-profile
+
+***
+Removes a security profile to specific rules or rules with a specific tag.
+
+#### Base Command
+
+`pan-os-remove-security-profile`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_type | The security profile type. Possible values are: data-filtering, file-blocking, spyware, url-filtering, virus, vulnerability, wildfire-analysis. | Required | 
+| rule_name | The rule name to apply. | Required | 
+| pre_post | The location of the rules. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| device-group | The device group for which to apply security profiles. | Optional | 
+
+#### Human Readable Output
+>The profile test has been removed from the rule rule1
 
 ### pan-os-get-ssl-decryption-rules
 ***
@@ -5537,7 +5684,7 @@ Gets information from all PAN-OS systems in the topology.
 
 ### pan-os-platform-get-device-groups
 ***
-Gets the operational information of the device groups in the topology.
+Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
 
 
 #### Base Command
@@ -7677,29 +7824,34 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 | name | The name of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules. | Optional | 
 | device-group | The device group in which the NAT rules are part of. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
-| limit | The maximum number of rules to retrieve, Will be used by default if page argument was not provided. Default is 50. | Optional | 
-| page_size | The page at which to start listing NAT rules. Must be a positive number. Default is 50. | Optional | 
-| page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. Possible values are: true, false. Default is false. | Optional | 
+| disabled | Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules. Possible values are: yes, no. | Optional | 
+| nat_type | The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules. Possible values are: ipv4, nat64, nptv6. | Optional | 
+| tags | A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules. | Optional | 
+| query | Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the NAT rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing NAT rules. Must be a positive number. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Nat.Name | String | The name of the rule. | 
-| Panorama.Nat.Location | String | The device group that the rule is part of. | 
-| Panorama.Nat.Tags | String | The tags in which the rule is part of. | 
-| Panorama.Nat.SourceZone | String | The source zone of the rule. | 
-| Panorama.Nat.DestinationZone | String | The destination zone of the rule. | 
-| Panorama.Nat.SourceAddress | String | The source address of the rule. | 
-| Panorama.Nat.DestinationAddress | String | The destination address of the rule. | 
-| Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
-| Panorama.Nat.Service | String | The service in which the rule has. | 
-| Panorama.Nat.Description | String | The description of the rule. | 
-| Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
-| Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
-| Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+| Panorama.NAT.Name | String | The name of the rule. | 
+| Panorama.NAT.Location | String | The device group that the rule is part of. | 
+| Panorama.NAT.Tags | String | The tags in which the rule is part of. | 
+| Panorama.NAT.SourceZone | String | The source zone of the rule. | 
+| Panorama.NAT.DestinationZone | String | The destination zone of the rule. | 
+| Panorama.NAT.SourceAddress | String | The source address of the rule. | 
+| Panorama.NAT.DestinationAddress | String | The destination address of the rule. | 
+| Panorama.NAT.DestinationInterface | String | The destination interface of the rule. | 
+| Panorama.NAT.Service | String | The service in which the rule has. | 
+| Panorama.NAT.Description | String | The description of the rule. | 
+| Panorama.NAT.SourceTranslation | Unknown | The source translation of the rule. | 
+| Panorama.NAT.DestinationTranslation | Unknown | The destination translation of the rule. | 
+| Panorama.NAT.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+| Panorama.NAT.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
 ```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
@@ -7707,49 +7859,52 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 ```json
 {
     "Panorama": {
-        "Nat": [
+        "NAT": [
             {
-                "Description": "a test rule",
-                "DestinationAddress": "test123",
+                "Description": "Test",
+                "DestinationAddress": "Test_Bla_Bla",
                 "DestinationInterface": "any",
                 "DestinationTranslation": {
-                    "TranslatedAddress": "1.1.1.1"
+                    "TranslatedAddress": "1.1.1.1/24",
+                    "TranslatedPort": "1234"
                 },
-                "DestinationZone": "2.2.2.2",
+                "DestinationZone": "Admin",
+                "Disabled": "yes",
                 "DynamicDestinationTranslation": null,
-                "Name": "test-2",
-                "Service": "any",
-                "SourceAddress": "5.5.5.5",
+                "Name": "Test",
+                "Service": "Test_group",
+                "SourceAddress": "bad-url.com",
                 "SourceTranslation": {
-                    "DynamicIpAndPort": {
-                        "InterfaceAddress": "a2"
+                    "StaticIp": {
+                        "TranslatedAddress": "1.2.3.4"
                     }
                 },
-                "SourceZone": [
-                    "2.2.2.2",
-                    "3.3.3.3"
-                ],
-                "Tags": "test tag"
+                "SourceZone": "any",
+                "Tags": null
             },
             {
-                "Description": "blabla",
-                "DestinationAddress": "1.1.1.1",
-                "DestinationInterface": "a2",
+                "Description": "Desc",
+                "DestinationAddress": "Test_Bla_Bla",
+                "DestinationInterface": "any",
                 "DestinationTranslation": null,
-                "DestinationZone": "2.2.2.2",
+                "DestinationZone": "Admin",
+                "Disabled": "yes",
                 "DynamicDestinationTranslation": {
-                    "TranslatedAddress": "1.1.1.1"
+                    "DistributionMethod": "ip-hash",
+                    "TranslatedAddress": "bad-url.com"
                 },
-                "Name": "test-1",
-                "Service": "any",
-                "SourceAddress": "3.3.3.3",
-                "SourceTranslation": {
-                    "StaticIP": {
-                        "TranslatedAddress": "3.3.3.3"
-                    }
-                },
-                "SourceZone": "3.3.3.3",
-                "Tags": null
+                "Name": "Test",
+                "Service": "XSOAR_Test",
+                "SourceAddress": "bad-url.com",
+                "SourceTranslation": null,
+                "SourceZone": [
+                    "Admin",
+                    "Bla"
+                ],
+                "Tags": [
+                    "test",
+                    "tag"
+                ]
             }
         ]
     }
@@ -7759,10 +7914,11 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Nat Policy Rules:
->| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
---------|---|---|---|---|---|---|---|---|---|
->| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
->| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+>|Name|Tags|Source Zone|Destination Zone|Source Address|Disabled|Destination Address|Destination Interface|Service|Description|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Test |  | any | Admin | bad-url.com | yes | Test_Bla_Bla | any | Test_group | Test |
+>| Test | test,<br/>tag | Admin,<br/>multicast | Admin | bad-url.com | yes | Test_Bla_Bla | any | XSOAR_Test | Desc |
+
 
 
 ### pan-os-create-nat-rule
@@ -8278,7 +8434,11 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 | rulename | The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules. | Optional | 
 | device-group | The device-group that the pbf-rules are part of. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. Possible values are: true, false. Default is false. | Optional | 
+| disabled | Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules. Possible values are: yes, no. | Optional | 
+| action | The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules. Possible values are: discard, forward, no-pbf. | Optional | 
+| tags | A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules. | Optional | 
+| query | Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules. | Optional | 
 | limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The size of pbf-rules to return. Default is 50. | Optional | 
 | page | The page at which to start listing pbf-rules. Must be a positive number. | Optional | 
@@ -8300,52 +8460,72 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 | Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
 | Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
 | Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+| Panorama.PBF.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
-```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
+```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true debug-mode=true```
 #### Context Example
 ```json
 {
     "Panorama": {
-        "PBF": {
-            "Action": {
-                "forward": {
-                    "egress-interface": "a2",
-                    "monitor": {
-                        "disable-if-unreachable": "no",
-                        "ip-address": "1.1.1.1",
-                        "profile": "profile"
-                    },
-                    "nexthop": {
-                        "ip-address": "2.2.2.2"
+        "PBF": [
+            {
+                "Action": {
+                    "forward": {
+                        "egress-interface": "Test"
                     }
+                },
+                "Application": "acronis-snapdeploy",
+                "Description": "Test policy based forwarding rule with a twist",
+                "DestinationAddress": "bad-url.com",
+                "Disabled": "no",
+                "EnforceSymmetricReturn": {
+                    "enabled": "no"
+                },
+                "Name": "Test_PBF",
+                "Service": "service-https",
+                "SourceAddress": "any",
+                "SourceInterface": null,
+                "SourceUser": "any",
+                "SourceZone": "Test_Zone",
+                "Tags": "test",
+                "Target": {
+                    "negate": "no"
                 }
             },
-            "Application": "3pc",
-            "Description": "this is a test description",
-            "DestinationAddress": "1.1.1.1",
-            "EnforeSymmetricReturn": {
-                "enabled": "yes",
-                "nexthop-address-list": {
-                    "entry": {
-                        "@name": "1.1.1.1"
+            {
+                "Action": {
+                    "forward": {
+                        "egress-interface": "ethernet1/1"
                     }
-                }
-            },
-            "Name": "test",
-            "Service": "application-default",
-            "SourceAddress": "1.1.1.1",
-            "SourceInterface": null,
-            "SourceUser": "pre-logon",
-            "SourceZone": "1.1.1.1",
-            "Tags": [
-                "test tag",
-                "dag_test_tag"
-            ],
-            "Target": {
-                "negate": "no"
+                },
+                "Application": "any",
+                "Description": "TEst2",
+                "DestinationAddress": "any",
+                "Disabled": "no",
+                "EnforceSymmetricReturn": {
+                    "enabled": "yes",
+                    "nexthop-address-list": {
+                        "entry": [
+                            {
+                                "@name": "1.1.1.1"
+                            },
+                            {
+                                "@name": "2.2.2.2"
+                            }
+                        ]
+                    }
+                },
+                "Name": "Test_PBF4",
+                "Service": "any",
+                "SourceAddress": "any",
+                "SourceInterface": null,
+                "SourceUser": "any",
+                "SourceZone": "internal",
+                "Tags": null,
+                "Target": null
             }
-        }
+        ]
     }
 }
 ```
@@ -8353,9 +8533,10 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Policy Based Forwarding Rules:
->|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
->|---|---|---|---|---|---|---|---|
->| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+>|Action|Description|Destination Address|Disabled|Name|Source Address|Source User|Source Zone|Tags|
+>|---|---|---|---|---|---|---|---|---|
+>| forward | Test policy based forwarding rule with a twist | bad-url.com | no | Test_PBF | any | any | Test_Zone | test |
+>| forward | TEst2 | any | no | Test_PBF4 | any | any | internal |  |
 
 ### pan-os-create-pbf-rule
 ***
@@ -8413,7 +8594,7 @@ Edits a redistribution-profile in a virtual-router.
 | rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
 | device-group | The device-group that the PBF rule is in. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf, disabled. | Required | 
 | element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
 
 
@@ -8639,3 +8820,166 @@ There is no context output for this command.
 #### Human Readable Output
 
 >application-group test-3 was deleted successfully.
+### pan-os-list-tag
+
+***
+Returns a list of tags from Panorama.
+
+#### Base Command
+
+`pan-os-list-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| include_shared_tags | Whether to include shared tags in the list. Possible values are: Yes, No. Default is No. | Optional | 
+| device_group | The device group that the tags are part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Tag.name | String | The name of the tag. | 
+| Panorama.Tag.color | String | The color of the tag. | 
+| Panorama.Tag.comment | String | The comment in the tag. | 
+| Panorama.Tag.disable-override | String | Whether overriding the tag is disabled. | 
+
+#### Command example
+```!pan-os-list-tag include_shared_tags=No```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Tag": [
+            {
+                "name": "tag1",
+                "color": "color13"
+            },
+            {
+                "name": "tag2",
+                "color": "color39"
+            },
+            {
+                "name": "tag3",
+                "color": "color39",
+                "disable-override": "no",
+                "comments": "text text text"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags:
+>|Name|Color|Comment|
+>|---|---|---|
+>| tag1 | color13 |  |
+>| tag2 | color39 |  |
+>| tag3 | color39 | text text text |
+
+### pan-os-create-tag
+
+***
+Creates a new tag in Panorama.
+
+#### Base Command
+
+`pan-os-create-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the new tag to be created. | Required | 
+| device_group | The device group that the tag will be part of. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| is_shared | Whether the tag should be generated in a shared location. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-tag name="testtag" comment="some comment" is_shared=false```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was created successfully.
+
+### pan-os-edit-tag
+
+***
+Edits a tag in Panorama.
+
+#### Base Command
+
+`pan-os-edit-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The existing name for the tag to be edited. | Required | 
+| new_name | The new name for the tag to be replaced with. | Optional | 
+| device_group | The device group of the tag. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was edited successfully.
+
+### pan-os-delete-tag
+
+***
+Deletes a tag from Panorama.
+
+#### Base Command
+
+`pan-os-delete-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the tag to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-delete-tag name="testtag"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was deleted successfully.
+
+### pan-os-list-device-groups
+
+***
+Returns a list of all device groups from Panorama.
+#### Base Command
+
+`pan-os-list-device-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.DeviceGroupNames | string | The list of device groups. |

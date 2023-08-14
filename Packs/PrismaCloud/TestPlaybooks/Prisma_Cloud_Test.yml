@@ -1,0 +1,1520 @@
+id: Prisma Cloud V2 Test
+version: -1
+name: Prisma Cloud V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9535719a-c184-4b2f-8948-7ab3a504506e
+    type: start
+    task:
+      id: 9535719a-c184-4b2f-8948-7ab3a504506e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4788143e-4a56-431d-890f-bdbd0653541f
+    type: regular
+    task:
+      id: 4788143e-4a56-431d-890f-bdbd0653541f
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "20"
+      - "28"
+      - "34"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9f390247-bc2d-4e34-8cd6-ae0c526dd7c0
+    type: regular
+    task:
+      id: 9f390247-bc2d-4e34-8cd6-ae0c526dd7c0
+      version: -1
+      name: prisma-cloud-alert-filter-list
+      description: List the acceptable filters and values for alerts
+      script: '|||prisma-cloud-alert-filter-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3110,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9c4d384f-61df-4c26-85db-0643637616d6
+    type: condition
+    task:
+      id: 9c4d384f-61df-4c26-85db-0643637616d6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.AlertFilters.filterName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3110,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c7c8266b-c025-4475-8a08-a434bd0f4971
+    type: title
+    task:
+      id: c7c8266b-c025-4475-8a08-a434bd0f4971
+      version: -1
+      name: Test Finished Successfully
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ea800c2a-204e-4717-88d1-0224b7755438
+    type: regular
+    task:
+      id: ea800c2a-204e-4717-88d1-0224b7755438
+      version: -1
+      name: prisma-cloud-alert-search
+      description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
+      script: '|||prisma-cloud-alert-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filters:
+        simple: alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8fa94b33-64bd-4439-8636-908841e03f65
+    type: condition
+    task:
+      id: 8fa94b33-64bd-4439-8636-908841e03f65
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+      - "16"
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Alert.policy.policyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Alert.resource.rrn
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 91d597ca-68e0-4f41-84bb-ffab7c7b5536
+    type: regular
+    task:
+      id: 91d597ca-68e0-4f41-84bb-ffab7c7b5536
+      version: -1
+      name: prisma-cloud-alert-get-details
+      description: Gets the details of an alert based on alert ID
+      script: '|||prisma-cloud-alert-get-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4ceb59b8-d1f5-4c67-8969-28ea341a9068
+    type: condition
+    task:
+      id: 4ceb59b8-d1f5-4c67-8969-28ea341a9068
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.id
+            iscontext: true
+          right:
+            value:
+              simple: PrismaCloud.Alert.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f22a297d-d53f-4c29-828f-9549af31700d
+    type: regular
+    task:
+      id: f22a297d-d53f-4c29-828f-9549af31700d
+      version: -1
+      name: prisma-cloud-alert-dismiss
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: '|||prisma-cloud-alert-dismiss'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert_ids:
+        simple: ${PrismaCloud.Alert.id}
+      dismissal_note:
+        simple: Dismissing from XSOAR test playbook
+      time_range_unit:
+        simple: month
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6f09ae8c-ea95-4874-8705-f9ea581ae97f
+    type: regular
+    task:
+      id: 6f09ae8c-ea95-4874-8705-f9ea581ae97f
+      version: -1
+      name: prisma-cloud-alert-get-details
+      description: Gets the details of an alert based on alert ID
+      script: '|||prisma-cloud-alert-get-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_id:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 749c02a1-bde3-4789-82fc-2765ee8e67aa
+    type: condition
+    task:
+      id: 749c02a1-bde3-4789-82fc-2765ee8e67aa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: dismissed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.reason
+            iscontext: true
+          right:
+            value:
+              simple: USER_DISMISSED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 51652f29-19db-4069-8a10-d840c478273c
+    type: regular
+    task:
+      id: 51652f29-19db-4069-8a10-d840c478273c
+      version: -1
+      name: prisma-cloud-alert-reopen
+      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+      script: '|||prisma-cloud-alert-reopen'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_ids:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 260febe2-b86c-49dc-86fc-bc6010ba8425
+    type: regular
+    task:
+      id: 260febe2-b86c-49dc-86fc-bc6010ba8425
+      version: -1
+      name: prisma-cloud-alert-get-details
+      description: Gets the details of an alert based on alert ID
+      script: '|||prisma-cloud-alert-get-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alert_id:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 19d387e8-6731-41e0-850e-d7865ab9210a
+    type: condition
+    task:
+      id: 19d387e8-6731-41e0-850e-d7865ab9210a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: open
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.reason
+            iscontext: true
+          right:
+            value:
+              simple: USER_REOPENED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e7c6a9bb-1352-4d50-802e-68222a227c81
+    type: regular
+    task:
+      id: e7c6a9bb-1352-4d50-802e-68222a227c81
+      version: -1
+      name: prisma-cloud-remediation-command-list
+      description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+      script: '|||prisma-cloud-remediation-command-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "5"
+      policy_id:
+        simple: ${PrismaCloud.Alert.policy.policyId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
+    type: condition
+    task:
+      id: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.AlertRemediation.[0].alertId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 122c515c-00d8-4677-80b5-f6fc87ca8005
+    type: regular
+    task:
+      id: 122c515c-00d8-4677-80b5-f6fc87ca8005
+      version: -1
+      name: prisma-cloud-config-search
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 39b61365-8bfb-452d-80d4-bd5d2b1d861e
+    type: condition
+    task:
+      id: 39b61365-8bfb-452d-80d4-bd5d2b1d861e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Config.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Config.regionName
+            iscontext: true
+          right:
+            value:
+              simple: AWS Ohio
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 796b7e04-93c3-4dd3-897b-81affa2831d4
+    type: regular
+    task:
+      id: 796b7e04-93c3-4dd3-897b-81affa2831d4
+      version: -1
+      name: prisma-cloud-event-search
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, default time range is all times.
+      script: '|||prisma-cloud-event-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: event from cloud.audit_logs where cloud.type = 'aws'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 792a0798-358f-43a8-8a97-381d44fa56fd
+    type: condition
+    task:
+      id: 792a0798-358f-43a8-8a97-381d44fa56fd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Event.id
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PrismaCloud.Config.regionName
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
+    type: regular
+    task:
+      id: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
+      version: -1
+      name: prisma-cloud-network-search
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+      script: '|||prisma-cloud-network-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      query:
+        simple: network from vpc.flow_record where bytes > 100000 limit search records to 1000
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: db080dc5-185b-4c7c-879a-34023bff57f3
+    type: condition
+    task:
+      id: db080dc5-185b-4c7c-879a-34023bff57f3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Node.[0].id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Connection.[0].from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Connection.[0].to
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: af1de502-305d-4534-8ef1-67ed1ad509f7
+    type: regular
+    task:
+      id: af1de502-305d-4534-8ef1-67ed1ad509f7
+      version: -1
+      name: prisma-cloud-resource-get
+      description: Get resource details.
+      script: '|||prisma-cloud-resource-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      rrn:
+        simple: ${PrismaCloud.Alert.resource.rrn}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0dbd7177-e431-48a5-84e3-97730aff994a
+    type: condition
+    task:
+      id: 0dbd7177-e431-48a5-84e3-97730aff994a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Resource.rrn
+            iscontext: true
+          right:
+            value:
+              simple: PrismaCloud.Alert.resource.rrn
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e562fe07-d602-4639-8097-aac8035309d0
+    type: regular
+    task:
+      id: e562fe07-d602-4639-8097-aac8035309d0
+      version: -1
+      name: prisma-cloud-account-list
+      description: List accounts.
+      script: '|||prisma-cloud-account-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 35171953-23b6-45ef-860a-3923e674d67b
+    type: condition
+    task:
+      id: 35171953-23b6-45ef-860a-3923e674d67b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Account.accountId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6ae32f46-574a-4f1f-8855-c16699f40e64
+    type: regular
+    task:
+      id: 6ae32f46-574a-4f1f-8855-c16699f40e64
+      version: -1
+      name: prisma-cloud-account-status-get
+      description: Get accounts statuses.
+      script: '|||prisma-cloud-account-status-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      account_ids:
+        simple: ${PrismaCloud.Account.[0].accountId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5ce2426d-5c4c-4195-8b4c-9e3af9b6518e
+    type: condition
+    task:
+      id: 5ce2426d-5c4c-4195-8b4c-9e3af9b6518e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Account.accountId
+            iscontext: true
+          right:
+            value:
+              simple: PrismaCloud.Account.[0].accountId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 8987e58d-e04d-42c3-87b5-11463624edf2
+    type: regular
+    task:
+      id: 8987e58d-e04d-42c3-87b5-11463624edf2
+      version: -1
+      name: prisma-cloud-account-owner-list
+      description: Get accounts owners.
+      script: '|||prisma-cloud-account-owner-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      account_ids:
+        simple: ${PrismaCloud.Account.[0].accountId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 90d413b7-b2e8-4076-86ec-4b15755a4e18
+    type: condition
+    task:
+      id: 90d413b7-b2e8-4076-86ec-4b15755a4e18
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Account.accountId
+            iscontext: true
+          right:
+            value:
+              simple: PrismaCloud.Account.[0].accountId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 7497c1a1-2db2-4902-8b3c-2da27a558da0
+    type: regular
+    task:
+      id: 7497c1a1-2db2-4902-8b3c-2da27a558da0
+      version: -1
+      name: prisma-cloud-error-file-list
+      description: Lists scanned files that contain errors. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+      script: '|||prisma-cloud-error-file-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit:
+        simple: "5"
+      repository:
+        simple: prashmp/iac-samples
+      source_types:
+        simple: Github
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3e3ae07f-5fac-4d94-8ae0-ab25ad828387
+    type: condition
+    task:
+      id: 3e3ae07f-5fac-4d94-8ae0-ab25ad828387
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.ErrorFile.[0].filePath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e4c8bede-e07a-4351-8651-70a32805b2e7
+    type: regular
+    task:
+      id: e4c8bede-e07a-4351-8651-70a32805b2e7
+      version: -1
+      name: prisma-cloud-permission-list
+      description: Get permission list. You must provide either "query" or "next_token".
+      script: '|||prisma-cloud-permission-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit:
+        simple: "5"
+      query:
+        simple: config from iam where dest.cloud.region = 'AWS Virginia' AND dest.cloud.service.name = 'lambda' AND dest.cloud.resource.type = 'function'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 27819fb6-d7ac-40e5-8c64-c1e6d6519f03
+    type: condition
+    task:
+      id: 27819fb6-d7ac-40e5-8c64-c1e6d6519f03
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Permission.[0].destCloudServiceName
+            iscontext: true
+          right:
+            value:
+              simple: lambda
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Permission.[0].destResourceType
+            iscontext: true
+          right:
+            value:
+              simple: function
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Permission.[0].id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 705fc765-7dd6-43ec-8c45-826d32cf6b71
+    type: regular
+    task:
+      id: 705fc765-7dd6-43ec-8c45-826d32cf6b71
+      version: -1
+      name: prisma-cloud-alert-dismiss
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: '|||prisma-cloud-alert-dismiss'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alert_ids:
+        simple: ${PrismaCloud.Alert.id}
+      dismissal_note:
+        simple: Snoozing from XSOAR test playbook
+      snooze_unit:
+        simple: hour
+      snooze_value:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c1b78299-d5e1-4b4d-8a2c-ba9a82325e93
+    type: regular
+    task:
+      id: c1b78299-d5e1-4b4d-8a2c-ba9a82325e93
+      version: -1
+      name: prisma-cloud-alert-get-details
+      description: Gets the details of an alert based on alert ID
+      script: '|||prisma-cloud-alert-get-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      alert_id:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 5fefb209-bead-452c-8389-9e1f25352e68
+    type: condition
+    task:
+      id: 5fefb209-bead-452c-8389-9e1f25352e68
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: snoozed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaCloud.Alert.reason
+            iscontext: true
+          right:
+            value:
+              simple: USER_DISMISSED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2660,
+        "width": 3010,
+        "x": 480,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: Test for Prisma Cloud V2

@@ -1,14 +1,11 @@
 args:
 - default: true
   description: The name of the job to configure.
-  isArray: false
   name: job_name
   required: true
-  secret: false
 commonfields:
   id: JobCreator
   version: -1
-enabled: false
 name: JobCreator
 comment: Job Creator for the Content Management pack.
 outputs:
@@ -17,7 +14,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management
@@ -28,4 +24,4 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
 marketplaces:
-  - xsoar
+- xsoar

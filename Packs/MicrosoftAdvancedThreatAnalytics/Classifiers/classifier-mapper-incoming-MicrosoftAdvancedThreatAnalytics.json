@@ -1,6 +1,6 @@
 {
 	"id": "Microsoft Advanced Threat Analytics-mapper",
-	"name": " Microsoft Advanced Threat Analytics - Incoming Mapper",
+	"name": "Microsoft Advanced Threat Analytics - Incoming Mapper",
 	"type": "mapping-incoming",
 	"description": "Maps Microsoft Advanced Threat Analytics suspicious activity fields.",
 	"fromVersion": "6.0.0",

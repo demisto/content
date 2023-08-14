@@ -1,0 +1,630 @@
+id: Add Employees to New Hire Watchlist
+version: -1
+fromversion: "6.8.0"
+name: Add Employees to New Hire Watchlist
+description: Loops through stand-up tickets provided by the New Hire Auto-Add playbook
+  and adds employees to the New Hire watchlist in Code42 Incydr.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 59df06b9-b554-44da-80b2-e2eac2d5b8f9
+    type: start
+    task:
+      id: 59df06b9-b554-44da-80b2-e2eac2d5b8f9
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 235,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bfff400a-062c-4471-8f29-5e393889dd47
+    type: regular
+    task:
+      id: bfff400a-062c-4471-8f29-5e393889dd47
+      version: -1
+      name: Add User to New Hire Watchlist
+      description: Add a user to a watchlist.
+      script: Code42|||code42-watchlists-add-user
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#error#':
+      - "18"
+      '#none#':
+      - "24"
+    scriptarguments:
+      username:
+        simple: ${inputs.ticket_username}
+      watchlist:
+        simple: NEW_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 586f072c-4826-4126-8d1a-538a196e03ab
+    type: condition
+    task:
+      id: 586f072c-4826-4126-8d1a-538a196e03ab
+      version: -1
+      name: Is Username Already in Watchlist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: inputs.ticket_username
+            iscontext: true
+          right:
+            value:
+              simple: Code42.WatchlistUsers.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 235,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ee28d729-1cac-4ae8-83a8-ff7b9aefbb3e
+    type: regular
+    task:
+      id: ee28d729-1cac-4ae8-83a8-ff7b9aefbb3e
+      version: -1
+      name: Set "No Action Taken" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No action taken on ${inputs.ticket_username}. Employee is in the New
+          Hire watchlist with a start date of ${inputs.ticket_start_date}.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8fcc4eb3-d69b-4739-86c2-e22d75165dfa
+    type: regular
+    task:
+      id: 8fcc4eb3-d69b-4739-86c2-e22d75165dfa
+      version: -1
+      name: Set "Added User" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Added ${inputs.ticket_username} to New Hire watchlist with a start
+          date of ${inputs.ticket_start_date}.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 1fa88709-ed54-44df-8ac1-f17eb1325e2e
+    type: regular
+    task:
+      id: 1fa88709-ed54-44df-8ac1-f17eb1325e2e
+      version: -1
+      name: Set "Error Adding" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Error adding ${inputs.ticket_username} to New Hire watchlist.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2202dbcf-1bce-49d4-8f24-756331ffbb93
+    type: title
+    task:
+      id: 2202dbcf-1bce-49d4-8f24-756331ffbb93
+      version: -1
+      name: Playbook Complete
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 440274b5-5769-4758-87c3-ca5b1c24aa44
+    type: regular
+    task:
+      id: 440274b5-5769-4758-87c3-ca5b1c24aa44
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Added to New Hire watchlist on '
+              suffix:
+                value:
+                  simple: .
+      start_date:
+        simple: ${inputs.ticket_start_date}
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6309a9d8-1515-4fed-893f-eb9b99584484
+    type: regular
+    task:
+      id: 6309a9d8-1515-4fed-893f-eb9b99584484
+      version: -1
+      name: Get Incydr User Profile Information
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 235,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 066fa850-f1be-414c-8f04-72cf4a927f26
+    type: regular
+    task:
+      id: 066fa850-f1be-414c-8f04-72cf4a927f26
+      version: -1
+      name: Format Departure Date for Time Comparison
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: start_date
+      value:
+        simple: ${Code42.UserRiskProfiles.StartDate.year}-${Code42.UserRiskProfiles.StartDate.month}-${Code42.UserRiskProfiles.StartDate.day}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 235,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 279ac8e2-0783-4900-8e3c-da0ea00722d9
+    type: condition
+    task:
+      id: 279ac8e2-0783-4900-8e3c-da0ea00722d9
+      version: -1
+      name: Do Start Dates Match?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "Yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ticket_start_date
+            iscontext: true
+          right:
+            value:
+              simple: start_date
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 55ad8b97-58e9-48a4-8f59-61298ccfe1b5
+    type: regular
+    task:
+      id: 55ad8b97-58e9-48a4-8f59-61298ccfe1b5
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Added to New Hire watchlist on '
+              suffix:
+                value:
+                  simple: .
+      start_date:
+        simple: ${inputs.ticket_start_date}
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ffd9b4de-bf07-4e50-881c-a7db3590a959
+    type: regular
+    task:
+      id: ffd9b4de-bf07-4e50-881c-a7db3590a959
+      version: -1
+      name: Set "Updated Start Date" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Updated ${inputs.ticket_username}'s Incydr start date to ${inputs.ticket_start_date}
+          based on ticket.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 41df94dd-d17b-48b0-8312-d1135a52543c
+    type: regular
+    task:
+      id: 41df94dd-d17b-48b0-8312-d1135a52543c
+      version: -1
+      name: Delete User Profile Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: Code42.UserRiskProfiles
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1425,
+        "width": 1810,
+        "x": -410,
+        "y": -600
+      }
+    }
+  }
+inputs:
+- key: ticket_username
+  value: {}
+  required: true
+  description: The username (in email format) provided in a stand-up ticket from Jira,
+    Zendesk, etc.
+  playbookInputQuery: null
+- key: ticket_start_date
+  value: {}
+  required: true
+  description: The start date (in YYYY-MM-DD format) provided in a stand-up ticket
+    from Jira, Zendesk, etc.
+  playbookInputQuery: null
+- key: ticket_key
+  value: {}
+  required: false
+  description: The unique identifier of a stand-up ticket from Jira, Zendesk, etc.
+    (optional).
+  playbookInputQuery: null
+outputs: []

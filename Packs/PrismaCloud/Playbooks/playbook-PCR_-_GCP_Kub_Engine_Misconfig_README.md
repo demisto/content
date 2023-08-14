@@ -20,7 +20,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration
 
 ### Integrations
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 This playbook does not use any scripts.

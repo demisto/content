@@ -1,0 +1,32 @@
+{
+    "id": "incident_symantecedrdetectiontype",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "modified": "2023-01-28T13:29:19.708162018+05:30",
+    "name": "SymantecEDR Detection Type",
+    "ownerOnly": false,
+    "description": "Symantec EDR Incident Detection Type",
+    "cliName": "symantecedrdetectiontype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec EDR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

@@ -1,0 +1,43 @@
+{
+    "result": [
+        {
+            "user_agent_ip": "127.0.0.1",
+            "entity_result": {
+                "data": {
+                    "incident_management": {
+                        "uuid": "602d1680-79e6-11ed-cc32-000000000002"
+                    }
+                },
+                "type": "Incident",
+                "uid": "602d1680-79e6-11ed-cc32-000000000002",
+                "name": "incident_management"
+            },
+            "status_id": 1,
+            "feature_name": "Incident",
+            "device_ip": "127.0.0.1",
+            "user_name": "SEDR API",
+            "atp_node_role": 5,
+            "category_id": 4,
+            "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
+            "log_name": "atp_audit_log-2022-12",
+            "count": 1,
+            "device_name": "localhost.localdomain",
+            "message": "Incident Closed Successfully.",
+            "log_time": "2022-12-25T20:16:40.637Z",
+            "severity_id": 1,
+            "device_cap": "EDR",
+            "id": 2,
+            "device_time": "2022-12-25T20:16:39.824Z",
+            "product_ver": "4.6.8-8",
+            "device_end_time": "2022-12-25T20:16:39.824Z",
+            "type_id": 21,
+            "uuid": "0a6aa900-8491-11ed-cfc2-000000032d2d",
+            "product_name": "Symantec Endpoint Detection and Response",
+            "status_detail": "Success",
+            "timezone": 0,
+            "user_uid": "O2ID.atp-customer.atp-domain.dbq9fmcjk132kmha7f9584qvr7"
+        }
+    ],
+    "next": "MSwyMDIyLTEyLTI1VDIzOjE1OjIxLjcwNFo=",
+    "total": 33
+}

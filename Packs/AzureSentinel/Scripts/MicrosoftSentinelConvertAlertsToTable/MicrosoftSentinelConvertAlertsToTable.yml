@@ -1,0 +1,14 @@
+commonfields:
+  id: MicrosoftSentinelConvertAlertsToTable
+  version: -1
+comment: This script is used to convert alerts to a table.
+name: MicrosoftSentinelConvertAlertsToTable
+outputs:
+script: '-'
+tags:
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.5.0

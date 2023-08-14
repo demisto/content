@@ -13,36 +13,35 @@ Investigates a Cortex XDR incident containing internal port scan alerts. The pla
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Internal - Generic v2
-* Isolate Endpoint - Generic
 * Block IP - Generic v3
-* PANW - Hunting and threat detection by indicator type V2
+* IP Enrichment - Internal - Generic v2
 * Block File - Generic v2
+* Isolate Endpoint - Generic V2
 * Calculate Severity - Generic v2
+* PANW - Hunting and threat detection by indicator type V2
 
 ### Integrations
 * CortexXDRIR
 
 ### Scripts
-* StopScheduledTask
 * AssignAnalystToIncident
-* XDRSyncScript
 * IsIPInRanges
+* StopScheduledTask
 * SetAndHandleEmpty
+* XDRSyncScript
 
 ### Commands
-* xdr-update-incident
-* setIncident
-* xdr-get-endpoints
-* send-mail
 * closeInvestigation
+* xdr-get-endpoints
+* xdr-update-incident
+* send-mail
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| WhitelistedPorts | A list of comma-separated ports that should not be blocked even if used in an attack. |  | Optional |
 | BlockAttackerIP | Whether attacking IPs should be automatically blocked using firewalls. | False | Optional |
 | WhitelistedHostnames | A list of comma-separated hostnames that should not be isolated even if used in an attack. | AdminPC | Optional |
 | EmailAddressesToNotify | A list of comma-separated values of email addresses that should receive a notification about compromised hosts. |  | Optional |

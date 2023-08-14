@@ -2,8 +2,10 @@ id: Archer initiate incident
 version: -1
 name: Archer initiate incident
 fromversion: "5.0.0"
+deprecated: true
 starttaskid: "0"
-description: "initiate Archer incident"
+description: "Deprecated. Use the `archer-get-file` command directly instead. 
+initiate Archer incident"
 tasks:
   "0":
     id: "0"

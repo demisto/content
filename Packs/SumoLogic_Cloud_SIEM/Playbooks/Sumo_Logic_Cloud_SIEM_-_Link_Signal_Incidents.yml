@@ -1,0 +1,106 @@
+id: Sumo Logic Cloud SIEM - Link Signal Incidents
+description: "Playbook to link Sumo Logic Signal Incidents to the corresponding Insight Incident"
+inputs:
+- description: "The Sumo Logic Insight incident to which we will link its Signal incidents"
+  key: Sumo Logic Insight
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: id
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.type
+          operator: isEqualString
+          right:
+            value:
+              simple: Sumo Logic Insight
+      root: incident
+name: Sumo Logic Cloud SIEM - Link Signal Incidents
+outputs: []
+starttaskid: "0"
+tags:
+- Sumo Logic
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c403551f-4faf-45aa-8453-e3e7e08997a6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c403551f-4faf-45aa-8453-e3e7e08997a6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: '!SumoLogicLinkSignalIncidents'
+      cron:
+        simple: '* * * * *'
+      times:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Schedule a command to run inside the war room at a future time (once or reoccurring)
+      id: 81ee1eea-8da3-4e88-8811-df4ae05ef0ee
+      iscommand: false
+      name: SumoLogicLinkSignalIncidents (Scheduled)
+      script: ScheduleCommand
+      type: regular
+      version: -1
+    taskid: 81ee1eea-8da3-4e88-8811-df4ae05ef0ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 400,
+        "x": 430,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

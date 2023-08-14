@@ -16,6 +16,7 @@ This integration enables you to:
 - Get a list of files in the GitLab project.
 - Get the contents and details of a file in GitLab.
 - Search for code in the GitLab project.
+- Trigger a pipeline in the GitLab project.
 
 #### Create a Personal Access Token 
 Personal access tokens (PATs) are an alternative to using passwords for authentication to GitLab when using the GitLab API. 
@@ -27,6 +28,22 @@ To generate a new token:
 5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
 6. Select the **scopes**, or **permissions**, you want to grant this token. The minimum is read-only on repo.
 7. Click **Create personal access token** and copy the api key generated.-+
+
+#### Create a Trigger Token
+Trigger tokens allow you to trigger a pipeline for a branch using it to authenticate on an API call.
+
+**Prerequisite:**
+
+You must have at least the Maintainer role for the project.
+
+**To generate a new token:**
+
+1. Navigate to your project.
+2. Select **Settings** > **CI/CD**.
+3. Expand Pipeline triggers.
+4. Enter a description and select **Add trigger**.
+   - You can view and copy the full token for all triggers you have created.
+   - You can only see the first 4 characters for tokens created by other project members.
 
 #### Get Project ID
 1. Go to the desired project example gitlab.com/username/project1.
@@ -42,6 +59,7 @@ To generate a new token:
     | --- | --- | --- |
     | Server URL (e.g. https://gitlab.com/api/v4) |  | False |
     | API Key | The API Key to use for connection | True |
+    | Trigger Token | The trigger token to run pipelines | False |
     | Project ID |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -2015,3 +2033,171 @@ Get the users list of a project.
 | gitlab-file-delete |  |  |  |  |
 | gitlab-code-search |  |  |  |  |
 | gitlab-project-user-list |  |  |  |  |
+### gitlab-pipelines-list
+
+***
+Gets the details of the pipelines.
+
+#### Base Command
+
+`gitlab-pipelines-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve pipelines. | Optional | 
+| pipeline_id | ID of specific pipeline from which to retrieve its details. | Optional | 
+| ref | Reference name of the pipelines, e.g., 'master'. | Optional | 
+| status | Retrieves pipelines of which status matches the given status. Possible values are: created, waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID that the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Reference of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when the pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when the pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when the pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when the pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline in seconds. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.username | String | Username that triggered the pipeline. | 
+| GitLab.Pipeline.user.id | Number | ID of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 
+### gitlab-pipelines-schedules-list
+
+***
+Gets the details of the pipeline schedules.
+
+#### Base Command
+
+`gitlab-pipelines-schedules-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve pipeline schedules. | Optional | 
+| pipeline_schedule_id | ID of the specific pipeline schedule from which to retrieve its details. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.PipelineSchedule.id | Number | Pipeline schedule ID. | 
+| GitLab.PipelineSchedule.description | String | Pipeline schedule description. | 
+| GitLab.PipelineSchedule.ref | String | Pipeline schedule reference. | 
+| GitLab.PipelineSchedule.next_run_at | Date | Pipeline schedule next run scheduled time. | 
+| GitLab.PipelineSchedule.active | Boolean | Whether pipeline schedule is active. | 
+| GitLab.PipelineSchedule.created_at | Date | When pipeline schedule was created. | 
+| GitLab.PipelineSchedule.updated_at | Date | When the pipeline schedule was last updated. | 
+| GitLab.PipelineSchedule.last_pipeline.id | Number | ID of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.sha | String | SHA of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.ref | String | Reference of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.status | String | Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+### gitlab-jobs-list
+
+***
+Gets job details.
+
+#### Base Command
+
+`gitlab-jobs-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve jobs details. | Optional | 
+| pipeline_id | ID of the pipeline from which to retrieve its jobs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Job.status | String | The status of the job. | 
+| GitLab.Job.created_at | Date | Time the job was created. | 
+| GitLab.Job.started_at | Date | Time the job was started. | 
+| GitLab.Job.finished_at | Date | Time the job was finished. | 
+| GitLab.Job.duration | Number | Duration of the job in seconds. | 
+| GitLab.Job.id | Number | ID of the job. | 
+| GitLab.Job.name | String | Name of the job. | 
+| GitLab.Job.pipeline.id | Number | Pipeline the job belongs to. | 
+| GitLab.Job.pipeline.project_id | Number | Project ID the job belongs to. | 
+| GitLab.Job.pipeline.ref | String | Reference of the pipeline the job belongs to. | 
+| GitLab.Job.pipeline.sha | String | SHA of the pipeline the job belongs to. | 
+| GitLab.Job.pipeline.status | String | Status of the pipeline the job belongs to. | 
+| GitLab.Job.ref | String | Reference name of the job. | 
+| GitLab.Job.stage | String | Stage of the job. | 
+| GitLab.Job.web_url | String | Web URL of the job. | 
+### gitlab-artifact-get
+
+***
+Gets an artifact from a given artifact path, corresponding to a given job ID.
+
+#### Base Command
+
+`gitlab-artifact-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve an artifact. | Optional | 
+| job_id | ID of a specific job from which to retrieve its artifact. | Required | 
+| artifact_path_suffix | Suffix to the path of an artifact from which to retrieve its data. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Artifact.job_id | String | Job ID from which the artifact was taken. | 
+| GitLab.Artifact.artifact_path_suffix | String | Suffix of the given artifact path. | 
+| GitLab.Artifact.artifact_data | String | Data of the artifact requested. | 
+
+### gitlab-trigger-pipeline
+
+***
+Triggers a GitLab pipeline on a selected project and branch.
+
+#### Base Command
+
+`gitlab-trigger-pipeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID on which to run the pipeline. | Optional | 
+| ref_branch | The branch on which to run the pipeline. Default is 'master'. | Optional | 
+| trigger_variables | JSON containing the pipeline variables. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID that the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Reference of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when the pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when the pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when the pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when the pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline in seconds. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.username | String | Username that triggered the pipeline. | 
+| GitLab.Pipeline.user.id | Number | ID of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 

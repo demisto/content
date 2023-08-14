@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # TODO: Add description to the integration in <root>/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
 from datetime import timezone
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
@@ -11,7 +11,7 @@ import requests
 import urllib3
 import dateutil.parser
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

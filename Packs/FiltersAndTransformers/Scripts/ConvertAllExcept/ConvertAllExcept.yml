@@ -21,8 +21,7 @@ args:
   isArray: true
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
 - No test - used in Prisma Cloud classifier.

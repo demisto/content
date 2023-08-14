@@ -8,18 +8,33 @@ configuration:
   required: true
   type: 0
   defaultvalue: ""
+  section: Connect
 - display: User Name
   name: credentials
   required: true
   type: 9
+  section: Connect
+- display: Product Version
+  name: version
+  type: 15
+  defaultvalue: V9x
+  options:
+  - V9x
+  - V10x
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  section: Connect
+  advanced: true
+  required: false
 description: McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
 display: 'McAfee NSM v2'
 name: McAfeeNSMv2
@@ -31,19 +46,12 @@ script:
     - name: domain_id
       required: true
       description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Policy.policyId
@@ -79,11 +87,8 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.
-      isArray: false
     - name: include_rule_objects
-      required: false
       description: Whether to insert the rule objects that are linked to the policy in the context.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -201,15 +206,11 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: name
       required: true
       description: The policy name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the policy is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -218,11 +219,8 @@ script:
     - name: description
       required: true
       description: The description of the policy.
-      isArray: false
     - name: is_editable
-      required: false
       description: Whether the policy is editable.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -231,7 +229,6 @@ script:
     - name: policy_type
       auto: PREDEFINED
       description: The type of the policy.
-      isArray: false
       predefined:
       - Advanced
       - Classic
@@ -239,11 +236,9 @@ script:
     - name: rule_description
       required: true
       description: The rule description.
-      isArray: false
     - name: response
       auto: PREDEFINED
       description: Action to be performed if the traffic matches this rule.
-      isArray: false
       predefined:
       - Scan
       - Drop
@@ -254,9 +249,7 @@ script:
       - Require Authentication
       required: true
     - name: rule_enabled
-      required: false
       description: Whether the rule is enabled.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -265,20 +258,16 @@ script:
     - name: direction
       auto: PREDEFINED
       description: The direction of the rule.
-      isArray: false
       predefined:
       - Inbound
       - Outbound
       - Either
       required: true
     - name: source_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: source_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -286,15 +275,11 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: destination_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: destination_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -302,7 +287,6 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     outputs:
     - contextPath: NSM.Policy.FirewallPolicyId
       description: The ID of the newly created firewall policy.
@@ -313,32 +297,21 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy. To get the policy ID, use the !nsm-list-domain-firewall-policy.
-      isArray: false
     - name: domain
-      required: false
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: name
-      required: false
       description: The policy name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the policy is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the policy.
-      isArray: false
     - name: is_editable
-      required: false
       description: Whether the policy is editable.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -346,19 +319,14 @@ script:
     - name: policy_type
       auto: PREDEFINED
       description: The type of the policy.
-      isArray: false
       predefined:
       - Advanced
       - Classic
-      required: false
     - name: rule_description
-      required: false
       description: The rule description.
-      isArray: false
     - name: response
       auto: PREDEFINED
       description: Action to be performed if the traffic matches this rule.
-      isArray: false
       predefined:
       - Scan
       - Drop
@@ -367,11 +335,8 @@ script:
       - Stateless Ignore
       - Stateless Drop
       - Require Authentication
-      required: false
     - name: rule_enabled
-      required: false
       description: Whether the rule is enabled.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -380,20 +345,15 @@ script:
     - name: direction
       auto: PREDEFINED
       description: The direction of the rule.
-      isArray: false
       predefined:
       - Inbound
       - Outbound
       - Either
-      required: false
     - name: source_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: source_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -401,15 +361,11 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: destination_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: destination_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -417,11 +373,8 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: is_overwrite
-      required: false
       description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -432,18 +385,15 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy to delete. To get the policy ID, use the !nsm-list-domain-firewall-policy.
-      isArray: false
   - name: nsm-list-domain-rule-object
-    description: Updates the firewall policy details.
+    description: Gets the list of rule objects defined in a particular domain.
     arguments:
     - name: domain_id
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: type
       auto: PREDEFINED
       description: The type of the rule.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -452,20 +402,13 @@ script:
       - Range IP V.6
       - Network IP V.6
       - All
-      required: false
       defaultValue: All
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Rule.ruleobjId
@@ -561,7 +504,6 @@ script:
     - name: rule_id
       required: true
       description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
     outputs:
     - contextPath: NSM.Rule.ruleobjId
       description: The ID of the rule object.
@@ -653,11 +595,9 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: rule_object_type
       auto: PREDEFINED
       description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value, where X is 4 or 6 respectively.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -669,44 +609,34 @@ script:
     - name: name
       required: true
       description: The rule object name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the rule object is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the rule object.
-      isArray: false
     - name: address_ip_v.4
-      required: false
       description: List of IPv4 Host Address, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.4
-      required: false
       description: Start of the IPv4 range.
-      isArray: false
     - name: to_address_ip_v.4
-      required: false
       description: End of the IPv4 range.
-      isArray: false
     - name: address_ip_v.6
-      required: false
       description: List of IPv6 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.6
-      required: false
       description: Start of the IPv6 range.
-      isArray: false
     - name: to_address_ip_v.6
-      required: false
       description: End of the IPv6 range.
-      isArray: false
+    - name: state
+      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
+      defaultValue: Enabled
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
     outputs:
     - contextPath: NSM.Rule.ruleobjId
       description: The ID of the newly created rule object.
@@ -717,82 +647,60 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: rule_id
       description: The ID of the rule. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
       required: true
     - name: name
-      required: false
       description: The rule object name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the rule object is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the rule object.
-      isArray: false
     - name: address_ip_v.4
-      required: false
       description: List of IPv4 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.4
-      required: false
       description: Start of the IPv4 range.
-      isArray: false
     - name: to_address_ip_v.4
-      required: false
       description: End of the IPv4 range.
-      isArray: false
     - name: address_ip_v.6
-      required: false
       description: List of IPv6 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.6
-      required: false
       description: Start of the IPv6 range.
-      isArray: false
     - name: to_address_ip_v.6
-      required: false
       description: End of the IPv6 range.
-      isArray: false
     - name: is_overwrite
-      required: false
       description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+    - name: state
+      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x, and can be used for adding a new address. Existing address states cannot be modified."
+      defaultValue: Enabled
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
   - name: nsm-delete-rule-object
     description: Deletes a rule object.
     arguments:
     - name: rule_id
       required: true
       description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
   - name: nsm-get-alerts
     description: Retrieves the alerts.
     arguments:
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     - name: time_period
       auto: PREDEFINED
@@ -806,17 +714,11 @@ script:
       - LAST_14_DAYS
       - CUSTOM
       description: Time period.
-      required: false
-      isArray: false
       defaultValue: LAST_7_DAYS
     - name: start_time
       description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: end_time
       description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: state
       auto: PREDEFINED
       predefined:
@@ -825,20 +727,12 @@ script:
       - Unacknowledged
       description: Alert state.
       defaultValue: ANY
-      required: false
-      isArray: false
     - name: search
       description: Search string in alert details.
-      required: false
-      isArray: false
     - name: filter
       description: 'Filter alert by fields. For example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
-      required: false
-      isArray: false
     - name: domain_id
-      required: false
       description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
-      isArray: false
       defaultValue: 0
     outputs:
     - contextPath: NSM.Alerts.ID
@@ -1038,12 +932,10 @@ script:
     arguments:
     - name: alert_id
       required: true
-      isArray: false
       description: Alert ID. In order to get the alert ID, use the command '!nsm-get-alerts' and use the output field “ID”.
     - name: sensor_id
       description: Sensor ID. In order to get the sensor ID, use the command '!nsm-get-alerts' and use the output field “SensorID”.
       required: true
-      isArray: false
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID.
@@ -1301,9 +1193,7 @@ script:
     description: If an attack is given, the command returns the details for the specific attack. Otherwise, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you get a timeout error, increase the timeout by using the parameter "execution-timeout".
     arguments:
     - name: attack_id
-      required: false
       description: The ID of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack ID.
-      isArray: false
     outputs:
     - contextPath: InfoFile.Name
       description: File name.
@@ -1409,20 +1299,12 @@ script:
     arguments:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
-      required: false
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50.
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Domains.ID
@@ -1439,20 +1321,12 @@ script:
     arguments:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
-      required: false
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Sensors.ID
@@ -1518,19 +1392,12 @@ script:
     - name: domain_id
       description: Specific domain ID. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
       required: true
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.IPSPolicies.IsEditable
@@ -1554,7 +1421,6 @@ script:
     - name: policy_id
       description: Specific IPS policy ID. To get the policy_id use !nsm-get-ips-policies command.
       required: true
-      isArray: false
     outputs:
     - contextPath: NSM.IPSPolicies.ID
       description: IPS policy ID.
@@ -1597,8 +1463,6 @@ script:
       - Unacknowledged
       description: Alert state.
       defaultValue: ANY
-      required: false
-      isArray: false
     - name: time_period
       auto: PREDEFINED
       predefined:
@@ -1611,35 +1475,23 @@ script:
       - LAST_14_DAYS
       - CUSTOM
       description: Time period.
-      required: false
-      isArray: false
       defaultValue: LAST_7_DAYS
     - name: start_time
       description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: end_time
       description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: new_state
       auto: PREDEFINED
       predefined:
       - Acknowledged
       - Unacknowledged
       description: The new alert state.
-      required: false
-      isArray: false
     - name: new_assignee
       description: The new assignee.
-      required: false
-      isArray: false
     - name: search
       description: Search string in alert details.
     - name: filter
       description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed - name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID.
@@ -1839,19 +1691,12 @@ script:
     - name: sensor_id
       required: true
       description: The ID of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display. The default is 1.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.PcapFile
@@ -1863,11 +1708,9 @@ script:
     - name: sensor_id
       required: true
       description: The ID of the sensor. To get the sensor_id, use the command !nsm-get-sensors.
-      isArray: false
     - name: file_name
       required: true
       description: The name of the wanted file. To get the file_name, use the command !nsm-list-pcap-file.
-      isArray: false
     outputs:
     - contextPath: InfoFile.Name
       description: File name.
@@ -1884,12 +1727,329 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information about the file.
       type: string
-  isfetch: false
+  - name: nsm-list-domain-device
+    description: List the devices related to a given domain.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: limit
+      description: The maximum number of devices to return.
+    - name: all_results
+      description: Return all devices related to the given domain.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    outputs:
+    - contextPath: NSM.Device.ContactInformation
+      description: The contact information of the device.
+      type: string
+    - contextPath: NSM.Device.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.Device.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.Device.DeviceType
+      description: The type of the device.
+      type: string
+    - contextPath: NSM.Device.Location
+      description: The location of the device.
+      type: string
+    - contextPath: NSM.Device.UpdatingMode
+      description: The updating mode of the device.
+      type: string
+  - name: nsm-list-device-interface
+    description: List the interfaces related to a given device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      required: true
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: limit
+      description: The maximum number of interfaces to return.
+    - name: all_results
+      description: Return all interfaces related to the given device.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    outputs:
+    - contextPath: NSM.Interface.InterfaceId
+      description: The id of the interface.
+      type: number
+    - contextPath: NSM.Interface.InterfaceName
+      description: The name of the interface.
+      type: Unknown
+    - contextPath: NSM.Interface.InterfaceType
+      description: The type of the interface.
+      type: string
+  - name: nsm-assign-device-policy
+    description: Assign a policy to a specific device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      required: true
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: pre_firewall_policy_name
+      description: The name of the policy to add to the top of the rule order and evaluated first. To get the policies, use the !nsm-list-domain-firewall-policy command.
+    - name: post_firewall_policy_name
+      description: The name of the policy to add to the end of the rule order and evaluated last. To get the policies, use the !nsm-list-domain-firewall-policy command.
+  - name: nsm-list-device-policy
+    description: List all the policies assigned to a domain or a specific device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: limit
+      description: The maximum number of policies to return.
+    - name: all_results
+      description: Return all policies assigned to a domain or a specific device.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    outputs:
+    - contextPath: NSM.DevicePolicy.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.DevicePolicy.AtdUserForInboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.InterfaceName
+      description: The name of the interface.
+      type: string
+    - contextPath: NSM.DevicePolicy.FirewallPolicyLast
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ReconnaissancePolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.PolicyGroup
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.AtdUserForOutboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.DevicePolicy.AdvancedMalwareOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ConnectionLimitingPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ProtectionOptionsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.AdvancedMalwareInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosOutboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.IpsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosInboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.FirewallPolicyFirst
+      description: ""
+      type: Unknown
+  - name: nsm-assign-interface-policy
+    description: Assign a policy to a specific interface.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: interface_id
+      required: true
+      description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
+    - name: firewall_policy_name
+      description: The name of the firewall policy that will be connected to the interface. To get the policy name, use the !nsm-list-domain-firewall-policy command.
+    - name: firewall_port_policy_name
+      description: The name of the firewall policy that will be connected to the interface/port. To get the policy name, use the !nsm-list-domain-firewall-policy command.
+    - name: ips_policy_name
+      description: The name of the IPS policy that will be connected to the interface. To get the policy name, use the !nsm-get-ips-policies command.
+    - name: custom_policy_json
+      description: A Json with firewall policy types as keys and firewall policy names as values. (e.g `{"advancedMalwareInboundPolicy":"test"}`). To see all the firewall policy options visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html.
+  - name: nsm-list-interface-policy
+    description: List all the policies assigned to all interfaces or a specific interface.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: interface_id
+      description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
+    - name: limit
+      description: The maximum number of policies to return.
+    - name: all_results
+      description: Return all policies assigned to all interfaces or a specific interface.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    outputs:
+    - contextPath: NSM.InterfacePolicy.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.InterfacePolicy.AtdUserForInboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.InterfaceName
+      description: The name of the interface.
+      type: string
+    - contextPath: NSM.InterfacePolicy.FirewallPolicyLast
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ReconnaissancePolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.PolicyGroup
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.AtdUserForOutboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.InterfacePolicy.AdvancedMalwareOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ConnectionLimitingPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ProtectionOptionsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.AdvancedMalwareInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosOutboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.IpsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosInboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.FirewallPolicyFirst
+      description: ""
+      type: Unknown
+  - name: nsm-get-device-configuration
+    description: Provides configuration information of a given device.
+    arguments:
+    - name: device_id
+      description: The ID of the device. To get the device ID, use the !nsm-get-sensors command.
+      required: true
+    outputs:
+    - contextPath: NSM.DeviceConfiguration.IsSSLConfigurationChanged
+      description: Was the ssl configuration changed.
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.DeviceConfiguration.IsConfigurationChanged
+      description: Was the configuration changed.
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsMalwareConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.LastUpdateTime
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DeviceConfiguration.IsGAMUpdateRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsSignatureSetConfigurationChanged
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DeviceConfiguration.IsSigsetConfigPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsBotnetPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsPolicyConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsSSLPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsGloablPolicyConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsBotnetConfigurationChanged
+      description: ""
+      type: boolean
+  - name: nsm-deploy-device-configuration
+    polling: true
+    description: "Deploy the pending changes.\n Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.\nTo get the pending changes, use the !nsm-get-device-configuration command."
+    arguments:
+    - name: request_id
+      description: This is for the polling to work. not for the user.
+      hidden: true
+    - name: device_id
+      description: The ID of the device. To get the device ID, use the !nsm-get-sensors command.
+      required: true
+    - name: push_ssl_key
+      description: Deploy the SSL configuration pending changes.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: push_gam_updates
+      description: Deploy the Gateway Anti-Malware configuration pending changes.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: push_configuration_signature_set
+      description: Deploy the Signature set configuration pending changes.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: push_botnet
+      description: Deploy the Firewall policy description pending changes.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: interval_in_seconds
+      description: The interval between status checks.
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.5.0
 tests:
-- Test_McAfeeNSMv2
+- Test_McAfeeNSMv2_using_v9
+- Test_McAfeeNSMv2_using_v10
+sectionorder:
+- Connect
+- Collect

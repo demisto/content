@@ -1,4 +1,3 @@
-Use Core REST APIs
 
 ## Configure Core REST API on Cortex XSIAM/XSOAR
 
@@ -10,10 +9,10 @@ Use Core REST APIs
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Core Server URL |  | True |
-    | Auth ID |  | True |
+    | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
+    | API Key (Password) | The core server API key. | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Core Server API Key (Password) |  | True |
     | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -251,3 +250,85 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The following packs installed successfully: AutoFocus
+
+### core-api-file-upload
+
+***
+Upload to the incident a file that the user provided according to the entry_id or the content of the file.
+
+#### Base Command
+
+`core-api-file-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's ID. | Required | 
+| file_name | The new file's name. | Optional | 
+| file_content | The new file's content. | Optional | 
+| entry_id | The War Room entry ID of the pack zip file. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### core-api-file-delete
+
+***
+Delete a file from Cortex XSOAR by entry_id.
+
+#### Base Command
+
+`core-api-file-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The War Room entry ID of the file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### core-api-file-attachment-delete
+
+***
+Delete the attachment from the incident and from the Cortex XSOAR server.
+
+#### Base Command
+
+`core-api-file-attachment-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's ID. | Required | 
+| file_path | The file's path. | Required | 
+| field_name | Name of the field (type attachment) from which to remove the attachment. Default is attachment. | Optional | 
+
+#### Command example
+```!core-api-file-attachment-delete file_path=1@1 incident_id=1```
+#### Human Readable Output
+
+>Attachment 1@1 deleted.
+### core-api-file-check
+
+***
+Check if the file exists in Cortex XSOAR by entry_id.
+
+#### Base Command
+
+`core-api-file-check`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The War Room entry ID of the file. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IsFileExists | unknown | Dictionary with EntryID as the key and boolean if the file exists as a value. | 

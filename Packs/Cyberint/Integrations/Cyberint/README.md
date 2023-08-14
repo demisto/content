@@ -1,5 +1,6 @@
 Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
 This integration was integrated and tested with version v1 of cyberint
+
 ## Configure cyberint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,6 +13,7 @@ This integration was integrated and tested with version v1 of cyberint
     | Cyberint Access Token | Cyberint API access token. | True |
     | Cyberint API Environment | Cyberint environment on which the services run \(i.e http://\{environment\}.cyberint.io/...\) | True |
     | Fetch incidents |  | False |
+    | Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record | False |
     | Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
     | Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
     | Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
@@ -22,10 +24,14 @@ This integration was integrated and tested with version v1 of cyberint
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cyberint-alerts-fetch
+
 ***
 List alerts according to parameters
 
@@ -33,6 +39,7 @@ List alerts according to parameters
 #### Base Command
 
 `cyberint-alerts-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -115,9 +122,11 @@ List alerts according to parameters
 
 
 #### Command Example
+
 ```!cyberint-alerts-fetch page="1" page_size="100" created_date_range="7 days"```
 
 #### Context Example
+
 ```json
 {
     "Cyberint": {
@@ -664,7 +673,9 @@ List alerts according to parameters
 
 >Total alerts: 9
 >Current page: 1
+
 >### CyberInt alerts:
+
 >|ref_id|title|status|severity|created_date|type|environment|
 >|---|---|---|---|---|---|---|
 >| ARG-3 | Company Customer Credentials Exposed | open | high | 2021-04-12T00:01:12 | compromised_customer_credentials | Argos Demo |
@@ -679,6 +690,7 @@ List alerts according to parameters
 
 
 ### cyberint-alerts-status-update
+
 ***
 Update the status of one or more alerts.
 
@@ -686,6 +698,7 @@ Update the status of one or more alerts.
 #### Base Command
 
 `cyberint-alerts-status-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -705,9 +718,11 @@ Update the status of one or more alerts.
 
 
 #### Command Example
+
 ```!cyberint-alerts-status-update alert_ref_ids="ADS10-3" status="acknowledged"```
 
 #### Context Example
+
 ```json
 {
     "Cyberint": {
@@ -723,12 +738,14 @@ Update the status of one or more alerts.
 #### Human Readable Output
 
 >### CyberInt alerts updated information:
+
 >|ref_id|status|
 >|---|---|
 >| ADS10-3 | acknowledged |
 
 
 ### cyberint-alerts-get-attachment
+
 ***
 Get alert attachment.
 
@@ -736,6 +753,7 @@ Get alert attachment.
 #### Base Command
 
 `cyberint-alerts-get-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -762,9 +780,11 @@ Get alert attachment.
 
 
 #### Command Example
+
 ```!cyberint-alerts-get-attachment alert_ref_id="ARG-3" attachment_id="18" attachment_name="Compromised Account As Appears On Argos.png"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -787,6 +807,7 @@ Get alert attachment.
 
 
 ### cyberint-alerts-analysis-report
+
 ***
 Get alert analysis report.
 
@@ -794,6 +815,7 @@ Get alert analysis report.
 #### Base Command
 
 `cyberint-alerts-analysis-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -819,9 +841,11 @@ Get alert analysis report.
 
 
 #### Command Example
+
 ```!cyberint-alerts-analysis-report alert_ref_id="ARG-4" report_name="Expert Analysis - Active Phishing Website Targeting Company.pdf"```
 
 #### Context Example
+
 ```json
 {
     "File": {

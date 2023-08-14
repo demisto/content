@@ -1,6 +1,6 @@
 id: Cisco_ISE
 name: Cisco ISE
-fromversion: 6.10.0
+fromversion: 8.2.0
 tags: []
 rules: ''
 samples: ''

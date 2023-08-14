@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "As a result to the new filters added, you might see some duplicate incidents."
+}

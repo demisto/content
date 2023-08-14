@@ -1,3 +1,5 @@
+Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+
 This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
 This integration was integrated and tested with version V1 of Exchange Online PowerShell.
 

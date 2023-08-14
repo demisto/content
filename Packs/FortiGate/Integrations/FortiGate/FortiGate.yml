@@ -13,35 +13,25 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Manage FortiGate Firewall
 display: FortiGate
 name: FortiGate
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: root
+    - defaultValue: root
       description: Filter by address (ip or domain)
-      isArray: false
       name: address
-      required: false
-      secret: false
-    - default: false
-      description: Filter by address name
-      isArray: false
+    - description: Filter by address name
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Get all address objects from your firewall
-    execution: false
     name: fortigate-get-addresses
     outputs:
     - contextPath: Fortigate.Address.Name
@@ -57,15 +47,9 @@ script:
       description: Address object end IP address
       type: string
   - arguments:
-    - default: false
-      description: Filter by group name
-      isArray: false
+    - description: Filter by group name
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Get information about FortiGate service groups
-    execution: false
     name: fortigate-get-service-groups
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
@@ -75,32 +59,20 @@ script:
       description: Service Group member name
       type: string
   - arguments:
-    - default: false
-      description: Group name to update
-      isArray: false
+    - description: Group name to update
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: Service name to update from the group (If providing data argument
-        value does not matter)
-      isArray: false
+    - description: Service name to update from the group (If providing data argument value does not matter)
       name: serviceName
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Action to take on the service
-      isArray: false
       name: action
       predefined:
       - add
       - remove
       required: true
-      secret: false
-    deprecated: false
     description: Update a FortiGate service group
-    execution: false
     name: fortigate-update-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
@@ -110,15 +82,10 @@ script:
       description: Service name
       type: string
   - arguments:
-    - default: false
-      description: Group name of the group you would like to delete
-      isArray: false
+    - description: Group name of the group you would like to delete
       name: groupName
       required: true
-      secret: false
-    deprecated: false
     description: Delete a service group from FortiGate
-    execution: false
     name: fortigate-delete-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
@@ -128,15 +95,9 @@ script:
       description: Was service group deleted
       type: boolean
   - arguments:
-    - default: false
-      description: Service name
-      isArray: false
+    - description: Service name
       name: serviceName
-      required: false
-      secret: false
-    deprecated: false
     description: Get information about a service from FortiGate Firewall
-    execution: false
     name: fortigate-get-firewall-service
     outputs:
     - contextPath: Fortigate.Service.Name
@@ -149,29 +110,14 @@ script:
       description: UDP Port range included for the service
       type: string
   - arguments:
-    - default: false
-      description: Service name
-      isArray: false
+    - description: Service name
       name: serviceName
       required: true
-      secret: false
-    - default: false
-      description: 'TCP Port range for the service. Example: 100-120 or simply a single
-        port.'
-      isArray: false
+    - description: 'TCP Port range for the service. Example: 100-120 or simply a single port.'
       name: tcpRange
-      required: false
-      secret: false
-    - default: false
-      description: 'UDP Port range for the service. Example: 100-120, or simply a
-        single port.'
-      isArray: false
+    - description: 'UDP Port range for the service. Example: 100-120, or simply a single port.'
       name: udpRange
-      required: false
-      secret: false
-    deprecated: false
     description: Create a service in FortiGate firewall
-    execution: false
     name: fortigate-create-firewall-service
     outputs:
     - contextPath: Fortigate.Service.Name
@@ -184,21 +130,11 @@ script:
       description: UDP Port range included for the service
       type: string
   - arguments:
-    - default: false
-      description: Policy name
-      isArray: false
+    - description: Policy name
       name: policyName
-      required: false
-      secret: false
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policyID
-      required: false
-      secret: false
-    deprecated: false
     description: Get information about a firewall policy on FortiGate
-    execution: false
     name: fortigate-get-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
@@ -232,16 +168,11 @@ script:
       description: Policy attached security profile
       type: string
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policyID
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Field parameter to update
-      isArray: false
       name: field
       predefined:
       - description
@@ -253,39 +184,21 @@ script:
       - log
       - nat
       required: true
-      secret: false
-    - default: false
-      description: Value of field parameter to update
-      isArray: false
+    - description: Value of field parameter to update
       name: value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to keep the original data or not. Only relevant if the
-        updated field is "source" or "destination". If the supplied value is 'True',
-        the current data will not be replaced. Instead, the supplied addresses will
-        be added / removed from the existing data.
-      isArray: false
+      description: Whether to keep the original data or not. Only relevant if the updated field is "source" or "destination". If the supplied value is 'True', the current data will not be replaced. Instead, the supplied addresses will be added / removed from the existing data.
       name: keep_original_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to add or remove the supplied addresses from the existing
-        data. Only relevant in case the field to update is "source" or "destination",
-        and keep_original_data is specified to 'True'.
-      isArray: false
+      description: Whether to add or remove the supplied addresses from the existing data. Only relevant in case the field to update is "source" or "destination", and keep_original_data is specified to 'True'.
       name: add_or_remove
       predefined:
       - add
       - remove
-      required: false
-      secret: false
-    deprecated: false
     description: Update a firewall policy on FortiGate
     execution: true
     name: fortigate-update-policy
@@ -318,93 +231,55 @@ script:
       description: Does the policy log the traffic or not
       type: boolean
   - arguments:
-    - default: false
-      description: Policy name
-      isArray: false
+    - description: Policy name
       name: policyName
       required: true
-      secret: false
-    - default: false
-      description: Description for the policy
-      isArray: false
+    - description: Description for the policy
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: 'Source interface  (examples : port1, port2 or port3)'
-      isArray: false
+    - description: 'Source interface  (examples : port1, port2 or port3)'
       name: sourceIntf
       required: true
-      secret: false
-    - default: false
-      description: 'Destination interface (examples : port1, port2 or port3)'
-      isArray: false
+    - description: 'Destination interface (examples : port1, port2 or port3)'
       name: dstIntf
       required: true
-      secret: false
-    - default: false
-      description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
-      isArray: false
+    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
       name: source
       required: true
-      secret: false
-    - default: false
-      description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
-      isArray: false
+    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
       name: destination
       required: true
-      secret: false
-    - default: false
-      description: Service for the policy (for example HTTP)
-      isArray: false
+    - description: Service for the policy (for example HTTP)
       name: service
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Action to take
-      isArray: false
       name: action
       predefined:
       - accept
       - block
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: enable
       description: policy status
-      isArray: false
       name: status
       predefined:
       - enable
       - disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: enable
       description: Will the policy log the traffic or not
-      isArray: false
       name: log
       predefined:
       - all
       - utm
       - disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: enable
       description: enable/disable NAT
-      isArray: false
       name: nat
       predefined:
       - enable
       - disable
-      required: false
-      secret: false
-    deprecated: false
     description: Create a firewall policy (rule) on FortiGate
     execution: true
     name: fortigate-create-policy
@@ -443,31 +318,20 @@ script:
       description: Policy NAT
       type: string
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policyID
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Position for the policy (before or after)
-      isArray: false
       name: position
       predefined:
       - before
       - after
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy being used as a positional anchor
-      isArray: false
+    - description: The ID of the policy being used as a positional anchor
       name: neighbor
       required: true
-      secret: false
-    deprecated: false
     description: Move a firewall policy rule to a different position
-    execution: false
     name: fortigate-move-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
@@ -477,13 +341,9 @@ script:
       description: Was policy moved successfully
       type: boolean
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policyID
       required: true
-      secret: false
-    deprecated: false
     description: Delete a policy from FortiGate firewall
     execution: true
     name: fortigate-delete-policy
@@ -495,15 +355,9 @@ script:
       description: Was policy deleted successfully
       type: boolean
   - arguments:
-    - default: false
-      description: Filter by group name
-      isArray: false
+    - description: Filter by group name
       name: groupName
-      required: false
-      secret: false
-    deprecated: false
     description: Get information about address groups from FortiGate
-    execution: false
     name: fortigate-get-address-groups
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
@@ -516,32 +370,20 @@ script:
       description: Address Group UUID
       type: string
   - arguments:
-    - default: false
-      description: Group name
-      isArray: false
+    - description: Group name
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: An address to add or remove from the group (If providing data argument,
-        value does not matter)
-      isArray: false
+    - description: An address to add or remove from the group (If providing data argument, value does not matter)
       name: address
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Action to take on the service
-      isArray: false
       name: action
       predefined:
       - add
       - remove
       required: true
-      secret: false
-    deprecated: false
     description: Update an address group on FortiGate firewall
-    execution: false
     name: fortigate-update-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
@@ -554,21 +396,13 @@ script:
       description: Address group UUID
       type: Unknown
   - arguments:
-    - default: false
-      description: Group name
-      isArray: false
+    - description: Group name
       name: groupName
       required: true
-      secret: false
-    - default: false
-      description: Address member to add to the group
-      isArray: false
+    - description: Address member to add to the group
       name: address
       required: true
-      secret: false
-    deprecated: false
     description: Create an address group in FortiGate firewall
-    execution: false
     name: fortigate-create-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
@@ -578,15 +412,10 @@ script:
       description: Address group member address
       type: string
   - arguments:
-    - default: false
-      description: Address group name
-      isArray: false
+    - description: Address group name
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Delete an address group from FortiGate firewall
-    execution: false
     name: fortigate-delete-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
@@ -596,38 +425,22 @@ script:
       description: Was address group deleted
       type: boolean
   - arguments:
-    - default: false
-      description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses are supported.
-        For example, "1.1.1.1,6.7.8.9".
+    - description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses are supported. For example, "1.1.1.1,6.7.8.9".
       isArray: true
       name: ip_address
       required: true
-      secret: false
-    - default: false
-      description: Time until ban expires in seconds. 0 for indefinite ban.
-      isArray: false
+    - description: Time until ban expires in seconds. 0 for indefinite ban.
       name: expiry
-      required: false
-      secret: false
-    deprecated: false
     description: Adds IP addresses to the banned list.
-    execution: false
     name: fortigate-ban-ip
   - arguments:
-    - default: false
-      description: CSV list of banned user IP addresses to clear. IPv4 and IPv6 addresses
-        are supported. For example, "1.1.1.1,6.7.8.9".
+    - description: CSV list of banned user IP addresses to clear. IPv4 and IPv6 addresses are supported. For example, "1.1.1.1,6.7.8.9".
       isArray: true
       name: ip_address
       required: true
-      secret: false
-    deprecated: false
     description: Clears a list of specific banned IP addresses.
-    execution: false
     name: fortigate-unban-ip
-  - deprecated: false
-    description: Returns a list of banned IP addresses.
-    execution: false
+  - description: Returns a list of banned IP addresses.
     name: fortigate-get-banned-ips
     outputs:
     - contextPath: Fortigate.BannedIP.IP
@@ -643,34 +456,17 @@ script:
       description: Source of the ban.
       type: string
   - arguments:
-    - default: false
-      description: The address name.
-      isArray: false
+    - description: The address name.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: 'The IP Address, example: 1.1.1.1 .'
-      isArray: false
+    - description: 'The IP Address, example: 1.1.1.1 .'
       name: address
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 255.255.255.255
+    - defaultValue: 255.255.255.255
       description: 'The address mask,example: 255.255.255.0 , Default is 255.255.255.255.'
-      isArray: false
       name: mask
-      required: false
-      secret: false
-    - default: false
-      description: 'The domain name, example: example.com.'
-      isArray: false
+    - description: 'The domain name, example: example.com.'
       name: fqdn
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new address object.
-    execution: false
     name: fortigate-create-address
     outputs:
     - contextPath: Fortigate.Address.Name
@@ -683,15 +479,10 @@ script:
       description: The domain name.
       type: String
   - arguments:
-    - default: false
-      description: The address name.
-      isArray: false
+    - description: The address name.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an address by name.
-    execution: false
     name: fortigate-delete-address
     outputs:
     - contextPath: Fortigate.Address.Name
@@ -700,11 +491,7 @@ script:
     - contextPath: Fortigate.Address.Deleted
       description: The address deletion status.
       type: String
-  dockerimage: demisto/python3:3.10.6.33415
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

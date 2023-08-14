@@ -7,8 +7,9 @@ import dateparser
 import pytest
 from exchangelib import Message
 from EWSv2 import fetch_last_emails
-
+from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
+from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 
 
 class TestNormalCommands:
@@ -106,7 +107,8 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
             return [Message(), Message(), Message(), Message(), Message()]
 
     client = TestNormalCommands.MockClient()
-    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293))
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
+                                                                            datetime.timezone.utc))
     mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
 
     mocker.patch.object(MockObject, 'filter')
@@ -205,33 +207,33 @@ MESSAGES = [
             message_id='message1',
             text_body='Hello World',
             body='message1',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message2',
             message_id='message2',
             text_body='Hello World',
             body='message2',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message3',
             message_id='message3',
             text_body='Hello World',
             body='message3',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message4',
             message_id='message4',
             text_body='Hello World',
             body='message4',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC'))
             ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = (
@@ -307,3 +309,228 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     fetch_emails_as_incidents(client, 'Inbox')
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
+class MockItem:
+    def __init__(self, item_id):
+        self.id = item_id
+
+
+class MockAccount:
+    def __init__(self, primary_smtp_address="", error=401):
+        self.primary_smtp_address = primary_smtp_address
+        self.error = error
+
+    @property
+    def root(self):
+        if self.error == 401:
+            raise UnauthorizedError('Wrong username or password')
+        if self.error == 404:
+            raise Exception('Page not found')
+
+    def fetch(self, ids):
+        if isinstance(ids, type(map)):
+            ids = list(ids)
+
+        result = []
+
+        for item in ids:
+            item_id = item.id
+            if item_id == '3':
+                result.append(ErrorInvalidIdMalformed(value="malformed ID 3"))
+            elif item_id == '4':
+                result.append(ErrorItemNotFound(value="ID 4 was not found"))
+            else:
+                result.append(item_id)
+        return result
+
+
+def test_send_mail(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert results[0].get('Contents') == {
+        'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_trailing_comma(mocker):
+    """
+    Given -
+        a 'subject' which is 'test' and 'to' which is 'test@gmail.com,' (ending with a comma),
+
+    When -
+        trying to send an email
+
+    Then -
+        verify that the 'to' field was extracted correctly and that the trailing comma was handled.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email(to="test@gmail.com,", subject="test")
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert results[0].get('Contents') == {
+        'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+@pytest.mark.parametrize(
+    'item_ids, should_throw_exception', [
+        (
+            ['1'],
+            False
+        ),
+        (
+            ['1', '2'],
+            False
+        ),
+        (
+            ['1', '2', '3'],
+            True
+        ),
+        (
+            ['1', '2', '3', '4'],
+            True
+        ),
+    ]
+)
+def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
+    """
+    Given -
+        Case A: single ID which is valid
+        Case B: two IDs which are valid
+        Case C: two ids which are valid and one id == 3 which cannot be found
+        Case D: two ids which are valid and one id == 3 which cannot be found and one id == 4 which is malformed
+
+    When -
+        executing get_items_from_mailbox function
+
+    Then -
+        Case A: make sure the ID is returned successfully
+        Case B: make sure that IDs are returned successfully
+        Case C: make sure an exception is raised
+        Case D: make sure an exception is raised
+    """
+    from EWSv2 import get_items_from_mailbox
+
+    mocker.patch('EWSv2.Item', side_effect=[MockItem(item_id=item_id) for item_id in item_ids])
+
+    if should_throw_exception:
+        with pytest.raises(Exception):
+            get_items_from_mailbox(MockAccount(), item_ids=item_ids)
+    else:
+        assert get_items_from_mailbox(MockAccount(), item_ids=item_ids) == item_ids
+
+
+def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      categories=['Purple category', 'Orange category']
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+def test_list_parse_item_as_dict():
+    """
+    Given -
+        a Message where effective rights is a list.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the object is parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+    from exchangelib.properties import EffectiveRights
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=[EffectiveRights(), EffectiveRights()]
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    effetive_right_res = return_value.get("effective_rights")
+    assert type(effetive_right_res) is list
+    assert len(effetive_right_res) == 2
+
+
+def test_parse_item_as_dict_with_empty_field():
+    """
+    Given -
+        a Message where effective rights is None and other fields are false\empty strings.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        effective rights field was removed from response other empty\negative fields aren't.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=None,
+                      is_read=False
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert 'effective_rights' not in return_value
+    assert return_value['body'] == ''
+    assert return_value['is_read'] is False
+
+
+def test_get_entry_for_object_empty():
+    from EWSv2 import get_entry_for_object
+    obj = {}
+    assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
+
+
+def test_get_entry_for_object():
+    from EWSv2 import get_entry_for_object
+    obj = {"a": 1, "b": 2}
+    assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'

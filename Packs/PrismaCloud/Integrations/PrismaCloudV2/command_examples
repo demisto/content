@@ -1,0 +1,19 @@
+!prisma-cloud-alert-filter-list
+!prisma-cloud-alert-search filters=alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config limit=2
+!prisma-cloud-alert-get-details alert_id=P-465020
+!prisma-cloud-alert-dismiss dismissal_note="from XSOAR" alert_ids=P-464811 snooze_unit=hour snooze_value=1
+!prisma-cloud-alert-dismiss dismissal_note="from XSOAR" alert_ids=P-469663 time_range_unit=month
+!prisma-cloud-alert-reopen alert_ids=P-469663
+!prisma-cloud-remediation-command-list policy_id=a11b2cc3-1111-2222-33aa-a1b23ccc4dd5 limit=2
+!prisma-cloud-alert-remediate alert_id=P-8497004
+!prisma-cloud-config-search query="config from cloud.resource where cloud.region = 'AWS Ohio' " limit=1
+!prisma-cloud-event-search query="event from cloud.audit_logs where cloud.type = 'aws'" limit=2
+!prisma-cloud-network-search query="network from vpc.flow_record where cloud.account = 'AWS Prod' AND source.publicnetwork IN ( 'Suspicious IPs' ) AND bytes > 0 "
+!prisma-cloud-trigger-scan
+!prisma-cloud-resource-get rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25
+!prisma-cloud-account-list limit=3
+!prisma-cloud-account-status-get account_ids=111111111111
+!prisma-cloud-account-owner-list account_ids=888888888888888888888888888888888888,111111111111
+!prisma-cloud-error-file-list repository=chanduusc/AWS-GWLB-VMSeries source_types=Github limit=2
+!prisma-cloud-host-finding-list rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 finding_types=guard_duty_host,guard_duty_iam limit=2
+!prisma-cloud-permission-list query="config from iam where source.cloud.service.name = 'EC2'" limit=2

@@ -83,7 +83,7 @@ tasks:
       - "4"
     scriptarguments:
       filename:
-        simple: test.pdf
+        simple: "# test.pdf"
       method:
         simple: GET
       saveAsFile:

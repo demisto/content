@@ -6,9 +6,10 @@ from CommonServerUserPython import *
 import requests
 from typing import Dict, List, Any, cast, Union
 from datetime import datetime, timedelta
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

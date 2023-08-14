@@ -16,12 +16,17 @@ You need to configure an audit log policy in the Citrix ADC UI.
 8. From the dropdown list, select the bind point as **SYSTEM_GLOBAL** and click **Bind**, and then click **Done**.
 9. Navigate to **System** > **Auditing** > **Message Actions**, and create the audit message action.
 
+Note:
+In order to parse the timestamp correctly, make sure to configure the logs to be sent in a GMT timezone.
+
+
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
-To create or configure the Broker VM, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

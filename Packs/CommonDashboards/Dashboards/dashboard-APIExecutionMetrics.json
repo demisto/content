@@ -778,81 +778,185 @@
             "reflectDimensions": true
         },
         {
-            "id": "8469e000-52db-11ed-af6a-eb2c495cab55",
+			"id": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
+			"forceRange": false,
+			"x": 8,
+			"y": 6,
+			"i": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "c63390c0-0c5e-4906-8b44-a748e6a639ee",
+				"version": 1,
+				"cacheVersn": 0,
+				"modified": "2023-07-16T14:10:20.740319+03:00",
+				"packID": "JoeSecurity",
+				"packName": "Joe Security",
+				"itemVersion": "1.1.9",
+				"fromServerVersion": "6.5.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "API Call Results for Joe Security",
+				"prevName": "API Call Results for Joe Security",
+				"dataType": "metrics",
+				"widgetType": "line",
+				"query": "type:integration and instance:\"JoeSecurityV2_instance_1\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 0,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"Auth Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "AuthError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Auth Error"
+							},
+							"Connection Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "ConnectionError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Connection Error"
+							},
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Quota Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "QuotaError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Quota Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"modified(d)",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {
+						"type": "max"
+					},
+					"showOthers": false,
+					"timeFrame": "days",
+					"valuesFormat": "abbreviated",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "Request Counts"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+        {
             "forceRange": false,
-            "x": 8,
-            "y": 6,
-            "i": "636b8130-3a83-11ed-a458-1bc96ed59c0e",
+            "h": 3,
+            "i": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
+            "id": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
+            "reflectDimensions": true,
             "w": 4,
-            "h": 2,
             "widget": {
-                "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2022-10-23T11:08:08.285884451Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "Cache": null,
-                "name": "API Call Results for Joe Security",
-                "prevName": "API Call Results for Joe Security",
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
                 "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"JoeSecurityV2_instance_1\"",
-                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byTo": "",
                         "byFrom": "days",
-                        "toValue": null,
+                        "byTo": "",
+                        "field": "",
                         "fromValue": 0,
-                        "field": ""
+                        "toValue": null
                     },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                    "toDate": "0001-01-01T00:00:00Z"
                 },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ea",
+                "isPredefined": true,
+                "itemVersion": "3.0.0",
+                "modified": "2023-05-10T15:54:41.634649071+03:00",
+                "name": "API Call Results for Rapid7 Threat Command",
+                "packID": "IntSight",
+                "packName": "Rapid7 - Threat Command (IntSights)",
+                "packPropagationLabels": [
+                    "all"
+                ],
                 "params": {
                     "customGroupBy": [
                         null,
                         {
-                            "Auth Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "AuthError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Auth Error"
-                            },
-                            "Connection Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "ConnectionError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Connection Error"
-                            },
                             "General Error": {
                                 "conditions": [
                                     [
@@ -910,9 +1014,18 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": ""
+                "prevName": "API Call Results for Rapid7 Threat Command",
+                "propagationLabels": [],
+                "query": "type:integration and instance:\"rapid7_threat_command_instance_1\" or \"rapid7_threat_command_instance_1_copy\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
             },
-            "reflectDimensions": true
+            "x": 0,
+            "y": 8
         }
     ],
     "fromVersion": "6.8.0",

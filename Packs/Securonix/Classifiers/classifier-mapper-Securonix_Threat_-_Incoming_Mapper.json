@@ -1,0 +1,129 @@
+{
+    "description": "Securonix Threat Incoming Mapper",
+    "feed": false,
+    "id": "Securonix Threat - Incoming Mapper",
+    "mapping": {
+        "Securonix Threat": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Securonix Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Securonix Entity ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entityid",
+                        "transformers": []
+                    }
+                },
+                "Securonix Policies": {
+                    "complex": {
+                        "filters": [],
+                        "root": "policies",
+                        "transformers": []
+                    }
+                },
+                "Securonix Resource Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resourcename",
+                        "transformers": []
+                    }
+                },
+                "Securonix Resource Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resourcetype",
+                        "transformers": []
+                    }
+                },
+                "Securonix ResourceGroup Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resourcegroupname",
+                        "transformers": []
+                    }
+                },
+                "Securonix Tenant ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenantid",
+                        "transformers": []
+                    }
+                },
+                "Tenant Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenantname",
+                        "transformers": []
+                    }
+                },
+                "Securonix Threat Generation Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "generationtime",
+                        "transformers": []
+                    }
+                },
+                "Threat Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threatname",
+                        "transformers": []
+                    }
+                },
+                "Securonix Violation Spotter Query": {
+                    "complex": {
+                        "filters": [],
+                        "root": "solrquery",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "index = violation and "
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "@"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Securonix Violator": {
+                    "complex": {
+                        "filters": [],
+                        "root": "violator",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Securonix Threat - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

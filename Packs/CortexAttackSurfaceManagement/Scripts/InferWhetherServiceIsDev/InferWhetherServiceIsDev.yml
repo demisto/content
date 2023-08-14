@@ -9,11 +9,10 @@ comment: Identify whether the service is a "development" server. Development ser
 commonfields:
   id: InferWhetherServiceIsDev
   version: -1
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.10.12.68714
 enabled: true
 name: InferWhetherServiceIsDev
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

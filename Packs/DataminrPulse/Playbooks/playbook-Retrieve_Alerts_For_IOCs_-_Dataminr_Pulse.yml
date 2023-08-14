@@ -1,0 +1,432 @@
+id: Retrieve Alerts For IOCs - Dataminr Pulse
+version: -1
+name: Retrieve Alerts For IOCs - Dataminr Pulse
+description: This playbook is used to fetch alerts from Dataminr Pulse, which will be based on the given input text. First, it will extract indicators from the input text, then it will use extracted indicators to retrieve alerts from Dataminr Pulse. After that, it will store related alerts in the context.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47ae3032-0e5e-4a56-8625-78c26c88169d
+    type: start
+    task:
+      id: 47ae3032-0e5e-4a56-8625-78c26c88169d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5e3d36b2-24c9-4ee1-8e5a-b29eb2eadb21
+    type: title
+    task:
+      id: 5e3d36b2-24c9-4ee1-8e5a-b29eb2eadb21
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ff22102e-f8d3-452a-8617-13d1cd2772c6
+    type: regular
+    task:
+      id: ff22102e-f8d3-452a-8617-13d1cd2772c6
+      version: -1
+      name: Integration is not enabled.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: As an instance of Dataminr Pulse Integration is not active, so not going to fetch alerts.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: eb7806a0-9264-4576-839f-7c15216ceeed
+    type: condition
+    task:
+      id: eb7806a0-9264-4576-839f-7c15216ceeed
+      version: -1
+      name: Is Dataminr Pulse integration enabled?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "61"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Dataminr Pulse
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 91ece7a1-4c44-4ba6-8ae7-b8a342b962cb
+    type: regular
+    task:
+      id: 91ece7a1-4c44-4ba6-8ae7-b8a342b962cb
+      version: -1
+      name: Extract indicators.
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      extend-context:
+        simple: ExtractedIndicatorsForDataminrPulse=.
+      text:
+        simple: ${inputs.text}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: abf5fcac-d4b7-4076-8bda-7b9bf3353d7f
+    type: regular
+    task:
+      id: abf5fcac-d4b7-4076-8bda-7b9bf3353d7f
+      version: -1
+      name: Get alerts from Dataminr Pulse API for indicator list.
+      description: Retrieves the alerts as per the provided watchlists or query.
+      script: '|||dataminrpulse-alerts-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: RetrievedDataminrAlerts=.
+      ignore-outputs:
+        simple: "true"
+      num:
+        simple: ${inputs.num}
+      query:
+        complex:
+          root: TransformedIndicators
+          transformers:
+          - operator: LastArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: indicatorList
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "0"
+      use_configured_watchlist_names:
+        complex:
+          root: inputs.use_configured_watchlist_names
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: edb6750a-ec9e-46ec-82bc-3ebb5f1bd289
+    type: regular
+    task:
+      id: edb6750a-ec9e-46ec-82bc-3ebb5f1bd289
+      version: -1
+      name: Transform extracted indicators to list.
+      description: Script used to transform result received from the extractIndicators (Builtin) script from the dictionary of indicators to a list of indicators.
+      scriptName: DataminrPulseTransformExtractedIndicatorsToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      ExtractedIndicators:
+        complex:
+          root: ExtractedIndicatorsForDataminrPulse
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 9d6260dc-c1fe-406e-8382-578a6982b695
+    type: condition
+    task:
+      id: 9d6260dc-c1fe-406e-8382-578a6982b695
+      version: -1
+      name: Do extracted indicators exist?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "56"
+    scriptarguments:
+      value:
+        complex:
+          root: ExtractedIndicatorsForDataminrPulse
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: ExtractedIndicatorsForDataminrPulse
+                iscontext: true
+              right:
+                value:
+                  simple: '{}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c02d678a-91f3-4908-8cf5-dda1f4ba769d
+    type: regular
+    task:
+      id: c02d678a-91f3-4908-8cf5-dda1f4ba769d
+      version: -1
+      name: Indicators not found.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: Not able to find any indicators, so not retrieving the alerts.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 70ab8698-7042-4c09-80c9-f7f2f4a589e3
+    type: regular
+    task:
+      id: 70ab8698-7042-4c09-80c9-f7f2f4a589e3
+      version: -1
+      name: Delete context for ExtractedIndicatorsForDataminrPulse key.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: ExtractedIndicatorsForDataminrPulse
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: text
+  value:
+    simple: ${incident}
+  required: false
+  description: Text to enrich (default will be entire incident context).
+  playbookInputQuery:
+- key: num
+  value:
+    simple: "40"
+  required: false
+  description: The number of alerts to retrieve.
+  playbookInputQuery:
+- key: use_configured_watchlist_names
+  value:
+    simple: "yes"
+  required: false
+  description: A Boolean indicating that it should use configured watchlist names. Provide "yes " or "no" as value. Default will be "yes".
+  playbookInputQuery:
+outputs: []
+tests:
+- DataminrPulse-Test
+fromversion: 6.5.0

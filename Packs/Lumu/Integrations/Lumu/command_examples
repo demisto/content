@@ -1,0 +1,21 @@
+!lumu-retrieve-labels
+!lumu-retrieve-a-specific-label label_id=51
+!lumu-retrieve-incidents
+!lumu-retrieve-incidents page=2 status=open adversary-types=Malware labels=1580
+!lumu-retrieve-a-specific-incident-details lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumu-retrieve-a-specific-incident-context lumu_incident_id=6eddaf40-938c-11ed-b0f8-a7e340234a4e hash=SHA256
+!lumu-retrieve-open-incidents
+!lumu-retrieve-open-incidents adversary-types=Spam labels=1791
+!lumu-retrieve-muted-incidents
+!lumu-retrieve-muted-incidents labels=1651 adversary-types=Malware
+!lumu-retrieve-closed-incidents
+!lumu-retrieve-closed-incidents labels=0 adversary-types=Mining,Spam
+!lumu-retrieve-endpoints-by-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumu-consult-incidents-updates-through-rest items=4 offset=1096305 time=4
+!lumu-mark-incident-as-read lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 
+!lumu-mute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="mute from cortex"
+!lumu-unmute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="unmute from cortex"
+!lumu-comment-a-specific-incident comment="from cortex, palo alto" lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumu-close-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="closed from Cortex"
+!lumu-get-cache
+!lumu-clear-cache

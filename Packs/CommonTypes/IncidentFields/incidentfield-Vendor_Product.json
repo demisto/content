@@ -26,8 +26,10 @@
   "associatedTypes": [
    "Malware",
    "Traps",
-   "FireEye NX Alerts",
-   "FireEye NX IPS Event"
+   "FireEye NX Alert",
+   "FireEye NX IPS Event",
+   "Microsoft Sentinel Incident",
+   "CrowdStrike Falcon IDP Detection"
   ],
   "associatedToAll": false,
   "unmapped": false,

@@ -75,7 +75,7 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    while pipeline_status not in ['failed', 'success'] and elapsed < TIMEOUT:
+    while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         time.sleep(300)
         pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)

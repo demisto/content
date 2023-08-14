@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.5.0",
+    "currentVersion": "1.6.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -23,29 +23,57 @@
             "mandatory": false,
             "display_name": "ServiceNow"
         },
-        "Nmap": {
-            "mandatory": false,
-            "display_name": "Nmap"
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         },
-        "Tenable_io": {
+        "Azure-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "Tenable.io"
+            "display_name": "Azure Enrichment and Remediation"
         },
         "AWS-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "AWS Enrichment and Remediation"
         },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "qualys": {
+            "mandatory": false,
+            "display_name": "Qualys"
         },
         "GCP-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "GCP Enrichment and Remediation"
         },
-        "Azure-Enrichment-Remediation": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "SplunkPy": {
             "mandatory": false,
-            "display_name": "Azure Enrichment and Remediation"
+            "display_name": "Splunk"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 InsightVM"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
+        "GCP-IAM": {
+            "mandatory": false,
+            "display_name": "GCP-IAM"
         }
     },
     "marketplaces": [
@@ -57,11 +85,17 @@
     ],
     "displayedImages": [
         "ServiceNow",
-        "Nmap",
-        "Tenable_io",
+        "CommonScripts",
         "Azure-Enrichment-Remediation",
         "AWS-Enrichment-Remediation",
+        "Jira",
+        "qualys",
         "GCP-Enrichment-Remediation",
-        "CommonScripts"
+        "FiltersAndTransformers",
+        "SplunkPy",
+        "PrismaCloud",
+        "Rapid7_Nexpose",
+        "Tenable_io",
+        "SplunkPyPreRelease"
     ]
 }

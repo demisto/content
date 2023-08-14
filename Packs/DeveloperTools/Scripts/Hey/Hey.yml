@@ -1,0 +1,90 @@
+commonfields:
+  id: Hey
+  version: -1
+fromversion: 6.0.0
+comment: Use rakyll/hey to test a web application with a load of requests.
+name: Hey
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: url
+  required: true
+  description: URL to query.
+- name: requests_number
+  description: Number of requests to run. Default is 200.
+- name: timeout
+  description: Timeout for each request in seconds. Default is 20, use 0 for infinite.
+- name: concurrency
+  description: Number of workers to run concurrently.
+- name: duration
+  description: Duration of application to send requests (in seconds).
+- name: method
+  auto: PREDEFINED
+  predefined:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - HEAD
+  - OPTIONS
+  description: HTTP method.
+- name: headers
+  description: Custom HTTP header. Comma separated list of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
+- name: disable_compression
+  defaultValue: "true"
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Disable compression.
+- name: results_map
+  description: Additional information to add to the result. Comma separated list of "key=value". e.g. Content-Type=text/plain,Accept=*/*.
+- name: body
+  description: HTTP request body.
+- name: proxy
+  description: HTTP Proxy address as host:port.
+- name: enable_http2
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Enable HTTP/2.
+- name: disable_redirects
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Disable following of HTTP redirects.
+outputs:
+- contextPath: Hey.Timeout
+  description: Timeout for each request.
+  type: number
+- contextPath: Hey.Concurrency
+  description: Max number of concurrent workers.
+  type: number
+- contextPath: Hey.Requests
+  description: Number of requests sent to URL.
+  type: number
+- contextPath: Hey.SlowestTime
+  description: The slowest time it took for a request to finish.
+  type: number
+- contextPath: Hey.FastestTime
+  description: The fastest time it took for a request to finish.
+  type: number
+- contextPath: Hey.SuccessfulResponses
+  description: The number of responses that returned with 200 status code.
+  type: number
+- contextPath: Hey.AverageTime
+  description: The average time it took for a request to finish.
+  type: number
+- contextPath: Hey.Result
+  description: The full result in text format when output is set to "human_readable"
+  type: number
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/rakyll-hey:1.0.0.49364
+runas: DBotWeakRole
+tests:
+- No test

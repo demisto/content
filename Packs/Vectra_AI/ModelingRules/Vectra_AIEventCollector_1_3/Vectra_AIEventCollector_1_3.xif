@@ -1,0 +1,63 @@
+[MODEL:dataset="vectra_vectra_raw"]
+filter id != null |
+    alter
+        xdm.event.type = detection_type, 
+        xdm.alert.original_alert_id = to_string(id),
+        xdm.alert.category = if(
+            category = "botnet", XDM_CONST.THREAT_CATEGORY_BOTNET, 
+            category = null, null, to_string(category)
+        ),
+        xdm.alert.mitre_tactics = arraycreate(if(
+            category = "command", XDM_CONST.MITRE_TACTIC_COMMAND_AND_CONTROL,
+            category = "lateral", XDM_CONST.MITRE_TACTIC_LATERAL_MOVEMENT,
+            category = "reconnaissance", XDM_CONST.MITRE_TACTIC_RECONNAISSANCE,
+            category = "exfiltration", XDM_CONST.MITRE_TACTIC_EXFILTRATION,
+            category = null, null, to_string(category))),
+        xdm.alert.mitre_techniques = arraycreate(if(
+            detection_type = "External Remote Access", XDM_CONST.MITRE_TECHNIQUE_REMOTE_ACCESS_SOFTWARE,
+            detection_type = "Hidden DNS Tunnel", XDM_CONST.MITRE_TECHNIQUE_PROTOCOL_TUNNELING,
+            detection_type = "Hidden HTTP Tunnel", XDM_CONST.MITRE_TECHNIQUE_PROTOCOL_TUNNELING,
+            detection_type = "Hidden HTTPS Tunnel", XDM_CONST.MITRE_TECHNIQUE_PROTOCOL_TUNNELING,
+            detection_type = "Suspect Domain Activity", XDM_CONST.MITRE_TECHNIQUE_DOMAIN_POLICY_MODIFICATION,
+            detection_type = "TOR Activity", XDM_CONST.MITRE_TECHNIQUE_PROXY_MULTI_HOP_PROXY,
+            detection_type = "Multi-home Fronted Tunnel", XDM_CONST.MITRE_TECHNIQUE_PROTOCOL_TUNNELING,
+            detection_type = "Brute-Force", XDM_CONST.MITRE_TECHNIQUE_BRUTE_FORCE,
+            detection_type = "Outbound DoS", XDM_CONST.MITRE_TECHNIQUE_NETWORK_DENIAL_OF_SERVICE,
+            detection_type = "Outbound Port Sweep", XDM_CONST.MITRE_TECHNIQUE_ACTIVE_SCANNING,
+            detection_type = "Outbound Spam", XDM_CONST.MITRE_TECHNIQUE_PHISHING,
+            detection_type = "File Share Enumeration", XDM_CONST.MITRE_TECHNIQUE_NETWORK_SHARE_DISCOVERY,
+            detection_type = "Kerberoasting: SPN Sweep", XDM_CONST.MITRE_TECHNIQUE_STEAL_OR_FORGE_KERBEROS_TICKETS_KERBEROASTING,
+            detection_type = "Port Scan", XDM_CONST.MITRE_TECHNIQUE_ACTIVE_SCANNING,
+            detection_type = "Port Sweep", XDM_CONST.MITRE_TECHNIQUE_ACTIVE_SCANNING,
+            detection_type = "SMB Account Scan", XDM_CONST.MITRE_TECHNIQUE_ACCOUNT_DISCOVERY,
+            detection_type = "RDP Recon", XDM_CONST.MITRE_TECHNIQUE_REMOTE_SERVICES_REMOTE_DESKTOP_PROTOCOL,
+            detection_type = "RDP Recon", XDM_CONST.MITRE_TECHNIQUE_REMOTE_SERVICES_REMOTE_DESKTOP_PROTOCOL,
+            detection_type = "Kerberos Brute-Force", XDM_CONST.MITRE_TECHNIQUE_BRUTE_FORCE,
+            detection_type = "Ransomware File Activity", XDM_CONST.MITRE_TECHNIQUE_DATA_ENCRYPTED_FOR_IMPACT,
+            detection_type = "Shell Knocker Client", XDM_CONST.MITRE_TECHNIQUE_TRAFFIC_SIGNALING_PORT_KNOCKING,
+            detection_type = "Shell Knocker Server", XDM_CONST.MITRE_TECHNIQUE_TRAFFIC_SIGNALING_PORT_KNOCKING,
+            detection_type = "SMB Brute-Force", XDM_CONST.MITRE_TECHNIQUE_BRUTE_FORCE,
+            detection_type = "Data Smuggler", XDM_CONST.MITRE_TECHNIQUE_OBFUSCATED_FILES_OR_INFORMATION_HTML_SMUGGLING,
+            detection_type = null, null, to_string(detection_type))),
+        xdm.alert.original_threat_name = detection_type,
+        xdm.source.ipv4 = src_ip,
+        xdm.source.host.hostname = json_extract_scalar(src_host, "$.name"),
+        xdm.source.agent.identifier = json_extract_scalar(src_host, "$.id"),
+        xdm.event.description = coalesce(description, json_extract_scalar(summary, "$.description")),
+        xdm.event.is_completed = if(state = "fixed"),
+        xdm.alert.severity = to_string(threat);
+filter id = null  |
+    alter
+        xdm.event.type = "AUDIT",
+        xdm.source.user.user_type = role ,
+        xdm.source.user.username = user,
+        xdm.event.outcome = if(
+            result = "success", XDM_CONST.OUTCOME_SUCCESS,
+            result = "failure", XDM_CONST.OUTCOME_FAILED,
+            result = null, null, to_string(result)),
+        xdm.target.host.hostname = dvchost,
+        xdm.target.application.version = version,
+        xdm.target.ipv4  = headend_addr,
+        xdm.source.ipv4 = source_ip,
+        xdm.event.description = message,
+        xdm.event.is_completed = if(result != "pending");

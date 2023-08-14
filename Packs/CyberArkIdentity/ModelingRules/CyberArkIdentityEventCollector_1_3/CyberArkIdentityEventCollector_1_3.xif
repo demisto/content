@@ -3,7 +3,7 @@ filter
     EventType in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
 | alter
     xdm.target.user.identifier = ImpersonateTargetUuid,
-    xdm.target.user.username = ImpersonateTargetName,
+    xdm.target.user.username = coalesce(NormalizedUser,UserName,ImpersonateTargetName),
     xdm.session_context_id = Session,
     xdm.event.outcome = MfaResult,
     xdm.event.outcome_reason = MfaReason,

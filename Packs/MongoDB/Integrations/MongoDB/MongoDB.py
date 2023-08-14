@@ -4,11 +4,12 @@ from json import JSONDecodeError
 from typing import List, Union, Tuple, Any, Optional
 
 from bson.objectid import ObjectId
+from pymongo import UpdateMany, UpdateOne
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import OperationFailure
-from pymongo.results import InsertManyResult, UpdateResult, DeleteResult
+from pymongo.results import InsertManyResult, UpdateResult, DeleteResult, BulkWriteResult
 from pymongo.cursor import Cursor
 
 CONTEXT_KEY = 'MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)'
@@ -124,12 +125,12 @@ class Client:
         raw = collection_object.insert_many(entries)
         return self.datetime_to_str(raw)
 
-    def update_entry(self, collection, filter, update, update_one) -> UpdateResult:
+    def update_entry(self, collection, filter, update, update_one, upsert) -> UpdateResult:
         collection_object = self.get_collection(collection)
         if update_one:
-            raw = collection_object.update_one(filter, update)
+            raw = collection_object.update_one(filter, update, upsert)
         else:
-            raw = collection_object.update_many(filter, update)
+            raw = collection_object.update_many(filter, update, upsert)
         return self.datetime_to_str(raw)
 
     def delete_entry(self, collection, filter, delete_one) -> DeleteResult:
@@ -153,6 +154,27 @@ class Client:
         entries = self.datetime_to_str(entries)
         entries = [self.normalize_id(entry) for entry in entries]
         return entries
+
+    def bulk_update_entries(self, collection, filter_update_zip, update_one, upsert) -> BulkWriteResult:
+        """Bulk updates entries in a collection (Send a batch of write operations to the server).
+
+        Args:
+            collection (str): name of the collection.
+            filter_update_zip (zip): a zip object of (filter,update) pairs of queries.
+            update_one (boolean): whether to update one or many entries per query.
+            upsert (boolean): whether to insert a new entry if no match is found per query.
+        Returns:
+            BulkWriteResult: An object wrapper for bulk API write results
+        """
+        collection_object = self.get_collection(collection)
+        requests = []
+        for filter, update in filter_update_zip:
+            if update_one:
+                requests.append(UpdateOne(filter, update, upsert))
+            else:
+                requests.append(UpdateMany(filter, update, upsert))
+        raw = collection_object.bulk_write(requests)
+        return self.datetime_to_str(raw)
 
 
 def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
@@ -232,6 +254,75 @@ def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
         ['5e4412f230c5b8f63a7356ba']  # guardrails-disable-line
     '''
     return list(map(str, entries))
+
+
+def handle_bulk_update_string_query_arguments(
+        argument: Tuple[str, str],
+        filter_valid_input_example: str, update_valid_input_example: str) -> List[dict]:
+    """Handles the case where the filter or update arguments are strings when using mongodb-bulk-update command.
+        (the other case is a list of dictionaries from context)
+
+    Args:
+        argument (Tuple[str, str]): a tuple containing the argument name and value.
+        filter_valid_input_example (str): a string representing a valid filter argument.
+        update_valid_input_example (str): a string representing a valid update argument.
+
+    Raises:
+        DemistoException: if the filter or update argument is not a json array.
+
+    Returns:
+        List[dict]: a list of dictionaries representing the parsed and validated filter or update argument.
+    """
+    argument_name, argument_value = argument
+    if not argument_value.startswith('[') or not argument_value.endswith(']'):
+        brackets_syntax_error_msg = 'The {} argument must be a json array. Valid input example: {}'
+        raise DemistoException(
+            brackets_syntax_error_msg.format(
+                f'`{argument_name}`', filter_valid_input_example
+                if argument_name == 'filter' else update_valid_input_example))
+    return argToList(argument_value)
+
+
+def parse_and_validate_bulk_update_arguments(filter: str | list, update: str | list) -> Tuple[List, List]:
+    """Parses and validates the bulk update queries (filter and update command arguments).
+
+    Args:
+        filter (str | list): raw string representing the filter command argument or a list object (from context).
+        update (str | list): raw string representing the update command argument or a list object (from context).
+
+    Raises:
+        DemistoException: if filter or update command arguments have invalid syntax.
+        DemistoException: if filter and update command arguments do not contain the same number of elements.
+        DemistoException: if the filter command argument contains an invalid json.
+        DemistoException: if the update command argument contains an invalid json.
+
+    Returns:
+        Tuple[List, List]: lists of dictionaries representing the parsed and validated filter and update arguments.
+    """
+    filter_valid_input_example = '`[{"key1": "value1"},{"key2": "value2"}]`'
+    update_valid_input_example = '`[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`'
+    json_validation_error_msg = 'The {} argument contains an invalid json. Valid input example: {}'
+
+    filters = handle_bulk_update_string_query_arguments(
+        ('filter', filter),
+        filter_valid_input_example, update_valid_input_example) if isinstance(filter, str) else filter
+    updates = handle_bulk_update_string_query_arguments(
+        ('update', update),
+        filter_valid_input_example, update_valid_input_example) if isinstance(update, str) else update
+
+    if len(filters) != len(updates):
+        raise DemistoException('The `filter` and `update` arguments must contain the same number of elements.')
+
+    try:
+        filter_list = [validate_json_objects(filter) for filter in filters]
+    except JSONDecodeError as e:
+        raise DemistoException(json_validation_error_msg.format('`filter`', filter_valid_input_example)) from e
+    try:
+        update_list = [validate_json_objects(update) for update in updates]
+    except JSONDecodeError as e:
+        raise DemistoException(json_validation_error_msg.format('`update`', update_valid_input_example)) from e
+
+    return filter_list, update_list
 
 
 def test_module(client: Client, **kwargs) -> Tuple[str, dict]:
@@ -359,29 +450,36 @@ def format_sort(sort_str: str) -> list:
 def update_entry_command(
         client: Client,
         collection: str,
-        filter: str,
-        update: str,
+        filter: str | dict,
+        update: str | dict,
         update_one=False,
+        upsert=False,
         **kwargs,
 ) -> Tuple[str, None]:
-    try:
-        json_filter = validate_json_objects(json.loads(filter))
 
-    except JSONDecodeError:
-        raise DemistoException('The `filter` argument is not a valid json.')
+    filter_valid_input_example = '`{"key": "value"}`'
+    update_valid_input_example = '`{"$set": {"key": "value"}`'
+    invalid_json_error_msg = 'The {} argument is not a valid json. Valid input example: {}'
+
     try:
-        json_update = validate_json_objects(json.loads(update))
+        json_filter = validate_json_objects(json.loads(filter)) if isinstance(filter, str) else validate_json_objects(filter)
     except JSONDecodeError:
-        raise DemistoException('The `update` argument is not a valid json.')
+        raise DemistoException(invalid_json_error_msg.format('`filter`', filter_valid_input_example))
+    try:
+        json_update = validate_json_objects(json.loads(update)) if isinstance(update, str) else validate_json_objects(update)
+    except JSONDecodeError:
+        raise DemistoException(invalid_json_error_msg.format('`update`', update_valid_input_example))
     response = client.update_entry(
-        collection, json_filter, json_update, argToBoolean(update_one)
+        collection, json_filter, json_update, argToBoolean(update_one), argToBoolean(upsert)
     )
-    if not response.acknowledged:
-        raise DemistoException('Error occurred when trying to enter update entries.')
-    return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.',
-        None,
-    )
+    if response and response.acknowledged:
+        human_readable = "A new entry was inserted to the collection." if response.upserted_id \
+            else f'MongoDB: Total of {response.modified_count} entries has been modified.'
+        return (
+            human_readable,
+            None,
+        )
+    raise DemistoException('Error occurred when trying to enter update entries.')
 
 
 def delete_entry_command(
@@ -469,6 +567,30 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
         return 'MongoDB: No results found', {}, raw_response
 
 
+def bulk_update_command(
+        client: Client,
+        collection: str,
+        filter: str,
+        update: str,
+        update_one=True,
+        upsert=False,
+        **kwargs,
+) -> Tuple[str, None]:
+
+    filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
+
+    response = client.bulk_update_entries(
+        collection, zip(filter_list, update_list), argToBoolean(update_one), argToBoolean(upsert)
+    )
+    if response and response.acknowledged:
+        return (
+            f'MongoDB: Total of {response.modified_count} entries has been modified.\
+            \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
+            None,
+        )
+    raise DemistoException('Error occurred when trying to enter update entries.')
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -491,7 +613,8 @@ def main():
         'mongodb-list-collections': list_collections_command,
         'mongodb-create-collection': create_collection_command,
         'mongodb-drop-collection': drop_collection_command,
-        'mongodb-pipeline-query': pipeline_query_command
+        'mongodb-pipeline-query': pipeline_query_command,
+        'mongodb-bulk-update': bulk_update_command,
     }
     try:
         return_outputs(*commands[command](client, **args))  # type: ignore[operator]

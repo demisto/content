@@ -825,3 +825,44 @@ def test_format_custom_query_args(custom_query_argument, expected_result):
     result = format_custom_query_args(custom_query_argument)
 
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "timestamp,output_format,expected_result",
+    [
+        (
+            "07 Sep 2022 09:08:03 (GMT)",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "2022-09-07T09:08:03Z"
+        ),
+        (
+            "24 Apr 2023 10:14:50 (GMT -05:00)",
+            "%Y-%m-%dT%H:%M:00.000Z",
+            "2023-04-24T15:14:00.000Z"
+        ),
+        (
+            "24 Apr 2023 10:14:50 (GMT-06:00)",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "2023-04-24T16:14:50Z"
+        ),
+        (
+            "24 Apr 2023 10:14:50 (GMT +01:00)",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "2023-04-24T09:14:50Z"
+        )
+    ],
+)
+def test_format_timestamp(timestamp, output_format, expected_result):
+    """
+    Given:
+     - timestamps strings.
+    When:
+     - format_timestamp function called.
+    Then:
+     - Ensure result is correct.
+    """
+    from CiscoSMA import format_timestamp
+
+    result = format_timestamp(timestamp, output_format)
+
+    assert result == expected_result

@@ -136,6 +136,10 @@ Checks the file reputation of the specified hash.
 | DbotScore.Score | number | An integer regarding the status of the indicator | 
 | DbotScore.Type | string | The indicator type | 
 | DbotScore.Vendor | string | The vendor used to calculate the score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | Type of indicator. | 
+| DBotScore.Vendor | String | Vendor used to calculate the score. | 
 
 
 #### Command Example

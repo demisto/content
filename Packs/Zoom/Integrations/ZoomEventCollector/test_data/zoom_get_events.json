@@ -1,0 +1,32 @@
+[
+  {
+    "time": "2023-03-21T08:22:09Z",
+    "operator": "test@test.com",
+    "category_type": "Channels",
+    "action": "Update",
+    "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+  },
+  {
+    "time": "2023-03-21T08:22:06Z",
+    "operator": "admin@test.com",
+    "category_type": "Channels",
+    "action": "Update",
+    "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+  },
+  {
+    "email": "admin@test.com",
+    "time": "2023-03-29T11:38:50Z",
+    "type": "Sign in",
+    "ip_address": "8.8.8.8",
+    "client_type": "Browser",
+    "version": "-"
+  },
+  {
+    "email": "admin@test.com",
+    "time": "2023-03-29T07:59:46Z",
+    "type": "Sign in",
+    "ip_address": "8.8.8.8",
+    "client_type": "Browser",
+    "version": "-"
+  }
+  ]

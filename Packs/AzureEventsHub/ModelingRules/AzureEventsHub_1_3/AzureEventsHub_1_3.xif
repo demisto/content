@@ -126,11 +126,13 @@ filter
 filter
     category = "AdvancedHunting-CloudAppEvents"
 | alter
+    outcome_result = json_extract_scalar(properties, "$.RawEventData.ResultStatus")
+| alter
     xdm.target.user.username = json_extract_scalar(properties, "$.ObjectId"),
     xdm.event.operation = json_extract_scalar(properties, "$.ActionType"),
     xdm.event.operation_sub_type = json_extract_scalar(properties, "$.ActivityType"),
     xdm.event.id = json_extract_scalar(properties, "$.ReportId"),
-    xdm.event.outcome = json_extract_scalar(properties, "$.RawEventData.ResultStatus"),
+    xdm.event.outcome = if(outcome_result ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome_result = "success", XDM_CONST.OUTCOME_SUCCESS, outcome_result = null, null, to_string(outcome_result)),
     xdm.source.agent.identifier = json_extract_scalar(properties, "$.UserAgent"),
     xdm.source.user.username = json_extract_scalar(properties, "$.RawEventData.UserId"),
     xdm.source.ipv4 = json_extract_scalar(properties, "$.IPAddress"),

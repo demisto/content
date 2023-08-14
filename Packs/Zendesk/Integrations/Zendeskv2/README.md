@@ -1,5 +1,3 @@
-IT service management
-
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
 
@@ -18,7 +16,11 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
     | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
     | Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
+    | Ticket Field to Fetch by | Duplications might accrue when choosing 'updated-at' | True |
     | Ticket types to fetch |  | False |
+    | Fetch tickets status filter |  | False |
+    | Fetch tickets priority filter |  | False |
+    | Fetch tickets query filter |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Incidents Fetch Interval |  | False |
@@ -26,13 +28,22 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection. 
+    (The test does not ensure sufficient permissions for all integration commands.)
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+## Required permissions
+This integration enables executing commands with different permission levels. See the commands' descriptions for more information on the required permission. 
+To learn more on Zendesk roles refer to:
+[Understanding Zendesk Support user roles](https://support.zendesk.com/hc/en-us/articles/4408883763866-Understanding-Zendesk-Support-user-roles#topic_ibd_fdq_cc)
+[About team member product roles and access](https://support.zendesk.com/hc/en-us/articles/4408832171034)
+
 ### zendesk-user-list
 ***
-Gets the specified user's data.
+Gets the specified user's data. 
+Required permissions: Admins, Agents and Light Agents.
 
 
 #### Base Command
@@ -43,7 +54,7 @@ Gets the specified user's data.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user's ID to retrieve. | Optional | 
-| user_name | The user's name. | Optional | 
+| user_name | The user's name. <br/>Required permissions to use this argument: Agents . | Optional | 
 | external_id | The user's unique identifier from another system. | Optional | 
 | role | The user's role. Possible values are: end_user, agent, admin. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
@@ -94,7 +105,8 @@ Gets the specified user's data.
 
 ### zendesk-user-create
 ***
-Creates a new Zendesk user.
+Creates a new Zendesk user. 
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -168,7 +180,8 @@ Creates a new Zendesk user.
 
 ### zendesk-user-update
 ***
-Update user data.
+Update user data. 
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -243,7 +256,8 @@ Update user data.
 
 ### zendesk-user-delete
 ***
-Delete a user.
+Delete a user. 
+Required permissions: Admins.
 
 
 #### Base Command
@@ -261,7 +275,10 @@ Delete a user.
 There is no context output for this command.
 ### zendesk-organization-list
 ***
-Get organization's data.
+Get organization's data. 
+Required permissions: Agents, with certain restrictions. 
+If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
+a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk help.
 
 
 #### Base Command
@@ -271,7 +288,7 @@ Get organization's data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_id | The ID of a specific organization. | Optional | 
+| organization_id | The ID of a specific organization. <br/>Required permissions: Admins, Agents.  | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page_size | The page size (used for pagination). | Optional | 
 | page_number | The page number (used for pagination). | Optional | 
@@ -297,7 +314,8 @@ Get organization's data.
 
 ### zendesk-ticket-list
 ***
-List Zendesk tickets.
+List Zendesk tickets. 
+Required permissions: Agents. 
 
 
 #### Base Command
@@ -363,6 +381,7 @@ List Zendesk tickets.
 ### zendesk-ticket-create
 ***
 Create a new zendesk ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -370,29 +389,32 @@ Create a new zendesk ticket.
 `zendesk-ticket-create`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subject | The subject of this ticket. | Required | 
-| type | The type of this ticket. Possible values are: problem, incident, question, task. | Required | 
-| requester | The user who requested this ticket. | Required | 
-| assignee_email | The email address of the agent to assign the ticket to. | Optional | 
-| collaborators | Users to add as CC's when creating a ticket. | Optional | 
-| description | The ticket description. | Required | 
-| recipient | The original recipient email address of the ticket. | Optional | 
-| status | The state of the ticket. Possible values are: new, open, pending, hold, solved, closed. | Optional | 
-| priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. Default is normal. | Optional | 
-| due_at | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional | 
-| email_ccs | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
-| external_id | An ID you can use to link Zendesk Support tickets to local records. | Optional | 
-| forum_topic_id | The topic in the Zendesk Web portal this ticket originated from, if any. | Optional | 
-| followers | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
-| group_id | The group this ticket is assigned to. | Optional | 
-| organization_id | The organization of the requester. | Optional | 
-| problem_id | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional | 
-| tags | The tags applied to this ticket. | Optional | 
+| **Argument Name**      | **Description** | **Required** |
+|------------------------| --- | --- |
+| subject                | The subject of this ticket. | Required | 
+| type                   | The type of this ticket. Possible values are: problem, incident, question, task. | Required | 
+| requester              | The user who requested this ticket. | Required | 
+| assignee_email         | The email address of the agent to assign the ticket to. | Optional | 
+| collaborators          | Users to add as CC's when creating a ticket. | Optional | 
+| description            | The ticket description. | Required | 
+| recipient              | The original recipient email address of the ticket. | Optional | 
+| status                 | The state of the ticket. Possible values are: new, open, pending, hold, solved, closed. | Optional | 
+| priority               | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. Default is normal. | Optional | 
+| due_at                 | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional | 
+| email_ccs              | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| external_id            | An ID you can use to link Zendesk Support tickets to local records. | Optional | 
+| forum_topic_id         | The topic in the Zendesk Web portal this ticket originated from, if any. | Optional | 
+| followers              | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| group_id               | The group this ticket is assigned to. | Optional | 
+| organization_id        | The organization of the requester. | Optional | 
+| problem_id             | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional | 
+| tags                   | The tags applied to this ticket. | Optional | 
 | via_followup_source_id | The ID of a closed ticket when creating a follow-up ticket. | Optional | 
-| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional | 
-| brand_id | Enterprise only. The ID of the brand this ticket is associated with. | Optional | 
+| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional | 
+| brand_id               | Enterprise only. The ID of the brand this ticket is associated with. | Optional | 
+| comment                | A comment to add to the ticket. | Optional | 
+| html_comment           | An HTML comment to add to the ticket. | Optional | 
+| public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -441,6 +463,7 @@ Create a new zendesk ticket.
 ### zendesk-ticket-update
 ***
 Updates a Zendesk ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -457,6 +480,8 @@ Updates a Zendesk ticket.
 | assignee_email | The email address of the agent to assign the ticket to. | Optional | 
 | collaborators | Users to add as CCs when creating a ticket. | Optional | 
 | comment | A comment to add to the ticket. | Optional | 
+| html_comment | An HTML comment to add to the ticket. | Optional | 
+| public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional | 
 | recipient | The original recipient email address of the ticket. | Optional | 
 | status | The state of the ticket. Possible values are: open, pending, hold, solved, closed. | Optional | 
 | priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. | Optional | 
@@ -513,7 +538,10 @@ Updates a Zendesk ticket.
 
 ### zendesk-ticket-delete
 ***
-Delete ticket.
+Delete ticket. 
+Required permissions: Admins, Agents with permission to delete tickets.
+Agent delete permissions are set in Support.
+See Deleting tickets in the Zendesk Support Help Center.
 
 
 #### Base Command
@@ -532,6 +560,7 @@ There is no context output for this command.
 ### zendesk-ticket-comment-list
 ***
 List comments for a given ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -576,6 +605,7 @@ List comments for a given ticket.
 ### zendesk-ticket-attachment-add
 ***
 Attach file to ticket.
+Required permissions: End users.
 
 
 #### Base Command
@@ -597,6 +627,7 @@ There is no context output for this command.
 ### zendesk-attachment-get
 ***
 Get attachment.
+Required permissions: Admins.
 
 
 #### Base Command
@@ -639,6 +670,7 @@ Search in Zendesk.
 ### zendesk-article-list
 ***
 List all available articles.
+Required permissions: Agents, End users, Anonymous users.
 
 
 #### Base Command
@@ -760,4 +792,187 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
+
+### zendesk-group-user-list
+
+***
+Get group's users. 
+Allowed for: Admins, Agents and Light Agents.
+
+*Note*: In case the group_id does not exist, the command will return all users.
+
+#### Base Command
+
+`zendesk-group-user-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The ID of a specific group. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page_size | The page size (used for pagination). | Optional | 
+| page_number | The page number (used for pagination). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zendesk.UserGroup.active | Boolean | False if the user has been deleted. | 
+| Zendesk.UserGroup.alias | String | An alias displayed to end users. | 
+| Zendesk.UserGroup.created_at | Date | The time the user was created. | 
+| Zendesk.UserGroup.custom_role_id | Number | A custom role if the user is an agent on the Enterprise plan or above. | 
+| Zendesk.UserGroup.default_group_id | Number | The ID of the user's default group. | 
+| Zendesk.UserGroup.details | String | Any details you want to store about the user, such as an address. | 
+| Zendesk.UserGroup.email | String | The user's primary email address. | 
+| Zendesk.UserGroup.external_id | String | A unique identifier from another system. | 
+| Zendesk.UserGroup.iana_time_zone | String | The time zone for the user. | 
+| Zendesk.UserGroup.id | Number | The user's ID. | 
+| Zendesk.UserGroup.last_login_at | Date | The last time the user signed in to Zendesk Support. | 
+| Zendesk.UserGroup.locale | String | The user's locale. | 
+| Zendesk.UserGroup.locale_id | Number | The user's locale ID. | 
+| Zendesk.UserGroup.moderator | Boolean | Whether the user has forum moderation capabilities. | 
+| Zendesk.UserGroup.name | String | The user's name. | 
+| Zendesk.UserGroup.notes | String | Any notes you want to store about the user. | 
+| Zendesk.UserGroup.only_private_comments | Boolean | True if the user can only create private comments. | 
+| Zendesk.UserGroup.organization_id | Number | The ID of the user's organization. | 
+| Zendesk.UserGroup.phone | String | The user's primary phone number. | 
+| Zendesk.UserGroup.photo | String | A URL pointing to the user's profile picture. | 
+| Zendesk.UserGroup.report_csv | Boolean | Whether the user can access the CSV report on the Search tab of the Reporting page in the Support admin interface. | 
+| Zendesk.UserGroup.restricted_agent | Boolean | Whether the agent has any restrictions; false for admins and unrestricted agents, true for other agents. | 
+| Zendesk.UserGroup.role | String | The user's role. Possible values are "end-user", "agent", or "admin". | 
+| Zendesk.UserGroup.role_type | Number | The user's role type. | 
+| Zendesk.UserGroup.shared | Boolean | Whether the user is shared from a different Zendesk Support instance. | 
+| Zendesk.UserGroup.shared_agent | Boolean | Whether the user is a shared agent from a different Zendesk Support instance. | 
+| Zendesk.UserGroup.shared_phone_number | Boolean | Whether the phone number is shared. | 
+| Zendesk.UserGroup.signature | String | The user's signature. | 
+| Zendesk.UserGroup.suspended | Boolean | Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal. | 
+| Zendesk.UserGroup.tags | Unknown | The user's tags. Only present if your account has user tagging enabled. | 
+| Zendesk.UserGroup.ticket_restriction | Unknown | Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null. | 
+| Zendesk.UserGroup.time_zone | String | The user's time zone. | 
+| Zendesk.UserGroup.two_factor_auth_enabled | Unknown | Whether two factor authentication is enabled. | 
+| Zendesk.UserGroup.updated_at | Date | The time the user was last updated. | 
+| Zendesk.UserGroup.url | String | The URL that points to the user's API record. | 
+| Zendesk.UserGroup.user_fields | Unknown | The user fields as shown in the Zendesk user interface. | 
+| Zendesk.UserGroup.verified | Boolean | Whether any of the user's identities is verified. | 
+
+#### Command example
+```!zendesk-group-user-list group_id=12345 limit=1```
+#### Context Example
+```json
+{
+    "Zendesk": {
+        "UserGroup": [
+            {
+                "active": true,
+                "alias": "",
+                "created_at": "2022-03-27T08:42:06Z",
+                "custom_role_id": 4678497517981,
+                "default_group_id": 4678483739805,
+                "details": "",
+                "email": "test@user.com",
+                "external_id": null,
+                "iana_time_zone": "Asia/Jerusalem",
+                "id": 1908275070333,
+                "last_login_at": "2023-05-31T11:13:41Z",
+                "locale": "en-US",
+                "locale_id": 1,
+                "moderator": true,
+                "name": "Admin",
+                "notes": "",
+                "only_private_comments": false,
+                "organization_id": 4678483740317,
+                "phone": null,
+                "photo": null,
+                "report_csv": true,
+                "restricted_agent": false,
+                "role": "admin",
+                "role_type": 4,
+                "shared": false,
+                "shared_agent": false,
+                "shared_phone_number": null,
+                "signature": "",
+                "suspended": false,
+                "tags": [],
+                "ticket_restriction": null,
+                "time_zone": "Asia/Jerusalem",
+                "two_factor_auth_enabled": null,
+                "updated_at": "2023-05-31T11:13:41Z",
+                "url": "https://some-url/api/v2/users/1908275070333.json",
+                "user_fields": {},
+                "verified": true
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zendesk Group Users:
+>|Id|Name|Email|Role|CreatedAt|
+>|---|---|---|---|---|
+>| 1908275070333 | Admin | test@user.com | admin | 2022-03-27T08:42:06Z |
+
+### zendesk-group-list
+
+***
+Get Zendesk groups. 
+Allowed for: Admins, Agents.
+
+#### Base Command
+
+`zendesk-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page_size | The page size (used for pagination). | Optional | 
+| page_number | The page number (used for pagination). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zendesk.Group.created_at | Date | The time the group was created. | 
+| Zendesk.Group.default | Boolean | If the group is the default one for the account. | 
+| Zendesk.Group.deleted | Boolean | `true` if the group is deleted `false` otherwise. | 
+| Zendesk.Group.description | String | The description of the group. | 
+| Zendesk.Group.id | Number | The group ID. | 
+| Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group. | 
+| Zendesk.Group.name | String | The name of the group. | 
+| Zendesk.Group.updated_at | Date | The time of the last update of the group. | 
+| Zendesk.Group.url | String | The API URL of the group. | 
+
+#### Command example
+```!zendesk-group-list limit=1```
+#### Context Example
+```json
+{
+    "Zendesk": {
+        "Group": [
+            {
+                "created_at": "2023-06-06T07:44:20Z",
+                "default": false,
+                "deleted": false,
+                "description": "This is a group for testing",
+                "id": 11395818128925,
+                "is_public": true,
+                "name": "Test Group",
+                "updated_at": "2023-06-06T07:44:20Z",
+                "url": "https://some-url/api/v2/groups/11395818128925.json"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zendesk groups:
+>|Id| Name |IsPublic|CreatedAt|UpdatedAt|
+>|------|---|---|---|---|
+>| 11395818128925 | Test Group | true | 2023-06-06T07:44:20Z | 2023-06-06T07:44:20Z |
 

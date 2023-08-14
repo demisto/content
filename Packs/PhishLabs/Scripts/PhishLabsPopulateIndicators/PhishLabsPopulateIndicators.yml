@@ -1,83 +1,59 @@
 args:
-- default: false
-  defaultValue: 1h
+- defaultValue: 1h
   description: Get indicators updated within this duration (from now).
-  isArray: false
   name: since
-  required: false
-  secret: false
-- default: false
-  description: Maximum number of results to return.
-  isArray: false
+- description: Maximum number of results to return.
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: If true, the indicators that were updated to be false positive will be added to allow list in Demisto. No new indicators will be created.
-  isArray: false
   name: delete_false_positive
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Filter by indicator type.
-  isArray: false
   name: indicator_type
   predefined:
   - Domain
   - URL
   - Attachment
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Removes the query string part from indicators, when the rules can be applied.
-  isArray: false
   name: remove_query
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Removes the protocol part from indicators, when the rule can be applied.
-  isArray: false
   name: remove_protocol
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 comment: |-
   Populate indicators by the PhishLabs IOC global feed.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: PhishLabsPopulateIndicators
   version: -1
 enabled: true
 name: PhishLabsPopulateIndicators
 script: '-'
-system: false
 tags:
 - PhishLabs
 timeout: 3.6µs
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.10.48392
 subtype: python3
-runonce: false
 dependson:
   must: []
   should:
   - PhishLabs IOC|||phishlabs-global-feed
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

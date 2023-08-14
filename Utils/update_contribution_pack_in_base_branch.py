@@ -5,7 +5,6 @@ from typing import Iterable, List
 from urllib.parse import urljoin
 
 import requests
-from demisto_sdk.commands.common.tools import print_success
 
 
 def main():
@@ -21,8 +20,9 @@ def main():
 
     packs_dir_names = get_files_from_github(repo, branch, pr_number)
     if packs_dir_names:
-        print_success(f'Successfully updated the base branch with the following contrib packs: Packs/'
-                      f'{", Packs/".join(packs_dir_names)}')
+        print('Successfully updated the base branch '
+              'with the following contrib packs: Packs/'
+              f'{", Packs/".join(packs_dir_names)}')
 
 
 def get_pr_files(pr_number: str) -> Iterable[str]:

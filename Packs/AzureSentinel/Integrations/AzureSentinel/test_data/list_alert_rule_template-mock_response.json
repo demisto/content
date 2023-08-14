@@ -1,0 +1,23 @@
+{
+    "value": [
+        {
+            "name": "template1",
+            "kind": "Fusion",
+            "properties": {
+                "severity": "High",
+                "displayName": "Template 1",
+                "description": "Description of Template 1"
+            }
+        },
+        {
+            "name": "template2",
+            "kind": "MicrosoftSecurityIncidentCreation",
+            "properties": {
+                "severity": "Medium",
+                "displayName": "Template 2",
+                "description": "Description of Template 2",
+                "enabled": false
+            }
+        }
+    ]
+}

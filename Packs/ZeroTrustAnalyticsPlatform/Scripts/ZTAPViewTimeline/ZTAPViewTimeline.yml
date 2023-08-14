@@ -1,0 +1,16 @@
+args: []
+comment: View notes only relating to ZTAP.
+commonfields:
+  id: ZTAPViewTimeline
+  version: -1
+name: ZTAPViewTimeline
+script: ''
+subtype: python3
+tags:
+- ztap
+type: python
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.10.10.51930
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

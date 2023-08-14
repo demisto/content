@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item)
+                     handle_transient_files, parse_incident_from_item, parse_item_as_dict)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -249,13 +249,13 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
-
+    from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
     client.get_folder_by_path = mock_get_folder_by_path
     client.folder_name = 'Inbox'
     last_run = mocker.patch.object(demisto, 'setLastRun')
-    fetch_emails_as_incidents(client, current_last_run)
+    fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
@@ -290,17 +290,17 @@ def test_fetch_and_mark_as_read(mocker):
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
-
+    from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
     client.folder_name = 'Inbox'
     mark_item_as_read = mocker.patch('EWSO365.mark_item_as_read')
 
-    fetch_emails_as_incidents(client, {})
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
     assert mark_item_as_read.called is False
 
     client.mark_as_read = True
-    fetch_emails_as_incidents(client, {})
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
     assert mark_item_as_read.called is True
 
 
@@ -610,3 +610,29 @@ def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, e
                        _tenant_id='new_tenant_id')
 
     assert client.ms_client.client_secret == expected
+
+
+def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      categories=['Purple category', 'Orange category']
+                      )
+
+    return_value = parse_item_as_dict(message)
+    assert return_value.get("categories") == ['Purple category', 'Orange category']

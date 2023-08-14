@@ -1,34 +1,23 @@
 args:
-- default: false
-  description: Hostname or IP of a Carbon Black sensor.
-  isArray: false
+- description: Hostname or IP of a Carbon Black sensor.
   name: endpoint
   required: true
-  secret: false
-- default: false
-  description: Comma-separated list of file paths to download from the endpoint.
+- description: Comma-separated list of file paths to download from the endpoint.
   isArray: true
   name: path
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: '2000'
   description: Session timeout (ms). Default is 2000.
-  isArray: false
   name: timeout
   predefined:
-  - Session timeout (If a command is not issued after this time the session will be
-    closed)
-  required: false
-  secret: false
+  - Session timeout (If a command is not issued after this time the session will be closed)
 comment: |-
   This automation translates an endpoints hostname/IP to the Carbon Black sensor ID.
   It then opens a session to the endpoint to download the given file paths and closes the session.
 commonfields:
   id: CBLiveGetFile_V2
   version: -1
-enabled: false
 name: CBLiveGetFile_V2
 outputs:
 - contextPath: CbLiveResponse.Commands.CbCommandID
@@ -38,8 +27,7 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command status ('pending', 'in progress', 'complete', 'error',
-    or 'canceled').
+  description: The command status ('pending', 'in progress', 'complete', 'error', or 'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
   description: The command completion time (0 if not complete).
@@ -112,13 +100,12 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - carbon-black
 - endpoint
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No Test
 dependson:

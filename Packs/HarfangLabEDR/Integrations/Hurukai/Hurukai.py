@@ -4,16 +4,16 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import json
-import requests
+import urllib3
 import time
 import traceback
 
-from typing import Any, Dict
+from typing import Any
 from datetime import datetime, timedelta, timezone
 import dateutil.parser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """Helper function"""
 
@@ -88,7 +88,7 @@ class Client(BaseClient):
         if kwargs.get('method', None) == 'GET' and len(kwargs.get('params', {})) > 0:
             params = kwargs.pop('params')
             suffix = kwargs.pop('url_suffix')
-            suffix += '?{}'.format('&'.join(['{}={}'.format(k, v)
+            suffix += '?{}'.format('&'.join([f'{k}={v}'
                                    for (k, v) in params.items()]))
             kwargs['url_suffix'] = suffix
 
@@ -115,6 +115,7 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix=f'/api/data/endpoint/Agent/{agent_id}/',
             )
+        return None
 
     def endpoint_search(self, hostname=None, offset=0):
 
@@ -402,10 +403,7 @@ def fetch_incidents(client, args):
 
     last_run = demisto.getLastRun()
 
-    if 'first_fetch' in args and args['first_fetch']:
-        days = int(args['first_fetch'])
-    else:
-        days = 0
+    days = int(args['first_fetch']) if 'first_fetch' in args and args['first_fetch'] else 0
     first_fetch_time = int(datetime.timestamp(
         datetime.now() - timedelta(days=days)) * 1000000)
     alert_status = args.get('alert_status', None)
@@ -423,12 +421,7 @@ def fetch_incidents(client, args):
         last_fetch = last_run.get('last_fetch', None)
         already_fetched_previous = last_run.get('already_fetched', [])
 
-    if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
-        last_fetch = first_fetch_time
-    else:
-        # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
 
     if alert_status == 'ACTIVE':
         status = ['new', 'probable_false_positive', 'investigating']
@@ -475,9 +468,8 @@ def fetch_incidents(client, args):
                     dateutil.parser.isoparse(alert.get('alert_time', '0'))) * 1000000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-                if last_fetch:
-                    if incident_created_time_us <= latest_created_time_us:
-                        continue
+                if last_fetch and incident_created_time_us <= latest_created_time_us:
+                    continue
 
                 tags = alert.get('tags', [])
                 tactic = []
@@ -1689,6 +1681,7 @@ def hunt_search_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_hash(client, args)
+        return None
     else:
         data = client.data_hash_search(filehash=filehash)
         prefetchs = []
@@ -1757,6 +1750,7 @@ def hunt_search_running_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_running_process_hash(client, args)
+        return None
     else:
         data = client.invest_running_process(filehash=filehash)
         prefetchs = []
@@ -1818,6 +1812,7 @@ def hunt_search_runned_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_runned_process_hash(client, args)
+        return None
     else:
         data = client.invest_runned_process(filehash=filehash)
         prefetchs = []
@@ -1864,7 +1859,7 @@ def hunt_search_runned_process_hash(client, args):
         return data
 
 
-def isolate_endpoint(client, args) -> Dict[str, Any]:
+def isolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
@@ -1889,7 +1884,7 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     return context
 
 
-def deisolate_endpoint(client, args) -> Dict[str, Any]:
+def deisolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
@@ -2034,7 +2029,7 @@ class Telemetry:
         output = self._construct_output(data['results'], client)
 
         # Determines headers for readable output
-        headers = [label for label in output[0].keys()] if len(
+        headers = list(output[0].keys()) if len(
             output) > 0 else []
         readable_output = tableToMarkdown(
             self.title, output, headers=headers, removeNull=True)
@@ -2175,10 +2170,7 @@ class TelemetryBinary(Telemetry):
         for x in results:
             for i in range(0, len(x['names'])):
                 name = x['names'][i]
-                if len(x['paths']) > i:
-                    path = x['paths'][i]
-                else:
-                    path = None
+                path = x['paths'][i] if len(x['paths']) > i else None
 
                 link = None
                 if x['downloaded'] == 0:
@@ -2305,7 +2297,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url').rstrip('/')
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials', {}).get('password', '') or demisto.params().get("apikey", '')
 
     try:
         headers = {
@@ -2323,7 +2315,7 @@ def main():
         target_function = get_function_from_command_name(command)
 
         if target_function is None:
-            raise Exception('unknown command : {}'.format(command))
+            raise Exception(f'unknown command : {command}')
 
         args = demisto.args()
         if command == 'fetch-incidents':

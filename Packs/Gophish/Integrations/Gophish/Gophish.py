@@ -6,7 +6,8 @@ from CommonServerPython import *  # noqa: F401
 import dateparser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 
 def results_return(command, thingtoreturn):

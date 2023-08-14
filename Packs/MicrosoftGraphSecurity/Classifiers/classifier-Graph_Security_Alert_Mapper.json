@@ -1,0 +1,149 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Graph Security Alert",
+    "mapping": {
+        "Graph Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert URL": {
+                    "simple": "alertWebUrl"
+                },
+                "Close Time": {
+                    "simple": "resolvedDateTime"
+                },
+                "End Time": {
+                    "simple": "lastActivityDateTime"
+                },
+                "Microsoft Graph Security Id": {
+                    "simple": "incidentId"
+                },
+                "Last Update Time": {
+                    "simple": "lastUpdateDateTime"
+                },
+				"Microsoft Graph Security Alert Evidence": {
+					"simple": "evidence"
+				},
+				"Microsoft Graph Security Detector Id": {
+					"simple": "detectorId"
+				},
+				"Microsoft Graph Security Comment": {
+					"simple": "comments"
+				},
+                "Microsoft Graph Security Alert Determination": {
+                    "simple": "determination"
+                },
+                "Microsoft Graph Security Recommended Action": {
+                    "simple": "recommendedActions"
+                },
+                "Microsoft Graph Security Service Source": {
+                    "simple": "serviceSource"
+                },
+                "Start Time": {
+                    "simple": "firstActivityDateTime"
+                },
+                "Title": {
+                    "simple": "title"
+                }
+            }
+        },
+        "Malware": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Threat Actor": {
+                    "simple": "actorDisplayName"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Source": {
+                    "simple": "detectionSource"
+                },
+                "Alert URL": {
+                    "simple": "alertWebUrl"
+                },
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Classification": {
+                    "simple": "classification"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Incident Link": {
+                    "simple": "incidentWebUrl"
+                },
+                "Source Category": {
+                    "simple": "category"
+                },
+                "Source Create time": {
+                    "simple": "createdDateTime"
+                },
+                "Source Id": {
+                    "simple": "providerAlertId"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Tenant Name": {
+                    "simple": "tenantId"
+                },
+                "Threat Family Name": {
+                    "simple": "threatFamilyName"
+                },
+                "Threat Name": {
+                    "simple": "threatDisplayName"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unknown, informational, low, medium, high"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Unknown, Informational, Low, Medium, High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitreTechniques"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Graph Security Alert",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -34,14 +34,14 @@ args:
   - "all"
   - "true"
   - "false"
-  description: Whether to save the argument as a string. 
+  description: Whether to save the argument as a string.
   defaultValue: "noop"
 - name: force
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Whether to force the creation of the context. 
+  description: Whether to force the creation of the context.
   defaultValue: "false"
 - name: context
   description: The context data which overwrites the Demisto context.
@@ -58,8 +58,7 @@ args:
   defaultValue: "false"
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

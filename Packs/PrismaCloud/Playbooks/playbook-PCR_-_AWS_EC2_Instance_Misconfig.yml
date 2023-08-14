@@ -3,6 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration
 description: |+
+  Deprecated. Use Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls the following sub-playbooks to perform the remediation:
   - AWS Default Security Group Does Not Restrict All Traffic
   - AWS Security Groups Allow Internet Traffic
@@ -286,11 +287,11 @@ tasks:
     task:
       id: 1b01f096-ed50-4e46-8dfc-1fc611535c7a
       version: -1
-      name: Is Prisma Cloud (RedLock) integration enabled?
-      description: Is Prisma Cloud (RedLock) integration enabled?
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
       type: condition
       iscommand: false
-      brand: RedLock
+      brand: PrismaCloud v2
     nexttasks:
       '#default#':
       - "7"
@@ -314,7 +315,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -691,10 +692,10 @@ tasks:
       name: Dismiss Prisma Cloud alert
       description: Dismiss the alerts matching the given filter. You must provide
         either the policy IDs or alert IDs.
-      script: RedLock|||redlock-dismiss-alerts
+      script: PrismaCloud v2|||redlock-dismiss-alerts
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "7"
@@ -786,4 +787,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

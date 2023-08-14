@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulseeventtime",
+    "version": -1,
+    "modified": "2023-01-30T12:17:08.396082522+05:30",
+    "name": "Dataminr Pulse Event Time",
+    "ownerOnly": false,
+    "cliName": "dataminrpulseeventtime",
+    "type": "date",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

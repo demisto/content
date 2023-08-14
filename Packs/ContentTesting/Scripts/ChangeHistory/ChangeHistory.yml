@@ -4,12 +4,11 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.12.68300
 enabled: true
 name: ChangeHistory
 comment: ""
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -18,3 +17,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+timeout: 600ns

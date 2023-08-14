@@ -1,0 +1,44 @@
+[
+    {
+    "tid": 9,
+    "expiry": 0,
+    "thid": 9,
+    "name": "Admin",
+    "restricted": false,
+    "data": {
+    "auto": false,
+    "color": 200,
+    "description": "",
+    "visibility": ""
+    },
+    "isReferenced": true
+    },
+    {
+    "tid": 117,
+    "expiry": 0,
+    "thid": 117,
+    "name": "TEST",
+    "restricted": false,
+    "data": {
+    "auto": false,
+    "color": 0,
+    "description": "Testing tag for SDK",
+    "visibility": "Public"
+    },
+    "isReferenced": false
+    },
+    {
+    "tid": 90,
+    "expiry": 0,
+    "thid": 90,
+    "name": "Katherine Test",
+    "restricted": false,
+    "data": {
+    "auto": false,
+    "color": 181,
+    "description": "",
+    "visibility": "Public"
+    },
+    "isReferenced": false
+    }
+    ]

@@ -1,0 +1,116 @@
+{
+    "next": null,
+    "page_size": 10,
+    "previous": null,
+    "results": [
+        {
+            "analyst_cvss_score": null,
+            "analyst_score": null,
+            "analyst_tlp": null,
+            "confidence_score": null,
+            "confidence_type": "ctix",
+            "country": null,
+            "created": 1684737666,
+            "ctix_created": 1685005825,
+            "ctix_modified": 1685009335,
+            "custom_attributes": [
+                {
+                    "acti_uuid": "99688734-2ee7-4d0e-8ed7-b2ee8a40114a",
+                    "custom_attribute_name": "acti_uuid",
+                    "custom_attribute_value": "99688734-2ee7-4d0e-8ed7-b2ee8a40114a"
+                },
+                {
+                    "analysis": "Exploitation could allow an  attacker to cause a denial of service (DoS) condition on the targeted host.\n\nACTI considers this a LOW-severity vulnerability due to the minimal impact potential.",
+                    "custom_attribute_name": "analysis",
+                    "custom_attribute_value": "Exploitation could allow an  attacker to cause a denial of service (DoS) condition on the targeted host.\n\nACTI considers this a LOW-severity vulnerability due to the minimal impact potential."
+                },
+                {
+                    "custom_attribute_name": "cvss2.0_vector",
+                    "custom_attribute_value": "AV:L/AC:L/Au:N/C:N/I:N/A:P/E:U/RL:U/RC:C",
+                    "cvss2.0_vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P/E:U/RL:U/RC:C"
+                },
+                {
+                    "custom_attribute_name": "cvss3.1_vector",
+                    "custom_attribute_value": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H/E:U/RL:U/RC:C",
+                    "cvss3.1_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H/E:U/RL:U/RC:C"
+                },
+                {
+                    "custom_attribute_name": "cwe",
+                    "custom_attribute_value": "CWE-416",
+                    "cwe": "CWE-416"
+                },
+                {
+                    "custom_attribute_name": "display_text",
+                    "custom_attribute_value": "CVE-2023-33250 - Linux Linux Kernel Use After Free DoS Vulnerability",
+                    "display_text": "CVE-2023-33250 - Linux Linux Kernel Use After Free DoS Vulnerability"
+                },
+                {
+                    "custom_attribute_name": "history",
+                    "custom_attribute_value": "[{\"comment\": \"Initial Report.\", \"timestamp\": \"2023-05-22T06:41:06.000Z\", \"updated_properties\": [\"cwe\", \"cvss2\", \"popularity\", \"description\", \"tag_internal\", \"cvss3\", \"sources_external\", \"threat_types\", \"analysis\", \"title\", \"key\"]}]",
+                    "history": "[{\"comment\": \"Initial Report.\", \"timestamp\": \"2023-05-22T06:41:06.000Z\", \"updated_properties\": [\"cwe\", \"cvss2\", \"popularity\", \"description\", \"tag_internal\", \"cvss3\", \"sources_external\", \"threat_types\", \"analysis\", \"title\", \"key\"]}]"
+                },
+                {
+                    "custom_attribute_name": "last_published",
+                    "custom_attribute_value": "2023-05-22T06:41:06.000Z",
+                    "last_published": "2023-05-22T06:41:06.000Z"
+                },
+                {
+                    "custom_attribute_name": "popularity",
+                    "custom_attribute_value": "3",
+                    "popularity": "3"
+                },
+                {
+                    "custom_attribute_name": "title",
+                    "custom_attribute_value": "Linux Linux Kernel Use After Free DoS Vulnerability",
+                    "title": "Linux Linux Kernel Use After Free DoS Vulnerability"
+                }
+            ],
+            "first_seen": null,
+            "id": "bcf32602-c1c2-4047-8f9b-18e3737061c6",
+            "indicator_type": null,
+            "ioc_type": null,
+            "is_actioned": false,
+            "is_deprecated": false,
+            "is_false_positive": false,
+            "is_reviewed": false,
+            "is_revoked": false,
+            "is_watchlist": false,
+            "is_whitelisted": false,
+            "last_seen": null,
+            "modified": 1684737666,
+            "name": "CVE-2023-33250",
+            "null": [],
+            "primary_attribute": null,
+            "published_collections": [
+                {
+                    "id": "6c95e5f4-b085-4070-9f26-e82598eae793",
+                    "name": null
+                }
+            ],
+            "risk_severity": null,
+            "source_collections": [
+                {
+                    "id": "7d4d4bf9-6e45-4ede-a36d-478710ccd482",
+                    "name": "vulnerability"
+                }
+            ],
+            "source_confidence": "MEDIUM",
+            "sources": [
+                {
+                    "id": "1e398660-1adb-42ce-bede-658ece9e9483",
+                    "name": "Acti",
+                    "source_type": "API_FEEDS"
+                }
+            ],
+            "sub_type": null,
+            "subscriber_collections": [],
+            "subscribers": [],
+            "tags": [],
+            "tlp": "AMBER",
+            "type": "vulnerability",
+            "valid_from": null,
+            "valid_until": null
+        }
+    ],
+    "total": 1
+}

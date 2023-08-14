@@ -1,0 +1,32 @@
+{
+    "id": "incident_symantecedrruleid",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "modified": "2023-01-05T22:52:23.992801485+05:30",
+    "name": "SymantecEDR Rule ID",
+    "ownerOnly": false,
+    "description": "The textual representation of the rule that triggered this incident",
+    "cliName": "symantecedrruleid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec EDR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

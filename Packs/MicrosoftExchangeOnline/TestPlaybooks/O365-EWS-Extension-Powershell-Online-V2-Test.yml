@@ -1,6 +1,6 @@
-id: 'EWS Extension: Powershell Online V2 Test'
+id: playbook-O365-EWS-Extension-Powershell-Online-V2-Test
 version: -1
-name: 'EWS Extension: Powershell Online V2 Test'
+name: playbook-O365-EWS-Extension-Powershell-Online-V2-Test
 description: Test playbook
 starttaskid: "0"
 tasks:

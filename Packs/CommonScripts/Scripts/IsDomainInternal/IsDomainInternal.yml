@@ -1,0 +1,37 @@
+commonfields:
+  id: IsDomainInternal
+  version: -1
+name: IsDomainInternal
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: |-
+  The script takes one or more domain names and checks whether they're in the Cortex XSOAR list defined in the *InternalDomainsListName* argument. By default, the *InternalDomainsListName* argument will use the Cortex XSOAR list called "InternalDomains".
+  The list can be customized by the user. It should contain the organization's internal domain names, separated by new lines. Subdomains are also supported in the list.
+  The results of the script are tagged with the "Internal_Domain_Check_Results" tag, so they can be displayed in the War Room entry sections in incident layouts.
+enabled: true
+args:
+- name: InternalDomainsListName
+  description: The name of the Cortex XSOAR list that holds the internal domains in the organization. If no list is specified, the script will use the InternalDomains list by default.
+  defaultValue: InternalDomains
+- name: Domains
+  required: true
+  description: A domain name or a list of domain names to check for being internal or external, against the specified list of internal domains.
+  isArray: true
+outputs:
+- contextPath: Domain.Name
+  description: The domain name that was checked for being internal/external.
+  type: string
+- contextPath: Domain.Internal
+  description: Whether the domain name is internal or external, according to the domain names defined in the Cortex XSOAR list, which is provided in the *InternalDomains* argument.
+  type: boolean
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+tests:
+- IsDomainInternal - Test

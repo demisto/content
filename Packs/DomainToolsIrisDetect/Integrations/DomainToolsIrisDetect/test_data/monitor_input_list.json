@@ -1,0 +1,43 @@
+{
+  "total_count": 3,
+  "offset": 0,
+  "limit": 500,
+  "monitors": [
+    {
+      "term": "dummyexpress",
+      "match_substring_variations": false,
+      "nameserver_exclusions": [],
+      "text_exclusions": [],
+      "id": "QEMba8wmxo",
+      "created_date": "2022-09-20T06:01:56.760955+00:00",
+      "updated_date": "2022-09-20T06:02:33.358799+00:00",
+      "state": "active",
+      "status": "completed",
+      "created_by": "user@example.com"
+    },
+    {
+      "term": "dummy",
+      "match_substring_variations": false,
+      "nameserver_exclusions": [],
+      "text_exclusions": [],
+      "id": "rA7bn46jQ3",
+      "created_date": "2022-09-16T22:29:20.567614+00:00",
+      "updated_date": "2022-09-16T22:30:16.212269+00:00",
+      "state": "active",
+      "status": "completed",
+      "created_by": "user@example.com"
+    },
+    {
+      "term": "dummysoft",
+      "match_substring_variations": false,
+      "nameserver_exclusions": [],
+      "text_exclusions": [],
+      "id": "YNrbr6Gbkx",
+      "created_date": "2022-09-20T05:35:21.203482+00:00",
+      "updated_date": "2022-09-20T05:35:28.630194+00:00",
+      "state": "active",
+      "status": "completed",
+      "created_by": "user@example.com"
+    }
+  ]
+}

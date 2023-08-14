@@ -4,6 +4,7 @@ import dateparser
 import pytest
 import requests
 import demistomock as demisto
+from CommonServerPython import IncidentStatus, tableToMarkdown, pascalToSpace, CommandResults
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
@@ -13,14 +14,19 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, \
-    build_threat_indicator_data, DEFAULT_SOURCE
+    list_threat_indicator_command, NEXT_LINK_DESCRIPTION, process_incidents, fetch_incidents, \
+    fetch_incidents_additional_info, \
+    get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
+    update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
+    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
+    list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
+    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
-API_VERSION = '2021-04-01'
+API_VERSION = '2022-11-01'
 
 
 def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
@@ -44,12 +50,11 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     mocker.patch.object(client._client._session, 'request', return_value=api_response)
 
     with pytest.raises(ValueError, match='[Forbidden 403]'):
-        test_module(client)
+        test_module(client, {})
 
 
 def mock_client():
     client = AzureSentinelClient(
-        server_url='http://server_url',
         tenant_id='tenant_id',
         client_id='client_id',
         client_secret='client_secret',
@@ -70,6 +75,12 @@ def mock_404_response(resource_id: str):
     res.status_code = 404
     res._content = json.dumps(
         {'error': {'code': 'NotFound', 'message': f"Resource '{resource_id}' does not exist"}}).encode()
+    return res
+
+
+def mock_204_response():
+    res = requests.Response()
+    res.status_code = 204
     return res
 
 
@@ -695,7 +706,8 @@ class TestHappyPath:
 
         # prepare
         client = mock_client()
-        args = {'labels': ['label_after_1', 'label_after_2'], 'assignee_email': 'bob@example.com'}
+        args = {'labels': ['label_after_1', 'label_after_2'], 'assignee_email': 'bob@example.com',
+                'user_principal_name': 'booUserPrincipalName'}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_UPDATE_INCIDENT)
 
         # run
@@ -706,6 +718,7 @@ class TestHappyPath:
         assert properties['labels'] == [{'labelName': 'label_after_1', 'labelType': 'User'},
                                         {'labelName': 'label_after_2', 'labelType': 'User'}]
         assert properties['owner']['email'] == 'bob@example.com'
+        assert properties['owner']['userPrincipalName'] == 'booUserPrincipalName'
 
     def test_list_incident_entities(self, mocker):
         """
@@ -723,7 +736,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'incident_id': TEST_INCIDENT_ID}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ENTITIES)
-        with open('TestData/expected_entities.json', 'r') as file:
+        with open('test_data/expected_entities.json', 'r') as file:
             expected_entities = json.load(file)
 
         # run
@@ -750,7 +763,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ALERTS)
-        with open('TestData/expected_alerts.json', 'r') as file:
+        with open('test_data/expected_alerts.json', 'r') as file:
             expected_alerts = json.load(file)
 
         # run
@@ -776,7 +789,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS)
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlists = json.load(file)
 
         # run
@@ -804,7 +817,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS['value'][0])
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -862,7 +875,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLIST_ITEMS)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_items = json.load(file)
 
         # run
@@ -890,7 +903,7 @@ class TestHappyPath:
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS, 'watchlist_item_id': TEST_ITEM_ID}
         mocked_item = MOCKED_WATCHLIST_ITEMS['value'][0]
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -930,7 +943,7 @@ class TestHappyPath:
             'content_type': demisto.get(mocked_watchlist, 'properties.contentType')
         }
         mocker.patch.object(client, 'http_request', return_value=mocked_watchlist)
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -962,7 +975,7 @@ class TestHappyPath:
         }
 
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -1018,7 +1031,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.get(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/indicators', json=mocked_indicators)
         else:
@@ -1038,7 +1051,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
@@ -1061,7 +1074,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.post(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/queryIndicators', json=mocked_indicators)
         else:
@@ -1080,7 +1093,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
@@ -1212,11 +1225,11 @@ class TestHappyPath:
         mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
 
         requests_mock.get(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_indicators)
         requests_mock.put(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_updated_indicators)
 
@@ -1380,9 +1393,10 @@ class TestHappyPath:
         params = {
             'managed_identities_client_id': {'password': client_id},
             'use_managed_identities': 'True',
-            'subscription_id': {'password': 'test'},
-            'resource_group': 'test_resource_group',
-            'tenant_id': 'test_tenant_id'
+            'subscriptionID': 'test_subscription_id',
+            'resourceGroupName': 'test_resource_group',
+            'tenant_id': 'test_tenant_id',
+            'azure_cloud': 'Worldwide',
         }
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -1435,3 +1449,564 @@ class TestEdgeCases:
 
         # validate
         assert error.value.args[0] == f"[NotFound 404] Resource '{resource_id}' does not exist"
+
+
+@pytest.mark.parametrize("incidents", [
+    ([{'ID': 'incident-1'}]),
+    ([{'ID': 'incident-1'}, {'ID': 'incident-2'}]),
+    ({'ID': 'incident-1'}),
+    ([]),
+])
+def test_fetch_incidents_additional_info(mocker, incidents):
+    """
+    Given:
+        - A list of incidents
+    When:
+        - Calling fetch_incidents_additional_info
+    Then:
+        - Ensure the client's http_request method was called the expected number of times,
+          and the incidents were updated with the additional info
+    """
+    args = {'fetch_additional_info': ['Alerts', 'Entities']}
+    mocker.patch('demistomock.params', return_value=args)
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', side_effect=[
+        {'value': [{'id': 'alert-1'}]},
+        {'entities': [{'id': 'entities-1'}]},
+        {'value': [{'id': 'alert-2'}]},
+        {'entities': [{'id': 'entities-2'}]}
+    ])
+
+    fetch_incidents_additional_info(client, incidents)
+
+    if isinstance(incidents, dict):
+        incidents = [incidents]
+
+    assert client.http_request.call_count == len(args['fetch_additional_info']) * len(incidents)
+    if incidents:
+        assert client.http_request.call_args_list[0][0][1] == 'incidents/incident-1/alerts'
+
+    for i, incident in enumerate(incidents):
+        assert 'alerts' in incident
+        assert incident['alerts'] == [{'id': f'alert-{i + 1}'}]
+        assert 'entities' in incident
+        assert incident['entities'] == [{'id': f'entities-{i + 1}'}]
+
+
+@pytest.mark.parametrize("last_update, expected_last_update", [
+    ('2023-01-06T08:17:09.001016488+02:00', '2023-01-06T06:17:09.001016Z'),
+    ('2023-01-06T08:17:09.001016488Z', '2023-01-06T08:17:09.001016Z')
+])
+def test_get_modified_remote_data_command(mocker, last_update, expected_last_update):
+    """
+    Given
+        - client
+        - args with lastUpdate
+    When
+        - running get_modified_remote_data_command
+    Then
+        - Ensure the client's http_request method was called with the expected filter,
+          and the modified_incident_ids were returned the expected list of ids.
+    """
+    client = mock_client()
+    mock_response = {'value': [{'name': 'incident-1'}, {'name': 'incident-2'}]}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
+    excepted_filter = f'properties/lastModifiedTimeUtc ge {expected_last_update}'
+    assert client.http_request.call_args[1]['params']['$filter'] == excepted_filter
+    assert result.modified_incident_ids == [incident['name'] for incident in mock_response['value']]
+
+
+def test_get_remote_data_command(mocker):
+    """
+    Given
+        - client
+        - args with id and lastUpdate
+    When
+        - running get_remote_data_command
+    Then
+        - Ensure the mirrored object was returned the expected object
+    """
+
+    mocker.patch('AzureSentinel.get_remote_incident_data', return_value=({'name': 'incident-1'}, {'ID': 'incident-1'}))
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+
+    result = get_remote_data_command(mock_client(), {'id': 'incident-1', 'lastUpdate': '2023-01-06T08:17:09Z'})
+    assert result.mirrored_object == {'ID': 'incident-1'}
+    assert result.entries == []
+
+
+def test_get_remote_incident_data(mocker):
+    """
+    Given
+        - client
+        - incident id
+    When
+        - running get_remote_incident_data
+    Then
+        Verify the function returns the expected mirrored data and updated object
+    """
+    client = mock_client()
+    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1'}}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    result = get_remote_incident_data(client, 'id-incident-1')
+    assert result == (mock_response, {'ID': 'id-incident-1', 'Title': 'title-incident-1'})
+
+
+@pytest.mark.parametrize("incident, expected_contents", [
+    (
+        {'ID': 'id-incident-1', 'Status': 'Closed', 'classification': 'BenignPositive'},
+        {'dbotIncidentClose': True, 'closeReason': 'Resolved - Closed on Microsoft Sentinel', 'closeNotes': ''}
+    ),
+    (
+        {'ID': 'id-incident-1', 'Status': 'Active'},
+        {'dbotIncidentReopen': True}
+    ),
+])
+def test_set_xsoar_incident_entries(mocker, incident, expected_contents):
+    """
+    Given
+        - incident
+        - entries
+    When
+        - running set_xsoar_incident_entries
+    Then
+        - Ensure the entries were updated with the expected contents
+    """
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    entries: list = []
+    set_xsoar_incident_entries(incident, entries, 'id-incident-1')
+    assert entries[0].get('Contents') == expected_contents
+
+
+def test_get_mapping_fields_command():
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping scheme
+    """
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'Microsoft Sentinel Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
+                                                             'classificationReason', 'tags', 'classificationComment',
+                                                             'severity', 'firstActivityTimeUtc', 'classification',
+                                                             'title', 'etag'}
+
+
+def test_update_remote_system_command(mocker):
+    """
+    Given
+        - client
+        - args with remoteId, status, data and delta
+    When
+        - running update_remote_system_command
+    Then
+        - Ensure the function returns the expected incident id
+    """
+    mocker.patch('AzureSentinel.update_remote_incident', return_value={})
+
+    args = {'remoteId': 'incident-1',
+            'status': 1,
+            'data': {'title': 'Title', 'severity': 2, 'status': 1},
+            'delta': {'title': 'New Title', 'severity': 3}}
+
+    result = update_remote_system_command(mock_client(), args)
+    assert result == 'incident-1'
+
+
+@pytest.mark.parametrize("incident_status, close_incident_in_remote, delta, expected_update_call", [
+    (IncidentStatus.DONE, True, {}, True),
+    (IncidentStatus.DONE, False, {}, False),  # delta is empty
+    (IncidentStatus.DONE, False, {'classification': 'FalsePositive'}, False),  # delta have only closing fields
+    (IncidentStatus.DONE, False, {'title': 'Title'}, True),  # delta have fields except closing fields
+    (IncidentStatus.ACTIVE, True, {}, True),
+    (IncidentStatus.ACTIVE, False, {}, True),
+    (IncidentStatus.PENDING, True, {}, False),
+])
+def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
+    """
+    Given
+        - incident status
+    When
+        - running update_remote_incident
+    Then
+        - ensure the function call only when the incident status is DONE and close_incident_in_remote is True
+          or when the incident status is ACTIVE
+    """
+    mocker.patch('AzureSentinel.close_incident_in_remote', return_value=close_incident_in_remote)
+    mock_update_status = mocker.patch('AzureSentinel.update_incident_request')
+    update_remote_incident(mock_client(), {}, delta, incident_status, 'incident-1')
+    assert mock_update_status.called == expected_update_call
+
+
+@pytest.mark.parametrize('delta, close_ticket_param, to_close', [
+    ({'classification': 'FalsePositive'}, True, True),
+    ({'classification': 'FalsePositive'}, False, False),
+    ({}, True, False),
+    ({}, False, False)
+])
+def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
+    """
+    Given
+        - one of the close parameters
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
+    """
+    mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
+    assert close_incident_in_remote(delta) == to_close
+
+
+@pytest.mark.parametrize("data, delta, mock_response, close_ticket", [
+    (
+        {'title': 'New Title', 'severity': 2, 'status': 1},
+        {'title': 'New Title'},
+        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
+        False
+    ),
+    (
+        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
+    ),
+    (
+        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
+        False
+    )
+])
+def test_update_incident_request(mocker, data, delta, mock_response, close_ticket):
+    """
+    Given
+        - data
+        - delta
+    When
+        - running update_incident_request
+    Then
+        - Ensure the client.http_request was called with the expected data
+    """
+    client = mock_client()
+    mock_response = {'etag': None, 'properties': mock_response}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
+    assert client.http_request.call_args[1]['data'] == mock_response
+
+
+@pytest.mark.parametrize("args", [
+    ({}),
+    ({"limit": 1}),
+    ({"limit": 2}),
+    ({'rule_id': 'rule1'})
+])
+def test_list_alert_rule_command(mocker, args):
+    """
+    Given
+        - client
+        - args with limit or rule_id
+    When
+        - running list_alert_rule_command
+    Then
+        - Ensure the function returns the expected alert rule
+    """
+    prefix_file = 'get' if args.get('rule_id') else 'list'
+    with open(f'test_data/{prefix_file}_alert_rule-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = list_alert_rule_command(client, args)
+
+    if limit := args.get("limit"):
+        assert len(command_results.outputs) == limit
+        assert command_results.outputs == mock_response.get("value", [])[:limit]
+
+    elif rule_id := args.get("rule_id"):
+        assert command_results.outputs == [mock_response]
+        assert command_results.outputs[0].get("name") == rule_id
+
+    else:
+        assert command_results.outputs == mock_response.get("value", [])
+        assert len(command_results.outputs) == len(mock_response.get("value", []))
+
+
+@pytest.mark.parametrize("args", [
+    ({}),
+    ({"limit": 1}),
+    ({"limit": 2}),
+    ({'template_id': 'template1'})
+])
+def test_list_alert_rule_template_command(mocker, args):
+    """
+    Given
+        - client
+        - args with limit or rule_id
+    When
+        - running list_alert_rule_template_command
+    Then
+        - Ensure the function returns the expected alert rule template
+    """
+    prefix_file = 'get' if args.get('template_id') else 'list'
+    with open(f'test_data/{prefix_file}_alert_rule_template-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = list_alert_rule_template_command(client, args)
+
+    if limit := args.get("limit"):
+        assert len(command_results.outputs) == limit
+        assert command_results.outputs == mock_response.get("value", [])[:limit]
+
+    elif rule_id := args.get("template_id"):
+        assert command_results.outputs == [mock_response]
+        assert command_results.outputs[0].get("name") == rule_id
+
+    else:
+        assert command_results.outputs == mock_response.get("value", [])
+        assert len(command_results.outputs) == len(mock_response.get("value", []))
+
+
+@pytest.mark.parametrize("mock_response, expected_readable_output, expected_outputs", [
+    ({}, 'Alert rule rule1 was deleted successfully.', {'ID': 'rule1', 'Deleted': True}),  # 200 response
+    (mock_204_response(), 'Alert rule rule1 does not exist.', None)  # 204 response
+])
+def test_delete_alert_rule_command(mocker, mock_response, expected_readable_output, expected_outputs):
+    """
+    Given
+        - args with rule_id
+    When
+        - running delete_alert_rule_command
+    Then
+        - Ensure the function returns the expected command results
+    """
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = delete_alert_rule_command(client, {'rule_id': 'rule1'})
+
+    assert command_results.readable_output == expected_readable_output
+
+
+def test_validate_required_arguments_for_alert_rule():
+    """
+    Given
+        - args with all required arguments
+        - args with missing required arguments
+    When
+        - running validate_required_arguments_for_alert_rule
+    Then
+        - if all required arguments are provided, ensure the function returns nothing
+        - if a required argument is missing, ensure the function raises a ValueError
+    """
+    # Test with a fusion alert rule with all required arguments
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'template_name': 'test_template',
+        'enabled': True
+    }
+    validate_required_arguments_for_alert_rule(args)
+
+    # Test with a scheduled alert rule with all required arguments
+    args = {
+        'kind': 'scheduled',
+        'rule_name': 'test_scheduled_rule',
+        'displayName': 'test_display_name',
+        'enabled': True,
+        'query': 'test_query',
+        'query_frequency': 'test_frequency',
+        'query_period': 'test_period',
+        'severity': 'test_severity',
+        'suppression_duration': 'test_duration',
+        'suppression_enabled': True,
+        'trigger_operator': 'test_operator',
+        'trigger_threshold': 10
+    }
+    validate_required_arguments_for_alert_rule(args)
+
+    # Test with a fusion alert rule with a missing required argument
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'enabled': True
+    }
+    with pytest.raises(Exception) as e:
+        validate_required_arguments_for_alert_rule(args)
+    assert str(e.value) == '"template_name" is required for "fusion" alert rule.'
+
+    # Test without a kind argument
+    args = {
+        'rule_name': 'test_unknown_rule'
+    }
+    with pytest.raises(Exception) as e:
+        validate_required_arguments_for_alert_rule(args)
+    assert str(e.value) == 'The "kind" argument is required for alert rule.'
+
+
+def test_create_data_for_alert_rule():
+    """
+    Given
+        - args
+    When
+        - running create_data_for_alert_rule
+    Then
+        - Ensure the function returns the expected data
+    """
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'template_name': 'test_template',
+        'enabled': True,
+        'description': None
+    }
+    expected_data = {
+        'kind': 'Fusion',
+        'etag': None,
+        'properties': {
+            'alertRuleTemplateName': 'test_template',
+            'enabled': True
+        }
+    }
+    data = create_data_for_alert_rule(args)
+    assert data == expected_data
+
+
+def test_create_and_update_alert_rule_command(mocker):
+    """
+    Given
+        - client
+        - args with all required arguments
+    When
+        - running create_alert_rule_command
+    Then
+        - Ensure the function returns the expected command results
+    """
+    with open('test_data/create_alert_rule-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    args = {
+        'kind': 'Fusion',
+        "etag": "3d00c3ca-0000-0100-0000-5d42d5010000",
+        "properties": {
+            "enabled": True,
+            "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8"
+        }
+    }
+    mocker.patch('AzureSentinel.create_data_for_alert_rule', return_value=args)
+    command_results = create_and_update_alert_rule_command(client, args)
+    assert command_results.outputs == mock_response
+    assert command_results.outputs_prefix == 'AzureSentinel.AlertRule'
+    assert command_results.outputs_key_field == 'name'
+    assert '|ID|Name|Kind|Severity|Display Name|Description|Enabled|Etag|' in command_results.readable_output
+
+
+def test_list_incident_comments_command_happy_path(mocker):
+    """
+    Given:
+    - Valid incident ID, limit, and next link.
+
+    When:
+    - Calling the list_incident_comments_command function.
+
+    Then:
+    - Ensure the function successfully retrieves comments for the given incident ID with and without
+    a specified limit and next link.
+    - Ensure the function returns the expected CommandResults object.
+    """
+
+    client = mocker.Mock()
+    args = {
+        'incident_id': '123',
+        'limit': '50',
+        'next_link': ''
+    }
+    result = {
+        'value': [
+            {
+                'name': 'comment1',
+                'properties': {
+                    'message': 'test comment 1',
+                    'author': {
+                        'assignedTo': 'test user',
+                        'email': 'test@test.com'
+                    },
+                    'createdTimeUtc': '2022-01-01T00:00:00Z'
+                }
+            },
+            {
+                'name': 'comment2',
+                'properties': {
+                    'message': 'test comment 2',
+                    'author': {
+                        'assignedTo': 'test user 2',
+                        'email': 'test2@test.com'
+                    },
+                    'createdTimeUtc': '2022-01-02T00:00:00Z'
+                }
+            }
+        ],
+        'nextLink': ''
+    }
+    client.http_request.return_value = result
+
+    expected_comments = [
+        {
+            'ID': 'comment1',
+            'IncidentID': '123',
+            'Message': 'test comment 1',
+            'AuthorName': 'test user',
+            'AuthorEmail': 'test@test.com',
+            'CreatedTimeUTC': '2022-01-01T00:00:00Z'
+        },
+        {
+            'ID': 'comment2',
+            'IncidentID': '123',
+            'Message': 'test comment 2',
+            'AuthorName': 'test user 2',
+            'AuthorEmail': 'test2@test.com',
+            'CreatedTimeUTC': '2022-01-02T00:00:00Z'
+        }
+    ]
+
+    expected_outputs = {
+        'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === 123)': expected_comments
+    }
+
+    expected_readable_output = tableToMarkdown('Incident 123 Comments (2 results)', expected_comments,
+                                               headers=COMMENT_HEADERS, headerTransform=pascalToSpace, removeNull=True)
+
+    # Execute the test
+    assert list_incident_comments_command(client, args).readable_output == CommandResults(
+        readable_output=expected_readable_output,
+        outputs=expected_outputs,
+        raw_response=result
+    ).readable_output
+
+
+def test_update_incident_command_table_to_markdown(mocker):
+    """
+    Given:
+    - A valid incident_id and incident data.
+
+    When:
+    - Calling update_incident_command function.
+
+    Then:
+    - Ensure that the function formats the output table correctly.
+    """
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value={'id': '123', 'title': 'test', 'severity': 'High'})
+    args = {'incident_id': '123', 'title': 'new title', 'description': 'new description', 'severity': 'High'}
+    result = update_incident_command(client, args)
+    expected_output = '### Updated incidents 123 details\n**No entries.**'
+    assert result.readable_output.strip() == expected_output

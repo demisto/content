@@ -1,7 +1,8 @@
 [MODEL: dataset=fireeye_mps_raw]
-alter xdm.target.port = to_number(dpt),
+alter 
+    xdm.target.port = to_number(dpt),
     xdm.source.port = to_number(spt),
-    xdm.event.outcome = act,
+    xdm.event.operation_sub_type = act,
     xdm.target.ipv4 = dst,
     xdm.source.ipv4 = src,
     xdm.target.host.mac_addresses = arraycreate(coalesce(dmac,"")) ,

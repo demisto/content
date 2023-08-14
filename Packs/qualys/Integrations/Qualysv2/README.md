@@ -37,6 +37,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 33. qualys-report-template-list - Added new parameters, changed outputs.
 34. qualys-report-launch-map - changed existing parameters
 35. qualys-ip-restricted-manage - New command.
+36. qualys-purge-scan-host-data - New command.
 
 # Playbooks
 1. Vulnerability Management - Qualys (Job) - migrated to work with this new version
@@ -67,6 +68,11 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Asset Tag Commands
+There are several API endpoints on the Qualys API that can be used in the QualysV2 integration configuration as the `SERVER URL` parameter.
+When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the `SERVER URL` parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -817,6 +823,7 @@ View a list of scanned hosts in the user account.
 | show_cloud_tags | (Optional) Specify 1 to display cloud provider tags for each scanned host asset in the output. The default value of the parameter is set to 0. When set to 0, we will not show the cloud provider tags for the scanned assets. Possible values are: 0, 1. | Optional | 
 | cloud_tag_fields | (Optional when show_cloud_tags is specified) Specify cloud tags or cloud tag and name combinations to only return information for specified cloud tags. A cloud tag name and value combination is specified with a colon (for example:SomeTag6:AY_ec2). For each cloud tag, we show the cloud tag’s name, its value, and last success date (the tag last success date/time, fetched from instance). If this parameter is not specified and "show_cloud_tags" is set to 1, we will show all the cloud provider tags for the assets. | Optional | 
 | limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
+| details | (Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. | Optional |
 
 
 #### Context Output

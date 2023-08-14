@@ -257,7 +257,8 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get(
+            'user_service_account_json_creds', {}).get('password') or params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -287,7 +288,7 @@ def main() -> None:
         return_error(f'Error: {str(e)}')
 
 
-from GSuiteApiModule import *  # noqa: E402
+from GSuiteApiModule import *   # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

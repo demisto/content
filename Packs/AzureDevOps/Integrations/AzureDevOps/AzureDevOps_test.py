@@ -780,3 +780,45 @@ def test_get_mapping_fields_command():
     res = get_mapping_fields_command()
 
     assert expected_mapping == res.extract_mapping()
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function azure-devops-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from AzureDevOps import main
+    import AzureDevOps
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'organization': 'test_organization',
+        'self_deployed': 'True',
+        'tenant_id': tenant_id,
+        'client_id': client_id,
+        'auth_type': 'Authorization Code',
+        'credentials': {'identifier': client_id, 'password': 'client_secret'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='azure-devops-generate-login-url')
+    mocker.patch.object(AzureDevOps, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code' \
+                   '&scope=offline_access%20499b84ac-1321-427f-aa17-267ca6975798/user_impersonation%20offline_access' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = AzureDevOps.return_results.call_args[0][0].readable_output
+    assert expected_url in res

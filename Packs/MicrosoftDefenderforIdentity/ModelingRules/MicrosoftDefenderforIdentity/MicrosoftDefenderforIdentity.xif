@@ -1,0 +1,12 @@
+[MODEL: dataset="microsoft_azure_atp_raw"]
+alter
+	xdm.network.application_protocol = app,
+	xdm.intermediate.host.fqdn = cs1,
+	xdm.event.description = msg,
+	xdm.source.host.hostname = shost,
+	xdm.source.user.username = suser,
+	xdm.target.host.fqdn = request,
+	xdm.event.id = externalId,
+	xdm.alert.severity = cefSeverity,
+	xdm.observer.version = cefDeviceVersion,
+	xdm.alert.subcategory = cefDeviceEventClassId;

@@ -1,0 +1,2 @@
+email,password,userStatus,passwordStatus,internalDomain,message,remediationAction,remediationStatus,rawData
+test@test.com,12345,unknown,unknown,,,,,

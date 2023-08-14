@@ -1,0 +1,2066 @@
+category: Network Security
+commonfields:
+  id: rapid7_threat_command
+  version: -1
+configuration:
+- defaultvalue: https://api.ti.insight.rapid7.com/
+  display: Server URL
+  name: base_url
+  required: true
+  type: 0
+- name: credentials
+  displaypassword: API key
+  display: Account ID
+  required: true
+  type: 9
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: 'false'
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+  display: First fetch timestamp.
+  name: first_fetch
+  type: 0
+  required: false
+- additionalinfo: Default is 50. Maximum is 100.
+  display: Maximum incidents per fetch
+  defaultvalue: 50
+  name: max_fetch
+  type: 0
+  required: true
+- display: Alert types to fetch as incidents
+  name: alert_types
+  options:
+  - AttackIndication
+  - DataLeakage
+  - Phishing
+  - BrandSecurity
+  - ExploitableData
+  - vip
+  type: 16
+  required: false
+- display: Minimum Alert Severity Level
+  name: alert_severity
+  options:
+  - Low
+  - Medium
+  - High
+  type: 15
+  required: false
+- display: Source types to filter alerts by
+  name: source_types
+  options:
+  - ApplicationStores
+  - BlackMarkets
+  - HackingForums
+  - SocialMedia
+  - PasteSites
+  - Others
+  type: 16
+  required: false
+- defaultvalue: 'false'
+  display: Fetch closed alerts
+  name: fetch_closed_incidents
+  type: 8
+  required: false
+- defaultvalue: 'false'
+  display: Include CSV files of alerts
+  name: fetch_csv
+  type: 8
+  required: false
+- defaultvalue: 'false'
+  display: Include attachments of alerts
+  name: fetch_attachments
+  type: 8
+  additionalinfo: MSSP accounts must provide a sub-account ID to perform this action.
+  required: false
+- display: "Sub-account ID (for MSSP accounts)."
+  name: mssp_sub_account
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: Rapid7 Insight - Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
+display: Rapid7 - Threat Command (IntSights)
+name: rapid7_threat_command
+script:
+  commands:
+  - arguments:
+    - description: Filter by free text, which can be the cyber term name or ID.
+      name: search
+    - auto: PREDEFINED
+      description: "A comma-separated list of cyber term types by which to filter the results. For example: ThreatActor,Campaign."
+      isArray: true
+      name: types
+      predefined:
+      - Threat Actor
+      - Malware
+      - Campaign
+    - auto: PREDEFINED
+      description: "A comma-separated list of cyber term severities by which to filter the results. For example: High,Low."
+      isArray: true
+      name: severities
+      predefined:
+      - High
+      - Medium
+      - Low
+    - description: "A comma-separated list of targeted sectors by which to filter the results. For example: Education,Government."
+      isArray: true
+      name: sectors
+    - description: "A comma-separated list of targeted countries by which to filter the results. For example: Albania,Algeria."
+      isArray: true
+      name: countries
+    - description: "A comma-separated list of nationalities by which to filter the results. For example: Egypt,Iraq."
+      isArray: true
+      name: origins
+    - description: "A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor"
+      isArray: true
+      name: ttps
+    - description: "Filter for results whose last update date is greater than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. Default value: Last year."
+      name: last_update_from
+    - description: "Filter for results whose last update date is less than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z."
+      name: last_update_to
+    - defaultValue: '1'
+      description: The page number of the results to retrieve (1-based).
+      name: page
+    - description: The number of objects per page.
+      name: page_size
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: List cyber terms by filter.
+    name: threat-command-cyber-term-list
+    outputs:
+    - contextPath: ThreatCommand.CyberTerm.id
+      description: The ID of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.type
+      description: The type of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.name
+      description: Name of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.severity
+      description: The severity of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.aliases
+      description: Aliases of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.target_countries
+      description: List of targeted countries.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.sectors
+      description: List of targeted sectors.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.origins
+      description: List of origin nationalities.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.created_date
+      description: The date the cyber term was first reported.
+      type: Date
+    - contextPath: ThreatCommand.CyberTerm.updated_date
+      description: The date the cyber term was last updated.
+      type: Date
+    - contextPath: ThreatCommand.CyberTerm.ttp
+      description: List of TTPs.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.overview
+      description: Overview of the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.additional_information
+      description: Additional information about the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.related_malware
+      description: Related malware names.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.related_threat_actor
+      description: Related threat actor names.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.related_campaigns
+      description: Related campaign names.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.MitreAttack.tactic
+      description: MITRE ATT&CK tactic name related to the cyber term.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.MitreAttack.Techniques.name
+      description: MITRE ATT&CK technique names.
+      type: String
+    - contextPath: ThreatCommand.CyberTerm.MitreAttack.Techniques.url
+      description: MITRE ATT&CK technique URLs.
+      type: String
+  - arguments:
+    - description: "Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs)."
+      name: cyber_term_id
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: List cyber term CVEs by cyber term ID.
+    name: threat-command-cyber-term-cve-list
+    outputs:
+    - contextPath: ThreatCommand.CVE.id
+      description: CVE ID.
+      type: String
+    - contextPath: ThreatCommand.CVE.publish_date
+      description: CVE publish date.
+      type: String
+    - contextPath: ThreatCommand.CVE.vendor_product
+      description: CVE vendor product.
+      type: Number
+  - arguments:
+    - description: "Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs)."
+      name: cyber_term_id
+      required: true
+    - auto: PREDEFINED
+      description: IOC types to include.
+      name: ioc_type
+      predefined:
+      - Ip Addresses
+      - Urls
+      - Domains
+      - Hashes
+      - Emails
+    - description: The page number of the results to retrieve (1-based).
+      defaultValue: '1'
+      name: page
+    - description: The number of objects per page.
+      name: page_size
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: List cyber term IOCs by cyber term ID.
+    name: threat-command-cyber-term-ioc-list
+    outputs:
+    - contextPath: ThreatCommand.IOC.value
+      description: The value of the IOC.
+      type: String
+    - contextPath: ThreatCommand.IOC.type
+      description: The type of the IOC
+      type: String
+    - contextPath: ThreatCommand.IOC.updated_date
+      description: The date the IOC was last updated.
+      type: String
+    - contextPath: ThreatCommand.IOC.status
+      description: The status of the IOC.
+      type: String
+    - contextPath: ThreatCommand.IOC.is_whitelisted
+      description: Whether the IOC is whitelisted.
+      type: String
+    - contextPath: ThreatCommand.IOC.severity
+      description: The severity of the IOC.
+      type: String
+    - contextPath: ThreatCommand.IOC.reporting_feeds
+      description: List of reporting feeds in which the value appears.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Gets lists of IOC document sources.
+    name: threat-command-source-list
+    outputs:
+    - contextPath: ThreatCommand.Source.id
+      description: Source ID.
+      type: String
+    - contextPath: ThreatCommand.Source.name
+      description: Source name.
+      type: String
+    - contextPath: ThreatCommand.Source.confidence_level
+      description: Source confidence level.
+      type: Number
+    - contextPath: ThreatCommand.Source.is_enable
+      description: Whether the source is enabled.
+      type: Boolean
+    - contextPath: ThreatCommand.Source.type
+      description: Source type.
+      type: String
+  - arguments:
+    - description: Source name.
+      name: name
+      required: true
+    - description: Source description.
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Source confidence level.
+      name: confidence_level
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      required: true
+    - auto: PREDEFINED
+      description: Whether to share this source with all tenants (available for MSSP users only).
+      name: share
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Source severity level.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+    - description: "Comma-separated list of user tags for the document."
+      isArray: true
+      name: tags
+    - description: "Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com"
+      isArray: true
+      name: domains
+    - description: "Comma-separated list of URL IOC values to add. For example: \"http://securitywap.com/path\""
+      isArray: true
+      name: urls
+    - description: "Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4."
+      isArray: true
+      name: ips
+    - description: "Comma-separated list of hash IOC values to add. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7."
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to add. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: Adds a new IOC source document. At least one IOC is required.
+    name: threat-command-source-document-create
+    outputs:
+    - contextPath: ThreatCommand.Source.Files.id
+      description: Document source ID.
+      type: String
+    - contextPath: ThreatCommand.Source.Files.name
+      description: Document source name.
+      type: String
+  - arguments:
+    - description: "The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type=\"Files\" to get all the document source IDs)."
+      name: source_id
+      required: true
+    description: Deletes an existing IOC source document.
+    name: threat-command-source-document-delete
+  - arguments:
+    - description: "The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type=\"Files\" to get all the document source IDs)."
+      name: source_id
+      required: true
+    - description: "Comma-separated list of domain IOC values to create. For example: securitywap.com,test.com."
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to create. For example: "http://securitywap.com/path".'
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of IP IOC values to create. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to create. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to create. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: Create new IOCs to existing IOC source documents. At least one IOC is required.
+    name: threat-command-source-document-ioc-create
+  - arguments:
+    - description: "IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other filtering arguments are not relevant. "
+      name: ioc_value
+    - description: The page number of the results to retrieve (1-based).
+      defaultValue: '1'
+      name: page
+    - description: The number of objects per page.
+      name: page_size
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: "Enrichment flag. Use True to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). "
+      name: enrichment
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The interval in seconds between each poll. Relevant while enrichment=true.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends. Relevant while enrichment=true.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    - description: "Filter by last update date (IOC update date is greater than). For example:  2022-12-25T08:38:06Z. Required when ioc_value is not selected."
+      name: last_updated_from
+    - description: "Filter by last update date (IOC update date is less than). For example:  2022-12-25T08:38:06Z."
+      name: last_updated_to
+    - description: "Filter by last seen date (IOC last seen date is greater than). For example:  2022-12-25T08:38:06Z."
+      name: last_seen_from
+    - description: "Filter by last seen date (IOC last seen date is less than). For example:  2022-12-25T08:38:06Z."
+      name: last_seen_to
+    - description: "Filter by first seen date (IOC first seen date is greater than). For example:  2022-12-25T08:38:06Z."
+      name: first_seen_from
+    - description: "Filter by first seen date (IOC first seen date is less than). For example:  2022-12-25T08:38:06Z."
+      name: first_seen_to
+    - auto: PREDEFINED
+      description: Filter by IOC status.
+      name: status
+      predefined:
+      - Active
+      - Retired
+    - auto: PREDEFINED
+      description: "Comma-separated list of IOC types to filter. For example: Urls,Domains."
+      isArray: true
+      name: type_list
+      predefined:
+      - Ip Addresses
+      - Urls
+      - Domains
+      - Hashes
+      - Emails
+    - auto: PREDEFINED
+      description: "Comma-separated list of IOC severities to filter. For example: Low,Medium."
+      isArray: true
+      name: severity_list
+      predefined:
+      - High
+      - Medium
+      - Low
+    - auto: PREDEFINED
+      description: Filter by whitelist status.
+      name: whitelisted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "Comma-separated list of source IDs (dependencies - use threat-command-source-document-ioc-get command to get all the document source IDs)."
+      isArray: true
+      name: source_ids
+    - auto: PREDEFINED
+      description: "Comma-separated list of the phase of the Lockheed-Martin kills chain. For example: Delivery,Exploitation."
+      isArray: true
+      name: kill_chain_phases
+      predefined:
+      - Reconnaissance
+      - Weaponization
+      - Delivery
+      - Exploitation
+      - Installation
+      - Command and Control
+      - Actions on Objective
+    description: "Gets IOC details by value or IOC’s full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get."
+    name: threat-command-ioc-search
+    polling: true
+    outputs:
+    - contextPath: ThreatCommand.IOC.value
+      description: IOC value.
+      type: String
+    - contextPath: ThreatCommand.IOC.type
+      description: IOC type.
+      type: String
+    - contextPath: ThreatCommand.IOC.Source.name
+      description: "IOC source name (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Source.confindece_level
+      description: IOC source confidence level(Relevant to enrichment only).
+      type: String
+    - contextPath: ThreatCommand.IOC.system_tags
+      description: "IOC system tags (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.tags
+      description: IOC tags.
+      type: String
+    - contextPath: ThreatCommand.IOC.status
+      description: "IOC status is determined based on how recently the IOC was last seen. (Active/Retired).The domain is active for 3 months, the Email address for 2 months, the File hash for 1 year, the IP address for 2 weeks, and the URL for 2 months."
+      type: String
+    - contextPath: ThreatCommand.IOC.is_known_ioc
+      description: "Whether the IOC is known (Relevant to enrichment only)."
+      type: Boolean
+    - contextPath: ThreatCommand.IOC.related_malware
+      description: "Malware related to the IOC (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedThreatActors.value
+      description: "Threat actors related to the IOC (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.related_campaign
+      description: Related campaign (Relevant to enrichment only).
+      type: String
+    - contextPath: ThreatCommand.IOC.first_seen
+      description: IOC first seen date.
+      type: Date
+    - contextPath: ThreatCommand.IOC.last_seen
+      description: IOC last seen date.
+      type: Date
+    - contextPath: ThreatCommand.IOC.update_seen
+      description: IOC updated seen date (Relevant to enrichment only).
+      type: Date
+    - contextPath: ThreatCommand.IOC.is_whitelisted
+      description: Whether the IOC is whitelisted.
+      type: Boolean
+    - contextPath: ThreatCommand.IOC.Severity.value
+      description: IOC severity value.
+      type: String
+    - contextPath: ThreatCommand.IOC.Severity.score
+      description: IOC severity score.
+      type: Number
+    - contextPath: ThreatCommand.IOC.Severity.origin
+      description: "IOC severity origin (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.DnsRecord.value
+      description: "IOC DNS recorded value (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.DnsRecord.type
+      description: "IOC DNS recorded type (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.DnsRecord.first_resolved
+      description: "IOC DNS recorded first resolved (Relevant to enrichment only)."
+      type: Date
+    - contextPath: ThreatCommand.IOC.DnsRecord.last_resolved
+      description: "IOC DNS recorded last resolved (Relevant to enrichment only)."
+      type: Date
+    - contextPath: ThreatCommand.IOC.DnsRecord.count
+      description: "IOC DNS record count (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.subdomains
+      description: "IOC subdomain (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.History.status
+      description: "History statuses (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.History.name_servers
+      description: "History name servers (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Current.status
+      description: "Current statuses (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Current.name_servers
+      description: "Current name servers (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Resolution.resolved_ip_address
+      description: "Resolved IP address (Relevant to domain IOC) (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Resolution.resolved_domain
+      description: "Resolved domain (Relevant to IP IOC) (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.Resolution.reporting_sources
+      description: "Reporting sources (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedHash.downloaded
+      description: "Download hashes (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedHash.communicating
+      description: "Communicating hashes (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedHashes.referencing
+      description: "Referencing hashes (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.antivirus_scan_date
+      description: "Antivirus scan date (Relevant to enrichment only)."
+      type: Date
+    - contextPath: ThreatCommand.IOC.file_name
+      description: "File name (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.file_type
+      description: "File type (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.file_author
+      description: "File author (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.file_description
+      description: "File description (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.file_size
+      description: "File size (the file size is shown in bytes) (Relevant to enrichment only)."
+      type: Number
+    - contextPath: ThreatCommand.IOC.antivirus_detection_ratio
+      description: "Antivirus detection ratio (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.antivirus_detected_engines
+      description: "Antivirus-detected engines (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.AntivirusDetection.name
+      description: "Detection name (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.AntivirusDetection.version
+      description: "Detection version (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.AntivirusDetection.detected
+      description: "Whether the IOC is detected (Relevant to enrichment only)."
+      type: Boolean
+    - contextPath: ThreatCommand.IOC.AntivirusDetection.result
+      description: "Detection result (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedHash.type
+      description: "Hash type (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.RelatedHash.value
+      description: "Hash value (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.ip_range
+      description: "IOC IP range (Relevant to enrichment only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.last_update_date
+      description: "IOC last update date (Relevant to search mode only)."
+      type: Date
+    - contextPath: ThreatCommand.IOC.geo_location
+      description: "Geo location code (Relevant to search mode only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.reportedFeeds.id
+      description: "IOC reported feed ID (Relevant to search mode only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.reportedFeeds.name
+      description: "IOC reported feed name (Relevant to search mode only)."
+      type: String
+    - contextPath: ThreatCommand.IOC.reportedFeeds.confidence_level
+      description: "IOC reported feed confidence level (Relevant to search mode only)."
+      type: Number
+  - arguments:
+    - description: The IOC value.
+      isArray: true
+      name: ioc_value
+      required: true
+    - description: "Comma-separated list of tags to add (Tag can be any word). For example: \"Example Tag\",\"Regional Alert\"."
+      isArray: true
+      name: tag_values
+      required: true
+    description: "Adds user tags to IOCs. This enables you to classify IOCs and later search for all IOCs with a specific tag. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC."
+    name: threat-command-ioc-tags-add
+  - arguments:
+    - auto: PREDEFINED
+      description: "The whitelist status for the IOCs. Add to the user whitelist - The IOCs will not be passed to integrated devices. Do not whitelist - The IOCs will be passed to integrated devices, even if the IOCs are on the system whitelist. "
+      name: is_whitelisted
+      predefined:
+      - Add to the user whitelist
+      - Do not whitelist
+      required: true
+    - description: 'Comma-separated list of domain IOC values to apply is_whitelisted to. For example: securitywap.com,test.com.'
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "http://securitywap.com/path".'
+      name: urls
+    - description: 'Comma-separated list of IP IOC values to apply is_whitelisted to. For example: 8.8.8.8,1.2.3.4.'
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to apply is_whitelisted to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      name: hashes
+    - description: 'Comma-separated list of email IOC values to apply is_whitelisted to. For example: test@test.com.'
+      name: emails
+    description: "You can add an IOC to your user whitelist (even if it is already on the system whitelist). If you change your mind, you can then revert that decision to rely again on the system designation using the threat-command-account-whitelist-remove command. When an IOC is whitelisted, it will not be sent to integrated security to block. When an IOC is not whitelisted, it will be sent to integrated security devices to block. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required. "
+    name: threat-command-account-whitelist-update
+  - arguments:
+    - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: securitywap.com,test.com.'
+      isArray: true
+      name: domains
+    - description: "Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: \"http://securitywap.com/path\"."
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: "Reverts IOC values to the system-default whitelist status. The ETP Suite automatically whitelists certain IOCs, such as company assets. You can override this designation or ensure that certain IOCs will not be system whitelisted using the threat-command-account-whitelist-update command. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required."
+    name: threat-command-account-whitelist-remove
+  - arguments:
+    - description: 'Comma-separated list of domain IOC values to add to the Remediation blocklist. For example: securitywap.com,test.com.'
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "http://securitywap.com/path".'
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of IP IOC valuesto add to the Remediation blocklist. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to add to the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to add to the Remediation blocklist. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: "Adds an IOC to an internal Remediation Blocklist. By sending the blocklist to security devices, you can block the IOCs. At least one IOC is required."
+    name: threat-command-ioc-blocklist-add
+  - arguments:
+    - description: 'Comma-separated list of domain IOC values to remove from the Remediation blocklist. For example: securitywap.com,test.com.'
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "http://securitywap.com/path".'
+      isArray: true
+      name: urls
+    - description: "Comma-separated list of IP IOC values to remove from the Remediation blocklist. For example: 8.8.8.8,1.2.3.4."
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to remove from the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: Removes IOC values from the Remediation blocklist. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required.
+    name: threat-command-ioc-blocklist-remove
+  - arguments:
+    - auto: PREDEFINED
+      description: The severity of the IOCs.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: true
+    - description: 'Comma-separated list of domain IOC values to update the severity. For example: securitywap.com,test.com.'
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to update the severity. For example: "http://securitywap.com/path".'
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of IP IOC values to update the severity. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to update the severity. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to update the severity. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: Changes the severity of existing IOCs for the requester account (overrides the system severity). At least one IOC is required.
+    name: threat-command-ioc-severity-update
+  - arguments:
+    - description: The comment to add.
+      name: comment
+      required: true
+    - description: "Comma-separated list of domain IOC values to add the comment to. For example: securitywap.com,test.com."
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to add the comment to. For example: "http://securitywap.com/path".'
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of IP IOC values to add the comment to. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of hash IOC values to add the comment to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
+      isArray: true
+      name: hashes
+    - description: "Comma-separated list of email IOC values to add the comment to. For example: test@test.com."
+      isArray: true
+      name: emails
+    description: Adds comments to IOCs. At least one IOC is required.
+    name: threat-command-ioc-comment-add
+  - description: Gets the current API enrichment credits ("quota") usage for the requester account.
+    name: threat-command-enrichment-quota-usage
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+    - description: The page number of the results to retrieve (1-based).
+      defaultValue: '1'
+      name: page
+    - description: The number of objects per page.
+      name: page_size
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Retrieve alert IDs only. Set to False in order to get the alerts with complete data details, and set to True in order to get a list of alerts.
+      name: retrieve_ids_only
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '1970-01-01T00:00:00.000Z'
+      description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
+      name: last_updated_from
+    - auto: PREDEFINED
+      description: Alert's type.
+      isArray: true
+      name: alert_type
+      predefined:
+      - Attack Indication
+      - Data Leakage
+      - Phishing
+      - Brand Security
+      - Exploitable Data
+      - vip
+    - auto: PREDEFINED
+      description: Comma-separated list of alert severities. For example:High,Medium.
+      isArray: true
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+    - auto: PREDEFINED
+      description: "Comma-separated list of alert source types. For example:Others,Markets."
+      isArray: true
+      name: source_type
+      predefined:
+      - Application Stores
+      - Black Markets
+      - Hacking Forums
+      - Social Media
+      - Paste Sites
+      - Others
+    - auto: PREDEFINED
+      description: "Comma-separated list of alert network types. For example:Clear Web,Dark Web."
+      isArray: true
+      name: network_type
+      predefined:
+      - Clear Web
+      - Dark Web
+    - description: "Comma-separated list of alert matched assets."
+      isArray: true
+      name: matched_asset_value
+    - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
+      name: last_updated_to
+    - description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
+      name: source_date_from
+    - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
+      name: source_date_to
+    - description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
+      name: found_date_from
+    - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
+      name: found_date_to
+    - auto: PREDEFINED
+      description: Show assigned/unassigned alerts.
+      name: assigned
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Show flagged/unflagged alerts.
+      name: is_flagged
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show closed/open alerts.
+      name: is_closed
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Show alerts with IOC results.
+      name: has_ioc
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get a list of alerts with all details.
+    name: threat-command-alert-list
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.assets.type
+      description: Asset type.
+      type: Date
+    - contextPath: ThreatCommand.Alert.assets.value
+      description: Asset value.
+      type: String
+    - contextPath: ThreatCommand.Alert.assignees
+      description: Assignees list.
+      type: String
+    - contextPath: ThreatCommand.Alert.type
+      description: "Alert type list."
+      type: String
+    - contextPath: ThreatCommand.Alert.sub_type
+      description: "Alert sub type."
+      type: String
+    - contextPath: ThreatCommand.Alert.title
+      description: "Alert title."
+      type: String
+    - contextPath: ThreatCommand.Alert.description
+      description: "Alert description."
+      type: String
+    - contextPath: ThreatCommand.Alert.severity
+      description: "Alert severity."
+      type: String
+    - contextPath: ThreatCommand.Alert.images
+      description: "Alert images list."
+      type: String
+    - contextPath: ThreatCommand.Alert.source_type
+      description: "Alert type."
+      type: String
+    - contextPath: ThreatCommand.Alert.source_url
+      description: "Alert URL source."
+      type: String
+    - contextPath: ThreatCommand.Alert.source_email
+      description: "Alert email source."
+      type: String
+    - contextPath: ThreatCommand.Alert.source_network_type
+      description: "Alert network type."
+      type: String
+    - contextPath: ThreatCommand.Alert.source_date
+      description: "Alert date."
+      type: Date
+    - contextPath: ThreatCommand.Alert.Tags.created_by
+      description: Alert tag creator.
+      type: String
+    - contextPath: ThreatCommand.Alert.Tags.name
+      description: Alert tag name.
+      type: String
+    - contextPath: ThreatCommand.Alert.Tags.id
+      description: Alert tag ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.related_iocs
+      description: Alert related IOC list.
+      type: String
+    - contextPath: ThreatCommand.Alert.found_date
+      description: Alert found date.
+      type: String
+    - contextPath: ThreatCommand.Alert.update_date
+      description: Alert update date.
+      type: String
+    - contextPath: ThreatCommand.Alert.takedown_status
+      description: Alert remediation status.
+      type: String
+    - contextPath: ThreatCommand.Alert.is_closed
+      description: Whether the alert is closed.
+      type: Boolean
+    - contextPath: ThreatCommand.Alert.is_flagged
+      description: Whether the alert is flagged.
+      type: Boolean
+    - contextPath: ThreatCommand.Alert.related_threat_ids
+      description: Alert-related threat IDs.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Domain
+      description: Takedown target. Available for phishing scenarios only. If you have evidence of malicious activity associated with this domain, select Domain.
+      name: target
+      predefined:
+      - Domain
+      - Website
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to close the alert after successful remediation.
+      name: close_alert_after_success
+      predefined:
+      - 'true'
+      - 'false'
+    description: Send a takedown request for the selected alert (Request that Threat Command will contact the host to request a takedown of a malicious domain, website, or mobile application).
+    name: threat-command-alert-takedown-request
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Get the alert's takedown status.
+    name: threat-command-alert-takedown-request-status-get
+    outputs:
+    - contextPath: ThreatCommand.Alert.takedown_status
+      description: Alert's takedown status.
+      type: String
+  - arguments:
+    - description: "Alert's found date. For example:  2022-12-25T08:38:06Z. The defaut value is the current time."
+      name: found_date
+    - description: Alert's title.
+      name: title
+      required: true
+    - description: Alert's description.
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: "Alert's type (dependencies - use threat-command-alert-type-list command to get all the alert types). Required while scenario not inserted."
+      name: type
+      predefined:
+      - Attack Indication
+      - Data Leakage
+      - Phishing
+      - Brand Security
+      - Exploitable Data
+      - vip
+    - description: "Alert subtype (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). Required while scenario not inserted."
+      name: sub_type
+    - auto: PREDEFINED
+      description: Alert's severity.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: true
+    - description: "Alert source type (dependencies - use threat-command-alert-source-type-list command to get all the alert source types)."
+      name: source_type
+      required: true
+    - auto: PREDEFINED
+      description: Source network type.
+      name: source_network_type
+      predefined:
+      - Clear Web
+      - Dark Web
+      required: true
+    - description: "The source URL of the alert. "
+      name: source_url
+    - description: "Alert's source date. For example:  2022-12-25T08:38:06Z."
+      name: source_date
+    - description: "Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg"
+      isArray: true
+      name: image_entry_ids
+    - description: "If provided, the related values will override any type and sub_type parameters (dependencies - use the threat-command-alert-scenario-list command to get all the alert scenarios)."
+      name: scenario
+    description: Create a new alert. You have to insert scenario or type and sub_type.
+    name: threat-command-alert-create
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: Alert's closed reason.
+      name: reason
+      predefined:
+      - Problem Solved
+      - Informational Only
+      - Problem We Are Already Aware Of
+      - Company Owned Domain
+      - Legitimate Application/Profile
+      - Not Related To My Company
+      - False Positive
+      - Other
+      required: true
+    - description: Alert's comments.
+      name: comment
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Alerts' hidden status (Delete alert from the account instance only when reason is FalsePositive).
+      name: is_hidden
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Alert's rate. Rate range: 0-5 (The range not officaly documented)."
+      name: rate
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    description: Close alert.
+    name: threat-command-alert-close
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.is_closed
+      description: Whether the alert is closed.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: The desired severity.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: true
+    description: "Change the alert's severity. Changing the severity level of alerts can help to prioritize alert management."
+    name: threat-command-alert-severity-update
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.severity
+      description: "Alert severity."
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Get alert's blocklist status.
+    name: threat-command-alert-blocklist-get
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.BlockList.value
+      description: Alert blocklist value.
+      type: String
+    - contextPath: ThreatCommand.Alert.BlockList.status
+      description: Alert blocklist status.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: 'Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com'
+      isArray: true
+      name: domains
+    - description: 'Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path"'
+      isArray: true
+      name: urls
+    - description: 'Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4.'
+      isArray: true
+      name: ips
+    - description: 'Comma-separated list of email IOC values to add. For example: test@test.com.'
+      isArray: true
+      name: emails
+    - auto: PREDEFINED
+      description: Blocklist status.
+      name: blocklist_status
+      predefined:
+      - Sent
+      - Not Sent
+      required: true
+    description: Change selected IOCs blocklist status.
+    name: threat-command-alert-blocklist-update
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: "Comma-separated list of the desired source names (dependencies - use threat-command-source-ioc-get to get all the source names). For example:GoogleWebRisk,PhishTank.Since there are variety of sources that accept different types of IOCs, select only sources that accept the alert IOCs."
+      isArray: true
+      name: external_sources
+      required: true
+    description: "Report IOCs to external sources (Report the URLs and domains that are included in an alert to external sources. This can warn others of the potential danger of those IOCs)."
+    name: threat-command-alert-ioc-report
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: "Assigned user ID (dependencies - use threat-command-mssp-user-list or threat-command-account-user-list to get user IDs)."
+      name: user_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If the assigned user is an MSSP user or not.
+      name: is_mssp
+      predefined:
+      - 'true'
+      - 'false'
+    description: "Assign an alert to other ETP Suite users. When an alert is assigned, the assignee will receive a notification. Mainly used to assign alerts."
+    name: threat-command-alert-assign
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.assignees
+      description: Assignees list.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Unassign an alert from all users.
+    name: threat-command-alert-unassign
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.assignees
+      description: Assignees list.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Reopen alert.
+    name: threat-command-alert-reopen
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: The new tag string.
+      name: tag_name
+      required: true
+    description: "Adds a tag to an alert. This enables you to classify alerts and later search for all alerts with a specific tag."
+    name: threat-command-alert-tag-add
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: "Tag's unique ID to remove (dependencies - use threat-command-alert-list command to get all the tag IDs)."
+      name: tag_id
+      required: true
+    description: Removes a tag from the alert.
+    name: threat-command-alert-tag-remove
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: "Comma-separated list of destinaions email addresses."
+      isArray: true
+      name: email_addresses
+      required: true
+    - description: Content added to the alert details.
+      name: content
+      required: true
+    description: Send mail with the alert details and a question.
+    name: threat-command-alert-send-mail
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: Question added to the alert details.
+      name: question
+      required: true
+    description: "Send a question to an analyst about the requested alert. Questions can revolve around an alert explanation, a request for more context, recommended remediation steps, or requests for threat actor engagement. In order to get the conversation with the analyst, use the threat-command-alert-analyst-conversation-list command."
+    name: threat-command-alert-analyst-ask
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Get alert's analyst response
+    name: threat-command-alert-analyst-conversation-list
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.Message.date
+      description: Response date.
+      type: String
+    - contextPath: ThreatCommand.Alert.Message.initiator
+      description: Response initiator.
+      type: String
+    - contextPath: ThreatCommand.Alert.Message.message
+      description: Response message
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Get alert activity log.
+    name: threat-command-alert-activity-log-get
+    outputs:
+    - contextPath: ThreatCommand.Alert.ActivityLog.rate
+      description: Alert rate.
+      type: Number
+    - contextPath: ThreatCommand.Alert.ActivityLog.type
+      description: Alert type.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.sub_types
+      description: Alert subtypes.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.initiator
+      description: Alert initiator.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.created_date
+      description: Alert created date.
+      type: Date
+    - contextPath: ThreatCommand.Alert.ActivityLog.update_date
+      description: Alert update date.
+      type: Date
+    - contextPath: ThreatCommand.Alert.ActivityLog.read_by
+      description: Alert read by.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.id
+      description: Alert created ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.tag_names
+      description: Alert tag names.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.tag_ids
+      description: Alert tag IDs.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.note_id
+      description: Alert note ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.question
+      description: Alert mail question.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.Replies.email
+      description: Alert mail reply email.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.Replies.token
+      description: Alert mail reply token.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.Replies.date
+      description: Alert mail reply date.
+      type: Date
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.Replies.read_by
+      description: Alert mail read by.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Mail.Replies.is_token_valid
+      description: Alert mail reply is token valid.
+      type: Boolean
+    - contextPath: ThreatCommand.Alert.ActivityLog.Messages.initiator_id
+      description: Alert message ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.ActivityLog.Messages.initiator_is_support
+      description: Whether asking the analyst is supported.
+      type: Boolean
+    - contextPath: ThreatCommand.Alert.ActivityLog.Messages.date
+      description: Alert message date.
+      type: Date
+    - contextPath: ThreatCommand.Alert.ActivityLog.Messages.content
+      description: Alert message content.
+      type: String
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: Get alert's CSV file in case of credentials leakage or leaked credit cards alerts.
+    name: threat-command-alert-csv-get
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    - description: Desired note.
+      name: note
+      required: true
+    - description: "Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg"
+      isArray: true
+      name: entry_ids
+    description: "Add a note to the alert. You can add notes, as text or uploaded files, to an alert that can be seen by internal users. Each note is accompanied by the name of the note creator. Other users can reply to notes. Alert notes remain with the alert, even after it is closed or otherwise remediated."
+    name: threat-command-alert-note-add
+  - arguments:
+    - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
+      name: alert_id
+      required: true
+    description: List alert images by ID.
+    name: threat-command-alert-image-list
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - description: This field is used for pagination. Each request is limited to 1000 results. To get the next page, send the returned "nextOffset" parameter back to the sever as "offset".
+      name: offset
+    - description: "CVE's publish date minimum value. For example:  2022-12-25T08:38:06Z."
+      name: publish_date_from
+    - description: "CVE's publish date maximum value. For example:  2022-12-25T08:38:06Z."
+      name: publish_date_to
+    - description: "CVE's update date minimum value. For example:  2022-12-25T08:38:06Z."
+      name: update_date_from
+    - description: "CVE's update date maximum value. For example:  2022-12-25T08:38:06Z."
+      name: update_date_to
+    - auto: PREDEFINED
+      description: "Comma-separated list of CVE severities."
+      isArray: true
+      name: severity_list
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+    - description: "Comma-separated list of CPEs."
+      isArray: true
+      name: cpe_list
+    - description: "Comma-separated list of specific CVE IDs."
+      isArray: true
+      name: cve_ids
+    description: Get CVE's list from account.
+    name: threat-command-cve-list
+    outputs:
+    - contextPath: ThreatCommand.CVE.id
+      description: CVE ID.
+      type: String
+    - contextPath: ThreatCommand.CVE.Cpe.value
+      description: CVE CPE value.
+      type: String
+    - contextPath: ThreatCommand.CVE.Cpe.title
+      description: CVE CPE title.
+      type: String
+    - contextPath: ThreatCommand.CVE.Cpe.vendor_product
+      description: CVE CPE vendor.
+      type: String
+    - contextPath: ThreatCommand.CVE.published_date
+      description: CVE CP publish date.
+      type: Date
+    - contextPath: ThreatCommand.CVE.update_date
+      description: CVE update date.
+      type: Date
+    - contextPath: ThreatCommand.CVE.severity
+      description: CVE severity.
+      type: String
+    - contextPath: ThreatCommand.CVE.intsights_score
+      description: CVE insight score.
+      type: Number
+    - contextPath: ThreatCommand.CVE.cvss_score
+      description: CVE CVSS score.
+      type: Number
+    - contextPath: ThreatCommand.CVE.mentions_amount
+      description: CVE mentions amount.
+      type: Number
+    - contextPath: ThreatCommand.CVE.paste_site_mentions
+      description: CVE paste site mentions.
+      type: Number
+    - contextPath: ThreatCommand.CVE.hacking_forum_mentions
+      description: "CVE hacking forum mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.instant_message_mentions
+      description: "CVE instant message mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.dark_web_mentions
+      description: "CVE dark web mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.clear_web_cyber_blogs_mentions
+      description: "CVE clear web cyber blogs mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.code_repositories_mentions
+      description: "CVE code repositories mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.exploit_mentions
+      description: "CVE exploit mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.social_media_mentions
+      description: "CVE social media mentions."
+      type: Number
+    - contextPath: ThreatCommand.CVE.first_mention_date
+      description: CVE first mention date.
+      type: Date
+    - contextPath: ThreatCommand.CVE.last_mention_date
+      description: CVE last mention date.
+      type: Date
+    - contextPath: ThreatCommand.CVE.exploit_availability
+      description: "CVE exploit availability."
+      type: Boolean
+    - contextPath: ThreatCommand.CVE.vulnerability_origin
+      description: "CVE last vulnerability origin."
+      type: String
+    - contextPath: ThreatCommand.CVE.related_threat_actors
+      description: Related threat actors.
+      type: String
+    - contextPath: ThreatCommand.CVE.related_malware
+      description: Related malware.
+      type: String
+    - contextPath: ThreatCommand.CVE.related_campaigns
+      description: Related campaigns.
+      type: String
+  - arguments:
+    - description: "Comma-separated list of CVEs unique IDs."
+      isArray: true
+      name: cve_ids
+      required: true
+    description: Add CVEs to account.
+    name: threat-command-cve-add
+  - arguments:
+    - description: "Comma-separated list of CVEs unique IDs (dependencies - use threat-command-cve-listto get all the CVE IDs)."
+      isArray: true
+      name: cve_ids
+      required: true
+    description: Delete CVEs from account.
+    name: threat-command-cve-delete
+  - arguments:
+    - description: "The type of asset to add value. For example: asset_type=\"Domains\" asset_value=\"example.com\". (You can get the asset types with threat-command-asset-type-list command)."
+      name: asset_type
+      required: true
+    - description: Asset value.
+      name: asset_value
+      required: true
+    description: "Add assets by type and value. Assets include any company resource that could lead to a potential security threat."
+    outputs:
+    - contextPath: ThreatCommand.Asset.type
+      description: The type of the asset.
+      type: String
+    - contextPath: ThreatCommand.Asset.value
+      description: The value of the asset type.
+      type: String
+    name: threat-command-asset-add
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "Comma-separated list of alert source types (dependencies - use threat-command-asset-type-list command to get all the asset types). For example:Domains,CompanyNames. "
+      isArray: true
+      name: asset_types
+    description: Get account assets grouped by asset type.
+    name: threat-command-asset-list
+    outputs:
+    - contextPath: ThreatCommand.Asset.type
+      description: The type of the asset.
+      type: String
+    - contextPath: ThreatCommand.Asset.value
+      description: The value of the asset type.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: "Get all asset types. Mainly used to add or delete assets."
+    name: threat-command-asset-type-list
+    outputs:
+    - contextPath: ThreatCommand.AssetType
+      description: Asset type.
+      type: String
+  - arguments:
+    - description: "The type of asset to add value. For example: asset_type=\"Domains\" asset_value=\"example.com\". (You can get the asset types with threat-command-asset-type-list command)."
+      name: asset_type
+      required: true
+    - description: Asset value.
+      name: asset_value
+      required: true
+    description: Delete asset by type and value.
+    name: threat-command-asset-delete
+  - description: List the system modules of your account.
+    name: threat-command-account-system-modules-list
+    outputs:
+    - contextPath: ThreatCommand.SystemModule.module_name
+      description: Module name.
+      type: String
+    - contextPath: ThreatCommand.SystemModule.status
+      description: Whether the module module is enabled.
+      type: String
+  - arguments:
+    - description: "Search using simple keywords (you can choose the search keywords by the outputs keywords), basic operators, search operators, and by document type. Basic operators: Use AND, OR, NOT, and (). For example: Searching for \"bin_number: 1234 AND email_user_name: john_smith\" returns all results that contain this BIN number and that username as the email user name, Searching for \"comment_number: 17 AND author: gyber\" returns all results with 17 comments and the author is Gyber. "
+      name: search
+      required: true
+    - description: "Supply time-frame. For example:  2022-12-25T08:38:06Z."
+      name: report_date
+    - defaultValue: '0'
+      description: Zero-based page number. 15 results per page.
+      name: page_number
+    - auto: PREDEFINED
+      description: A comma-separated list of source types to filter.
+      name: source_types
+      predefined:
+      - Social Media
+      - Paste Site
+      - Hacking Forum
+      - Instant Message
+      - Black Market
+      - Cyber Security Blog
+      - Web Page
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show only mentions from the dark web or not.
+      name: only_dark_web
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: true
+      description: Show highlight tags (<em>) in the content or not.
+      name: highlight_tags
+      predefined:
+      - 'true'
+      - 'false'
+    description: Search for strings in the scrapes database.
+    name: threat-command-mention-search
+    outputs:
+    - contextPath: ThreatCommand.Mentions.author
+      description: Mention author.
+      type: String
+    - contextPath: ThreatCommand.Mentions.comment_number
+      description: Mentions comments number.
+      type: Number
+    - contextPath: ThreatCommand.Mentions.original_url
+      description: Mentions original URL.
+      type: String
+    - contextPath: ThreatCommand.Mentions.source_date
+      description: Mentions source date.
+      type: Date
+    - contextPath: ThreatCommand.Mentions.url
+      description: Mention URL.
+      type: String
+    - contextPath: ThreatCommand.Mentions.insertion_date
+      description: Mention insertion date.
+      type: Date
+    - contextPath: ThreatCommand.Mentions.type
+      description: Mention type.
+      type: String
+    - contextPath: ThreatCommand.Mentions.Tags.is_product_for_sale
+      description: Whether the product for sale.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.credit_cards
+      description: Whether the mention includes credit cards.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.domains
+      description: Whether the mention includes domains.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.emails
+      description: Whether the mention includes emails.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.ips
+      description: Whether the mention includes IPs.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.ssns
+      description: Whether the mention includes SSNs (Switched Service Networks).
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.Tags.urls
+      description: Whether the mention includes URLs.
+      type: Boolean
+    - contextPath: ThreatCommand.Mentions.id
+      description: Mention ID.
+      type: String
+    - contextPath: ThreatCommand.Mentions.short_content
+      description: Mention short content.
+      type: String
+    - contextPath: ThreatCommand.Mentions.title
+      description: Mention title.
+      type: String
+    - contextPath: ThreatCommand.Mentions.date
+      description: Mention date.
+      type: Date
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: "Get all Managed Security Service Provider's (MSSP) sub-accounts."
+    name: threat-command-mssp-customer-list
+    outputs:
+    - contextPath: ThreatCommand.MsspCustomer.id
+      description: Customer ID.
+      type: String
+    - contextPath: ThreatCommand.MsspCustomer.company_name
+      description: Customer company name.
+      type: String
+    - contextPath: ThreatCommand.MsspCustomer.status
+      description: Customer status.
+      type: String
+    - contextPath: ThreatCommand.MsspCustomer.note
+      description: Customer note.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get the details of the MSSPs users (In case you are an MSSP account).
+    name: threat-command-mssp-user-list
+    outputs:
+    - contextPath: ThreatCommand.MsspUser.id
+      description: User ID.
+      type: String
+    - contextPath: ThreatCommand.MsspUser.email
+      description: User email.
+      type: String
+    - contextPath: ThreatCommand.MsspUser.role
+      description: User role.
+      type: String
+    - contextPath: ThreatCommand.MsspUser.is_deleted
+      description: Whether the user was deleted.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of the user.
+      name: user_type
+      predefined:
+      - Admin
+      - Analyst
+    - description: Email of the user.
+      name: user_email
+    - description: The ID of the user.
+      name: user_id
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: List the users in your account. Mainly used to assign alerts.
+    name: threat-command-account-user-list
+    outputs:
+    - contextPath: ThreatCommand.AccountUser.id
+      description: User ID.
+      type: String
+    - contextPath: ThreatCommand.AccountUser.email
+      description: User email.
+      type: String
+    - contextPath: ThreatCommand.AccountUser.first_name
+      description: User first name.
+      type: String
+    - contextPath: ThreatCommand.AccountUser.last_name
+      description: User last name.
+      type: String
+    - contextPath: ThreatCommand.AccountUser.role
+      description: User role.
+      type: String
+    - contextPath: ThreatCommand.AccountUser.is_deleted
+      description: Whether the user was deleted.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: List alert types and sub-types. They are mainly used to add manual alerts.
+    name: threat-command-alert-type-list
+    outputs:
+    - contextPath: ThreatCommand.AlertType.type
+      description: Type.
+      type: String
+    - contextPath: ThreatCommand.AlertType.sub_type
+      description: Sub-type of the type.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: List alert source types. They are mainly used to add manual alerts.
+    name: threat-command-alert-source-type-list
+    outputs:
+    - contextPath: ThreatCommand.AlertSourceType
+      description: List of source types.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Show all results if True.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Alert type (dependencies - use threat-command-alert-type-list command to get all the alert types)."
+      name: type
+      predefined:
+      - Attack Indication
+      - Data Leakage
+      - Phishing
+      - Brand Security
+      - Exploitable Data
+      - vip
+    - description: "Alert's sub-type (dependencies - use threat-command-alert-type-list command to get all the alert subtypes)."
+      name: sub_type
+    description: "List alert scenarios. They are mainly used to add manual alerts."
+    name: threat-command-alert-scenario-list
+    outputs:
+    - contextPath: ThreatCommand.Scenario.type
+      description: Alert type.
+      type: String
+    - contextPath: ThreatCommand.Scenario.subtype
+      description: Alert sub-type.
+      type: String
+    - contextPath: ThreatCommand.Scenario.scenario
+      description: Name of the scenario.
+      type: String
+    - contextPath: ThreatCommand.Scenario.description
+      description: Short description of the scenario.
+      type: String
+  - name: file
+    polling: true
+    description: Runs reputation on files.
+    arguments:
+    - name: unfinished_enriches
+      description: Unfinished IOCs number.
+      hidden: true
+      defaultValue: '-1'
+      required: true
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.sha512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.description
+      description: The description of the file.
+      type: String
+    - contextPath: File.size
+      description: The size of the file.
+      type: String
+    - contextPath: File.file_type
+      description: The type of the file.
+      type: String
+    - contextPath: File.tags
+      description: The tags of the file.
+      type: String
+    - contextPath: File.actor
+      description: Related threat actors to the file.
+      type: String
+    - contextPath: File.campaign
+      description: Related threat campaigns to the file.
+      type: String
+    - contextPath: File.associated_file_names
+      description: Assosiated file names to the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - name: ip
+    polling: true
+    arguments:
+    - name: unfinished_enriches
+      description: Unfinished IOCs number.
+      hidden: true
+      defaultValue: '-1'
+      required: true
+    - name: ip
+      description: IP address to check.
+      default: true
+      isArray: true
+      required: true
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    description: Checks the reputation of an IP address.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+      type: String
+    - contextPath: IP.ASN
+      description: IP ASN.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Region
+      description: IP region.
+      type: String
+    - contextPath: IP.UpdatedDate
+      description: IP updated date.
+      type: String
+    - contextPath: ThreatCommand.IP.asn
+      description: IP ASN.
+      type: String
+    - contextPath: ThreatCommand.IP.ip
+      description: IP address.
+      type: String
+    - contextPath: ThreatCommand.IP.region
+      description: IP region.
+      type: String
+    - contextPath: ThreatCommand.IP.updated_date
+      description: IP updated date.
+      type: String
+  - name: url
+    polling: true
+    arguments:
+    - name: unfinished_enriches
+      description: Unfinished IOCs number.
+      hidden: true
+      defaultValue: '-1'
+      required: true
+    - name: url
+      description: A comma-separated list of URLs to check. This command will not work properly on URLs containing commas.
+      default: true
+      isArray: true
+      required: true
+    - defaultValue: '10'
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
+      name: sampleSize
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+      type: String
+    - contextPath: URL.Data
+      description: The URL value.
+      type: String
+    - contextPath: URL.DetectionEngines
+      description: URL detection engines.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: Number of positive engines.
+      type: Number
+    - contextPath: URL.Tags
+      description: URL tags.
+      type: Number
+    - contextPath: ThreatCommand.URL.detection_engines
+      description: URL detection engines.
+      type: String
+    - contextPath: ThreatCommand.URL.positive_detections
+      description: URL positive detection engines.
+      type: String
+    - contextPath: ThreatCommand.URL.tags
+      description: URL tags.
+      type: String
+    - contextPath: ThreatCommand.URL.url
+      description: The URL value.
+      type: Number
+    description: Checks the reputation of a URL.
+  - name: domain
+    polling: true
+    arguments:
+    - name: unfinished_enriches
+      description: Unfinished IOCs number.
+      hidden: true
+      defaultValue: '-1'
+      required: true
+    - name: domain
+      description: Domain name to check.
+      default: true
+      isArray: true
+      required: true
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    outputs:
+    - contextPath: Domain.domain
+      description: Domain found.
+      type: String
+    - contextPath: Domain.Name
+      description: The name of the domain that was checked.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+      type: String
+    - contextPath: Domain.DNSRecords
+      description: DNS records of the domain.
+      type: String
+    - contextPath: ThreatCommand.Domain.domain
+      description: The domain value.
+      type: String
+    - contextPath: ThreatCommand.Domain.sub_domains
+      description: Sub domains of the domain.
+      type: Date
+    - contextPath: ThreatCommand.Domain.tags
+      description: Tags of the domain.
+      type: String
+    - contextPath: ThreatCommand.Domain.updated_date
+      description: Domain updated date.
+      type: String
+    description: Checks the reputation of a domain.
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetch: true
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests

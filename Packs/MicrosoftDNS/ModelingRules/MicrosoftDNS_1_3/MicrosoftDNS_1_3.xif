@@ -1,14 +1,23 @@
 [MODEL: dataset="microsoft_dns_raw"]
-alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
-Context=arrayindex(regextract(_raw_log,"(\w+)\s+"),5)
-|alter xdm.source.port=coalesce(to_integer(sourcePort),to_integer(0)),
-xdm.source.ipv4=if(sourceIp not contains ":",coalesce(sourceIp,"")),
-xdm.source.ipv6=if(sourceIp  contains ":",coalesce(sourceIp,"")),
-xdm.network.dns.response_code=responseCode,
-xdm.network.dns.dns_question.name=questionName,
-xdm.network.dns.dns_question.type=questionType,
-xdm.target.port=to_integer(dstPort),
-xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
-xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
-xdm.session_context_id=Context,
-xdm.target.ipv4="";
+// answer section part
+alter answerSec = arrayindex(regextract(_raw_log ,"ANSWER\sSECTION\:([^\:]+)AUTHORITY\sSECTION\:"),0)
+| alter answerSec = replex(answerSec ,"\n","")
+| alter answerType = arrayindex(regextract(answerSec ,"TYPE\s+([a-zA-Z]*)"),0),
+    answerValue = arrayindex(regextract(answerSec ,"DATA\s+([\d\.]*)"),0)
+//
+| alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
+    Context=arrayindex(regextract(_raw_log,"PACKET\s+(\w+)\s"),0)
+| alter xdm.source.port=if(sourcePort!="",to_integer(sourcePort),0),
+    xdm.source.ipv4=if(sourceIp not contains ":",coalesce(sourceIp,"")),
+    xdm.source.ipv6=if(sourceIp  contains ":",coalesce(sourceIp,"")),
+    xdm.network.dns.response_code=if(responseCode="NOERROR",XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR ,responseCode="FORMERR",XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR,responseCode="SERVFAIL",XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE,responseCode="NXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN,responseCode="NOTIMP",XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED,responseCode="REFUSED",XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED,responseCode="YXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT,responseCode="YXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT,responseCode="NXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT,responseCode="NOTAUTH",XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE,responseCode="NOTZONE",XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE,responseCode="BADVERS",XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION,responseCode="BADSIG",XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE,responseCode="BADKEY",XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED,responseCode="BADTIME",XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW,responseCode="BADMODE",XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE,responseCode="BADNAME",XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME,
+responseCode="BADALG",XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED,responseCode="BADTRUNC",XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, to_string(responseCode)),
+    xdm.network.dns.dns_question.name=questionName,
+    xdm.network.dns.dns_question.type=if(questionType="A",XDM_CONST.DNS_RECORD_TYPE_A, questionType="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, questionType="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, questionType="APL",XDM_CONST.DNS_RECORD_TYPE_APL, questionType="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, questionType="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, questionType="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, questionType="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, questionType="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, questionType="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, questionType="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, questionType="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, questionType="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, questionType="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, questionType="DS",XDM_CONST.DNS_RECORD_TYPE_DS, questionType="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, questionType="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, questionType="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, questionType="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, questionType="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, questionType="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, questionType="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, questionType="KX",XDM_CONST.DNS_RECORD_TYPE_KX, questionType="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, questionType="MX",XDM_CONST.DNS_RECORD_TYPE_MX, questionType="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, questionType="NS",XDM_CONST.DNS_RECORD_TYPE_NS, questionType="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, questionType="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, questionType="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, questionType="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, questionType="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, questionType="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, questionType="RP",XDM_CONST.DNS_RECORD_TYPE_RP, questionType="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, questionType="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, questionType="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, questionType="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, questionType="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, questionType="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, questionType="TA",XDM_CONST.DNS_RECORD_TYPE_TA, questionType="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, questionType="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, questionType="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, questionType="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, questionType="URI",XDM_CONST.DNS_RECORD_TYPE_URI, questionType="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(questionType)),
+    xdm.target.port=to_integer(dstPort),
+    xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
+    xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
+    xdm.session_context_id=Context,
+    xdm.target.ipv4="",
+    xdm.network.dns.dns_resource_record.type = answerType,
+    xdm.network.dns.dns_resource_record.value = answerValue;

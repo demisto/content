@@ -1,0 +1,45 @@
+{
+    "test_case_1":{
+        "args": {
+            "id": "1",
+            "username": "secman",
+            "email": "Test1@test.com"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"createdTime":"1675677287","email":"Test1@test.com","firstname":"","id":"1","lastLogin":"1684916014","lastname":"",
+        "modifiedTime":"1682935546","role":{"description":"Test","id":"1","name":"Security Manager"},"title":"","username":"secman1","uuid":"uuid_1"},
+        "timestamp":1684916053,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Users\n|ID|Username|Email|Created|Modified|LastLogin|Role|\n|---|---|---|---|---|---|---|\n| 1 | secman1 | Test1@test.com | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T08:13:34Z | Security Manager |\n",
+        "expected_ec": [{"ID": "1", "Username": "secman1", "Email": "Test1@test.com", "Created": "2023-02-06T09:54:47Z", "Modified": "2023-05-01T10:05:46Z", "LastLogin": "2023-05-24T08:13:34Z", "Role": "Security Manager"}]
+    },
+    "test_case_3":{
+        "args": {
+            "username": "secman1",
+            "email": "Test2@test.com"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"createdTime":"1675677287","email":"Test1@test.com","firstname":"","id":"1","lastLogin":"1684916014","lastname":"",
+        "modifiedTime":"1682935546","role":{"description":"Test","id":"12","name":"Security Manager"},"title":"","username":"secman1","uuid":"uuid_1"},
+        {"createdTime":"1675677287","email":"Test2@test.com","firstname":"","id":"2","lastLogin":"1684916014","lastname":"",
+        "modifiedTime":"1682935546","role":{"description":"Test","id":"2","name":"Security Manager"},"title":"","username":"secman2","uuid":"uuid_2"},
+        {"createdTime":"1675677287","email":"Test3@test.com","firstname":"","id":"3","lastLogin":"1684916014","lastname":"",
+        "modifiedTime":"1682935546","role":{"description":"Test","id":"32","name":"Security Manager"},"title":"","username":"secman3","uuid":"uuid_3"}],
+        "timestamp":1684916053,"type":"regular","warnings":[]},
+        
+        "expected_hr": "### Tenable.sc Users\n|ID|Username|Email|Created|Modified|LastLogin|Role|\n|---|---|---|---|---|---|---|\n| 1 | secman1 | Test1@test.com | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T08:13:34Z | Security Manager |\n",
+        "expected_ec": [{"ID": "1", "Username": "secman1", "Email": "Test1@test.com", "Created": "2023-02-06T09:54:47Z", "Modified": "2023-05-01T10:05:46Z", "LastLogin": "2023-05-24T08:13:34Z", "Role": "Security Manager"}]
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"createdTime":"1675677287","email":"Test1@test.com","firstname":"","id":"1","lastLogin":"1684916014","lastname":"",
+                        "modifiedTime":"1682935546","role":{"description":"Test","id":"12","name":"Security Manager"},"title":"","username":"secman1","uuid":"uuid_1"},
+                        {"createdTime":"1675677287","email":"Test2@test.com","firstname":"","id":"2","lastLogin":"1684916014","lastname":"",
+                        "modifiedTime":"1682935546","role":{"description":"Test","id":"2","name":"Security Manager"},"title":"","username":"secman2","uuid":"uuid_2"},
+                        {"createdTime":"1675677287","email":"Test3@test.com","firstname":"","id":"3","lastLogin":"1684916014","lastname":"",
+                        "modifiedTime":"1682935546","role":{"description":"Test","id":"32","name":"Security Manager"},"title":"","username":"secman3","uuid":"uuid_3"}],
+                        "timestamp":1684916053,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Users\n|ID|Username|Email|Created|Modified|LastLogin|Role|\n|---|---|---|---|---|---|---|\n| 1 | secman1 | Test1@test.com | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T08:13:34Z | Security Manager |\n| 2 | secman2 | Test2@test.com | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T08:13:34Z | Security Manager |\n| 3 | secman3 | Test3@test.com | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T08:13:34Z | Security Manager |\n",
+        "expected_ec": [{"ID": "1", "Username": "secman1", "Email": "Test1@test.com", "Created": "2023-02-06T09:54:47Z", "Modified": "2023-05-01T10:05:46Z", "LastLogin": "2023-05-24T08:13:34Z", "Role": "Security Manager"}, 
+        {"ID": "2", "Username": "secman2", "Email": "Test2@test.com", "Created": "2023-02-06T09:54:47Z", "Modified": "2023-05-01T10:05:46Z", "LastLogin": "2023-05-24T08:13:34Z", "Role": "Security Manager"}, 
+        {"ID": "3", "Username": "secman3", "Email": "Test3@test.com", "Created": "2023-02-06T09:54:47Z", "Modified": "2023-05-01T10:05:46Z", "LastLogin": "2023-05-24T08:13:34Z", "Role": "Security Manager"}]
+    }
+}

@@ -1,0 +1,20 @@
+args:
+- description: List of potential service owners
+  isArray: true
+  name: owners
+comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+commonfields:
+  id: RankServiceOwners
+  version: -1
+dockerimage: demisto/python3:3.10.12.68714
+enabled: true
+name: RankServiceOwners
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

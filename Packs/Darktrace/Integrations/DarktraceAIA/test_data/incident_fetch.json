@@ -1,0 +1,682 @@
+[
+    {
+        "summariser": "SaasHijackSummary",
+        "acknowledged": false,
+        "pinned": true,
+        "createdAt": 1658853909796,
+        "attackPhases": [
+        3
+        ],
+        "mitreTactics": [
+        "privilege-escalation"
+        ],
+        "title": "Possible Hijack of AzureActiveDirectory Account",
+        "id": "bc64f242-ce29-4f35-bc94-230991116564",
+        "children": [
+        "bc64f242-ce29-4f35-bc94-230991116564"
+        ],
+        "category": "critical",
+        "currentGroup": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+        "groupCategory": "critical",
+        "groupScore": 40.666309838880856,
+        "groupPreviousGroups": [],
+        "activityId": "da39a3ee",
+        "groupingIds": [
+        "97265864"
+        ],
+        "groupByActivity": false,
+        "userTriggered": false,
+        "externalTriggered": false,
+        "aiaScore": 94,
+        "summary": "Though this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.Consequently, the security team may wish to confirm that this activity was legitimate and expected.",
+        "periods": [
+        {
+        "start": 1658853532289,
+        "end": 1658853542330
+        }
+        ],
+        "breachDevices": [
+        {
+        "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "ip": null,
+        "mac": null,
+        "subnet": null,
+        "did": 1975,
+        "sid": -9
+        }
+        ],
+        "relatedBreaches": [
+        {
+        "modelName": "SaaS / Admin / User Added To Admin Group",
+        "pbid": 27055,
+        "threatScore": 73,
+        "timestamp": 1658853636000
+        }
+        ],
+        "details": [
+        {
+        "blockType": "single",
+        "blocks": [
+        {
+        "blockHeader": "SaaS User Details",
+        "bulletBlocks": [
+        [
+        {
+        "detailKey": "SaaS account",
+        "valueType": "device",
+        "detailValues": [
+        {
+        "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "ip": null,
+        "mac": null,
+        "subnet": null,
+        "did": 1975,
+        "sid": -9
+        }
+        ]
+        },
+        {
+        "detailKey": "Actor",
+        "valueType": "string",
+        "detailValues": [
+        "example.foo@storosta.com"
+        ]
+        }
+        ]
+        ]
+        }
+        ]
+        },
+        {
+        "blockType": "grouped",
+        "blocks": [
+        {
+        "blockHeader": "Agent Carrying out Suspicious Activity",
+        "bulletBlocks": [
+        [
+        {
+        "detailKey": "Source IP",
+        "valueType": "externalHost",
+        "detailValues": [
+        {
+        "identifier": "0.0.0.0",
+        "ip": null
+        }
+        ]
+        },
+        {
+        "detailKey": "ASN",
+        "valueType": "string",
+        "detailValues": [
+        "AS577 BACOM"
+        ]
+        },
+        {
+        "detailKey": "City",
+        "valueType": "string",
+        "detailValues": [
+        "Richmond Hill"
+        ]
+        },
+        {
+        "detailKey": "Country",
+        "valueType": "string",
+        "detailValues": [
+        "Canada"
+        ]
+        }
+        ]
+        ]
+        },
+        {
+        "blockHeader": "Summary of Activity",
+        "bulletBlocks": [
+        [
+        {
+        "detailKey": "Time",
+        "valueType": "timeRange",
+        "detailValues": [
+        {
+        "start": 1658853532289,
+        "end": 1658853542330
+        }
+        ]
+        },
+        {
+        "detailKey": "Suspicious properties",
+        "valueType": "string",
+        "detailValues": [
+        "Unusual time for activity",
+        "Unusual external source for activity",
+        "Suspicious action performed"
+        ]
+        }
+        ]
+        ]
+        },
+        {
+        "blockHeader": "Activity Details",
+        "bulletBlocks": [
+        [
+        {
+        "detailKey": "Event",
+        "valueType": "string",
+        "detailValues": [
+        "User registered all required security info"
+        ]
+        },
+        {
+        "detailKey": "Number of events",
+        "valueType": "string",
+        "detailValues": [
+        "1"
+        ]
+        },
+        {
+        "detailKey": "Resource name",
+        "valueType": "string",
+        "detailValues": [
+        "example.foo@storosta.com"
+        ]
+        },
+        {
+        "detailKey": "Status message",
+        "valueType": "string",
+        "detailValues": [
+        "success"
+        ]
+        }
+        ],
+        [
+        {
+        "detailKey": "Event",
+        "valueType": "string",
+        "detailValues": [
+        "User registered security info"
+        ]
+        },
+        {
+        "detailKey": "Number of events",
+        "valueType": "string",
+        "detailValues": [
+        "1"
+        ]
+        },
+        {
+        "detailKey": "Resource name",
+        "valueType": "string",
+        "detailValues": [
+        "example.foo@storosta.com"
+        ]
+        },
+        {
+        "detailKey": "Status message",
+        "valueType": "string",
+        "detailValues": [
+        "success"
+        ]
+        }
+        ],
+        [
+        {
+        "detailKey": "Event",
+        "valueType": "string",
+        "detailValues": [
+        "User started security info registration"
+        ]
+        },
+        {
+        "detailKey": "Number of events",
+        "valueType": "string",
+        "detailValues": [
+        "1"
+        ]
+        },
+        {
+        "detailKey": "Resource name",
+        "valueType": "string",
+        "detailValues": [
+        "example.foo@storosta.com"
+        ]
+        },
+        {
+        "detailKey": "Status message",
+        "valueType": "string",
+        "detailValues": [
+        "success"
+        ]
+        }
+        ]
+        ]
+        }
+        ]
+        }
+        ],
+        "explanations": [
+        [
+        {
+        "iconType": "search",
+        "valueType": "formatString",
+        "value": "Searching for recent SaaS actions from {}.",
+        "replacements": [
+        {
+        "valueType": "device",
+        "value": {
+        "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+        "ip": null,
+        "mac": null,
+        "subnet": null,
+        "did": 1975,
+        "sid": -9
+        }
+        }
+        ]
+        },
+        {
+        "iconType": "searchResult",
+        "valueType": "formatString",
+        "value": "Discovered {} cases of {} unique {} events originating from {}.",
+        "replacements": [
+        {
+        "valueType": "string",
+        "value": "3"
+        },
+        {
+        "valueType": "string",
+        "value": "3"
+        },
+        {
+        "valueType": "string",
+        "value": "AzureActiveDirectory"
+        },
+        {
+        "valueType": "externalHost",
+        "value": {
+        "identifier": "0.0.0.0",
+        "ip": null
+        }
+        }
+        ]
+        },
+        {
+        "iconType": "analysis",
+        "valueType": "string",
+        "value": "Determining possible agents responsible for this activity based on ASN and user agent analysis."
+        },
+        {
+        "iconType": "analysisResult",
+        "valueType": "string",
+        "value": "Identified a single possible agent responsible for this activity."
+        },
+        {
+        "iconType": "analysis",
+        "valueType": "string",
+        "value": "Assessing recent agent activity for signs of possible hijack."
+        },
+        {
+        "iconType": "analysisResult",
+        "valueType": "formatString",
+        "value": "Identified {} suspicious cases of {} unique {} events, associated with a single agent.",
+        "replacements": [
+        {
+        "valueType": "string",
+        "value": "3"
+        },
+        {
+        "valueType": "string",
+        "value": "3"
+        },
+        {
+        "valueType": "string",
+        "value": "AzureActiveDirectory"
+        }
+        ]
+        }
+        ]
+        ],
+        "figures": []
+        },
+        {
+            "summariser": "SaasHijackSummary",
+            "acknowledged": false,
+            "pinned": true,
+            "createdAt": 1658853909796,
+            "attackPhases": [
+            3
+            ],
+            "mitreTactics": [
+            "privilege-escalation"
+            ],
+            "title": "Possible Hijack of AzureActiveDirectory Account",
+            "id": "bc64f242-ce29-4f35-bc94-230991116564",
+            "children": [
+            "bc64f242-ce29-4f35-bc94-230991116564"
+            ],
+            "category": "critical",
+            "currentGroup": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+            "groupCategory": "critical",
+            "groupScore": 40.666309838880856,
+            "groupPreviousGroups": [],
+            "activityId": "da39a3ee",
+            "groupingIds": [
+            "97265864"
+            ],
+            "groupByActivity": false,
+            "userTriggered": false,
+            "externalTriggered": false,
+            "aiaScore": 94,
+            "summary": "Though this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.Consequently, the security team may wish to confirm that this activity was legitimate and expected.",
+            "periods": [
+            {
+            "start": 1658853532289,
+            "end": 1658853542330
+            }
+            ],
+            "breachDevices": [
+            {
+            "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "ip": null,
+            "mac": null,
+            "subnet": null,
+            "did": 1975,
+            "sid": -9
+            }
+            ],
+            "relatedBreaches": [
+            {
+            "modelName": "SaaS / Admin / User Added To Admin Group",
+            "pbid": 27055,
+            "threatScore": 73,
+            "timestamp": 1658853636000
+            }
+            ],
+            "details": [
+            {
+            "blockType": "single",
+            "blocks": [
+            {
+            "blockHeader": "SaaS User Details",
+            "bulletBlocks": [
+            [
+            {
+            "detailKey": "SaaS account",
+            "valueType": "device",
+            "detailValues": [
+            {
+            "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "ip": null,
+            "mac": null,
+            "subnet": null,
+            "did": 1975,
+            "sid": -9
+            }
+            ]
+            },
+            {
+            "detailKey": "Actor",
+            "valueType": "string",
+            "detailValues": [
+            "example.foo@storosta.com"
+            ]
+            }
+            ]
+            ]
+            }
+            ]
+            },
+            {
+            "blockType": "grouped",
+            "blocks": [
+            {
+            "blockHeader": "Agent Carrying out Suspicious Activity",
+            "bulletBlocks": [
+            [
+            {
+            "detailKey": "Source IP",
+            "valueType": "externalHost",
+            "detailValues": [
+            {
+            "identifier": "0.0.0.0",
+            "ip": null
+            }
+            ]
+            },
+            {
+            "detailKey": "ASN",
+            "valueType": "string",
+            "detailValues": [
+            "AS577 BACOM"
+            ]
+            },
+            {
+            "detailKey": "City",
+            "valueType": "string",
+            "detailValues": [
+            "Richmond Hill"
+            ]
+            },
+            {
+            "detailKey": "Country",
+            "valueType": "string",
+            "detailValues": [
+            "Canada"
+            ]
+            }
+            ]
+            ]
+            },
+            {
+            "blockHeader": "Summary of Activity",
+            "bulletBlocks": [
+            [
+            {
+            "detailKey": "Time",
+            "valueType": "timeRange",
+            "detailValues": [
+            {
+            "start": 1658853532289,
+            "end": 1658853542330
+            }
+            ]
+            },
+            {
+            "detailKey": "Suspicious properties",
+            "valueType": "string",
+            "detailValues": [
+            "Unusual time for activity",
+            "Unusual external source for activity",
+            "Suspicious action performed"
+            ]
+            }
+            ]
+            ]
+            },
+            {
+            "blockHeader": "Activity Details",
+            "bulletBlocks": [
+            [
+            {
+            "detailKey": "Event",
+            "valueType": "string",
+            "detailValues": [
+            "User registered all required security info"
+            ]
+            },
+            {
+            "detailKey": "Number of events",
+            "valueType": "string",
+            "detailValues": [
+            "1"
+            ]
+            },
+            {
+            "detailKey": "Resource name",
+            "valueType": "string",
+            "detailValues": [
+            "example.foo@storosta.com"
+            ]
+            },
+            {
+            "detailKey": "Status message",
+            "valueType": "string",
+            "detailValues": [
+            "success"
+            ]
+            }
+            ],
+            [
+            {
+            "detailKey": "Event",
+            "valueType": "string",
+            "detailValues": [
+            "User registered security info"
+            ]
+            },
+            {
+            "detailKey": "Number of events",
+            "valueType": "string",
+            "detailValues": [
+            "1"
+            ]
+            },
+            {
+            "detailKey": "Resource name",
+            "valueType": "string",
+            "detailValues": [
+            "example.foo@storosta.com"
+            ]
+            },
+            {
+            "detailKey": "Status message",
+            "valueType": "string",
+            "detailValues": [
+            "success"
+            ]
+            }
+            ],
+            [
+            {
+            "detailKey": "Event",
+            "valueType": "string",
+            "detailValues": [
+            "User started security info registration"
+            ]
+            },
+            {
+            "detailKey": "Number of events",
+            "valueType": "string",
+            "detailValues": [
+            "1"
+            ]
+            },
+            {
+            "detailKey": "Resource name",
+            "valueType": "string",
+            "detailValues": [
+            "example.foo@storosta.com"
+            ]
+            },
+            {
+            "detailKey": "Status message",
+            "valueType": "string",
+            "detailValues": [
+            "success"
+            ]
+            }
+            ]
+            ]
+            }
+            ]
+            }
+            ],
+            "explanations": [
+            [
+            {
+            "iconType": "search",
+            "valueType": "formatString",
+            "value": "Searching for recent SaaS actions from {}.",
+            "replacements": [
+            {
+            "valueType": "device",
+            "value": {
+            "identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com",
+            "ip": null,
+            "mac": null,
+            "subnet": null,
+            "did": 1975,
+            "sid": -9
+            }
+            }
+            ]
+            },
+            {
+            "iconType": "searchResult",
+            "valueType": "formatString",
+            "value": "Discovered {} cases of {} unique {} events originating from {}.",
+            "replacements": [
+            {
+            "valueType": "string",
+            "value": "3"
+            },
+            {
+            "valueType": "string",
+            "value": "3"
+            },
+            {
+            "valueType": "string",
+            "value": "AzureActiveDirectory"
+            },
+            {
+            "valueType": "externalHost",
+            "value": {
+            "identifier": "0.0.0.0",
+            "ip": null
+            }
+            }
+            ]
+            },
+            {
+            "iconType": "analysis",
+            "valueType": "string",
+            "value": "Determining possible agents responsible for this activity based on ASN and user agent analysis."
+            },
+            {
+            "iconType": "analysisResult",
+            "valueType": "string",
+            "value": "Identified a single possible agent responsible for this activity."
+            },
+            {
+            "iconType": "analysis",
+            "valueType": "string",
+            "value": "Assessing recent agent activity for signs of possible hijack."
+            },
+            {
+            "iconType": "analysisResult",
+            "valueType": "formatString",
+            "value": "Identified {} suspicious cases of {} unique {} events, associated with a single agent.",
+            "replacements": [
+            {
+            "valueType": "string",
+            "value": "3"
+            },
+            {
+            "valueType": "string",
+            "value": "3"
+            },
+            {
+            "valueType": "string",
+            "value": "AzureActiveDirectory"
+            }
+            ]
+            }
+            ]
+            ],
+            "figures": []
+            }
+]

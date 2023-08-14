@@ -11,4 +11,4 @@ Basically, you can perform tasks that a user would need to do manually in the QR
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/QRadar)._
 
-_If you're new to our QRadar Content Pack, check out our [Ingest Incidents from a SIEM Using QRadar](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/ingest-incidents-from-a-siem.html) tutorial._
+_If you're new to our QRadar Content Pack, check out our [Ingest Incidents from a SIEM Using QRadar](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) tutorial._

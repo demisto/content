@@ -4,6 +4,7 @@
     "name": "Email Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
+    "toVersion": "6.9.9",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -144,53 +145,6 @@
                                 "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
                                 "index": 5,
                                 "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techname",
-                                "height": 22,
-                                "id": "7cb5a1e0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techcountry",
-                                "height": 22,
-                                "id": "7fad0ff0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "techorganization",
-                                "height": 22,
-                                "id": "82471bc0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 5,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techemail",
-                                "height": 22,
-                                "id": "83db5050-9861-11eb-a24d-4941fb0e06df",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "billing",
-                                "height": 22,
-                                "id": "89ebbe30-9861-11eb-a24d-4941fb0e06df",
-                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },

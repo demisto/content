@@ -11,8 +11,7 @@ This integration was integrated and tested with version 1.25.0 of Hackuity
     | --- | --- |
     | Corporate server URL | True |
     | Namespace | True |
-    | Login | True |
-    | Password | True |
+    | Api key | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -57,6 +56,7 @@ Search for findings in Hackuity.
 | Hackuity.Findings.Status.Ignored | Boolean | Whether the finding is ignored | 
 | Hackuity.Findings.Status.State | String | The state of the finding | 
 | Hackuity.Findings.Status.SubState | String | The sub-state of the finding | 
+| Hackuity.Findings.Status.LastClosedAt | Date | The date of the last time the finding was closed |
 | Hackuity.Findings.VulnType.ID | String | The ID of the vulnerability type | 
 | Hackuity.Findings.VulnType.Name | String | The name of the vulnerability type | 
 

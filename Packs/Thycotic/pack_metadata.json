@@ -2,13 +2,13 @@
     "name": "Thycotic Secret Server (Deprecated)",
     "description": "Deprecated. Use DelineaSS instead.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Thycotic, Inc",
     "url": "https://thycotic.force.com/support/s/login",
     "email": "support@thycotic.com",
     "created": "2020-10-09T14:49:56Z",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],

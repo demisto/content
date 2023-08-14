@@ -4,14 +4,15 @@ from CommonServerUserPython import *
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
 USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
-API_KEY = demisto.params()['APIKey']
+API_KEY = demisto.params().get("credentials_api_key", {}).get('password') or demisto.params().get('APIKey')
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
 DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
@@ -819,6 +820,8 @@ def run_response_play(incident_id, from_email, response_play_uuid):
 
 
 def main():
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':

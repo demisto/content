@@ -38,8 +38,8 @@ configuration:
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 script:
   script: ''
   type: javascript
@@ -152,6 +152,8 @@ script:
       description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
     - description: integer value to limit the amount of results returned (default no limit)
       name: limit
+    - description: Sort query results in descending or ascending order. Format:'<field>.asc' or '<field>.desc' (e.g. 'Assigned To.asc').
+      name: sort
     outputs:
     - contextPath: Ticket.Assignee
       description: Ticket assignee
@@ -265,7 +267,6 @@ script:
       description: Ticket service type
     description: Update exiting incident
   isfetch: true
-  runonce: false
 fromversion: 5.0.0
 tests:
 - Remedy-On-Demand-Test

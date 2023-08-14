@@ -87,7 +87,7 @@ tasks:
       brand: ServiceNow CMDB
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       class:
         simple: ${inputs.SearchCIClass}
@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1330
+          "y": 1360
         }
       }
     note: false
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
+    taskid: 47156e2a-4f91-4926-8b0b-a84bb3ea80b3
     type: regular
     task:
-      id: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
+      id: 47156e2a-4f91-4926-8b0b-a84bb3ea80b3
       version: -1
       name: Fetch related CMDB CI by ID
       description: Query attributes and relationship information for a specific record.
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1525
+          "y": 2040
         }
       }
     note: false
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 1920
+          "x": 1320,
+          "y": 2530
         }
       }
     note: false
@@ -237,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 1530
+          "y": 1810
         }
       }
     note: false
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 1725
+          "y": 2040
         }
       }
     note: false
@@ -326,7 +326,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1740
+          "y": 2250
         }
       }
     note: false
@@ -437,7 +437,92 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 1330
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: caa5e8dc-a1cf-4bc1-861c-2a8f763f9304
+    type: condition
+    task:
+      id: caa5e8dc-a1cf-4bc1-861c-2a8f763f9304
+      version: -1
+      name: Is the CI a network adapter?
+      description: Check if the returned CI is a network adapter.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ServiceNowCMDB.Record.Attributes
+                accessor: sys_class_name
+            iscontext: true
+          right:
+            value:
+              simple: cmdb_ci_network_adapter
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0505c752-d13b-4ee6-851b-f1ee5cd5f2ab
+    type: regular
+    task:
+      id: 0505c752-d13b-4ee6-851b-f1ee5cd5f2ab
+      version: -1
+      name: Get record by ID and Network adapter CI
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_network_adapter
+      sys_id:
+        complex:
+          root: ServiceNowCMDB.Records
+          accessor: sys_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1810
         }
       }
     note: false
@@ -455,8 +540,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1415,
-        "width": 1300,
+        "height": 2025,
+        "width": 1250,
         "x": 450,
         "y": 570
       }
@@ -465,9 +550,9 @@ view: |-
 inputs:
 - key: SearchCIClass
   value:
-    simple: cmdb_ci_network_adapter
+    simple: cmdb_ci
   required: false
-  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
+  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci).
   playbookInputQuery:
 - key: SearchQueryField
   value:

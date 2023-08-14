@@ -49,7 +49,8 @@ The EWS integration can be used for the following use cases.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
-    *   **Use a self deployed Azure Application**
+    *   **Use a self deployed Azure Application**: Select this checkbox if you are using a self-deployed Azure application.
+
 4.  Click **Test** to validate the URLs, token, and connection.
 
 ## Authentication
@@ -984,6 +985,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
+|EWS.Items.categories|String|Categories of the email.| 
 
 ##### Command Example
 
@@ -1094,6 +1096,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
+|EWS.Items.categories|String|Categories of the email.| 
 |Email.CC|String|Email addresses CC'ed to the email.|
 |Email.BCC|String|Email addresses BCC'ed to the email.|
 |Email.To|String|The recipient of the email.|
@@ -1377,6 +1380,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
 | from_address | The email address from which to reply. | Optional |
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
+| importance | Sets the importance/Priority of the email. Default value is Normal. | Optional |
 
 
 #### Context Output

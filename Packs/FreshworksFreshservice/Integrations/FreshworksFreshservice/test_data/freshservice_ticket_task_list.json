@@ -1,0 +1,32 @@
+{
+    "tasks": [
+        {
+            "id": 1,
+            "agent_id": null,
+            "status": 1,
+            "due_date": "tasks[0]_due_date",
+            "notify_before": 0,
+            "title": "Supply lightsabers to all the Jedis",
+            "description": "We need to re-supply to win the war!",
+            "created_at": "tasks[0]_created_at",
+            "updated_at": "tasks[0]_updated_at",
+            "closed_at": null,
+            "group_id": null,
+            "deleted": false
+        },
+        {
+            "id": 1,
+            "agent_id": null,
+            "status": 1,
+            "due_date": "tasks[0]_due_date",
+            "notify_before": 0,
+            "title": "Supply lightsabers to all the Jedis",
+            "description": "We need to re-supply to win the war!",
+            "created_at": "tasks[0]_created_at",
+            "updated_at": "tasks[0]_updated_at",
+            "closed_at": null,
+            "group_id": null,
+            "deleted": false
+        }
+    ]
+}

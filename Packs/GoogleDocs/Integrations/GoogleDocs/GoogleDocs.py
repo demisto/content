@@ -46,7 +46,7 @@ def get_function_by_action_name(action):
 def parse_actions(actions: str):
     """Destructs action1{param1,param2,...};action2{param1,param2,...}... to a dictionary where keys are action type and
       values are function params"""
-    parsed_actions = dict()
+    parsed_actions = {}
     actions = actions.split(';')
     for action in actions:
         action_type, params = action.split('{')
@@ -60,9 +60,9 @@ def get_http_client_with_proxy(disable_ssl):
     proxies = handle_proxy()
     if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
+    https_proxy = proxies.get('https')
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-        https_proxy = 'https://' + https_proxy
+        https_proxy = f'https://{https_proxy}'
     parsed_proxy = urllib.parse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
@@ -81,10 +81,10 @@ def get_credentials(credentials, scopes):
 def get_client(credentials, scopes, proxy, disable_ssl):
     credentials = get_credentials(credentials, scopes)
 
-    if proxy or disable_ssl:
-        http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
-        return discovery.build('docs', 'v1', http=http_client)
-    return discovery.build('docs', 'v1', credentials=credentials)
+    if not proxy:
+        return discovery.build('docs', 'v1', credentials=credentials)
+    http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
+    return discovery.build('docs', 'v1', http=http_client)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -275,6 +275,26 @@ def delete_positioned_object(action_name, object_id):
     }
 
 
+def generate_results(document, human_readable_text):
+    """ Generates the results dictionary for the command """
+
+    res = {
+        'RevisionId': document['revisionId'],
+        'DocumentId': document['documentId'],
+        'Title': document['title']
+    }
+    ec = {
+        'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
+    }
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': ec,
+        'HumanReadable': tableToMarkdown(human_readable_text, res),
+        'EntryContext': ec
+    }
+
+
 def batch_update_document_command(service):
     args = demisto.args()
     document_id = args.get('document_id')
@@ -284,7 +304,7 @@ def batch_update_document_command(service):
     document = batch_update_document(service, document_id, actions, required_revision_id, target_revision_id)
     human_readable_text = "The document with the title {title} and actions {actions} was updated. the results are:".\
         format(title=document['title'], actions=args.get('actions'))
-    return document, human_readable_text
+    return generate_results(document, human_readable_text)
 
 
 def batch_update_document(service, document_id, actions, required_revision_id=None, target_revision_id=None):
@@ -308,8 +328,7 @@ def batch_update_document(service, document_id, actions, required_revision_id=No
         payload["requests"].append(request)
 
     service.documents().batchUpdate(documentId=document_id, body=payload).execute()
-    document = get_document(service, document_id)
-    return document
+    return get_document(service, document_id)
 
 
 def create_document_command(service):
@@ -317,7 +336,7 @@ def create_document_command(service):
     title = args.get('title')
     document = create_document(service, title)
     human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
-    return document, human_readable_text
+    return generate_results(document, human_readable_text)
 
 
 def create_document(service, title):
@@ -325,8 +344,7 @@ def create_document(service, title):
         "title": title,
     }
 
-    document = service.documents().create(body=payload).execute()
-    return document
+    return service.documents().create(body=payload).execute()
 
 
 def get_document_command(service):
@@ -335,62 +353,43 @@ def get_document_command(service):
     document = get_document(service, document_id)
     human_readable_text = "The document with the title {title} was returned. The results are:".\
         format(title=document['title'])
-    return document, human_readable_text
+    return generate_results(document, human_readable_text)
 
 
 def get_document(service, document_id):
-    document = service.documents().get(documentId=document_id).execute()
-    return document
+    return service.documents().get(documentId=document_id).execute()
 
 
-def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
-    proxy = demisto.params().get('proxy')
-    disable_ssl = demisto.params().get('insecure', False)
-    service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
-    if demisto.command() == 'test-module':
-        try:
-            get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-            demisto.results('ok')
-        except Exception as e:
-            return_error("Failed to execute test. Error: {}".format(str(e)), e)
-
+def main():  # pragma: no cover
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+    params = demisto.params()
+    proxy = params.get('proxy', False)
+    disable_ssl = params.get('insecure', False)
+    service_account_credentials = params.get('credentials_service_account', {}).get(
+        'password') or params.get('service_account_credentials')
+    if not service_account_credentials:
+        return_error('Service Account Private Key file must be provided.')
     try:
-        service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-        if demisto.command() == 'google-docs-update-document':
-            document, human_readable_text = batch_update_document_command(service)
-        elif demisto.command() == 'google-docs-create-document':
-            document, human_readable_text = create_document_command(service)
-        elif demisto.command() == 'google-docs-get-document':
-            document, human_readable_text = get_document_command(service)
+        service = get_client(json.loads(service_account_credentials), SCOPES, proxy, disable_ssl)
+        if command == 'google-docs-update-document':
+            return_results(batch_update_document_command(service))
+        elif command == 'google-docs-create-document':
+            return_results(create_document_command(service))
+        elif command == 'google-docs-get-document':
+            return_results(get_document_command(service))
+        elif command == 'test-module':
+            if not service:
+                raise DemistoException('Failed to create client')
+            return_results('ok')
         else:
-            return_error("Command {} does not exist".format(demisto.command()))
-            return
+            raise DemistoException(f"Command {command} does not exist.")
 
-        res = {
-            'RevisionId': document['revisionId'],
-            'DocumentId': document['documentId'],
-            'Title': document['title']
-        }
-        ec = {
-            'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
-        }
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': ec,
-            'HumanReadable': tableToMarkdown(human_readable_text, res),
-            'EntryContext': ec
-        })
-
-    # Log exceptions
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)
+        return_error(f"Failed to execute {command} command. Error: {str(e)}", e)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

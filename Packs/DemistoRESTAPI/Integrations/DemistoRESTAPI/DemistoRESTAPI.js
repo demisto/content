@@ -3,7 +3,7 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
@@ -256,7 +256,10 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 
 switch (command) {
     case 'test-module':
-        sendRequest('GET','user');
+        res = sendRequest('GET','user');
+        if (res.response.id == undefined){
+            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
+        }
         return 'ok';
     case 'demisto-api-post':
         if(args.body)

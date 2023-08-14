@@ -1,39 +1,45 @@
 Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
 This integration was integrated and tested with version 1.31.0 of GoogleDrive
 
-## Configure GoogleDrive on Cortex XSOAR
+## Configure Google Drive on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GoogleDrive.
+2. Search for Google Drive.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | User's Service Account JSON |  | True |
-    | User ID | The primary email address of the user to fetch the incident\(s\). | False |
-    | Action Detail Case Include | Action types to include for fetching the incident. | False |
-    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | False |
-    | Drive Item Search Value | itemName or folderName for fetching the incident. | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Max Incidents | The maximum number of incidents to fetch each time. | False |
-    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &amp;lt;number&amp;gt; &amp;lt;unit&amp;gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | User's Service Account JSON |  |  |
+    | User ID | The primary email address of the user to fetch the incident\(s\). |  |
+    | User ID |  |  |
+    | User's Service Account JSON |  |  |
+    | Action Detail Case Include | Action types to include for fetching the incident. |  |
+    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". |  |
+    | Drive Item Search Value | itemName or folderName for fetching the incident. |  |
+    | Fetch incidents |  |  |
+    | Incident type |  |  |
+    | Max Incidents | The maximum number of incidents to fetch each time. |  |
+    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &amp;lt;number&amp;gt; &amp;lt;unit&amp;gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. |  |
+    | Trust any certificate (not secure) |  |  |
+    | Use system proxy settings |  |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-drive-create
+
 ***
 Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
 This shared drive/team drive feature is available only with G Suite Enterprise, Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits edition.
 
-
 #### Base Command
 
 `google-drive-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,7 +47,6 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 | user_id | The user's primary email address. | Optional | 
 | name | The name of this shared drive. | Required | 
 | hidden | Whether the shared drive is hidden from the default view. Possible values: "True" and "False". Possible values are: True, False. | Optional | 
-
 
 #### Context Output
 
@@ -52,22 +57,15 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 | GoogleDrive.Drive.name | String | The name of the shared drive. | 
 | GoogleDrive.Drive.hidden | Boolean | Whether the shared drive is hidden from the default view. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-changes-list
+
 ***
 Lists the changes for a user or shared drive.
-
 
 #### Base Command
 
 `google-drive-changes-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -84,7 +82,6 @@ Lists the changes for a user or shared drive.
 | spaces | A comma-separated list of spaces to query within the user corpus. Possible values are 'drive', 'appDataFolder', and 'photos'. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | fields | The paths of the fields you want to include in the response. Possible values are: "basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Possible values are: basic, advance. Default is basic. | Optional | 
-
 
 #### Context Output
 
@@ -287,22 +284,15 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. | 
 | GoogleDrive.DriveChange.drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-activity-list
+
 ***
 Query past activity in Google Drive.
-
 
 #### Base Command
 
 `google-drive-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -315,7 +305,6 @@ Query past activity in Google Drive.
 | action_detail_case_include | A singular value or a list of allowed action types enclosed in parentheses. The filters are based on given actions. For example: <br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
 | action_detail_case_remove | A singular value or a list of allowed action types enclosed in parentheses. The filters are based on given actions. For example:<br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
 | page_token | The token identifying which page of results to return. Set this to the nextPageToken value returned from a previous query to obtain the following page of results. If not set, the first page of results will be returned. | Optional | 
-
 
 #### Context Output
 
@@ -563,22 +552,15 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.timeRange.startTime | String | The start of the time range. | 
 | GoogleDrive.DriveActivity.timeRange.endTime | String | The end of the time range. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-drives-list
+
 ***
 Lists the user's shared drives.
-
 
 #### Base Command
 
 `google-drive-drives-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -588,7 +570,6 @@ Lists the user's shared drives.
 | query | Query string for searching shared drives. | Optional | 
 | use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
 | user_id | The user's primary email address. | Optional | 
-
 
 #### Context Output
 
@@ -622,22 +603,15 @@ Lists the user's shared drives.
 | GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
 | GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-drive-get
+
 ***
 Gets a user shared drives.
-
 
 #### Base Command
 
 `google-drive-drive-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -646,7 +620,6 @@ Gets a user shared drives.
 | user_id | The user's primary email address. | Optional | 
 | drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, themeId, capabilities, createdTime, hidden, restrictions. | Optional | 
-
 
 #### Context Output
 
@@ -680,22 +653,15 @@ Gets a user shared drives.
 | GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
 | GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-files-list
+
 ***
 Lists the user's shared drives.
-
 
 #### Base Command
 
 `google-drive-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -703,10 +669,10 @@ Lists the user's shared drives.
 | page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
 | page_token | Page token for shared drives. | Optional | 
 | query | Query string for searching shared drives. | Optional | 
+| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | user_id | The user's primary email address. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
-
 
 #### Context Output
 
@@ -717,30 +683,23 @@ Lists the user's shared drives.
 | GoogleDrive.File.File.name | String | The name of the file. This is not necessarily unique within a folder. | 
 | GoogleDrive.File.File.resourceKey | String | A key needed to access the item via a shared link. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-get
+
 ***
 Get a single file.
-
 
 #### Base Command
 
 `google-drive-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
 | user_id | The user's primary email address. | Optional | 
+| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
-
 
 #### Context Output
 
@@ -815,22 +774,15 @@ Get a single file.
 | GoogleDrive.File.File.webViewLink | String | A link for opening the file in a relevant Google editor or viewer in a browser. | 
 | GoogleDrive.File.File.writersCanShare | Boolean | Whether users with only writer permission can modify the file's permissions. Not populated for items in shared drives. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-upload
+
 ***
 Creates a new file.
-
 
 #### Base Command
 
 `google-drive-file-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,7 +790,6 @@ Creates a new file.
 | file_name | The name of the file to upload. | Optional | 
 | entry_id | The file's Entry ID. | Optional | 
 | parent | The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder. | Optional | 
-
 
 #### Context Output
 
@@ -914,22 +865,15 @@ Creates a new file.
 | GoogleDrive.File.File.permissions.type | String | The type of the grantee. | 
 | GoogleDrive.File.File.permissions.photoLink | String | A link to the user's profile photo, if available. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-download
+
 ***
 Download a single file.
-
 
 #### Base Command
 
 `google-drive-file-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -937,7 +881,6 @@ Download a single file.
 | file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
 | file_name | Name of the downloaded file. Default is untitled. | Optional | 
 | user_id | The user's primary email address. | Optional | 
-
 
 #### Context Output
 
@@ -954,29 +897,21 @@ Download a single file.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-replace-existing
+
 ***
 Updates a file's content.
-
 
 #### Base Command
 
 `google-drive-file-replace-existing`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_id | ID of the file to replace. Can be retrieved using the `google-drive-files-list` command. | Optional | 
 | entry_id | The file's entry ID. | Optional | 
-
 
 #### Context Output
 
@@ -1052,22 +987,15 @@ Updates a file's content.
 | GoogleDrive.File.File.permissions.type | String | The type of the grantee. | 
 | GoogleDrive.File.File.permissions.photoLink | String | A link to the user's profile photo, if available. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-delete
+
 ***
 Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
-
 
 #### Base Command
 
 `google-drive-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1076,29 +1004,21 @@ Permanently deletes a file owned by the user without moving it to the trash. If 
 | user_id | The user's primary email address. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GoogleDrive.File.File.id | String | ID of the deleted file. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-permissions-list
+
 ***
 Lists a file's or shared drive's permissions.
-
 
 #### Base Command
 
 `google-drive-file-permissions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1108,7 +1028,7 @@ Lists a file's or shared drive's permissions.
 | page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
 | page_token | Page token for shared drives. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
-
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
 
 #### Context Output
 
@@ -1122,22 +1042,15 @@ Lists a file's or shared drive's permissions.
 | GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
 | GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-permission-create
+
 ***
 Creates a permission for a file or shared drive.
-
 
 #### Base Command
 
 `google-drive-file-permission-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1150,7 +1063,6 @@ Creates a permission for a file or shared drive.
 | domain | The domain to which this permission refers. | Optional | 
 | email_address | The email address of the user or group to which this permission refers. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1163,22 +1075,15 @@ Creates a permission for a file or shared drive.
 | GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
 | GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-permission-update
+
 ***
 Updates a permission with patch semantics.
-
 
 #### Base Command
 
 `google-drive-file-permission-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1189,7 +1094,6 @@ Updates a permission with patch semantics.
 | permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
 | role | The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader". Possible values are: owner, organizer, fileOrganizer, writer, commenter, reader. Default is reader. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1202,22 +1106,15 @@ Updates a permission with patch semantics.
 | GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
 | GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### google-drive-file-permission-delete
+
 ***
 Delete a permission.
-
 
 #### Base Command
 
 `google-drive-file-permission-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1227,14 +1124,6 @@ Delete a permission.
 | permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-

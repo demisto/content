@@ -11,8 +11,8 @@ configuration:
 - defaultvalue: https://data.reversinglabs.com
   display: Base URL for extended RL Data
   name: baserl
-  required: false
   type: 0
+  required: false
 - display: Credentials
   name: credentials
   required: true
@@ -20,12 +20,12 @@ configuration:
 - defaultvalue: 'false'
   display: Return extended data if available
   name: extended
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. Use the ReversingLabs TitaniumCloud v2 integration instead.
 display: ReversingLabs TitaniumCloud (Deprecated)
 name: ReversingLabs Titanium Cloud
@@ -35,24 +35,17 @@ script:
   - arguments:
     - default: true
       description: file hash
-      isArray: false
       name: file
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Return as much data as available. Overrides the default setting.
-      isArray: false
       name: extended
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     deprecated: true
     description: Retrieve Malware Presence Status from ReversingLabs
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -85,10 +78,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: ''
   subtype: python2

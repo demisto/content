@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3eadd7cb-dbe3-4a3a-8ef7-87d397b56893
+    taskid: 74d8d9d3-4a7f-4576-84d3-e546cc88ff9a
     type: start
     task:
-      id: 3eadd7cb-dbe3-4a3a-8ef7-87d397b56893
+      id: 74d8d9d3-4a7f-4576-84d3-e546cc88ff9a
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1daff8af-ce88-4059-854d-16384a18a273
+    taskid: 14f3f209-501e-4660-8da3-d48e7e02dbf8
     type: playbook
     task:
-      id: 1daff8af-ce88-4059-854d-16384a18a273
+      id: 14f3f209-501e-4660-8da3-d48e7e02dbf8
       version: -1
       name: Cortex XDR - quarantine file
       playbookName: Cortex XDR - quarantine file
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     scriptarguments:
       endpoint_id:
-        simple: f8a2f58846b542579c12090652e79f3d
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       file_hash:
         simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
       file_path:

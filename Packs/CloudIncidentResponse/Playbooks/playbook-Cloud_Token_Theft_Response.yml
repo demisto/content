@@ -1,0 +1,2069 @@
+id: Cloud Token Theft Response
+version: -1
+name: Cloud Token Theft Response
+description: |-
+  ---
+
+  ## Cloud Token Theft Response Playbook
+
+  The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
+
+  **Cloud Enrichment:**
+  - Enriches the involved resources
+  - Enriches the involved identities
+  - Enriches the involved IPs
+
+  **Verdict Decision Tree:**
+  - Determines the appropriate verdict based on the investigation findings
+
+  **Early Containment using the Cloud Response - Generic Playbook:**
+  - Implements early containment measures to prevent further impact
+
+  **Cloud Persistence Threat Hunting:**
+  - Conducts threat hunting activities to identify any cloud persistence techniques
+
+  **Enriching and Responding to Hunting Findings:**
+  - Performs additional enrichment and responds to the findings from threat hunting
+
+  **Verdict Handling:**
+  - Handles false positives identified during the investigation
+  - Handles true positives by initiating appropriate response actions
+
+  ---
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72cf7e2b-9a6f-4a1b-821e-f4679e486af5
+    type: start
+    task:
+      id: 72cf7e2b-9a6f-4a1b-821e-f4679e486af5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e611d3ea-534f-46c9-8647-e82036bbb2d1
+    type: regular
+    task:
+      id: e611d3ea-534f-46c9-8647-e82036bbb2d1
+      version: -1
+      name: Fetch alert extra data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: inputs.alert_id
+      extend-context:
+        simple: alertData=
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: ASN
+      output:
+        simple: ${Core.OriginalAlert.event.caller_ip_asn}
+    - incidentfield: ASN Name
+      output:
+        simple: ${Core.OriginalAlert.event.caller_ip_asn_org}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 17724863-d960-46ad-8a11-8f42cbf47f0e
+    type: regular
+    task:
+      id: 17724863-d960-46ad-8a11-8f42cbf47f0e
+      version: -1
+      name: Load alert JSON
+      description: Loads a JSON from a string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: alertJson=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: alertData.alerts
+          accessor: original_alert_json
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 98397e62-31c7-4b49-876f-a6c4210260ee
+    type: title
+    task:
+      id: 98397e62-31c7-4b49-876f-a6c4210260ee
+      version: -1
+      name: Check VPN
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a505e901-1a19-4c54-89a5-5679da10c8e7
+    type: playbook
+    task:
+      id: a505e901-1a19-4c54-89a5-5679da10c8e7
+      version: -1
+      name: Cloud Enrichment - Generic
+      description: |-
+        ---
+
+        ## Generic Cloud Enrichment Playbook
+
+        The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevant playbooks concerning the enrichment of information in the cloud. It provides a standardized approach to enriching information in cloud environments.
+
+        ### Supported Blocks
+
+        1. **Cloud IAM Enrichment - Generic**
+           - Enriches information related to Identity and Access Management (IAM) in the cloud.
+
+        2. **Cloud Compute Enrichment - Generic**
+           - Enriches information related to cloud compute resources.
+
+        ---
+      playbookName: Cloud Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cloudProvider:
+        complex:
+          root: alert
+          accessor: cloudprovider
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 296536c2-e825-421c-8e77-d23c4858e540
+    type: title
+    task:
+      id: 296536c2-e825-421c-8e77-d23c4858e540
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 506a830b-e106-49bb-884d-3046683e101d
+    type: title
+    task:
+      id: 506a830b-e106-49bb-884d-3046683e101d
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 99b32157-a4b5-4ad2-8949-3664187f3f1a
+    type: condition
+    task:
+      id: 99b32157-a4b5-4ad2-8949-3664187f3f1a
+      version: -1
+      name: Check verdict resolution
+      description: Checks which verdict was received by the Cloud Token Theft - Set Verdict playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      Malicious:
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alertVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d9455fee-7caf-46ac-8026-364883bdbc26
+    type: playbook
+    task:
+      id: d9455fee-7caf-46ac-8026-364883bdbc26
+      version: -1
+      name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
+      playbookName: Handle False Positive Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      ShouldCloseAutomatically:
+        simple: "False"
+      ShouldHandleFPautomatically:
+        simple: "False"
+      alertName:
+        complex:
+          root: alert
+          accessor: name
+      sourceIP:
+        complex:
+          root: alert
+          accessor: hostip
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 3005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0b5c42f1-1adc-47e1-85be-b74017596364
+    type: playbook
+    task:
+      id: 0b5c42f1-1adc-47e1-85be-b74017596364
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-accessKeyRemediationType:
+        simple: Disable
+      GCP-userRemediationType:
+        simple: Disable
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "True"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "False"
+      cloudProvider:
+        complex:
+          root: alert.cloudprovider
+          accessor: '[0]'
+      username:
+        complex:
+          root: alert.username
+          accessor: '[0]'
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6ec57530-4216-4d77-8f85-35d0df561827
+    type: title
+    task:
+      id: 6ec57530-4216-4d77-8f85-35d0df561827
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 89ca3353-c319-48a6-82ab-3c18ad78136e
+    type: title
+    task:
+      id: 89ca3353-c319-48a6-82ab-3c18ad78136e
+      version: -1
+      name: Enrich IoCs
+      description: This script will extract indicators from the given AWS CloudTrail, GCP Logging, or Azure Log Analytics event data.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 94a1e1eb-6884-4f7a-8262-f4cf8179b2d6
+    type: title
+    task:
+      id: 94a1e1eb-6884-4f7a-8262-f4cf8179b2d6
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 866c90ea-1631-4f35-8c08-dbca5e72b8e8
+    type: condition
+    task:
+      id: 866c90ea-1631-4f35-8c08-dbca5e72b8e8
+      version: -1
+      name: Persistence activity or suspicious IoCs found?
+      description: Checks if one of the extracted indicators is suspicious or malicious, or if there are any results from the Cloud Threat Hunting - Persistence playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                accessor: Indicator
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWSQuery
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: GCPQuery
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: AzureQuery
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 73551cc9-76bd-48f9-8f38-2fef3a302f11
+    type: title
+    task:
+      id: 73551cc9-76bd-48f9-8f38-2fef3a302f11
+      version: -1
+      name: Manual invetigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 03e6367e-d3af-4622-8f11-d1352c77c619
+    type: regular
+    task:
+      id: 03e6367e-d3af-4622-8f11-d1352c77c619
+      version: -1
+      name: Investigate the data collected
+      description: You should investigate the data collected manually and choose how the playbook should continue.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: adea59ae-46c6-4565-8ab0-ac19f1301c91
+    type: condition
+    task:
+      id: adea59ae-46c6-4565-8ab0-ac19f1301c91
+      version: -1
+      name: Should contain the threats?
+      description: Whether to contain the threats found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9a44b2ac-d8e1-42cd-828b-50908be646c9
+    type: title
+    task:
+      id: 9a44b2ac-d8e1-42cd-828b-50908be646c9
+      version: -1
+      name: Eradication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3a8277ea-891b-4edd-853d-c2e6b2bd0c3c
+    type: playbook
+    task:
+      id: 3a8277ea-891b-4edd-853d-c2e6b2bd0c3c
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Delete
+      AWS-resourceRemediationType:
+        simple: Terminate
+      AWS-userRemediationType:
+        simple: Delete
+      Azure-resourceRemediationType:
+        simple: Delete
+      Azure-userRemediationType:
+        simple: Delete
+      GCP-accessKeyRemediationType:
+        simple: Delete
+      GCP-resourceRemediationType:
+        simple: Delete
+      GCP-userRemediationType:
+        simple: Delete
+      accessKeyId:
+        complex:
+          root: CloudIndicators
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "False"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "False"
+      cloudProvider:
+        complex:
+          root: alert
+          accessor: cloudprovider
+      region:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: region
+      resourceName:
+        complex:
+          root: CloudIndicators
+          accessor: resource_name
+      username:
+        complex:
+          root: CloudIndicators
+          accessor: username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f7b26e88-099c-4859-8a0e-629596e6b090
+    type: condition
+    task:
+      id: f7b26e88-099c-4859-8a0e-629596e6b090
+      version: -1
+      name: Should eradicate the threats?
+      description: Whether to eradicate the threats. This playbook should be treated with care as its actions are irreversible.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "Yes":
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 698ba6ec-2278-4493-8c8f-c89090d79136
+    type: title
+    task:
+      id: 698ba6ec-2278-4493-8c8f-c89090d79136
+      version: -1
+      name: Resolution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 876d7226-1120-4c0d-8df4-66b95ed0fd55
+    type: condition
+    task:
+      id: 876d7226-1120-4c0d-8df4-66b95ed0fd55
+      version: -1
+      name: Is manual investigation required to complete the resolution process?
+      description: Whether to continue with the investigation manually or close the alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "Yes":
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1f50da4e-2d0b-4012-83aa-a865b9b04551
+    type: regular
+    task:
+      id: 1f50da4e-2d0b-4012-83aa-a865b9b04551
+      version: -1
+      name: Investigate further
+      description: Continue to investigate manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 355623a4-717a-4333-86b9-a75900536328
+    type: regular
+    task:
+      id: 355623a4-717a-4333-86b9-a75900536328
+      version: -1
+      name: Resolve the alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      closeReason:
+        simple: True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: d09e1a12-93e1-4e50-8e5c-26fdbf28e9ec
+    type: title
+    task:
+      id: d09e1a12-93e1-4e50-8e5c-26fdbf28e9ec
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 4300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
+    type: playbook
+    task:
+      id: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
+      version: -1
+      name: Cloud Token Theft - Set Verdict
+      description: |-
+        ---
+
+        ## Cloud Token Theft - Set Verdict Playbook
+
+        The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
+
+        ### Event Search
+
+        The playbook searches for events based on the attacker's IP address within the last two hours.
+
+        ### Tests Performed
+
+        The following tests are performed on the observed activity:
+
+        1. **Malicious IP Check**: Determines if the IP address is malicious.
+        2. **CSP ASN Check**: Checks if the activity was performed from an Autonomous System Number (ASN) belonging to one of the Cloud Service Providers (CSPs).
+        3. **IP and ASN History Check**: Verifies if the IP address and ASN have been previously observed.
+        4. **Region Check**: Determines if the API call was made from outside the recognized region.
+        5. **Anomalous State Check**: Checks if the API call was made from an anomalous state.
+        6. **Alert Check**: Looks for any related alerts around the event, including:
+           - Possible cloud instance metadata service (IMDS) abuse.
+           - Impossible Traveler by cloud identity.
+
+        ---
+      playbookName: Cloud Token Theft - Set Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      fromDate:
+        complex:
+          root: alert
+          accessor: created
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
+      sourceIP:
+        complex:
+          root: alert
+          accessor: hostip
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 2662f014-da1e-489b-8060-0c245f55789b
+    type: playbook
+    task:
+      id: 2662f014-da1e-489b-8060-0c245f55789b
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e470723c-a8a3-4166-883b-5f4b38a6e7e6
+    type: playbook
+    task:
+      id: e470723c-a8a3-4166-883b-5f4b38a6e7e6
+      version: -1
+      name: Cloud Threat Hunting - Persistence
+      description: |-
+        ---
+
+        ## Cloud Threat Hunting - Persistence Playbook
+
+        The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure.
+
+        ### Hunting Queries
+
+        The playbook executes hunting queries for each provider related to each of the following:
+
+        1. IAM
+        2. Compute Resources
+        3. Compute Functions
+
+        ### Indicator Extraction
+
+        If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
+
+        ---
+      playbookName: Cloud Threat Hunting - Persistence
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AWSAccessKeyID:
+        complex:
+          root: Core.OriginalAlert.[0].event
+          accessor: identity_invoked_by_uuid
+      AWSTimespan:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: +
+              fields:
+                value:
+                  simple: "1"
+      AzureTimespan:
+        simple: 2h
+      GCPTimespan:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Z
+              toReplace:
+                value:
+                  simple: "+00:00"
+      cloudProvider:
+        complex:
+          root: alert
+          accessor: cloudprovider
+      projectName:
+        complex:
+          root: alert
+          accessor: cloudproject
+      region:
+        complex:
+          root: alert
+          accessor: region
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3ca72ce8-4d38-41bf-84b6-0675027851bd
+    type: playbook
+    task:
+      id: 3ca72ce8-4d38-41bf-84b6-0675027851bd
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: CloudIndicators
+          accessor: source_ip
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: CloudIndicators
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: eb31ed85-ba4e-4e7f-89af-03e29b765ab1
+    type: playbook
+    task:
+      id: eb31ed85-ba4e-4e7f-89af-03e29b765ab1
+      version: -1
+      name: Cloud Enrichment - Generic
+      description: |-
+        ---
+
+        ## Generic Cloud Enrichment Playbook
+
+        The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevant playbooks concerning the enrichment of information in the cloud. It provides a standardized approach to enriching information in cloud environments.
+
+        ### Supported Blocks
+
+        1. **Cloud IAM Enrichment - Generic**
+           - Enriches information related to Identity and Access Management (IAM) in the cloud.
+
+        2. **Cloud Compute Enrichment - Generic**
+           - Enriches information related to cloud compute resources.
+
+        ---
+      playbookName: Cloud Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      cloudProvider:
+        complex:
+          root: alert
+          accessor: cloudprovider
+      instanceName:
+        complex:
+          root: CloudIndicators
+          accessor: resource_name
+      username:
+        complex:
+          root: CloudIndicators
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 6798a3cc-ca31-44ed-8082-a2029eb938d0
+    type: condition
+    task:
+      id: 6798a3cc-ca31-44ed-8082-a2029eb938d0
+      version: -1
+      name: Investigate and set verdict
+      description: You should investigate the data collected manually and choose how the playbook should continue.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      Malicious:
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 7887cd1f-10d5-4bc0-8b99-11260af33fd8
+    type: condition
+    task:
+      id: 7887cd1f-10d5-4bc0-8b99-11260af33fd8
+      version: -1
+      name: Should execute early containment?
+      description: Whether to execute early containment and block the IP address and respond to the username involved.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.earlyContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: a81c56dd-412e-46b0-8a77-1bb72f5c3769
+    type: playbook
+    task:
+      id: a81c56dd-412e-46b0-8a77-1bb72f5c3769
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Disable
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        simple: Disable
+      SourceIP:
+        complex:
+          root: CloudIndicators
+          accessor: source_ip
+      accessKeyId:
+        complex:
+          root: CloudIndicators
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "True"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "True"
+      cloudProvider:
+        complex:
+          root: alert.cloudprovider
+          accessor: '[0]'
+      username:
+        complex:
+          root: CloudIndicators
+          accessor: username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+    type: condition
+    task:
+      id: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+      version: -1
+      name: Check the VPN list type
+      description: Checks if the provided data is comma separated or an URL.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      URL:
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: URL
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              simple: http://
+          ignorecase: true
+        - operator: startWith
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              simple: https://
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: bf94c5a6-0100-4e60-89bc-e35364b5415a
+    type: regular
+    task:
+      id: bf94c5a6-0100-4e60-89bc-e35364b5415a
+      version: -1
+      name: Process the VPN IP list
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      url:
+        complex:
+          root: inputs.VPNIPList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Device External IPs
+      output:
+        simple: ${http.parsedBlog.indicators}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: eaaa946c-8d95-4186-8584-793b17a4fc7b
+    type: condition
+    task:
+      id: eaaa946c-8d95-4186-8584-793b17a4fc7b
+      version: -1
+      name: Was a VPN list provided?
+      description: Checks if data was provided for the VPNIPList input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+    type: condition
+    task:
+      id: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+      version: -1
+      name: Should continue and investigate a known VPN IP address?
+      description: Once the attacker's IP address is part of the VPN IP list, the analyst will be required to decide whether to continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+    type: regular
+    task:
+      id: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+      version: -1
+      name: Set Is VPN IP Address to true
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      isvpnipaddress:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: fd775e61-aee3-4cee-8f4f-af31b9676081
+    type: playbook
+    task:
+      id: fd775e61-aee3-4cee-8f4f-af31b9676081
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: alert
+          accessor: hostip
+      LimitResults:
+        simple: "200"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+    type: title
+    task:
+      id: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "58"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 626d149e-03db-47df-8186-ed7b64bde19a
+    type: condition
+    task:
+      id: 626d149e-03db-47df-8186-ed7b64bde19a
+      version: -1
+      name: 'Is the attacker IP matches a VPN IP? '
+      description: Checks if the attacker's IP address is part of the VPN IP list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.deviceexternalips
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_15_yes": 0.65,
+      "19_20_#default#": 0.48,
+      "23_51_Yes": 0.61,
+      "23_9_#default#": 0.25,
+      "36_35_Yes": 0.41,
+      "36_37_#default#": 0.8,
+      "38_39_Yes": 0.42,
+      "49_9_#default#": 0.14,
+      "50_11_yes": 0.38,
+      "52_53_URL": 0.43,
+      "54_59_#default#": 0.11,
+      "56_9_#default#": 0.12,
+      "60_57_yes": 0.4,
+      "60_59_#default#": 0.21,
+      "8_49_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5835,
+        "width": 2130,
+        "x": -860,
+        "y": -1470
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    complex:
+      root: alert
+      accessor: investigationId
+  required: false
+  description: The alert ID.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: earlyContainment
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to execute early containment.
+    This action allows you to respond rapidly but have higher probability for false positives.
+  playbookInputQuery:
+- key: VPNIPList
+  value: {}
+  required: false
+  description: |
+    This input can process to types of data:
+    1. A comma separated list of IP addresses assigned by the VPN provider. (using a XSIAM list or an hardcoded array)
+    2. A comma separated list of CIDRs.
+    3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.8.0

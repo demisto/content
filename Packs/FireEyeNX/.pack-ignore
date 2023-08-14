@@ -74,4 +74,11 @@ ignore=BA101
 ignore=BA101
 
 [known_words]
-NX
+nx
+
+[file:FireEyeNX.yml]
+ignore=MR108,PR101
+
+[file:FireEyeNX_1_3.yml]
+ignore=MR108
+

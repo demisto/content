@@ -1,0 +1,1038 @@
+id: Use Case Builder
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Use Case Builder
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd931fb7-1db9-4f47-874f-a11be9bbadcf
+    type: start
+    task:
+      id: fd931fb7-1db9-4f47-874f-a11be9bbadcf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a8e8c39b-3050-4c82-8372-90de2801c89a
+    type: collection
+    task:
+      id: a8e8c39b-3050-4c82-8372-90de2801c89a
+      version: -1
+      name: Click Me to Begin the Use Case Definition Guide
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Follow the prompts to start the use case definition process
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the name of your use case?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: usecasename
+        placeholder: 'Name of Use Case. Example: NGFW Alert, WinEvent Alert, Linux Alert'
+        tooltip: Create a unique name. Examples are Malicious IP Block, Expanse Alert
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: What is the purpose and goal of your use case
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: usecasepurpose
+        placeholder: Purpose and objectives of the Use Case
+        tooltip: Use case is defined by the process, logic, and tasks that are being done as part of an Incident Response process for a specific incident type.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: What begins  the incident response flow?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: markdown
+        options: []
+        optionsarg: []
+        fieldassociated: trigger
+        placeholder: Trigger for the Use Case
+        tooltip: A alert from a security tool?  A Phishing Email? A SOC Analyst manually creating an incident?
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: What are the Incidents fields that are required as part of the incident response process.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: incidentstructureandmapping
+        placeholder: Required Incident Fields for the Use Case
+        tooltip: 'Incidents fields that are required as part of the incident response process Example: Sender, account details, etc.'
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: What is the high level overview for handling the alert? (the incident response process)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: incidentresponseprocess
+        placeholder: Use Case Incident Response Process (supports markdown)
+        tooltip: 'Pro-tip: Use a format like  Step 1)... Step 2) along with bullet points'
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: 'Are there any Enrichment actions you want to perform? '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: markdown
+        options: []
+        optionsarg: []
+        fieldassociated: usecaseenrichmentactions
+        placeholder: Use Case Enrichment Actions (supports markdown)
+        tooltip: 'Example: Enriching URLs and IP addresses from cloud threat intel services, enriching event with raw data'
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: 'Are there any manual steps that need to be performed?  '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: manualsteps
+        placeholder: Use Case Manual Steps (supports markdown)
+        tooltip: 'Example: Blocking IP addresses or carrying out actions that cannot be performed automatically'
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: 'Are there any interactive steps with end-user required to complete investigation? '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: enduserinteractiveness
+        placeholder: Use Case End User Interactive Steps (supports markdown)
+        tooltip: 'Example:  Asking a end user questions via email, asking management approval via email'
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: 'Is there any logic to deduplication incidents? '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: deduplicationlogic
+        placeholder: Use Case Deduplication Logic
+        tooltip: 'Example: Find active incidents with similar subject line and sender – close as duplicate if found'
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          simple: List out any tools, data sources or integrations that you need to connect too?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: thirdpartyintegrations
+        placeholder: Use Case Required Integrations
+        tooltip: Any third party tools. Examples are Service Now, Palo Alto Firewalls, etc
+        readonly: false
+      - id: "10"
+        label: ""
+        labelarg:
+          simple: Are there any custom incident structures or mapping?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: markdown
+        options: []
+        optionsarg: []
+        fieldassociated: customincidentdatastructure
+        placeholder: Use Case Custom Fields
+        tooltip: Custom fields unique to your environment
+        readonly: false
+      title: Use Case Definition
+      description: This playbook will guide and assist you through the use case development cycle
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: be17f5b0-d302-4e4b-884c-dbdc28df87a3
+    type: regular
+    task:
+      id: be17f5b0-d302-4e4b-884c-dbdc28df87a3
+      version: -1
+      name: Adding the incident name for tracking
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: ${incident.usecasename}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 715d9e10-fce1-428e-87bc-e9ce70c41cd8
+    type: regular
+    task:
+      id: 715d9e10-fce1-428e-87bc-e9ce70c41cd8
+      version: -1
+      name: Setting Severity to Informational
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      severity:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 72821f20-04e2-4c89-8303-8a1487910603
+    type: regular
+    task:
+      id: 72821f20-04e2-4c89-8303-8a1487910603
+      version: -1
+      name: Create HTML
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: UseCaseDefinitionHTML
+      listTemplate:
+        simple: UseCaseTemplate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6fe317ea-f70a-4a4f-8008-641462c8ce81
+    type: regular
+    task:
+      id: 6fe317ea-f70a-4a4f-8008-641462c8ce81
+      version: -1
+      name: Create HTML Report
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      tags:
+      - UseCaseDownload
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      data:
+        simple: ${UseCaseDefinitionHTML}
+      filename:
+        simple: UseCaseDefinition.html
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: ${Use Case Definition.Answers.0}
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f0a70d1b-3539-4768-8e32-4d9dddd7edbd
+    type: regular
+    task:
+      id: f0a70d1b-3539-4768-8e32-4d9dddd7edbd
+      version: -1
+      name: Preparing data for the Use Case
+      description: Converts Markdown to HTML.
+      scriptName: UseCaseBuilderMarkdownToHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      convertOnlyMarkdown:
+        simple: "True"
+      prettifyHTML:
+        simple: "False"
+      text:
+        simple: ${Use Case Definition.Answers}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: acda5467-af92-4546-8ccf-7deefb75c0a5
+    type: condition
+    task:
+      id: acda5467-af92-4546-8ccf-7deefb75c0a5
+      version: -1
+      name: Start over?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "No":
+      - "4"
+      "Yes":
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d744d9c6-123e-4600-8568-7bbfa4de6707
+    type: playbook
+    task:
+      id: d744d9c6-123e-4600-8568-7bbfa4de6707
+      version: -1
+      name: Use Case Builder Playbook Reset
+      playbookName: Use Case Builder Playbook Reset
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f3af660a-8bd9-461c-87be-9a8c8378560f
+    type: regular
+    task:
+      id: f3af660a-8bd9-461c-87be-9a8c8378560f
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: cb6f2b22-0484-4211-8f62-6326c6ff73d4
+    type: regular
+    task:
+      id: cb6f2b22-0484-4211-8f62-6326c6ff73d4
+      version: -1
+      name: Initializing use case adoption coverage
+      scriptName: UseCaseAdoptionMetrics
+      type: regular
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      extend-context:
+        simple: adoption=
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7be184e8-fd1c-4ccf-8b7c-cb12720274a3
+    type: regular
+    task:
+      id: 7be184e8-fd1c-4ccf-8b7c-cb12720274a3
+      version: -1
+      name: Setting adoption metrics
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      usecaseadoptionmetrics:
+        simple: ${adoption}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cfa53867-af5b-4796-8d04-45b6802f7f45
+    type: condition
+    task:
+      id: cfa53867-af5b-4796-8d04-45b6802f7f45
+      version: -1
+      name: Is the XSOAR Rest API enabled?
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: modules
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core REST API
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Core REST API
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: modules
+                      iscontext: true
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Demisto REST API
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value:
+              simple: Demisto REST API
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e0ceeb96-cd73-4ab0-8da4-3822bd252a0d
+    type: playbook
+    task:
+      id: e0ceeb96-cd73-4ab0-8da4-3822bd252a0d
+      version: -1
+      name: Generate Playbooks Based On Category
+      playbookName: Generate Playbooks Based On Category
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: dcb2918d-2f1a-4687-8513-c811676a250a
+    type: regular
+    task:
+      id: dcb2918d-2f1a-4687-8513-c811676a250a
+      version: -1
+      name: XSOAR Rest API is not Active
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      value:
+        simple: Enable the XSOAR Rest API to Generate a Playbook Template
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7dd86862-bb2c-45d3-8f6c-83d7b1f5ef01
+    type: condition
+    task:
+      id: 7dd86862-bb2c-45d3-8f6c-83d7b1f5ef01
+      version: -1
+      name: Is this a Quick Start Use Case?
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.usecasetype
+            iscontext: true
+          right:
+            value:
+              simple: Quick Start
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 91c956e5-b37f-4992-88eb-0bf054948a3f
+    type: regular
+    task:
+      id: 91c956e5-b37f-4992-88eb-0bf054948a3f
+      version: -1
+      name: Create New Quick Start Incident
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      name:
+        simple: Quick Start Incident
+      severity:
+        simple: "0.5"
+      type:
+        simple: Quick Start Use Case
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bc644698-fadc-47d2-82ed-fff9b6ac79e4
+    type: regular
+    task:
+      id: bc644698-fadc-47d2-82ed-fff9b6ac79e4
+      version: -1
+      name: Close the Original Use Case Builder Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 57ae9cf7-0399-47f4-831e-05b352d08909
+    type: playbook
+    task:
+      id: 57ae9cf7-0399-47f4-831e-05b352d08909
+      version: -1
+      name: Setting up the Use Case Builder Content
+      playbookName: Setting up the Use Case Builder Content
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: cda9c45f-d56a-4357-8e3c-8855c92c7993
+    type: title
+    task:
+      id: cda9c45f-d56a-4357-8e3c-8855c92c7993
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: da63a6ec-e778-4a45-82c6-81c9da091712
+    type: playbook
+    task:
+      id: da63a6ec-e778-4a45-82c6-81c9da091712
+      version: -1
+      name: Generate Use Case Builder Lists
+      playbookName: Generate Use Case Builder Lists
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "29"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2540,
+        "width": 1670,
+        "x": 50,
+        "y": -180
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'The main playbook for the Use Case Builder'

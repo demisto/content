@@ -1,30 +1,21 @@
 args:
-- default: false
-  description: The end date for searching incidents.
-  isArray: false
+- description: The end date for searching incidents.
   name: to
-  required: false
-  secret: false
-- default: false
-  description: The start date for searching incidents.
-  isArray: false
+- description: The start date for searching incidents.
   name: from
-  required: false
-  secret: false
 comment: |-
   This widget script generates a map of the Open Expanse Issue Incidents with provider On Prem.
   The map is generated as a static PNG file embedded in Markdown.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1
-dockerimage: demisto/chromium:1.0.0.46586
+dockerimage: demisto/chromium:1.0.0.56296
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
-runonce: false
 script: '-'
 scripttarget: 0
 subtype: python3

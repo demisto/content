@@ -1,0 +1,305 @@
+id: AppendIfNotEmpty_test
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: AppendIfNotEmpty_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11ccb20d-ffcc-48bc-8f36-7014f5408a53
+    type: start
+    task:
+      id: 11ccb20d-ffcc-48bc-8f36-7014f5408a53
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ca39654a-dc18-4760-8e1b-6499b1d2f267
+    type: regular
+    task:
+      id: ca39654a-dc18-4760-8e1b-6499b1d2f267
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f707e37a-b3d9-4081-8df3-4fcc65ce5cd1
+    type: title
+    task:
+      id: f707e37a-b3d9-4081-8df3-4fcc65ce5cd1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6ed1747d-dd5b-4299-853d-61c4cc873e1a
+    type: condition
+    task:
+      id: 6ed1747d-dd5b-4299-853d-61c4cc873e1a
+      version: -1
+      name: 'Test: Add values to empty'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: empty
+                transformers:
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: empty
+                      iscontext: true
+                    raw: {}
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: value
+                    raw: {}
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: value1,value2
+                    raw:
+                      value:
+                        simple: "false"
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: list
+                      iscontext: true
+                    raw: {}
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              simple: '["value","value1","value2","value1","value2"]'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 316ad35f-f394-4dce-8a1a-f783414fa660
+    type: regular
+    task:
+      id: 316ad35f-f394-4dce-8a1a-f783414fa660
+      version: -1
+      name: Set a list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: list
+      value:
+        complex:
+          root: empty
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: value1
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: value2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6f8c6a14-6d6b-42ac-8734-bc1ffbb20ab4
+    type: condition
+    task:
+      id: 6f8c6a14-6d6b-42ac-8734-bc1ffbb20ab4
+      version: -1
+      name: 'Test: Add values to list'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: list
+                transformers:
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: empty
+                      iscontext: true
+                    raw: {}
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: value
+                    raw: {}
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: value1,value2
+                    raw:
+                      value:
+                        simple: "false"
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: list
+                      iscontext: true
+                    raw: {}
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              simple: '["value1","value2","value","value1","value2","value1","value2"]'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

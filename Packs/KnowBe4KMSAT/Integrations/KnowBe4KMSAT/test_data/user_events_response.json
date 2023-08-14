@@ -1,0 +1,63 @@
+{
+    "data": [
+        {
+            "id": "513f46ac-c3d7-4682-ad0d-0c149c0728a2",
+            "account_id": 585832,
+            "user": {
+                "email": "don.juan@example.com",
+                "id": 79233950,
+                "archived": false
+            },
+            "external_id": null,
+            "source": "test",
+            "description": null,
+            "occurred_date": "2023-01-13T13:52:04.529Z",
+            "risk": {
+                "level": null,
+                "decay_mode": null,
+                "expire_date": null
+            },
+            "metadata": null,
+            "event_type": {
+                "id": 2372290413,
+                "name": "test",
+                "description": null
+            }
+        },
+        {
+            "id": "b7e087e6-d537-40fc-8b91-4f28ff0160b4",
+            "account_id": 585832,
+            "user": {
+                "email": "admin@kb4-demo.com",
+                "id": 79233950,
+                "archived": false
+            },
+            "external_id": null,
+            "source": "test",
+            "description": null,
+            "occurred_date": "2023-01-13T13:50:47.740Z",
+            "risk": {
+                "level": null,
+                "decay_mode": null,
+                "expire_date": null
+            },
+            "metadata": null,
+            "event_type": {
+                "id": 2372028387,
+                "name": "PhishRIP Message Found",
+                "description": null
+            }
+        }
+    ],
+    "meta": {
+        "count": 2,
+        "limit_value": 50,
+        "total_pages": 1,
+        "current_page": 1,
+        "next_page": null,
+        "prev_page": null,
+        "is_first_page": true,
+        "is_last_page": true,
+        "is_out_of_range": false
+    }
+}

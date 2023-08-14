@@ -1151,7 +1151,7 @@ class Client(BaseClient):
             raise_on_status=True,
         )
 
-    def new_indicator_request(self, category):
+    def new_indicator_request(self, category, body: Dict[str, Any]):
         """
         Create a new indicator
         """
@@ -1159,8 +1159,10 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='POST',
-                url_suffix=f"indicators/{category}"
+                url_suffix=f"indicators/{category}",
+                json_data=body
             )
+
         except Exception as e:
             demisto.debug(str(e))
             raise ValueError('Failed to parse response body, unexpected response structure from the server.')
@@ -2821,16 +2823,29 @@ def create_indicator_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
 
     category = args.get('category')
+    payload = {}
+    if args.get('display_name'):
+        payload['display_name'] = args.get('display_name')
 
-    response = client.new_indicator_request(category)["data"]
+    if args.get('description'):
+        payload['description'] = args.get('description')
 
-    md_table = tableToMarkdown('FireEye HX New Indicator created successfully', {'ID': response.get('_id')})
+    if args.get('platforms'):
+        if isinstance(args.get('platforms'), list):
+            payload['platforms'] = args.get('platforms')
+        else:
+            payload['platforms'] = [args.get('platforms')]
+
+    response = client.new_indicator_request(category, payload)
+
+    md_table = tableToMarkdown('FireEye HX New Indicator created successfully', {'ID': response.get('data').get('_id')})
 
     return CommandResults(
         outputs_prefix="FireEyeHX.Indicators",
         outputs_key_field="_id",
-        outputs=response,
-        readable_output=md_table
+        outputs=response.get('data'),
+        readable_output=md_table,
+        raw_response=response
     )
 
 
@@ -3059,7 +3074,7 @@ FETCH INCIDENT
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    fetch_limit = min([int(args.get('max_fetch') or '50'), 50])
+    fetch_limit = int(args.get('max_fetch') or '50')
 
     args["sort"] = "reported_at+ascending"
     args["limit"] = fetch_limit
@@ -3115,7 +3130,7 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=1800)
         # result with scheduled_command only - no update to the war room
         return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 

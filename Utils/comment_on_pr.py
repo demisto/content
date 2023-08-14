@@ -5,8 +5,6 @@ import sys
 
 import requests
 
-from demisto_sdk.commands.common.tools import print_success, print_error
-
 
 def main():
     parser = argparse.ArgumentParser(description='Add a comment to a pull request in the repo.')
@@ -24,7 +22,7 @@ def main():
     response = requests.post(comments_url, json={'body': comment}, headers=headers)
     response.raise_for_status()
 
-    print_success('Successfully added the comment to the PR.')
+    print('Successfully added the comment to the PR.')
 
 
 def get_pr_comments_url(pr_number: str) -> str:
@@ -42,7 +40,7 @@ def get_pr_comments_url(pr_number: str) -> str:
     response.raise_for_status()
     pr = response.json()
     if not pr:
-        print_error('Could not find the pull request to reply on.')
+        print('Could not find the pull request to reply on.')
         sys.exit(1)
     page = 1
     comments_url = pr['comments_url']

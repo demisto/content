@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 from freezegun import freeze_time
+import defusedxml.ElementTree as defused_ET
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -24,7 +25,7 @@ def load_json_mock_response(file_name: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -38,7 +39,7 @@ def load_xml_mock_response(file_name: str) -> str:
     """
     file_path = f'test_data/{file_name}'
 
-    top = ET.parse(file_path)
+    top = defused_ET.parse(file_path)
     return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")
 
 
@@ -656,3 +657,15 @@ def test_fetch_incidents_with_pagination(post_mock):
     assert len(incidents) == 5
     assert updated_last_run['create_time'] == 1646237070000
     assert updated_last_run['last_incidents'] == [9, 10, 11, 12, 13]
+
+
+@pytest.mark.parametrize('nested_attr, expected_result', [
+    ('key:value', ('key', 'value')),
+    ('key:value:extra', ('key', 'value')),
+    ('', (None, None)),
+    ('key', (None, None)),
+])
+def test_format_nested_incident_attribute(nested_attr, expected_result):
+    from FortiSIEMV2 import format_nested_incident_attribute
+
+    assert format_nested_incident_attribute(nested_attr) == expected_result
