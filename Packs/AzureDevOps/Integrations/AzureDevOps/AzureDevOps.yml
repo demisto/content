@@ -21,14 +21,14 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality.
-  display: Pull-request project name
+- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands, and the user can override it by the command argument.
+  display: Default Project Name
   name: project
   type: 0
   defaultvalue:
   required: false
-- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality.
-  display: Pull-request repository name
+- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands, and the user can override it by the command argument.
+  display: Default Repository Name
   name: repository
   type: 0
   defaultvalue:
