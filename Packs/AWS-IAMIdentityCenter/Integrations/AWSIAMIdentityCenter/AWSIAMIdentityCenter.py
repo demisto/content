@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-import botocore.exceptions
-
 from datetime import datetime, date
 import urllib3.util
 
