@@ -25,7 +25,6 @@ USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': f'api_key {API_KEY}', 'User-Agent': 'Cortex XSOAR/1.1.11'}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
-DEFAULT_ARCHIVE_PASSWORD = b'infected'
 INDEX_LOG_DELIMITER = '|'
 INDEX_LOG_FILENAME_POSITION = 3
 
@@ -1373,11 +1372,11 @@ def get_screenshots_command():
     screenshot_counter = 0
     try:
         with ZipFile(io.BytesIO(screenshots_data), 'r') as screenshots_zip:
-            index_log_data = screenshots_zip.read('screenshots/index.log', pwd=DEFAULT_ARCHIVE_PASSWORD)
+            index_log_data = screenshots_zip.read('screenshots/index.log')
             for line in index_log_data.splitlines():
                 filename = line.decode('utf-8').split(INDEX_LOG_DELIMITER)[INDEX_LOG_FILENAME_POSITION].strip()
                 extension = os.path.splitext(filename)[1]
-                screenshot_data = screenshots_zip.read(f'screenshots/{filename}', pwd=DEFAULT_ARCHIVE_PASSWORD)
+                screenshot_data = screenshots_zip.read(f'screenshots/{filename}')
                 file_results.append(
                     fileResult(
                         filename=f'analysis_{analysis_id}_screenshot_{screenshot_counter}{extension}',
