@@ -2602,7 +2602,7 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG(f'GMAIL: possible new incidents are {result}')
+    demisto.debug(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2696,7 +2696,7 @@ def main():  # pragma: no cover
         'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command,))
+    demisto.debug(f'GMAIL: command is {command},')
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
@@ -2719,8 +2719,8 @@ def main():  # pragma: no cover
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
-            LOG(traceback.format_exc())
-            LOG.print_log()
+            demisto.error(traceback.format_exc())
+            demisto.error(f'GMAIL: {str(e)}')
             raise
 
         else:
