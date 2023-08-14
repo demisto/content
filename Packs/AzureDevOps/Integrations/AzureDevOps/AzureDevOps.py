@@ -1824,7 +1824,9 @@ def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dic
     entry_id = args.get("entry_id", "")
     if not (entry_id or file_path):
         raise DemistoException('You must specify either the "file_path" or the "entry_id" of the file.')
-    elif entry_id:
+
+    # Take the given arguments, not the entry id, if file_path and entry_id are passed. Otherwise, take the entry id.
+    if not file_path:
         file_path = demisto.getFilePath(entry_id)["path"]
         file_content = Path(file_path).read_text()
 
