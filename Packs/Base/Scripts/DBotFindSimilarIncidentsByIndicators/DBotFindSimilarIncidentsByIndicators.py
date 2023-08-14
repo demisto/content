@@ -384,9 +384,9 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
 def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
-    return CommandResults(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
-                   raw_response={})
-
+    return CommandResults(readable_output=hr,
+                          outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
+                          raw_response={})
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
