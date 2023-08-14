@@ -17,16 +17,16 @@ BOOL_TO_M_LEVEL: dict = {
 }
 CHANGE_TYPE_TO_TEMPLATE: dict[str, Template] = {
     "added": Template("   - A new *$m_level* dependency **$dep_id** was added.\n"),
-    "removed": Template("   - The *$m_level* dependency **$dep_id** is no longer a dependency.\n"),
-    "modified": Template("   - The dependency **$dep_id** was changed from *$previous_m_level* to *$m_level*.\n"),
+    "removed": Template("   - Pack **$dep_id** is no longer a dependency.\n"),
+    "modified": Template("   - The dependency **$dep_id** was changed to *$m_level*.\n"),
 }
 MP_VERSION_TO_DISPLAY: dict = {
     MarketplaceVersions.XSOAR: "XSOAR",
     MarketplaceVersions.MarketplaceV2: "XSIAM",
     MarketplaceVersions.XPANSE: "XPANSE",
 }
-NO_CHANGES_MSG = "## No changes in packs dependencies were made on this pull request."
-CHANGES_MSG_TITLE = "## This pull request introduces changes in packs dependencies.\n"
+NO_CHANGES_MSG = "**No changes in packs dependencies were made on this pull request.**"
+CHANGES_MSG_TITLE = "## This pull request introduces changes in packs dependencies\n"
 
 
 logging_setup(logger.DEBUG)
@@ -86,7 +86,6 @@ def get_summary(diff: dict) -> str:
                         s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
                             dep_id=dep_id,
                             m_level=BOOL_TO_M_LEVEL[dep_data["mandatory"]],
-                            previous_m_level=BOOL_TO_M_LEVEL[not dep_data["mandatory"]],
                         )
     if s:
         logger.info(s)

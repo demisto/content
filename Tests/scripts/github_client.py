@@ -157,7 +157,7 @@ class GithubPullRequest(GithubClient):
                                            "Hello, <!-- SECTION - START -->\nbye<!-- SECTION - END -->!"
         """
         logging.info(f"Editing comment of pull request #{self.data.get('number')}")
-        current_comment = self.data.get("body") or ""
+        current_comment = (self.data.get("body") or "").replace("\r\n", "\n")
         updated_comment = comment
 
         if section_name:
@@ -166,12 +166,12 @@ class GithubPullRequest(GithubClient):
             end_tag = f"\n<!-- {section_name} - END -->"
             replace_pattern = f"({start_tag})(.*?)({end_tag})"
             if re.search(replace_pattern, current_comment, re.DOTALL):
-                updated_comment = re.sub(replace_pattern, fr"\1{comment}\3", current_comment, count=1, flags=re.DOTALL)
+                updated_comment = re.sub(replace_pattern, fr"\1{comment}\3", current_comment, flags=re.DOTALL)
             else:
                 comment = f"{start_tag}{comment}{end_tag}"
                 append = True
         if append:
-            updated_comment = f"{self.data.get('body')}\n{comment}"
+            updated_comment = f"{current_comment}\n{comment}"
         return self.graphql(
             query="""
                 mutation UpdateComment($nodeId: ID!, $comment: String!) {
