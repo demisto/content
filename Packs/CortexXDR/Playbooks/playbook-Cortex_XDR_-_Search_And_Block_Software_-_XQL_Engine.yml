@@ -1,7 +1,7 @@
 id: Cortex XDR - Search And Block Software - XQL Engine
 version: -1
 name: Cortex XDR - Search And Block Software - XQL Engine
-description: This playbook will search a  file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can than choose the files he wishes to block.
+description: This playbook will search a file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can then choose the files to block.
 starttaskid: "0"
 tasks:
   "0":
@@ -127,7 +127,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -549,7 +549,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -798,7 +798,7 @@ tasks:
       id: 391d4c59-dc10-4cdc-8240-7df0d498eb74
       version: -1
       name: Set query results to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -846,7 +846,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
