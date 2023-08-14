@@ -370,6 +370,13 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
                     break
 
     except Exception as e:
+        # 429 error can only be raised when the Elasticsearch instance encountered an error
+        if '429' in str(e):
+            version = demisto.demistoVersion()
+            demisto.error('Encountered issue in Elastic Search query. Restarting container and trying again.')
+            # NG + XSIAM can recover from a shutdown
+            if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
+                exit()
         demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
 
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
@@ -481,7 +488,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
-                (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
+                (indicator_proxysg_category in request_axrgs.category_attribute or len(request_args.category_attribute) == 0):
             # handle indicators in multiple categories
             if isinstance(indicator_proxysg_category, list):
                 for category in indicator_proxysg_category:
