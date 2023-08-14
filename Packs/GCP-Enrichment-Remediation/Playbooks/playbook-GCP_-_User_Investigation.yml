@@ -1,0 +1,1199 @@
+id: GCP - User Investigation
+version: -1
+name: GCP - User Investigation
+description: |-
+  This playbook performs an investigation on a specific user in GCP environments, using queries and logs from G Suite Auditor, and GCP Logging to locate the following activities performed by the user:
+  - Failed login attempt
+  - Suspicious API usage by the user
+  - Anomalous network traffic by the user
+  - Unusual and suspicious login attempt
+  - User's password leaked
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b27cfc98-c986-48f1-81f5-57a7f1ef7d05
+    type: start
+    task:
+      id: b27cfc98-c986-48f1-81f5-57a7f1ef7d05
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: dadc9fcb-5a06-46e0-8ab0-90af4b540ab0
+    type: condition
+    task:
+      id: dadc9fcb-5a06-46e0-8ab0-90af4b540ab0
+      version: -1
+      name: Is Google Cloud Logging enabled and the user name is defined?
+      description: Checks if the Google Cloud Logging integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleCloudLogging
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6d9cbf17-12c3-4665-8982-a8f9cab6f8bb
+    type: condition
+    task:
+      id: 6d9cbf17-12c3-4665-8982-a8f9cab6f8bb
+      version: -1
+      name: Is G Suite Auditor enabled and the user name is defined?
+      description: Checks if the G Suite Auditor integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GSuiteAuditor
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e54c43ff-8afb-4223-800b-86aaeac9073f
+    type: title
+    task:
+      id: e54c43ff-8afb-4223-800b-86aaeac9073f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6dae067b-06cb-43e0-8226-842cf95bf639
+    type: regular
+    task:
+      id: 6dae067b-06cb-43e0-8226-842cf95bf639
+      version: -1
+      name: Failed login
+      description: Retrieves a list of activities for a specific customer's account and application.
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      application_name:
+        simple: login
+      end_time:
+        complex:
+          root: TimeNow
+      event_name:
+        simple: login_failure
+      extend-context:
+        simple: GsuiteFailLogon=
+      ignore-outputs:
+        simple: "true"
+      start_time:
+        complex:
+          root: SearchFromTime
+      user_key:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e7ae2ca7-97fb-43a9-8b46-56b6c48c49ee
+    type: regular
+    task:
+      id: e7ae2ca7-97fb-43a9-8b46-56b6c48c49ee
+      version: -1
+      name: 'A count of login failure '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GsuiteFailLogonCount
+      value:
+        complex:
+          root: GsuiteFailLogon.items.events
+          accessor: name
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bbf3382b-d462-45e3-8492-d2c860dbb660
+    type: title
+    task:
+      id: bbf3382b-d462-45e3-8492-d2c860dbb660
+      version: -1
+      name: G Suite Auditor
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+      - "16"
+      - "17"
+      - "18"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 56251e8f-bbc7-4764-8729-da592377f6fc
+    type: title
+    task:
+      id: 56251e8f-bbc7-4764-8729-da592377f6fc
+      version: -1
+      name: Google Cloud Logging
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "25"
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3a68adeb-b97e-4308-8ad8-0e64b816b2ad
+    type: regular
+    task:
+      id: 3a68adeb-b97e-4308-8ad8-0e64b816b2ad
+      version: -1
+      name: Multiple failed login attempts by the service account
+      description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
+      script: '|||gcp-logging-log-entries-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: GcpFailLogon=
+      filter:
+        simple: |-
+          resource.type="audited_resource" AND protoPayload.methodName="google.cloud.audit.login" AND protoPayload.status.code!=0
+          AND protoPayload.methodName="google.cloud.audit.AuthenticationInfo.AuthenticationFailed"
+          AND protoPayload.authenticationInfo.principalEmail="${inputs.Username}"
+          AND timestamp>="${SearchFromTime}"
+      ignore-outputs:
+        simple: "true"
+      project_name:
+        complex:
+          root: inputs.GcpProjectName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d87966fb-9f6e-4fed-8f90-7912f1969ff8
+    type: regular
+    task:
+      id: d87966fb-9f6e-4fed-8f90-7912f1969ff8
+      version: -1
+      name: An unusual login was performed by the user
+      description: The login attempt had some unusual characteristics, for example the user logged in from an unfamiliar IP address.
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      application_name:
+        simple: login
+      end_time:
+        complex:
+          root: TimeNow
+      event_name:
+        simple: risky_sensitive_action_allowed
+      extend-context:
+        simple: UnusualLoginAllowed=
+      ignore-outputs:
+        simple: "true"
+      start_time:
+        complex:
+          root: SearchFromTime
+      user_key:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 651f89f0-a093-4922-80a3-10dfba47413f
+    type: regular
+    task:
+      id: 651f89f0-a093-4922-80a3-10dfba47413f
+      version: -1
+      name: An unusual login attempt was performed by the user and blocked
+      description: Retrieves a list of activities for a specific customer's account and application.
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      application_name:
+        simple: login
+      end_time:
+        complex:
+          root: TimeNow
+      event_name:
+        simple: risky_sensitive_action_blocked
+      extend-context:
+        simple: GsuiteUnusualLoginBlocked=
+      ignore-outputs:
+        simple: "true"
+      start_time:
+        complex:
+          root: SearchFromTime
+      user_key:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 76c3f3ce-9072-4074-8565-2f4f5e24c649
+    type: regular
+    task:
+      id: 76c3f3ce-9072-4074-8565-2f4f5e24c649
+      version: -1
+      name: Suspicious login was performed by the user
+      description: Retrieves a list of activities for a specific customer's account and application.
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      application_name:
+        simple: login
+      end_time:
+        complex:
+          root: TimeNow
+      event_name:
+        simple: suspicious_login
+      extend-context:
+        simple: GsuiteSuspiciousLogin=
+      ignore-outputs:
+        simple: "true"
+      start_time:
+        complex:
+          root: SearchFromTime
+      user_key:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: bcb78ae5-5768-41a7-84d5-043809656e5d
+    type: regular
+    task:
+      id: bcb78ae5-5768-41a7-84d5-043809656e5d
+      version: -1
+      name: The user disabled and the user's password leaked
+      description: Retrieves a list of activities for a specific customer's account and application.
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      application_name:
+        simple: login
+      end_time:
+        complex:
+          root: TimeNow
+      event_name:
+        simple: account_disabled_password_leak
+      extend-context:
+        simple: GsuiteLeakedpassword=
+      ignore-outputs:
+        simple: "true"
+      start_time:
+        complex:
+          root: SearchFromTime
+      user_key:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1520,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4e139f69-d44c-437c-85a5-37bc0b5b362d
+    type: regular
+    task:
+      id: 4e139f69-d44c-437c-85a5-37bc0b5b362d
+      version: -1
+      name: A count of Suspicious login performed by the user
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GsuiteSuspiciousLoginCount
+      value:
+        complex:
+          root: GoogleUserLogs.items.events
+          accessor: name
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1a06c391-b315-44cb-81b0-99908ac77676
+    type: regular
+    task:
+      id: 1a06c391-b315-44cb-81b0-99908ac77676
+      version: -1
+      name: A count of unusual logins attempts performed by the user and blocked
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GsuiteUnusualLoginBlockedCount
+      value:
+        complex:
+          root: GoogleUserLogs.items.events
+          accessor: name
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2b3aba1d-0642-4246-8a7b-d3823f405798
+    type: regular
+    task:
+      id: 2b3aba1d-0642-4246-8a7b-d3823f405798
+      version: -1
+      name: A count of unusual logins performed by the user
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GsuiteUnusualLoginAllowedCount
+      value:
+        complex:
+          root: GoogleUserLogs.items.events
+          accessor: name
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 02c4cc95-abd1-4c0e-8b21-daeff88959a2
+    type: regular
+    task:
+      id: 02c4cc95-abd1-4c0e-8b21-daeff88959a2
+      version: -1
+      name: Set If User's password was leaked
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GsuiteUserPasswordLeaked
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: LeakedPassword.items.events.name
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1520,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: acebc7b1-fc43-4027-8ad2-e8b236ca8ab6
+    type: regular
+    task:
+      id: acebc7b1-fc43-4027-8ad2-e8b236ca8ab6
+      version: -1
+      name: ' Suspicious API usage by the service account'
+      description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
+      script: '|||gcp-logging-log-entries-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      extend-context:
+        simple: GcpApi=
+      filter:
+        simple: "resource.type=\"api\" AND \nprotoPayload.type=\"type.googleapis.com/google.cloud.audit.AuditLog\" AND protoPayload.authenticationInfo.principalEmail=\"${inputs.Username}\" AND protoPayload.status.code!=OK AND timestamp>=\"${SearchFromTime}\""
+      ignore-outputs:
+        simple: "true"
+      project_name:
+        complex:
+          root: inputs.GcpProjectName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 485e7aad-cfa0-4d76-8b57-7909630b2217
+    type: regular
+    task:
+      id: 485e7aad-cfa0-4d76-8b57-7909630b2217
+      version: -1
+      name: Anomalous network traffic  by the service account
+      description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
+      script: '|||gcp-logging-log-entries-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      extend-context:
+        simple: GcpAnomalousTraffic=
+      filter:
+        simple: |-
+          resource.type="gce_network" AND
+          logName="projects/${inputs.GcpProjectName}/logs/compute.googleapis.com%2Fvpc_flows" AND
+          protoPayload.authenticationInfo.principalEmail="${inputs.Username}" AND
+          protoPayload.status.details="ANOMALOUS_TRAFFIC" AND timestamp>="${SearchFromTime}"
+      ignore-outputs:
+        simple: "true"
+      project_name:
+        complex:
+          root: inputs.GcpProjectName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ecdd0724-1f54-46dc-8ca3-195f7106c933
+    type: regular
+    task:
+      id: ecdd0724-1f54-46dc-8ca3-195f7106c933
+      version: -1
+      name: Get Time for a search
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    scriptarguments:
+      contextKey:
+        simple: SearchFromTime
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        complex:
+          root: inputs.GcpTimeSearchFrom
+      extend-context:
+        simple: SearchFromTime=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ff2101fc-3346-4b65-86f6-aff69984940e
+    type: regular
+    task:
+      id: ff2101fc-3346-4b65-86f6-aff69984940e
+      version: -1
+      name: Get TimeNow for a search
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 70b6ec52-aa56-47c2-822c-cbadf7ff93cc
+    type: regular
+    task:
+      id: 70b6ec52-aa56-47c2-822c-cbadf7ff93cc
+      version: -1
+      name: Count of login failure  by the service account
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GcpFailLogonCount
+      value:
+        complex:
+          root: GcpFailLogon.items.events
+          accessor: name
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: b3ca8f19-3b42-492d-85b9-b88e69668194
+    type: regular
+    task:
+      id: b3ca8f19-3b42-492d-85b9-b88e69668194
+      version: -1
+      name: Set If  there suspicious API usage by the service account
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GcpSuspiciousApiUsage
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: GcpApi.items.events.name
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 1180b12d-2fa5-44eb-8379-0396652b579e
+    type: regular
+    task:
+      id: 1180b12d-2fa5-44eb-8379-0396652b579e
+      version: -1
+      name: Set If there is anomalous network traffic  by the service account
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: GcpAnomalousNetworkTraffic
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: GcpAnomalousTraffic.items.events.name
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_14_yes": 0.52,
+      "6_8_#default#": 0.21,
+      "7_13_yes": 0.41,
+      "7_8_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 3520,
+        "x": -1520,
+        "y": -270
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: The username to investigate.
+  playbookInputQuery:
+- key: GcpProjectName
+  value: {}
+  required: false
+  description: The GCP project name. This is a mandatory field for GCP queries.
+  playbookInputQuery:
+- key: GcpTimeSearchFrom
+  value:
+    simple: "1"
+  required: false
+  description: "The Search Time for the `GetTime` task used by the GCP Logging search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  playbookInputQuery:
+outputs:
+- contextPath: GcpAnomalousNetworkTraffic
+  description: Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
+  type: unknown
+- contextPath: GcpSuspiciousApiUsage
+  description: Determines whether there are events of suspicious API usage by the user in the GCP environment.
+  type: unknown
+- contextPath: GcpFailLogonCount
+  description: The number of failed logins by the user in the GCP environment.
+  type: unknown
+- contextPath: GsuiteFailLogonCount
+  description: The number of failed logins by the user in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUnusualLoginAllowedCount
+  description: The number of unusual logins performed by the user and allowed in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUnusualLoginBlockedCount
+  description: The number of unusual logins performed by the user and blocked in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteSuspiciousLoginCount
+  description: The number of suspicious logons performed by the user in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUserPasswordLeaked
+  description: Determines whether the user's password was leaked in the G Suite environment.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
