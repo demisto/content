@@ -18,8 +18,8 @@ MAX_SKIP = 50000
 EXECUTION_TIMEOUT_SECONDS = 190  # 3:30 minutes
 # Netskope response constants
 WAIT_TIME = 'wait_time'  # Wait time between queries
-RATELIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
-RATELIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
+RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
+RATE_LIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
 
 ''' CLIENT CLASS '''
 
@@ -62,11 +62,11 @@ def honor_rate_limiting(headers, endpoint):
     client.
     """
     try:
-        if remaining := headers.get(RATELIMIT_REMAINING):
+        if remaining := headers.get(RATE_LIMIT_REMAINING):
             demisto.debug(f'Remaining rate limit is: {remaining}')
             if int(remaining) <= 0:
                 demisto.debug(f'Rate limiting reached for the endpoint: {endpoint}')
-                if to_sleep := headers.get(RATELIMIT_RESET):
+                if to_sleep := headers.get(RATE_LIMIT_RESET):
                     demisto.debug(f'Going to sleep for {to_sleep} seconds to avoid rate limit error')
                     time.sleep(int(to_sleep))
                 else:
@@ -242,7 +242,7 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
         first_fetch = params.get('first_fetch')
         max_fetch = arg_to_number(params.get('max_fetch', 1000))
-        vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev_2')
+        vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
 

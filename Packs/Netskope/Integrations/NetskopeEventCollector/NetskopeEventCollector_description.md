@@ -1,3 +1,4 @@
+[//]: # (TODO: add limitations and permissions)
 ### Netskope Event Collector
 
 - Collects events extracted from SaaS traffic and logs.
