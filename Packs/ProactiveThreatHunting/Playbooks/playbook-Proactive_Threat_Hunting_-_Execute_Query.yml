@@ -48,7 +48,7 @@ tasks:
       id: f450f9f6-7d4c-40e6-80c1-08ed03dd1fd4
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -87,7 +87,7 @@ tasks:
       id: dde3c637-b8b9-4134-85d7-631098080714
       version: -1
       name: Please provide query to execute
-      description: Asks the analyst to provide query to execute
+      description: Asks the analyst to provide a query to execute.
       type: collection
       iscommand: false
       brand: ""
@@ -189,7 +189,7 @@ tasks:
       id: f728b726-18a0-4d6b-8850-96a4ffdfdc0c
       version: -1
       name: Is Cortex XDR Query Engine enabled?
-      description: Checks if the Query Engine integration enabled
+      description: Checks if the Query Engine integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -295,7 +295,7 @@ tasks:
       id: 58d64fc9-710a-413d-8f57-a0f9a85139a6
       version: -1
       name: Set custom query results to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -343,7 +343,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -383,7 +383,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -422,7 +422,7 @@ tasks:
       id: 2bf0fd8c-61f3-4e63-819a-4b6bf238b3ce
       version: -1
       name: Has custom query results?
-      description: Checks if the query returned results
+      description: Checks if the query returned results.
       type: condition
       iscommand: false
       brand: ""
@@ -472,7 +472,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -544,7 +544,7 @@ tasks:
       id: 6015fbf9-bc6d-41bd-8bb1-cc9b914755f1
       version: -1
       name: Is Microsoft Defender enabled?
-      description: Checks if the Defender integration enabled
+      description: Checks if the Microsoft Defender integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -608,7 +608,7 @@ tasks:
       id: 333030f6-517f-4b22-8492-f80d559d53c2
       version: -1
       name: Has custom query results?
-      description: Checks if the query returned results
+      description: Checks if the query returned results.
       type: condition
       iscommand: false
       brand: ""
@@ -653,7 +653,7 @@ tasks:
       id: 2ecae88f-51fa-4352-8879-61c295a0ac71
       version: -1
       name: Set custom query results to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false

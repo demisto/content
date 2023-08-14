@@ -2,7 +2,7 @@ id: Proactive Threat Hunting
 version: -1
 name: Proactive Threat Hunting
 description: |-
-  This playbook is the the main playbook of the 'Proactive Threat Hunting' pack. It automatically runs during a new hunting session and guides the threat hunter through the session based on the selected hunting method. The available hunting methods are:
+  This playbook is the main playbook of the 'Proactive Threat Hunting' pack. It automatically runs during a new hunting session and guides the threat hunter through the session based on the selected hunting method. The available hunting methods are:
 
   - SDO Hunt: Constructs the hunting hypothesis based on SDO indicators (Campaign, Malware, Intrusion Set).
   - Freestyle Hunt: Allows the threat hunter to provide their own queries and IOCs for hunting.
@@ -115,7 +115,7 @@ tasks:
       id: 55f7df93-7f3b-4b7d-85ac-e35c9c61280a
       version: -1
       name: Set incident tag
-      description: Change the properties of an incident
+      description: Change the properties of an incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -245,7 +245,7 @@ tasks:
       id: 6b95d466-9d56-4f1a-8829-3b1972077d66
       version: -1
       name: Executed from indicator layout?
-      description: Checks if the incident was executed from indicator layout
+      description: Checks if the incident was executed from the indicator layout.
       type: condition
       iscommand: false
       brand: ""
@@ -290,7 +290,7 @@ tasks:
       id: 5729a1c8-5911-4c26-8db4-14e638020822
       version: -1
       name: Print message to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -393,7 +393,7 @@ tasks:
       id: ec471de0-f8bb-4391-8c31-ab18223eabe2
       version: -1
       name: Hunt for
-      description: Choosing hunting method based on the collection task
+      description: Choose hunting method based on the collection task.
       type: condition
       iscommand: false
       brand: ""
@@ -488,7 +488,7 @@ tasks:
       id: 083b81ce-0303-4fa3-8a49-b960f18c4829
       version: -1
       name: Print message to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -547,7 +547,7 @@ inputs:
   value:
     simple: "0.5"
   required: false
-  description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  description: 'StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
   playbookInputQuery:
 outputs: []
 tests:

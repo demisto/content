@@ -44,7 +44,7 @@ tasks:
       id: 7a4ed82d-bb5e-4701-8bb3-4b8cfd310250
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -124,7 +124,7 @@ tasks:
       id: ecbda7db-7aaa-4ab6-838d-7821036829d7
       version: -1
       name: Has endpoint enrichment results
-      description: Check if the automation "endpoint" outputs results
+      description: Check if the automation "endpoint" outputs results.
       type: condition
       iscommand: false
       brand: ""
@@ -169,7 +169,7 @@ tasks:
       id: 2059eb16-79e8-43f4-86ef-1845e9cab36e
       version: -1
       name: Choose entities to enrich
-      description: Ask the user to select entities(users/endpoints) to enrich
+      description: Ask the user to select entities(users/endpoints) to enrich.
       type: collection
       iscommand: false
       brand: ""
@@ -258,7 +258,7 @@ tasks:
       id: 41f3e374-9a9c-4430-8c04-3112776f3c4c
       version: -1
       name: Set endpoint enrichment data to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -367,7 +367,7 @@ tasks:
       id: 7437209c-2eea-4918-8c1f-fe682758c9b4
       version: -1
       name: Related alerts found?
-      description: Checks if related alerts were found
+      description: Checks if related alerts were found.
       type: condition
       iscommand: false
       brand: ""
@@ -410,7 +410,7 @@ tasks:
       id: fba78e75-3d40-48b9-82e3-238b7fdcdf54
       version: -1
       name: Set related alerts to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -603,7 +603,7 @@ tasks:
         - Okta
         - AWS IAM
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -772,7 +772,7 @@ tasks:
       id: 5ac27be5-c75e-4a7d-8f8c-4310738fe853
       version: -1
       name: Has user to enrich?
-      description: Checks if the analyst selected accounts to enrich
+      description: Checks if the analyst selected accounts to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -849,7 +849,7 @@ tasks:
       id: ad98b94b-9bd8-46d2-8999-1f1becbd19d8
       version: -1
       name: Has endpoint to enrich?
-      description: Checks if the analyst selected endpoints to enrich
+      description: Checks if the analyst selected endpoints to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -971,7 +971,7 @@ tasks:
       id: c7ff90ca-7678-41bf-86a9-e69595144ae2
       version: -1
       name: Set user enrichment data to layout
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -1070,7 +1070,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1110,7 +1110,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false

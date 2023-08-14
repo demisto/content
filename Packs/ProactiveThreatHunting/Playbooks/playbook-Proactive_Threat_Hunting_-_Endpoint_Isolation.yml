@@ -95,7 +95,7 @@ tasks:
       id: 66dba88b-62e6-42e7-83a7-c27389fdb346
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -134,7 +134,7 @@ tasks:
       id: 27544442-9757-4523-84f4-49181805f501
       version: -1
       name: Select endpoint to isolate
-      description: Asking the user to select endpoint to isolate
+      description: Asking the user to select an endpoint to isolate.
       type: collection
       iscommand: false
       brand: ""
@@ -204,7 +204,7 @@ tasks:
       id: 671ae69a-9ca5-438c-8dc0-e2ddd4b4a743
       version: -1
       name: Has endpoint to isolate?
-      description: Checks the user choice in the collection task "Select endpoint to isolate"
+      description: Checks the user's choice in the collection task "Select endpoint to isolate".
       type: condition
       iscommand: false
       brand: ""
@@ -277,7 +277,7 @@ tasks:
       id: c921585f-9766-41de-840d-3b0674bd438e
       version: -1
       name: Executed from freestyle hunt?
-      description: Checks if the playbook was executed from Freestyle Hunt tab
+      description: Checks if the playbook was executed from the Freestyle Hunt tab.
       type: condition
       iscommand: false
       brand: ""
@@ -324,7 +324,7 @@ tasks:
       id: f765e0c8-4332-4b21-8571-7cf1268938e5
       version: -1
       name: Enter endpoint name to isolate
-      description: Asking the user to select endpoint to isolate
+      description: Asking the user to select an endpoint to isolate.
       type: collection
       iscommand: false
       brand: ""

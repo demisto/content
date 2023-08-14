@@ -47,7 +47,7 @@ tasks:
       description: |-
         Searches Cortex XSOAR Indicators.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+        Searches for Cortex XSOAR indicators and returns the id, indicator_type, value, and score/verdict.
 
         You can add additional fields from the indicators using the add_field_to_context argument.
       scriptName: SearchIndicator
@@ -227,7 +227,7 @@ tasks:
       id: 9038c930-e180-482e-8b0f-583892205ba6
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -262,7 +262,7 @@ tasks:
       id: 1e8e2819-875f-4dff-838f-e2be4f776c73
       version: -1
       name: Which IOCs To Block?
-      description: Asking the user to select IOCs to block
+      description: Asking the user to select IOCs to block.
       type: collection
       iscommand: false
       brand: ""
@@ -330,7 +330,7 @@ tasks:
       id: 1c5125f8-0ee3-4eba-82f4-cce0659f3e34
       version: -1
       name: Block only detected IOCs?
-      description: Checks the user response in the collection task "Which IOCs to block?"
+      description: Checks the user response in the collection task "Which IOCs to block?".
       type: condition
       iscommand: false
       brand: ""
@@ -378,9 +378,9 @@ tasks:
       version: -1
       name: Get indicators
       description: |-
-        Searches Cortex XSOAR Indicators.
+        Searches Cortex XSOAR indicators.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+        Searches for Cortex XSOAR indicators and returns the id, indicator_type, value, and score/verdict.
 
         You can add additional fields from the indicators using the add_field_to_context argument.
       scriptName: SearchIndicator
@@ -427,7 +427,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -467,7 +467,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -502,7 +502,7 @@ tasks:
       id: 01e94d39-b13c-40db-8732-af1a36b3a8eb
       version: -1
       name: Executed from freestyle hunt?
-      description: Checks if the playbook was executed from Freestyle Hunt tab
+      description: Checks if the playbook was executed from the Freestyle Hunt tab.
       type: condition
       iscommand: false
       brand: ""
@@ -785,7 +785,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
