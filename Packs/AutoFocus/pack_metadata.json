@@ -20,7 +20,7 @@
     ],
     "dependencies": {
         "CommonScripts": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Scripts"
         }
     },

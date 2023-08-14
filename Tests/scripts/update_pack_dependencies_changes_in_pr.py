@@ -6,6 +6,7 @@ from string import Template
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.logger import logging_setup
+from demisto_sdk.commands.common.tools import get_marketplace_to_core_packs
 
 from Tests.scripts.find_pack_dependencies_changes import DEPENDENCIES_FIELDS, DIFF_FILENAME
 from Tests.scripts.github_client import GithubPullRequest
@@ -42,7 +43,7 @@ def parse_args() -> Namespace:
     return options.parse_args()
 
 
-def get_summary(diff: dict) -> str:
+def get_summary(diff: dict, core_packs: set) -> str:
     """Logs and returns a string reperesentation of the pack dependencies changes.
 
     `diff` is expected to contain key-value pairs of pack IDs and their changes.
@@ -78,9 +79,10 @@ def get_summary(diff: dict) -> str:
         for change_type, change_data in pack_data.items():
             for dep_field in DEPENDENCIES_FIELDS:
                 if dependencies_data := change_data.get(dep_field):
+                    core_pack = " (core pack)" if pack_id in core_packs else ""
                     s += (
                         f"- In the {'all' if dep_field.startswith('all') else 'first'}-"
-                        f"level dependencies of pack **{pack_id}**:\n"
+                        f"level dependencies of pack **{pack_id}{core_pack}**:\n"
                     )
                     for dep_id, dep_data in dependencies_data.items():
                         s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
@@ -102,11 +104,12 @@ def aggregate_summaries(artifacts_folder: str) -> dict:
         dict: a key-value pairs of marketplaces and their pack dependencies changes' summary.
     """
     summaries: dict = {}
+    core_packs = get_marketplace_to_core_packs()
     for marketplace in list(MarketplaceVersions):
         diff_path = Path(artifacts_folder) / marketplace.value / DIFF_FILENAME
         if diff_path.is_file():
             diff = json.loads(diff_path.read_text())
-            if summary := get_summary(diff):
+            if summary := get_summary(diff, core_packs[marketplace]):
                 summaries[marketplace.value] = summary
     return summaries
 
