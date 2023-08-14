@@ -130,7 +130,7 @@ def main():
         readable_role = env["Role"]
         role = readable_role.replace(' ', '')
         server_ip = env["InstanceDNS"]
-        logging.info(f'{i}/{len(servers_list)} {server_ip} - Downloading server log from {readable_role}, and destroying it')
+        logging.info(f'{i}/{len(servers_list)} {server_ip} - D ownloading server log from {readable_role}, and destroying it')
 
         success &= destroy_server(options.artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live)
 
