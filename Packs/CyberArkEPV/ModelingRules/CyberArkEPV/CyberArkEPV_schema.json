@@ -53,7 +53,7 @@
         "is_array": false
       },
       "cs6": {
-        "type": "string",
+        "type": "datetime",
         "is_array": false
       },
       "cs6Label": {
