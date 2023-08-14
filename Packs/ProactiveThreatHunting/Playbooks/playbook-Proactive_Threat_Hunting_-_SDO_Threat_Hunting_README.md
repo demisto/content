@@ -1,11 +1,11 @@
-This playbook will be executed when the analyst is choosing to perform SDO hunt.
-the playbook receives a SDO type indicator and executes for the following steps:
+This playbook will be executed when the analyst chooses to perform SDO hunting.
+The playbook receives an SDO type indicator and executes the following steps:
 
-- Searches IOCs related to the SDO indicator - IPs, Hashes, Domains, URLs
-- hunt for the found IOCs using "Threat Hunting - Generic" sub-playbook
-- Searches Attack patterns that are related to the SDO indicator
-- Searches LOLBAS tools that are related to the found attack patterns
-- Hunt for Lolbin executions command-line arguments that are similar to LOLBAS  malicious commands patterns
+- Searches IOCs related to the SDO indicator - IPs, Hashes, Domains, URLs.
+- Hunts for the found IOCs using the "Threat Hunting - Generic" sub-playbook.
+- Searches attack patterns that are related to the SDO indicator.
+- Searches LOLBAS tools that are related to the found attack patterns.
+- Hunts for LOLBin executions command-line arguments that are similar to LOLBAS  malicious commands patterns.
 
 ## Dependencies
 
