@@ -76,12 +76,20 @@ Query inventory information. This includes managed node status, such as Stopped 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.SSM.InventoryNextToken | String | The token for the next set of items to return. | 
-| AWS.SSM.Inventory.Entities | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
 | AWS.SSM.Inventory.Entities.Id | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
 | AWS.SSM.Inventory.Entities.Data.TypeName | String | The name of the inventory result item type. | 
 | AWS.SSM.Inventory.Entities.Data.SchemaVersion | String | The schema version for the inventory result item. | 
 | AWS.SSM.Inventory.Entities.Data.CaptureTime | String | The time inventory item data was captured. | 
 | AWS.SSM.Inventory.Entities.Data.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
+| AWS.SSM.Inventory.Entities.Data.Content.AgentType | String | The type of SSM agent running on the instance. | 
+| AWS.SSM.Inventory.Entities.Data.Content.AgentVersion | String | The version of the SSM agent running on the instance. | 
+| AWS.SSM.Inventory.Entities.Data.Content.ComputerName | String | The fully qualified host name of the managed node. | 
+| AWS.SSM.Inventory.Entities.Data.Content.IpAddress | String | The IP address of the managed node. | 
+| AWS.SSM.Inventory.Entities.Data.Content.PlatformName | String | The name of the operating system platform running on the managed node. | 
+| AWS.SSM.Inventory.Entities.Data.Content.PlatformType | String | The operating system platform type. | 
+| AWS.SSM.Inventory.Entities.Data.Content.PlatformVersion | String | The version of the OS platform running on the managed node. | 
+| AWS.SSM.Inventory.Entities.Data.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
+| AWS.SSM.Inventory.Entities.Data.Content.InstanceId | String | The managed node ID. | 
 
 #### Command example
 ```!aws-ssm-inventory-get limit=2```
@@ -134,3 +142,78 @@ Query inventory information. This includes managed node status, such as Stopped 
 >| i-test1 |  |  |  |  |  |  |  |
 >| i-test2 | i-test2 | computer_name | Linux | Ubuntu | agent_version | ip_address | resource_type |
 
+
+### aws-ssm-inventory-entry-list
+
+***
+A list of inventory items returned by the request.
+
+#### Base Command
+
+`aws-ssm-inventory-entry-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| instance_id | The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command. | Required | 
+| type_name | The type of inventory item to get information for. | Required | 
+| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.InventoryEntryNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.InventoryEntry.TypeName | String | The type of inventory item returned by the request. | 
+| AWS.SSM.InventoryEntry.InstanceId | String | The managed node ID targeted by the request to query inventory information. | 
+| AWS.SSM.InventoryEntry.SchemaVersion | String | The inventory schema version used by the managed node\(s\). | 
+| AWS.SSM.InventoryEntry.CaptureTime | String | The time that inventory information was collected for the managed node\(s\). | 
+| AWS.SSM.InventoryEntry.Entries.AgentVersion | String | The version of the SSM agent running on the instance. | 
+| AWS.SSM.InventoryEntry.Entries.AgentType | String | The type of SSM agent running on the instance. | 
+| AWS.SSM.InventoryEntry.Entries.ComputerName | String | The fully qualified host name of the managed node. | 
+| AWS.SSM.InventoryEntry.Entries.IpAddress | String | The IP address of the managed node. | 
+| AWS.SSM.InventoryEntry.Entries.PlatformName | String | The name of the operating system platform running on the managed node. | 
+| AWS.SSM.InventoryEntry.Entries.PlatformType | String | The operating system platform type. | 
+| AWS.SSM.InventoryEntry.Entries.PlatformVersion | String | The version of the OS platform running on the managed node. | 
+| AWS.SSM.InventoryEntry.Entries.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
+
+#### Command example
+```!aws-ssm-inventory-entry-list instance_id=test type_name=AWS:InstanceInformation```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "InventoryEntry": {
+                "CaptureTime": "2023-07-25T16:01:59Z",
+                "Entries": [
+                     {
+                        "AgentType": "agent_type",
+                        "AgentVersion": "agent_version",
+                        "ComputerName": "computer_name",
+                        "InstanceId": "instance_id",
+                        "InstanceStatus": "Stopped",
+                        "IpAddress": "ip_address",
+                        "PlatformName": "Ubuntu",
+                        "PlatformType": "Linux",
+                        "PlatformVersion": "20.04",
+                        "ResourceType": "resource_type"
+                    },
+                ],
+                "InstanceId": "test",
+                "SchemaVersion": "1.0",
+                "TypeName": "AWS:InstanceInformation"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS SSM Inventory
+>|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|
+>|---|---|---|---|---|---|---|
+>| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |

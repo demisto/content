@@ -2,10 +2,15 @@ import json
 # from mypy_boto3_ssm.client import SSMClient, Exceptions as AWSExceptions
 import pytest
 from pytest_mock import MockerFixture
-from AWSSystemManager import add_tags_to_resource_command, get_inventory_command
+from AWSSystemManager import (
+    add_tags_to_resource_command,
+    get_inventory_command,
+    list_inventory_entry_command,
+)
+from CommonServerPython import DemistoException
 
 
-class MockClient():
+class MockClient:
     def __init__(self):
         pass
 
@@ -13,6 +18,9 @@ class MockClient():
         pass
 
     def get_inventory(self, **kwargs):
+        pass
+
+    def list_inventory_entries(self, **kwargs):
         pass
 
 
@@ -83,14 +91,76 @@ def test_get_inventory_command(
         )
 
 
-# def test_get_inventory_command_raise_error(mocker: MockerFixture) -> NoReturn:
-#     error_msg = "Invalid next token. If the command has already been run, the next token exists in the context data in the key AWS.SSM.InventoryNextToken. : test_error."
-#     mocker.patch.object(
-#         MockClient,
-#         "get_inventory",
-#         side_effect=AWSExceptions.InvalidNextToken(
-#             operation_name="test_operation", response="test_error"
-#         ),
-#     )
-#     with pytest.raises(AWSExceptions.InvalidNextToken, match=error_msg):
-#         get_inventory_command(MockClient, {})
+@pytest.mark.parametrize(
+    "args, mock_res_token, expected_len",
+    [
+        (
+            {
+                "instance_id": "i-0a00aaa000000000a",
+                "type_name": "test_type_name",
+                "next_token": "test_token",
+            },
+            {"NextToken": "test_token"},
+            2,
+        ),
+        (
+            {
+                "instance_id": "i-0a00aaa000000000a",
+                "type_name": "test_type_name",
+                "next_token": "test_token",
+            },
+            {},
+            1,
+        ),
+    ],
+)
+def test_list_inventory_entry_command(
+    mocker: MockerFixture, args: dict, mock_res_token: dict, expected_len: int
+) -> None:
+    mock_response: dict = util_load_json(
+        "test_data/get_inventory_entry_command.json"
+    )
+    mock_response.update(mock_res_token)
+    mock_list_inventory_entry_request = mocker.patch.object(
+        MockClient, "list_inventory_entries", return_value=mock_response
+    )
+
+    readable_output = (
+        "### AWS SSM Inventory\n"
+        "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
+        "|---|---|---|---|---|---|---|\n"
+        "| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |\n"
+        "| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |\n"
+    )
+    response = list_inventory_entry_command(MockClient, args)
+    entries_index = 0 if len(response) == 1 else 1
+
+    # if next_token is not provided, the first CommandResults in the result is the entries
+    assert (
+        len(response) == expected_len
+    )  # assert that the response contains list of CommandResults the inventory and the next_token if provided
+    assert response[entries_index].outputs == mock_response
+    assert response[entries_index].readable_output == readable_output
+    mock_list_inventory_entry_request.assert_called_with(
+        NextToken=args["next_token"],
+        InstanceId=args["instance_id"],
+        TypeName=args["type_name"],
+        MaxResults=50,
+    )
+    if len(response) == 2:
+        assert response[0].outputs == "test_token"
+        assert (
+            response[0].readable_output
+            == f"For more results rerun the command with next_token='{mock_response.pop('NextToken')}'."
+        )
+
+
+def test_list_inventory_entry_command_raise_error():
+    with pytest.raises(DemistoException, match="Invalid instance id: bla-0a00aaa000000000a"):
+        list_inventory_entry_command(
+            MockClient,
+            {
+                "instance_id": "bla-0a00aaa000000000a",
+                "type_name": "test_type_name",
+            },
+        )

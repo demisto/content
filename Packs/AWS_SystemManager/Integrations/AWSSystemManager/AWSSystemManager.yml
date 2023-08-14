@@ -125,9 +125,6 @@ script:
     - contextPath: AWS.SSM.InventoryNextToken
       description: The token for the next set of items to return.
       type: String
-    - contextPath: AWS.SSM.Inventory.Entities
-      description: ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID.
-      type: String
     - contextPath: AWS.SSM.Inventory.Entities.Id
       description: ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID.
       type: String
@@ -142,6 +139,87 @@ script:
       type: String
     - contextPath: AWS.SSM.Inventory.Entities.Data.ContentHash
       description: MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.AgentType
+      description: The type of SSM agent running on the instance.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.AgentVersion
+      description: The version of the SSM agent running on the instance.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.ComputerName
+      description: The fully qualified host name of the managed node.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.IpAddress
+      description: The IP address of the managed node.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.PlatformName
+      description: The name of the operating system platform running on the managed node.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.PlatformType
+      description: The operating system platform type.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.PlatformVersion
+      description: The version of the OS platform running on the managed node.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.ResourceType
+      description: The type of instance. Instances are either EC2 instances or managed instances.
+      type: String
+    - contextPath: AWS.SSM.Inventory.Entities.Data.Content.InstanceId
+      description: The managed node ID.
+      type: String
+  - arguments:
+    - description: 'The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command.'
+      name: instance_id
+      required: True
+    - description: The type of inventory item to get information for.
+      name: type_name
+      required: True
+    - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
+      name: limit
+      defaultvalue: 50
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
+      name: next_token
+    description: A list of inventory items returned by the request.
+    name: aws-ssm-inventory-entry-list
+    outputs:
+    - contextPath: AWS.SSM.InventoryEntryNextToken
+      description: The token for the next set of items to return.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.TypeName
+      description: The type of inventory item returned by the request.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.InstanceId
+      description: The managed node ID targeted by the request to query inventory information.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.SchemaVersion
+      description: The inventory schema version used by the managed node(s).
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.CaptureTime
+      description: The time that inventory information was collected for the managed node(s).
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.AgentVersion
+      description: The version of the SSM agent running on the instance.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.AgentType
+      description: The type of SSM agent running on the instance.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.ComputerName
+      description: The fully qualified host name of the managed node.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.IpAddress
+      description: The IP address of the managed node.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformName
+      description: The name of the operating system platform running on the managed node.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformType
+      description: The operating system platform type.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformVersion
+      description: The version of the OS platform running on the managed node.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.Entries.ResourceType
+      description: The type of instance. Instances are either EC2 instances or managed instances.
       type: String
   isfetch: false
   runonce: false
