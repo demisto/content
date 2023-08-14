@@ -20,7 +20,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.12.68714
 enabled: true
 name: ContentDependencies
 runas: DBotWeakRole

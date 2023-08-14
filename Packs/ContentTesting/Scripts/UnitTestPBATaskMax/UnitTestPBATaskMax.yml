@@ -4,8 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-comment: ''
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.12.68714
 enabled: true
 name: UnitTestPBATaskMax
 runas: DBotWeakRole
@@ -19,3 +18,4 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+runonce: false

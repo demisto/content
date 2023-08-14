@@ -1,6 +1,5 @@
 args:
 - name: playbook
-  description: ''
 comment: |
   Assesses the tasks executed in a playbook during the content testing process.
 commonfields:
@@ -9,7 +8,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.12.68714
 enabled: true
 name: UnitTestCoverage
 runas: DBotWeakRole
