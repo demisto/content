@@ -2,7 +2,7 @@ id: Proactive Threat Hunting - Quarantine File
 version: -1
 name: Proactive Threat Hunting - Quarantine File
 description: |-
-  This playbook will be executed from the “Proactive Threat Hunting” layout button with the objective of quarantine a file specified by the analyst. The following integrations is supported:
+  This playbook will be executed from the “Proactive Threat Hunting” layout button with the objective of quarantining a file specified by the analyst. The following integration is supported:
   - Cortex XDR IR
 starttaskid: "0"
 tasks:
@@ -44,7 +44,7 @@ tasks:
       id: 7e850afe-3652-4e16-8e64-76d27b1e5381
       version: -1
       name: Print update to notes
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -83,7 +83,7 @@ tasks:
       id: 224159e0-ec3c-4364-8128-a8f2d37f8641
       version: -1
       name: Provide details for file quarantine
-      description: Asks the analyst to provide the relevant data required for quarantining file
+      description: Asks the analyst to provide the relevant data required for quarantining the file.
       type: collection
       iscommand: false
       brand: ""

@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Account Enrichment - Generic v2.1
+Account Enrichment - Generic v2.1
 
 ### Integrations
 

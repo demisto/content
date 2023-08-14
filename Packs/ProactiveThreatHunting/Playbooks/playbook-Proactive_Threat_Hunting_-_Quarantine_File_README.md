@@ -1,4 +1,4 @@
-This playbook will be executed from the “Proactive Threat Hunting” layout button with the objective of quarantine a file specified by the analyst. The following integrations is supported:
+This playbook will be executed from the “Proactive Threat Hunting” layout button with the objective of quarantine a file specified by the analyst. The following integration is supported:
 - Cortex XDR IR
 
 ## Dependencies
@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Print
+Print
 
 ### Commands
 
-* xdr-file-quarantine
+xdr-file-quarantine
 
 ## Playbook Inputs
 

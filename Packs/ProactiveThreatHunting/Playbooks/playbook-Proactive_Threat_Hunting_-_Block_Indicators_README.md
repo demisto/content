@@ -20,7 +20,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* extractIndicators
+extractIndicators
 
 ## Playbook Inputs
 
