@@ -42,15 +42,13 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 If you wish to collect only **Security** logs please select the "Windows Security" template located in the **Select Template** drop-down. After selecting the template press **Add**.
 
 #### Option B
-In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
+In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security** and **System**:
  ```bash
   winlogbeat.event_logs:
   - name: Security
     ignore_older: 1h
   - name: System
-    ignore_older: 1h
-  - name: Application
-    ignore_older: 1h    
+    ignore_older: 1h  
 ```
 
 **Note:** You can customize what will be collected by removing the "name" and "ignore_older" lines of the specific event type.
