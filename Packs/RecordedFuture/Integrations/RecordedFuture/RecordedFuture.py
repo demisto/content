@@ -12,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '2.4.1'
+__version__ = '2.5.0'
 
 
 # === === === === === === === === === === === === === === ===
@@ -290,6 +290,10 @@ class Client(BaseClient):
     def get_detection_rules(self) -> Dict[str, Any]:
         return self._call(url_suffix='/v2/detection_rules/search')
 
+    def submit_detection_to_collective_insight(self) -> Dict[str, Any]:
+        return self._call(url_suffix='/v2/collective-insights/detections')
+
+
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
 # === === === === === === === === === === === === === === ===
@@ -422,6 +426,10 @@ class Actions:
         response = self.client.get_detection_rules()
         return self._process_result_actions(response=response)
 
+    def collective_insight_command(self) -> List[CommandResults]:
+        response = self.client.submit_detection_to_collective_insight()
+        return self._process_result_actions(response=response)
+
 # === === === === === === === === === === === === === === ===
 # === === === === === === === MAIN === === === === === === ==
 # === === === === === === === === === === === === === === ===
@@ -511,6 +519,8 @@ def main() -> None:
             return_results(actions.threat_links_command())
         elif command == 'recordedfuture-detection-rules':
             return_results(actions.detection_rules_command())
+        elif command == 'recordedfuture-collective-insight':
+            return_results(actions.collective_insight_command())
 
     except Exception as e:
         return_error(message=f'Failed to execute {demisto.command()} command: {str(e)}')
