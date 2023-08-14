@@ -1,7 +1,7 @@
 {
   "check_point_vpn_1_firewall_1_raw": {
     "rt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
     },
     "app": {
@@ -163,7 +163,7 @@
   },
   "check_point_url_filtering_raw": {
     "rt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
     },
     "app": {
@@ -241,7 +241,7 @@
   },
   "check_point_smartdefense_raw": {
     "rt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
     },
     "cs1Label": {
@@ -335,7 +335,7 @@
   },
   "check_point_application_control_raw": {
     "rt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
     },
     "loguid": {
@@ -425,7 +425,7 @@
   },
   "check_point_identity_awareness_raw": {
     "rt": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "loguid": {
