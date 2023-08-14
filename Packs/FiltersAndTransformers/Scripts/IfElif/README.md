@@ -68,7 +68,7 @@ The ***value*** of the transformer can be retrieved using the keyword `#VALUE`
 | --- | --- |
 | value | Replaces any instance of the literal `#VALUE` in the "conditions" argument. |
 | conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".<br/>The last value can be any valid JSON object. |
-| flags | Flags to control comparison and regular expression behavior. |
+| flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match|
 
 ## Outputs
 
