@@ -1127,3 +1127,26 @@ Delete a permission.
 #### Context Output
 
 There is no context output for this command.
+### google-drive-file-modify-label
+
+***
+Modify labels to file.
+
+#### Base Command
+
+`google-drive-file-modify-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| label_id | The label id to set for the file. | Optional | 
+| field_id | the field id of the label to set. | Optional | 
+| selection_label_id | the label id to set for the field. | Optional | 
+| remove_label | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
