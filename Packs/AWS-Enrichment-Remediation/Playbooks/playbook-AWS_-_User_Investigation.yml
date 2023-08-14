@@ -1238,7 +1238,7 @@ tasks:
       name: Suspicious Activities
       description: |-
         Set the suspicious activities performed by the user, if it exists.
-        The task set the following activities:
+        The task sets the following activities:
         DeleteAlert ,DeleteAlarms ,DeleteCertificate ,DeleteCACertificate ,DeleteCertificateAuthority, DeleteLoggingConfiguration, DeleteWatchlist, StopLogging ,UpdateLoggingConfiguration, DeleteUser.
       scriptName: Set
       type: regular
