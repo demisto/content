@@ -112,7 +112,7 @@
             ]
         },
         {
-            "id":"Intezer",
+            "id":"Intezer v2",
             "reason":"Issue: CIAC-7861",
             "ignored_native_images":[
                 "native:8.3",
