@@ -151,9 +151,14 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
-        result = self.connection.execute(sql_query, bind_vars)
-        # For avoiding responses with lots of records
-        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+
+        with self.connection as connection:
+            # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
+            connection.execution_options(isolation_level="AUTOCOMMIT")
+            result = self.connection.execute(sql_query, bind_vars)
+            # For avoiding responses with lots of records
+            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+
         headers = []
         if results:
             # if the table isn't empty
