@@ -1295,11 +1295,11 @@ def main():
                 test_response = checkAPIerrors(PULL_ISSUES_QUERY, PULL_ISSUES_TEST_VARIABLES)
 
                 if 'errors' not in test_response:
-                    demisto.results('ok')
+                    return_results('ok')
                 else:
-                    demisto.results(test_response)
+                    return_results(test_response)
             else:
-                demisto.results("Invalid token")
+                return_results("Invalid token")
 
         elif command == 'fetch-incidents':
             max_fetch = int(demisto.params().get('max_fetch'))

@@ -275,7 +275,7 @@ def return_entry_results(title, content, human_readable, context, headers):
     """
 
     if len(content) == 0:
-        return_outputs(
+        CommandResults(
             readable_output="There is no output result",
             outputs=context,
             raw_response=content,
@@ -297,7 +297,7 @@ def return_entry_results(title, content, human_readable, context, headers):
         lambda h: h.title().replace("_", " ").replace(".", ":"),
     )
 
-    return_outputs(
+    CommandResults(
         readable_output=readable_output, outputs=context, raw_response=content
     )
 
@@ -308,7 +308,7 @@ def return_entry_results(title, content, human_readable, context, headers):
 def test_module_command():
 
     http_request("GET", "/campaigns")
-    demisto.results("ok")
+    return_results('ok')
 
 
 def list_dsns_command():

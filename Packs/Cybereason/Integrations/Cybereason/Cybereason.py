@@ -1602,7 +1602,7 @@ def logout(client: Client):
 
 ''' EXECUTION CODE '''
 
-LOG(f'command is {demisto.command()}')
+demisto.debug(f'command is {demisto.command()}')
 
 session = requests.session()
 

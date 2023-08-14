@@ -4077,7 +4077,7 @@ def test_module(client: Client):
 
     try:
         client._http_request("get", "", headers={})
-        demisto.results("ok")
+        return "ok"
     except DemistoException as e:
         if e.res:
             raise Exception(f"{e.res.status_code}: {e.res.text}")
@@ -4255,7 +4255,8 @@ def main() -> None:
         }
 
         if command == "test-module":
-            test_module(client)
+            results = test_module(client)
+            return_results(results)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
