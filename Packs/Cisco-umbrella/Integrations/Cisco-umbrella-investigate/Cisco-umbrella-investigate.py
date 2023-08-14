@@ -31,7 +31,7 @@ DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0))
+SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0)) or 0
 MALICIOUS_THRESHOLD = arg_to_number(PARAMS.get('dboscore_threshold', -100))
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
@@ -193,18 +193,29 @@ def timestamp_to_date(ts):
     return ts
 
 
-def securerank_to_dbotscore(sr):
+def securerank_to_dbotscore(sr:Optional[int]) -> int:
     # converts cisco umbrella score to dbotscore
-    DBotScore = 0
-    if sr is not None:
-        if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
-            DBotScore = 1
-        elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD:
-            DBotScore = 2
-        elif sr <= MALICIOUS_THRESHOLD:
-            DBotScore = 3
-    return DBotScore
+    if sr is None:
+        return 0
+    
+    if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
+        return 1
+    elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD: # type:ignore[operator]
+        return 2
+    elif sr <= MALICIOUS_THRESHOLD: # type:ignore[operator]
+        return  3
+    return 0 
 
+def domain_securerank_to_dbotscore(secure_rank:Optional[int], security_rank_2:int) -> int:
+    if secure_rank == -1:
+        return Common.DBotScore.BAD
+    if secure_rank == 1:
+        return Common.DBotScore.GOOD
+    if secure_rank == 0:
+        return securerank_to_dbotscore(security_rank_2)
+    
+    raise ValueError(f"unexpected secure_rank value {secure_rank} (expected 0,1 or -1)")
+    
 
 ''' INTERNAL FUNCTIONS '''
 
@@ -1880,7 +1891,16 @@ def get_url_timeline(url):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-
+def umbrella_score_to_demisto(score) -> int:
+    match score:
+        case -1:
+            return Common.DBotScore.BAD
+        case 1:
+            return Common.DBotScore.GOOD
+        case 0:
+            ...
+        case _:
+            raise ValueError(f"unexpected {score=}")
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
