@@ -535,8 +535,8 @@ inputs:
   required: false
   description: |-
     Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:
-    -value: *process name*
-    -commands: *command-line arguments*
+    - value: *process name*
+    - commands: *command-line arguments*
   playbookInputQuery:
 - key: HuntingTimeFrame
   value:

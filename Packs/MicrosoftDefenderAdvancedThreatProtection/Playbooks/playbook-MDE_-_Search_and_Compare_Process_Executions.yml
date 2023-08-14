@@ -2,11 +2,11 @@ id: MDE - Search and Compare Process Executions
 version: -1
 name: MDE - Search and Compare Process Executions
 description: |-
-  This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+  This playbook is a generic playbook that receives a process name and a command-line argument. It uses the "Microsoft Defender For Endpoint" integration to search for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
-  Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+  Note: Under the "Processes", input the playbook should receive an array that contains the following keys:
   - value: *process name*
-  -commands: *command-line arguments*
+  - commands: *command-line arguments*
 starttaskid: "0"
 tasks:
   "0":
@@ -118,7 +118,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -543,8 +543,8 @@ inputs:
   required: false
   description: |-
     Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:
-    -value: *process name*
-    -commands: *command-line arguments*
+    - value: *process name*
+    - commands: *command-line arguments*
   playbookInputQuery:
 - key: HuntingTimeFrame
   value:
@@ -556,7 +556,7 @@ inputs:
   value:
     simple: "0.5"
   required: false
-  description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  description: 'StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
   playbookInputQuery:
 outputs:
 - contextPath: StringSimilarity

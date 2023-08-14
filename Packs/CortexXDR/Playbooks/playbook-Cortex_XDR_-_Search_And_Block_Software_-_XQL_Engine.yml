@@ -881,7 +881,7 @@ tasks:
       id: 67f2a88b-19c8-4e19-8bb8-e0080da47105
       version: -1
       name: Cortex XDR - Block File
-      description: Use this playbook to add files to Cortex XDR block list with a given file SHA256 playbook input.
+      description: Use this playbook to add files to the Cortex XDR block list with a given SHA256 file playbook input.
       playbookName: Cortex XDR - Block File
       type: playbook
       iscommand: false
