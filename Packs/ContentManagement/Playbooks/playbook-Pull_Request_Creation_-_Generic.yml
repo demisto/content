@@ -1005,10 +1005,14 @@ inputs:
   required: true
   description: Which version control integration to use. We support github, gitlab, bitbucket and azuredevops.
   playbookInputQuery:
-- key: ""
-  value: {}
+- key: Azure DevOps target ref
+  value:
+    complex:
+      root: incident
+      accessor: azuredevopstargetref
   required: false
-  description: ""
+  description: Mandatory for Azure DevOps. The reference branch or sha commit  to
+    create a new branch from.
   playbookInputQuery:
 outputs: []
 tests:

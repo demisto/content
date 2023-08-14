@@ -62,7 +62,9 @@ tasks:
       file_path:
         simple: '"create_branch.txt"'
       reference_branch_name:
-        simple: refs/heads/master
+        simple: ${inputs.ReferenceBranch}
+      target_ref:
+        simple: ${inputs.Azure DevOps target ref}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1179,6 +1181,14 @@ inputs:
   required: true
   description: The File or Files to commit to the new or updated branch or pr
   playbookInputQuery:
+- key: Azure DevOps target ref
+  value:
+    complex:
+      root: incident
+      accessor: azuredevopstargetref
+  required: true
+  description: The reference to create a new branch from
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
