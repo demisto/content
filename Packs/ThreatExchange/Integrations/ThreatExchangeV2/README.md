@@ -21,10 +21,11 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the *pa
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | --- | -- | --- |
     | App ID |  | True |
     | App Secret | | True |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
+    | Share Level Type | A designation of how the indicator may be shared based on the US-CERT's Traffic Light Protocol | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Malicious Threshold | If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious. | False |
