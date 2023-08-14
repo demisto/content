@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
@@ -2697,7 +2698,11 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         if type(e) == NotFoundError:
             return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
-        return_error(str(e))
+        # show just the error message if possible
+        try:
+            return_error(json.loads(e.res.text)['message'])
+        except Exception as e:
+            return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
