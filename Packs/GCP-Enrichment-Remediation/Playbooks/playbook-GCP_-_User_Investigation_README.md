@@ -19,8 +19,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * GetTime
+* Set
 
 ### Commands
 

@@ -1,7 +1,7 @@
 id: AWS - User Investigation
 version: -1
 name: AWS - User Investigation
-description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n-Failed login attempt\n-Suspicious activities \n-API Access denied\n-Administrative user activities\n-Security rules and policies changes\n-Access keys and access token activities\n-Script-based user agent usage\n-User role changes activities\n-MFA device changes activities\n"
+description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n- Failed login attempt\n- Suspicious activities \n- API Access denied\n- Administrative user activities\n- Security rules and policies changes\n- Access keys and access token activities\n- Script-based user agent usage\n- User role changes activities\n- MFA device changes activities\n"
 starttaskid: "0"
 tasks:
   "0":

@@ -10,7 +10,6 @@ This playbook performs an investigation on a specific user in Azure environments
 - Uncommon high volume of actions
 - Action uncommonly performed by the user
 
-
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -25,8 +24,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * SetMultipleValues
+* SetAndHandleEmpty
 
 ### Commands
 

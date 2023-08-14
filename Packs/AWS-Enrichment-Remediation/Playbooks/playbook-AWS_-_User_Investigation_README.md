@@ -24,8 +24,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* GetTime
 * LoadJSON
+* GetTime
 * Set
 
 ### Commands
