@@ -1235,7 +1235,7 @@ script:
       name: bcc
     - description: The content (body) of the email to be sent in HTML format.
       name: htmlBody
-    - description: Choose true if you wish to handle html body as MimeMultipart. Default is "false".
+    - description: Choose true if you wish to handle html body as MimeMultipart.
       name: force_handle_htmlBody
       auto: PREDEFINED
       defaultValue: 'false'
