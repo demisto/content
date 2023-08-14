@@ -4282,38 +4282,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "130":
-    id: "130"
-    taskid: 9b005755-9a0f-4a31-8f26-9deba02d6239
-    type: regular
-    task:
-      id: 9b005755-9a0f-4a31-8f26-9deba02d6239
-      version: -1
-      name: Query Scheduled Scan With Id
-      description: Retrieve ODS scheduled scan details.
-      script: '|||cs-falcon-ods-query-scheduled-scan'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      ids:
-        simple: ${CrowdStrike.CreatedScheduledScanID}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2557.5,
-          "y": 9270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
