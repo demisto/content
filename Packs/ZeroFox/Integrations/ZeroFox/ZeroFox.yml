@@ -22,12 +22,12 @@ configuration:
   required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
   type: 0
   required: false
-- defaultvalue: '10'
+- defaultvalue: '100'
   display: Fetch Limit
-  name: fetch_limit
+  name: max_fetch
   required: true
   type: 0
 - display: Fetch incidents
