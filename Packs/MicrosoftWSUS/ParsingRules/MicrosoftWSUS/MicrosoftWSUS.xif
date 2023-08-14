@@ -1,8 +1,9 @@
 [INGEST:vendor="MSFT", product="WSUS", target_dataset="msft_wsus_raw" , no_hit=keep]
-alter tmp_event_time = arrayindex(regextract(_raw_log , "^(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"),0),
-    tmp_event_time_mili = arrayindex(regextract(_raw_log , "^\d+\-\d+\-\d+\s\d+\:\d+\:\d+\.(\d{3})"),0)
-| alter tmp_epoch_s = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", tmp_event_time ), "millis")
-| alter tmp_epoch_ms = to_integer(tmp_event_time_mili )
-| alter tmp_cc = add(tmp_epoch_s , tmp_epoch_ms)
-| alter _time = to_timestamp(tmp_cc, "millis")
-| fields - tmp_event_time_mili , tmp_epoch_ms , tmp_epoch_s , tmp_event_time , tmp_event_time_mili , tmp_cc;
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+UTC\s" 
+| alter 
+    tmp_event_time = arrayindex(regextract(_raw_log , "(\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+UTC\s"),0) 
+| alter 
+    tmp_parse_time = parse_timestamp("%Y-%m-%d %H:%M:%E3S", tmp_event_time )
+| alter 
+    _time = tmp_parse_time
+| fields -tmp_event_time, tmp_parse_time;

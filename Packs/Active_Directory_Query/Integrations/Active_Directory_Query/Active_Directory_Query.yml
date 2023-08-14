@@ -21,6 +21,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Username
   name: credentials
   defaultvalue: ""
