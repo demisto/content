@@ -19,7 +19,14 @@ args:
     The last value can be any valid JSON object.
   required: true
 - name: flags
-  description: Control regular expression behavior.
+  description: Flags to control comparison and regular expression behavior.
+  isArray: true
+  auto: PREDEFINED
+  predefined:
+  - case_insensitive
+  - regex_dot_all
+  - regex_multiline
+  - regex_full_match
 scripttarget: 0
 subtype: python3
 runonce: false
