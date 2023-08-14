@@ -427,8 +427,9 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return CommandResults(readable_output=tableToMarkdown("Actual Incident", incident_json,
-                                                   col_incident))
+    return CommandResults(readable_output=tableToMarkdown("Actual Incident",
+                                                          incident_json,
+                                                          col_incident))
 
 
 def load_indicators_for_current_incident(incident_id: str, indicators_types: List[str], min_nb_of_indicators: int,
