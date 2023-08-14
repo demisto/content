@@ -1,7 +1,6 @@
 import io
 import json
 import re
-import pathlib
 from NetskopeEventCollector import Client, ALL_SUPPORTED_EVENT_TYPES
 
 
@@ -17,27 +16,6 @@ EVENTS_PAGE_RAW = util_load_json('test_data/multiple_events_raw.json')
 BASE_URL = 'https://netskope.example.com'
 FIRST_LAST_RUN = {'alert': {'operation': 1680182467}, 'application': {'operation': 1680182467},
                   'audit': {'operation': 1680182467}, 'network': {'operation': 1680182467}, 'page': {'operation': 1680182467}}
-
-
-# def test_dedup_by_id():
-#     """
-#     Given:
-#         - Results from the API
-#     When:
-#         - Running the dedup_by_id command
-#     Then:
-#         - Make sure only the limited number of events return.
-#         - Make sure that first comes the event that with the earlier timestamp
-#         - Make sure that the last_run timestamp has been updated
-#         - Make sure that the correct last_run_ids returned.
-#     """
-#     from NetskopeEventCollector import dedup_by_id
-#     results = EVENTS_PAGE_RAW_V1.get('data')
-#     events, new_last_run = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4, results=results)
-#     assert events[0].get('timestamp') == 1684751415
-#     assert len(events) == 4
-#     assert new_last_run == {'page': 1684751416, 'page-ids': ['3757761212778242bfda29cd', '9e99b72b957416a43222fa7a',
-#                                                              '66544bf5fda515f229592644', '98938eb19b4f9bea24ef9a8c']}
 
 
 def test_test_module(mocker):
@@ -73,7 +51,7 @@ def test_populate_prepare_events():
     assert event.get('event_id') == 'f0e9b2cadd17402b59b3938b'
 
 
-def test_get_all_events(mocker, requests_mock):
+def test_get_all_events(requests_mock):
     """
     Given:
         - netskope-get-events call
@@ -85,7 +63,7 @@ def test_get_all_events(mocker, requests_mock):
         - Make sure the new_last_run is set.
     """
 
-    def json_callback(request, context):
+    def json_callback(request, _):
         endpoint = request.path.split('/')[-1]
         return EVENTS_PAGE_RAW[endpoint]
 
@@ -93,7 +71,6 @@ def test_get_all_events(mocker, requests_mock):
     client = Client(BASE_URL, 'netskope_token', validate_certificate=False, proxy=False)
     url_matcher = re.compile('https://netskope.example.com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
-    # mocker.patch.object(client, 'perform_data_export', return_value=EVENTS_RAW_V2)
     events, new_last_run = get_all_events(client, FIRST_LAST_RUN, limit=6, is_command=False)
     assert len(events) == 25
     assert events[0].get('event_id') == '1'

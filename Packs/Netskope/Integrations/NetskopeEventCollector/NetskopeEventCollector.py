@@ -72,11 +72,12 @@ def honor_rate_limiting(headers, endpoint):
                 else:
                     # if the RESET value does not exist in the header then
                     # sleep for default 1 second as the rate limit remaining is 0
-                    demisto.debug(f'Did not find a rate limit reset value, going to sleep for 1 second to avoid rate limit error')
+                    demisto.debug('Did not find a rate limit reset value, going to sleep for 1 second to avoid rate limit error')
                     time.sleep(1)
 
             elif 'alerts' in endpoint:
-                demisto.debug(f'Sleeping for 1 seconds between alerts')
+                # This is needed since consecutive requests to alerts tends to fail on 429
+                demisto.debug('Sleeping for 1 seconds between alerts')
                 time.sleep(1)
 
     except ValueError as ve:
@@ -100,10 +101,13 @@ def prepare_events(events: list, event_type: str) -> list:
 
     return events
 
+
 def print_event_statistics_logs(events: list, event_type: str):
+    # This is for debugging purposes
     demisto.debug(f'__[{event_type}]__ - Total events fetched this round: {len(events)}')
     if events:
-        event_times = f'__[{event_type}]__ - First event: {events[0].get("timestamp")} __[{event_type}]__ - Last event: {events[-1].get("timestamp")}'
+        event_times = f'__[{event_type}]__ - First event: {events[0].get("timestamp")} __[{event_type}]__ - Last event: ' \
+                      f'{events[-1].get("timestamp")}'
         demisto.debug(event_times)
 
 
@@ -117,7 +121,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
 
 def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int, start_time: datetime):
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
-    wait_time = 0
+    wait_time: int = 0
     events: list[dict] = []
     index_name = f'xsoar_collector_{instance_name}_{event_type}'
 
@@ -130,9 +134,9 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
         # Wait time between queries
         if wait_time:
             demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
-            time.sleep(wait_time) # pylint: disable=E9003
+            time.sleep(wait_time)   # pylint: disable=E9003
         else:
-            demisto.debug(f'No wait time received, going to sleep for 1 second')
+            demisto.debug('No wait time received, going to sleep for 1 second')
             time.sleep(1)
 
         response = client.perform_data_export('events', event_type, index_name, operation)
@@ -143,7 +147,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
 
         # The API responds with the time we should wait between requests, the server needs this time to prepare the next response.
         # It will be used to sleep in the beginning of the next iteration
-        wait_time: int = arg_to_number(response.get(WAIT_TIME, 5))
+        wait_time = arg_to_number(response.get(WAIT_TIME, 5)) or 5
         demisto.debug(f'Wait time is {wait_time} seconds')
 
         events.extend(results)
@@ -233,7 +237,7 @@ def main() -> None:  # pragma: no cover
 
         url = params.get('url')
         token = params.get('credentials', {}).get('password')
-        base_url = urljoin(url, f'/api/v2/')
+        base_url = urljoin(url, '/api/v2/')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         first_fetch = params.get('first_fetch')
@@ -247,8 +251,8 @@ def main() -> None:  # pragma: no cover
         last_run = setup_last_run(demisto.getLastRun(), first_fetch)
         demisto.debug(f'Running with the following last_run - {last_run}')
 
-        events = []
-        new_last_run: list[dict] = {}
+        events: list[dict] = []
+        new_last_run: dict = {}
         if command_name == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
@@ -262,8 +266,8 @@ def main() -> None:  # pragma: no cover
 
         elif command_name == 'fetch-events':
             # We have this try-finally block for fetch events where wrapping up should be done if errors occur
+            start = datetime.utcnow()
             try:
-                start = datetime.utcnow()
                 demisto.debug(f'Sending request with last run {last_run}')
                 events, new_last_run = fetch_events_command(client, last_run, max_fetch, is_command=False)
             finally:
