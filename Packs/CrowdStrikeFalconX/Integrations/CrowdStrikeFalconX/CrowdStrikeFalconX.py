@@ -1435,7 +1435,7 @@ def main():
     reliability = params.get('reliability', DBotScoreReliability.B)
 
     command = demisto.command()
-    LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
+    demisto.debug(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
 
     try:
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy,
