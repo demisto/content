@@ -20,7 +20,6 @@ tasks:
       - "8"
       - "10"
       - "9"
-      - "11"
       - "13"
       - "14"
       - "15"
@@ -33,11 +32,13 @@ tasks:
       - "23"
       - "24"
       - "25"
+      - "27"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3275,
+          "x": 3280,
           "y": 50
         }
       }
@@ -115,7 +116,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -370,
           "y": 370
         }
       }
@@ -178,7 +179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 60,
           "y": 370
         }
       }
@@ -227,54 +228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: fbcfafc2-80a7-4dc2-8390-0c90a83f3728
-    type: playbook
-    task:
-      id: fbcfafc2-80a7-4dc2-8390-0c90a83f3728
-      version: -1
-      name: CrowdStrike Falcon Sandbox - Detonate file
-      description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
-      playbookName: CrowdStrike Falcon Sandbox - Detonate file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      EnvironmentID:
-        simple: "100"
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "5"
-      Timeout:
-        simple: "30"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1340,
+          "x": 490,
           "y": 370
         }
       }
@@ -866,14 +820,105 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 8febf391-f313-4539-89c1-bd4df099dc51
+    type: playbook
+    task:
+      id: 8febf391-f313-4539-89c1-bd4df099dc51
+      version: -1
+      name: Detonate file - CrowdStrike Falcon Sandbox v2
+      description: Detonates a File using CrowdStrike Falcon.
+      playbookName: Detonate file - CrowdStrike Falcon Sandbox v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      File:
+        complex:
+          root: inputs.File
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: bcdde402-6c62-405b-8ed9-655e87f661d8
+    type: playbook
+    task:
+      id: bcdde402-6c62-405b-8ed9-655e87f661d8
+      version: -1
+      name: CrowdStrike Falcon Sandbox - Detonate file
+      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 6850,
-        "x": 50,
+        "width": 7270,
+        "x": -370,
         "y": 50
       }
     }
@@ -1300,7 +1345,7 @@ outputs:
   description: Task analysis status.
   type: String
 - contextPath: VMRay.Job
-  description: 'The Job Object'
+  description: The Job Object
   type: unknown
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
