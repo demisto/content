@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AWSApiModule import *
 import re
+
 # from mypy_boto3_ssm.client import SSMClient, Exceptions
 
 
@@ -45,6 +46,24 @@ def config_aws_session(args: dict[str, str], aws_client: AWSClient):
         role_arn=args.get("roleArn"),
         role_session_name=args.get("roleSessionName"),
         role_session_duration=args.get("roleSessionDuration"),
+    )
+
+
+def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandResults:
+    """
+    Creates a CommandResults object with the next token as the output.
+
+    Args:
+        next_token (str): The next token.
+        outputs_prefix (str): The prefix for the outputs.
+
+    Returns:
+        CommandResults: A CommandResults object with the next token as the output.
+    """
+    return CommandResults(
+        outputs_prefix=f"AWS.SSM.{outputs_prefix}",
+        outputs=next_token,
+        readable_output=f"For more results rerun the command with {next_token=}.",
     )
 
 
@@ -107,6 +126,7 @@ def get_inventory_command(aws_client, args: dict[str, Any]) -> list[CommandResul
                 )
                 parsed_entities.append(parsed_entity)
         return parsed_entities
+
     kwargs = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
@@ -123,12 +143,9 @@ def get_inventory_command(aws_client, args: dict[str, Any]) -> list[CommandResul
     command_results = []
     if next_token := response.get("NextToken"):
         command_results.append(
-            CommandResults(
-                outputs_prefix="AWS.SSM.InventoryNextToken",
-                outputs=next_token,
-                readable_output=f"For more results rerun the command with {next_token=}.",
-            )
+            next_token_command_result(next_token, "InventoryNextToken")
         )
+
     entities = response.get("Entities", [])
     command_results.append(
         CommandResults(
@@ -144,19 +161,26 @@ def get_inventory_command(aws_client, args: dict[str, Any]) -> list[CommandResul
     return command_results
 
 
-def list_inventory_entry_command(aws_client, args: dict[str, Any]) -> list[CommandResults]:
+def list_inventory_entry_command(
+    aws_client, args: dict[str, Any]
+) -> list[CommandResults]:
     def _parse_inventory_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        return [{
-            "Instance Id": entry.get("InstanceId"),
-            "Computer Name": entry.get("ComputerName"),
-            "Platform Type": entry.get("PlatformType"),
-            "Platform Name": entry.get("PlatformName"),
-            "Agent version": entry.get("AgentVersion"),
-            "IP address": entry.get("IpAddress"),
-            "Resource Type": entry.get("ResourceType"),
-        }for entry in entries]
+        return [
+            {
+                "Instance Id": entry.get("InstanceId"),
+                "Computer Name": entry.get("ComputerName"),
+                "Platform Type": entry.get("PlatformType"),
+                "Platform Name": entry.get("PlatformName"),
+                "Agent version": entry.get("AgentVersion"),
+                "IP address": entry.get("IpAddress"),
+                "Resource Type": entry.get("ResourceType"),
+            }
+            for entry in entries
+        ]
 
-    if (instance_id := args["instance_id"]) and not re.search(REGEX_INSTANCE_ID, instance_id):
+    if (instance_id := args["instance_id"]) and not re.search(
+        REGEX_INSTANCE_ID, instance_id
+    ):
         raise DemistoException(f"Invalid instance id: {instance_id}")
 
     kwargs = {
@@ -173,16 +197,14 @@ def list_inventory_entry_command(aws_client, args: dict[str, Any]) -> list[Comma
     command_results = []
     if next_token := response.get("NextToken"):
         command_results.append(
-            CommandResults(
-                outputs_prefix="AWS.SSM.InventoryEntryNextToken",
-                outputs=next_token,
-                readable_output=f"For more results rerun the command with {next_token=}.",
-            )
+            next_token_command_result(next_token, "InventoryEntryNextToken")
         )
+
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.InventoryEntry",
             outputs=response,
+            outputs_key_field="InstanceId",
             readable_output=tableToMarkdown(
                 name="AWS SSM Inventory",
                 t=_parse_inventory_entries(response.get("Entries", [])),
@@ -193,20 +215,47 @@ def list_inventory_entry_command(aws_client, args: dict[str, Any]) -> list[Comma
     return command_results
 
 
-# def list_associations_command(
-#     aws_client: SSMClient, args: dict[str, Any]
-# ) -> CommandResults:
-#     limit = arg_to_number(args.get("limit", 50))
-#     next_token = args.get("next_token")
-#     if limit:
-#         kwargs: ListAssociationsRequestRequestTypeDef = {
-#             "MaxResults": limit,
-#             "NextToken": next_token,
-#         }
-#     res = aws_client.list_associations(**kwargs)
-#     return CommandResults(
-#         outputs_prefix="AWS.SSM.Association",
-#     )
+def list_associations_command(aws_client, args: dict[str, Any]) -> list[CommandResults]:
+    def _parse_associations(associations: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {
+                "Document name": association.get("Name"),
+                "Association id": association.get("AssociationId"),
+                "Association version": association.get("AssociationVersion"),
+                "Last execution date": str(association.get("LastExecutionDate")),
+                "Resource status count": association.get("Overview", {}).get("AssociationStatusAggregatedCount"),
+                "Status": association.get("OverView", {}).get("Status"),
+            }
+            for association in associations
+        ]
+
+    kwargs = {
+        "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
+    }
+    if next_token := args.get("next_token"):
+        kwargs["NextToken"] = next_token
+    response = aws_client.list_associations(**kwargs)
+
+    command_results = []
+
+    if next_token := response.get("NextToken"):
+        command_results.append(
+            next_token_command_result(next_token, "InventoryNextToken")
+        )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix="AWS.SSM.Association",
+            outputs=response,
+            outputs_key_field="AssociationId",
+            readable_output=tableToMarkdown(
+                name="AWS SSM Association",
+                t=_parse_associations(response.get("Associations", [])),
+            ),
+        )
+    )
+
+    return command_results
 
 
 def test_module(aws_client) -> str:
@@ -269,8 +318,8 @@ def main():
                 return_results(get_inventory_command(aws_client, args))
             case "aws-ssm-inventory-entry-list":
                 return_results(list_inventory_entry_command(aws_client, args))
-            # case "aws-ssm-association-list":
-            #     return_results(list_associations_command(aws_client, args))
+            case "aws-ssm-association-list":
+                return_results(list_associations_command(aws_client, args))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 

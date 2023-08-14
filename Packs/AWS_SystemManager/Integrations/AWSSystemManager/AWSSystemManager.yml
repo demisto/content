@@ -221,6 +221,60 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.Entries.ResourceType
       description: The type of instance. Instances are either EC2 instances or managed instances.
       type: String
+  - arguments:
+    - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
+      name: limit
+      defaultvalue: 50
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
+      name: next_token
+    description: "Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule."
+    name: aws-ssm-association-list
+    outputs:
+    - contextPath: AWS.SSM.AssociationNextToken
+      description: The token for the next set of items to return.
+      type: String
+    - contextPath: AWS.SSM.Association.Name
+      description: The name of the SSM document.
+      type: String
+    - contextPath: AWS.SSM.Association.AssociationName
+      description: The association name.
+      type: String
+    - contextPath: AWS.SSM.Association.InstanceId
+      description: The managed node ID.
+      type: String
+    - contextPath: AWS.SSM.Association.AssociationId
+      description: The ID created by the system when crating an association. An association is a binding between a document and a set of targets with a schedule.
+      type: String
+    - contextPath: AWS.SSM.Association.AssociationVersion
+      description: The association version.
+      type: String
+    - contextPath: AWS.SSM.Association.DocumentVersion
+      description: The version of the document used in the association.
+      type: String
+    - contextPath: AWS.SSM.Association.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.Association.Targets.Values
+      description: User-defined criteria that maps to Key.
+      type: String
+    - contextPath: AWS.SSM.Association.LastExecutionDate
+      description: The date on which the association was last run.
+      type: String
+    - contextPath: AWS.SSM.Association.Overview.Status
+      description: "The status of the association. Status can be: Pending, Success, or Failed."
+      type: String
+    - contextPath: AWS.SSM.Association.Overview.DetailedStatus
+      description: A detailed status of the association.
+      type: String
+    - contextPath: AWS.SSM.Association.Overview.AssociationStatusAggregatedCount
+      description: Returns the number of targets for the association status. For example, if you created an association with two managed nodes, and one of them was successful, this would return the count of managed nodes by status.
+      type: String
+    - contextPath: AWS.SSM.Association.ScheduleExpression
+      description: A cron expression that specifies a schedule when the association runs. The schedule runs in Coordinated Universal Time (UTC).
+      type: String
+    - contextPath: AWS.SSM.Association.ScheduleOffset
+      description: Number of days to wait after the scheduled day to run an association.
+      type: Number
   isfetch: false
   runonce: false
   script: '-'
