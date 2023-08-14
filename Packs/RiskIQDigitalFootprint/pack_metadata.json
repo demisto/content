@@ -28,10 +28,6 @@
             "mandatory": true,
             "display_name": "SANS"
         },
-        "GetServerURL": {
-            "mandatory": true,
-            "display_name": "GetServerURL"
-        },
         "NIST": {
             "mandatory": true,
             "display_name": "NIST"
