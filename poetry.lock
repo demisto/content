@@ -1097,7 +1097,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "enhance-dump-pack-metadata"
-resolved_reference = "6b0a5be467ce6ce3a37620cb97cb30c878e79db2"
+resolved_reference = "c55aab3bb0ca8e7be39c4d80f58c643938a6570d"
 
 [[package]]
 name = "deprecated"
