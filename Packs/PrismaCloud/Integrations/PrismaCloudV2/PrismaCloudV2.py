@@ -1365,7 +1365,7 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
                              for alert_id, cli_script in response.get('alertIdVsCliScript', {}).items()]
         total_response_amount = len(readable_response)
         if not all_results and limit and readable_response:
-            demisto.debug(f'Returning results only up to {limit=}, from {len(readable_response)} results returned.')
+            demisto.debug(f'Returning results only up to limit={limit}, from {len(readable_response)} results returned.')
             readable_response = readable_response[:limit]
 
     except DemistoException as de:
