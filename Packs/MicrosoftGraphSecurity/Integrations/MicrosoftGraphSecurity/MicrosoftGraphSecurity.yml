@@ -105,11 +105,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use a self-deployed Azure application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -757,7 +758,11 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.58768
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: ms-graph-security-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   isfetch: true
   runonce: false
   script: '-'

@@ -1,5 +1,7 @@
 id: Cloud Response - Azure
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cloud Response - Azure
 description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n- Resource remediation    \n   - Delete the instance\n   - Power off the instance\n- Identity remediation:\n   - Disable the user\n   - Delete the user\n- Block indicators"
 starttaskid: "0"
@@ -163,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 700
+          "y": 690
         }
       }
     note: false
@@ -189,7 +191,7 @@ tasks:
       '#default#':
       - "35"
       "yes":
-      - "19"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -234,10 +236,10 @@ tasks:
     nexttasks:
       '#default#':
       - "23"
-      Disable:
-      - "20"
       Delete:
       - "21"
+      Disable:
+      - "20"
     separatecontext: false
     conditions:
     - label: Disable
@@ -330,12 +332,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 967e66f3-1549-4e06-84ea-530b78224d52
+    taskid: 58e2591a-f8b7-48d6-8d0b-db9fa18a66be
     type: regular
     task:
-      id: 967e66f3-1549-4e06-84ea-530b78224d52
+      id: 58e2591a-f8b7-48d6-8d0b-db9fa18a66be
       version: -1
-      name: Change the user's password
+      name: Delete the user
       description: |-
         Deletes an existing user.
         Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
@@ -393,7 +395,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
+          "x": 90,
           "y": 1960
         }
       }
@@ -895,7 +897,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "19"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1308,12 +1310,59 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: cd8e8bd1-d5ca-453d-8989-cbbec45aeca6
+    type: regular
+    task:
+      id: cd8e8bd1-d5ca-453d-8989-cbbec45aeca6
+      version: -1
+      name: Revoke user's existing sessions
+      description: |-
+        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+        Permission: Directory.AccessAsUser.All(Delegated)
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      user:
+        complex:
+          root: Manual user remediation.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.username
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "17_18_yes": 0.4,
       "17_23_#default#": 0.37,
-      "18_19_yes": 0.47,
       "18_35_#default#": 0.62,
       "19_20_Disable": 0.64,
       "19_23_#default#": 0.74,
