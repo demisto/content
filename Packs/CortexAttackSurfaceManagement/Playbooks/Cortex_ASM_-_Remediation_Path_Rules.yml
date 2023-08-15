@@ -259,7 +259,7 @@ tasks:
             value:
               complex:
                 root: alert.asmcloud
-                accessor: Provider
+                accessor: provider
             iscontext: true
           right:
             value:
@@ -1470,7 +1470,7 @@ tasks:
       gridfield:
         simple: asmdatacollection
       keys:
-        simple: Options,Selected,Answerer,Timestamp
+        simple: options,selected,answerer,timestamp
       val1:
         simple: What remediation action would you like to take?
       val2:
