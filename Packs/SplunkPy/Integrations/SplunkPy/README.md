@@ -1048,6 +1048,27 @@ Returns the Splunk's username matching the given Cortex XSOAR's username.
 >| admin | unassigned |
 
 
+
+### splunk-kv-store-collection-create-transform
+
+***
+Creates the KV store collection transform.
+
+#### Base Command
+
+`splunk-kv-store-collection-create-transform`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| kv_store_collection_name | The name of the KV store collection. | Required | 
+| supported_fields | A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address. If no value is specified, the KV Store collection configuration will be used. | Optional | 
+| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ## Additional Information
 To get the HEC token
 1. Go to the Splunk UI.
