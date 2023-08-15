@@ -827,13 +827,49 @@ def test_generate_login_url(mocker):
     assert expected_url in res
 
 
-@pytest.mark.parametrize('pull_request_id, mock_response_path',
-                         [('40', 'list_reviewers_pull_request.json'),
-                          ('42', 'pull_request_not_found.json')])
-def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
+@pytest.mark.parametrize('pull_request_id, mock_response_path', [('40', 'list_reviewers_pull_request.json')])
+def test_1_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
      - pull_request_id
+    When:
+     - executing azure-devops-pull-request-reviewer-list command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, pull_request_reviewer_list_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    project = 'test'
+    repository = 'xsoar'
+    pull_request_id = pull_request_id
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/' \
+          f'pullRequests/{pull_request_id}/reviewers'
+
+    mock_response = json.loads(load_mock_response(mock_response_path))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = pull_request_reviewer_list_command(client, {'pull_request_id': pull_request_id}, ORGANIZATION, repository, project)
+
+    assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
+    assert result.readable_output.startswith("### Reviewers List")
+
+
+@pytest.mark.parametrize('pull_request_id, mock_response_path', [('42', 'pull_request_not_found.json')])
+def test_2_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
+    """
+    Given:
+     - pull_request_id (pr does not exist)
     When:
      - executing azure-devops-pull-request-reviewer-list command
     Then:
@@ -864,19 +900,14 @@ def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_req
 
     result = pull_request_reviewer_list_command(client, {'pull_request_id': pull_request_id}, ORGANIZATION, repository, project)
 
-    assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
-    assert result.readable_output.startswith("### Reviewers List")
-    # PR does not exist
-    if pull_request_id == '42':
-        assert 'The requested pull request was not found.' in result.raw_response.get("message")
+    assert 'The requested pull request was not found.' in result.raw_response.get("message")
 
 
 @pytest.mark.parametrize('args, organization, expected_result',
                          [({'organization_name': 'OVERRIDE'}, 'TEST', 'OVERRIDE'),
                           ({}, 'TEST', 'TEST'),
-                          ({'organization_name': 'OVERRIDE'}, '', 'OVERRIDE'),
-                          ({}, '', 'ERROR')])
-def test_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
+                          ({'organization_name': 'OVERRIDE'}, '', 'OVERRIDE')])
+def test_1_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
     """
     Given:
      - organization as configuration parameter and as argument
@@ -886,7 +917,6 @@ def test_organization_repository_project_preprocess_function(args: dict, organiz
      - Ensure that the logic is correct
         1. The argument should override the parameter if both exist
         2. If there's only one, take it
-        3. Raise an exception if both don't exist
     """
 
     from AzureDevOps import organization_repository_project_preprocess
@@ -894,14 +924,34 @@ def test_organization_repository_project_preprocess_function(args: dict, organiz
     project = 'TEST'
     repository = 'TEST'
 
-    try:
-        organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository, project,
-                                                                                          is_organization_required=True,
-                                                                                          is_repository_id_required=True)
-    except DemistoException:
-        assert expected_result == 'ERROR'
-    else:
-        assert organization == expected_result
+    organization, repository_id, project = organization_repository_project_preprocess(args, organization, repository, project,
+                                                                                      is_organization_required=True,
+                                                                                      is_repository_id_required=True)
+
+    assert organization == expected_result
+
+
+@pytest.mark.parametrize('args, organization, expected_result',
+                         [({}, '', 'ERROR')])
+def test_2_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
+    """
+    Given:
+     - organization as configuration parameter and as argument
+    When:
+     - executing organization_repository_project_preprocess function
+    Then:
+     - Ensure raising an exception if organization does not exist and required
+    """
+
+    from AzureDevOps import organization_repository_project_preprocess
+
+    project = 'TEST'
+    repository = 'TEST'
+
+    with pytest.raises(Exception):
+        organization_repository_project_preprocess(args, organization, repository, project,
+                                                   is_organization_required=True,
+                                                   is_repository_id_required=True)
 
 
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
@@ -1115,7 +1165,7 @@ def test_work_item_get_command(requests_mock):
 
     result = work_item_get_command(client, {'item_id': '12'}, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('### Work Item Details\n|ID|Title|Assigned To|State|Area Path|Tags|Activity Date|\n')
+    assert result.readable_output.startswith('### Work Item Details\n|Activity Date|Area Path|Assigned To|ID|State|Tags|Title|\n')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
 
 

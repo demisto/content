@@ -7,15 +7,12 @@ ATTEMPTS = 10
 def find_available_branch_azure_devops(pack_name: str):
     response = demisto.executeCommand('azure-devops-branch-list', args={})
     existing_branches = response[0].get("Contents", {}).get("value", [])
-    branch_name = pack_name
-    for i in range(ATTEMPS):
-        branch_exists = False
-        if i > 0:
-            branch_name = f'{pack_name}_{i}'
-        for branch in existing_branches:
-            if branch.get("name", "").endswith(branch_name):
-                branch_exists = True
-                break
+    for i in range(1, ATTEMPTS + 1):
+        branch_name = f'{pack_name}_{i}'
+        branch_exists = any(
+            branch.get("name", "").endswith(branch_name)
+            for branch in existing_branches
+        )
         if not branch_exists:
             return f'refs/heads/{branch_name}'
     raise DemistoException('Please enter a branch name.')
@@ -23,7 +20,7 @@ def find_available_branch_azure_devops(pack_name: str):
 
 def find_available_branch(pack_name: str, command_get_branch: str):
     branch_name = pack_name
-    for i in range(ATTEMPS):
+    for i in range(ATTEMPTS):
         if i > 0:
             branch_name = f'{pack_name}_{i}'
         status, get_branch_res = execute_command(command_get_branch, {'branch_name': branch_name}, fail_on_error=False)
