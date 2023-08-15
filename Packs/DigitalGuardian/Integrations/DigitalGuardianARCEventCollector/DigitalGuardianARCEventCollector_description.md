@@ -4,8 +4,7 @@
 This integration is supported by Palo Alto Networks. 
 
 ### Configuration
-Event fetch interval should be set to "1 hour".
-A quote error might be received in case of fetching every "1 minute".
+The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
 
 ### How to get the configuration parameters
 API Client ID: 

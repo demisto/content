@@ -57,9 +57,8 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return response.get("access_token")
 
-    def get_events(self, time_of_last_event_str):
+    def get_events(self, time_of_last_event_str, current_time):
         token = self.get_token()
-        current_time = datetime_to_string(datetime.now())
         time_param = f'dg_time:{time_of_last_event_str},{current_time}'
         headers = {
             'Authorization': 'Bearer ' + token
@@ -105,7 +104,7 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
        helper function that is used in get-events and fetch-events to get the actual events and sort them
        Args:
            client (Client): DG client
-           time_of_last_event: time of last ingested
+           time_of_last_event: time of last ingested event
        Returns:
            list: list of events
     """
@@ -117,7 +116,8 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
     else:
         temp_time: datetime = arg_to_datetime(arg=time_of_last_event, required=True)  # type: ignore[assignment]
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
-    events = client.get_events(time_of_last_event_str)
+    current_time = datetime_to_string(datetime.now())
+    events = client.get_events(time_of_last_event_str, current_time)
     for field_names in events["fields"]:
         outcome.append(field_names['name'])
     for event in events["data"]:

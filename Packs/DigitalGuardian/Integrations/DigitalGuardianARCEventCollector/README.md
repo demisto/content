@@ -2,8 +2,7 @@ This is the Digital Guardian ARC event collector integration for XSIAM.
 This integration was integrated and tested with version 3.10.0 of DigitalGuardianARCEventCollector
 
 ## Known Limitations
-A quote error might be received in case of fetching every "1 minute".
-Event fetch interval should be set to "1 hour".
+The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
 
 ## Configure Digital Guardian ARC Event Collector on Cortex XSOAR
 
