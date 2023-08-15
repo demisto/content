@@ -1671,10 +1671,8 @@ def main():
         if params["url"].endswith("/")
         else params["url"]
     )
-    FETCH_TIME: str = params.get(
-        "first_fetch", FETCH_TIME_DEFAULT,
-    ).strip()
-    FETCH_LIMIT: int = int(demisto.params().get("max_fetch", "100"))
+    FETCH_TIME: str = (params.get('first_fetch') or params.get('fetch_time') or FETCH_TIME_DEFAULT).strip()
+    FETCH_LIMIT: int = int(params.get('max_fetch') or params.get('fetch_limit') or "100")
 
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
