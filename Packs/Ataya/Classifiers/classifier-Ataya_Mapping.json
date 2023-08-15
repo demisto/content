@@ -1,18 +1,11 @@
 {
-    "description": "",
+    "description": "Ataya Harmony fields for use in Integration Playbooks about 5G UE registration.",
     "feed": false,
     "id": "Ataya Mapping",
     "mapping": {
-        "ataya": {
-            "dontMapEventToLabels": true,
+        "Ataya": {
+            "dontMapEventToLabels": false,
             "internalMapping": {
-                "Additional Data": {
-                    "complex": {
-                        "filters": [],
-                        "root": "eventType",
-                        "transformers": []
-                    }
-                },
                 "Ataya_IMEI": {
                     "complex": {
                         "accessor": "imei",
@@ -34,6 +27,13 @@
                         "accessor": "ip",
                         "filters": [],
                         "root": "sessionInfo",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventType",
                         "transformers": []
                     }
                 }
@@ -66,7 +66,7 @@
                         "transformers": []
                     }
                 },
-                "Ataya_eventType": {
+                "Event Type": {
                     "complex": {
                         "filters": [],
                         "root": "eventType",

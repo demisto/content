@@ -71,7 +71,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -82,7 +84,9 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -95,7 +99,9 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
@@ -108,7 +114,9 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -170,7 +178,9 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
@@ -212,7 +222,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
@@ -236,7 +248,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
@@ -251,11 +265,22 @@
                         "i": "caseinfoid-83be88a0-e9e8-11ed-9314-61e884feb460",
                         "items": [
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "eventtype",
+                                "height": 22,
+                                "id": "2285c530-3a79-11ee-b0f8-8dcebe47cfac",
+                                "index": 0,
+                                "listId": "caseinfoid-83be88a0-e9e8-11ed-9314-61e884feb460",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "atayaimei",
                                 "height": 22,
                                 "id": "928e9b50-e9e7-11ed-9314-61e884feb460",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -273,20 +298,12 @@
                                 "fieldId": "atayaip",
                                 "height": 22,
                                 "id": "773415a0-e9e8-11ed-9314-61e884feb460",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "atayaeventtype",
-                                "height": 22,
-                                "id": "10a6be20-edb5-11ed-a885-0d12621a05a9",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
