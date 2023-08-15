@@ -20,13 +20,20 @@ from unittest.mock import patch
         "StringB": "test",
         "SimilarityScore": 0.7272727272727273,
     }),
+    ("a", "b", 0.1, {
+     None})
 ])
 def test_string_similarity(first_string, second_string, similarity_threshold, expected_result, mocker):
-    try:
-        result = stringSimilarity(first_string, second_string, similarity_threshold)
+    """
+        given two strings and similarity threshold
+        when calling stringSimilarity
+        then make sure a None value is returned when similarityScore < threshold, else is expected_result
+        """
+    result = stringSimilarity(first_string, second_string, similarity_threshold)
+    if result is not None:
         assert result.outputs == expected_result
-    except ValueError as e:
-        assert "No similarity score calculated" in str(e)
+    else:
+        assert result is None
 
 
 def test_main_with_similarity_match():
