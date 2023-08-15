@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ATTEMPS = 10
+ATTEMPTS = 10
 
 
 def find_available_branch_azure_devops(pack_name: str, command_get_branch: str):
