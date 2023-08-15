@@ -18,7 +18,7 @@ args:
   - "13"
   - "14"
   - "15"
-- description: Enter the needed secret
+- description: Enter the secret
   name: secret
 commonfields:
   id: CTFSKO
