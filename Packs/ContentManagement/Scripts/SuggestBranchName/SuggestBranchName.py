@@ -4,16 +4,16 @@ from CommonServerPython import *  # noqa: F401
 ATTEMPTS = 10
 
 
-def find_available_branch_azure_devops(pack_name: str, command_get_branch: str):
-    response = demisto.executeCommand(command_get_branch, args={})
+def find_available_branch_azure_devops(pack_name: str):
+    response = demisto.executeCommand('azure-devops-branch-list', args={})
+    existing_branches = response[0].get("Contents", {}).get("value", [])
     branch_name = pack_name
     for i in range(ATTEMPS):
         branch_exists = False
         if i > 0:
             branch_name = f'{pack_name}_{i}'
-        for branch in response[0].get("Contents", {}).get("value", []):
+        for branch in existing_branches:
             if branch.get("name", "").endswith(branch_name):
-                print(f'{branch.get("name")=} {branch_name=}')
                 branch_exists = True
                 break
         if not branch_exists:
@@ -41,7 +41,7 @@ def main():  # pragma: no cover
         command_get_branch = demisto.getArg('use_command')
 
         if command_get_branch == 'azure-devops-branch-list':
-            branch_name = find_available_branch_azure_devops(pack_name, command_get_branch)
+            branch_name = find_available_branch_azure_devops(pack_name)
             print(f"{branch_name=}")
         else:
             branch_name = find_available_branch(pack_name, command_get_branch)

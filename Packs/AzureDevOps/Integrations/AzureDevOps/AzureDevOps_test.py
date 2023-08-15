@@ -830,7 +830,7 @@ def test_generate_login_url(mocker):
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
                          [('40', 'list_reviewers_pull_request.json'),
                           ('42', 'pull_request_not_found.json')])
-def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id, mock_response_path):
+def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
      - pull_request_id
@@ -875,7 +875,7 @@ def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_req
                           ({}, 'TEST', 'TEST'),
                           ({'organization_name': 'OVERRIDE'}, '', 'OVERRIDE'),
                           ({}, '', 'ERROR')])
-def test_organization_repository_project_preprocess_function(args, organization, expected_result):
+def test_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
     """
     Given:
      - organization as configuration parameter and as argument
@@ -905,7 +905,7 @@ def test_organization_repository_project_preprocess_function(args, organization,
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
                          [('40', 'pull_request_reviewer_create.json'),
                           ('42', 'pull_request_not_found.json')])
-def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_request_id, mock_response_path):
+def test_azure_devops_pull_request_reviewer_add_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
      - all arguments
@@ -938,9 +938,8 @@ def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_r
         proxy=False,
         auth_type='Device Code')
 
-    result = pull_request_reviewer_add_command(client, {'pull_request_id': pull_request_id,
-                                                           'reviewer_user_id': reviewer_user_id},
-                                                  ORGANIZATION, repository, project)
+    result = pull_request_reviewer_add_command(client, {'pull_request_id': pull_request_id, 'reviewer_user_id': reviewer_user_id},
+                                               ORGANIZATION, repository, project)
     if pull_request_id == '42':
         # PR does not exist
         assert 'The requested pull request was not found.' in result.outputs.get("message")
@@ -951,7 +950,7 @@ def test_azure_devops_pull_request_reviewer_create_command(requests_mock, pull_r
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
                          [('40', 'pull_request_commit_list.json'),
                           ('42', 'pull_request_not_found.json')])
-def test_pull_request_commit_list_command(requests_mock, pull_request_id, mock_response_path):
+def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
      - all arguments
@@ -997,7 +996,7 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id, mock_r
                           ({'limit': '2'}, 2, 0),
                           ({'page': '2'}, 50, 50),
                           ({'limit': '2', 'page': '2'}, 2, 2)])
-def test_pagination_preprocess_and_validation(args, expected_limit, expected_offset):
+def test_pagination_preprocess_and_validation(args: dict, expected_limit: int, expected_offset: int):
     from AzureDevOps import pagination_preprocess_and_validation
 
     limit, offset = pagination_preprocess_and_validation(args)
@@ -1194,7 +1193,7 @@ ARGUMENTS_LIST = ['title', 'iteration_path', 'description', 'priority', 'tag']
 ARGS = {"title": "zzz",  "iteration_path": "test",  "description": "test", "priority": "4", "tag": "test"}
 @pytest.mark.parametrize('args, arguments_list, expected_result',
                          [(ARGS, ARGUMENTS_LIST, EXPECTED_RESULT)])
-def test_work_item_pre_process_data(args, arguments_list, expected_result):
+def test_work_item_pre_process_data(args: dict, arguments_list: list[str], expected_result: dict):
     """
     Ensure work_item_pre_process_data function generates the data (body) for the request as expected.
     """
@@ -1288,7 +1287,7 @@ DELETE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '1
 DELETE_FILE = (DELETE_FILE_CHANGE_TYPE, DELETE_FILE_ARGS, DELETE_FILE_EXPECTED_RESULT)
 @pytest.mark.parametrize('change_type, args, expected_result',
                          [CREATE_FILE, UPDATE_FILE, DELETE_FILE])
-def test_file_pre_process_body_request(requests_mock, change_type, args, expected_result):
+def test_file_pre_process_body_request(requests_mock, change_type: str, args: dict, expected_result: dict):
     """
     Given:
      - all required arguments
@@ -1452,7 +1451,7 @@ def test_file_list_command(requests_mock):
 ZIP = ("zip", {"Content-Type": "application/zip"}, "response")
 JSON = ("json", {"Content-Type": "application/json"}, "json")
 @pytest.mark.parametrize('format_file, headers, resp_type', [ZIP, JSON])
-def test_file_get_command(mocker, requests_mock, format_file, headers, resp_type):
+def test_file_get_command(mocker, requests_mock, format_file: str, headers: dict, resp_type: str):
     """
     Given:
      - all required arguments

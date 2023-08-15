@@ -138,7 +138,7 @@ def does_file_exist(branch_name: str, content_file: ContentFile) -> bool:
 def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) -> bool:
     full_path = Path(content_file.path_to_file, content_file.file_name)
 
-    if str(full_path) in files_path:
+    if str(full_path) in files_path:  # the files list, check if the file already exists in the list
         return True
     # try to get the file from branch
     response = execute_command('azure-devops-file-list', args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
@@ -186,7 +186,8 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
         return
     response = demisto.executeCommand('azure-devops-branch-list', args={})
     branch_id = ""
-    for branch in response[0].get("Contents", {}).get("value", []):
+    branches_list = response[0].get("Contents", {}).get("value", []) if response and isinstance(response, list) else []
+    for branch in branches_list:
         if branch.get("name", "") == branch_name:
             branch_id = branch.get("objectId", "")
             break

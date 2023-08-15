@@ -7,20 +7,21 @@ from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
-from typing import Callable
+from collections.abc import Callable
+from typing import Callable, Tuple, NamedTuple
 from collections import namedtuple
 from datetime import datetime
 import urllib3
 
-PARAMETERS_ERROR_MSG = "One or more arguments are missing." \
+MISSING_PARAMETERS_ERROR_MSG = "One or more arguments are missing." \
       "Please pass with the command: {arguments}" \
       "You can also re-configure the instance and set them as parameters."
 
-PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
+MISSING_PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
       "Please pass with the command: repository and project." \
       "You can also re-configure the instance and set them as parameters."
 
-
+COMMIT_HEADERS_MAPPING = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
 INCIDENT_TYPE_NAME = "Azure DevOps"
 OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'title': 'The title of the pull request.',
@@ -447,24 +448,24 @@ class Client:
 
         return response
 
-    def pull_requests_reviewer_list_request(self, org_repo_project_tuple: namedtuple, pull_request_id: int):
+    def list_pull_requests_reviewers(self, project_tuple: namedtuple, pull_request_id: int):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/reviewers'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{pull_request_id}/reviewers'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def pull_requests_reviewer_add_request(self, org_repo_project_tuple: namedtuple, pull_request_id: int,
-                                           reviewer_user_id: str, is_required: bool):
+    def add_pull_requests_reviewer(self, project_tuple: namedtuple, pull_request_id: int,
+                                   reviewer_user_id: str, is_required: bool):
         params = {"api-version": 7.0}
         data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
 
         return self.ms_client.http_request(method='PUT',
                                            full_url=full_url,
@@ -472,43 +473,43 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def pull_requests_commit_list_request(self, org_repo_project_tuple: namedtuple, pull_request_id: int, limit: int):
+    def list_pull_requests_commits(self, project_tuple: namedtuple, pull_request_id: int, limit: int):
 
         params = {"api-version": 7.0, "$top": limit}
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/commits'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{pull_request_id}/commits'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def commit_list_request(self, org_repo_project_tuple: namedtuple, limit: int, offset: int):
+    def list_commits(self, project_tuple: namedtuple, limit: int, offset: int):
 
         params = {"api-version": 7.0, "searchCriteria.$skip": offset, "searchCriteria.$top": limit}
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/commits'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/commits'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def commit_get_request(self, org_repo_project_tuple: namedtuple, commit_id: str):
+    def get_commit(self, project_tuple: namedtuple, commit_id: str):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/commits/{commit_id}'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/commits/{commit_id}'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def work_item_get_request(self, org_repo_project_tuple: namedtuple, item_id: str):
+    def get_work_item(self, project_tuple: namedtuple, item_id: str):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
                    f'_apis/wit/workitems/{item_id}'
 
         return self.ms_client.http_request(method='GET',
@@ -516,14 +517,14 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def work_item_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def create_work_item(self, project_tuple: namedtuple, args: Dict[str, Any]):
         arguments_list = ['title', 'iteration_path', 'description', 'priority', 'tag']
 
         data = work_item_pre_process_data(args, arguments_list)
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
                    f'_apis/wit/workitems/${args["type"]}'
 
         return self.ms_client.http_request(method='POST',
@@ -533,14 +534,14 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def work_item_update_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
-        arguments_list = ['title', 'assignee_display_name', 'state', 'iteration_path', 'description', 'priority', 'tag']
+    def update_work_item(self, project_tuple: namedtuple, args: Dict[str, Any]):
+        arguments = ['title', 'assignee_display_name', 'state', 'iteration_path', 'description', 'priority', 'tag']
 
-        data = work_item_pre_process_data(args, arguments_list)
+        data = work_item_pre_process_data(args, arguments)
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
                    f'_apis/wit/workitems/{args["item_id"]}'
 
         return self.ms_client.http_request(method='PATCH',
@@ -550,14 +551,14 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def file_request(self, org_repo_project_tuple: namedtuple, change_type: str, args: Dict[str, Any]):
+    def file_request(self, project_tuple: namedtuple, change_type: str, args: Dict[str, Any]):
 
         data = file_pre_process_body_request(change_type, args)
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/git/repositories/{org_repo_project_tuple.repository}/pushes'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
+                   f'_apis/git/repositories/{project_tuple.repository}/pushes'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -565,28 +566,28 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def file_list_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def list_files(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         params = {"api-version": 7.0, "versionDescriptor.version": args["branch_name"].split('/')[-1],
                   "versionDescriptor.versionType": "branch", "recursionLevel": args["recursion_level"],
                   "includeContentMetadata": True}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/git/repositories/{org_repo_project_tuple.repository}/items'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
+                   f'_apis/git/repositories/{project_tuple.repository}/items'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def file_get_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def get_file(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         params = {"path": args["file_name"], "api-version": 7.0, "$format": args["format"],
                   "includeContent": args["include_content"], "versionDescriptor.versionType": "branch",
                   "versionDescriptor.version": args["branch_name"]}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/git/repositories/{org_repo_project_tuple.repository}/items'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
+                   f'_apis/git/repositories/{project_tuple.repository}/items'
 
         headers = {"Content-Type": "application/json" if args["format"] == 'json' else "application/zip"}
 
@@ -596,7 +597,7 @@ class Client:
                                            params=params,
                                            resp_type='response' if args["format"] == 'zip' else 'json')
 
-    def branch_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def create_branch(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         # initialize new branch - this is the syntax if no reference was given
         args["branch_id"] = args["branch_id"] if args.get("branch_id") else "0000000000000000000000000000000000000000"
@@ -604,8 +605,8 @@ class Client:
         data = file_pre_process_body_request("add", args)
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
-                   f'_apis/git/repositories/{org_repo_project_tuple.repository}/pushes'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/' \
+                   f'_apis/git/repositories/{project_tuple.repository}/pushes'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -613,7 +614,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def pull_request_thread_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def create_pull_request_thread(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         data = {
                   "comments": [
@@ -628,8 +629,8 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{args["pull_request_id"]}/threads'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{args["pull_request_id"]}/threads'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -637,7 +638,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def pull_request_thread_update_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def update_pull_request_thread(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         data = {
                   "comments": [
@@ -652,8 +653,8 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{args["pull_request_id"]}/' \
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{args["pull_request_id"]}/' \
                    f'threads/{args["thread_id"]}'
 
         return self.ms_client.http_request(method='PATCH',
@@ -662,48 +663,48 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def pull_request_thread_list_request(self, org_repo_project_tuple: namedtuple, pull_request_id: str):
+    def list_pull_request_threads(self, project_tuple: namedtuple, pull_request_id: str):
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/threads'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/pullRequests/{pull_request_id}/threads'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def project_team_list_request(self, org_repo_project_tuple: namedtuple):
+    def list_project_teams(self, project_tuple: namedtuple):
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/_apis/projects/' \
-                   f'{org_repo_project_tuple.project}/teams'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/_apis/projects/' \
+                   f'{project_tuple.project}/teams'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def team_member_list_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any], limit: int, skip: int):
+    def list_team_members(self, project_tuple: namedtuple, args: Dict[str, Any], limit: int, skip: int):
 
         params = {"api-version": 7.0, "$skip": skip, "$top": limit}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/_apis/projects/' \
-                   f'{org_repo_project_tuple.project}/teams/{args["team_id"]}/members'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/_apis/projects/' \
+                   f'{project_tuple.project}/teams/{args["team_id"]}/members'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def blob_zip_get_request(self, org_repo_project_tuple: namedtuple, file_object_id: str):
+    def get_blob_zip(self, project_tuple: namedtuple, file_object_id: str):
 
         params = {"api-version": 7.0, "$format": "zip"}
 
-        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
-                   f'repositories/{org_repo_project_tuple.repository}/blobs/{file_object_id}'
+        full_url = f'https://dev.azure.com/{project_tuple.organization}/{project_tuple.project}/_apis/git/' \
+                   f'repositories/{project_tuple.repository}/blobs/{file_object_id}'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -984,9 +985,9 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    org_repo_project_tuple = organization_repository_project_preprocess(args=args, organization=None, repository_id=repository,
-                                                                        project=project, is_organization_required=False)
-    project, repository_id = org_repo_project_tuple.project, org_repo_project_tuple.repository
+    project_tuple = organization_repository_project_preprocess(args=args, organization=None, repository_id=repository,
+                                                               project=project, is_organization_required=False)
+    project, repository_id = project_tuple.project, project_tuple.repository
 
     source_branch = args['source_branch']
     target_branch = args['target_branch']
@@ -1030,9 +1031,9 @@ def pull_request_update_command(client: Client, args: Dict[str, Any], repository
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    org_repo_project_tuple = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
+    project_tuple = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
                                                                         is_organization_required=False, organization=None)
-    project, repository = org_repo_project_tuple.project, org_repo_project_tuple.repository
+    project, repository = project_tuple.project, project_tuple.repository
 
     pull_request_id = args['pull_request_id']
     title = args.get('title')
@@ -1099,6 +1100,11 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
+def verify_repository_and_project_argument(repository: Optional[str], project: Optional[str]):
+    if not (repository and project):
+        raise DemistoException(MISSING_PARAMETERS_ERROR_MSG_2)
+
+
 def pull_requests_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Retrieve pull requests in repository.
@@ -1114,8 +1120,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any], repository:
     """
     project = args.get('project') or project
     repository = args.get('repository') or repository
-    if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_2)
+    verify_repository_and_project_argument(repository, project)
 
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
@@ -1493,8 +1498,7 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
     """
     project = args.get('project') or project
     repository = args.get('repository') or repository
-    if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_2)
+    verify_repository_and_project_argument(repository, project)
 
     page = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
@@ -1884,9 +1888,9 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
         missing_arguments.append("project")
 
     if missing_arguments:
-        raise DemistoException(PARAMETERS_ERROR_MSG.format(arguments=", ".join(missing_arguments)))
+        raise DemistoException(MISSING_PARAMETERS_ERROR_MSG.format(arguments=", ".join(missing_arguments)))
 
-    return OrgRepoProject(organization=organization, repository=repository_id, project=project)
+    return Project(organization=organization, repository=repository_id, project=project)
 
 
 def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
@@ -1896,12 +1900,11 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
     """
 
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
-    organization, repository_id, project = \
-        org_repo_project_tuple.organization,  org_repo_project_tuple.repository, org_repo_project_tuple.project
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
     pull_request_id = arg_to_number(args.get('pull_request_id'))
 
-    response = client.pull_requests_reviewer_list_request(org_repo_project_tuple, pull_request_id)
+    response = client.list_pull_requests_reviewers(project_tuple, pull_request_id)
     mapping = {"displayName": "Reviewer(s)", "hasDeclined": "Has Declined", "isFlagged": "Is Flagged"}
     readable_output = tableToMarkdown('Reviewers List', response["value"], headers=["displayName", "hasDeclined", "isFlagged"],
                                       headerTransform=lambda header: mapping.get(header, header))
@@ -1922,16 +1925,16 @@ def pull_request_reviewer_add_command(client: Client, args: Dict[str, Any], orga
     """
 
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     reviewer_user_id = args["reviewer_user_id"]  # reviewer_user_id is required
     is_required = args.get('is_required', False)
 
-    response = client.pull_requests_reviewer_add_request(org_repo_project_tuple, pull_request_id,
-                                                            reviewer_user_id, is_required)
+    response = client.add_pull_requests_reviewer(project_tuple, pull_request_id,
+                                                 reviewer_user_id, is_required)
 
-    readable_output = f'{response.get("displayName")} ({response.get("id")}) was created successfully as a reviewer for' \
+    readable_output = f'{response.get("displayName", "")} ({response.get("id", "")}) was created successfully as a reviewer for' \
                       f' Pull Request ID {pull_request_id}.'
 
     return CommandResults(
@@ -1948,17 +1951,16 @@ def pull_request_commit_list_command(client: Client, args: Dict[str, Any], organ
     Get the commits for the specified pull request.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
 
-    response = client.pull_requests_commit_list_request(org_repo_project_tuple, pull_request_id, limit)
+    response = client.list_pull_requests_commits(project_tuple, pull_request_id, limit)
 
-    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
     readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
-                                      headerTransform=lambda header: mapping.get(header, header))
+                                      headerTransform=lambda header: COMMIT_HEADERS_MAPPING.get(header, header))
 
     return CommandResults(
         readable_output=readable_output,
@@ -1974,15 +1976,14 @@ def commit_list_command(client: Client, args: Dict[str, Any], organization: Opti
     Get the commits for the specified pull request.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
 
-    response = client.commit_list_request(org_repo_project_tuple, limit, offset)
+    response = client.list_commits(project_tuple, limit, offset)
 
-    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
     readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
-                                      headerTransform=lambda header: mapping.get(header, header))
+                                      headerTransform=lambda header: COMMIT_HEADERS_MAPPING.get(header, header))
 
     return CommandResults(
         readable_output=readable_output,
@@ -1998,15 +1999,14 @@ def commit_get_command(client: Client, args: Dict[str, Any], organization: Optio
     Retrieve a particular commit.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     # a required argument
     commit_id = args.get('commit_id')
 
-    response = client.commit_get_request(org_repo_project_tuple, commit_id)
+    response = client.get_commit(project_tuple, commit_id)
 
-    mapping = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
     readable_output = tableToMarkdown('Commit Details', response, headers=['comment', 'commitId', 'committer'],
-                                      headerTransform=lambda header: mapping.get(header, header))
+                                      headerTransform=lambda header: COMMIT_HEADERS_MAPPING.get(header, header))
 
     return CommandResults(
         readable_output=readable_output,
@@ -2022,11 +2022,11 @@ def work_item_get_command(client: Client, args: Dict[str, Any], organization: Op
     Returns a single work item.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     # a required argument
     item_id = args.get('item_id')
 
-    response = client.work_item_get_request(org_repo_project_tuple, item_id)
+    response = client.get_work_item(project_tuple, item_id)
 
     response_for_hr = {"ID": response.get("id"),
                        "Title": response.get("fields", {}).get("System.Title"),
@@ -2080,11 +2080,11 @@ def work_item_create_command(client: Client, args: Dict[str, Any], organization:
     Creates a single work item.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.work_item_create_request(org_repo_project_tuple, args)
+    response = client.create_work_item(project_tuple, args)
 
-    readable_output = f'Work Item {response.get("id")} was created successfully.'
+    readable_output = f'Work Item {response["id"]} was created successfully.'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2100,9 +2100,9 @@ def work_item_update_command(client: Client, args: Dict[str, Any], organization:
     Updates a single work item.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.work_item_update_request(org_repo_project_tuple, args)
+    response = client.update_work_item(project_tuple, args)
 
     readable_output = f'Work Item {response.get("id")} was updated successfully.'
 
@@ -2114,11 +2114,11 @@ def work_item_update_command(client: Client, args: Dict[str, Any], organization:
     )
 
 
-def extract_branch_id_and_validate_for_files_commands(client: Client, args: Dict[str, Any], org_repo_project_tuple: namedtuple):
+def extract_branch_id_and_validate_for_files_commands(client: Client, args: Dict[str, Any], project_tuple: namedtuple):
     """
     Extract the branch id by the given branch name. In case of None, raise an exception since branch does not exist.
     """
-    if branch_id := mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple):
+    if branch_id := mapping_branch_name_to_branch_id(client, args, project_tuple):
         return branch_id
     raise DemistoException(f'The given branch {args["branch_name"]} does not exist.')
 
@@ -2129,12 +2129,12 @@ def file_create_command(client: Client, args: Dict[str, Any], organization: Opti
     Add a file to the repository.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
-    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, project_tuple)
 
-    response = client.file_request(org_repo_project_tuple, change_type="add", args=args)
+    response = client.file_request(project_tuple, change_type="add", args=args)
 
-    readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was created and pushed successfully by ' \
+    readable_output = f'Commit "{response["commits"][0].get("comment")}" was created and pushed successfully by ' \
                       f'"{response.get("pushedBy", {}).get("displayName")}" to branch "{args.get("branch_name")}".'
 
     return CommandResults(
@@ -2151,10 +2151,10 @@ def file_update_command(client: Client, args: Dict[str, Any], organization: Opti
     Update a file in the repository.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
-    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, project_tuple)
 
-    response = client.file_request(org_repo_project_tuple, change_type="edit", args=args)
+    response = client.file_request(project_tuple, change_type="edit", args=args)
 
     readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was updated successfully by ' \
                       f'"{response.get("pushedBy", {}).get("displayName")}" in branch "{args.get("branch_name")}".'
@@ -2173,10 +2173,10 @@ def file_delete_command(client: Client, args: Dict[str, Any], organization: Opti
     Delete a file in the repository.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
-    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, project_tuple)
 
-    response = client.file_request(org_repo_project_tuple, change_type="delete", args=args)
+    response = client.file_request(project_tuple, change_type="delete", args=args)
 
     readable_output = f'Commit "{response.get("commits", [])[0].get("comment")}" was deleted successfully by ' \
                       f'"{response.get("pushedBy", {}).get("displayName")}" in branch "{args.get("branch_name")}".'
@@ -2195,9 +2195,9 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
     Retrieve repository files (items) list.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.file_list_request(org_repo_project_tuple, args=args)
+    response = client.list_files(project_tuple, args=args)
 
     mapping = {"path": "File Name(s)", "objectId": "Object ID", "commitId": "Commit ID", "gitObjectType": "Object Type",
                "isFolder": "Is Folder"}
@@ -2219,9 +2219,9 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     Getting the file.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.file_get_request(org_repo_project_tuple, args=args)
+    response = client.get_file(project_tuple, args=args)
     file_name = Path(args["file_name"]).name
 
     if args["format"] == 'json':
@@ -2240,11 +2240,11 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     return [fileResult(filename=file_name, data=response.content, file_type=EntryType.FILE)]
 
 
-def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_repo_project_tuple: namedtuple):
+def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], project_tuple: namedtuple):
     """
     This function converts a branch name to branch id. If the given branch does not exist, returns None.
     """
-    branch_list = branch_list_command(client, args, org_repo_project_tuple.repository, org_repo_project_tuple.project)
+    branch_list = branch_list_command(client, args, project_tuple.repository, project_tuple.project)
     for branch in branch_list.outputs:
         # two places call this function, one has target_ref as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
@@ -2257,20 +2257,20 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
     Create a branch.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     # convert target_ref to branch id
     if args.get("target_ref"):
-        args["branch_id"] = mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple)
+        args["branch_id"] = mapping_branch_name_to_branch_id(client, args, project_tuple)
 
-    response = client.branch_create_request(org_repo_project_tuple, args=args)
+    response = client.create_branch(project_tuple, args=args)
 
     # For deleting this redundant file, we re-set the reference to be itself in case the new branch came from a reference branch.
     if args.get("target_ref"):
         args["target_ref"] = args["branch_name"]
 
     # Delete the file was created for the new branch.
-    file_delete_command(client=client, args=args, organization=org_repo_project_tuple.organization,
-                        repository_id=org_repo_project_tuple.repository, project=org_repo_project_tuple.project)
+    file_delete_command(client=client, args=args, organization=project_tuple.organization,
+                        repository_id=project_tuple.repository, project=project_tuple.project)
 
     readable_output = f'Branch {response.get("refUpdates", [])[0].get("name")} was created successfully by' \
                       f' {response.get("pushedBy", {}).get("displayName")}.'
@@ -2289,9 +2289,9 @@ def pull_request_thread_create_command(client: Client, args: Dict[str, Any], org
     Create a thread in a pull request.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.pull_request_thread_create_request(org_repo_project_tuple, args=args)
+    response = client.create_pull_request_thread(project_tuple, args=args)
 
     readable_output = f'Thread {response.get("id")} was created successfully by' \
                       f' {response.get("comments", [])[0].get("author", {}).get("displayName")}.'
@@ -2310,9 +2310,9 @@ def pull_request_thread_update_command(client: Client, args: Dict[str, Any], org
     Update a thread in a pull request.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.pull_request_thread_update_request(org_repo_project_tuple, args=args)
+    response = client.update_pull_request_thread(project_tuple, args=args)
 
     readable_output = f'Thread {response.get("id")} was updated successfully by' \
                       f' {response.get("comments", [])[0].get("author", {}).get("displayName")}.'
@@ -2331,9 +2331,9 @@ def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organ
     Retrieve all threads in a pull request.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.pull_request_thread_list_request(org_repo_project_tuple, args["pull_request_id"])
+    response = client.list_pull_request_threads(project_tuple, args["pull_request_id"])
 
     list_to_table = []
     for thread in response.get("value"):
@@ -2368,10 +2368,10 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     Get a list of teams.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
                                                                         is_repository_id_required=False)
 
-    response = client.project_team_list_request(org_repo_project_tuple)
+    response = client.list_project_teams(project_tuple)
 
     mapping = {"name": "Name"}
     readable_output = tableToMarkdown(
@@ -2395,12 +2395,12 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
     Get a list of members for a specific team.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
                                                                         is_repository_id_required=False)
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
 
-    response = client.team_member_list_request(org_repo_project_tuple, args, limit, offset)
+    response = client.list_team_members(project_tuple, args, limit, offset)
 
     list_for_hr = []
     list_for_hr.extend(
@@ -2431,9 +2431,9 @@ def blob_zip_get_command(client: Client, args: Dict[str, Any], organization: Opt
     Get a single blob.
     """
     # pre-processing inputs
-    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.blob_zip_get_request(org_repo_project_tuple, args["file_object_id"])
+    response = client.get_blob_zip(project_tuple, args["file_object_id"])
 
     return fileResult(filename=f'{args["file_object_id"]}.zip', data=response.content, file_type=EntryType.FILE)
 
@@ -2525,6 +2525,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     client_id = params['client_id']
     organization = params['organization']
+    repository = params.get("repository")
+    project = params.get("project")
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     is_mirroring = params.get('is_mirroring', False)
@@ -2565,16 +2567,16 @@ def main() -> None:
             return_results(user_remove_command(client, args))
 
         elif command == 'azure-devops-pull-request-create':
-            return_results(pull_request_create_command(client, args, params.get('repository'), params.get('project')))
+            return_results(pull_request_create_command(client, args, repository, project))
 
         elif command == 'azure-devops-pull-request-get':
             return_results(pull_request_get_command(client, args))
 
         elif command == 'azure-devops-pull-request-update':
-            return_results(pull_request_update_command(client, args, params.get('repository'), params.get('project')))
+            return_results(pull_request_update_command(client, args, repository, project))
 
         elif command == 'azure-devops-pull-request-list':
-            return_results(pull_requests_list_command(client, args, params.get('repository'), params.get('project')))
+            return_results(pull_requests_list_command(client, args, repository, project))
 
         elif command == 'azure-devops-project-list':
             return_results(project_list_command(client, args))
@@ -2595,7 +2597,7 @@ def main() -> None:
             return_results(pipeline_list_command(client, args))
 
         elif command == 'azure-devops-branch-list':
-            return_results(branch_list_command(client, args, params.get('repository'), params.get('project')))
+            return_results(branch_list_command(client, args, repository, project))
 
         elif command == 'test-module':
             return_results(test_module(client))
@@ -2619,82 +2621,64 @@ def main() -> None:
                 return_results(update_remote_system_command(client, args))
 
         elif command == 'azure-devops-pull-request-reviewer-list':
-            return_results(pull_request_reviewer_list_command(client, args, params.get('organization'),
-                                                              params.get('repository'), params.get('project')))
+            return_results(pull_request_reviewer_list_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-pull-request-reviewer-add':
-            return_results(pull_request_reviewer_add_command(client, args, params.get('organization'),
-                                                             params.get('repository'), params.get('project')))
+            return_results(pull_request_reviewer_add_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-pull-request-commit-list':
-            return_results(pull_request_commit_list_command(client, args, params.get('organization'),
-                                                            params.get('repository'), params.get('project')))
+            return_results(pull_request_commit_list_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-commit-list':
-            return_results(commit_list_command(client, args, params.get('organization'),
-                                               params.get('repository'), params.get('project')))
+            return_results(commit_list_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-commit-get':
-            return_results(commit_get_command(client, args, params.get('organization'),
-                                              params.get('repository'), params.get('project')))
+            return_results(commit_get_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-work-item-get':
-            return_results(work_item_get_command(client, args, params.get('organization'),
-                                                 params.get('repository'), params.get('project')))
+            return_results(work_item_get_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-work-item-create':
-            return_results(work_item_create_command(client, args, params.get('organization'),
-                                                    params.get('repository'), params.get('project')))
+            return_results(work_item_create_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-work-item-update':
-            return_results(work_item_update_command(client, args, params.get('organization'),
-                                                    params.get('repository'), params.get('project')))
+            return_results(work_item_update_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-file-create':
-            return_results(file_create_command(client, args, params.get('organization'),
-                                               params.get('repository'), params.get('project')))
+            return_results(file_create_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-file-update':
-            return_results(file_update_command(client, args, params.get('organization'),
-                                               params.get('repository'), params.get('project')))
+            return_results(file_update_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-file-delete':
-            return_results(file_delete_command(client, args, params.get('organization'),
-                                               params.get('repository'), params.get('project')))
+            return_results(file_delete_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-file-list':
-            return_results(file_list_command(client, args, params.get('organization'),
-                                             params.get('repository'), params.get('project')))
+            return_results(file_list_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-file-get':
-            return_results(file_get_command(client, args, params.get('organization'),
-                                            params.get('repository'), params.get('project')))
+            return_results(file_get_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-branch-create':
-            return_results(branch_create_command(client, args, params.get('organization'),
-                                                 params.get('repository'), params.get('project')))
+            return_results(branch_create_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-pull-request-thread-create':
-            return_results(pull_request_thread_create_command(client, args, params.get('organization'),
-                                                              params.get('repository'), params.get('project')))
+            return_results(pull_request_thread_create_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-pull-request-thread-update':
-            return_results(pull_request_thread_update_command(client, args, params.get('organization'),
-                                                              params.get('repository'), params.get('project')))
+            return_results(pull_request_thread_update_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-pull-request-thread-list':
-            return_results(pull_request_thread_list_command(client, args, params.get('organization'),
-                                                            params.get('repository'), params.get('project')))
+            return_results(pull_request_thread_list_command(client, args, organization, repository, project))
 
         elif command == 'azure-devops-project-team-list':
-            return_results(project_team_list_command(client, args, params.get('organization'), params.get('project')))
+            return_results(project_team_list_command(client, args, organization, project))
 
         elif command == 'azure-devops-team-member-list':
-            return_results(team_member_list_command(client, args, params.get('organization'), params.get('project')))
+            return_results(team_member_list_command(client, args, organization, project))
 
         elif command == 'azure-devops-blob-zip-get':
-            return_results(blob_zip_get_command(client, args, params.get('organization'),
-                                                params.get('repository'), params.get('project')))
+            return_results(blob_zip_get_command(client, args, organization, repository, project))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
