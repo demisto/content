@@ -705,6 +705,41 @@ def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> d
     return res.json()
 
 
+def get_scanner_info():
+    """
+    Returns the scanner list and additional information about each scanner
+    Args:
+        NEW_HEADERS and USE_SSL
+    Returns:
+        CommandResults: Command object with relevant data.
+    """
+    command_result_headers = ['Scanner ID', 'Name', 'Status', 'Timestamp']
+    full_url = f'{BASE_URL}/scanners'
+    response = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    response_data = response.json()
+    scanners = response_data['scanners']
+    if response.status_code != 200:
+        raise DemistoException(raw_resposne.text)
+    scanner_data = []
+    for scanner in scanners:
+        scanner_results = {
+            'scanner_id': scanner['id'],
+            'scanner_name': scanner['name'],
+            'scanner_status': scanner['status'],
+            'timestamp': scanner['timestamp']
+        }
+        scanner_data.append(scanner_results)
+    markdown = tableToMarkdown('Scanners', scanner_data, headers=command_result_headers)
+    results = CommandResults(
+        readable_output = markdown,
+        outputs_key_field = 'status',
+        outputs_prefix = 'TenableIO.Scanner',
+        outputs = scanner_data,
+        raw_response = response_data
+    )
+    return_results(results)
+
+
 def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:
     """Gets chunks of assets or vulnerabilities
 
@@ -1141,6 +1176,8 @@ def main():  # pragma: no cover
         return_results(export_assets_command(demisto.args()))
     elif demisto.command() == 'tenable-io-export-vulnerabilities':
         return_results(export_vulnerabilities_command(demisto.args()))
+    elif demisto.command() == 'tenable-io-list-scanners':
+        demisto.results(get_scanner_info())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
