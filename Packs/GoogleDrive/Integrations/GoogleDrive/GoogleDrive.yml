@@ -1,4 +1,4 @@
-name: GoogleDrive-Gal
+name: GoogleDrive
 category: IT Services
 display: Google Drive
 sectionOrder:
@@ -2726,6 +2726,13 @@ script:
     arguments:
       - name: user_id
         description: The user's primary email address
+  - name: google-drive-get-file-labels
+    description: Modify labels to file.
+    arguments:
+      - name: file_id
+        description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+      - name: user_id
+        description: The user's primary email address
   dockerimage: demisto/googleapi-python3:1.0.0.66918
   isfetch: true
   runonce: false
@@ -2733,7 +2740,7 @@ script:
   subtype: python3
   type: python
 commonfields:
-  id: GoogleDrive-Gal
+  id: GoogleDrive
   version: -1
 fromversion: 5.0.0
 tests:

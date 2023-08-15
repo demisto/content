@@ -1168,3 +1168,22 @@ Google Drive get labels.
 #### Context Output
 
 There is no context output for this command.
+### google-drive-get-file-labels
+
+***
+Modify labels to file.
+
+#### Base Command
+
+`google-drive-get-file-labels`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
