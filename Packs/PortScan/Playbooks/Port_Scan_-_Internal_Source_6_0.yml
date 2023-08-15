@@ -1,5 +1,7 @@
 id: Port Scan - Internal Source
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Port Scan - Internal Source
 description: Remediates port scans originating within the network.
 starttaskid: "0"
@@ -20,6 +22,7 @@ tasks:
       - "97"
       - "115"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,7 +35,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -61,6 +63,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -73,7 +76,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
@@ -102,6 +104,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -118,7 +121,6 @@ tasks:
         simple: Internal
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "46":
@@ -147,6 +149,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -159,7 +162,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "52":
@@ -178,6 +180,7 @@ tasks:
       '#none#':
       - "102"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -190,7 +193,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "54":
@@ -235,6 +237,7 @@ tasks:
                 root: QRadar
                 accessor: DetectedInternalHosts
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,7 +250,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "59":
@@ -283,6 +285,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -300,7 +303,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "67":
@@ -374,6 +376,7 @@ tasks:
                         simple: Splunk.DetectedExternalIPs
                 accessor: Indicator
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -386,7 +389,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "68":
@@ -420,6 +422,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -432,7 +435,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "69":
@@ -451,6 +453,7 @@ tasks:
       '#none#':
       - "102"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -463,7 +466,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "71":
@@ -494,6 +496,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -511,7 +514,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "72":
@@ -555,6 +557,7 @@ tasks:
             value:
               simple: inputs.InvolvedFileSHA256
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -567,7 +570,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "73":
@@ -586,6 +588,7 @@ tasks:
       '#none#':
       - "102"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -598,7 +601,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "77":
@@ -653,11 +655,12 @@ tasks:
                         simple: WhitelistedHostnames
                       iscontext: true
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2335,
-          "y": 1730
+          "y": 1680
         }
       }
     note: false
@@ -665,7 +668,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "78":
@@ -684,6 +686,7 @@ tasks:
       '#none#':
       - "102"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -696,87 +699,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
-    taskid: df709030-c68e-4b44-8e34-e56967209e33
-    type: playbook
-    task:
-      id: df709030-c68e-4b44-8e34-e56967209e33
-      version: -1
-      name: Isolate Endpoint - Generic
-      description: |-
-        This playbook isolates a given endpoint using the following integrations:
-        - Carbon Black Enterprise Response
-        - Palo Alto Networks Traps
-      playbookName: Isolate Endpoint - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "123"
-    scriptarguments:
-      EndpointId:
-        complex:
-          root: PaloAltoNetworksXDREndpoint
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: PaloAltoNetworksXDREndpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: AttackerHostnames
-                iscontext: true
-          accessor: endpoint_id
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          root: AttackerHostnames
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: AttackerHostnames
-                iscontext: true
-              right:
-                value:
-                  simple: WhitelistedHostnames
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 2760,
-          "y": 2390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: ddedec42-5c3e-4f61-845c-a06d970a0004
+    taskid: 6a269bc0-311b-4d30-8329-9bd4ee39d616
     type: regular
     task:
-      id: ddedec42-5c3e-4f61-845c-a06d970a0004
+      id: 6a269bc0-311b-4d30-8329-9bd4ee39d616
       version: -1
       name: Get Cortex XDR endpoints
       description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -804,11 +734,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 2040
+          "x": 3000,
+          "y": 2030
         }
       }
     note: false
@@ -816,7 +747,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "89":
@@ -837,6 +767,7 @@ tasks:
       - "98"
       - "111"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -849,7 +780,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "90":
@@ -868,6 +798,7 @@ tasks:
       '#none#':
       - "77"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -880,7 +811,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "95":
@@ -898,7 +828,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "79"
+      - "129"
     scriptarguments:
       key:
         simple: PaloAltoNetworksXDREndpoint
@@ -909,11 +839,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 2195
+          "x": 3000,
+          "y": 2185
         }
       }
     note: false
@@ -921,7 +852,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "97":
@@ -943,6 +873,7 @@ tasks:
       - "15"
       - "127"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -955,7 +886,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "98":
@@ -999,6 +929,7 @@ tasks:
       event_limit:
         simple: "100"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1016,7 +947,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "99":
@@ -1042,6 +972,7 @@ tasks:
         simple: Containment
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1078,7 +1009,6 @@ tasks:
                   simple: ', '
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "100":
@@ -1089,7 +1019,7 @@ tasks:
       id: 38da39e8-5233-4050-84e3-95689fc0133a
       version: -1
       name: Were file hashes involved with the scan?
-      description: "Checks whether any file hashes were involved with the port scan."
+      description: Checks whether any file hashes were involved with the port scan.
       type: condition
       iscommand: false
       brand: ""
@@ -1120,6 +1050,7 @@ tasks:
               complex:
                 root: inputs.InvolvedFileSHA256
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1132,7 +1063,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "102":
@@ -1148,6 +1078,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1160,7 +1091,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "104":
@@ -1177,7 +1107,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "79"
+      - "129"
       "yes":
       - "84"
     separatecontext: false
@@ -1207,6 +1137,7 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1219,7 +1150,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "111":
@@ -1263,6 +1193,7 @@ tasks:
       TimeFrame:
         simple: LAST 7 DAYS
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1280,7 +1211,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "115":
@@ -1300,6 +1230,7 @@ tasks:
       - "116"
       - "117"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1312,7 +1243,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "116":
@@ -1341,6 +1271,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1349,7 +1280,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1872.5,
+          "x": 1892.5,
           "y": 340
         }
       }
@@ -1358,7 +1289,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "117":
@@ -1385,6 +1315,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1402,7 +1333,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "118":
@@ -1433,8 +1363,9 @@ tasks:
       employeemanageremail:
         complex:
           root: UserManagerEmail
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1447,7 +1378,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "119":
@@ -1466,6 +1396,7 @@ tasks:
       '#none#':
       - "54"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1478,7 +1409,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "120":
@@ -1497,6 +1427,7 @@ tasks:
       '#none#':
       - "67"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1509,7 +1440,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "121":
@@ -1555,6 +1485,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1572,7 +1503,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "122":
@@ -1601,6 +1531,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1613,7 +1544,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "123":
@@ -1633,8 +1563,9 @@ tasks:
       '#none#':
       - "102"
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1651,7 +1582,6 @@ tasks:
         simple: "True"
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "124":
@@ -1671,8 +1601,9 @@ tasks:
       '#none#':
       - "102"
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1689,7 +1620,6 @@ tasks:
         simple: "True"
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "125":
@@ -1709,8 +1639,9 @@ tasks:
       '#none#':
       - "102"
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1727,7 +1658,6 @@ tasks:
         simple: "True"
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "126":
@@ -1748,8 +1678,9 @@ tasks:
       - "52"
       - "72"
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1787,7 +1718,6 @@ tasks:
                   simple: ', '
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "127":
@@ -1806,8 +1736,9 @@ tasks:
     nexttasks:
       '#none#':
       - "100"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1824,7 +1755,6 @@ tasks:
         simple: Internal
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "128":
@@ -1926,12 +1856,100 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 99ee386f-e101-43ac-85c5-1c58253679cb
+    type: playbook
+    task:
+      id: 99ee386f-e101-43ac-85c5-1c58253679cb
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      Endpoint_hostname:
+        complex:
+          root: AttackerHostnames
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+              right:
+                value:
+                  simple: WhitelistedHostnames
+                iscontext: true
+          transformers:
+          - operator: uniq
+      Endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDREndpoint
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXDREndpoint.endpoint_name
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
+      Endpoint_ip:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+          accessor: ip
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "100_121_#default#": 0.45,
       "100_89_yes": 0.39,
-      "104_79_#default#": 0.25,
+      "104_129_#default#": 0.51,
       "104_84_yes": 0.51,
       "54_102_#default#": 0.25,
       "67_102_#default#": 0.24,
@@ -1944,7 +1962,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2745,
-        "width": 3210,
+        "width": 3450,
         "x": -70,
         "y": 50
       }
@@ -2017,8 +2035,6 @@ inputs:
   description: All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage.
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
+fromversion: 6.0.0
