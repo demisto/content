@@ -26,9 +26,9 @@ class IfElif:
     }
 
     def __init__(self, value, conditions, variables='', flags=None):
-        self.conditions = self.evaluate(conditions)
         self.load_variables(variables, value)
         self.handle_flags(argToList(flags))
+        self.conditions = self.evaluate(conditions)
 
     def handle_flags(self, flags: list):
         if flags:
