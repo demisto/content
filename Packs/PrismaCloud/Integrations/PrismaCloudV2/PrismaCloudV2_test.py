@@ -18,7 +18,7 @@ def prisma_cloud_v2_client(mocker):
     headers[REQUEST_CSPM_AUTH_HEADER] = AUTH_HEADER
 
     return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
-                  username='username', password='password', mirror_direction='None', close_incident=False, close_alert=False)
+                  username='username', password='password', mirror_direction=None, close_incident=False, close_alert=False)
 
 
 ''' COMMAND FUNCTIONS TESTS '''
@@ -884,7 +884,7 @@ def test_fetch_request(mocker, prisma_cloud_v2_client, limit, request_results, e
                           input_data.exactly_limit_for_filter,
                           input_data.high_limit_for_filter,
                           ))
-def test_filter_alerts(limit, expected_incidents, expected_updated_fetched_ids):
+def test_filter_alerts(prisma_cloud_v2_client, limit, expected_incidents, expected_updated_fetched_ids):
     """
     Given:
         - The IDs that were already fetched, the items in the response from the request and the limit of incidents to return
@@ -901,7 +901,7 @@ def test_filter_alerts(limit, expected_incidents, expected_updated_fetched_ids):
                       input_data.truncated_alert6,
                       input_data.truncated_alert7]
 
-    assert filter_alerts(fetched_ids, response_items, limit) == expected_incidents
+    assert filter_alerts(prisma_cloud_v2_client, fetched_ids, response_items, limit) == expected_incidents
     assert fetched_ids == expected_updated_fetched_ids
 
 
@@ -911,7 +911,7 @@ def test_filter_alerts(limit, expected_incidents, expected_updated_fetched_ids):
                           (input_data.truncated_alert_no_policy, input_data.incident_no_policy),
                           (input_data.full_alert, input_data.full_incident),
                           ))
-def test_alert_to_incident_context(alert, expected_incident_context):
+def test_alert_to_incident_context(prisma_cloud_v2_client, alert, expected_incident_context):
     """
     Given:
         - An alert as it was got in the response of the request to Prisma Cloud
@@ -921,7 +921,7 @@ def test_alert_to_incident_context(alert, expected_incident_context):
         - Returns the incident that was created from the alert given
     """
     from PrismaCloudV2 import alert_to_incident_context, add_mirroring_fields
-    add_mirroring_fields(alert)
+    add_mirroring_fields(prisma_cloud_v2_client, alert)
     assert alert_to_incident_context(alert) == expected_incident_context
 
 
