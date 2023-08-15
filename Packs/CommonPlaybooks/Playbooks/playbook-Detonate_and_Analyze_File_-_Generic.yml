@@ -446,7 +446,7 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: webid
+          accessor: ID
           transformers:
           - operator: uniq
     separatecontext: false
@@ -533,7 +533,7 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: webid
+          accessor: ID
           transformers:
           - operator: uniq
     separatecontext: false
