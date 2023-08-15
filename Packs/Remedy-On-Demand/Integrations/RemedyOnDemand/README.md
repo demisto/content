@@ -34,29 +34,31 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first-name | customer's first name (make sure customer already exists). | Required | 
-| last-name | customer's first name (make sure customer already exists). | Required | 
-| description | Incident description. | Required | 
-| status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required | 
-| source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Required | 
-| service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Required | 
-| impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
-| urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional | 
+| first-name | customer's first name (make sure customer already exists). | Required |
+| last-name | customer's first name (make sure customer already exists). | Required |
+| description | Incident description. | Required |
+| status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required |
+| source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Required |
+| service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Required |
+| impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required |
+| urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required |
+| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional |
+| custom-fields-seperator | A custom delimeter to use for the custom-fields, dont use '=' as a delimiter. default value is ','. | Optional |
+
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| Ticket.ID | string | Ticket ID |
+| Ticket.Submitter | string | Ticket submitter |
+| Ticket.Status | string | Ticket status |
+| Ticket.Description | string | Ticket description |
+| Ticket.Source | string | Ticket reported source |
+| Ticket.Impact | string | TicketiImpact |
+| Ticket.Urgency | string | Ticket urgency |
+| Ticket.Type | string | Ticket service type |
 
 
 #### Command Example
@@ -81,21 +83,21 @@ Get one incident by ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"". | Required | 
+| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"". | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| Ticket.ID | string | Ticket ID |
+| Ticket.Submitter | string | Ticket submitter |
+| Ticket.Status | string | Ticket status |
+| Ticket.Description | string | Ticket description |
+| Ticket.Source | string | Ticket reported source |
+| Ticket.Impact | string | TicketiImpact |
+| Ticket.Urgency | string | Ticket urgency |
+| Ticket.Type | string | Ticket service type |
 
 
 #### Command Example
@@ -121,7 +123,7 @@ Fetch all incidents
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search query/qualification format of '&lt;field&gt; LIKE "&lt;values&gt;"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"'). | Optional | 
+| query | Search query/qualification format of '&lt;field&gt; LIKE "&lt;values&gt;"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"'). | Optional |
 | sort | Sort query results in descending or ascending order. Format:'&lt;field&gt;.asc' or '&lt;field&gt;.desc' (e.g. 'Assigned To.asc'). | Optional |
 
 
@@ -132,7 +134,7 @@ Fetch all incidents
 | Ticket.Assignee | string | Ticket assignee |
 | Ticket.Description | string | Ticket description |
 | Ticket.Email | string | Ticket email |
-| Ticket.EntryID | string | Ticket entry ID | 
+| Ticket.EntryID | string | Ticket entry ID |
 | Ticket.ID | string | Ticket request ID |
 | Ticket.Impact | string | Ticket impact |
 | Ticket.IncidentNumber | string | Ticket number |
@@ -170,27 +172,27 @@ Update exiting incident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"". | Required | 
-| description | Updated description. | Optional | 
-| status | Updated status (unchanged if not specified). Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Optional | 
-| urgency | Updated urgency (unchanged if not specified). Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| impact | Updated impact (unchanged if not specified). Possible values are: 1-Extensive/Widespread, 2-Signinficant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| source | Updated reported source (unchanged if not specified). Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Optional | 
-| service-type | Updated service-type (unchanged if not specified). Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Optional | 
+| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"". | Required |
+| description | Updated description. | Optional |
+| status | Updated status (unchanged if not specified). Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Optional |
+| urgency | Updated urgency (unchanged if not specified). Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional |
+| impact | Updated impact (unchanged if not specified). Possible values are: 1-Extensive/Widespread, 2-Signinficant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional |
+| source | Updated reported source (unchanged if not specified). Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Optional |
+| service-type | Updated service-type (unchanged if not specified). Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| Ticket.ID | string | Ticket ID |
+| Ticket.Submitter | string | Ticket submitter |
+| Ticket.Status | string | Ticket status |
+| Ticket.Description | string | Ticket description |
+| Ticket.Source | string | Ticket reported source |
+| Ticket.Impact | string | TicketiImpact |
+| Ticket.Urgency | string | Ticket urgency |
+| Ticket.Type | string | Ticket service type |
 
 
 #### Command Example
