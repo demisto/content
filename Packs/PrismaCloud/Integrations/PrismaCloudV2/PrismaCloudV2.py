@@ -682,7 +682,7 @@ def reopen_incident_in_xsoar(remote_alert_id: str):
 
     Returns: An entry object with relevant data for reopening an XSOAR incident.
     """
-    demisto.debug(f'Prisma Alert {remote_alert_id} was reopened')
+    demisto.debug(f'Prisma Alert {remote_alert_id} was reopened. Reopening the incident on XSOAR.')
     entry = {
         'Type': EntryType.NOTE,
         'Contents': {
