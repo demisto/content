@@ -47,7 +47,7 @@ MIRROR_DIRECTION_MAPPING = {
     "Incoming And Outgoing": "Both",
 }
 
-INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote', 'reason']
+INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote', 'reason', 'policy.name']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
 INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = 'Closed by XSOAR'
@@ -637,12 +637,19 @@ def get_remote_alert_data(client: Client, remote_alert_id: str) -> tuple[Dict, D
 
     Returns: The raw alert's details, and a dictionary contains only the mirrored fields and their values.
     """
-    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='false')
+    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='true')
 
     updated_object: Dict[str, Any] = {}
     for field in INCIDENT_INCOMING_MIRROR_ARGS:
-        mirrored_field_value = alert_details.get(field, '')
-        updated_object[field] = mirrored_field_value
+        mirrored_field_value = demisto.get(alert_details, field, '')
+        if '.' in field:  # field is nested (currently it is only the policy.name field)
+            # policy.name field was added to the mirrored fields cause this is the field that is used in the default classifier to
+            # classify incident types. Without it, all mirrored alerts will be changed to the default incident type which is
+            # 'Prisma Cloud'.
+            split_field = field.split('.')
+            updated_object[split_field[0]] = {split_field[1]: mirrored_field_value}
+        else:
+            updated_object[field] = mirrored_field_value
     return alert_details, updated_object
 
 
