@@ -581,3 +581,16 @@ def test_smime_without_to_from_subject(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
+
+
+def test_unknown_file_type(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
+    mocker.patch.object(demisto, 'results')
+    try:
+        main()
+    except SystemExit:
+        gotexception = True
+    results = demisto.results.call_args[0][0]['Contents']
+    assert gotexception
+    assert 'Unknown file format:' in results
