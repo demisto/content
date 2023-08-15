@@ -1335,7 +1335,7 @@ UPDATE_FILE_ARGS = {"branch_id": "111",
 UPDATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
                                'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'edit', 'item':
                                            {'path': '/test_5.md'},
-                                            'newContent': {'content': 'UPDATE', 'contentType': 'rawtext'}}]}]}
+                                   'newContent': {'content': 'UPDATE', 'contentType': 'rawtext'}}]}]}
 UPDATE_FILE = (UPDATE_FILE_CHANGE_TYPE, UPDATE_FILE_ARGS, UPDATE_FILE_EXPECTED_RESULT)
 
 DELETE_FILE_CHANGE_TYPE = "delete"

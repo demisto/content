@@ -973,7 +973,7 @@ def generate_pull_request_readable_information(response: Union[dict, list],
 
 
 def pull_request_create_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
-    -> CommandResults:
+        -> CommandResults:
     """
     Create a new pull-request.
     Args:
@@ -988,7 +988,7 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
     """
     project_args = organization_repository_project_preprocess(args=args, organization=None, repository_id=repository,
                                                               project=project, is_organization_required=False)
-    project, repository_id = project_args.project, project_args.repository
+    project, repository_id = project_args.project, project_args.repository  # type: ignore[attr-defined]
 
     source_branch = args['source_branch']
     target_branch = args['target_branch']
@@ -1020,7 +1020,7 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
 
 
 def pull_request_update_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
-    -> CommandResults:
+        -> CommandResults:
     """
     Update a pull request.
     Args:
@@ -1035,7 +1035,7 @@ def pull_request_update_command(client: Client, args: Dict[str, Any], repository
     """
     project_args = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
                                                               is_organization_required=False, organization=None)
-    project, repository = project_args.project, project_args.repository
+    project, repository = project_args.project, project_args.repository  # type: ignore[attr-defined]
 
     pull_request_id = args['pull_request_id']
     title = args.get('title')
@@ -1108,7 +1108,7 @@ def verify_repository_and_project_argument(repository: Optional[str], project: O
 
 
 def pull_requests_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
-    -> CommandResults:
+        -> CommandResults:
     """
     Retrieve pull requests in repository.
     Args:
@@ -1128,12 +1128,12 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any], repository:
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
 
-    if page < 1 or limit < 1:
+    if page < 1 or limit < 1:  # type: ignore[operator]
         raise Exception('Page and limit arguments must be greater than 1.')
 
-    offset = (page - 1) * limit
+    offset = (page - 1) * limit  # type: ignore[operator]
 
-    response = client.pull_requests_list_request(project, repository, offset, limit)
+    response = client.pull_requests_list_request(project, repository, offset, limit)  # type: ignore[arg-type]
 
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out of ' \
                        f'others that may exist.'
@@ -1487,7 +1487,7 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def branch_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
-    -> CommandResults:
+        -> CommandResults:
     """
     Retrieve repository branches list.
     Args:
@@ -1526,7 +1526,7 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
                 raw_response=[]
             )
 
-    response = client.branch_list_request(project, repository, limit, continuation_token).json()
+    response = client.branch_list_request(project, repository, limit, continuation_token).json()  # type: ignore[arg-type]
     outputs = copy.deepcopy(response.get("value", []))
 
     for branch in outputs:
@@ -1595,7 +1595,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.data)
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Azure DevOps\n')
-            pull_request_update_command(client, update_args)
+            pull_request_update_command(client, update_args, repository=None, project=None)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1862,7 +1862,7 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
 
-    if page < 1 or limit < 1:
+    if page < 1 or limit < 1:  # type: ignore[operator]
         raise ValueError('Page and limit arguments must be greater than 1.')
 
     return limit, (page - 1) * limit  # type: ignore[operator, return-value]
