@@ -57,7 +57,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 - When *mirroring in* incidents from Prisma Cloud to Cortex XSOAR:
   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in Prisma Cloud that determines whether the incident was closed or re-opend is the `status` field.
 - When *mirroring out* incidents from Cortex XSOAR to Prisma Cloud:
-  - When enabling the *Close Mirrored Prisma Cloud Alert* integration parameter, the corresponding alert in Prisma Cloud will be closed with a *Dismissed* status for every reason chosen in the XSOAR incident (possible reasons are: `False Positive`, `Duplicate`, `Other` and `Resolved`). The *Reason* field of the Prisma Cloud alert will include the original reason selected in XSOAR and the close notes.
+  - When enabling the *Close Mirrored Prisma Cloud Alert* integration parameter, the corresponding alert in Prisma Cloud will be closed with a *Dismissed* status for every reason chosen in the Cortex XSOAR incident (possible reasons are: `False Positive`, `Duplicate`, `Other` and `Resolved`). The *Reason* field of the Prisma Cloud alert will include the original reason selected in Cortex XSOAR and the close notes.
   - When re-opening an XSOAR incident with a `Resolved` Prisma Cloud status, the incident will be re-opened, but the alert in Prisma Cloud will remain Resolved due to API limitations.  
  
 ## Commands
