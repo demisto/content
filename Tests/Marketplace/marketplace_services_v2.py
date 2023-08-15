@@ -11,7 +11,6 @@ import urllib.parse
 import warnings
 
 from datetime import datetime, timedelta
-from distutils.util import strtobool
 
 from packaging.version import Version
 from pathlib import Path
@@ -29,7 +28,7 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+    RN_HEADER_TO_ID_SET_KEYS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -3021,7 +3020,7 @@ class Pack:
                 #     # disable-secrets-detection-start
                 #     author_image_storage_path = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
                 #                                              author_image_storage_path)
-                    # disable-secrets-detection-end
+                # disable-secrets-detection-end
                 logging.info(f"Skipping uploading of {self._pack_name} pack author image "
                              f"and use default {GCPConfig.BASE_PACK} pack image")
             else:

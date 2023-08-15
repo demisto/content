@@ -8,8 +8,6 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
-from Tests.Marketplace.marketplace_services import Pack
-
 
 # disable-secrets-detection-start
 
