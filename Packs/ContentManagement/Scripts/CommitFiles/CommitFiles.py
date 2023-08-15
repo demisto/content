@@ -206,7 +206,6 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
     except DemistoException as e:
         raise DemistoException(
             f'Failed to execute azure-devops-file-update or azure-devops-file-create commands. Error: {e}, '
-            f'{traceback.format_exc()}'
         ) from e
 
 
