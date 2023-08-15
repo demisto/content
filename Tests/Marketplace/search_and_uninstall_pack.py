@@ -29,12 +29,17 @@ def generic_retries_request(client: demisto_client,
                             accept: str = 'application/json',
                             attempts_count: int = 5,
                             sleep_interval: int = 60,
+                            should_try_handler: Callable = None,
                             success_handler: Callable = None,
                             api_exception_handler: Callable = None,
                             http_exception_handler: Callable = None):
     try:
         for attempt in range(attempts_count - 1, -1, -1):
             try:
+                if should_try_handler and not should_try_handler():
+                    # if the method exist and we should not try again
+                    return True, None
+
                 logging.info(f"{try_message}, Attempt: {attempts_count - attempt}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
@@ -258,6 +263,16 @@ def uninstall_pack(client: demisto_client,
         logging.success(f'Pack: {pack_id} was successfully uninstalled from the server')
         return True, None
 
+    def should_try_handler():
+        """
+
+        Returns: true if we should try and uninstall the pack - the pack is still installed
+
+        """
+        still_installed, _ = check_if_pack_still_installed(client=client,
+                                                           pack_id=pack_id)
+        return still_installed
+
     def api_exception_handler(ex):
         if ALREADY_IN_PROGRESS in ex.body:
             wait_succeeded = wait_until_not_updating(client)
@@ -265,11 +280,6 @@ def uninstall_pack(client: demisto_client,
                 raise Exception(
                     "Failed to wait for the server to exit installation/updating status"
                 ) from ex
-        still_installed, _ = check_if_pack_still_installed(client=client,
-                                                           pack_id=pack_id)
-        if not still_installed:
-            return True, None
-        return None
 
     return generic_retries_request(client=client,
                                    retries_message=f'Failed to uninstall pack: {pack_id}',
@@ -279,6 +289,7 @@ def uninstall_pack(client: demisto_client,
                                    method='DELETE',
                                    attempts_count=attempts_count,
                                    sleep_interval=sleep_interval,
+                                   should_try_handler=should_try_handler,
                                    success_handler=success_handler,
                                    api_exception_handler=api_exception_handler)
 
