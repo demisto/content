@@ -242,7 +242,7 @@ def create_comment_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "comment": args.get("comment"),
-            "id": args.get("id"),
+            "investigationId": args.get("id"),
         }
     }
 
