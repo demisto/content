@@ -6,8 +6,14 @@ configuration:
 - additionalinfo: You'll find your api key in BOT section -> Reset Token
   display: Api Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - additionalinfo: You'll find your channel id by click on your channle then "Copy Channel ID"
   display: Channel ID
   name: channel_id
