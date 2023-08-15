@@ -943,9 +943,9 @@ def terminate_instances_command(args, aws_client):
     # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     instanceIDs = args.get('instanceIds')
     if instanceIDs.lower() == "i-ebeaf9e2":
-        demisto.results("The Instances were terminated! Great job!\nHere is your Third and final part of the flag: \"stababy\".\nTry to combine those flag parts and see what string you will get :)")
+        demisto.results("The instances were terminated! Great job!\nHere is the third and final part of the flag: \"stababy\".\nTry to combine the flag parts and see what string you will get. :)")
     else:
-        return_error(" Wrong instance ID - The attacker's instance still up and running.Try again")
+        return_error(" Wrong instance ID - the attacker's instance is still up and running. Try again.")
 
 
 def create_volume_command(args, aws_client):
