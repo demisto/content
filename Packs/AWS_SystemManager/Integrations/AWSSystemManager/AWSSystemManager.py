@@ -3,9 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AWSApiModule import *
 import re
-
+# from mypy_boto3_accessanalyzer import AccessAnalyzerClient
 # from mypy_boto3_ssm.client import SSMClient, Exceptions
-
+# from boto3_stubs.ssm import SSMClient as SSMClientType
 
 # from mypy_boto3_ssm.type_defs import (
 #     AddTagsToResourceRequestRequestTypeDef,
@@ -47,6 +47,25 @@ def config_aws_session(args: dict[str, str], aws_client: AWSClient):
         role_session_name=args.get("roleSessionName"),
         role_session_duration=args.get("roleSessionDuration"),
     )
+
+
+def convert_last_execution_date(response: dict) -> dict:
+    """
+    Converts the 'LastExecutionDate' value in the response from a datetime object to a string.
+
+    Args:
+        response: A dictionary representing the response from the AWS SSM 'list_associations' API.
+
+    Returns:
+        A dictionary with the same keys and values as the input dictionary, except that the 'LastExecutionDate'
+        value is converted to a string.
+    """
+    for association in response.get("Associations", []):
+        last_execution_date = association.get("LastExecutionDate")
+        if isinstance(last_execution_date, datetime):
+            association["LastExecutionDate"] = last_execution_date.isoformat()
+
+    return response
 
 
 def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandResults:
@@ -98,7 +117,7 @@ def add_tags_to_resource_command(aws_client, args: dict[str, Any]) -> CommandRes
 
 
 def get_inventory_command(aws_client, args: dict[str, Any]) -> list[CommandResults]:
-    def _parse_inventory_entities(entities) -> list[dict[str, str]]:
+    def _parse_inventory_entities(entities: list[dict]) -> list[dict]:
         """
         Parses a list of entities and returns a list of dictionaries containing relevant information.
 
@@ -110,7 +129,7 @@ def get_inventory_command(aws_client, args: dict[str, Any]) -> list[CommandResul
         """
         parsed_entities = []
         for entity in entities:
-            entity_content = entity.get("Data", {}).get("AWS:InstanceInformation", {}).get("Content", [{}])
+            entity_content = dict_safe_get(entity, ["Data", "AWS:InstanceInformation", "Content"], [{}])
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
                 parsed_entity.update(
@@ -178,13 +197,11 @@ def list_inventory_entry_command(
             for entry in entries
         ]
 
-    if (instance_id := args["instance_id"]) and not re.search(
-        REGEX_INSTANCE_ID, instance_id
-    ):
+    if (instance_id := args["instance_id"]) and not re.search(REGEX_INSTANCE_ID, instance_id):
         raise DemistoException(f"Invalid instance id: {instance_id}")
 
     kwargs = {
-        "InstanceId": instance_id,
+        "InstanceId": args["instance_id"],
         "TypeName": args["type_name"],
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
@@ -224,7 +241,7 @@ def list_associations_command(aws_client, args: dict[str, Any]) -> list[CommandR
                 "Association version": association.get("AssociationVersion"),
                 "Last execution date": str(association.get("LastExecutionDate")),
                 "Resource status count": association.get("Overview", {}).get("AssociationStatusAggregatedCount"),
-                "Status": association.get("OverView", {}).get("Status"),
+                "Status": association.get("Overview", {}).get("Status"),
             }
             for association in associations
         ]
@@ -235,6 +252,7 @@ def list_associations_command(aws_client, args: dict[str, Any]) -> list[CommandR
     if next_token := args.get("next_token"):
         kwargs["NextToken"] = next_token
     response = aws_client.list_associations(**kwargs)
+    response.pop("ResponseMetadata")
 
     command_results = []
 
@@ -245,12 +263,12 @@ def list_associations_command(aws_client, args: dict[str, Any]) -> list[CommandR
 
     command_results.append(
         CommandResults(
-            outputs_prefix="AWS.SSM.Association",
-            outputs=response,
+            outputs_prefix="AWS.SSM.Associations",
+            outputs=convert_last_execution_date(response),
             outputs_key_field="AssociationId",
             readable_output=tableToMarkdown(
-                name="AWS SSM Association",
-                t=_parse_associations(response.get("Associations", [])),
+                "AWS SSM Association",
+                _parse_associations(response.get("Associations", [])),
             ),
         )
     )
@@ -272,17 +290,11 @@ def main():
     aws_role_arn = params.get("roleArn")
     aws_role_session_name = params.get("roleSessionName")
     aws_role_session_duration = params.get("sessionDuration")
-    aws_access_key_id = params.get("credentials", {}).get("identifier") or params.get(
-        "access_key"
-    )
-    aws_secret_access_key = params.get("credentials", {}).get("password") or params.get(
-        "secret_key"
-    )
-    aws_role_policy = (
-        None  # added it for using AWSClient class without changing the code
-    )
-    timeout = params.get("timeout")
-    retries = params.get("retries") or 5
+    aws_access_key_id = params.get("credentials", {}).get("identifier")
+    aws_secret_access_key = params.get("credentials", {}).get("password")
+    aws_role_policy = None  # added it for using AWSClient class without changing the code
+    timeout = params["timeout"]
+    retries = params["retries"]
 
     validate_params(
         aws_default_region,

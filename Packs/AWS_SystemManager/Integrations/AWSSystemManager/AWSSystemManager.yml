@@ -43,16 +43,6 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
-- display: Access Key
-  name: access_key
-  type: 0
-  hidden: true
-  required: false
-- display: Secret Key
-  name: secret_key
-  type: 4
-  hidden: true
-  required: false
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
