@@ -656,7 +656,7 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
 
     Returns: An entry object with relevant data for closing an XSOAR incident.
     """
-    demisto.debug(f'Prisma Alert {remote_alert_id} was closed')
+    demisto.debug(f'Prisma Alert {remote_alert_id} was closed. Closing the mirrored incident in XSOAR')
     if mirrored_status == 'resolved' and mirrored_dismissal_note == '':
         mirrored_dismissal_note = 'resolved'
 
