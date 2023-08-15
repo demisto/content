@@ -55,7 +55,7 @@ def main():
             test_msg[key]['fail_on_test_module'] = True
     # Remove keys with empty lists
     test_msg = {key: value for key, value in test_msg.items() if value}
-    for key, val in test_msg.items():
+    for key in test_msg:
         test_msg[key]['error_msgs'] = list(set(test_msg[key]['error_msgs']))
     with open("/Users/sfainberg/Downloads/failing_tests.csv", 'w', newline='') as file:
         writer = csv.writer(file)
