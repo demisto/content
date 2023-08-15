@@ -669,3 +669,15 @@ def test_format_nested_incident_attribute(nested_attr, expected_result):
     from FortiSIEMV2 import format_nested_incident_attribute
 
     assert format_nested_incident_attribute(nested_attr) == expected_result
+
+
+@pytest.mark.parametrize('events_mock_response, expected_result', [
+    ({'result': {'code': 255}}, 0),
+    (load_json_mock_response("triggered_events.json"), 5),
+])
+def test_get_related_events_for_fetch_command(events_mock_response, expected_result, requests_mock):
+    from FortiSIEMV2 import FortiSIEMClient, get_related_events_for_fetch_command
+    client: FortiSIEMClient = mock_client()
+    requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
+
+    assert len(get_related_events_for_fetch_command('123456',  20, client)) == expected_result
