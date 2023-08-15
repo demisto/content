@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
-from collections.abc import Callable
 from typing import NamedTuple
 from collections.abc import Callable
 from collections import namedtuple
@@ -988,7 +987,7 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
 
     """
     project_args = organization_repository_project_preprocess(args=args, organization=None, repository_id=repository,
-                                                               project=project, is_organization_required=False)
+                                                              project=project, is_organization_required=False)
     project, repository_id = project_args.project, project_args.repository
 
     source_branch = args['source_branch']
@@ -1034,7 +1033,7 @@ def pull_request_update_command(client: Client, args: Dict[str, Any], repository
 
     """
     project_args = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
-                                                               is_organization_required=False, organization=None)
+                                                              is_organization_required=False, organization=None)
     project, repository = project_args.project, project_args.repository
 
     pull_request_id = args['pull_request_id']
@@ -2371,7 +2370,7 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     """
     # pre-processing inputs
     project_args = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
-                                                               is_repository_id_required=False)
+                                                              is_repository_id_required=False)
 
     response = client.list_project_teams(project_args)
 
@@ -2398,7 +2397,7 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
     """
     # pre-processing inputs
     project_args = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
-                                                               is_repository_id_required=False)
+                                                              is_repository_id_required=False)
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
 
