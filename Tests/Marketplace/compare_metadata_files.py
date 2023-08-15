@@ -99,11 +99,8 @@ def main():
             continue
 
         new_pack_dir = f"{options.uploaded_packs}/{pack_dir_name}"
-        try:
-            with ZipFile(pack_dir) as pack_dir_zip:
-                pack_dir_zip.extractall(new_pack_dir)
-        except Exception as e:
-            logging.info(f"Pack '{pack_dir_name}' is not a zip\n{e}")
+        with ZipFile(pack_dir) as pack_dir_zip:
+            pack_dir_zip.extractall(new_pack_dir)
 
         existing_metadata = read_metadata(f"{new_pack_dir}/metadata.json")
         new_metadata = read_metadata(f"content_packs/{pack_dir_name}/metadata.json")
@@ -117,8 +114,6 @@ def main():
         elif different_ignored_keys:
             logging.debug(f"Found different (ignored) values in 'content_packs/{pack_dir_name}/metadata.json' for keys "
                           f"'{different_ignored_keys}'")
-        else:
-            logging.success("Found the metadata files equal")
 
 
 if __name__ == '__main__':
