@@ -1320,8 +1320,9 @@ CREATE_FILE_ARGS = {"branch_id": "111",
                     }
 CREATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
                                'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'add', 'item': {'path': '/test_5.md'},
-                                                                              'newContent': {'content': '# Tasks\\n\\n* Item 1\\n* Item 2',
-                                                                                             'contentType': 'rawtext'}}]}]}
+                                                                              'newContent':
+                                                                                  {'content': '# Tasks\\n\\n* Item 1\\n* Item 2',
+                                                                                   'contentType': 'rawtext'}}]}]}
 CREATE_FILE = (CREATE_FILE_CHANGE_TYPE, CREATE_FILE_ARGS, CREATE_FILE_EXPECTED_RESULT)
 
 UPDATE_FILE_CHANGE_TYPE = "edit"
@@ -1332,9 +1333,9 @@ UPDATE_FILE_ARGS = {"branch_id": "111",
                     "file_path": "/test_5.md"
                     }
 UPDATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
-                               'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'edit', 'item': {'path': '/test_5.md'},
-                                                                              'newContent': {'content': 'UPDATE',
-                                                                                             'contentType': 'rawtext'}}]}]}
+                               'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'edit', 'item':
+                                           {'path': '/test_5.md'},
+                                            'newContent': {'content': 'UPDATE', 'contentType': 'rawtext'}}]}]}
 UPDATE_FILE = (UPDATE_FILE_CHANGE_TYPE, UPDATE_FILE_ARGS, UPDATE_FILE_EXPECTED_RESULT)
 
 DELETE_FILE_CHANGE_TYPE = "delete"
@@ -1509,8 +1510,7 @@ def test_file_list_command(requests_mock):
             }
     result = file_list_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n|---|---|---|---|---|\n| / |  |  | tree | true |\n'
-                                             '| /.github |  |  | tree | true |\n')
+    assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 

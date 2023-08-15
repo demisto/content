@@ -40,7 +40,6 @@ def main():  # pragma: no cover
 
         if command_get_branch == 'azure-devops-branch-list':
             branch_name = find_available_branch_azure_devops(pack_name)
-            print(f"{branch_name=}")
         else:
             branch_name = find_available_branch(pack_name, command_get_branch)
 

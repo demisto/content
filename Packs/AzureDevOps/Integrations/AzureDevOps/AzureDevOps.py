@@ -972,7 +972,8 @@ def generate_pull_request_readable_information(response: Union[dict, list],
     return readable_output
 
 
-def pull_request_create_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_create_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
+    -> CommandResults:
     """
     Create a new pull-request.
     Args:
@@ -1018,7 +1019,8 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
     return command_results
 
 
-def pull_request_update_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_update_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
+    -> CommandResults:
     """
     Update a pull request.
     Args:
@@ -1105,7 +1107,8 @@ def verify_repository_and_project_argument(repository: Optional[str], project: O
         raise DemistoException(MISSING_PARAMETERS_ERROR_MSG_2)
 
 
-def pull_requests_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_requests_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
+    -> CommandResults:
     """
     Retrieve pull requests in repository.
     Args:
@@ -1483,7 +1486,8 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def branch_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
+def branch_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str])\
+    -> CommandResults:
     """
     Retrieve repository branches list.
     Args:
@@ -1861,7 +1865,7 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int
     if page < 1 or limit < 1:
         raise ValueError('Page and limit arguments must be greater than 1.')
 
-    return limit, (page - 1) * limit
+    return limit, (page - 1) * limit  # type: ignore[operator, return-value]
 
 
 def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
@@ -2057,7 +2061,7 @@ def work_item_pre_process_data(args: Dict[str, Any], arguments_list: List[str]) 
                "assignee_display_name": "System.AssignedTo",
                "state": "System.State"}
 
-    data: List[dict]= []
+    data: List[dict] = []
 
     data.extend(
         {
