@@ -22,7 +22,7 @@
         },
         "inc_id": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "dg_comment": {
             "type": "string",
