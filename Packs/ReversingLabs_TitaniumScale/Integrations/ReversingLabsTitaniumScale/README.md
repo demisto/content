@@ -33,6 +33,13 @@ You need to obtain the following:
     | Reliability  |  True (default: C - Fairly reliable)
     |Wait time between report fetching retries (seconds)| True (default: 2)|
     |Number of report fetching retries| True (default: 30)|
+    | HTTP proxy address with the protocol and port number. | False |
+    | HTTP proxy username (if needed) | False |
+    | HTTP proxy password (if needed) | False |
+    | HTTPS proxy address with the protocol and port number. | False |
+    | HTTPS proxy username (if needed) | False |
+    | HTTPS proxy password (if needed) | False |
+
 4. Click **Test** to validate connection.
 
 ## Commands
