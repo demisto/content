@@ -861,7 +861,6 @@ def urls_from_ip_output(ip, response):
 
 
 def main():
-
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:
