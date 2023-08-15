@@ -1306,7 +1306,8 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_compatible_content_packs, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_compatible_content_packs,
+                             marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     # packs_with_missing_dependencies = []
@@ -1360,8 +1361,7 @@ def main():
         #     continue
 
         task_status, _ = pack.format_metadata(index_folder_path,
-                                              packs_dependencies_mapping, build_number,
-                                              current_commit_hash,
+                                              packs_dependencies_mapping,
                                               statistics_handler,
                                               packs_for_current_marketplace_dict, marketplace)
 
@@ -1520,14 +1520,15 @@ def main():
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
-    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, \
+        skipped_packs, failed_packs = get_packs_summary(packs_to_upload_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_list, readme_images_dict=readme_images_dict)
+        images_data=get_images_data(packs_to_upload_list, readme_images_dict=readme_images_dict)
     )
 
     # summary of packs status

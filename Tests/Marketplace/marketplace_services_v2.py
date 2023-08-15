@@ -493,25 +493,25 @@ class Pack:
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    # def is_data_source_pack(self, yaml_content):
+    def is_data_source_pack(self, yaml_content):
 
-    #     is_data_source = self._is_data_source
-    #     # this's the first integration in the pack, and the pack is in xsiam
-    #     if self._single_integration and 'marketplacev2' in self.marketplaces:
+        is_data_source = self._is_data_source
+        # this's the first integration in the pack, and the pack is in xsiam
+        if self._single_integration and 'marketplacev2' in self.marketplaces:
 
-    #         # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
-    #         if yaml_content.get('script', {}).get('isfetchevents', False) or \
-    #                 yaml_content.get('script', {}).get('isfetch', False) is True:
-    #             logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
-    #             is_data_source = True
-    #     # already has the pack as data source
-    #     elif not self._single_integration and is_data_source:
+            # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
+            if yaml_content.get('script', {}).get('isfetchevents', False) or \
+                    yaml_content.get('script', {}).get('isfetch', False) is True:
+                logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
+                is_data_source = True
+        # already has the pack as data source
+        elif not self._single_integration and is_data_source:
 
-    #         # found a second integration in the pack
-    #         logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-    #         is_data_source = False
+            # found a second integration in the pack
+            logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+            is_data_source = False
 
-    #     return is_data_source
+        return is_data_source
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
@@ -950,76 +950,76 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
-        """ Detects pack modified files.
+    # def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
+    #     """ Detects pack modified files.
 
-        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
-        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
-        from origin/master.
+    #     The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
+    #     index. In case that no commit was found in index (initial run), the default value will be set to previous commit
+    #     from origin/master.
 
-        Args:
-            content_repo (git.repo.base.Repo): content repo object.
-            index_folder_path (str): full path to downloaded index folder.
-            current_commit_hash (str): last commit hash of head.
-            previous_commit_hash (str): the previous commit to diff with.
+    #     Args:
+    #         content_repo (git.repo.base.Repo): content repo object.
+    #         index_folder_path (str): full path to downloaded index folder.
+    #         current_commit_hash (str): last commit hash of head.
+    #         previous_commit_hash (str): the previous commit to diff with.
 
-        Returns:
-            bool: whether the operation succeeded.
-            list: list of RN files that were modified.
-            bool: whether pack was modified and override will be required.
-        """
-        task_status = False
-        modified_rn_files_paths = []
-        pack_was_modified = False
+    #     Returns:
+    #         bool: whether the operation succeeded.
+    #         list: list of RN files that were modified.
+    #         bool: whether pack was modified and override will be required.
+    #     """
+    #     task_status = False
+    #     modified_rn_files_paths = []
+    #     pack_was_modified = False
 
-        try:
-            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
+    #     try:
+    #         pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
 
-            if not os.path.exists(pack_index_metadata_path):
-                logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
-                task_status = True
-                return None
+    #         if not os.path.exists(pack_index_metadata_path):
+    #             logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
+    #             task_status = True
+    #             return None
 
-            with open(pack_index_metadata_path) as metadata_file:
-                downloaded_metadata = json.load(metadata_file)
+    #         with open(pack_index_metadata_path) as metadata_file:
+    #             downloaded_metadata = json.load(metadata_file)
 
-            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
-            # set 2 commits by hash value in order to check the modified files of the diff
-            current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit(previous_commit_hash)
+    #         previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
+    #         # set 2 commits by hash value in order to check the modified files of the diff
+    #         # current_commit = content_repo.commit(current_commit_hash)
+    #         # previous_commit = content_repo.commit(previous_commit_hash)
 
-            for modified_file in current_commit.diff(previous_commit):
-                if modified_file.a_path.startswith(PACKS_FOLDER) and \
-                        not is_ignored_pack_file(os.path.normpath(modified_file.a_path).split(os.sep)):
-                    # modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
-                    # pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
+    #         # for modified_file in current_commit.diff(previous_commit):
+    #         #     if modified_file.a_path.startswith(PACKS_FOLDER) and \
+    #         #             not is_ignored_pack_file(os.path.normpath(modified_file.a_path).split(os.sep)):
+    #         #         modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
+    #         #         pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
 
-                    # if pack_name and pack_name == self._pack_name:
-                    #     if not is_ignored_pack_file(modified_file_path_parts):
-                    #         logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
-                    #         task_status, pack_was_modified = True, True
-                    #         modified_rn_files_paths.append(modified_file.a_path)
+    #         #         if pack_name and pack_name == self._pack_name:
+    #         #             if not is_ignored_pack_file(modified_file_path_parts):
+    #         #                 logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
+    #         #                 task_status, pack_was_modified = True, True
+    #         #                 modified_rn_files_paths.append(modified_file.a_path)
 
-                    #         if entity_type_dir in PackFolders.pack_displayed_items():
-                    #             if entity_type_dir in self._modified_files:
-                    #                 self._modified_files[entity_type_dir].append(modified_file.a_path)
-                    #             else:
-                    #                 self._modified_files[entity_type_dir] = [modified_file.a_path]
+    #         #                 if entity_type_dir in PackFolders.pack_displayed_items():
+    #         #                     if entity_type_dir in self._modified_files:
+    #         #                         self._modified_files[entity_type_dir].append(modified_file.a_path)
+    #         #                     else:
+    #         #                         self._modified_files[entity_type_dir] = [modified_file.a_path]
 
-                    #     else:
-                    #         logging.debug(f'{modified_file.a_path} is an ignored file')
+    #         #             else:
+    #         #                 logging.debug(f'{modified_file.a_path} is an ignored file')
 
-            task_status = True
-            if pack_was_modified:
-                # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
-                # Filter modifications in release notes config JSON file - they will be handled later on.
-                modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            return None
-        except Exception:
-            logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
+    #         task_status = True
+    #         if pack_was_modified:
+    #             # Make sure the modification is not only of release notes files, if so count that as not modified
+    #             pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+    #             # Filter modifications in release notes config JSON file - they will be handled later on.
+    #             modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
+    #         return None
+    #     except Exception:
+    #         logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
+    #     finally:
+    #         return task_status, modified_rn_files_paths
 
     # def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
     #     """
@@ -1453,7 +1453,7 @@ class Pack:
         """
         modified_rn_files = []
         for file_path in diff_list:
-            if not self.is_pack_release_notes_file():
+            if not self.is_pack_release_notes_file(file_path):
                 logging.debug(f"file path '{file_path}' is not a release notes file of the pack '{self._pack_name}'")
                 continue
             modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
@@ -2393,7 +2393,7 @@ class Pack:
             self.description = metadata.get(Metadata.DESCRIPTION, False)
             self.display_name = metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._tags = set(metadata.get(Metadata.TAGS, {}))
-            self.user_metadata = metadata
+            self._user_metadata = metadata
             self._marketplaces = metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = metadata.get(Metadata.MODULES, [])
             self._content_items = metadata.get(Metadata.CONTENT_ITEMS)

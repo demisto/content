@@ -501,7 +501,7 @@ class TestCleanPacks:
             private_packs=private_packs,
             storage_bucket=dummy_storage_bucket,
             storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
+            content_packs=[public_pack, private_pack]
         )
 
         assert not skipped_cleanup
