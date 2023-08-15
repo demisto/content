@@ -1,5 +1,2 @@
-[file:DemistoClassApiModule.py]
-ignore=W9014
-
 [file:README.md]
 ignore=RM106
