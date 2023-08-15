@@ -1957,7 +1957,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
