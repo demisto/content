@@ -5380,6 +5380,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1"
+        },
+        {
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
@@ -5673,7 +5678,6 @@
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
         "EWS_O365_test": "Issue CIAC-6753",
-        "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
