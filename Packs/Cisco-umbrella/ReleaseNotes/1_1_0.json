@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The DBotScore calculation for domains has changed. The `status` field now takes precedence to the `security_rank2` field."
+}
