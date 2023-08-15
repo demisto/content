@@ -1,4 +1,4 @@
-This playbook creates a pull request using Azure DevOps integration.
+This playbook creates a pull request using the Azure DevOps integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
