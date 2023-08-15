@@ -1,5 +1,24 @@
-import demistomock as demisto
 import pytest
+from unittest.mock import patch
+
+
+def test_load_variables():
+    import IfElif
+
+    IfElif.ARGS = {
+        'variables': 'int_var=42 \n str_var = hello  \nlist_var  =  [1, 2, 3]',
+        'value': 'some_value'
+    }
+
+    variables = IfElif.load_variables()
+
+    assert variables['int_var'] == 42
+    assert variables['str_var'] == 'hello'
+    assert variables['list_var'] == [1, 2, 3]
+    assert variables['true'] is True
+    assert variables['false'] is False
+    assert variables['null'] is None
+    assert variables['VALUE'] == 'some_value'
 
 
 @pytest.mark.parametrize(
@@ -13,7 +32,7 @@ import pytest
         ('regex_match("\s", "s")', False),
     ]
 )
-def test_parse_boolean_expression(expression, expected_result):
+def test_evaluate(expression, expected_result):
     """
     Given:
         - A boolean expression as a string.
@@ -28,7 +47,7 @@ def test_parse_boolean_expression(expression, expected_result):
 
     result = evaluate(expression)
 
-    assert result is expected_result
+    assert bool(result) is expected_result
 
 
 @pytest.mark.parametrize(
@@ -40,7 +59,7 @@ def test_parse_boolean_expression(expression, expected_result):
         'sys.exit()'
     ]
 )
-def test_parse_boolean_expression_error(expression):
+def test_evaluate_error(expression):
     """
     Given:
         - A boolean expression with invalid or unsupported syntax.
@@ -57,27 +76,31 @@ def test_parse_boolean_expression_error(expression):
         evaluate(expression)
 
 
-def test_load_conditions(mocker):
+# @patch('demisto.args', return_value={'value': 'some_value'})
+@pytest.mark.parametrize(
+    'expression, expected_result',
+    [
+        ('true and [1,2,3]', True),
+        ('1 and 2 < 3 < 4 or 5 or [] or 4', True),
+        ('1 or 2 or 0', True),
+        ('false and {1: 2, 3: [4,5,6,7]}', False),
+        ('regex_match("\s", " ")', True),
+        ('regex_match("\s", "s")', False),
+    ]
+)
+def test_evaluate_flags(expression, expected_result):
     """
     Given:
-        - A string containing context references in the format #{<path>} and/or "#VALUE".
+        - A boolean expression as a string.
 
     When:
-        - Running If-Elif
+        - Running If-Elif with flags
 
     Then:
-        - Replace #{...}'s with the string representation of the corresponding value in the context
-          and "#VALUE" with the demisto.args()['value'].
+        - Parse the expression and return it's boolean value.
     """
-    import IfElif
+    from IfElif import evaluate
 
-    IfElif.ARGS = {
-        'conditions': '{"key1": #{a.b.[0].c}, "key2": #VALUE}',
-        'value': 'value2',
-    }
-    dt = mocker.patch.object(demisto, 'dt', return_value='value1')
+    result = evaluate(expression)
 
-    result = IfElif.load_conditions()
-
-    assert result == {'key1': 'value1', 'key2': 'value2'}
-    dt.assert_called_with({}, 'a.b.[0].c')
+    assert bool(result) is expected_result
