@@ -137,10 +137,10 @@ def delete_user(args, client):  # pragma: no cover
     UserName = args.get('userName')
     if UserName.lower() == "bob":
         demisto.results(
-            'The User {0} has been deleted!\n Great job - here is your second part of the flag ( out of 3)...\nflag:\"alavi\"'.format(UserName))
+            'User {0} has been deleted!\n Great job - here is the second part of the flag (out of 3)...\nflag:\"alavi\"'.format(UserName))
     else:
         return_error(
-            ('You\'ve entered the folowing user {0}.\nAre you sure that this user you want to delete?\nOperation aborted.Exit code (400).'.format(UserName)))
+            ('You\'ve entered user {0}.\nAre you sure you want to delete this user?\nOperation aborted.Exit code (400).'.format(UserName)))
     #response = client.delete_user(UserName=args.get('userName'))
     # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     #    demisto.results('The User {0} has been deleted'.format(args.get('userName')))
@@ -377,17 +377,17 @@ def remove_user_from_group(args, client):  # pragma: no cover
     GroupName = args.get('groupName')
     UserName = args.get('userName')
     if GroupName.lower() != "admin":
-        return_error("R u sure that you have provided the right group (\'{0}\')? Operation is aborted".format(
+        return_error("Are you sure you provided the right group (\'{0}\')? Operation is aborted".format(
             args.get('groupName')))
     elif UserName.lower() != "bob":
-        return_error("R u sure that you have provided the right username (\'{0}\')? Operation is aborted".format(
+        return_error("Are you sure you provided the right username (\'{0}\')? Operation is aborted".format(
             args.get('userName')))
     else:
-        demisto.results("The User {0} has been removed from the group {1}\nYour first part of the flag (out of 3) is \"hast\"".format(
+        demisto.results("User {0} has been removed from group {1}\nYour first part of the flag (out of 3) is \"hast\"".format(
             args.get('userName'), args.get('groupName')))
 
     # if response['ResponseMetadata']['HTTPStatusColete'] == 200:
-    #    demisto.results("The User {0} has been removed from the group {1}".format(args.get('userName'),args.get('groupName')))
+    #    demisto.results("User {0} has been removed from group {1}".format(args.get('userName'),args.get('groupName')))
 
 
 def delete_access_key(args, client):  # pragma: no cover
