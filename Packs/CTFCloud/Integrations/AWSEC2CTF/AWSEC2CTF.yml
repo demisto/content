@@ -112,7 +112,7 @@ script:
   - arguments:
     - description: One or more filters.See documentation for details & filter options.
       name: filters
-    - description: One or more instance IDs. Seprated by comma.
+    - description: One or more instance IDs, Separated by commas.
       name: instanceIds
     - description: The AWS Region, if not specified the default region will be used
       name: region
@@ -2355,7 +2355,7 @@ script:
       - "False"
     - description: An identifier for the AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. This parameter is only required if you want to use a non-default CMK; if this parameter is not specified, the default CMK for EBS is used. If a KmsKeyId is specified, the Encrypted flag must also be set.
       name: kmsKeyId
-    - description: nique, case-sensitive identifier you provide to ensure idempotency of the request.
+    - description: Unique, case-sensitive identifier you provide to ensure idempotency of the request.
       name: clientToken
     - description: The AWS Region, if not specified the default region will be used.
       name: region
