@@ -238,3 +238,8 @@ def different_inputs_handling(*args):
 ))
 def test_calculate_domain_dbot_score(data:dict, expected_score:int):
     assert Cisco_umbrella_investigate.calculate_domain_dbot_score(data) == expected_score
+
+@pytest.mark.parametrize("status",(("","3","none","na","NA","🥲")))
+def test_calculate_domain_dbot_score_unexpected_status(status:str):
+    with pytest.raises(ValueError, match=f"unexpected {status=}, expected 0,1 or -1"):
+        Cisco_umbrella_investigate.calculate_domain_dbot_score({"status":status})
