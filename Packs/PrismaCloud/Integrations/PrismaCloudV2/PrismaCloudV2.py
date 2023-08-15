@@ -628,7 +628,7 @@ def get_remote_alert_data(client: Client, remote_alert_id: str) -> tuple[Dict, D
     Called every time get-remote-data command runs on an alert.
     Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
     Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
-    we want to mirror in.
+    selected to mirror in.
 
     Args:
         client: Demisto client.
