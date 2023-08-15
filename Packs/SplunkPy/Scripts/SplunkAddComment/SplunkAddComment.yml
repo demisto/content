@@ -10,7 +10,7 @@ args:
   - FROM XSOAR
   required: false
   isArray: true
-comment: Use this script to add a comment with a tag (the "Comment tag to Splunk" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a comment to a Splunk issue. This script should be run within an incident.
+comment: Use this script to add a comment with a tag (the "Comment tag to Splunk" defined in the instance configuration) as an entry in Cortex XSOAR, which will then be mirrored as a comment to a Splunk issue. This script should be run within an incident.
 commonfields:
   id: SplunkAddComment
   version: -1
