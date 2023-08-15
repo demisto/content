@@ -2733,7 +2733,7 @@ script:
         description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
       - name: user_id
         description: The user's primary email address
-  dockerimage: demisto/googleapi-python3:1.0.0.66918
+  dockerimage: demisto/googleapi-python3:1.0.0.68850
   isfetch: true
   runonce: false
   script: "-"
