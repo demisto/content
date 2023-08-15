@@ -660,13 +660,17 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
     if mirrored_status == 'resolved' and mirrored_dismissal_note == '':
         mirrored_dismissal_note = 'resolved'
 
+    closing_time = datetime.now()
+    parsed_closing_time = closing_time.strftime(DATE_FORMAT)
+
     entry = {
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
             'rawCloseReason': mirrored_status,
             'closeReason': f'Alert was {mirrored_status} on Prisma Cloud.',
-            'closeNotes': mirrored_dismissal_note
+            'closeNotes': mirrored_dismissal_note,
+            'closed': parsed_closing_time
         },
         'ContentsFormat': EntryFormat.JSON
     }
