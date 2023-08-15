@@ -43,6 +43,8 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 | impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
 | urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
 | custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional | 
+| custom-fields-seperator | A custom delimeter to use for the custom-fields, dont use '=' as a delimiter. default value is ','. | Optional |
+
 
 
 #### Context Output
