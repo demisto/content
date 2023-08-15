@@ -448,18 +448,18 @@ class Client:
 
         return response
 
-    def list_pull_requests_reviewers(self, project_args: NamedTuple, pull_request_id: int):
+    def list_pull_requests_reviewers(self, project_args: NamedTuple, pull_request_id: Optional[int]):
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers'
+                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers'  # type:ignore[attr-defined]
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
                                            params=params,
                                            resp_type='json')
 
-    def add_pull_requests_reviewer(self, project_args: NamedTuple, pull_request_id: int,
+    def add_pull_requests_reviewer(self, project_args: NamedTuple, pull_request_id: Optional[int],
                                    reviewer_user_id: str, is_required: bool):
         params = {"api-version": 7.0}
         data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
@@ -1855,8 +1855,8 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int
     """
     Ensure the pagination values are valid.
     """
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit: int = arg_to_number(args.get('limit') or '50')
+    page: int = arg_to_number(args.get('page') or '1')
 
     if page < 1 or limit < 1:
         raise ValueError('Page and limit arguments must be greater than 1.')
@@ -1890,7 +1890,7 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     if missing_arguments:
         raise DemistoException(MISSING_PARAMETERS_ERROR_MSG.format(arguments=", ".join(missing_arguments)))
 
-    return Project(organization=organization, repository=repository_id, project=project)
+    return Project(organization=organization, repository=repository_id, project=project)  # type:ignore[arg-type]
 
 
 def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
@@ -1931,8 +1931,7 @@ def pull_request_reviewer_add_command(client: Client, args: Dict[str, Any], orga
     reviewer_user_id = args["reviewer_user_id"]  # reviewer_user_id is required
     is_required = args.get('is_required', False)
 
-    response = client.add_pull_requests_reviewer(project_args, pull_request_id,
-                                                 reviewer_user_id, is_required)
+    response = client.add_pull_requests_reviewer(project_args, pull_request_id, reviewer_user_id, is_required)
 
     readable_output = f'{response.get("displayName", "")} ({response.get("id", "")}) was created successfully as a reviewer for' \
                       f' Pull Request ID {pull_request_id}.'
@@ -2000,8 +1999,8 @@ def commit_get_command(client: Client, args: Dict[str, Any], organization: Optio
     """
     # pre-processing inputs
     project_args = organization_repository_project_preprocess(args, organization, repository_id, project)
-    # a required argument
-    commit_id = args.get('commit_id')
+
+    commit_id = args["commit_id"]
 
     response = client.get_commit(project_args, commit_id)
 
@@ -2023,8 +2022,8 @@ def work_item_get_command(client: Client, args: Dict[str, Any], organization: Op
     """
     # pre-processing inputs
     project_args = organization_repository_project_preprocess(args, organization, repository_id, project)
-    # a required argument
-    item_id = args.get('item_id')
+
+    item_id = args["item_id"]
 
     response = client.get_work_item(project_args, item_id)
 
@@ -2058,7 +2057,7 @@ def work_item_pre_process_data(args: Dict[str, Any], arguments_list: List[str]) 
                "assignee_display_name": "System.AssignedTo",
                "state": "System.State"}
 
-    data = []
+    data: List[dict]= []
 
     data.extend(
         {
@@ -2244,7 +2243,7 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], proje
     This function converts a branch name to branch id. If the given branch does not exist, returns None.
     """
     branch_list = branch_list_command(client, args, project_args.repository, project_args.project)  # type: ignore[attr-defined]
-    for branch in branch_list.outputs:  # type: ignore[union-attr]
+    for branch in branch_list.outputs:  # type: ignore[union-attr, attr-defined]
         # two places call this function, one has target_ref as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
             return branch.get("objectId")
@@ -2402,7 +2401,7 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
 
     response = client.list_team_members(project_args, args, limit, offset)
 
-    list_for_hr = []
+    list_for_hr: List[dict] = []
     list_for_hr.extend(
         {
             "Name": member.get("identity").get("displayName"),
@@ -2689,7 +2688,7 @@ def main() -> None:
             return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
         # show just the error message if possible
         try:
-            return_error(json.loads(e.res.text)['message'])
+            return_error(json.loads(e.res.text)['message'])  # type: ignore[attr-defined]
         except Exception as e:
             return_error(str(e))
 

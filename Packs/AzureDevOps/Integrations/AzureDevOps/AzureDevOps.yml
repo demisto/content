@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: AzureDevOps - dev
+  id: AzureDevOps
   version: -1
 configuration:
 - additionalinfo: App Registration Client ID
@@ -105,8 +105,8 @@ description: >-
   Manage Git repositories in Azure DevOps Services. Integration capabilities
   include retrieving, creating, and updating pull requests. Run pipelines and
   retrieve Git information.
-display: AzureDevOps - dev
-name: AzureDevOps - dev
+display: AzureDevOps
+name: AzureDevOps
 defaultmapperin: Azure DevOps Incoming Mapper
 defaultmapperout: Azure DevOps Outgoing Mapper
 script:
