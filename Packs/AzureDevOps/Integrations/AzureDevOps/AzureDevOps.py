@@ -9,7 +9,6 @@ import copy
 from requests import Response
 from typing import NamedTuple
 from collections.abc import Callable
-from collections import namedtuple
 from datetime import datetime
 import urllib3
 
@@ -449,7 +448,7 @@ class Client:
 
         return response
 
-    def list_pull_requests_reviewers(self, project_args: namedtuple, pull_request_id: int):
+    def list_pull_requests_reviewers(self, project_args: NamedTuple, pull_request_id: int):
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
@@ -460,7 +459,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def add_pull_requests_reviewer(self, project_args: namedtuple, pull_request_id: int,
+    def add_pull_requests_reviewer(self, project_args: NamedTuple, pull_request_id: int,
                                    reviewer_user_id: str, is_required: bool):
         params = {"api-version": 7.0}
         data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
@@ -474,7 +473,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def list_pull_requests_commits(self, project_args: namedtuple, pull_request_id: int, limit: int):
+    def list_pull_requests_commits(self, project_args: NamedTuple, pull_request_id: Optional[int], limit: int):
 
         params = {"api-version": 7.0, "$top": limit}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
@@ -485,7 +484,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def list_commits(self, project_args: namedtuple, limit: int, offset: int):
+    def list_commits(self, project_args: NamedTuple, limit: int, offset: int):
 
         params = {"api-version": 7.0, "searchCriteria.$skip": offset, "searchCriteria.$top": limit}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
@@ -496,7 +495,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def get_commit(self, project_args: namedtuple, commit_id: str):
+    def get_commit(self, project_args: NamedTuple, commit_id: str):
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
@@ -507,7 +506,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def get_work_item(self, project_args: namedtuple, item_id: str):
+    def get_work_item(self, project_args: NamedTuple, item_id: str):
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
@@ -518,7 +517,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def create_work_item(self, project_args: namedtuple, args: Dict[str, Any]):
+    def create_work_item(self, project_args: NamedTuple, args: Dict[str, Any]):
         arguments_list = ['title', 'iteration_path', 'description', 'priority', 'tag']
 
         data = work_item_pre_process_data(args, arguments_list)
@@ -535,7 +534,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def update_work_item(self, project_args: namedtuple, args: Dict[str, Any]):
+    def update_work_item(self, project_args: NamedTuple, args: Dict[str, Any]):
         arguments = ['title', 'assignee_display_name', 'state', 'iteration_path', 'description', 'priority', 'tag']
 
         data = work_item_pre_process_data(args, arguments)
@@ -552,7 +551,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def file_request(self, project_args: namedtuple, change_type: str, args: Dict[str, Any]):
+    def file_request(self, project_args: NamedTuple, change_type: str, args: Dict[str, Any]):
 
         data = file_pre_process_body_request(change_type, args)
 
@@ -567,7 +566,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def list_files(self, project_args: namedtuple, args: Dict[str, Any]):
+    def list_files(self, project_args: NamedTuple, args: Dict[str, Any]):
 
         params = {"api-version": 7.0, "versionDescriptor.version": args["branch_name"].split('/')[-1],
                   "versionDescriptor.versionType": "branch", "recursionLevel": args["recursion_level"],
@@ -581,7 +580,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def get_file(self, project_args: namedtuple, args: Dict[str, Any]):
+    def get_file(self, project_args: NamedTuple, args: Dict[str, Any]):
 
         params = {"path": args["file_name"], "api-version": 7.0, "$format": args["format"],
                   "includeContent": args["include_content"], "versionDescriptor.versionType": "branch",
@@ -598,7 +597,7 @@ class Client:
                                            params=params,
                                            resp_type='response' if args["format"] == 'zip' else 'json')
 
-    def create_branch(self, project_args: namedtuple, args: Dict[str, Any]):
+    def create_branch(self, project_args: NamedTuple, args: Dict[str, Any]):
 
         # initialize new branch - this is the syntax if no reference was given
         args["branch_id"] = args["branch_id"] if args.get("branch_id") else "0000000000000000000000000000000000000000"
@@ -615,7 +614,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def create_pull_request_thread(self, project_args: namedtuple, args: Dict[str, Any]):
+    def create_pull_request_thread(self, project_args: NamedTuple, args: Dict[str, Any]):
 
         data = {
             "comments": [
@@ -639,7 +638,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def update_pull_request_thread(self, project_args: namedtuple, args: Dict[str, Any]):
+    def update_pull_request_thread(self, project_args: NamedTuple, args: Dict[str, Any]):
 
         data = {
             "comments": [
@@ -664,7 +663,7 @@ class Client:
                                            json_data=data,
                                            resp_type='json')
 
-    def list_pull_request_threads(self, project_args: namedtuple, pull_request_id: str):
+    def list_pull_request_threads(self, project_args: NamedTuple, pull_request_id: str):
 
         params = {"api-version": 7.0}
 
@@ -676,7 +675,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def list_project_teams(self, project_args: namedtuple):
+    def list_project_teams(self, project_args: NamedTuple):
 
         params = {"api-version": 7.0}
 
@@ -688,7 +687,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def list_team_members(self, project_args: namedtuple, args: Dict[str, Any], limit: int, skip: int):
+    def list_team_members(self, project_args: NamedTuple, args: Dict[str, Any], limit: int, skip: int):
 
         params = {"api-version": 7.0, "$skip": skip, "$top": limit}
 
@@ -700,7 +699,7 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def get_blob_zip(self, project_args: namedtuple, file_object_id: str):
+    def get_blob_zip(self, project_args: NamedTuple, file_object_id: str):
 
         params = {"api-version": 7.0, "$format": "zip"}
 
@@ -1867,7 +1866,7 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int
 
 def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                                                project: Optional[str], is_repository_id_required: bool = True,
-                                               is_organization_required: bool = True) -> namedtuple:
+                                               is_organization_required: bool = True) -> NamedTuple:
     """
     The organization, repository and project are preprocessed by this function.
     """
@@ -2114,7 +2113,7 @@ def work_item_update_command(client: Client, args: Dict[str, Any], organization:
     )
 
 
-def extract_branch_id_and_validate_for_files_commands(client: Client, args: Dict[str, Any], project_args: namedtuple):
+def extract_branch_id_and_validate_for_files_commands(client: Client, args: Dict[str, Any], project_args: NamedTuple):
     """
     Extract the branch id by the given branch name. In case of None, raise an exception since branch does not exist.
     """
@@ -2240,12 +2239,12 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     return [fileResult(filename=file_name, data=response.content, file_type=EntryType.FILE)]
 
 
-def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], project_args: namedtuple):
+def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], project_args: NamedTuple):
     """
     This function converts a branch name to branch id. If the given branch does not exist, returns None.
     """
-    branch_list = branch_list_command(client, args, project_args.repository, project_args.project)
-    for branch in branch_list.outputs:
+    branch_list = branch_list_command(client, args, project_args.repository, project_args.project)  # type: ignore[attr-defined]
+    for branch in branch_list.outputs: # type: ignore[union-attr]
         # two places call this function, one has target_ref as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
             return branch.get("objectId")
@@ -2270,8 +2269,8 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
         args["target_ref"] = args["branch_name"]
 
     # Delete the file was created for the new branch.
-    file_delete_command(client=client, args=args, organization=project_args.organization,
-                        repository_id=project_args.repository, project=project_args.project)
+    file_delete_command(client=client, args=args, organization=project_args.organization,  # type: ignore[attr-defined]
+                        repository_id=project_args.repository, project=project_args.project)  # type: ignore[attr-defined]
 
     readable_output = f'Branch {response.get("refUpdates", [])[0].get("name")} was created successfully by' \
                       f' {response.get("pushedBy", {}).get("displayName")}.'
@@ -2336,7 +2335,7 @@ def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organ
 
     response = client.list_pull_request_threads(project_args, args["pull_request_id"])
 
-    list_to_table = []
+    list_to_table: List[dict] = []
     for thread in response.get("value", []):
         thread_id = thread.get("id")
         list_to_table.extend(
