@@ -46,8 +46,6 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))
-INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote', 'reason']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
@@ -98,8 +96,10 @@ TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdat
 
 
 class Client(BaseClient):
-    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str):
+    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str,
+                 mirror_direction: str | None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
+        self.mirror_direction = mirror_direction
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
@@ -559,7 +559,7 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            )
     response_items = response.get('items', [])
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
-    incidents = filter_alerts(fetched_ids, response_items, limit)
+    incidents = filter_alerts(client, fetched_ids, response_items, limit)
 
     # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
@@ -575,13 +575,13 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
         response_items = response.get('items', [])
         updated_last_run_time_epoch = \
             response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
-        incidents.extend(filter_alerts(fetched_ids, response_items, limit, len(incidents)))
+        incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
 
     return incidents, fetched_ids, updated_last_run_time_epoch
 
 
-def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int, num_of_prev_incidents: int = 0) \
-        -> List[Dict[str, Any]]:
+def filter_alerts(client: Client, fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int,
+                  num_of_prev_incidents: int = 0) -> List[Dict[str, Any]]:
     incidents = []
 
     for alert in response_items:
@@ -590,7 +590,7 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
             continue
 
         demisto.debug(f'Processing new fetched alert {alert.get("id")}.')
-        add_mirroring_fields(alert)
+        add_mirroring_fields(client, alert)
         incidents.append(alert_to_incident_context(alert))
         fetched_ids[str(alert['id'])] = int(alert['alertTime'])
 
@@ -600,15 +600,16 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
     return incidents
 
 
-def add_mirroring_fields(alert: Dict):
+def add_mirroring_fields(client: Client, alert: Dict):
     """
     Updates the given Prisma Cloud fetched alert to hold the needed mirroring fields.
 
     Args:
+        client: Demisto client.
         alert: The Prisma Cloud fetched alert.
     """
-    alert['mirror_direction'] = MIRROR_DIRECTION
-    alert['mirror_instance'] = INTEGRATION_INSTANCE
+    alert['mirror_direction'] = client.mirror_direction
+    alert['mirror_instance'] = demisto.integrationInstance()
 
 
 def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
@@ -1977,8 +1978,10 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction'))
 
     return_v1_output = params.get('output_old_format', False)
 
@@ -1987,7 +1990,8 @@ def main() -> None:
 
     try:
         urllib3.disable_warnings()
-        client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password)
+        client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
+                                mirror_direction=mirror_direction)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 
