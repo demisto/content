@@ -2836,27 +2836,9 @@ script:
       - contextPath: RecordedFuture.ThreatMap.opportunity
         description: Recorded Future threat actor opportunity.
         type: number
-      - contextPath: RecordedFuture.ThreatMap.log_entries.watchlist.id
-        description: Recorded Future threat actor watchlist id.
-        type: string
-      - contextPath: RecordedFuture.ThreatMap.log_entries.watchlist.name
-        description: Recorded Future threat actor watchlist name.
-        type: string
-      - contextPath: RecordedFuture.ThreatMap.log_entries.entity.id
-        description: Recorded Future threat actor entity id.
-        type: string
-      - contextPath: RecordedFuture.ThreatMap.log_entries.entity.name
-        description: Recorded Future threat actor entity name.
-        type: string
-      - contextPath: RecordedFuture.ThreatMap.log_entries.severity
-        description: Recorded Future threat actor log severity.
-        type: number
-      - contextPath: RecordedFuture.ThreatMap.log_entries.axis
-        description: Recorded Future threat actor log axis.
-        type: string
-      - contextPath: RecordedFuture.ThreatMap.log_entries.date
-        description: Recorded Future threat actor log date.
-        type: datetime
+      - contextPath: RecordedFuture.ThreatMap.log_entries
+        description: Recorded Future threat actor log entries.
+        type: array
       - contextPath: RecordedFuture.ThreatMap.links
         description: Recorded Future threat actor links by type.
         type: string
@@ -3027,9 +3009,6 @@ script:
       - name: entity_source_type
         required: false
         description: Used to describe what log source the IOC came from
-      - name: incident_name
-        required: false
-        description: Title of the incident related to the IOC
       - name: incident_name
         required: false
         description: Title of the incident related to the IOC
