@@ -41,7 +41,7 @@ tasks:
     task:
       id: d0c37d3a-a14a-4ae5-84ae-5db1102c47a4
       version: -1
-      name: Welcome Message
+      name: Welcome message
       type: title
       iscommand: false
       brand: ""
@@ -103,7 +103,7 @@ tasks:
     task:
       id: 50c655b4-36a6-44db-8d81-537a94730c3c
       version: -1
-      name: Let's check the affected Asset
+      name: Check the affected asset
       type: title
       iscommand: false
       brand: ""
@@ -165,7 +165,7 @@ tasks:
     task:
       id: 10e3c0c2-effe-4eb1-8ee8-f4d657ce6b63
       version: -1
-      name: Identify any other realated alerts
+      name: Identify any other related alerts
       type: title
       iscommand: false
       brand: ""
@@ -228,7 +228,7 @@ tasks:
       id: f35b69e7-30fc-45bf-8c02-147df535b9e4
       version: -1
       name: Welcome To the SKO XSOAR's CTF!
-      description: "# **Welcome all!**\n\nIn this exercise, we are going to wear the analyst hat and investigate another interesting incident :relaxed:\nSo tighten your belt and enjoy the ride.\n\n## What do you need to do:\n* Find the \"Suspicious API call\" Incident which is still in an active state. \n* To make your life easier use the following query \n`status:Active AND name:*Suspicious*`\n\n## Rules\n* Do not change anything in the incident's Playbook\n* Raise your hand in case you need help\n* To re-enter your answer, check out the following gif ob how to do so:\n![image](https://raw.githubusercontent.com/demisto/content/3cfe7f529f3a5e82ffdf021829cfd4f0c335dc7e/Packs/ctf01/doc_files/demo.gif)\n* An SLA timer will start ticking Once you have marked this task as completed. This timer will indicate who finished the challenge first!\n\n\nAnd as usual, enjoy the exercise!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/the-dark-knight-joker.gif)\n"
+      description: "# **Welcome all!**\n\nIn this exercise, we are going to wear the analyst's hat and investigate an interesting incident :relaxed:\nSo fasten your seatbelt and enjoy the ride.\n\n## What you need to do:\n* Find the \"Suspicious API call\" incident which is still in an active state. \n* To make your life easier, use the following query: \n`status:Active AND name:*Suspicious*`\n\n## Rules\n* Do not change anything in the incident playbook.\n* Raise your hand if you need help.\n* To re-enter your answer, check out the following on how to do so:\n![image](https://raw.githubusercontent.com/demisto/content/3cfe7f529f3a5e82ffdf021829cfd4f0c335dc7e/Packs/ctf01/doc_files/demo.gif)\n* An SLA timer will start ticking once you mark this task as completed. This timer will indicate who finished the challenge first!\n\n\nAs usual, enjoy the exercise!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/the-dark-knight-joker.gif)\n"
       type: regular
       iscommand: false
       brand: ""
@@ -344,9 +344,9 @@ tasks:
         readonly: false
       title: Investigate the indicator
       description: |-
-        Our malicious indicator can give more information about the incident, let's dig into this it!
+        Our malicious indicator can give more information about the incident, let's dig into it!
 
-        Answer the following questions to give us more information about what happened in this incident.
+        Answer the following questions to give more information about what happened in this incident.
 
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/confused-john-travolta.gif)
       sender: Your SOC team
@@ -363,7 +363,7 @@ tasks:
     task:
       id: 25fd80cf-4bd6-4a80-8d47-f31b9907070d
       version: -1
-      name: Let's check the affected Asset
+      name: Let's check the affected asset
       type: collection
       iscommand: false
       brand: ""
@@ -425,10 +425,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The project ID is also named Account ID - and it's referred to the Cloud Project where the attack occurred. For more information - read about what is Amazon Resource Names (ARN).
+        tooltip: The project ID is also named Account ID - and it refers to the Cloud Project where the attack occurred. For more information, read about Amazon Resource Names (ARN).
         readonly: false
       title: Let's Check our impacted asset
-      description: "As we continue to investigate the incident, we need to understand better the involved assets. As this incident occurred in our environment - we need better understand it! \n\nIn this section, we will cover the involved assets with the received incident.\nThis may assist us in understanding what was the impact o the organization.\n\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ok-now-what.gif)"
+      description: "In this section, we will check the assets associated with the received incident.\nThis may help understand the impact on the organization.\n\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ok-now-what.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -491,12 +491,12 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Check the AWS IAM command outputs that are assoicated with this incident.
+        tooltip: Check the AWS IAM command outputs that are associated with this incident.
         readonly: false
       - id: "1"
         label: ""
         labelarg:
-          simple: Give an example of one suspicious activity that can indicate persistence ( mention the eventName).
+          simple: Give an example of one suspicious activity that can indicate persistence (mention the eventName).
         required: true
         gridcolumns: []
         defaultrows: []
@@ -505,15 +505,13 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You might want to check the CloudTrail Section.
+        tooltip: You may want to check the CloudTrail section.
         readonly: false
       title: Suspicious activity in the account
       description: |-
-        We found some suspicious activity in the related alerts here. Help us to understand the attacker's footprint in our organization.
-        We will need to understand how the attacker is authenticated to our system and which actions did he take.
+        There was suspicious activity in the account. Check how the attacker was authenticated in the system and which actions the attacker took.
 
-        Help us to find the suspicious activity performed by the attacker.
-
+        
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hacker-typing.gif)
       sender: Your SOC team
       expired: false
@@ -529,8 +527,8 @@ tasks:
     task:
       id: 581b4789-29a4-4cf4-8c27-22516f935009
       version: -1
-      name: Check the Answer for Q1
-      description: What is the type of malicious indicators?
+      name: Check the answer for Q1
+      description: What is the type of malicious indicator?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -746,7 +744,7 @@ tasks:
       version: -1
       name: |
         Check the Answer for Q7
-      description: Give an example of one suspicious activity that can indicate persistence ( mention the eventName).
+      description: Give an example of one suspicious activity that can indicate persistence (mention the eventName).
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -827,7 +825,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Which new XDR Incident ID have you identified as related to this attack?
+          simple: Which new XDR incident ID have you identified as related to this attack?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -850,7 +848,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You might want to check the XDR Network Artifacts section
+        tooltip: You may want to check the XDR Network Artifacts section
         readonly: false
       - id: "2"
         label: ""
@@ -864,7 +862,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Inspect the XDR alerts section
+        tooltip: Check the XDR alerts section
         readonly: false
       - id: "3"
         label: ""
@@ -886,7 +884,7 @@ tasks:
         readonly: false
       title: Find the missing incident and answer the questions below
       description: |-
-        It seems like we missed an incident that can assist us with understanding our current one. Let's dig into it!! Check the  Malicious and Suspicious indicators' "related incident" section and find the missed incident
+        It seems like we missed an incident that can help understand the current one. Check the Malicious and Suspicious indicators' "related incident" section and find the missed incident.
 
 
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/charlie-day.gif)
@@ -905,7 +903,7 @@ tasks:
       id: d4cb8454-2ba5-4ed1-8ff4-8758e0bd4e3f
       version: -1
       name: Check the Answer for Q8
-      description: Which new XDR Incident ID you have identified as related to this attack?
+      description: Which new XDR Incident ID have you identified as related to this attack?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1063,7 +1061,7 @@ tasks:
     task:
       id: 08c0d3d7-48f2-4e4f-8354-9a27cb122af5
       version: -1
-      name: Creating a Remediation Playbook
+      name: Creating a remediation playbook
       type: title
       iscommand: false
       brand: ""
@@ -1206,7 +1204,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Revoke the compromised account access keys using the mentioned remediation button - get the required flag to finish this CTF! (don't forget to check the script's results in the war room).
+          simple: Revoke the compromised account access keys using the remediation button. Get the required flag to finish! And don't forget to check the script results in the War Room.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -1217,14 +1215,14 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Use the right user to achieve the flag '
+        tooltip: 'Use the right user to get the flag '
         readonly: false
-      title: To keep your company secured - Make some remediation
+      title: Keep your company secure with remediation
       description: |-
-        After we analyzed the original incident we need to choose if we are taking remediation actions.
+        After analyzing the original incident, decide whether to take remediation actions.
 
-        Now, XSOAR can be customized in many ways so we already created a custom button for quick remediation action "Revoke Access Keys".
-        Check the original incident's layout ('Suspicious API call from a Tor exit node').
+        You can customize Cortex XSOAR to facilitate your remediation actions. For example, we created the Revoke Access Keys button.
+        Check the original 'Suspicious API call from a Tor exit node' incident layout.
 
         Take the necessary measures to keep your company secure!
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ocean-ocean-protocol.gif)
@@ -1243,7 +1241,7 @@ tasks:
       id: 4df33cd6-7822-4282-8765-33095180d63e
       version: -1
       name: Check the answer for Q13
-      description: Revoke the compromised account access keys using the mentioned remediation button - get the required flag to finish this CTF! (don't forget to check the script's results in the war room).
+      description: Revoke the compromised account access keys using the remediation button. Get the required flag to finish! And don't forget to check the script results in the War Room.
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1404,7 +1402,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the origin pack name of this specific playbook?
+          simple: Which pack contains this specific playbook?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -1413,14 +1411,14 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Check the Settings section of the mentioned playbook
+        tooltip: Check the playbook Settings section
         readonly: false
       - id: "1"
         label: ""
         labelarg:
           simple: |-
             What is the hidden flag in the fixed tasks?
-            (check out their results)
+            (check out the results)
         required: true
         gridcolumns: []
         defaultrows: []
@@ -1429,10 +1427,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Use the `CloudTrail` Context key to retrieve the right values for the integration's commands.
+        tooltip: Use the `CloudTrail` context key to retrieve the right values for the integration commands.
         readonly: false
       title: Create a remediation playbook
-      description: "As we are an automation platform, we need to provide automated tools to our analysts. Our SecOps team left on vacation and didn't finish one of the playbooks - we hoped you can step in and finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\" (and add your student ID number to the playbook name) and finish the tasks (Don't detach it - just copy it with your name):\n- we will remove the created user from the Admins group in our AWS project\n- We will delete the newly created user.\n- We will kill the EC2 instance that was created by the attacker. \n- Remember that you will need to provide proper input (using the right context path keys) for each task in order to run the playbook properly. Use the Playbook debugger feature to import the Cortex XDR IAM incident's context into your playground and run the PB from there. Here is a short git on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you fixed it properly - the tasks will give you the final flag to finish this CTF.\nHelp us to kick out the attacker from our organization once and for all!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
+      description: "As an automation platform, we need to provide automated tools for our analysts. Our SecOps team left for vacation and didn't finish one of the playbooks, and we hoped you could finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\", add your student ID number to the playbook name, and finish the tasks. Don't detach the playbook, just copy it with your name.\n- Remove the created user from the Admins group in our AWS project\n- Delete the newly created user.\n- Kill the EC2 instance that was created by the attacker. \n- Remember that you need to provide inputs with the right context path keys so each task can run properly. Use the playbook debugger to import the Cortex XDR IAM incident context into your playground and run the playbook from there. Here is a short gif on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you finished the playbook properly, the tasks will give you the final flag.\nHelp kick out the attacker from our organization once and for all!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1478,7 +1476,7 @@ tasks:
       name: Check the answer for Q15
       description: |-
         What is the hidden flag in the fixed tasks?
-        (check out their results)
+        (check the results)
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1519,7 +1517,7 @@ tasks:
       id: c3f8ee94-6484-42f2-8f15-f1a41595e097
       version: -1
       name: Check the answer for Q14
-      description: What is the origin pack name of this specific playbook?
+      description: Which pack contains this specific playbook?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1599,12 +1597,12 @@ tasks:
     task:
       id: 7a727792-8c86-468f-8d97-4680a40b9956
       version: -1
-      name: You have finished the Advanced part of our CTF!
+      name: You have finished the advanced part of CTF!
       description: |-
-        ## !!!! Congrats you did it !!!!
-        #### Wow, no doubt you have a Security Engineer's blood running in your veins!
+        ## !!!! Congrats, you did it !!!!
+        #### Wow, no doubt you have Security Engineer's blood running in your veins!
 
-        We hope you have learned and gained some knowledge from this exercise, and of course, enjoyed this exercise.
+        We hope you gained some knowledge from this exercise, and of course, had fun.
 
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/party-over-excited.gif)
       type: regular
@@ -1673,7 +1671,7 @@ tasks:
       version: -1
       name: Check the answer for Q11
       description: |+
-        Why there are no additional alerts from this machine (172.16.7.41)?
+        Why are there no additional alerts from this machine (172.16.7.41)?
 
         - Nothing happened on the machine
         - XDR agent is not installed
@@ -1803,8 +1801,8 @@ tasks:
         placeholder: ""
         tooltip: On average, the human heart beats 100,000 times a day. Maybe if you check Yes it will be more than that....
         readonly: false
-      title: You have finished the Cloud IAM CTF Challange
-      description: "# You have finished the Cloud IAM CTF challenge!\nNicely done! Indeed you demonstrate amazing analyst skills and helped us to investigate the incident.\n\n\n## But hey, would you want to assist us with some advanced measures that we think to take? \nChoose wisely...\n\nIt doesn't matter if you choose to stop here or continue our adventure - we want to let you know it was a pleasure, and we hope you enjoyed the ride! \n\nIn case you choose \"no\" -  that's our last stop! Thanks for participating in the XSOAR CTF challenge.\n\n![image](https://raw.githubusercontent.com/demisto/content/8269ce28a9c239298a865d2f554300d02f06ac92/Packs/CTFCloud/doc_files/pill-red-sibarita-matrix.gif)"
+      title: You have finished the Cloud IAM CTF challenge
+      description: "# You have finished the Cloud IAM CTF challenge!\nNicely done! Indeed you demonstrate amazing analyst skills and helped us investigate the incident.\n\n\n## Hey, do you want to assist us with some advanced security measures? \nChoose wisely...\n\nIt doesn't matter if you stop here or continue on our adventure. It was a pleasure having you participate, and we hope you enjoyed the ride! \n\nIf you choose \"no\" -  this is our last stop! Thanks for participating in the Cortex XSOAR CTF challenge.\n\n![image](https://raw.githubusercontent.com/demisto/content/8269ce28a9c239298a865d2f554300d02f06ac92/Packs/CTFCloud/doc_files/pill-red-sibarita-matrix.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
