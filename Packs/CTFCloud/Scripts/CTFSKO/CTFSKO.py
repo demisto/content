@@ -61,8 +61,8 @@ HTML_MESSAGE_BAD = '''
 <img src="%s" alt="Error">
 <div style='font-size:18px;'>
 Nope!!! Try again.
-Remember to overwrite the "secret" argument when you are re-running the task.
-To re-run this task -> Click on "Complete Task" -> clear the Secret value using the trash-can icon -> fill out the Secret value -> click on the 'Run script now' :)
+Remember to overwrite the "secret" argument when you are rerunning the task.
+To rerun this task -> Click "Complete Task" -> Clear the Secret value using the trashcan icon -> Fill out the Secret value -> Click 'Run script now' :)
 </div>
 ''' % (bad_images[random.randint(0, len(bad_images) - 1)])
 
@@ -92,9 +92,9 @@ answers = {
 def main():
     try:
         args = demisto.args()
-        # __Error handeling when there is an empty secret or question id__
+        # __Error handling when there is an empty secret or question id__
         if (args.get("secret") == None or args.get("question_ID") == None):
-            return_error(f'Please specify Secret and Question ID to proceed with the challange')
+            return_error(f'Specify Secret and Question ID to proceed with the challenge')
 
         if (args.get("secret").lower() in answers[args.get("question_ID")]):
             return_results({
@@ -102,12 +102,12 @@ def main():
                 'Type': EntryType.NOTE,
                 'Contents': HTML_MESSAGE_1,
             })
-        # General Error handeling
+        # General Error handling
         else:
             # if (args.get("question_ID") ==  "03"):
-            #    return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none> :). ')
+            #    return_error(f'If the playbook is in Quiet Mode, no output will be displayed in the War Room.\n\nYou can skip this task if you want or rerun it with <none> :). ')
            # else:
-            #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
+            #return_error(f'Nope... try again!!!\nRemember to overwrite the Secret argument when rerunning the task :)')
             demisto.results({
                 'Type': entryTypes['error'],
                 'ContentsFormat': formats['html'],
