@@ -33,7 +33,7 @@ GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORI
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 
-class OrgRepoProject(namedtuple('OrgRepoProject', field_names='organization repository project')):
+class Project(NamedTuple):
     organization: str
     repository: str
     project: str
