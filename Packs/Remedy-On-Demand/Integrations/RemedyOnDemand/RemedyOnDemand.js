@@ -127,6 +127,9 @@ var convertIncidentToTicket = function(incident) {
 };
 
 var updateBodyWithCustomFields = function(body, customFields, customFieldsSeperator) {
+    if (!customFieldsSeperator){
+        customFieldsSeperator = ','
+    }
     if (customFields) {
         var customFieldsArr = customFields.split(customFieldsSeperator);
         for (var i = 0; i < customFieldsArr.length; i++) {
