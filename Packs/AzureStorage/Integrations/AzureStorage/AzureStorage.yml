@@ -9,31 +9,32 @@ configuration:
 - defaultvalue: 55f9764e-300a-474a-a2bb-549cece85439
   display: Application ID
   name: app_id
-  required: false
   type: 0
   section: Connect
-- display: Subscription ID
+- display: Default Subscription ID
   name: subscription_id
   required: true
   type: 0
   section: Connect
-- display: Resource Group Name
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
+- display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
   section: Connect
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - name: auth_type
   display: Authentication Type
   required: true
@@ -47,75 +48,75 @@ configuration:
   section: Connect
 - name: tenant_id
   display: Tenant ID (for user-auth mode)
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: ""
   section: Connect
+  required: false
 - name: credentials
   display: Client Secret (for user-auth mode)
-  required: false
   defaultvalue:
   type: 9
   additionalinfo: ""
   displaypassword: Client Secret (for user-auth mode)
   hiddenusername: true
   section: Connect
+  required: false
 - name: redirect_uri
   display: Application redirect URI (for user-auth mode)
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: ""
   section: Connect
   advanced: true
+  required: false
 - name: auth_code
   display: Authorization code
-  required: false
   defaultvalue:
   type: 9
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
   displaypassword: Authorization code
   hiddenusername: true
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
 name: Azure Storage
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-storage-auth-test
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-storage-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the azure-storage-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the azure-storage-auth-start command.
     name: azure-storage-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-storage-auth-reset
   - arguments:
-    - default: false
-      description: The name of the storage account, optional.
-      isArray: false
+    - description: The name of the storage account, optional.
       name: account_name
       required: false
       secret: false
-    deprecated: false
+    - default: false
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     description: Run this command to get the all or specific account storage details
-    execution: false
     name: azure-storage-account-list
     outputs:
     - contextPath: AzureStorage.StorageAccount.id
@@ -256,17 +257,27 @@ script:
     - contextPath: AzureStorage.StorageAccount.type
       description: The type of the resource.
       type: String
+    deprecated: false
   - arguments:
-    - default: false
-      description: The name of the storage account.
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
       isArray: false
+      secret: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: The name of the storage account.
       name: account_name
       required: true
-      secret: false
-    - auto: PREDEFINED
       default: false
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
       isArray: false
+    - auto: PREDEFINED
+      description: Gets or sets the SKU name, Required for account creation; optional for update.
       name: sku
       predefined:
       - Premium_LRS
@@ -278,12 +289,9 @@ script:
       - Standard_RAGZRS
       - Standard_ZRS
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicates the type of storage account.
-      isArray: false
+    - description: Indicates the type of storage account.
       name: kind
+      auto: PREDEFINED
       predefined:
       - Storage
       - StorageV2
@@ -291,12 +299,9 @@ script:
       - FileStorage
       - BlockBlobStorage
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed.
-      isArray: false
+    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed.
       name: location
+      auto: PREDEFINED
       predefined:
       - eastus
       - eastus2
@@ -332,163 +337,90 @@ script:
       - germanywestcentral
       - norwayeast
       required: true
-      secret: false
-    - default: false
-      description: Gets or sets a list of tags that describe the resource.
-      isArray: true
+    - description: Gets or sets a list of tags that describe the resource.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Gets or sets the custom domain name assigned to the storage account.
-      isArray: false
+      isArray: true
+    - description: Gets or sets the custom domain name assigned to the storage account.
       name: custom_domain_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether indirect CName validation is enabled.
-      isArray: false
       name: use_sub_domain_name
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The encryption keySource.
-      isArray: false
+    - description: The encryption keySource.
       name: enc_key_source
+      auto: PREDEFINED
       predefined:
       - Microsoft.Storage
       - Microsoft.Keyvault
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicating whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      isArray: false
+    - description: Indicating whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
       name: enc_requireInfrastructureEncryption
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The name of KeyVault key.
-      isArray: false
+    - description: The name of KeyVault key.
       name: enc_keyvault_key_name
-      required: false
-      secret: false
-    - default: false
-      description: The version of KeyVault key.
-      isArray: false
+    - description: The version of KeyVault key.
       name: enc_keyvault_key_version
-      required: false
-      secret: false
-    - default: false
-      description: The Uri of KeyVault.
-      isArray: false
+    - description: The Uri of KeyVault.
       name: enc_keyvault_uri
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The access tier for the account. Required where kind = BlobStorage.
-      isArray: false
       name: access_tier
       predefined:
-      - Hot
-      - Cool
-      required: false
-      secret: false
+      - 'Hot'
+      - 'Cool'
     - auto: PREDEFINED
-      default: false
       description: Allows https traffic only to storage service if sets to true.
-      isArray: false
       name: supports_https_traffic_only
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Account HierarchicalNamespace enabled if sets to true.
-      isArray: false
       name: is_hns_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Allow large file shares if sets to Enabled.
-      isArray: false
       name: large_file_shares_state
       predefined:
       - Disabled
       - Enabled
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Allow or disallow public access to all blobs or containers in the storage account.
-      isArray: false
       name: allow_blob_public_access
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Set the minimum TLS version to be permitted on requests to storage.
-      isArray: false
+    - description: Set the minimum TLS version to be permitted on requests to storage.
       name: minimum_tls_version
+      auto: PREDEFINED
       predefined:
       - TLS1_0
       - TLS1_1
       - TLS1_2
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
-      isArray: true
+    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
       name: network_ruleset_bypass
+      auto: PREDEFINED
+      isArray: true
       predefined:
       - AzureServices
       - Logging
       - Metrics
       - None
-      required: false
-      secret: false
-    - default: false
-      description: Specifies the default action of allow or deny when no other rules match.
-      isArray: false
+    - description: Specifies the default action of allow or deny when no other rules match.
       name: network_ruleset_default_action
-      required: false
-      secret: false
-    - default: false
-      description: Sets the IP ACL rules
-      isArray: false
+    - description: Sets the IP ACL rules
       name: network_ruleset_ipRules
-      required: false
-      secret: false
-    - default: false
-      description: Sets the virtual network rules
-      isArray: false
+    - description: Sets the virtual network rules
       name: virtual_network_rules
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Run this command to create or update a specific
       account storage.
-    execution: false
     name: azure-storage-account-create-update
     outputs:
     - contextPath: AzureStorage.StorageAccount.id
@@ -630,15 +562,24 @@ script:
       description: The type of the resource.
       type: String
   - arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - default: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     - default: false
       description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
-      secret: false
-    deprecated: false
     description: Run this command to get the blob service properties of a specific account storage.
-    execution: false
     name: azure-storage-blob-service-properties-get
     outputs:
     - contextPath: AzureStorage.BlobServiceProperties.id
@@ -663,119 +604,77 @@ script:
       description: An array of predefined supported blob types. Only blockBlob is the supported value.
       type: String
   - arguments:
-    - default: false
-      description: The name of the storage account.
-      isArray: false
-      name: account_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
       default: false
-      description: Indicates whether change feed event logging is enabled for the Blob service.
       isArray: false
+      secret: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    - description: The name of the storage account.
+      name: account_name
+      default: false
+      isArray: false
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether change feed event logging is enabled for the Blob service.
       name: change_feed_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Indicates the duration of changeFeed retention in days.
-      isArray: false
+    - description: Indicates the duration of changeFeed retention in days.
       name: change_feed_retention_days
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether DeleteRetentionPolicy is enabled.
-      isArray: false
       name: container_delete_rentention_policy_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Indicates the number of days that the deleted item should be retained.
-      isArray: false
+    - description: Indicates the number of days that the deleted item should be retained.
       name: container_delete_rentention_policy_days
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether DeleteRetentionPolicy is enabled.
-      isArray: false
       name: delete_rentention_policy_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Indicates the number of days that the deleted item should be retained.
-      isArray: false
+    - description: Indicates the number of days that the deleted item should be retained.
       name: delete_rentention_policy_days
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Versioning is enabled if set to true.
-      isArray: false
+    - description: Versioning is enabled if set to true.
       name: versioning
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: When set to true last access time based tracking is enabled.
-      isArray: false
+    - description: When set to true last access time based tracking is enabled.
       name: last_access_time_tracking_policy_enabled
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: An array of predefined supported blob types.
-      isArray: true
+    - description: An array of predefined supported blob types.
       name: last_access_time_tracking_policy_blob_types
-      required: false
-      secret: false
-    - default: false
-      description: The field specifies blob object tracking granularity in days.
-      isArray: false
+      isArray: true
+    - description: The field specifies blob object tracking granularity in days.
       name: last_access_time_tracking_policy_days
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Blob restore is enabled if set to true.
-      isArray: false
+    - description: Blob restore is enabled if set to true.
       name: restore_policy_enabled
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The minimum date and time that the restore can be started.
-      isArray: false
+    - description: The minimum date and time that the restore can be started.
       name: restore_policy_min_restore_time
-      required: false
-      secret: false
-    - default: false
-      description: how long this blob can be restored.
-      isArray: false
+    - description: how long this blob can be restored.
       name: restore_policy_days
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Run this command to set properties for
       the blob service in a specific account storage
-    execution: false
     name: azure-storage-blob-service-properties-set
     outputs:
     - contextPath: AzureStorage.BlobServiceProperties.id
@@ -827,48 +726,42 @@ script:
       description: The SKU tier.
       type: String
   - arguments:
-    - default: false
-      description: The name of the storage account.
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
       isArray: false
-      name: account_name
-      required: true
       secret: false
-    - default: false
-      description: The name of the container.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      default: false
       isArray: false
+      secret: false
+    - description: The name of the storage account.
+      name: account_name
+      default: false
+      isArray: false
+      required: true
+    - description: The name of the container.
       name: container_name
       required: true
-      secret: false
-    - default: false
-      description: Default the container to use specified encryption scope for all writes.
-      isArray: false
+    - description: Default the container to use specified encryption scope for all writes.
       name: default_encryption_scope
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Block override of encryption scope from the container default.
-      isArray: false
       name: deny_encryption_scope_override
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the level of access.
-      isArray: false
       name: public_access
       predefined:
       - Blob
       - Container
       - None
-      required: false
-      secret: false
-    deprecated: false
     description: Run this command to create a blob container
-    execution: false
     name: azure-storage-blob-containers-create
     outputs:
     - contextPath: AzureStorage.BlobContainer.id
@@ -881,50 +774,44 @@ script:
       description: The type of the resource.
       type: String
   - arguments:
-    - default: false
-      description: The name of the storage account.
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
       isArray: false
-      name: account_name
-      required: true
       secret: false
-    - default: false
-      description: The name of the container.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      default: false
       isArray: false
+      secret: false
+    - description: The name of the storage account.
+      name: account_name
+      default: false
+      isArray: false
+      required: true
+    - description: The name of the container.
       name: container_name
       required: true
-      secret: false
-    - default: false
-      description: Default the container to use specified encryption scope for all writes.
-      isArray: false
+    - description: Default the container to use specified encryption scope for all writes.
       name: default_encryption_scope
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Block override of encryption scope from the container default.
-      isArray: false
       name: deny_encryption_scope_override
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the level of access.
-      isArray: false
       name: public_access
       predefined:
       - Blob
       - Container
       - None
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Run this command to update an specific
       blob container.
-    execution: false
     name: azure-storage-blob-containers-update
     outputs:
     - contextPath: AzureStorage.BlobContainer.id
@@ -949,37 +836,34 @@ script:
       description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the storage account.
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
       isArray: false
-      name: account_name
-      required: true
       secret: false
-    - default: false
-      description: The name of the container.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
       isArray: false
-      name: container_name
       required: false
       secret: false
-    - auto: PREDEFINED
+    - description: The name of the storage account.
+      name: account_name
       default: false
-      description: Specifies whether include the properties for soft deleted blob containers.
       isArray: false
+      required: true
+    - description: The name of the container.
+      name: container_name
+    - auto: PREDEFINED
+      description: Specifies whether include the properties for soft deleted blob containers.
       name: include_deleted
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Specified maximum number of containers that can be included in the list.
-      isArray: false
+    - description: Specified maximum number of containers that can be included in the list.
       name: maxpagesize
-      required: false
-      secret: false
-    deprecated: false
     description: Run this command to get the all or specific blob container details.
-    execution: false
     name: azure-storage-blob-containers-list
     outputs:
     - contextPath: AzureStorage.BlobContainer.id
@@ -1010,31 +894,125 @@ script:
       description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      default: false
+      isArray: false
+      secret: false
     - default: false
       description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
-      secret: false
-    - default: false
-      description: The name of the container.
-      isArray: false
+    - description: The name of the container.
       name: container_name
       required: true
-      secret: false
-    deprecated: false
     description: Run this command to delete a specific blob container.
-    execution: false
     name: azure-storage-blob-container-delete
+  - description: Gets all subscriptions for a tenant.
+    name: azure-storage-subscriptions-list
+    outputs:
+    - contextPath: AzureStorage.Subscription.id
+      description: 'The unique identifier of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.authorizationSource
+      description: 'The source of authorization for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.managedByTenants
+      description: 'The tenants that have access to manage the Azure storage subscription.'
+      type: Unknown
+    - contextPath: AzureStorage.Subscription.subscriptionId
+      description: 'The ID of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.tenantId
+      description: 'The ID of the tenant associated with the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.displayName
+      description: 'The display name of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.state
+      description: 'The current state of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.locationPlacementId
+      description: 'The ID of the location placement policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.quotaId
+      description: 'The ID of the quota policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.spendingLimit
+      description: 'The spending limit policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.count.type
+      description: 'The type of the Azure storage subscription count.'
+      type: String
+    - contextPath: AzureStorage.Subscription.count.value
+      description: 'The value of the Azure storage subscription count.'
+      type: Number
+  - description: Gets all resource groups for a subscription.
+    name: azure-storage-resource-group-list
+    arguments:
+    - default: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - name: limit
+      description: Limit on the number of resource groups to return. Default value is 50.
+      required: false
+      defaultValue: 50
+    - default: false
+      name: tag
+      description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
+      required: false
+    outputs:
+    - contextPath: AzureStorage.ResourceGroup.id
+      description: 'The unique identifier of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.name
+      description: 'The name of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.type
+      description: 'The type of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.location
+      description: 'The location of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.properties.provisioningState
+      description: 'The provisioning state of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.tags.Owner
+      description: 'The owner tag of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.tags
+      description: 'The tags associated with the Azure storage resource group.'
+      type: Unknown
+    - contextPath: AzureStorage.ResourceGroup.tags.Name
+      description: 'The name tag of the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.managedBy
+      description: 'The entity that manages the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-name
+      description: 'The AKS managed cluster name tag associated with the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg
+      description: 'The AKS managed cluster resource group tag associated with the Azure storage resource group.'
+      type: String
+    - contextPath: AzureStorage.ResourceGroup.tags.type
+      description: 'The type tag associated with the Azure storage resource group.'
+      type: String
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

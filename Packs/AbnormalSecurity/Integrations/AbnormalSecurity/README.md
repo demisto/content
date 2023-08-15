@@ -29,18 +29,18 @@ Check the status of an action requested on a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
-| action_id | A string representing the email case. Can be retrieved from payload after performing an action on a case. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required |
+| action_id | A string representing the email case. Can be retrieved from payload after performing an action on a case. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ActionStatus.status | String | Status of the case after an action is performed | 
-| AbnormalSecurity.ActionStatus.description | String | Detailed description of the status | 
+| AbnormalSecurity.ActionStatus.status | String | Status of the case after an action is performed |
+| AbnormalSecurity.ActionStatus.description | String | Detailed description of the status |
 
 
 #### Command Example
@@ -78,18 +78,18 @@ Check the status of an action requested on a threat.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
-| action_id | A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required |
+| action_id | A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ActionStatus.status | String | The status of a threat after performing an action on it | 
-| AbnormalSecurity.ActionStatus.description | String | The description of the status | 
+| AbnormalSecurity.ActionStatus.status | String | The status of a threat after performing an action on it |
+| AbnormalSecurity.ActionStatus.description | String | The description of the status |
 
 
 #### Command Example
@@ -127,10 +127,10 @@ Download data from Threat Log in .csv format
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`]. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| source | Filters threats based on the source of detection. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| filter | Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`]. | Optional |
+| mock-data | Returns test data if set to `True`. | Optional |
+| source | Filters threats based on the source of detection. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
@@ -173,24 +173,24 @@ Get a list of campaigns submitted to Abuse Mailbox
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC. | Optional | 
-| page_size | Number of abuse campaigns shown on each page. Each page of data will have at most page_size abuse campaign IDs. | Optional | 
-| page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC. | Optional |
+| page_size | Number of abuse campaigns shown on each page. Each page of data will have at most page_size abuse campaign IDs. | Optional |
+| page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbuseCampaign.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
-| AbnormalSecurity.AbuseCampaign.pageNumber | Number | The current page number. | 
-| AbnormalSecurity.AbuseCampaign.nextPageNumber | Number | The next page number. | 
+| AbnormalSecurity.AbuseCampaign.campaigns.campaignId | String | An id which maps to an abuse campaign. |
+| AbnormalSecurity.AbuseCampaign.pageNumber | Number | The current page number. |
+| AbnormalSecurity.AbuseCampaign.nextPageNumber | Number | The next page number. |
 
 
 #### Command Example
-```!abnormal-security-list-abuse-mailbox-campaigns filter="gte 2020-12-01T01:01:01Z"```
+```!abnormal-security-list-abuse-mailbox-campaigns filter="lastReportedTime gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
@@ -233,25 +233,25 @@ Get a list of Abnormal cases identified by Abnormal Security
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. | Optional | 
-| page_size | Number of cases that are on each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified. | Optional | 
-| page_number | 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. | Optional |
+| page_size | Number of cases that are on each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified. | Optional |
+| page_number | 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified. | Optional |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.inline_response_200_1.cases.caseId | String | A unique identifier for this case. | 
-| AbnormalSecurity.inline_response_200_1.cases.description | String | Description of the severity level for this case. | 
-| AbnormalSecurity.inline_response_200_1.pageNumber | Number | The current page number. Will not be be in the response if no filter query meter is passed in via the request. | 
-| AbnormalSecurity.inline_response_200_1.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
+| AbnormalSecurity.inline_response_200_1.cases.caseId | String | A unique identifier for this case. |
+| AbnormalSecurity.inline_response_200_1.cases.description | String | Description of the severity level for this case. |
+| AbnormalSecurity.inline_response_200_1.pageNumber | Number | The current page number. Will not be be in the response if no filter query meter is passed in via the request. |
+| AbnormalSecurity.inline_response_200_1.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request |
 
 
 #### Command Example
-```!abnormal-security-list-abnormal-cases filter="gte 2020-12-01T01:01:01Z"```
+```!abnormal-security-list-abnormal-cases filter="lastModifiedTime gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
@@ -292,25 +292,25 @@ Get a list of threats
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`. | Optional | 
-| page_size | Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified. | Optional | 
-| page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| source | Filters threats based on the source of detection. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/threats` is `receivedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`. | Optional |
+| page_size | Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified. | Optional |
+| page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional |
+| mock-data | Returns test data if set to `True`. | Optional |
+| source | Filters threats based on the source of detection. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.inline_response_200.threats.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbnormalSecurity.inline_response_200.pageNumber | Number | The current page number. Will not be be in the response if no filter query  meter is passed in via the request. | 
-| AbnormalSecurity.inline_response_200.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
+| AbnormalSecurity.inline_response_200.threats.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. |
+| AbnormalSecurity.inline_response_200.pageNumber | Number | The current page number. Will not be be in the response if no filter query  meter is passed in via the request. |
+| AbnormalSecurity.inline_response_200.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request |
 
 
 #### Command Example
-```!abnormal-security-list-threats filter="gte 2020-12-01T01:01:01Z"```
+```!abnormal-security-list-threats filter="receivedTime gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
@@ -350,38 +350,38 @@ Get details of a threat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ThreatDetails.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbnormalSecurity.ThreatDetails.messages.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbnormalSecurity.ThreatDetails.messages.abxMessageId | Number | A unique identifier for an individual message within a threat \(i.e email campaign\). | 
-| AbnormalSecurity.ThreatDetails.messages.abxPortalUrl | String | The URL at which the specific message details are viewable in Abnormal Security's Portal web interface. | 
-| AbnormalSecurity.ThreatDetails.messages.subject | String | The email subject. | 
-| AbnormalSecurity.ThreatDetails.messages.fromAddress | String | The email address of the sender. | 
-| AbnormalSecurity.ThreatDetails.messages.fromName | String | The display name of the sender. | 
-| AbnormalSecurity.ThreatDetails.messages.toAddresses | String | All the email addresses to which the message was sent, comma-se ted &amp; truncated at 255 chars. | 
-| AbnormalSecurity.ThreatDetails.messages.recipientAddress | String | the email address of the user who actually received the message. | 
-| AbnormalSecurity.ThreatDetails.messages.receivedTime | String | The timestamp at which this message arrived. | 
-| AbnormalSecurity.ThreatDetails.messages.sentTime | String | The timestamp at which this message was sent. | 
-| AbnormalSecurity.ThreatDetails.messages.internetMessageId | String | The internet message ID, per RFC 822 | 
-| AbnormalSecurity.ThreatDetails.messages.autoRemediated | Boolean | Abnormal has automatically detected and remediated this message from the user's mailbox. | 
-| AbnormalSecurity.ThreatDetails.messages.postRemediated | Boolean | Email campaigns that were remediated at a later time, after landing in user's mailbox. | 
-| AbnormalSecurity.ThreatDetails.messages.attackType | String | The type of threat the message represents. | 
-| AbnormalSecurity.ThreatDetails.messages.attackStrategy | String | The attack strategy identified to be used by a threat campaign | 
-| AbnormalSecurity.ThreatDetails.messages.returnPath | String | The potential path where information is returned to the attacker | 
-| AbnormalSecurity.ThreatDetails.messages.senderIpAddress | String | IP address of sender. | 
-| AbnormalSecurity.ThreatDetails.messages.impersonatedParty | String | Impersonated party, if any. | 
-| AbnormalSecurity.ThreatDetails.messages.attackVector | String | The attack medium. | 
-| AbnormalSecurity.ThreatDetails.messages.remediationTimestamp | String | The timestamp at which this message was remediated, or empty if it has not been remediated. | 
-| AbnormalSecurity.ThreatDetails.messages.isRead | Boolean | Whether an email has been read | 
-| AbnormalSecurity.ThreatDetails.messages.attackedParty | String | The party that was targeted by an attack. | 
+| AbnormalSecurity.ThreatDetails.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. |
+| AbnormalSecurity.ThreatDetails.messages.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. |
+| AbnormalSecurity.ThreatDetails.messages.abxMessageId | Number | A unique identifier for an individual message within a threat \(i.e email campaign\). |
+| AbnormalSecurity.ThreatDetails.messages.abxPortalUrl | String | The URL at which the specific message details are viewable in Abnormal Security's Portal web interface. |
+| AbnormalSecurity.ThreatDetails.messages.subject | String | The email subject. |
+| AbnormalSecurity.ThreatDetails.messages.fromAddress | String | The email address of the sender. |
+| AbnormalSecurity.ThreatDetails.messages.fromName | String | The display name of the sender. |
+| AbnormalSecurity.ThreatDetails.messages.toAddresses | String | All the email addresses to which the message was sent, comma-se ted &amp; truncated at 255 chars. |
+| AbnormalSecurity.ThreatDetails.messages.recipientAddress | String | the email address of the user who actually received the message. |
+| AbnormalSecurity.ThreatDetails.messages.receivedTime | String | The timestamp at which this message arrived. |
+| AbnormalSecurity.ThreatDetails.messages.sentTime | String | The timestamp at which this message was sent. |
+| AbnormalSecurity.ThreatDetails.messages.internetMessageId | String | The internet message ID, per RFC 822 |
+| AbnormalSecurity.ThreatDetails.messages.autoRemediated | Boolean | Abnormal has automatically detected and remediated this message from the user's mailbox. |
+| AbnormalSecurity.ThreatDetails.messages.postRemediated | Boolean | Email campaigns that were remediated at a later time, after landing in user's mailbox. |
+| AbnormalSecurity.ThreatDetails.messages.attackType | String | The type of threat the message represents. |
+| AbnormalSecurity.ThreatDetails.messages.attackStrategy | String | The attack strategy identified to be used by a threat campaign |
+| AbnormalSecurity.ThreatDetails.messages.returnPath | String | The potential path where information is returned to the attacker |
+| AbnormalSecurity.ThreatDetails.messages.senderIpAddress | String | IP address of sender. |
+| AbnormalSecurity.ThreatDetails.messages.impersonatedParty | String | Impersonated party, if any. |
+| AbnormalSecurity.ThreatDetails.messages.attackVector | String | The attack medium. |
+| AbnormalSecurity.ThreatDetails.messages.remediationTimestamp | String | The timestamp at which this message was remediated, or empty if it has not been remediated. |
+| AbnormalSecurity.ThreatDetails.messages.isRead | Boolean | Whether an email has been read |
+| AbnormalSecurity.ThreatDetails.messages.attackedParty | String | The party that was targeted by an attack. |
 
 
 #### Command Example
@@ -464,19 +464,19 @@ Get details of an Abnormal case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbnormalCaseDetails.caseId | String | A unique identifier for this case. | 
-| AbnormalSecurity.AbnormalCaseDetails.severity | String | Description of the severity level for this case. | 
-| AbnormalSecurity.AbnormalCaseDetails.affectedEmployee | String | Which employee this case pertains to. | 
-| AbnormalSecurity.AbnormalCaseDetails.firstObserved | String | First time suspicious behavior was observed. | 
+| AbnormalSecurity.AbnormalCaseDetails.caseId | String | A unique identifier for this case. |
+| AbnormalSecurity.AbnormalCaseDetails.severity | String | Description of the severity level for this case. |
+| AbnormalSecurity.AbnormalCaseDetails.affectedEmployee | String | Which employee this case pertains to. |
+| AbnormalSecurity.AbnormalCaseDetails.firstObserved | String | First time suspicious behavior was observed. |
 
 
 #### Command Example
@@ -522,27 +522,27 @@ Get details of an Abuse Mailbox campaign
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| campaign_id | A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| campaign_id | A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbuseCampaign.campaignId | String | An id which maps to an abuse campaign. | 
-| AbnormalSecurity.AbuseCampaign.firstReported | String | Date abuse campaign was first reported. | 
-| AbnormalSecurity.AbuseCampaign.lastReported | String | Date abuse campaign was last reported. | 
-| AbnormalSecurity.AbuseCampaign.messageId | String | A unique identifier for the first message in the abuse campaign. | 
-| AbnormalSecurity.AbuseCampaign.subject | String | Subject of the first email in the abuse campaign. | 
-| AbnormalSecurity.AbuseCampaign.fromName | String | The display name of the sender. | 
-| AbnormalSecurity.AbuseCampaign.fromAddress | String | The email address of the sender. | 
-| AbnormalSecurity.AbuseCampaign.recipientName | String | The email address of the recipient. | 
-| AbnormalSecurity.AbuseCampaign.recipientAddress | String | The email address of the recipient. | 
-| AbnormalSecurity.AbuseCampaign.judgementStatus | String | Judgement status of message. | 
-| AbnormalSecurity.AbuseCampaign.overallStatus | String | Overall status of message. | 
-| AbnormalSecurity.AbuseCampaign.attackType | String | The type of threat the message represents. | 
+| AbnormalSecurity.AbuseCampaign.campaignId | String | An id which maps to an abuse campaign. |
+| AbnormalSecurity.AbuseCampaign.firstReported | String | Date abuse campaign was first reported. |
+| AbnormalSecurity.AbuseCampaign.lastReported | String | Date abuse campaign was last reported. |
+| AbnormalSecurity.AbuseCampaign.messageId | String | A unique identifier for the first message in the abuse campaign. |
+| AbnormalSecurity.AbuseCampaign.subject | String | Subject of the first email in the abuse campaign. |
+| AbnormalSecurity.AbuseCampaign.fromName | String | The display name of the sender. |
+| AbnormalSecurity.AbuseCampaign.fromAddress | String | The email address of the sender. |
+| AbnormalSecurity.AbuseCampaign.recipientName | String | The email address of the recipient. |
+| AbnormalSecurity.AbuseCampaign.recipientAddress | String | The email address of the recipient. |
+| AbnormalSecurity.AbuseCampaign.judgementStatus | String | Judgement status of message. |
+| AbnormalSecurity.AbuseCampaign.overallStatus | String | Overall status of message. |
+| AbnormalSecurity.AbuseCampaign.attackType | String | The type of threat the message represents. |
 
 
 #### Command Example
@@ -592,21 +592,21 @@ Get employee identity analysis (Genome) data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | Email address of the employee you want to retrieve data for. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
+| email_address | Email address of the employee you want to retrieve data for. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.Employee.email | String | Employee email | 
-| AbnormalSecurity.Employee.histograms.key | String | Genome key name | 
-| AbnormalSecurity.Employee.histograms.name | String | Genome title | 
-| AbnormalSecurity.Employee.histograms.description | String | Description of genome object | 
-| AbnormalSecurity.Employee.histograms.values.value | String | Category value | 
-| AbnormalSecurity.Employee.histograms.values.percentage | Number | Ratio of this category relative to others | 
-| AbnormalSecurity.Employee.histograms.values.total_count | Number | Number of occurences for this category | 
+| AbnormalSecurity.Employee.email | String | Employee email |
+| AbnormalSecurity.Employee.histograms.key | String | Genome key name |
+| AbnormalSecurity.Employee.histograms.name | String | Genome title |
+| AbnormalSecurity.Employee.histograms.description | String | Description of genome object |
+| AbnormalSecurity.Employee.histograms.values.value | String | Category value |
+| AbnormalSecurity.Employee.histograms.values.percentage | Number | Ratio of this category relative to others |
+| AbnormalSecurity.Employee.histograms.values.total_count | Number | Number of occurences for this category |
 
 
 #### Command Example
@@ -672,18 +672,18 @@ Get employee information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | Email address of the employee you want to retrieve data for. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
+| email_address | Email address of the employee you want to retrieve data for. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.Employee.name | String | Name of the employee. | 
-| AbnormalSecurity.Employee.email | String | Email of the employee. | 
-| AbnormalSecurity.Employee.title | String | Job title of the employee. | 
-| AbnormalSecurity.Employee.manager | String | Email address of the employee's manager | 
+| AbnormalSecurity.Employee.name | String | Name of the employee. |
+| AbnormalSecurity.Employee.email | String | Email of the employee. |
+| AbnormalSecurity.Employee.title | String | Job title of the employee. |
+| AbnormalSecurity.Employee.manager | String | Email address of the employee's manager |
 
 
 #### Command Example
@@ -723,8 +723,8 @@ Get employee login information for last 30 days in csv format
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | Email address of the employee you want to retrieve data for. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
+| email_address | Email address of the employee you want to retrieve data for. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
@@ -756,7 +756,7 @@ There is no context output for this command.
 
 ### abnormal-security-get-latest-threat-intel-feed
 ***
-Get the latest threat intel feed.
+DEPRECATED. Get the latest threat intel feed.
 
 
 #### Base Command
@@ -766,7 +766,7 @@ Get the latest threat intel feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mock-data | Returns test data if set to `True`. | Optional | 
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
@@ -808,17 +808,17 @@ Manage a Threat identified by Abnormal Security
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
-| action | Action to perform on threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
+| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required |
+| action | Action to perform on threat. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ThreatManageResults.action_id | String | ID of the action taken | 
-| AbnormalSecurity.ThreatManageResults.status_url | String | URL of the status of the action | 
+| AbnormalSecurity.ThreatManageResults.action_id | String | ID of the action taken |
+| AbnormalSecurity.ThreatManageResults.status_url | String | URL of the status of the action |
 
 
 #### Command Example
@@ -856,17 +856,17 @@ Manage an Abnormal Case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
-| action | Action to perform on case. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required |
+| action | Action to perform on case. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.CaseManageResults.action_id | String | ID of the action taken | 
-| AbnormalSecurity.CaseManageResults.status_url | String | URL of the status of the action | 
+| AbnormalSecurity.CaseManageResults.action_id | String | ID of the action taken |
+| AbnormalSecurity.CaseManageResults.status_url | String | URL of the status of the action |
 
 
 #### Command Example
@@ -904,22 +904,22 @@ Provides the analysis and timeline details of a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
-| subtenant | Subtenant of the user (if applicable). | Optional | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required |
+| mock-data | Returns test data if set to `True`. | Optional |
+| subtenant | Subtenant of the user (if applicable). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.CaseAnalysis.insights.signal | String | Insight signal or highlight of a case | 
-| AbnormalSecurity.CaseAnalysis.insights.description | String | Description of insight signal or highlight | 
-| AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp | String | Time when event occurred | 
-| AbnormalSecurity.CaseAnalysis.eventTimeline.category | String | Type of event | 
-| AbnormalSecurity.CaseAnalysis.eventTimeline.title | String | Title of the event | 
-| AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address | String | IP Address where user accessed mail from | 
-| AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels | Unknown | Analysis labels associated with the fields in the timeline event | 
+| AbnormalSecurity.CaseAnalysis.insights.signal | String | Insight signal or highlight of a case |
+| AbnormalSecurity.CaseAnalysis.insights.description | String | Description of insight signal or highlight |
+| AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp | String | Time when event occurred |
+| AbnormalSecurity.CaseAnalysis.eventTimeline.category | String | Type of event |
+| AbnormalSecurity.CaseAnalysis.eventTimeline.title | String | Title of the event |
+| AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address | String | IP Address where user accessed mail from |
+| AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels | Unknown | Analysis labels associated with the fields in the timeline event |
 
 
 #### Command Example
@@ -1007,7 +1007,7 @@ Provides the analysis and timeline details of a case
 >|signal|description|
 >|---|---|
 >| Risky Location | There was a signin into test@lamronba.com from a location frequently used to launch attacks. |
->### Event Timeline for 
+>### Event Timeline for
 >|event_timestamp|category|title|field_labels|ip_address|description|location|sender|subject|title|rule_name|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-14T22:41:54Z | Risk Event | Impossible Travel |  | 127.0.0.1 | Impossible Travel Event was observed for test@lamronba.com. | city: Aldie<br/>state: Virginia<br/>country: US |  |  | Impossible Travel |  |
@@ -1028,16 +1028,16 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mock-data | Returns test data if set to `True`. | Optional | 
-| reporter | Email of the reporter. | Required | 
-| report_type | Type of misjudgement reported. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional |
+| reporter | Email of the reporter. | Required |
+| report_type | Type of misjudgement reported. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.SubmitInquiry.detail | String | Confirmation of inquiry sent | 
+| AbnormalSecurity.SubmitInquiry.detail | String | Confirmation of inquiry sent |
 
 
 #### Command Example
@@ -1073,8 +1073,8 @@ Submit a False Negative Report
 
 | **Argument Name** | **Description**                 | **Required** |
 |-------------------|---------------------------------| --- |
-| sender_email      | Email address of the sender.    | Required | 
-| recipient_email   | Email address of the recipient. | Required | 
+| sender_email      | Email address of the sender.    | Required |
+| recipient_email   | Email address of the recipient. | Required |
 | subject           | Email subject.                  | Required |
 
 
@@ -1117,4 +1117,3 @@ Submit a False Positive Report
 >|detail|
 >|---|
 >| Thank you for your feedback! We have sent your inquiry to our support staff. |
-

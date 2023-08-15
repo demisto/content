@@ -1,8 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 
-from CommonServerPython import *  # noqa: F401
-
-import demistomock as demisto  # noqa: F401
 
 # Consts
 COMPLIANCE_LABEL = "Compliance"

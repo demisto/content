@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import os
 import sys
 
 import boto3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 if not demisto.params()['proxy']:
     del os.environ['http_proxy']

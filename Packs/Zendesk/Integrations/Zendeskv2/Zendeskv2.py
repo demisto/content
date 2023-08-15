@@ -647,6 +647,8 @@ class ZendeskClient(BaseClient):
                     self._data['comment']['public'] = argToBoolean(public)
             if html_comment:
                 self._data['comment'] = {'html_body': html_comment}
+                if public:
+                    self._data['comment']['public'] = argToBoolean(public)
             if status:
                 Validators.validate_ticket_status(status)
                 self._data['status'] = status

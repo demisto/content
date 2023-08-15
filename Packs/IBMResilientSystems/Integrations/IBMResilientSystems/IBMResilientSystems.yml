@@ -9,111 +9,77 @@ configuration:
   type: 0
 - display: Credentials
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Organization name
   name: org
   required: true
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - display: API key ID
   name: api_key_id
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: API key secret
   name: api_key_secret
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: API key ID
   name: credentials_api_key
-  required: false
   type: 9
   displaypassword: API key secret
   section: Connect
+  required: false
 description: Case management that enables visibility across your tools for continual IR improvement.
 display: IBM Resilient Systems
 name: IBM Resilient Systems
 script:
   commands:
   - arguments:
-    - default: false
-      description: Comma-separated list of incident severity, e.g., Low,Medium,High.
-      isArray: false
+    - description: Comma-separated list of incident severity, e.g., Low,Medium,High.
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      isArray: false
+    - description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       name: date-created-before
-      required: false
-      secret: false
-    - default: false
-      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      isArray: false
+    - description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       name: date-created-after
-      required: false
-      secret: false
-    - default: false
-      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
-      isArray: false
+    - description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       name: date-created-within-the-last
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
-      isArray: false
       name: timeframe
       predefined:
       - days
       - hours
       - minutes
-      required: false
-      secret: false
-    - default: false
-      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
-      isArray: false
+    - description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       name: date-occurred-within-the-last
-      required: false
-      secret: false
-    - default: false
-      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      isArray: false
+    - description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       name: date-occurred-before
-      required: false
-      secret: false
-    - default: false
-      description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      isArray: false
+    - description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       name: date-occurred-after
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Incident type.
-      isArray: false
       name: incident-type
       predefined:
       - CommunicationError
@@ -135,12 +101,8 @@ script:
       - SystemIntrusion
       - TBD/Unknown
       - Vendor/3rdPartyError
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web".'
-      isArray: false
       name: nist
       predefined:
       - Attrition
@@ -151,27 +113,15 @@ script:
       - Loss/TheftOfEquipment
       - Other
       - Web
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Incident status. Possible values: "Active" and "Closed".'
-      isArray: false
       name: status
       predefined:
       - Active
       - Closed
-      required: false
-      secret: false
-    - default: false
-      description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
-      isArray: false
+    - description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       name: due-in
-      required: false
-      secret: false
-    deprecated: false
     description: Query for incidents
-    execution: false
     name: rs-search-incidents
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
@@ -196,33 +146,20 @@ script:
       description: Incident description.
       type: string
   - arguments:
-    - default: false
-      description: Incident ID to update.
-      isArray: false
+    - description: Incident ID to update.
       name: incident-id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Severity to update. Possible value: "Low", "Medium", and "High".'
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
-    - default: false
-      description: User full name to set as incident owner, e.g., Steve Jobs
-      isArray: false
+    - description: User full name to set as incident owner, e.g., Steve Jobs
       name: owner
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Incident type (added to the current incident types list).
-      isArray: false
       name: incident-type
       predefined:
       - CommunicationError
@@ -244,42 +181,22 @@ script:
       - SystemIntrusion
       - TBD/Unknown
       - Vendor/3rdPartyError
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Incident resolution. Possible value: "Unresolved", "Duplicate", "NotAnIssue", and "Resolved".'
-      isArray: false
       name: resolution
       predefined:
       - Unresolved
       - Duplicate
       - NotAnIssue
       - Resolved
-      required: false
-      secret: false
-    - default: false
-      description: Incident resolution summary.
-      isArray: false
+    - description: Incident resolution summary.
       name: resolution-summary
-      required: false
-      secret: false
-    - default: false
-      description: Incident description.
-      isArray: false
+    - description: Incident description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Incident name.
-      isArray: false
+    - description: Incident name.
       name: name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'NIST Attack Vectors (added to the current list of NIST attack vectors). Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web".'
-      isArray: false
       name: nist
       predefined:
       - Attrition
@@ -290,28 +207,15 @@ script:
       - Loss/TheftOfEquipment
       - Other
       - Web
-      required: false
-      secret: false
-    - default: false
-      description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
-      isArray: false
+    - description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       name: other-fields
-      required: false
-      secret: false
-    deprecated: false
     description: Updates incidents.
-    execution: false
     name: rs-update-incident
   - arguments:
-    - default: false
-      description: Incident ID to get members of.
-      isArray: false
+    - description: Incident ID to get members of.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets members of the incident.
-    execution: false
     name: rs-incidents-get-members
     outputs:
     - contextPath: Resilient.Incidents.ID
@@ -330,15 +234,10 @@ script:
       description: Member's email address.
       type: string
   - arguments:
-    - default: false
-      description: ID of incident to get.
-      isArray: false
+    - description: ID of incident to get.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets an individual incident by ID.
-    execution: false
     name: rs-get-incident
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
@@ -384,47 +283,28 @@ script:
       description: Incident NIST attack vectors.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of the incident for which to update its members.
-      isArray: false
+    - description: ID of the incident for which to update its members.
       name: incident-id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of members to add, e.g. 1,2,3.
-      isArray: false
+    - description: A comma-separated list of members to add, e.g. 1,2,3.
       name: members
       required: true
-      secret: false
-    deprecated: false
     description: Updates the incident's members.
-    execution: false
     name: rs-incidents-update-member
-  - deprecated: false
-    description: Gets a list of all users in the system.
-    execution: false
+  - description: Gets a list of all users in the system.
     name: rs-get-users
   - arguments:
     - default: true
       description: ID of the incident to close.
-      isArray: false
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Closes an incident.
-    execution: false
     name: rs-close-incident
   - arguments:
-    - default: false
-      description: Incident name.
-      isArray: false
+    - description: Incident name.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Creates an incident.
-    execution: false
     name: rs-create-incident
     outputs:
     - contextPath: Resilient.Incidents.Id
@@ -434,15 +314,10 @@ script:
       description: Incident name.
       type: string
   - arguments:
-    - default: false
-      description: Incident ID to get artifacts of.
-      isArray: false
+    - description: Incident ID to get artifacts of.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets incident artifacts.
-    execution: false
     name: rs-incident-artifacts
     outputs:
     - contextPath: Resilient.Incidents.Id
@@ -488,15 +363,10 @@ script:
       description: Attachment size.
       type: number
   - arguments:
-    - default: false
-      description: Incident ID to get attachments from.
-      isArray: false
+    - description: Incident ID to get attachments from.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets incident attachments.
-    execution: false
     name: rs-incident-attachments
     outputs:
     - contextPath: Resilient.Incidents.Id
@@ -527,15 +397,10 @@ script:
       description: Attachment size.
       type: number
   - arguments:
-    - default: false
-      description: Incident ID to get related incidents of.
-      isArray: false
+    - description: Incident ID to get related incidents of.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets related incidents.
-    execution: false
     name: rs-related-incidents
     outputs:
     - contextPath: Resilient.Incidents.Id
@@ -563,15 +428,10 @@ script:
       description: Creator of the artifact.
       type: string
   - arguments:
-    - default: false
-      description: Incident ID to get tasks of.
-      isArray: false
+    - description: Incident ID to get tasks of.
       name: incident-id
       required: true
-      secret: false
-    deprecated: false
     description: Gets tasks of incidents.
-    execution: false
     name: rs-incidents-get-tasks
     outputs:
     - contextPath: Resilient.Incidents.Id
@@ -605,21 +465,13 @@ script:
       description: Task status (Open/Closed).
       type: string
   - arguments:
-    - default: false
-      description: The ID of the incident.
-      isArray: false
+    - description: The ID of the incident.
       name: incident-id
       required: true
-      secret: false
-    - default: false
-      description: The text of the note.
-      isArray: false
+    - description: The text of the note.
       name: note
       required: true
-      secret: false
-    deprecated: false
     description: Add a note to an incident.
-    execution: false
     name: rs-add-note
     outputs:
     - contextPath: Resilient.IncidentNote.type
@@ -707,16 +559,11 @@ script:
       description: Whether the current user has permission to delete this note.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the incident.
-      isArray: false
+    - description: The ID of the incident.
       name: incident-id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the artifact.
-      isArray: false
       name: artifact-type
       predefined:
       - DNS Name
@@ -760,22 +607,12 @@ script:
       - User Agent
       - X509 Certificate File
       required: true
-      secret: false
-    - default: false
-      description: The value of the artifact.
-      isArray: false
+    - description: The value of the artifact.
       name: artifact-value
       required: true
-      secret: false
-    - default: false
-      description: The description of the artifact.
-      isArray: false
+    - description: The description of the artifact.
       name: artifact-description
-      required: false
-      secret: false
-    deprecated: false
     description: Add an artifact to an incident.
-    execution: false
     name: rs-add-artifact
     outputs:
     - contextPath: Resilient.IncidentArtifact.id
@@ -899,10 +736,7 @@ script:
       description: Whether the IP address is a destination.
       type: Boolean
   dockerimage: demisto/resilient:2.0.0.45701
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

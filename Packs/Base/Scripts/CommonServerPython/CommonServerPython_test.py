@@ -7757,27 +7757,28 @@ class TestFetchWithLookBack:
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 2, 'first_fetch': '40 minutes', 'look_back': None}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 3, 'time': INCIDENTS[3]['created']}),
-
-        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+         [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+                                     'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
-         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
         Given:
@@ -7811,7 +7812,6 @@ class TestFetchWithLookBack:
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         incidents_phase2 = self.example_fetch_incidents(time_aware)
-
         assert incidents_phase2 == result_phase2
 
     def mock_dateparser(self, date_string, settings):
@@ -7829,9 +7829,9 @@ class TestFetchWithLookBack:
         [
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]],
-                    [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+                    [INCIDENTS[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS[0]], 2
             ),
             (
@@ -7843,11 +7843,19 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
+                    [NEW_INCIDENTS[0]], 2
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 30*60},
                     [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
                     {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
                     [NEW_INCIDENTS[0]], 2
             ),
+
             (
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
@@ -7858,9 +7866,9 @@ class TestFetchWithLookBack:
 
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
-                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    [INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7872,11 +7880,10 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
-                                                                                                  INCIDENTS_TIME_AWARE[3],
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                   INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7923,7 +7930,6 @@ class TestFetchWithLookBack:
         for inc in incidents_phase1:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
-        next_run_phase1 = self.LAST_RUN['time']
         source_incidents = incidents[:index] + new_incidents + incidents[index:]
         if time_aware:
             self.INCIDENTS_TIME_AWARE = source_incidents
@@ -7937,10 +7943,7 @@ class TestFetchWithLookBack:
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
         assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
 
-        if len(incidents_phase2) >= params.get('limit'):
-            assert next_run_phase1 == self.LAST_RUN['time']
-        else:
-            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+        assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
 
         for inc in incidents_phase2:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
@@ -7977,7 +7980,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -7997,7 +8000,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-02T10:13:00',
                     'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': ''}
@@ -8018,8 +8021,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
-                    'limit': 12,
+                    'time': '2022-04-03T10:13:00',
+                    'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': '',
                                            '7': '', '8': '', '9': ''}
@@ -8042,7 +8045,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8081,7 +8084,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-02T10:12:00',
+                    'time': '2022-04-03T10:13:00',
                     'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
@@ -8104,7 +8107,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8121,14 +8124,14 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 6,
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
                     'incidents': [],
                     'fetch_limit': 3,
                     'start_fetch_time': '2022-04-02T10:12:00',
-                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'end_fetch_time': '2022-04-07T10:13:00',
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
@@ -8136,8 +8139,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-07T10:11:00',
-                    'limit': 6,
+                    'time': '2022-04-07T10:13:00',
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
@@ -8478,15 +8481,11 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
-    @pytest.fixture
-    def teardown_for_send_events_to_xsiam_positive(self):
-        yield
-        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
 
     @pytest.mark.parametrize('events_use_case', [
         'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
         Test for the fetch events function
         Given:
@@ -8547,10 +8546,10 @@ class TestSendEventsToXSIAMTest:
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
-        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
-                                                                                        self.orig_xsiam_file_size)
+        chunk_size = self.test_data[events_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
+                             chunk_size=chunk_size)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']

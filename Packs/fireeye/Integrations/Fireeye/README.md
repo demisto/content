@@ -51,3 +51,33 @@
 <div class="five wide break-word column integration-command-name">
 <strong>fe-submit-url-status</strong> - Get the status of a URL submitted to FireEye for analysis</div>
 </div>
+### fe-submit-url-result
+
+***
+Results of the URL submission
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
+#### Base Command
+
+`fe-submit-url-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| submissionID | Submission ID of the submission. | Required | 
+| info_level | Specifies the level of information to be returned. Unless otherwise specified, the info_level is set to concise. You can select the following information levels concise: (default), normal, extended. Possible values are: concise, normal, extended. Default is concise. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeAX.Submissions.Key | unknown | The submission key | 
+| FireEyeAX.Submissions.Severity | unknown | The severity level of the file | 
+| FireEyeAX.Submissions.InfoLevel | String | The info level of the report. | 
+| DBotScore.Score | unknown | The actual score | 
+| DBotScore.Indicator | unknown | The indicator we tested | 
+| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
+| File.MD5 | unknown | Bad hash found | 
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision | 

@@ -27,7 +27,7 @@ class Client(BaseClient):
 
         self.base_url = base_url
         self.client_body = {
-            'clientId': params.get('client_id'),
+            'clientId': params.get('api_creds', {}).get('identifier') or params.get('client_id'),
             'clientVersion': params.get('client_version'),
         }
 
@@ -219,7 +219,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
 
 
 def build_base_url(params: Dict) -> str:
-    api_key = params.get('api_key')
+    api_key = params.get('api_creds', {}).get('password') or params.get('api_key')
     base_url = params.get('url', '')
 
     if not base_url.endswith('/'):

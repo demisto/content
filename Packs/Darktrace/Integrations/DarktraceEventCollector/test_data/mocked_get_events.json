@@ -1,0 +1,869 @@
+[
+    {
+        "acknowledged": false,
+        "commentCount": 0,
+        "pbid": 11111,
+        "time": 1686478142000,
+        "creationTime": 1686478148000,
+        "model": {
+            "then": {
+                "name": "example::example",
+                "pid": 111,
+                "phid": 1111,
+                "uuid": "11111111-1111-1111-1111-111111111111",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 11111,
+                            "weight": 1
+                        },
+                        {
+                            "cid": 11112,
+                            "weight": 1
+                        }
+                    ],
+                    "targetScore": 1,
+                    "type": "example",
+                    "version": 1
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "2023-06-19 15:56:27",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 2
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 31,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            },
+            "now": {
+                "name": "example::example",
+                "pid": 111,
+                "phid": 1111,
+                "uuid": "11111111-1111-1111-1111-111111111111",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 11111,
+                            "weight": 1
+                        },
+                        {
+                            "cid": 11112,
+                            "weight": 1
+                        }
+                    ],
+                    "targetScore": 1,
+                    "type": "example",
+                    "version": 1
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "2023-06-19 15:56:27",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 2
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 31,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            }
+        },
+        "triggeredComponents": [
+            {
+                "time": 1686478141000,
+                "cbid": 11111,
+                "cid": 11111,
+                "chid": 11111,
+                "size": 1,
+                "threshold": 0,
+                "interval": 3600,
+                "logic": {
+                    "data": {
+                        "left": {
+                            "left": "A",
+                            "operator": "AND",
+                            "right": {
+                                "left": "C",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "D",
+                                    "operator": "AND",
+                                    "right": "F"
+                                }
+                            }
+                        },
+                        "operator": "OR",
+                        "right": {
+                            "left": {
+                                "left": "B",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "C",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "D",
+                                        "operator": "AND",
+                                        "right": "F"
+                                    }
+                                }
+                            },
+                            "operator": "OR",
+                            "right": {
+                                "left": {
+                                    "left": "A",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "C",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "E",
+                                            "operator": "AND",
+                                            "right": "G"
+                                        }
+                                    }
+                                },
+                                "operator": "OR",
+                                "right": {
+                                    "left": {
+                                        "left": "B",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "C",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "E",
+                                                "operator": "AND",
+                                                "right": "G"
+                                            }
+                                        }
+                                    },
+                                    "operator": "OR",
+                                    "right": {
+                                        "left": {
+                                            "left": "A",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "operator": "OR",
+                                        "right": {
+                                            "left": "B",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "version": "v0.1"
+                },
+                "ip": "1.1.1.1/11",
+                "port": 1,
+                "metric": {
+                    "mlid": 111,
+                    "name": "example",
+                    "label": "example label"
+                },
+                "triggeredFilters": [
+                    {
+                        "cfid": 111111,
+                        "id": "A",
+                        "filterType": "example filter type",
+                        "arguments": {
+                            "value": ".+"
+                        },
+                        "comparatorType": "does not match regular expression",
+                        "trigger": {
+                            "value": ""
+                        }
+                    }
+                ]
+            }
+        ],
+        "score": 0.465,
+        "device": {
+            "did": 1,
+            "ip": "111.111.11.#11111",
+            "ips": [
+                {
+                    "ip": "222.222.22.#22222",
+                    "timems": 1687082400000,
+                    "time": "2023-06-18 10:00:00",
+                    "sid": 1
+                }
+            ],
+            "sid": 1,
+            "firstSeen": 1639068361000,
+            "lastSeen": 1687082941000,
+            "typename": "desktop",
+            "typelabel": "Desktop"
+        }
+    },
+    {
+        "acknowledged": false,
+        "commentCount": 0,
+        "pbid": 22222,
+        "time": 2686478242000,
+        "creationTime": 2686478248000,
+        "model": {
+            "then": {
+                "name": "example::example",
+                "pid": 222,
+                "phid": 2222,
+                "uuid": "22222222-2222-2222-2222-222222222222",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 22222,
+                            "weight": 2
+                        },
+                        {
+                            "cid": 22222,
+                            "weight": 2
+                        }
+                    ],
+                    "targetScore": 2,
+                    "type": "example",
+                    "version": 2
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "2023-06-29 25:56:27",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 2
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 32,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            },
+            "now": {
+                "name": "example::example",
+                "pid": 222,
+                "phid": 2222,
+                "uuid": "22222222-2222-2222-2222-222222222222",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 22222,
+                            "weight": 2
+                        },
+                        {
+                            "cid": 22222,
+                            "weight": 2
+                        }
+                    ],
+                    "targetScore": 2,
+                    "type": "example",
+                    "version": 2
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "2023-06-29 25:56:27",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 2
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 32,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            }
+        },
+        "triggeredComponents": [
+            {
+                "time": 2686478242000,
+                "cbid": 22222,
+                "cid": 22222,
+                "chid": 22222,
+                "size": 2,
+                "threshold": 0,
+                "interval": 3600,
+                "logic": {
+                    "data": {
+                        "left": {
+                            "left": "A",
+                            "operator": "AND",
+                            "right": {
+                                "left": "C",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "D",
+                                    "operator": "AND",
+                                    "right": "F"
+                                }
+                            }
+                        },
+                        "operator": "OR",
+                        "right": {
+                            "left": {
+                                "left": "B",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "C",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "D",
+                                        "operator": "AND",
+                                        "right": "F"
+                                    }
+                                }
+                            },
+                            "operator": "OR",
+                            "right": {
+                                "left": {
+                                    "left": "A",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "C",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "E",
+                                            "operator": "AND",
+                                            "right": "G"
+                                        }
+                                    }
+                                },
+                                "operator": "OR",
+                                "right": {
+                                    "left": {
+                                        "left": "B",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "C",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "E",
+                                                "operator": "AND",
+                                                "right": "G"
+                                            }
+                                        }
+                                    },
+                                    "operator": "OR",
+                                    "right": {
+                                        "left": {
+                                            "left": "A",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "operator": "OR",
+                                        "right": {
+                                            "left": "B",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "version": "v0.2"
+                },
+                "ip": "2.2.2.2/22",
+                "port": 2,
+                "metric": {
+                    "mlid": 222,
+                    "name": "example",
+                    "label": "example label"
+                },
+                "triggeredFilters": [
+                    {
+                        "cfid": 222222,
+                        "id": "A",
+                        "filterType": "example filter type",
+                        "arguments": {
+                            "value": ".+"
+                        },
+                        "comparatorType": "does not match regular expression",
+                        "trigger": {
+                            "value": ""
+                        }
+                    }
+                ]
+            }
+        ],
+        "score": 0.465,
+        "device": {
+            "did": 2,
+            "ip": "222.222.22.#22222",
+            "ips": [
+                {
+                    "ip": "222.222.22.#22222",
+                    "timems": 2687082400000,
+                    "time": "2023-06-28 20:00:00",
+                    "sid": 2
+                }
+            ],
+            "sid": 2,
+            "firstSeen": 2639068362000,
+            "lastSeen": 2687082942000,
+            "typename": "desktop",
+            "typelabel": "Desktop"
+        }
+    },
+    {
+        "acknowledged": false,
+        "commentCount": 0,
+        "pbid": 33333,
+        "time": 3686478343000,
+        "creationTime": 3686478348000,
+        "model": {
+            "then": {
+                "name": "example::example",
+                "pid": 333,
+                "phid": 3333,
+                "uuid": "33333333-3333-3333-3333-333333333333",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 33333,
+                            "weight": 3
+                        },
+                        {
+                            "cid": 33333,
+                            "weight": 3
+                        }
+                    ],
+                    "targetScore": 3,
+                    "type": "example",
+                    "version": 3
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "3033-06-39 35:56:37",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 3
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 33,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            },
+            "now": {
+                "name": "example::example",
+                "pid": 333,
+                "phid": 3333,
+                "uuid": "33333333-3333-3333-3333-333333333333",
+                "logic": {
+                    "data": [
+                        {
+                            "cid": 33333,
+                            "weight": 3
+                        },
+                        {
+                            "cid": 33333,
+                            "weight": 3
+                        }
+                    ],
+                    "targetScore": 3,
+                    "type": "example",
+                    "version": 3
+                },
+                "throttle": 3600,
+                "sharedEndpoints": false,
+                "actions": {
+                    "alert": true,
+                    "antigena": {},
+                    "breach": true,
+                    "model": true,
+                    "setPriority": false,
+                    "setTag": false,
+                    "setType": false
+                },
+                "tags": [
+                    "",
+                    "AP: example_tag"
+                ],
+                "interval": 3600,
+                "delay": 0,
+                "sequenced": false,
+                "active": true,
+                "modified": "3033-06-39 35:56:37",
+                "activeTimes": {
+                    "devices": {},
+                    "tags": {},
+                    "type": "exclusions",
+                    "version": 3
+                },
+                "autoUpdatable": true,
+                "autoUpdate": true,
+                "autoSuppress": true,
+                "description": "An example description.",
+                "behaviour": "decreasing",
+                "defeats": [],
+                "created": {
+                    "by": "System"
+                },
+                "edited": {
+                    "by": "System"
+                },
+                "version": 33,
+                "priority": 5,
+                "category": "Critical",
+                "compliance": false
+            }
+        },
+        "triggeredComponents": [
+            {
+                "time": 3686478343000,
+                "cbid": 33333,
+                "cid": 33333,
+                "chid": 33333,
+                "size": 3,
+                "threshold": 0,
+                "interval": 3600,
+                "logic": {
+                    "data": {
+                        "left": {
+                            "left": "A",
+                            "operator": "AND",
+                            "right": {
+                                "left": "C",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "D",
+                                    "operator": "AND",
+                                    "right": "F"
+                                }
+                            }
+                        },
+                        "operator": "OR",
+                        "right": {
+                            "left": {
+                                "left": "B",
+                                "operator": "AND",
+                                "right": {
+                                    "left": "C",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "D",
+                                        "operator": "AND",
+                                        "right": "F"
+                                    }
+                                }
+                            },
+                            "operator": "OR",
+                            "right": {
+                                "left": {
+                                    "left": "A",
+                                    "operator": "AND",
+                                    "right": {
+                                        "left": "C",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "E",
+                                            "operator": "AND",
+                                            "right": "G"
+                                        }
+                                    }
+                                },
+                                "operator": "OR",
+                                "right": {
+                                    "left": {
+                                        "left": "B",
+                                        "operator": "AND",
+                                        "right": {
+                                            "left": "C",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "E",
+                                                "operator": "AND",
+                                                "right": "G"
+                                            }
+                                        }
+                                    },
+                                    "operator": "OR",
+                                    "right": {
+                                        "left": {
+                                            "left": "A",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "operator": "OR",
+                                        "right": {
+                                            "left": "B",
+                                            "operator": "AND",
+                                            "right": {
+                                                "left": "C",
+                                                "operator": "AND",
+                                                "right": {
+                                                    "left": "D",
+                                                    "operator": "AND",
+                                                    "right": {
+                                                        "left": "H",
+                                                        "operator": "AND",
+                                                        "right": "I"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "version": "v0.3"
+                },
+                "ip": "3.3.3.3/33",
+                "port": 3,
+                "metric": {
+                    "mlid": 333,
+                    "name": "example",
+                    "label": "example label"
+                },
+                "triggeredFilters": [
+                    {
+                        "cfid": 333333,
+                        "id": "A",
+                        "filterType": "example filter type",
+                        "arguments": {
+                            "value": ".+"
+                        },
+                        "comparatorType": "does not match regular expression",
+                        "trigger": {
+                            "value": ""
+                        }
+                    }
+                ]
+            }
+        ],
+        "score": 0.465,
+        "device": {
+            "did": 3,
+            "ip": "333.333.33.#33333",
+            "ips": [
+                {
+                    "ip": "333.333.33.#33333",
+                    "timems": 3687083400000,
+                    "time": "3033-06-38 30:00:00",
+                    "sid": 3
+                }
+            ],
+            "sid": 3,
+            "firstSeen": 3639068363000,
+            "lastSeen": 3687083943000,
+            "typename": "desktop",
+            "typelabel": "Desktop"
+        }
+    }
+]

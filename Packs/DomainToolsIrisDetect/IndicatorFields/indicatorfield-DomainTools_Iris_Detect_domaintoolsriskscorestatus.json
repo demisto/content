@@ -1,0 +1,31 @@
+{
+    "id": "indicator_domaintoolsriskscorestatus",
+    "version": -1,
+    "modified": "2023-01-24T16:23:01.245370432+05:30",
+    "name": "DomainTools Risk Score Status",
+    "ownerOnly": false,
+    "cliName": "domaintoolsriskscorestatus",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "DomainTools Iris Detect"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

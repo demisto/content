@@ -1,0 +1,33 @@
+{
+    "kind": "collection#UserObj",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 2,
+        "total": 2
+    },
+    "items": [
+        {
+            "kind": "object#UserObj",
+            "selfLink": "items[0]_selfLink",
+            "userName": "Squirtle",
+            "user": {
+                "kind": "objectRef#LocalUserObj",
+                "refLink": "items[0]_user_refLink",
+                "objectId": "Squirtle"
+            },
+            "objectId": "Squirtle"
+        },
+        {
+            "kind": "object#UserObj",
+            "selfLink": "items[1]_selfLink",
+            "userName": "Blastoise",
+            "user": {
+                "kind": "objectRef#LocalUserObj",
+                "refLink": "items[1]_user_refLink",
+                "objectId": "Blastoise"
+            },
+            "objectId": "Blastoise"
+        }
+    ]
+}

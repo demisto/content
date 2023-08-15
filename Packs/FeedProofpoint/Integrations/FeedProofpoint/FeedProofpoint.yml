@@ -5,21 +5,20 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: Authorization Code
   name: auth_code
-  required: false
   type: 4
   hidden: true
-- displaypassword: Authorization Code
-  name:  credentials_auth_code
   required: false
+- displaypassword: Authorization Code
+  name: credentials_auth_code
   hiddenusername: true
   type: 9
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -28,8 +27,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -51,8 +50,8 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: suddenDeath
   display: ""
   name: feedExpirationPolicy
@@ -61,23 +60,23 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: "20160"
   name: feedExpirationInterval
   display: ""
-  required: false
   type: 1
+  required: false
 - defaultvalue: "60"
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - additionalinfo: The indicator type in the feed to fetch. Domain is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt", IP is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt".
   defaultvalue: all
   display: Indicator Type
@@ -91,50 +90,37 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Detailed feed of domains and ips classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed
 display: Proofpoint Feed
 name: ProofpointFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return to the output. The default value is "50".
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The indicator type to fetch.
-      isArray: false
       name: indicator_type
       predefined:
       - all
       - domain
       - ip
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.66339
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

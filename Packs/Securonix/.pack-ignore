@@ -1,5 +1,5 @@
 [file:Securonix.yml]
-ignore=IN126,IN145
+ignore=IN126
 
 [file:playbook-Update_Incident_Status_And_Fetch_Attachments_-_Securonix.yml]
 ignore=PB106

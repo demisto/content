@@ -20,7 +20,6 @@ outputs:
   description: Firewall serials that sent logs to Crotex Data Lake.
   type: String
 runas: DBotWeakRole
-runonce: false
 script: ''
 tags:
 - CDL
@@ -28,7 +27,7 @@ tags:
 - XDR
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.31492
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

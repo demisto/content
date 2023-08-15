@@ -1,7 +1,7 @@
-import json
-from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
+from datetime import datetime, date
 from AWSApiModule import *  # noqa: E402
 import urllib3.util
 import boto3

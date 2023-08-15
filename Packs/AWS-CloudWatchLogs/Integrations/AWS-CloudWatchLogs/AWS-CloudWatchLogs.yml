@@ -28,43 +28,43 @@ configuration:
   required: false
 - display: Access Key
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Key
+  required: false
 - display: Access Key
   name: access_key
-  required: false
   type: 0
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
   additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
-  required: false
   type: 0
+  required: false
 - display: Retries
   name: retries
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  required: false
   type: 0
+  required: false
 - display: PrivateLink service URL.
   name: endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -448,7 +448,6 @@ script:
       type: string
     description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
   dockerimage: demisto/boto3py3:1.0.0.52713
-  runonce: false
 tests:
 - No Tests
 fromversion: 5.0.0

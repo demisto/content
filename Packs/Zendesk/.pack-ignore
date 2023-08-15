@@ -1,9 +1,9 @@
 [file:Zendesk.yml]
-ignore=IN126,IN145
-
+ignore=IN126
 
 [file:Zendesk_image.png]
 ignore=IM111
 
 [known_words]
-Requester
+requester
+

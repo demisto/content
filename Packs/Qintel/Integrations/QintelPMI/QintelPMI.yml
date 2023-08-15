@@ -5,24 +5,21 @@ commonfields:
 configuration:
 - display: PMI API URL (optional)
   name: remote
-  required: false
   type: 0
+  required: false
 - display: Qintel Credentials
   name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: 'Qintel’s Patch Management Intelligence (PMI) product simplifies the
-  vulnerability management process by providing vital context around reported Common
-  Vulnerabilities and Exposures. With this integration, users can query PMI to surface
-  CVEs that are known by Qintel to be leveraged by eCrime and Nation State adversaries.'
+  required: false
+description: 'Qintel’s Patch Management Intelligence (PMI) product simplifies the vulnerability management process by providing vital context around reported Common Vulnerabilities and Exposures. With this integration, users can query PMI to surface CVEs that are known by Qintel to be leveraged by eCrime and Nation State adversaries.'
 display: Qintel PMI
 name: QintelPMI
 script:
@@ -33,10 +30,7 @@ script:
       isArray: true
       name: cve
       required: true
-      secret: false
-    deprecated: false
     description: Queries Qintel for CVE intelligence
-    execution: false
     name: cve
     outputs:
     - contextPath: CVE.ID
@@ -81,12 +75,11 @@ script:
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

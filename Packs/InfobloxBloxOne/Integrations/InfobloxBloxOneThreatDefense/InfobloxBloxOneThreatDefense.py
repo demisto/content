@@ -1,6 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
-import demistomock as demisto
 
 
 class BloxOneTDClient(BaseClient):

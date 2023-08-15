@@ -28,6 +28,6 @@ dependson:
   must:
   - algosec-get-applications
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

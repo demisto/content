@@ -1,14 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, Optional, Tuple, Callable, Any, Union
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # key =  field of a ticket , val = dict of (name,id) of options
 TICKETS_OBJECTS = {

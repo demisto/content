@@ -31,26 +31,19 @@ script:
       - stopped
       - restarted
       - absent
-    - description: Aliyun availability zone ID in which to launch the instance. If
-        it is not specified, it will be allocated by system automatically.
+    - description: Aliyun availability zone ID in which to launch the instance. If it is not specified, it will be allocated by system automatically.
       name: availability_zone
-    - description: Image ID used to launch instances. Required when `state=present`
-        and creating new ECS instances.
+    - description: Image ID used to launch instances. Required when `state=present` and creating new ECS instances.
       name: image_id
-    - description: Instance type used to launch instances. Required when `state=present`
-        and creating new ECS instances.
+    - description: Instance type used to launch instances. Required when `state=present` and creating new ECS instances.
       name: instance_type
     - description: A list of security group IDs.
       name: security_groups
     - description: The subnet ID in which to launch the instances (VPC).
       name: vswitch_id
-    - description: The name of ECS instance, which is a string of 2 to 128 Chinese
-        or English characters. It must begin with an uppercase/lowercase letter or
-        a Chinese character and can contain numerals, ".", "_" or "-". It cannot begin
-        with http:// or https://.
+    - description: The name of ECS instance, which is a string of 2 to 128 Chinese or English characters. It must begin with an uppercase/lowercase letter or a Chinese character and can contain numerals, ".", "_" or "-". It cannot begin with http:// or https://.
       name: instance_name
-    - description: The description of ECS instance, which is a string of 2 to 256
-        characters. It cannot begin with http:// or https://.
+    - description: The description of ECS instance, which is a string of 2 to 256 characters. It cannot begin with http:// or https://.
       name: description
     - auto: PREDEFINED
       defaultValue: PayByBandwidth
@@ -60,17 +53,14 @@ script:
       - PayByBandwidth
       - PayByTraffic
     - defaultValue: '200'
-      description: Maximum incoming bandwidth from the public network, measured in
-        Mbps (Megabits per second).
+      description: Maximum incoming bandwidth from the public network, measured in Mbps (Megabits per second).
       name: max_bandwidth_in
     - defaultValue: '0'
-      description: Maximum outgoing bandwidth to the public network, measured in Mbps
-        (Megabits per second).
+      description: Maximum outgoing bandwidth to the public network, measured in Mbps (Megabits per second).
       name: max_bandwidth_out
     - description: Instance host name.
       name: host_name
-    - description: The password to login instance. After rebooting instances, modified
-        password will take effect.
+    - description: The password to login instance. After rebooting instances, modified password will take effect.
       name: password
     - auto: PREDEFINED
       defaultValue: cloud_efficiency
@@ -87,15 +77,9 @@ script:
     - description: Description of the system disk.
       name: system_disk_description
     - defaultValue: '1'
-      description: The number of the new instance. An integer value which indicates
-        how many instances that match `count_tag` should be running. Instances are
-        either created or terminated based on this value.
+      description: The number of the new instance. An integer value which indicates how many instances that match `count_tag` should be running. Instances are either created or terminated based on this value.
       name: count
-    - description: '`count` determines how many instances based on a specific tag
-        criteria should be present. This can be expressed in multiple ways and is
-        shown in the EXAMPLES section. The specified count_tag must already exist
-        or be passed in as the `instance_tags` option. If it is not specified, it
-        will be replaced by `instance_name`.'
+    - description: '`count` determines how many instances based on a specific tag criteria should be present. This can be expressed in multiple ways and is shown in the EXAMPLES section. The specified count_tag must already exist or be passed in as the `instance_tags` option. If it is not specified, it will be replaced by `instance_name`.'
       name: count_tag
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -124,8 +108,7 @@ script:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
-      description: The duration of the automatic renew the charge of the instance.
-        Required when `auto_renew=True`.
+      description: The duration of the automatic renew the charge of the instance. Required when `auto_renew=True`.
       name: auto_renew_period
       predefined:
       - '1'
@@ -133,8 +116,7 @@ script:
       - '3'
       - '6'
       - '12'
-    - description: A list of instance ids. It is required when need to operate existing
-        instances. If it is specified, `count` will lose efficacy.
+    - description: A list of instance ids. It is required when need to operate existing instances. If it is specified, `count` will lose efficacy.
       name: instance_ids
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -143,18 +125,13 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: A hash/dictionaries of instance tags, to add to the new instance
-        or for starting/stopping instance by tag. `{"key":"value"}`
+    - description: A hash/dictionaries of instance tags, to add to the new instance or for starting/stopping instance by tag. `{"key":"value"}`
       name: instance_tags
     - description: The name of key pair which is used to access ECS instance in SSH.
       name: key_name
-    - description: User-defined data to customize the startup behaviors of an ECS
-        instance and to pass data into an ECS instance. It only will take effect when
-        launching the new ECS instances.
+    - description: User-defined data to customize the startup behaviors of an ECS instance and to pass data into an ECS instance. It only will take effect when launching the new ECS instances.
       name: user_data
-    description: "Create, Start, Stop, Restart or Terminate an Instance in ECS. Add\
-      \ or Remove Instance to/from a Security Group.\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html"
+    description: "Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Instance to/from a Security Group.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html"
     name: ali-instance
     outputs:
     - contextPath: AlibabaCloud.AliInstance.instances
@@ -172,8 +149,7 @@ script:
       name: instance_ids
     - description: A hash/dictionaries of instance tags. `{"key":"value"}`
       name: instance_tags
-    description: "Gather information on instances of Alibaba Cloud ECS.\n Further\
-      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
+    description: "Gather information on instances of Alibaba Cloud ECS.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
     name: ali-instance-info
     outputs:
     - contextPath: AlibabaCloud.AliInstanceInfo.instances
@@ -183,7 +159,6 @@ script:
       description: List of ECS instance IDs
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.24037
-  runonce: false
   script: ''
   subtype: python3
   type: python

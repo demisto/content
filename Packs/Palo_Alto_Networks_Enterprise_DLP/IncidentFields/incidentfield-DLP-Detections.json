@@ -1,0 +1,32 @@
+{
+    "id": "incident_dlpdetections",
+    "version": -1,
+    "modified": "2023-06-21T06:56:52.858570445Z",
+    "name": "DLP Detections",
+    "ownerOnly": false,
+    "description": "Detected violations snippets.",
+    "cliName": "dlpdetections",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Data Loss Prevention"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

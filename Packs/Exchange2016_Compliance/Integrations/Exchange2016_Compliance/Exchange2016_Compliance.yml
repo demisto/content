@@ -76,7 +76,6 @@ script:
       default: true
       description: Name of the compliance search
     description: Checks the status of the purge operation on the compliance search.
-  runonce: false
   dockerimage: demisto/python:2.7.18.27799
 tests:
 - No test

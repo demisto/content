@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import copy
 import json
 from datetime import datetime
-from typing import Any, Union
+from typing import Any
 import codecs
 import requests
 import urllib3
@@ -75,7 +75,7 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
             BASE_URL, installation_id
         ),
         headers={
-            "Authorization": "Bearer {}".format(jwt_token),
+            "Authorization": f"Bearer {jwt_token}",
             "Accept": MEDIA_TYPE_INTEGRATION_PREVIEW,
         },
     )
@@ -89,7 +89,7 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
         return_error(f'Encountered an error: {response.text}')
 
 
-def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: Union[dict, list, str]) -> Any:
+def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: dict | list | str) -> Any:
     """Guarantees the default value in place of a Nonetype object when the value for a given key is explicitly None
 
     Args:
@@ -159,7 +159,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
             return res.json()
 
     except Exception as excep:
-        return_error('Error in HTTP request - {}'.format(str(excep)))
+        return_error(f'Error in HTTP request - {str(excep)}')
 
 
 def data_formatting(title, body, labels, assignees, state):
@@ -211,7 +211,7 @@ def list_create(issue, list_name, element_name):
         return [element.get(element_name) for element in issue.get(list_name)]
 
     else:
-        None
+        return None
 
 
 def issue_format(issue):
@@ -572,7 +572,7 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
     return ec_object
 
 
-def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict:
+def format_comment_outputs(comment: dict, issue_number: int | str) -> dict:
     """Take GitHub API Comment data and format to expected context outputs
 
     Args:
@@ -608,7 +608,7 @@ def create_pull_request(create_vals: dict = {}) -> dict:
 
 def create_pull_request_command():
     args = demisto.args()
-    create_vals = {key: val for key, val in args.items()}
+    create_vals = dict(args.items())
     maintainer_can_modify = args.get('maintainer_can_modify')
     if maintainer_can_modify:
         create_vals['maintainer_can_modify'] = maintainer_can_modify == 'true'
@@ -670,7 +670,7 @@ def list_branch_pull_requests_command() -> None:
     ))
 
 
-def is_pr_merged(pull_number: Union[int, str]):
+def is_pr_merged(pull_number: int | str):
     suffix = PULLS_SUFFIX + f'/{pull_number}/merge'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -685,7 +685,7 @@ def is_pr_merged_command():
     demisto.results(f'Pull Request #{pull_number} was Merged')
 
 
-def update_pull_request(pull_number: Union[int, str], update_vals: dict = {}) -> dict:
+def update_pull_request(pull_number: int | str, update_vals: dict = {}) -> dict:
     suffix = PULLS_SUFFIX + f'/{pull_number}'
     response = http_request('PATCH', url_suffix=suffix, data=update_vals)
     return response
@@ -730,7 +730,7 @@ def list_teams_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def get_pull_request(pull_number: Union[int, str], repository: str = None, organization: str = None):
+def get_pull_request(pull_number: int | str, repository: str = None, organization: str = None):
     if repository and organization and pull_number:
         suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}'
     else:
@@ -754,7 +754,7 @@ def get_pull_request_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def add_label(issue_number: Union[int, str], labels: list):
+def add_label(issue_number: int | str, labels: list):
     suffix = ISSUE_SUFFIX + f'/{issue_number}/labels'
     response = http_request('POST', url_suffix=suffix, data={'labels': labels})
     return response
@@ -790,7 +790,7 @@ def get_commit_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_pr_reviews(pull_number: Union[int, str]) -> list:
+def list_pr_reviews(pull_number: int | str) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -823,7 +823,7 @@ def list_pr_reviews_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_pr_files(pull_number: Union[int, str], organization: str = None, repository: str = None) -> list:
+def list_pr_files(pull_number: int | str, organization: str = None, repository: str = None) -> list:
     if pull_number and organization and repository:
         suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}/files'
     else:
@@ -861,7 +861,7 @@ def list_pr_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_pr_review_comments(pull_number: Union[int, str]) -> list:
+def list_pr_review_comments(pull_number: int | str) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/comments'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -885,7 +885,7 @@ def list_pr_review_comments_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_issue_comments(issue_number: Union[int, str], since_date: Optional[str]) -> list:
+def list_issue_comments(issue_number: int | str, since_date: Optional[str]) -> list:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     params = {}
     if since_date:
@@ -908,7 +908,7 @@ def list_issue_comments_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def create_comment(issue_number: Union[int, str], msg: str) -> dict:
+def create_comment(issue_number: int | str, msg: str) -> dict:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     response = http_request('POST', url_suffix=suffix, data={'body': msg})
     return response
@@ -928,7 +928,7 @@ def create_comment_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def request_review(pull_number: Union[int, str], reviewers: list) -> dict:
+def request_review(pull_number: int | str, reviewers: list) -> dict:
     """Make an API call to GitHub to request reviews from a list of users for a given PR
 
     Args:
@@ -967,7 +967,7 @@ def request_review_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
+def get_team_membership(team_id: int | str, user_name: str) -> dict:
     suffix = f'/teams/{team_id}/memberships/{user_name}'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -1139,7 +1139,7 @@ def create_command():
 
 def close_issue(id):
     response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                            url_suffix=ISSUE_SUFFIX + f'/{str(id)}',
                             data={'state': 'closed'})
     return response
 
@@ -1159,7 +1159,7 @@ def update_issue(id, title, body, state, labels, assign):
                            state=state)
 
     response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                            url_suffix=ISSUE_SUFFIX + f'/{str(id)}',
                             data=data)
     return response
 
@@ -1253,7 +1253,7 @@ def list_all_projects_command():
             projects_obj.append(get_project_details(project=proj, header=header))
 
     human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'],
-                                'Columns': [column for column in proj['Columns']]} for proj in projects_obj]
+                                'Columns': list(proj['Columns'])} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
@@ -1282,7 +1282,7 @@ def add_issue_to_project_board_command():
     header = HEADERS
     header.update({'Accept': PROJECTS_PREVIEW})
 
-    post_url = "%s/projects/columns/%s/cards" % (BASE_URL, column_id)
+    post_url = f"{BASE_URL}/projects/columns/{column_id}/cards"
     post_data = {"content_id": content_id,
                  "content_type": content_type,
                  }
@@ -1680,7 +1680,7 @@ def commit_file_command():
     }
     if file_sha:
         data['sha'] = file_sha
-    res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
+    res = http_request(method='PUT', url_suffix=f'{FILE_SUFFIX}/{path_to_file}', data=data)
 
     return_results(CommandResults(
         readable_output=f"The file {path_to_file} committed successfully. Link to the commit:"
@@ -1701,7 +1701,7 @@ def list_check_runs(owner_name, repository_name, run_id, commit_id):
 
     check_runs = http_request(method="GET", url_suffix=url_suffix)
 
-    return [r for r in check_runs.get('check_runs')]
+    return list(check_runs.get('check_runs'))
 
 
 def get_github_get_check_run():
@@ -1760,6 +1760,7 @@ def create_release_command():
         'name': args.get('name'),
         'body': args.get('body'),
         'draft': argToBoolean(args.get('draft')),
+        'target_commitish': args.get('ref')
     }
     response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
     release_url = response.get('html_url')
@@ -1938,7 +1939,7 @@ def github_releases_list_command():
     return_results(result)
 
 
-def update_comment(comment_id: Union[int, str], msg: str) -> dict:
+def update_comment(comment_id: int | str, msg: str) -> dict:
     suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
     response = http_request('PATCH', url_suffix=suffix, data={'body': msg})
     return response
@@ -2018,6 +2019,89 @@ def github_add_assignee_command():
                                   raw_response=response, readable_output=message))
 
 
+def github_trigger_workflow_command():
+    """
+    Triggers a GitHub workflow on a given repository and workflow
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            branch (str): The branch to trigger the workflow on.
+            workflow (str): The name of your workflow file.
+            inputs (str): The inputs of the workflow.
+
+        Returns:
+            CommandResults object with informative printout if trigger the workflow succeeded or not.
+    """
+    args = demisto.args()
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
+    branch = args.get('branch', 'master')
+    workflow = args.get('workflow')
+    inputs = json.loads(args.get('inputs', '{}'), strict=False)
+
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    data = assign_params(
+        ref=branch,
+        inputs=inputs
+    )
+    response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
+
+    if response.status_code == 204:
+        return_results(CommandResults(readable_output="Workflow triggered successfully."))
+    else:
+        return_results(CommandResults(
+            raw_response=response,
+            readable_output=f"Failed to trigger workflow. {response.json().get('message')}"
+        ))
+
+
+def github_list_workflows_command():
+    """Returns a list of GitHub workflows on a given repository.
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            workflow (str): The name of your workflow file.
+            limit (int): Number of workflows to return. Default is 100.
+
+        Returns:
+            CommandResults object with an informative printout of the returns workflows.
+    """
+    args = demisto.args()
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
+    workflow = args.get('workflow')
+    limit = int(args.get('limit', 100))
+
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/runs?per_page={limit}"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    response = http_request('GET', url_suffix=suffix, headers=headers)
+
+    output_headers = ['id', 'name', 'head_branch', 'head_sha', 'path', 'display_title', 'run_number', 'event', 'status',
+                      'conclusion', 'workflow_id', 'url', 'html_url', 'created_at', 'updated_at']
+
+    outputs: list[dict] = []
+    for workflow in response.get('workflow_runs', []):
+        outputs.append({k: v for k, v in workflow.items() if k in output_headers})
+
+    return_results(CommandResults(
+        raw_response=response,
+        outputs=outputs,
+        outputs_key_field='id',
+        outputs_prefix='GitHub.Workflow',
+        readable_output=tableToMarkdown('GitHub workflows', outputs, removeNull=True),
+    ))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -2064,6 +2148,8 @@ COMMANDS = {
     'GitHub-update-comment': github_update_comment_command,
     'GitHub-delete-comment': github_delete_comment_command,
     'GitHub-add-assignee': github_add_assignee_command,
+    'GitHub-trigger-workflow': github_trigger_workflow_command,
+    'GitHub-list-workflows': github_list_workflows_command,
 }
 
 
@@ -2099,7 +2185,7 @@ def main():
     FETCH_TIME = params.get('fetch_time', '3')
     MAX_FETCH_PAGE_RESULTS = 100
 
-    USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
+    USER_SUFFIX = f'/repos/{USER}/{REPOSITORY}'
     PROJECT_SUFFIX = USER_SUFFIX + '/projects'
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
     RELEASE_SUFFIX = USER_SUFFIX + '/releases'
@@ -2126,7 +2212,7 @@ def main():
     cmd = demisto.command()
     LOG(f'command is {cmd}')
     try:
-        if cmd in COMMANDS.keys():
+        if cmd in COMMANDS:
             COMMANDS[cmd]()
     except Exception as e:
         return_error(str(e))

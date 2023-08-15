@@ -32,22 +32,16 @@ script:
   - description: Manual command to fetch events.
     name: abnormal-security-event-collector-get-events
     arguments:
-      - auto: PREDEFINED
-        defaultValue: 'False'
-        description: Set this argument to True in order to create events, otherwise the command will only display them.
-        isArray: false
-        name: should_push_events
-        predefined:
-          - 'True'
-          - 'False'
-        required: true
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+  dockerimage: demisto/python3:3.10.12.66339
   isfetchevents: true
-  runonce: false
   subtype: python3
 fromversion: 6.8.0
 marketplaces:
