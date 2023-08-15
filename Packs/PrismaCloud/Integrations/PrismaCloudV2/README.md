@@ -44,7 +44,7 @@ To setup the mirroring follow these instructions:
 6. In the *Incident Mirroring Direction* parameter, select in which direction the incidents should be mirrored:
     - Incoming - Changes in Prisma Cloud Alerts (`status`, `dismissalNote`, `reason`) will be reflected in XSOAR incidents.
     - Outgoing - Changes in Cortex XSOAR incidents will be reflected in Prisma Cloud alerts (`status`, `reason`).
-    - Incoming And Outgoing - Changes in XSOAR incidents and in Prisma Cloud alerts will be reflected in both directions.
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and in Prisma Cloud alerts will be reflected in both directions.
     - None - Turns off incident mirroring.
 7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close or reopen the Cortex XSOAR incident when the corresponding alert is closed or re-opened in Prisma Cloud.
 8. Optional: Check the *Close Mirrored Prisma Cloud Alert* integration parameter to close or reopen the Prisma Cloud alert when the corresponding Cortex XSOAR incident is closed or re-opened.
