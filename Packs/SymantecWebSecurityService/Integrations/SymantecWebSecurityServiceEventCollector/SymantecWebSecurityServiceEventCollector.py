@@ -2,7 +2,8 @@ import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from zipfile import ZipFile
+from requests import Response
+from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 import gzip
 
@@ -46,7 +47,7 @@ def get_start_and_ent_date(
     return start_date, end_date
 
 
-def get_status_and_token_from_res(response) -> tuple[str, str]:
+def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
     status = ""
     token = ""
     if status_match := REGEX_FOR_STATUS.search(str(response.content)):
@@ -57,21 +58,24 @@ def get_status_and_token_from_res(response) -> tuple[str, str]:
     return status, token
 
 
-def extract_logs_from_response(response) -> list[str]:
+def extract_logs_from_response(response: Response) -> list[str]:
     logs: list[str] = []
     file_names: list[str] = []
-    with ZipFile(BytesIO(response.content)) as outer_zip:
-        for file in outer_zip.infolist():
-            if file.filename.lower().endswith(".gz"):
-                file_names.append(file.filename.lower())
-                with outer_zip.open(file) as nested_zip_file, gzip.open(
-                    nested_zip_file, "rb"
-                ) as f:
-                    log = f.readlines()
-                    for line in log:
-                        if REGEX_DETECT_LOG.match(line.decode()):
-                            logs.append(line.decode())
-
+    try:
+        with ZipFile(BytesIO(response.content)) as outer_zip:
+            for file in outer_zip.infolist():
+                if file.filename.lower().endswith(".gz"):
+                    file_names.append(file.filename.lower())
+                    with outer_zip.open(file) as nested_zip_file, gzip.open(
+                        nested_zip_file, "rb"
+                    ) as f:
+                        log = f.readlines()
+                        for line in log:
+                            if REGEX_DETECT_LOG.match(line.decode()):
+                                logs.append(line.decode())
+    except BadZipFile:
+        demisto.debug("No logs were returned from the API")
+        pass
     return logs
 
 
@@ -136,12 +140,12 @@ def main() -> None:  # pragma: no cover
         elif command == "symantec-get-events":
             should_update_last_run = False
             events, _ = get_events_command(client, args, last_run={})
-
+            t = [{"logs": event} for event in events]
             # By default return as an md table
             # when the argument `should_push_events` is set to true
             # will also be returned as events
             return_results(
-                CommandResults(readable_output=tableToMarkdown("Events:", events))
+                CommandResults(readable_output=tableToMarkdown("Events:", t))
             )
         elif command == "fetch-events":
             should_push_events = True
