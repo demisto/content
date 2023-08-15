@@ -2372,7 +2372,8 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0",
+            "timeout": 2000
         },
         {
             "integrations": "TeamCymru",
