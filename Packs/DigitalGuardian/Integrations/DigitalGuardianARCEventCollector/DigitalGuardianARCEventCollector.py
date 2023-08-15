@@ -112,8 +112,8 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
     outcome = []
     event_list = []
     if not time_of_last_event:
-        time_of_last_event = datetime.now() - timedelta(hours=1)
-        time_of_last_event_str = datetime_to_string(time_of_last_event)
+        time_of_last_event_datetime = datetime.now() - timedelta(hours=1)
+        time_of_last_event_str = datetime_to_string(time_of_last_event_datetime)
     else:
         temp_time: datetime = arg_to_datetime(arg=time_of_last_event, required=True)  # type: ignore[assignment]
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
@@ -137,7 +137,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
             list: list of events
             commandresults: readable output
     """
-    event_list = get_raw_events(client, None)
+    event_list = get_raw_events(client, "")
     limit = int(args.get("limit", 1000))
     if limit:
         event_list = event_list[:limit]
@@ -195,8 +195,7 @@ def fetch_events(client: Client, last_run: dict[str, list], limit: int) -> Tuple
         list: List of events that will be created in XSIAM.
     """
     id_list = last_run.get('id_list', [])
-
-    last_time = last_run.get('start_time', None)
+    last_time = str(last_run.get('start_time') or "")
     demisto.debug('fetching events')
     event_list = get_raw_events(client, last_time)
     event_list_for_push, time_of_event, id_list = create_events_for_push(event_list, last_time, id_list, limit)
