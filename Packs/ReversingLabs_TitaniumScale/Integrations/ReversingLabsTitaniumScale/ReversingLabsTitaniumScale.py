@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from ReversingLabs.SDK.tiscale import TitaniumScale
 
-import requests
 import json
 
 VERSION = "v1.1.0"
