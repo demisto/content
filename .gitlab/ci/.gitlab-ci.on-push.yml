@@ -293,15 +293,6 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_8:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.8"
-
 xsoar_server_6_9:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -328,6 +319,15 @@ xsoar_server_6_11:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.11"
+
+xsoar_server_6_12:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.12"
 
 xsoar_server_master:
   extends:
@@ -383,13 +383,13 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_8
-      optional: true
     - job: xsoar_server_6_9
       optional: true
     - job: xsoar_server_6_10
       optional: true
     - job: xsoar_server_6_11
+      optional: true
+    - job: xsoar_server_6_12
       optional: true
     - job: xsoar_server_master
       optional: true
