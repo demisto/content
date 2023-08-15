@@ -145,7 +145,7 @@ def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) ->
     files_set = {file.get("path", "") for file in response.get("value", [])}
     for file in files_set:
         if full_path in file:
-            files_path.append(full_path)
+            files_path.append(str(full_path))
             return True
     return False
 
