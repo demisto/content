@@ -5,7 +5,7 @@ from ReversingLabs.SDK.tiscale import TitaniumScale
 import requests
 import json
 
-VERSION = "v1.0.3"
+VERSION = "v1.1.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumScale {VERSION}"
 HOST = demisto.params().get('host')
 TOKEN = demisto.params().get('token')
@@ -13,6 +13,62 @@ VERIFY_CERT = demisto.params().get('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
 WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
 NUM_OF_RETRIES = demisto.params().get('num_of_retries')
+
+HTTP_PROXY = demisto.params().get("http_proxy", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_proxy_username", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_proxy_password", None)
+
+HTTPS_PROXY = demisto.params().get("https_proxy", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_proxy_username", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_proxy_password", None)
+
+
+def format_proxy(addr, username=None, password=None):
+    if addr.startswith("http://"):
+        protocol = addr[:7]
+        proxy_name = addr[7:]
+    elif addr.startswith("https://"):
+        protocol = addr[:8]
+        proxy_name = addr[8:]
+    else:
+        return_error("Proxy address needs to start with either 'http://' or 'https://'")
+
+    if username:
+        if password:
+            proxy = f"{protocol}{username}:{password}@{proxy_name}"
+        else:
+            proxy = f"{protocol}{username}@{proxy_name}"
+    else:
+        proxy = f"{protocol}{proxy_name}"
+
+    return proxy
+
+
+def return_proxies():
+    proxies = {}
+
+    if HTTP_PROXY:
+        http_proxy = format_proxy(
+            addr=HTTP_PROXY,
+            username=HTTP_PROXY_USERNAME,
+            password=HTTP_PROXY_PASSWORD
+        )
+
+        proxies["http"] = http_proxy
+
+    if HTTPS_PROXY:
+        https_proxy = format_proxy(
+            addr=HTTPS_PROXY,
+            username=HTTPS_PROXY_USERNAME,
+            password=HTTPS_PROXY_PASSWORD
+        )
+
+        proxies["https"] = https_proxy
+
+    if proxies:
+        return proxies
+    else:
+        return None
 
 
 def classification_to_score(classification):
@@ -25,22 +81,15 @@ def classification_to_score(classification):
     return score_dict.get(classification, 0)
 
 
-def test():
+def test(tiscale):
     """
     Test credentials and connectivity
     """
-    timeout = 10
-    headers = {'Authorization': 'Token %s' % TOKEN}
-    url = f"{HOST}/api/tiscale/v1/task"
     try:
-        r = requests.get(url, headers=headers, verify=VERIFY_CERT, timeout=timeout)
+        tiscale.test_connection()
+        return "ok"
     except Exception as e:
         return_error(str(e))
-
-    if r.status_code == 200:
-        return 'ok'
-    else:
-        return_error(f"An error has occurred, status code:{r.status_code}")
 
 
 def get_status_from_classification(classification_int):
@@ -87,7 +136,7 @@ def upload_file(tiscale):
 
 def parse_report_and_return_results(title, response_json):
     """
-    Parse the report, return human readable info, and the whole report as a file
+    Parse the report, return human-readable info, and the whole report as a file
     """
     md = title
     tc_report = response_json.get("tc_report")
@@ -219,20 +268,23 @@ def main():
     except ValueError:
         return_error("Integration parameter <Number of retries> has to be of type integer.")
 
+    proxies = return_proxies()
+
     tiscale = TitaniumScale(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
         wait_time_seconds=wait_time_seconds,
-        retries=num_of_retries
+        retries=num_of_retries,
+        proxies=proxies
     )
 
     demisto.info(f'Command being called is {demisto.command()}')
 
     try:
         if demisto.command() == 'test-module':
-            return_results(test())
+            return_results(test(tiscale))
         elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample-and-get-results':
             return_results(upload_file_and_get_results(tiscale))
         elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample':
