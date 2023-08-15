@@ -5,8 +5,9 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
 
 ## Note
-The `message-search-alerts` command does not filter alerts of the `Office 365` provider because of API limitations.\
-For more info, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
+For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 
 ### Required Permissions
 Legacy Alerts:
