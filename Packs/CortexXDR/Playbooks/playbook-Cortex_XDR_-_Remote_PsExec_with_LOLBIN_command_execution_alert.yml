@@ -1,0 +1,1012 @@
+id: Remote PsExec with LOLBIN command execution alert
+version: -1
+name: Remote PsExec with LOLBIN command execution alert
+description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and can not be used as a standalone version."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 65fdd1d7-6907-408f-89f2-729edc886826
+    type: start
+    task:
+      id: 65fdd1d7-6907-408f-89f2-729edc886826
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 20d515f3-7c1a-467c-89f5-2e3b6fb7e44a
+    type: title
+    task:
+      id: 20d515f3-7c1a-467c-89f5-2e3b6fb7e44a
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "6"
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4d25e8c6-bace-4a95-8e93-a4c932eea235
+    type: playbook
+    task:
+      id: 4d25e8c6-bace-4a95-8e93-a4c932eea235
+      version: -1
+      name: Entity Enrichment - Generic v4
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v4
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      RasterizeURL:
+        simple: "True"
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 51a74149-2ec2-4f89-80ad-ed4cee865109
+    type: playbook
+    task:
+      id: 51a74149-2ec2-4f89-80ad-ed4cee865109
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.IPAddress
+      LimitResults:
+        simple: "200"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2f4431bb-bf72-40f5-8df6-3560068752e6
+    type: condition
+    task:
+      id: 2f4431bb-bf72-40f5-8df6-3560068752e6
+      version: -1
+      name: Is it blocked?
+      description: Check if the command execution was blocked.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "Yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident.xdralerts
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: incident.xdralerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alerts_ids
+                      iscontext: true
+                accessor: action
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Prevented
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2978e2cc-1ebb-4288-8cbc-97e5a1357649
+    type: condition
+    task:
+      id: 2978e2cc-1ebb-4288-8cbc-97e5a1357649
+      version: -1
+      name: Should auto terminate process?
+      description: Check if auto remediation is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 247c47ce-91c4-45e7-867e-7643ff55d5dc
+    type: playbook
+    task:
+      id: 247c47ce-91c4-45e7-867e-7643ff55d5dc
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: incident.xdralerts
+          accessor: action_process_image_command_line
+          transformers:
+          - operator: uniq
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 19989dc1-cdd7-421c-8535-35cc482c7a1a
+    type: regular
+    task:
+      id: 19989dc1-cdd7-421c-8535-35cc482c7a1a
+      version: -1
+      name: Raise incident severity
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 397edf2b-ef75-42ba-8802-e21a387c7028
+    type: title
+    task:
+      id: 397edf2b-ef75-42ba-8802-e21a387c7028
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bcfec97a-7de7-40c1-8ab4-54a3b7f9bdea
+    type: condition
+    task:
+      id: bcfec97a-7de7-40c1-8ab4-54a3b7f9bdea
+      version: -1
+      name: Should auto block indicators?
+      description: Check if auto remediation is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3cdd884c-d37a-4efd-8c62-7332b10e1d9b
+    type: title
+    task:
+      id: 3cdd884c-d37a-4efd-8c62-7332b10e1d9b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c80acca3-c997-4fd9-83b2-93e25e1d30f2
+    type: title
+    task:
+      id: c80acca3-c997-4fd9-83b2-93e25e1d30f2
+      version: -1
+      name: Investigation & Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9fde0192-32e1-4c3a-8474-e3e4e326c6bf
+    type: playbook
+    task:
+      id: 9fde0192-32e1-4c3a-8474-e3e4e326c6bf
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: f030fec6-5454-4d72-86dd-4509b42653ed
+    type: condition
+    task:
+      id: f030fec6-5454-4d72-86dd-4509b42653ed
+      version: -1
+      name: Check verdict
+      description: Check if any malicious verdict is found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      Malicious:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RelatedCampaign
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 04de4a8b-e91f-4cd1-8f0f-e89899df10b4
+    type: regular
+    task:
+      id: 04de4a8b-e91f-4cd1-8f0f-e89899df10b4
+      version: -1
+      name: Get alert data
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: Cortex XDR - IR|||xdr-get-alerts
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alerts_ids}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 443dd253-cd7a-4f5f-89e1-5b344746eac7
+    type: playbook
+    task:
+      id: 443dd253-cd7a-4f5f-89e1-5b344746eac7
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 25406b22-45b5-4b4f-8558-ae0cbf7f90a9
+    type: playbook
+    task:
+      id: 25406b22-45b5-4b4f-8558-ae0cbf7f90a9
+      version: -1
+      name: Cortex XDR - Endpoint Investigation
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Cortex XDR - Endpoint Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "True"
+      agentID:
+        complex:
+          root: inputs.EndpointIDs
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a6753517-f7d8-4e60-899c-c37b2ffb4564
+    type: regular
+    task:
+      id: a6753517-f7d8-4e60-899c-c37b2ffb4564
+      version: -1
+      name: Terminate suspicious process
+      description: Initiates a new endpoint script execution of shell commands.
+      script: '|||xdr-script-commands-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      commands:
+        complex:
+          root: incident.xdralerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
+              ignorecase: true
+          accessor: os_actor_process_os_pid
+          transformers:
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: 'taskkill /F /PID '
+              suffix: {}
+              variable_markers: {}
+      endpoint_ids:
+        complex:
+          root: incident.xdralerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
+              ignorecase: true
+          accessor: endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 4a32235c-7097-4dd4-8417-7185bf1610e3
+    type: regular
+    task:
+      id: 4a32235c-7097-4dd4-8417-7185bf1610e3
+      version: -1
+      name: Waiting for manual remediation
+      description: |
+        Containment and Eradication:
+
+        1. Identify all affected systems and user accounts that were involved in the incident.
+        2. Disable or suspend compromised accounts and reset passwords where necessary.
+        3. Thoroughly investigate the extent of the compromise across the network.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_1_Yes": 0.29,
+      "17_28_yes": 0.52,
+      "17_36_#default#": 0.57,
+      "29_15_Malicious": 0.54,
+      "29_22_#default#": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2395,
+        "width": 1240,
+        "x": 20,
+        "y": -610
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value:
+    complex:
+      root: incident.xdralerts
+      accessor: actionremoteip
+      transformers:
+      - operator: uniq
+  required: false
+  description: The remote IP address which executed the process
+  playbookInputQuery:
+- key: alerts_ids
+  value:
+    complex:
+      root: incident.xdralerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.xdralerts.matchingserviceruleid
+            iscontext: true
+          right:
+            value:
+              simple: f2282012-53aa-44f0-bda2-e45cd6b8b61a
+          ignorecase: true
+      accessor: alert_id
+  required: false
+  description: The ID's of the relevant alerts
+  playbookInputQuery:
+- key: AutoRemediation
+  value:
+    simple: "false"
+  required: false
+  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  playbookInputQuery:
+- key: rule_id
+  value:
+    simple: f2282012-53aa-44f0-bda2-e45cd6b8b61a
+  required: false
+  description: The ID of the `Remote PsExec-like LOLBIN command execution from an unsigned non-standard` XDR analytics alert
+  playbookInputQuery:
+- key: LOLBASFeedLimit
+  value:
+    simple: "100"
+  required: false
+  description: LOLBAS Feed results limit
+  playbookInputQuery:
+- key: EndpointIDs
+  value:
+    complex:
+      root: incident.xdralerts
+      filters:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: incident.xdralerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote PsExec-like LOLBIN command execution
+          ignorecase: true
+      accessor: endpoint_id
+  required: false
+  description: The IDs of the victim endpoint
+  playbookInputQuery:
+outputs: []
+tests:
+- Test Playbook - Cortex XDR - Endpoint Investigation
+- Test XDR Playbook execute script commands
+- Test XDR Playbook
+fromversion: 6.9.0
