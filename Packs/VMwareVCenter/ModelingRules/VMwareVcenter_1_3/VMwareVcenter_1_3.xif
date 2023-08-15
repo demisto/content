@@ -5,7 +5,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     process_identifier = arrayindex(regextract(syslog_msg, "\[([\w-]+)\]\s+\w+\s+opId="), 0),
     thread_id = to_integer(arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0)),
@@ -45,7 +45,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     process_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[(\S+)"), 0),
     thread_id = to_integer(arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0)),
@@ -79,7 +79,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
     pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
@@ -112,7 +112,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
     event_payload = arrayindex(regextract(syslog_msg, "dnsmasq\[\d+\]:\s+(.+)"), 0)
@@ -156,7 +156,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     msg_internal_header =  arrayfilter(split(arrayindex(regextract(syslog_msg, "(\d{4}\-\S+\s+\S+\s+\S+\s+\S+)"), 0)), len("@element") > 0),
     event_payload = arrayindex(regextract(syslog_msg, "\d{4}\-\S+\s+\S+\s+\S+\s+\S+(.+)"), 0),
@@ -201,7 +201,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter tomcat_access_log_fields = arrayindex(regextract(syslog_msg, "(\".+)"), 0)
 | alter 
     client_remote_machine = arrayindex(regextract(syslog_msg, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
@@ -239,7 +239,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
     pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
@@ -258,12 +258,18 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     client_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 12), "(\d+[^\:]+)"), 0),
     client_port = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 12), ":(\d{1,5})"), 0),
     server_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 13), "(\d+[^\:]+)"), 0),
-    server_port = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 13), ":(\d{1,5})"), 0)
+    server_port = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 13), ":(\d{1,5})"), 0),
+    client2_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 14), "(\d+[^\:]+)"), 0),
+    proxy_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 15), "(\d+[^\:]+)"), 0),
+    proxy_port = to_integer(arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 15), ":(\d{1,5})"), 0))
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.intermediate.ipv4 = proxy_ip, 
+    xdm.intermediate.host.ipv4_addresses = arraycreate(proxy_ip),
+    xdm.intermediate.port = proxy_port,
     xdm.network.application_protocol = http_protocol, 
     xdm.network.http.url = uri, 
     xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
@@ -271,6 +277,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.application.name = sub_module, 
     xdm.source.ipv4 = client_ip,
     xdm.source.port = to_integer(client_port), 
+    xdm.source.host.ipv4_addresses = arraycreate(client_ip, client2_ip),
     xdm.source.sent_bytes = bytes_sent, 
     xdm.source.process.pid = pid, 
     xdm.source.process.name = event_type,
@@ -278,7 +285,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.sent_bytes = bytes_received,
     xdm.target.resource.value = uri,
     xdm.target.port = to_integer(server_port),
-    xdm.target.ipv4 = server_ip;
+    xdm.target.ipv4 = server_ip,
+    xdm.target.host.ipv4_addresses = arraycreate(server_ip);
 
 //  trustmanagement-gc 
 alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
@@ -286,7 +294,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
@@ -304,7 +312,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     thread_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[([\w-]+)\s+"), 0),
     msg_severity = arrayindex(regextract(syslog_msg, "(\w+)\s+\S+\s+opId="), 0),
@@ -337,7 +345,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     msg_severity = arrayindex(regextract(syslog_msg, "\|\s*(\w+)"), 0),
     module = arrayindex(regextract(syslog_msg, "\|\s*(\w+)"), 1),
@@ -367,7 +375,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "\S+\s+(\w+)"), 0)),
     module = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+(\w+)"), 0),
@@ -396,7 +404,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "\S+\s+\[\s*(\w+)"), 0)),
     module = arrayindex(regextract(syslog_msg, "\]\s+([\w\-]+)"), 0),
@@ -418,7 +426,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     process_identifier = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+\w+\[([^\]]+)"), 0),
     thread_id = to_integer(arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0)),
@@ -454,7 +462,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = arrayindex(regextract(syslog_msg, "\S+\s+\[\s*(\w+)\s*\]"), 0),
     module_identifier = arrayindex(regextract(syslog_msg, "\S+\s+\[\s*\w+\s*\]\s+(\S+)"), 0),
@@ -487,7 +495,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter // since the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
 | alter
@@ -504,7 +512,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     internal_header_fields = regextract(syslog_msg, "\|\s*(\S+)"),
     event_payload =  arrayindex(regextract(syslog_msg, "\|\s*([^\|]+)"), 4)
@@ -543,7 +551,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     event_payload = arrayindex(regextract(syslog_msg, "\S+\s+(.+)"), 0),
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
@@ -576,7 +584,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
@@ -624,7 +632,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     event_payload = arrayindex(regextract(syslog_msg, "\S+\s+(.+)"), 0),
      // since the log does not include an explicit severity, extract it from the syslog header priority field   
@@ -657,7 +665,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
     pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
@@ -680,7 +688,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     user = coalesce(arrayindex(regextract(syslog_msg, "USER=(\w+)"), 0),
                     arrayindex(regextract(syslog_msg, "for\s+user\s+(\w+)"), 0)),
@@ -708,7 +716,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = arrayindex(regextract(syslog_msg, "(\w+):\s+"), 0),
     module = arrayindex(regextract(syslog_msg, "\w+:\s+(\w+):"), 0),
@@ -738,7 +746,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     pid = to_integer(arrayindex(regextract(syslog_msg, "\[(\d+)\]"), 0)),
     msg_severity = arrayindex(regextract(syslog_msg, "\[\d+\]\s*(\w+)\:"), 0),
@@ -767,7 +775,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     event_payload = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+\S+\s+(.+)"), 0),
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
@@ -791,7 +799,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     process_name = arrayindex(regextract(syslog_msg, "\[([^\]]+)"), 0),
     msg_severity = arrayindex(regextract(syslog_msg, "\]\[(\w+)"), 0)
@@ -811,7 +819,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     process_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[(\S+)"), 0),
     thread_id = to_integer(arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0)),
@@ -842,7 +850,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter 
     thread_id = to_integer(arrayindex(regextract(syslog_msg, "\S+\s+(\S+)"), 0)),
     msg_severity = coalesce(arrayindex(regextract(syslog_msg, "\S+\s+\S+\s+(\w+)\s+"), 0),
@@ -871,7 +879,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
     pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
@@ -894,7 +902,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     msg_severity = arrayindex(regextract(syslog_msg, "\S+\s+(\w+)"), 0),
     event_payload = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+(.+)"), 0)
@@ -929,7 +937,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
@@ -969,7 +977,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
     // since the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
@@ -991,14 +999,19 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
-    operation_id = arrayindex(regextract(syslog_msg, "opId=([\w\-]+)"), 0),
-    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+    operation_id = arrayindex(regextract(syslog_msg, "opI[dD]=([\w\-]+)"), 0),
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    username = coalesce(arrayindex(regextract(syslog_msg, "USER=(\w+)"), 0),
+                    arrayindex(regextract(syslog_msg, "for\s+user\s+(\w+)"), 0),
+                    arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0),
+                    arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0))
 | alter 
     xdm.event.type = event_type,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.source.process.name = event_type,
+    xdm.source.user.username = username, 
     xdm.session_context_id = operation_id,
     xdm.source.host.hostname = syslog_hostname;
