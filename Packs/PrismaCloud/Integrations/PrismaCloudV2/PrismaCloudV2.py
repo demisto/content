@@ -97,9 +97,11 @@ TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdat
 
 class Client(BaseClient):
     def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str,
-                 mirror_direction: str | None):
+                 mirror_direction: str | None, close_incident: bool, close_alert: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self.mirror_direction = mirror_direction
+        self.close_incident = close_incident
+        self.close_alert = close_alert
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
@@ -714,16 +716,14 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
 
     Returns: An entry object with relevant data for closing or reopening an XSOAR incident.
     """
-    if demisto.params().get('close_incident'):
-        mirrored_status = updated_object.get('status')
-        if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):  # closing incident
-            mirrored_dismissal_note = updated_object.get('dismissalNote', '')
-            entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
-            return entry
-        elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:  # re-opening incident
-            entry = reopen_incident_in_xsoar(remote_alert_id)
-            return entry
-        return None
+    mirrored_status = updated_object.get('status')
+    if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):  # closing incident
+        mirrored_dismissal_note = updated_object.get('dismissalNote', '')
+        entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+        return entry
+    elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:  # re-opening incident
+        entry = reopen_incident_in_xsoar(remote_alert_id)
+        return entry
     return None
 
 
@@ -763,7 +763,7 @@ def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]):
     client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
 
 
-def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
+def whether_to_close_in_prisma_cloud(user_selection: bool, delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it.
@@ -774,16 +774,18 @@ def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     that was changed).
 
     Args:
+        user_selection: True if the user wants to mirror out closing of an incident ('close_alert' integration parameter),
+                        otherwise - False.
         delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
     Returns: True - if closing the prisma alert is needed, False - otherwise.
 
     """
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
-    return demisto.params().get('close_ticket') and any(field in delta for field in closing_fields)
+    return user_selection and any(field in delta for field in closing_fields)
 
 
-def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
+def whether_to_reopen_in_prisma_cloud(user_selection: bool, delta: Dict[str, Any]) -> bool:
     """
     Re-opening in the remote system should happen only when both:
         1. The user asked for it.
@@ -793,12 +795,14 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     a delta, but it is not the status that was changed.
 
     Args:
+        user_selection: True if the user wants to mirror out re-opening of an incident ('close_alert' integration parameter),
+                        otherwise - False.
         delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
     Returns: True - if re-opening the prisma alert is needed, False - otherwise.
 
     """
-    return demisto.params().get('close_ticket') and 'closingUserId' in delta
+    return user_selection and 'closingUserId' in delta
 
 
 def update_remote_alert(client: Client, delta: Dict[str, Any],
@@ -822,13 +826,13 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
     Returns: None.
     """
     # XSOAR incident was closed - closing the mirrored prisma alert
-    if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(delta):
+    if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(client.close_alert, delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         close_alert_in_prisma_cloud(client, [incident_id], delta)
         demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
 
     # XSOAR incident was re-opened - re-opening the mirrored prisma alert
-    elif inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
+    elif inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(client.close_alert, delta):
         demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
         reopen_alert_in_prisma_cloud(client, [incident_id])
         demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
@@ -1871,7 +1875,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         demisto.debug(f'Performing get-remote-data command with incident id: {remote_alert_id} '
                       f'and last_update: {remote_args.last_update}')
         mirrored_data, updated_object = get_remote_alert_data(client, remote_alert_id)
-        if updated_object:
+        if updated_object and client.close_incident:
             demisto.debug(f'Update incident {remote_alert_id} with fields: {updated_object}')
             entry = set_xsoar_incident_entries(updated_object, remote_alert_id)
             if entry:
@@ -1989,6 +1993,8 @@ def main() -> None:
     password = params.get('credentials', {}).get('password')
 
     mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction'))
+    close_incident = argToBoolean(params.get('close_incident'))
+    close_alert = argToBoolean(params.get('close_alert'))
 
     return_v1_output = params.get('output_old_format', False)
 
@@ -1998,7 +2004,7 @@ def main() -> None:
     try:
         urllib3.disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
-                                mirror_direction=mirror_direction)
+                                mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 
