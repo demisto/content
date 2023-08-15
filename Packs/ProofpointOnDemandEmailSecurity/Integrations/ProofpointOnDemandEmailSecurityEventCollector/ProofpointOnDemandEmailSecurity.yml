@@ -10,6 +10,10 @@ configuration:
   name: host
   type: 0
   required: true
+- display: Cluster ID
+  name: cluster_id
+  type: 0
+  required: true
 - displaypassword: API key
   name: api_key
   hiddenusername: true
@@ -33,18 +37,10 @@ script:
   script: ""
   type: python
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - 'True'
-      - 'False'
-      required: true
-    description: Manual command to fetch events and display them.
-    name: duo-get-events
-  dockerimage: devdemisto/python3:3.10.12.69053
+    - description: Manual command to fetch events and display them.
+      name: proofpoint-get-events
+
+  dockerimage: devdemisto/websockets:11.0.3.69389
   longRunning: true
   subtype: python3
 marketplaces:
