@@ -2701,7 +2701,7 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        if type(e) == NotFoundError:
+        if isinstance(e, NotFoundError):
             return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
         # show just the error message if possible
         try:
