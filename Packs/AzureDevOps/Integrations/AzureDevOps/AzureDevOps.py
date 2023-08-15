@@ -588,7 +588,7 @@ class Client:
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
                    f'_apis/git/repositories/{org_repo_project_tuple.repository}/items'
 
-        headers = {"Content-Type": "application/json"} if args["format"] == 'json' else {"Content-Type": "application/zip"}
+        headers = {"Content-Type": "application/json" if args["format"] == 'json' else "application/zip"}
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
