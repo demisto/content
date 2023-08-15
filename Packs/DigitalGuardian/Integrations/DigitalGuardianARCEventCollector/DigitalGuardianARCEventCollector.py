@@ -2,7 +2,7 @@ from CommonServerPython import *
 import urllib3
 from datetime import datetime, timedelta
 import time
-from typing import Any, Dict
+from typing import Any, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -85,7 +85,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        limit = arg_to_number(params.get('number_of_events', 1000))
+        limit = arg_to_number(params.get('number_of_events')) or 1000
         fetch_events(
             client=client,
             last_run={},
@@ -100,7 +100,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
     return "ok"
 
 
-def get_raw_events(client, time_of_last_event):
+def get_raw_events(client: Client, time_of_last_event: str) -> list:
     """
        helper function that is used in get-events and fetch-events to get the actual events and sort them
        Args:
@@ -115,7 +115,7 @@ def get_raw_events(client, time_of_last_event):
         time_of_last_event = datetime.now() - timedelta(hours=1)
         time_of_last_event_str = datetime_to_string(time_of_last_event)
     else:
-        temp_time = arg_to_datetime(time_of_last_event)
+        temp_time: datetime = arg_to_datetime(arg=time_of_last_event, required=True)  # type: ignore[assignment]
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
     events = client.get_events(time_of_last_event_str)
     for field_names in events["fields"]:
@@ -127,7 +127,7 @@ def get_raw_events(client, time_of_last_event):
     return event_list
 
 
-def get_events_command(client, args):
+def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
     """
         Implement the get_events command
         Args:
@@ -146,7 +146,7 @@ def get_events_command(client, args):
     return event_list, CommandResults(readable_output=hr)
 
 
-def create_events_for_push(event_list, last_time, id_list, limit):
+def create_events_for_push(event_list: list, last_time: str, id_list: list, limit: int) -> Tuple[list, str, list]:
     """
        Create events for pushing them and prepares the values for next_run save
        Args:
@@ -164,8 +164,8 @@ def create_events_for_push(event_list, last_time, id_list, limit):
     demisto.debug('Checking duplications and creating events for pushing to XSIAM')
     for event in event_list:
         if last_time:
-            last_time_date = arg_to_datetime(last_time).date()
-            event_date = arg_to_datetime(event.get("inc_mtime")).date()
+            last_time_date = arg_to_datetime(arg=last_time, required=True).date()   # type: ignore[union-attr]
+            event_date = arg_to_datetime(arg=event.get("inc_mtime"), required=True).date()   # type: ignore[union-attr]
             if event.get("inc_mtime") < last_time or event.get("dg_guid") in id_list:
                 continue
             if last_time_date == event_date:
@@ -182,7 +182,7 @@ def create_events_for_push(event_list, last_time, id_list, limit):
     return event_list_for_push, last_time, id_list
 
 
-def fetch_events(client: Client, last_run: dict[str, list], limit: int):
+def fetch_events(client: Client, last_run: dict[str, list], limit: int) -> Tuple[dict, list]:
     """
     Args:
         client (Client): DG client to use.
@@ -207,7 +207,7 @@ def fetch_events(client: Client, last_run: dict[str, list], limit: int):
     return next_run, event_list_for_push
 
 
-def add_time_to_events(events):
+def add_time_to_events(events: list[dict]) -> None:
     """
     Adds the _time key to the events.
     Args:
@@ -237,7 +237,7 @@ def main() -> None:  # pragma: no cover
 
     # How much time before the first fetch to retrieve events
     proxy = params.get('proxy', False)
-    limit = arg_to_number(params.get('number_of_events', 1000))
+    limit = arg_to_number(params.get('number_of_events')) or 1000
 
     demisto.debug(f'Command being called is {command}')
     try:
