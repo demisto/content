@@ -153,7 +153,7 @@ def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
     res, _ = script.generic_retries_request(client,
                                             retries_message='test',
                                             exception_message='test',
-                                            try_message='test',
+                                            prior_message='test',
                                             path=path,
                                             method='GET',
                                             request_timeout=0,
