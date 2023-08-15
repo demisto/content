@@ -42,7 +42,7 @@ def test_get_raw_events_command(mocker):
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
                     client_id="11", client_secret="22", export_profile="33")
-    events = get_raw_events(client)
+    events = get_raw_events(client, None)
 
     mock_events = util_load_json('test_data/events.json')
 

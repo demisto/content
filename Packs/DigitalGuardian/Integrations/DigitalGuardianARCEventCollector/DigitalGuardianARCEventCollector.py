@@ -1,6 +1,6 @@
 from CommonServerPython import *
 import urllib3
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 from typing import Any, Dict
 
@@ -57,15 +57,17 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return response.get("access_token")
 
-    def get_events(self):
+    def get_events(self, time_of_last_event_str):
         token = self.get_token()
+        current_time = datetime_to_string(datetime.now())
+        time_param = f'dg_time:{time_of_last_event_str},{current_time}'
         headers = {
             'Authorization': 'Bearer ' + token
         }
         response = self._http_request(
             method='GET',
             headers=headers,
-            params={'q': 'dg_time:last_n_days,1'}
+            params={'q': time_param}
         )
         return response
 
@@ -95,20 +97,27 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-def get_raw_events(client):
+def get_raw_events(client, time_of_last_event):
     """
        helper function that is used in get-events and fetch-events to get the actual events and sort them
        Args:
            client (Client): DG client
+           time_of_last_event: time of last ingested
        Returns:
            list: list of events
     """
     outcome = []
     event_list = []
-    events = client.get_events()
+    if not time_of_last_event:
+        time_of_last_event = datetime.now() - timedelta(hours=1)
+        time_of_last_event_str = datetime_to_string(time_of_last_event)
+    else:
+        temp_time = arg_to_datetime(time_of_last_event)
+        time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
+    events = client.get_events(time_of_last_event_str)
     for field_names in events["fields"]:
         outcome.append(field_names['name'])
     for event in events["data"]:
@@ -128,7 +137,7 @@ def get_events_command(client, args):
             list: list of events
             commandresults: readable output
     """
-    event_list = get_raw_events(client)
+    event_list = get_raw_events(client, None)
     limit = int(args.get("limit", 1000))
     if limit:
         event_list = event_list[:limit]
@@ -189,7 +198,7 @@ def fetch_events(client: Client, last_run: dict[str, list], limit: int):
 
     last_time = last_run.get('start_time', None)
     demisto.debug('fetching events')
-    event_list = get_raw_events(client)
+    event_list = get_raw_events(client, last_time)
     event_list_for_push, time_of_event, id_list = create_events_for_push(event_list, last_time, id_list, limit)
 
     # Save the next_run as a dict with the last_fetch key to be stored

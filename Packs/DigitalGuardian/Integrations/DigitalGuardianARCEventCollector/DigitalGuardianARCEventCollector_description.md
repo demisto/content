@@ -5,7 +5,7 @@ This integration is supported by Palo Alto Networks.
 
 ### Configuration
 Event fetch interval should be set to "1 hour".
-System fails when fetching every "1 minute".
+A quote error might be received in case of fetching every "1 minute".
 
 ### How to get the configuration parameters
 API Client ID: 
