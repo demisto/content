@@ -1070,9 +1070,8 @@ def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int
     events_list_response = client.events_list_request(max_events_fetch,
                                                       incident_id)
     # In case there are no events
-    if isinstance(events_list_response, dict):
-        if events_list_response.get('result', {}).get('code', '') == 255:
-            return []
+    if isinstance(events_list_response, dict) and events_list_response.get('result', {}).get('code', '') == 255:
+        return []
 
     formatted_events = format_outputs_time_attributes_to_iso(
         [event.get('attributes') for event in events_list_response])

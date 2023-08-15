@@ -25,7 +25,7 @@ def load_json_mock_response(file_name: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -680,4 +680,4 @@ def test_get_related_events_for_fetch_command(events_mock_response, expected_res
     client: FortiSIEMClient = mock_client()
     requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
 
-    assert len(get_related_events_for_fetch_command('123456',  20, client)) == expected_result
+    assert len(get_related_events_for_fetch_command('123456', 20, client)) == expected_result
