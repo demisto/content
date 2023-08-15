@@ -1,4 +1,4 @@
-name: GoogleDrive
+name: GoogleDrive-Gal
 category: IT Services
 display: Google Drive
 sectionOrder:
@@ -2721,6 +2721,11 @@ script:
         predefined:
           - "true"
           - "false"
+  - name: google-drive-get-labels
+    description: Google Drive get labels.
+    arguments:
+      - name: user_id
+        description: The user's primary email address
   dockerimage: demisto/googleapi-python3:1.0.0.66918
   isfetch: true
   runonce: false
@@ -2728,7 +2733,7 @@ script:
   subtype: python3
   type: python
 commonfields:
-  id: GoogleDrive
+  id: GoogleDrive-Gal
   version: -1
 fromversion: 5.0.0
 tests:

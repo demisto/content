@@ -1150,3 +1150,21 @@ Modify labels to file.
 #### Context Output
 
 There is no context output for this command.
+### google-drive-get-labels
+
+***
+Google Drive get labels.
+
+#### Base Command
+
+`google-drive-get-labels`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user's primary email address. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
