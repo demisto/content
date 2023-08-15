@@ -1815,12 +1815,12 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
 
 def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dict:
     # pre-process branch
-    branch_name = args["branch_name"]  # required
-    branch_id = args["branch_id"]  # required
+    branch_name = args["branch_name"]
+    branch_id = args["branch_id"]
     branch_details = [{"name": branch_name, "oldObjectId": branch_id}]
 
     # pre-process commit
-    comment = args["commit_comment"]  # required
+    comment = args["commit_comment"]
     file_path = args.get("file_path", "")
     file_content = args.get("file_content", "")
 
