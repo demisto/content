@@ -24,9 +24,9 @@ def test_parse_boolean_expression(expression, expected_result):
     Then:
         - Parse the expression and return it's boolean value.
     """
-    from IfElif import parse_boolean_expression
+    from IfElif import evaluate
 
-    result = parse_boolean_expression(expression)
+    result = evaluate(expression)
 
     assert result is expected_result
 
@@ -51,10 +51,10 @@ def test_parse_boolean_expression_error(expression):
     Then:
         - Raise an error.
     """
-    from IfElif import parse_boolean_expression
+    from IfElif import evaluate
 
     with pytest.raises(SyntaxError):
-        parse_boolean_expression(expression)
+        evaluate(expression)
 
 
 def test_load_conditions(mocker):

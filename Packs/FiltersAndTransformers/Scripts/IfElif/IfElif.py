@@ -2,14 +2,33 @@ import demistomock as demisto
 from CommonServerPython import *
 from collections.abc import Callable
 from functools import reduce, partial
-import json
 import ast
 import re
 
-CONTEXT = demisto.context()
 ARGS = demisto.args()
 FLAGS = argToList(ARGS.get('flags'))
 
+
+def load_variables():
+    variables = {}
+    assignments = ARGS.get('variables', '').splitlines()
+    for assign in assignments:
+        left, right = re.split('\s*=\s*', assign.strip(), 1)
+        try:
+            right = ast.literal_eval(right)
+        except Exception:  # is a string
+            right = right.strip()
+        variables[left.strip()] = right
+    variables |= {
+        'true': True,
+        'false': False,
+        'null': None,
+        'VALUE': ARGS['value'],
+    }
+    return variables
+
+
+variables = load_variables()
 
 regex_flags = (
     re.DOTALL * ('regex_dot_all' in FLAGS)
@@ -18,17 +37,10 @@ regex_flags = (
 )
 
 equal_func = (  # noqa: E731
-    lambda x, y: repr(x).lower() == repr(y).lower()
+    (lambda x, y: str(x).lower() == str(y).lower())
     if 'case_insensitive' in FLAGS
-    else lambda x, y: x == y
+    else (lambda x, y: x == y)
 )
-
-boolean_keywords = {
-    'true': True,
-    'false': False,
-    'null': None,
-}
-
 
 operator_functions: dict[type, Callable] = {
     # comparison operators:
@@ -68,7 +80,7 @@ def get_value(node):
                 for key, value in zip(node.keys, node.values)
             }
         case ast.Name:
-            return boolean_keywords[node.id]
+            return variables[node.id]
         case ast.Call:
             return functions[node.func.id](*map(get_value, node.args))
         case ast.Compare:
@@ -91,39 +103,24 @@ def get_value(node):
             )
 
 
-def parse_boolean_expression(expression: str) -> bool:
+def evaluate(expression: str):
+    # sourcery skip: raise-from-previous-error
     try:
         parsed = ast.parse(expression, mode='eval')
-        return bool(get_value(parsed.body))
     except Exception:
-        raise SyntaxError(f'Cannot parse expression: {expression}')
-
-
-def get_from_context(keys: re.Match) -> str:
-    context_obj = demisto.dt(CONTEXT, keys[1])
-    return json.dumps(context_obj)
-
-
-def load_conditions() -> list:
-    '''
-    Replace #{...}'s with the string representation of the corresponding value in CONTEXT
-    and '#VALUE' with the args['value'] and load the resulting json.
-    '''
-    conditions = ARGS['conditions']
-    conditions = conditions.replace('#VALUE', json.dumps(ARGS['value']))
-    conditions = re.compile('#{([\s\S]+?)}').sub(get_from_context, conditions)
-    return json.loads(conditions)
+        raise SyntaxError(f'Cannot parse expression: {expression!r}')
+    return get_value(parsed.body)
 
 
 def main():
     try:
-        *conditions, default = load_conditions()
+        *conditions, default = evaluate(ARGS['conditions'])
 
         result = next(
             (
                 condition['return']
                 for condition in conditions
-                if parse_boolean_expression(condition['condition'])
+                if evaluate(condition['condition'])
             ),
             default['else'],
         )

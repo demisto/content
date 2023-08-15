@@ -18,6 +18,8 @@ args:
     A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".
     The last value can be any valid JSON object.
   required: true
+- name: variables
+  description:
 - name: flags
   description: Flags to control comparison and regular expression behavior.
   isArray: true
