@@ -1992,7 +1992,7 @@ def main() -> None:
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
-    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction'))
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction', ''))
     close_incident = argToBoolean(params.get('close_incident'))
     close_alert = argToBoolean(params.get('close_alert'))
 
