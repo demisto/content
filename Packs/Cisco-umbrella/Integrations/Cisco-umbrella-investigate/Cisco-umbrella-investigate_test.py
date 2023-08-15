@@ -3,7 +3,7 @@ import requests
 
 import demistomock as demisto
 import importlib
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import DBotScoreReliability, Common
 
 Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
 
@@ -216,3 +216,23 @@ def different_inputs_handling(*args):
         error.response = requests.Response()
         error.response.status_code = 404
         raise error
+
+
+
+@pytest.mark.parametrize(("data", "expected_score"),(
+    pytest.param({},0,id="empty"),
+    pytest.param({"status":None},0,id="status None"),
+    pytest.param({"status":0},0,id="status 0"),
+    pytest.param({"status":-1},Common.DBotScore.BAD,id="status -1"),
+    pytest.param({"status":1},Common.DBotScore.GOOD,id="status 1"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.GOOD,id="above suspicious threshold"),
+    pytest.param({"status":1, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.GOOD,id="status (1) is stronger than threshold"),
+    pytest.param({"status":-1, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.BAD,id="status (-1) is stronger than threshold"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD},Common.DBotScore.GOOD,id="equal to suspicious threshold"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD - 1},Common.DBotScore.SUSPICIOUS,id="below suspicious to threshold"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD + 1},Common.DBotScore.SUSPICIOUS,id="above malicious threshold"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD},Common.DBotScore.SUSPICIOUS,id="equal to malicious threshold"),
+    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD - 1},Common.DBotScore.BAD,id="below malicious threshold"),
+))
+def test_calculate_domain_dbot_score(data:dict, expected_score:int):
+    assert Cisco_umbrella_investigate.calculate_domain_dbot_score(data) == expected_score

@@ -192,14 +192,14 @@ def timestamp_to_date(ts):
         return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%S')
     return ts
 
-def calculate_domain_score(data: dict) -> int:
+def calculate_domain_dbot_score(data: dict) -> int:
     match status := data.get('status'):
         case -1:
             return Common.DBotScore.BAD
         case 1:
             return Common.DBotScore.GOOD
-        case 0:
-            # When status is not available, security_rank2 is used.
+        case 0 | None: # todo check None
+            # When status is 0, security_rank2 is used
             if (rank := data.get('security_rank2')) is None:
                 return Common.DBotScore.NONE
             
@@ -210,10 +210,10 @@ def calculate_domain_score(data: dict) -> int:
             if rank < malicious_threshold:
                 return Common.DBotScore.BAD 
             
-            if rank > SUSPICIOUS_THRESHOLD:
-                return Common.DBotScore.GOOD
+            if rank < SUSPICIOUS_THRESHOLD:
+                return Common.DBotScore.SUSPICIOUS
             
-            return Common.DBotScore.SUSPICIOUS
+            return Common.DBotScore.GOOD
             
         case _:
             raise ValueError(f"unexpected {status=}, expected 0,1 or -1")
@@ -521,7 +521,7 @@ def get_domain_security_command():
             domain_security_context[context_key] = res[key]
 
         if domain_security_context:
-            dbot_score = calculate_domain_score(res)
+            dbot_score = calculate_domain_dbot_score(res)
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
@@ -815,11 +815,10 @@ def get_domain_command():
                 'Malware Categories': malware_categories
             }
 
-            domain_details = []  # type: ignore
-            domain_details = get_domain_details(domain)
+            domain_details = get_domain_details(domain) or {}
             popularity = domain_details.get('popularity')  # type: ignore
             secure_rank = domain_details.get('securerank2')  # type: ignore
-            dbotscore = securerank_to_dbotscore(secure_rank)
+            dbot_score = calculate_domain_dbot_score(domain_details)
 
             context[outputPaths['domain']] = {
                 'Name': domain,
@@ -840,18 +839,17 @@ def get_domain_command():
             }
 
             # Add malicious if needed
-            if risk_score == -1 or (secure_rank and secure_rank < MALICIOUS_THRESHOLD):
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found with risk score -1'
                 }
-                dbotscore = 3
 
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Score': dbotscore,
+                'Score': dbot_score,
                 'Reliability': reliability
             }
 
@@ -859,7 +857,7 @@ def get_domain_command():
                 'Risk Score': risk_score,
                 'Secure Rank': secure_rank,
                 'Populairty': popularity,
-                'Demisto Reputation': scoreToReputation(dbotscore),
+                'Demisto Reputation': scoreToReputation(dbot_score),
                 'First Queried time': first_queried,
             })
 
@@ -1164,7 +1162,7 @@ def get_domain_details_command():
                 'Domain': domain,
                 'Data': domain_security_context
             }
-            dbot_score = calculate_domain_score(res)
+            dbot_score = calculate_domain_dbot_score(res)
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
