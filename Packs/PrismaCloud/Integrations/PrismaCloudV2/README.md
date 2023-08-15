@@ -26,7 +26,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Output results of old version commands to the context data in the old format |  | False |
     | Mirroring Direction | 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).' | False |
     | Close Mirrored XSOAR Incident | When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the XSOAR incident are mirrored in Prisma Cloud. | False |
+    | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud. | False |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
