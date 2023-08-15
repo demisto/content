@@ -5,9 +5,9 @@ import secrets
 
 def validate(username):
     if (username.upper() == "AKIAZVSI4536365AD6WCJC"):
-        return "You got it right.Removed previous access keys to this user.\nFlag: keepcalmandstaysecure"
+        return "You got it right. Removed previous access keys for this user.\nFlag: keepcalmandstaysecure"
     else:
-        string="You got it wrong, the attacker still has an access to the organization.\nFlag:"
+        string="You got it wrong, the attacker still has access to the organization.\nFlag:"
         flag =  secrets.token_hex(21)
         return string + " " + flag
 
