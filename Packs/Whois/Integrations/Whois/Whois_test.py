@@ -330,7 +330,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
     with open('test_data/cnn_pickled', 'rb') as f:
-        get_whois_ret_value = pickle.load(f)
+        get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 
     result = Whois.whois_command(
@@ -662,7 +662,7 @@ def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixtur
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
     with open('test_data/cnn_pickled', 'rb') as f:
-        get_whois_ret_value = pickle.load(f)
+        get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 
     result = domain_command(
