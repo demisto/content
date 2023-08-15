@@ -95,7 +95,7 @@ def generic_retries_request(client: demisto_client,
             except (HTTPError, HTTPWarning) as http_ex:
                 if http_exception_handler:
                     http_exception_handler(http_ex)
-                if not attempt: # exhausted all attempts, understand what happened and exit.
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
                     raise Exception("Failed to perform http request to the server") from http_ex
                 logging.debug(f"Process failed, got error {http_ex}")
 

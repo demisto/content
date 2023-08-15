@@ -125,12 +125,15 @@ def test_exception_reset_base_pack(def_call, return_val, mocker):
 
     assert ret_val_from_call == return_val
 
+
 GENERIC_RETRIES_REQUEST = [
     ('/contentpacks/installed/error', False, 3),
     ('/contentpacks/api-exception', False, 3),
     ('/contentpacks/http-exception', False, 3),
     ('/contentpacks/marketplace/Base', True, 1)
 ]
+
+
 @pytest.mark.parametrize('path, ret_value, num_of_retries', GENERIC_RETRIES_REQUEST)
 def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
     """
