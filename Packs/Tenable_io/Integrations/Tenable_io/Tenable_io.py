@@ -343,7 +343,7 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
         if demisto.command() != 'test-module':
             return_error(err_msg)
         else:
-            return_results(err_msg)
+            demisto.results(err_msg)
         demisto.error(traceback.format_exc())
         sys.exit(0)
     except ValueError:
@@ -1402,23 +1402,23 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     if command == 'test-module':
-        return_results(test_module(client))
+        demisto.results(test_module(client))
     elif command == 'tenable-io-list-scans':
-        return_results(get_scans_command())
+        demisto.results(get_scans_command())
     elif command == 'tenable-io-launch-scan':
-        return_results(launch_scan_command())
+        demisto.results(launch_scan_command())
     elif command == 'tenable-io-get-scan-report':
-        return_results(get_report_command())
+        demisto.results(get_report_command())
     elif command == 'tenable-io-get-vulnerability-details':
-        return_results(get_vulnerability_details_command())
+        demisto.results(get_vulnerability_details_command())
     elif command == 'tenable-io-get-vulnerabilities-by-asset':
-        return_results(get_vulnerabilities_by_asset_command())
+        demisto.results(get_vulnerabilities_by_asset_command())
     elif command == 'tenable-io-get-scan-status':
-        return_results(get_scan_status_command())
+        demisto.results(get_scan_status_command())
     elif command == 'tenable-io-pause-scan':
-        return_results(pause_scan_command())
+        demisto.results(pause_scan_command())
     elif command == 'tenable-io-resume-scan':
-        return_results(resume_scan_command())
+        demisto.results(resume_scan_command())
     elif command == 'tenable-io-get-asset-details':
         return_results(get_asset_details_command())
     elif command == 'tenable-io-export-assets':
