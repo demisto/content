@@ -1137,6 +1137,7 @@ tasks:
       id: afce9a87-3284-4d05-8b25-c7710621687a
       version: -1
       name: Get Configuration File From azureDevOps
+      description: Get raw file.
       script: '|||azure-devops-file-get'
       type: regular
       iscommand: true
@@ -1177,6 +1178,7 @@ tasks:
       id: ef172a7b-5181-48c5-813d-783fdf6e1d7a
       version: -1
       name: Download Custom Packs from Azure DevOps
+      description: Retrieves the zip folders which contain the custom packs.
       script: '|||azure-devops-file-get'
       type: regular
       iscommand: true

@@ -8,18 +8,19 @@ from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
 from collections.abc import Callable
-from typing import Callable, Tuple, NamedTuple
+from typing import NamedTuple
+from collections.abc import Callable
 from collections import namedtuple
 from datetime import datetime
 import urllib3
 
 MISSING_PARAMETERS_ERROR_MSG = "One or more arguments are missing." \
-      "Please pass with the command: {arguments}" \
-      "You can also re-configure the instance and set them as parameters."
+    "Please pass with the command: {arguments}" \
+    "You can also re-configure the instance and set them as parameters."
 
 MISSING_PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
-      "Please pass with the command: repository and project." \
-      "You can also re-configure the instance and set them as parameters."
+    "Please pass with the command: repository and project." \
+    "You can also re-configure the instance and set them as parameters."
 
 COMMIT_HEADERS_MAPPING = {'commitId': 'Commit ID', 'committer': 'Committer', 'comment': 'Comment'}
 INCIDENT_TYPE_NAME = "Azure DevOps"
@@ -33,6 +34,7 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
+
 
 class Project(NamedTuple):
     organization: str
@@ -617,15 +619,15 @@ class Client:
     def create_pull_request_thread(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         data = {
-                  "comments": [
-                    {
-                      "parentCommentId": 0,
-                      "content": args["comment_text"],
-                      "commentType": 1
-                    }
-                  ],
-                  "status": 1
+            "comments": [
+                {
+                    "parentCommentId": 0,
+                    "content": args["comment_text"],
+                    "commentType": 1
                 }
+            ],
+            "status": 1
+        }
 
         params = {"api-version": 7.0}
 
@@ -641,15 +643,15 @@ class Client:
     def update_pull_request_thread(self, project_tuple: namedtuple, args: Dict[str, Any]):
 
         data = {
-                  "comments": [
-                    {
-                      "parentCommentId": 0,
-                      "content": args["comment_text"],
-                      "commentType": 1
-                    }
-                  ],
-                  "status": 1
+            "comments": [
+                {
+                    "parentCommentId": 0,
+                    "content": args["comment_text"],
+                    "commentType": 1
                 }
+            ],
+            "status": 1
+        }
 
         params = {"api-version": 7.0}
 
@@ -1032,7 +1034,7 @@ def pull_request_update_command(client: Client, args: Dict[str, Any], repository
 
     """
     project_tuple = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
-                                                                        is_organization_required=False, organization=None)
+                                                               is_organization_required=False, organization=None)
     project, repository = project_tuple.project, project_tuple.repository
 
     pull_request_id = args['pull_request_id']
@@ -1851,7 +1853,7 @@ def file_pre_process_body_request(change_type: str, args: Dict[str, Any]) -> dic
     return data
 
 
-def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int]:
+def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int]:
     """
     Ensure the pagination values are valid.
     """
@@ -2249,6 +2251,7 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], proje
         # two places call this function, one has target_ref as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
             return branch.get("objectId")
+    return None
 
 
 def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
@@ -2369,7 +2372,7 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     """
     # pre-processing inputs
     project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
-                                                                        is_repository_id_required=False)
+                                                               is_repository_id_required=False)
 
     response = client.list_project_teams(project_tuple)
 
@@ -2396,7 +2399,7 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
     """
     # pre-processing inputs
     project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
-                                                                        is_repository_id_required=False)
+                                                               is_repository_id_required=False)
     # pagination
     limit, offset = pagination_preprocess_and_validation(args)
 

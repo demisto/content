@@ -6,7 +6,6 @@ from CommonServerPython import *  # noqa: F401
 import os
 import io
 from os.path import exists
-from typing import Dict
 from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
@@ -20,7 +19,7 @@ PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '{}\n\n' \
               '---'
 
-file_path_to_sha: Dict[str, str] = {}
+file_path_to_sha: dict[str, str] = {}
 
 files_path = []
 
@@ -38,7 +37,7 @@ class ContentFile:  # pragma: no cover
 
         # read the file from entry id
         file_object = demisto.getFilePath(file['EntryID'])
-        with open(file_object['path'], 'r') as f:
+        with open(file_object['path']) as f:
             file_contents = f.read()
 
         self.file_text = file_contents
@@ -141,7 +140,8 @@ def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) ->
     if str(full_path) in files_path:  # the files list, check if the file already exists in the list
         return True
     # try to get the file from branch
-    response = execute_command('azure-devops-file-list', args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
+    response = execute_command('azure-devops-file-list',
+                               args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
     files_set = {file.get("path", "") for file in response.get("value", [])}
     for file in files_set:
         if full_path.name in file:
@@ -192,7 +192,7 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
             branch_id = branch.get("objectId", "")
             break
     if not branch_id:
-        raise DemistoException(f'Failed to find a corresponding branch id to the given branch name.')
+        raise DemistoException('Failed to find a corresponding branch id to the given branch name.')
     file_args["branch_id"] = branch_id
     try:
         if file_exists:
@@ -240,19 +240,18 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
     elif script_type == 'powershell':
         script_extention = 'ps1'
 
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
-            yml_splitter.extract_to_package_format()
+    with redirect_stdout(output_capture), redirect_stderr(output_capture):
+        yml_splitter.extract_to_package_format()
 
     yml_file_path = f'{base_name}/{base_name}.yml'
     script_file_path = f'{base_name}/{base_name}.{script_extention}'
     path_to_file = os.path.join(content_file.path_to_file, base_name)
 
     # read the py and yml files content
-    with open(yml_file_path, 'r') as f:
+    with open(yml_file_path) as f:
         yml_txt = f.read()
 
-    with open(script_file_path, 'r') as f:
+    with open(script_file_path) as f:
         script_txt = f.read()
 
     # create the yml file
@@ -272,7 +271,7 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
     # create the description file
     description_file_path = f'{base_name}/{base_name}_description.md'
     if exists(description_file_path):
-        with open(description_file_path, 'r') as f:
+        with open(description_file_path) as f:
             description_txt = f.read()
 
         description_file = ContentFile()

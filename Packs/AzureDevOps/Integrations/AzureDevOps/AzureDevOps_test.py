@@ -15,7 +15,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -870,6 +870,7 @@ def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_req
     if pull_request_id == '42':
         assert 'The requested pull request was not found.' in result.raw_response.get("message")
 
+
 @pytest.mark.parametrize('args, organization, expected_result',
                          [({'organization_name': 'OVERRIDE'}, 'TEST', 'OVERRIDE'),
                           ({}, 'TEST', 'TEST'),
@@ -901,6 +902,7 @@ def test_organization_repository_project_preprocess_function(args: dict, organiz
         assert expected_result == 'ERROR'
     else:
         assert organization == expected_result
+
 
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
                          [('40', 'pull_request_reviewer_create.json'),
@@ -947,6 +949,7 @@ def test_azure_devops_pull_request_reviewer_add_command(requests_mock, pull_requ
         assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
         assert result.readable_output == 'TEST (TEST) was created successfully as a reviewer for Pull Request ID 40.'
 
+
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
                          [('40', 'pull_request_commit_list.json'),
                           ('42', 'pull_request_not_found.json')])
@@ -991,6 +994,7 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, m
         assert result.readable_output.startswith('### Commits List')
         assert result.outputs_prefix == 'AzureDevOps.Commit'
 
+
 @pytest.mark.parametrize('args, expected_limit, expected_offset',
                          [({}, 50, 0),
                           ({'limit': '2'}, 2, 0),
@@ -1003,6 +1007,7 @@ def test_pagination_preprocess_and_validation(args: dict, expected_limit: int, e
 
     assert limit == expected_limit
     assert offset == expected_offset
+
 
 def test_commit_list_command(requests_mock):
     """
@@ -1038,6 +1043,7 @@ def test_commit_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Commits List')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
+
 
 def test_commit_get_command(requests_mock):
     """
@@ -1075,6 +1081,7 @@ def test_commit_get_command(requests_mock):
     assert result.readable_output.startswith('### Commit Details')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
 
+
 def test_work_item_get_command(requests_mock):
     """
     Given:
@@ -1111,6 +1118,7 @@ def test_work_item_get_command(requests_mock):
     assert result.readable_output.startswith('### Work Item Details\n|ID|Title|Assigned To|State|Area Path|Tags|Activity Date|\n')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
 
+
 def test_work_item_create_command(requests_mock):
     """
     Given:
@@ -1146,6 +1154,7 @@ def test_work_item_create_command(requests_mock):
 
     assert result.readable_output.startswith(f'Work Item {result.outputs.get("id")} was created successfully.')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+
 
 def test_work_item_update_command(requests_mock):
     """
@@ -1190,7 +1199,9 @@ EXPECTED_RESULT = [{'op': 'add', 'path': '/fields/System.Title', 'from': None, '
                    {'op': 'add', 'path': '/fields/Microsoft.VSTS.Common.Priority', 'from': None, 'value': '4'},
                    {'op': 'add', 'path': '/fields/System.Tags', 'from': None, 'value': 'test'}]
 ARGUMENTS_LIST = ['title', 'iteration_path', 'description', 'priority', 'tag']
-ARGS = {"title": "zzz",  "iteration_path": "test",  "description": "test", "priority": "4", "tag": "test"}
+ARGS = {"title": "zzz", "iteration_path": "test", "description": "test", "priority": "4", "tag": "test"}
+
+
 @pytest.mark.parametrize('args, arguments_list, expected_result',
                          [(ARGS, ARGUMENTS_LIST, EXPECTED_RESULT)])
 def test_work_item_pre_process_data(args: dict, arguments_list: list[str], expected_result: dict):
@@ -1200,6 +1211,7 @@ def test_work_item_pre_process_data(args: dict, arguments_list: list[str], expec
     from AzureDevOps import work_item_pre_process_data
     data = work_item_pre_process_data(args, arguments_list)
     assert data == expected_result
+
 
 def test_file_create_command(requests_mock):
     """
@@ -1244,8 +1256,8 @@ def test_file_create_command(requests_mock):
             }
     result = file_create_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith\
-        ('Commit "Test 5." was created and pushed successfully by "" to branch "refs/heads/main".')
+    assert result.readable_output.startswith(
+        'Commit "Test 5." was created and pushed successfully by "" to branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 
@@ -1257,9 +1269,9 @@ CREATE_FILE_ARGS = {"branch_id": "111",
                     "file_path": "/test_5.md"
                     }
 CREATE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '111'}],
-            'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'add', 'item': {'path': '/test_5.md'},
-                                                           'newContent': {'content': '# Tasks\\n\\n* Item 1\\n* Item 2',
-                                                                          'contentType': 'rawtext'}}]}]}
+                               'commits': [{'comment': 'Test 6', 'changes': [{'changeType': 'add', 'item': {'path': '/test_5.md'},
+                                                                              'newContent': {'content': '# Tasks\\n\\n* Item 1\\n* Item 2',
+                                                                                             'contentType': 'rawtext'}}]}]}
 CREATE_FILE = (CREATE_FILE_CHANGE_TYPE, CREATE_FILE_ARGS, CREATE_FILE_EXPECTED_RESULT)
 
 UPDATE_FILE_CHANGE_TYPE = "edit"
@@ -1285,6 +1297,8 @@ DELETE_FILE_EXPECTED_RESULT = {'refUpdates': [{'name': 'Test', 'oldObjectId': '1
                                'commits': [{'comment': 'Test 6',
                                             'changes': [{'changeType': 'delete', 'item': {'path': '/test_5.md'}}]}]}
 DELETE_FILE = (DELETE_FILE_CHANGE_TYPE, DELETE_FILE_ARGS, DELETE_FILE_EXPECTED_RESULT)
+
+
 @pytest.mark.parametrize('change_type, args, expected_result',
                          [CREATE_FILE, UPDATE_FILE, DELETE_FILE])
 def test_file_pre_process_body_request(requests_mock, change_type: str, args: dict, expected_result: dict):
@@ -1301,7 +1315,7 @@ def test_file_pre_process_body_request(requests_mock, change_type: str, args: di
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
 
-    client = Client(
+    Client(
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
@@ -1310,6 +1324,7 @@ def test_file_pre_process_body_request(requests_mock, change_type: str, args: di
 
     data = file_pre_process_body_request(change_type, args)
     assert data == expected_result
+
 
 def test_file_update_command(requests_mock):
     """
@@ -1357,6 +1372,7 @@ def test_file_update_command(requests_mock):
     assert result.readable_output.startswith('Commit "Test 5." was updated successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
+
 def test_file_delete_command(requests_mock):
     """
     Given:
@@ -1402,6 +1418,7 @@ def test_file_delete_command(requests_mock):
     assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
+
 def test_file_list_command(requests_mock):
     """
     Given:
@@ -1442,14 +1459,15 @@ def test_file_list_command(requests_mock):
             }
     result = file_list_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith\
-        ('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n|---|---|---|---|---|\n| / |  |  | tree | true |\n'
-         '| /.github |  |  | tree | true |\n')
+    assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n|---|---|---|---|---|\n| / |  |  | tree | true |\n'
+                                             '| /.github |  |  | tree | true |\n')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 
 ZIP = ("zip", {"Content-Type": "application/zip"}, "response")
 JSON = ("json", {"Content-Type": "application/json"}, "json")
+
+
 @pytest.mark.parametrize('format_file, headers, resp_type', [ZIP, JSON])
 def test_file_get_command(mocker, requests_mock, format_file: str, headers: dict, resp_type: str):
     """
@@ -1486,6 +1504,7 @@ def test_file_get_command(mocker, requests_mock, format_file: str, headers: dict
 
     assert http_request.call_args.kwargs["headers"] == headers
     assert http_request.call_args.kwargs["resp_type"] == resp_type
+
 
 def test_branch_create_command(requests_mock):
     """
@@ -1531,6 +1550,7 @@ def test_branch_create_command(requests_mock):
     assert result.readable_output.startswith('Branch refs/heads/main was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.Branch'
 
+
 def test_pull_request_thread_create_command(requests_mock):
     """
     Given:
@@ -1568,6 +1588,7 @@ def test_pull_request_thread_create_command(requests_mock):
 
     assert result.readable_output.startswith('Thread 65 was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+
 
 def test_pull_request_thread_update_command(requests_mock):
     """
@@ -1607,6 +1628,7 @@ def test_pull_request_thread_update_command(requests_mock):
 
     assert result.readable_output.startswith('Thread 66 was updated successfully by XXXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+
 
 def test_pull_request_thread_list_command(requests_mock):
     """
@@ -1648,6 +1670,7 @@ def test_pull_request_thread_list_command(requests_mock):
                                              ' 2023-07-23T20:08:57.74Z |\n| 66 | 111 | XXX | 2023-07-23T20:11:30.633Z |')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
 
+
 def test_project_team_list_command(requests_mock):
     """
     Given:
@@ -1682,6 +1705,7 @@ def test_project_team_list_command(requests_mock):
     assert result.readable_output.startswith('### Teams\n|Name|\n|---|\n| DevOpsDemo Team |\n')
     assert result.outputs_prefix == 'AzureDevOps.Team'
 
+
 def test_team_member_list_command(requests_mock):
     """
     Given:
@@ -1714,9 +1738,10 @@ def test_team_member_list_command(requests_mock):
 
     result = team_member_list_command(client, {"team_id": "zzz"}, ORGANIZATION, project)
 
-    assert result.readable_output.startswith\
-        ('### Team Members\n|Name|Unique Name|User ID|\n|---|---|---|\n| XXX |  |  |\n| YYY |  |  |')
+    assert result.readable_output.startswith(
+        '### Team Members\n|Name|Unique Name|User ID|\n|---|---|---|\n| XXX |  |  |\n| YYY |  |  |')
     assert result.outputs_prefix == 'AzureDevOps.TeamMember'
+
 
 def test_blob_zip_get_command(mocker, requests_mock):
     """
@@ -1745,7 +1770,7 @@ def test_blob_zip_get_command(mocker, requests_mock):
         response = Response()
         response._content = content
 
-    http_request = mocker.patch.object(client.ms_client, 'http_request', return_value=response)
+    mocker.patch.object(client.ms_client, 'http_request', return_value=response)
 
     args = {'file_object_id': 'zzz'}
 
