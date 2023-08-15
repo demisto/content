@@ -192,30 +192,31 @@ def timestamp_to_date(ts):
         return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%S')
     return ts
 
-
-def securerank_to_dbotscore(sr:Optional[int]) -> int:
-    # converts cisco umbrella score to dbotscore
-    if sr is None:
-        return 0
-    
-    if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
-        return 1
-    elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD: # type:ignore[operator]
-        return 2
-    elif sr <= MALICIOUS_THRESHOLD: # type:ignore[operator]
-        return  3
-    return 0 
-
-def domain_securerank_to_dbotscore(secure_rank:Optional[int], security_rank_2:int) -> int:
-    match secure_rank:
+def calculate_domain_score(data: dict) -> int:
+    match status := data.get('status'):
         case -1:
             return Common.DBotScore.BAD
         case 1:
             return Common.DBotScore.GOOD
         case 0:
-            return securerank_to_dbotscore(security_rank_2)
-        case _ :
-            raise ValueError(f"unexpected secure_rank value {secure_rank} (expected 0,1 or -1)")
+            # When status is not available, security_rank2 is used.
+            if (rank := data.get('security_rank2')) is None:
+                return Common.DBotScore.NONE
+            
+            malicious_threshold = arg_to_number(demisto.args().get('threshold', MALICIOUS_THRESHOLD), 
+                                                arg_name="threshold",
+                                                required=True)
+            
+            if rank < malicious_threshold:
+                return Common.DBotScore.BAD 
+            
+            if rank > SUSPICIOUS_THRESHOLD:
+                return Common.DBotScore.GOOD
+            
+            return Common.DBotScore.SUSPICIOUS
+            
+        case _:
+            raise ValueError(f"unexpected {status=}, expected 0,1 or -1")
     
 
 ''' INTERNAL FUNCTIONS '''
@@ -498,7 +499,6 @@ def get_domain_security_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_security(domain)
     if res:
@@ -521,27 +521,21 @@ def get_domain_security_command():
             domain_security_context[context_key] = res[key]
 
         if domain_security_context:
-            secure_rank = res.get('securerank2', False)
-            DBotScore = 0
-            if secure_rank:
-                if secure_rank < threshold:
-                    DBotScore = 3
-                else:
-                    DBotScore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
-                    'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': DBotScore,
-                    'Reliability': reliability
-                }
+            dbot_score = calculate_domain_score(res)
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
 
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Security': domain_security_context
             }
 
-            if DBotScore == 3:
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found via umbrella-domain-security'
@@ -551,7 +545,7 @@ def get_domain_security_command():
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
-            'Score': 0,
+            'Score': Common.DBotScore.NONE,
             'Reliability': reliability
 
         }
@@ -1144,7 +1138,6 @@ def get_domain_details_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_details(domain)
     if res:
@@ -1171,25 +1164,20 @@ def get_domain_details_command():
                 'Domain': domain,
                 'Data': domain_security_context
             }
-            secure_rank = res.get('securerank2', False)
-            if secure_rank:
-                if secure_rank < threshold:
-                    dbotscore = 3
-                else:
-                    dbotscore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
+            dbot_score = calculate_domain_score(res)
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
+            if dbot_score == Common.DBotScore.BAD:
+                context[outputPaths['domain']] = {}
+                context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': dbotscore,
-                    'Reliability': reliability
+                    'Description': 'Malicious domain found via get-domain-details'
                 }
-                if dbotscore == 3:
-                    context[outputPaths['domain']] = {}
-                    context[outputPaths['domain']]['Malicious'] = {
-                        'Vendor': 'Cisco Umbrella Investigate',
-                        'Description': 'Malicious domain found via get-domain-details'
-                    }
 
     results.append({
         'Type': entryTypes['note'],
@@ -1892,16 +1880,6 @@ def get_url_timeline(url):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-def umbrella_score_to_demisto(score) -> int:
-    match score:
-        case -1:
-            return Common.DBotScore.BAD
-        case 1:
-            return Common.DBotScore.GOOD
-        case 0:
-            ...
-        case _:
-            raise ValueError(f"unexpected {score=}")
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
