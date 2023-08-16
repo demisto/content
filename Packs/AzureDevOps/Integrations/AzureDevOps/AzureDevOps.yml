@@ -1367,7 +1367,7 @@ script:
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
-      description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
       description: Display name of user changed the work item.
