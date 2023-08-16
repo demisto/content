@@ -810,7 +810,7 @@ script:
       description: A way to mark some special pull requests we are dealing with to distinguish them from other pull requests.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.displayName
-      description: This is the non-unique display name of the graph subject. Changing this field in the source provider is the only way.
+      description: This is the non-unique display name of the graph subject. You can only change this field in the source provider.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.url
       description: REST URL for this resource.
