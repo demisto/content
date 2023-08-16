@@ -1227,7 +1227,7 @@ script:
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
-      description: ID of user activated the work item.
+      description: ID of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
       description: The unique name of user activated the work item.
