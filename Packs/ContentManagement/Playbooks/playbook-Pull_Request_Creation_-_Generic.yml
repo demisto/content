@@ -948,6 +948,8 @@ tasks:
         simple: ${PackName}
       PullRequestTemplate:
         simple: ${inputs.PullRequestTemplate}
+      AzureDevOpsTargetRef:
+        simple: ${inputs.AzureDevOpsTargetRef}
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1005,11 +1007,11 @@ inputs:
   required: true
   description: Which version control integration to use. We support github, gitlab, bitbucket and azuredevops.
   playbookInputQuery:
-- key: Azure DevOps target ref
+- key: AzureDevOpsTargetRef
   value:
     complex:
       root: incident
-      accessor: azuredevopstargetref
+      accessor: ${incident.cicdazuredevopstargetref}
   required: false
   description: Mandatory for Azure DevOps. The reference branch or sha commit  to
     create a new branch from.
