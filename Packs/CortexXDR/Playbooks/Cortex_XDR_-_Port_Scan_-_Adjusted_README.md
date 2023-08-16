@@ -21,17 +21,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
-* File Enrichment - Generic v2
-* Block Indicators - Generic v3
-* Threat Hunting - Generic
 * Cortex XDR - Endpoint Investigation
-* Cortex XDR - Isolate Endpoint
-* IP Enrichment - Generic v2
+* File Enrichment - Generic v2
 * TIM - Indicator Relationships Analysis
-* IP Enrichment - Internal - Generic v2
 * Account Enrichment - Generic v2.1
+* Threat Hunting - Generic
+* IP Enrichment - Generic v2
+* Command-Line Analysis
+* Cortex XDR - Isolate Endpoint
 * User Investigation - Generic
+* Block Indicators - Generic v3
+* IP Enrichment - Internal - Generic v2
 
 ### Integrations
 
@@ -39,10 +39,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
-* Set
-* IsIPInRanges
 * GetTime
+* IsIPInRanges
+* Set
+* SetAndHandleEmpty
 
 ### Commands
 
@@ -61,11 +61,8 @@ This playbook does not use any commands.
 | DstIPAddress | Scanned destination IP address. | PaloAltoNetworksXDR.Incident.alerts.action_remote_ip | Optional |
 | DstPort | Scanned port numbers. | PaloAltoNetworksXDR.Incident.alerts.action_remote_port | Optional |
 | EarlyContainment | Whether early containment should be allowed when the IP address is known to be malicious.<br/>Possible values:True/False. Default:True. | True | Required |
-| DstHostname | The destination host name that was scanned. | PaloAltoNetworksXDR.Incident.alerts.dst_action_external_hostname | Optional |
 | SrcHostname | Source host name from which port scanning was initiated. | PaloAltoNetworksXDR.Incident.alerts.host_name | Optional |
 | EndpointID | Source endpoint ID from which port scanning was initiated. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
-| Initiator_File_Name | The file name that initiated the port scan activity. | PaloAltoNetworksXDR.Incident.alerts.action_process_image_name | Optional |
-| Initiator_File_Path | The file path for the process that initiated the port scan activity. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
 | Initiator_CMD | The command used to initiate port scan activity. | PaloAltoNetworksXDR.Incident.alerts.action_process_image_command_line | Optional |
 | Initiator_Process_SHA256 | Process SHA256 file hash initiated port scanning. | PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256 | Optional |
 | AutoIsolateEndpoint | Whether to automatically isolate endpoints. | False | Required |

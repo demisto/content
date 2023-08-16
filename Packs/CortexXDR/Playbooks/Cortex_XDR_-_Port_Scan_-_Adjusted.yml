@@ -918,47 +918,6 @@ tasks:
       InternalRange:
         complex:
           root: inputs.InternalIPRanges
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-              ignorecase: true
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA256:
@@ -1142,10 +1101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: cc4f2e38-67da-42e6-8c33-ff7057745524
+    taskid: 8705ae15-603c-47ec-8f42-11f378c04583
     type: playbook
     task:
-      id: cc4f2e38-67da-42e6-8c33-ff7057745524
+      id: 8705ae15-603c-47ec-8f42-11f378c04583
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1161,12 +1120,6 @@ tasks:
         complex:
           root: inputs.Initiator_Process_SHA256
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.Parent_Process_SHA256
-                iscontext: true
           - operator: uniq
       HuntAttacker:
         simple: "True"
@@ -1277,10 +1230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "149":
     id: "149"
-    taskid: bdfc8343-587c-4e5e-89f1-34f6ac944984
+    taskid: 57d07af1-54fd-433d-884d-eded8e8f2453
     type: condition
     task:
-      id: bdfc8343-587c-4e5e-89f1-34f6ac944984
+      id: 57d07af1-54fd-433d-884d-eded8e8f2453
       version: -1
       name: Was port scanning initiated by a process?
       description: Checks whether a process initiated the port scanning activity.
@@ -1825,10 +1778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "176":
     id: "176"
-    taskid: 03de6101-ffb3-47df-8c39-e588ecc5bd13
+    taskid: d9581aa7-edf0-4159-8913-dbe1b9578028
     type: playbook
     task:
-      id: 03de6101-ffb3-47df-8c39-e588ecc5bd13
+      id: d9581aa7-edf0-4159-8913-dbe1b9578028
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
@@ -1844,12 +1797,6 @@ tasks:
         complex:
           root: inputs.Initiator_CMD
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.Parent_Process_CMD
-                iscontext: true
           - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
@@ -2022,30 +1969,6 @@ tasks:
                 value:
                   simple: IndicatorsToBlock
                 iscontext: true
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
           transformers:
           - operator: uniq
       UserVerification:
@@ -2262,10 +2185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "185":
     id: "185"
-    taskid: 94c2d610-95f6-4407-8597-eb09e3b232fa
+    taskid: a038f1f6-1280-4846-824e-b33513b4d99a
     type: regular
     task:
-      id: 94c2d610-95f6-4407-8597-eb09e3b232fa
+      id: a038f1f6-1280-4846-824e-b33513b4d99a
       version: -1
       name: Has investigation results?
       description: 'Checks whether any results have been obtained from the investigation stage. When results have been obtained for the investigation stage, the task will set the results under a new context key. '
@@ -2650,17 +2573,6 @@ inputs:
     Whether early containment should be allowed when the IP address is known to be malicious.
     Possible values:True/False. Default:True.
   playbookInputQuery:
-- key: DstHostname
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      accessor: dst_action_external_hostname
-      transformers:
-      - operator: uniq
-  required: false
-  description: |-
-    The destination host name that was scanned.
-  playbookInputQuery:
 - key: SrcHostname
   value:
     complex:
@@ -2675,7 +2587,8 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: Source host name from which port scanning was initiated.
+  description: |-
+    Source host name from which port scanning was initiated.
   playbookInputQuery:
 - key: EndpointID
   value:
@@ -2696,38 +2609,6 @@ inputs:
       - operator: uniq
   required: false
   description: Source endpoint ID from which port scanning was initiated.
-  playbookInputQuery:
-- key: Initiator_File_Name
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      accessor: action_process_image_name
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_name
-            iscontext: true
-      - operator: uniq
-  required: false
-  description: The file name that initiated the port scan activity.
-  playbookInputQuery:
-- key: Initiator_File_Path
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      accessor: actor_process_image_path
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_path
-            iscontext: true
-      - operator: uniq
-  required: false
-  description: The file path for the process that initiated the port scan activity.
   playbookInputQuery:
 - key: Initiator_CMD
   value:
@@ -2791,7 +2672,6 @@ outputs:
   type: unknown
 tests:
 - Test XDR Playbook general commands
-- Test Playbook - Cortex XDR - Endpoint Investigation
 - Test XDR Playbook
 fromversion: 5.0.0
 contentitemexportablefields:
