@@ -192,7 +192,7 @@ def timestamp_to_date(ts):
         return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%S')
     return ts
 
-def calculate_domain_dbot_score(status: int | None, securityrank2: int | None) -> int:
+def calculate_domain_dbot_score(status: int | None, securerank2: int | None) -> int:
     match status:
         case -1:
             return Common.DBotScore.BAD
@@ -200,7 +200,7 @@ def calculate_domain_dbot_score(status: int | None, securityrank2: int | None) -
             return Common.DBotScore.GOOD
         case 0 | None: # todo check None
             # When status is 0, security_rank2 is used
-            if securityrank2 is None:
+            if securerank2 is None:
                 return Common.DBotScore.NONE
             
             if (malicious_threshold := arg_to_number(
@@ -208,10 +208,10 @@ def calculate_domain_dbot_score(status: int | None, securityrank2: int | None) -
                 arg_name="threshold",)) is None:
                 raise RuntimeError(f"Cannot convert {malicious_threshold=} to number")
             
-            if securityrank2 < malicious_threshold:
+            if securerank2 < malicious_threshold:
                 return Common.DBotScore.BAD 
             
-            if securityrank2 < SUSPICIOUS_THRESHOLD:
+            if securerank2 < SUSPICIOUS_THRESHOLD:
                 return Common.DBotScore.SUSPICIOUS
             
             return Common.DBotScore.GOOD
@@ -523,7 +523,7 @@ def get_domain_security_command():
 
         if domain_security_context:
             dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
-                                                     securityrank2=(get_domain_details(domain) or {}).get('securerank2'))
+                                                     securerank2=(get_domain_details(domain) or {}).get('securerank2'))
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
@@ -821,7 +821,7 @@ def get_domain_command():
             popularity = domain_details.get('popularity')  # type: ignore
             secure_rank = domain_details.get('securerank2')  # type: ignore
             dbot_score = calculate_domain_dbot_score(status=risk_score,
-                                                     securityrank2=secure_rank)
+                                                     securerank2=secure_rank)
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Admin': admin,
@@ -1165,7 +1165,7 @@ def get_domain_details_command():
                 'Data': domain_security_context
             }
             dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
-                                                     securityrank2=res.get('securerank2'))
+                                                     securerank2=res.get('securerank2'))
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
