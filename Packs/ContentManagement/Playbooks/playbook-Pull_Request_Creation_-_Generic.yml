@@ -931,7 +931,7 @@ tasks:
       id: a20e1120-9ea5-4ca4-841a-5c81ca7e2eb5
       version: -1
       name: Pull Request Creation - AzureDevOps
-      description: This playbook creates a pull request using AzureDevOps integration.
+      description: This playbook creates a pull request using the AzureDevOps integration.
       playbookName: Pull Request Creation - AzureDevOps
       type: playbook
       iscommand: false
