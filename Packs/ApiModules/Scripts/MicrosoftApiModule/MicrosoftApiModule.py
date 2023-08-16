@@ -133,6 +133,7 @@ TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
 # Moderate Retry Mechanism
 MAX_DELAY_REQUEST_COUNTER = 6
 
+
 class CloudEndpointNotSetException(Exception):
     pass
 
@@ -601,8 +602,6 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
 
 
-
-
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
@@ -978,7 +977,6 @@ class MicrosoftClient(BaseClient):
 
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
-
 
     def _get_self_deployed_token(self,
                                  refresh_token: str = '',
