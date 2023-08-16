@@ -5257,12 +5257,12 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
         date = dateparser.parse(time_generated)
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(time_generated leq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'
+        query += '(time_generated leq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'  # type: ignore
     if time_generated_after:
         date = dateparser.parse(time_generated_after)
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(time_generated geq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'
+        query += '(time_generated geq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'  # type: ignore
     if action:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
