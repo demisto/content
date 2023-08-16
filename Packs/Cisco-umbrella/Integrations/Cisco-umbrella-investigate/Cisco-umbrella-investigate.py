@@ -192,33 +192,34 @@ def timestamp_to_date(ts):
         return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%S')
     return ts
 
+
 def calculate_domain_dbot_score(status: int | None, securerank2: int | None) -> int:
     match status:
         case -1:
             return Common.DBotScore.BAD
         case 1:
             return Common.DBotScore.GOOD
-        case 0 | None: # todo check None
+        case 0 | None:  # todo check None
             # When status is 0, security_rank2 is used
             if securerank2 is None:
                 return Common.DBotScore.NONE
-            
+
             if (malicious_threshold := arg_to_number(
-                demisto.args().get('threshold', MALICIOUS_THRESHOLD), 
-                arg_name="threshold",)) is None:
+                demisto.args().get('threshold', MALICIOUS_THRESHOLD),
+                    arg_name="threshold",)) is None:
                 raise RuntimeError(f"Cannot convert {malicious_threshold=} to number")
-            
+
             if securerank2 < malicious_threshold:
-                return Common.DBotScore.BAD 
-            
+                return Common.DBotScore.BAD
+
             if securerank2 < SUSPICIOUS_THRESHOLD:
                 return Common.DBotScore.SUSPICIOUS
-            
+
             return Common.DBotScore.GOOD
-            
+
         case _:
             raise ValueError(f"unexpected {status=}, expected 0,1 or -1")
-    
+
 
 ''' INTERNAL FUNCTIONS '''
 
@@ -1880,6 +1881,7 @@ def get_url_timeline(url):
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
+
 
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
