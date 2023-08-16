@@ -2,11 +2,34 @@ import Tests.scripts.update_pack_dependencies_changes_in_pr as script_module
 import pytest
 
 
-def test_get_summary() -> None:
+@pytest.mark.parametrize('mandatory_only, expected_summary', [
+    pytest.param(
+        False,
+        (
+            "- Pack **3CXDesktopApp_Supply_Chain_Attack** - first-level dependencies:\n"
+            "   - The dependency **MajorBreachesInvestigationandResponse** was changed to *optional*.\n"
+            "- Pack **3CXDesktopApp_Supply_Chain_Attack** - all-level dependencies:\n"
+            "   - Pack **CommonTypes** is no longer a dependency.\n"
+            "   - Pack **Cryptocurrency** is no longer a dependency.\n"
+            "- Pack **Campaign** (core pack) - first-level dependencies:\n"
+            "   - A new *mandatory* dependency **SplunkPy** was added."
+        ),
+        id="Should return all diff summary",
+    ),
+    pytest.param(
+        True,
+        (
+            "- Pack **Campaign** (core pack) - first-level dependencies:\n"
+            "   - A new *mandatory* dependency **SplunkPy** was added."
+        ),
+        id="Should return only existing mandatory dependencies",
+    ),
+])
+def test_get_summary(mandatory_only: bool, expected_summary: str) -> None:
     """
-    Given: Mock diff data of a single marketplace.
-    When: Running get_summary().
-    Then: Ensure summary string is formatted as expected.
+    Given: Mock diff data of a single marketplace, and a set of core packs.
+    When: Running get_summary() with different values of mandatory_only.
+    Then: Ensure summary string is formatted as expected in each case.
     """
     diff = {
         "3CXDesktopApp_Supply_Chain_Attack": {
@@ -39,22 +62,14 @@ def test_get_summary() -> None:
                 "dependencies": {
                     "SplunkPy": {
                         "display_name": "Splunk",
-                        "mandatory": False,
+                        "mandatory": True,
                         "is_test": False
                     }
                 }
             }
         }
     }
-    assert script_module.get_summary(diff, set(), mandatory_only=False) == (
-        "- In the first-level dependencies of pack **3CXDesktopApp_Supply_Chain_Attack**:\n"
-        "   - The dependency **MajorBreachesInvestigationandResponse** was changed to *optional*.\n"
-        "- In the all-level dependencies of pack **3CXDesktopApp_Supply_Chain_Attack**:\n"
-        "   - Pack **CommonTypes** is no longer a dependency.\n"
-        "   - Pack **Cryptocurrency** is no longer a dependency.\n"
-        "- In the first-level dependencies of pack **Campaign**:\n"
-        "   - A new *optional* dependency **SplunkPy** was added.\n"
-    )
+    assert script_module.get_summary(diff, {"Campaign"}, mandatory_only) == expected_summary
 
 
 def test_aggregate_summaries(mocker) -> None:

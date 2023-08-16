@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 import logging as logger
 from argparse import ArgumentParser, Namespace
@@ -8,7 +9,7 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import get_marketplace_to_core_packs, str2bool
 
-from Tests.scripts.find_pack_dependencies_changes import DEPENDENCIES_FIELDS, DIFF_FILENAME
+from Tests.scripts.find_pack_dependencies_changes import DIFF_FILENAME
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.utils.log_util import install_logging
 
@@ -17,9 +18,9 @@ BOOL_TO_M_LEVEL: dict = {
     False: "optional",
 }
 CHANGE_TYPE_TO_TEMPLATE: dict[str, Template] = {
-    "added": Template("   - A new *$m_level* dependency **$dep_id** was added.\n"),
-    "removed": Template("   - Pack **$dep_id** is no longer a dependency.\n"),
-    "modified": Template("   - The dependency **$dep_id** was changed to *$m_level*.\n"),
+    "added": Template("   - A new *$m_level* dependency **$dep_id** was added."),
+    "removed": Template("   - Pack **$dep_id** is no longer a dependency."),
+    "modified": Template("   - The dependency **$dep_id** was changed to *$m_level*."),
 }
 MP_VERSION_TO_DISPLAY: dict = {
     MarketplaceVersions.XSOAR: "XSOAR",
@@ -82,27 +83,42 @@ def get_summary(diff: dict, core_packs: set, mandatory_only: bool) -> str:
         mandatory_only (bool): If true, returns a compact version of the summary
             that includes only new/modified mandatory dependencies.
     """
-    s = ""
+    s_lines = []
+
+    def drop_non_mandatory_dependencies(pack_data: dict[str, dict[str, dict]]) -> dict:
+        return {
+            change_type: {
+                dep_field: {
+                    dep_id: dep_data
+                    for dep_id, dep_data in dependencies_data.items()
+                    if dep_data["mandatory"]
+                }
+                for dep_field, dependencies_data in change_data.items()
+            }
+            for change_type, change_data in pack_data.items()
+            if change_type != "removed"
+        }
 
     pack_data: dict[str, dict[str, dict]]
     for pack_id, pack_data in diff.items():
+        if mandatory_only:
+            pack_data = drop_non_mandatory_dependencies(pack_data)
         for change_type, change_data in pack_data.items():
-            if change_type == "removed" and mandatory_only:
-                continue
-            for dep_field in DEPENDENCIES_FIELDS:
-                if dependencies_data := change_data.get(dep_field):
-                    core_pack = " (core pack)" if pack_id in core_packs else ""
-                    s += (
-                        f"- In the {'all' if dep_field.startswith('all') else 'first'}-"
-                        f"level dependencies of pack **{pack_id}{core_pack}**:\n"
-                    )
-                    for dep_id, dep_data in dependencies_data.items():
-                        if (mandatory := dep_data["mandatory"]) or not mandatory_only:
-                            s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
-                                dep_id=dep_id,
-                                m_level=BOOL_TO_M_LEVEL[mandatory],
-                            )
-    if s:
+            for dep_field, dependencies_data in change_data.items():
+                if not dependencies_data:
+                    continue
+                s_lines.append(
+                    f"- Pack **{pack_id}**"
+                    f"{' (core pack)' if pack_id in core_packs else ''} - "
+                    f"{'all' if dep_field.startswith('all') else 'first'}-level dependencies:"
+                )
+                s_lines.extend([
+                    CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
+                        dep_id=dep_id,
+                        m_level=BOOL_TO_M_LEVEL[dep_data['mandatory']],
+                    ) for dep_id, dep_data in dependencies_data.items()
+                ])
+    if s := "\n".join(s_lines):
         logger.info(s)
     return s
 
