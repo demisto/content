@@ -1207,6 +1207,7 @@ def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) 
     return handle_response_file_single(file, args)
 
 
+@logger
 def modify_label_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
     modify_label_request_res = prepare_file_modify_labels_request(
         client, args, scopes=COMMAND_SCOPES['MODIFY_LABELS_PERMISSIONS_CRUD'])
@@ -1272,7 +1273,7 @@ def get_labels_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandR
     http_request_params = modify_label_request_res['http_request_params']
 
     full_url = URLS['DRIVE_LABELS'] + '?' + urllib.parse.urlencode(http_request_params)
-    demisto.log(full_url)
+    demisto.info(f'full url for get labels is: {full_url}')
     response = client.http_request(full_url=full_url, method='GET')
 
     outputs_context = {
