@@ -373,18 +373,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.28.26"
+version = "1.28.27"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.26-py3-none-any.whl", hash = "sha256:63619ffa44bc7f799b525c86d73bdb7f7a70994942bbff78253585bf64084e6e"},
-    {file = "boto3-1.28.26.tar.gz", hash = "sha256:a15841c7d04f87c63c9f2587b2b48198bec04d307d7b9950cbe4a021f845a5ba"},
+    {file = "boto3-1.28.27-py3-none-any.whl", hash = "sha256:8da9621931291b6c261fdaae465f05737c16519b9667d8463181cb8b88444572"},
+    {file = "boto3-1.28.27.tar.gz", hash = "sha256:a336cf53a6d86ee6d27b2f6d8b78ec9b320209127e5126359881bbd68f33d0b9"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.26,<1.32.0"
+botocore = ">=1.31.27,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -393,14 +393,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.26"
+version = "1.31.27"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.26-py3-none-any.whl", hash = "sha256:74d1c26144915312004a9f0232cdbe08946dfec9fc7dcd854456d2b73be9bfd9"},
-    {file = "botocore-1.31.26.tar.gz", hash = "sha256:e68a50ba76425ede8693fdf1f95b8411e283bc7619c03d7eb666db9f1de48153"},
+    {file = "botocore-1.31.27-py3-none-any.whl", hash = "sha256:13af1588023750c9bc66d202bb5a934c9412a7dc52587532264ab725c42c2c50"},
+    {file = "botocore-1.31.27.tar.gz", hash = "sha256:739d09e13751e3b9b0f341b5ffe5bf8d0452b8769d435c4084ee88739d42b7f7"},
 ]
 
 [package.dependencies]
@@ -1001,7 +1001,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.18.1"
+version = "1.19.1"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1097,7 +1097,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "add_python_version_graph"
-resolved_reference = "2bda2361994c580961c43560e4d62e10f1a544a3"
+resolved_reference = "7b120d12cede105ce092c777f47dc8c3a1443da3"
 
 [[package]]
 name = "deprecated"
@@ -5068,14 +5068,14 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.6.1"
+version = "0.6.2"
 description = "An Amazon S3 Transfer Manager"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "s3transfer-0.6.1-py3-none-any.whl", hash = "sha256:3c0da2d074bf35d6870ef157158641178a4204a6e689e82546083e31e0311346"},
-    {file = "s3transfer-0.6.1.tar.gz", hash = "sha256:640bb492711f4c0c0905e1f62b6aaeb771881935ad27884852411f8e9cacbca9"},
+    {file = "s3transfer-0.6.2-py3-none-any.whl", hash = "sha256:b014be3a8a2aab98cfe1abc7229cc5a9a0cf05eb9c1f2b86b230fd8df3f78084"},
+    {file = "s3transfer-0.6.2.tar.gz", hash = "sha256:cab66d3380cca3e70939ef2255d01cd8aece6a4907a9528740f668c4b0611861"},
 ]
 
 [package.dependencies]
@@ -5234,14 +5234,14 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "shellingham"
-version = "1.5.0.post1"
+version = "1.5.2"
 description = "Tool to Detect Surrounding Shell"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "shellingham-1.5.0.post1-py2.py3-none-any.whl", hash = "sha256:368bf8c00754fd4f55afb7bbb86e272df77e4dc76ac29dbcbb81a59e9fc15744"},
-    {file = "shellingham-1.5.0.post1.tar.gz", hash = "sha256:823bc5fb5c34d60f285b624e7264f4dda254bc803a3774a147bf99c0e3004a28"},
+    {file = "shellingham-1.5.2-py2.py3-none-any.whl", hash = "sha256:db9b385e903ebfe07958f6df493d47d4432ff5bed71e75ed3e613ace090be5f3"},
+    {file = "shellingham-1.5.2.tar.gz", hash = "sha256:95946024df2db98c83382606a9ae875f613b15c950c980a3bf7a5adde40e7720"},
 ]
 
 [[package]]
