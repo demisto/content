@@ -2256,7 +2256,7 @@ script:
       - 'zip'
       defaultValue: 'json'
       name: format
-      description: The file format (json or zip). Default is json.
+      description: The file format (json or zip).
       required: false
       isArray: false
     - name: include_content
