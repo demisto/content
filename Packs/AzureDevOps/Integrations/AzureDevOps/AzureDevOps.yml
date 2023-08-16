@@ -2477,7 +2477,7 @@ script:
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: pull_request_id
