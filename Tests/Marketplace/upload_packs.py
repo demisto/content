@@ -1416,6 +1416,13 @@ def main():
             pack.cleanup()
             continue
 
+        if marketplace == XSIAM_MP:
+            task_status = pack.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
+            if not task_status:
+                pack._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name  # type: ignore[misc]
