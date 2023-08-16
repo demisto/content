@@ -1,7 +1,7 @@
 args:
 - name: accesskey
   required: true
-comment: CTF script that initiates a revoke for all user access keys.
+comment: CTF script that initiates a revoke an access key.
 commonfields:
   id: APIKeyRevokeCTF
   version: -1
