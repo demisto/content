@@ -34,7 +34,7 @@ You can configure the specific vendor and product for this instance.
    | `Protocol`    | Should be aligned with the selected *protocol* value in the vCenter Server Management Interface syslog configuration, as described in the [Configuration on Server Side](#configuration-on-server-side) section above.   
    | `Port`        | Should be aligned with the *port* defined in the vCenter Server Management Interface syslog configuration as described on the [Configuration on Server Side](#configuration-on-server-side) above.   
    | `Format`      | Select **Auto-Detect**. 
-   | `Vendor`      | Enter *VMware*.
+   | `Vendor`      | Enter **VMware**.
    | `Product`     | Enter *vCenter*.
 
 </~XSIAM>	
