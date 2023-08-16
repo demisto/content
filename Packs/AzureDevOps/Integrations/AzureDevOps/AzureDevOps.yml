@@ -888,7 +888,7 @@ script:
       description: REST URL for this resource.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.imageUrl
-      description: Link to the reviewers user image.
+      description: Link to the reviewer's user image.
   - name: azure-devops-pull-request-commit-list
     description: Get the commits for the specified pull request.
     arguments:
