@@ -807,7 +807,7 @@ script:
       description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
     - type: Boolean
       contextPath: AzureDevOps.PullRequestReviewer.isFlagged
-      description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
+      description: A way to mark some special pull requests we are dealing with to distinguish them from other pull requests.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.displayName
       description: This is the non-unique display name of the graph subject. Changing this field in the source provider is the only way.
