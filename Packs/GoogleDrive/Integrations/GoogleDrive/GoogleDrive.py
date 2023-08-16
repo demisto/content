@@ -1835,7 +1835,7 @@ def main() -> None:
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
             result = test_module(gsuite_client, demisto.getLastRun(), params)
-            demisto.results(result)
+            return_results(result)
         elif demisto.command() == 'fetch-incidents':
 
             incidents, next_run = fetch_incidents(gsuite_client,
