@@ -666,6 +666,15 @@ def test_fetch_incidents_with_pagination(post_mock):
     ('key', (None, None)),
 ])
 def test_format_nested_incident_attribute(nested_attr, expected_result):
+    """
+    Formatting incident attributes.
+    Given:
+        - Some incident attributes.
+    When:
+        - format_nested_incident_attribute is running.
+    Then:
+        - Check that the formatted incident attribute is as expected.
+    """
     from FortiSIEMV2 import format_nested_incident_attribute
 
     assert format_nested_incident_attribute(nested_attr) == expected_result
@@ -676,6 +685,15 @@ def test_format_nested_incident_attribute(nested_attr, expected_result):
     (load_json_mock_response("triggered_events.json"), 5),
 ])
 def test_get_related_events_for_fetch_command(events_mock_response, expected_result, requests_mock):
+    """
+    Fetching events per incident.
+    Given:
+        - Incident ID wit/out events.
+    When:
+        - get_related_events_for_fetch_command is running.
+    Then:
+        - Check that the sum of the events is as expected.
+    """
     from FortiSIEMV2 import FortiSIEMClient, get_related_events_for_fetch_command
     client: FortiSIEMClient = mock_client()
     requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
