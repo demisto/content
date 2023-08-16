@@ -672,7 +672,7 @@ def test_format_nested_incident_attribute(nested_attr, expected_result):
 
 
 @pytest.mark.parametrize('events_mock_response, expected_result', [
-    ({'result': {'code': 255}}, 0),
+    ({'result': {'description': 'The incident detail was not found for incident 123465'}}, 0),
     (load_json_mock_response("triggered_events.json"), 5),
 ])
 def test_get_related_events_for_fetch_command(events_mock_response, expected_result, requests_mock):
