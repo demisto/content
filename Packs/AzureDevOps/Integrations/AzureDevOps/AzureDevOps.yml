@@ -947,15 +947,15 @@ script:
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The maximum number of results to retrieve. Minimum value is 1.
       name: limit
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
@@ -998,11 +998,11 @@ script:
     description: Retrieve a particular commit.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
@@ -1010,7 +1010,7 @@ script:
       required: false
       isArray: false
     - name: commit_id
-      description: The id of the commit.
+      description: The ID of the commit.
       required: true
       isArray: false
     outputs:
@@ -1073,10 +1073,10 @@ script:
       description: Display name of the user who pushed the commit.
     - type: String
       contextPath: AzureDevOps.Commit.push.pushedBy.url
-      description: Identity Reference.
+      description: Identity reference.
     - type: String
       contextPath: AzureDevOps.Commit.push.pushedBy._links.avatar.href
-      description: Url for the user's avatar.
+      description: URL for the user's avatar.
     - type: String
       contextPath: AzureDevOps.Commit.push.pushedBy.id
       description: ID of the user who pushed the commit.
@@ -1099,15 +1099,15 @@ script:
     description: Returns a single work item.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: item_id
-      description: The work item id.
+      description: The work item ID.
       required: true
       isArray: false
     outputs:
@@ -1137,19 +1137,19 @@ script:
       description: This field requires a state to determine what values are allowed.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
-      description: Display name of user assigned to the work item.
+      description: Display name of the user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.id
-      description: ID of user assigned to the work item.
+      description: ID of the user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName
-      description: The unique name of user assigned to the work item.
+      description: The unique name of the user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl
       description: Link to the user (assigned to the work item) image.
@@ -1161,19 +1161,19 @@ script:
       description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
-      description: Display name of user created the work item.
+      description: Display name of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
-      description: ID of user created the work item.
+      description: ID of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
-      description: The unique name of user created the work item.
+      description: The unique name of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
       description: Link to the user (created the work item) image.
@@ -1182,22 +1182,22 @@ script:
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
-      description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
-      description: Display name of user changed the work item.
+      description: Display name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
-      description: ID of user changed the work item.
+      description: ID of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
-      description: The unique name of user changed the work item.
+      description: The unique name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
       description: Link to the user (changed the work item) image.
@@ -1212,7 +1212,7 @@ script:
       description: The work item title.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
-      description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate
       description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
@@ -1397,7 +1397,7 @@ script:
       description: The work item title.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
-      description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: Number
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority
       description: This field specifies which work the team should do first.
@@ -1421,7 +1421,7 @@ script:
       description: Link to the work item comments.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.html.href
-      description: Link to the work item html.
+      description: Link to the work item HTML.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.workItemType.href
       description: Link to the work item type.
@@ -1435,19 +1435,19 @@ script:
     description: Updates a single work item.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: item_id
-      description: The work item id to update.
+      description: The work item ID to update.
       required: true
       isArray: false
     - name: title
@@ -1468,7 +1468,7 @@ script:
       required: false
       isArray: false
     - name: iteration_path
-      description: a new path for the operation.
+      description: A new path for the operation.
       required: false
       isArray: false
     - name: description
@@ -1486,7 +1486,7 @@ script:
       required: false
       isArray: false
     - name: tag
-      description: A new priority for the work item.
+      description: A new tag for the work item.
       required: false
       isArray: false
     outputs:
@@ -1519,16 +1519,16 @@ script:
       description: Display name of user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.id
-      description: ID of user assigned to the work item.
+      description: ID of the user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName
-      description: The unique name of user assigned to the work item.
+      description: The unique name of the user assigned to the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl
       description: Link to the user (assigned to the work item) image.
@@ -1540,19 +1540,19 @@ script:
       description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.displayName
-      description: Display name of user created the work item.
+      description: Display name of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
-      description: ID of user created the work item.
+      description: ID of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
-      description: The unique name of user created the work item.
+      description: The unique name of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
       description: Link to the user (created the work item) image.
@@ -1561,22 +1561,22 @@ script:
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
-      description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
-      description: Display name of user changed the work item.
+      description: Display name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
-      description: ID of user changed the work item.
+      description: ID of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
-      description: The unique name of user changed the work item.
+      description: The unique name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
       description: Link to the user (changed the work item) image.
@@ -1591,25 +1591,25 @@ script:
       description: The work item title.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate
-      description: 'The state changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate
       description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
-      description: Display name of user activated the work item.
+      description: Display name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
-      description: ID of user activated the work item.
+      description: ID of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
-      description: The unique name of user activated the work item.
+      description: The unique name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
       description: Link to the user (activated the work item) image.
@@ -1639,7 +1639,7 @@ script:
       description: Link to the work item comments.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.html.href
-      description: Link to the work item html.
+      description: Link to the work item HTML.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.workItemType.href
       description: Link to the work item type.
@@ -1653,15 +1653,15 @@ script:
     description: Add a file to the repository.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: branch_name
@@ -1741,7 +1741,7 @@ script:
       description: The URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.project.id
-      description: The ID of the Project.
+      description: The ID of the project.
     - type: String
       contextPath: AzureDevOps.File.repository.project.name
       description: The name of the project.
@@ -1759,7 +1759,7 @@ script:
       description: The revision number of the project.
     - type: String
       contextPath: AzureDevOps.File.repository.project.visibility
-      description: Indicates whom the project is visible to.
+      description: Indicates to whom the project is visible.
     - type: Date
       contextPath: AzureDevOps.File.repository.project.lastUpdateTime
       description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
@@ -1771,7 +1771,7 @@ script:
       description: Remote URL path to the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.sshUrl
-      description: The ssh URL of the repository.
+      description: The SSH URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.webUrl
       description: The web URL of the repository.
@@ -1786,10 +1786,10 @@ script:
       description: Display name of the user who pushed the commit / file.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.url
-      description: Identity Reference.
+      description: Identity reference.
     - type: String
       contextPath: AzureDevOps.File.pushedBy._links.avatar.href
-      description: Url for the user's avatar.
+      description: URL for the user's avatar.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.id
       description: ID of the user who pushed the commit / file.
@@ -1798,7 +1798,7 @@ script:
       description: The unique name of the user who pushed the commit.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.imageUrl
-      description: Identity Image.
+      description: Identity image.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.descriptor
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
@@ -1830,15 +1830,15 @@ script:
     description: Update a file in the repository.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: branch_name
@@ -1918,7 +1918,7 @@ script:
       description: The URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.project.id
-      description: The ID of the Project.
+      description: The ID of the project.
     - type: String
       contextPath: AzureDevOps.File.repository.project.name
       description: The name of the project.
@@ -1948,7 +1948,7 @@ script:
       description: Remote URL path to the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.sshUrl
-      description: The ssh URL of the repository.
+      description: The SSH URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.webUrl
       description: The web URL of the repository.
@@ -1963,10 +1963,10 @@ script:
       description: Display name of the user who pushed the commit / file.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.url
-      description: Identity Reference.
+      description: Identity reference.
     - type: String
       contextPath: AzureDevOps.File.pushedBy._links.avatar.href
-      description: Url for the user's avatar.
+      description: URL for the user's avatar.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.id
       description: ID of the user who pushed the commit / file.
@@ -1975,7 +1975,7 @@ script:
       description: The unique name of the user who pushed the commit.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.imageUrl
-      description: Identity Image.
+      description: Identity image.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.descriptor
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
@@ -2007,15 +2007,15 @@ script:
     description: Update a file in the repository.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: branch_name
@@ -2091,7 +2091,7 @@ script:
       description: The URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.project.id
-      description: The ID of the Project.
+      description: The ID of the project.
     - type: String
       contextPath: AzureDevOps.File.repository.project.name
       description: The name of the project.
@@ -2109,7 +2109,7 @@ script:
       description: The revision number of the project.
     - type: String
       contextPath: AzureDevOps.File.repository.project.visibility
-      description: Indicates whom the project is visible to.
+      description: Indicates to whom the project is visible.
     - type: Date
       contextPath: AzureDevOps.File.repository.project.lastUpdateTime
       description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
@@ -2121,7 +2121,7 @@ script:
       description: Remote URL path to the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.sshUrl
-      description: The ssh URL of the repository.
+      description: The SSH URL of the repository.
     - type: String
       contextPath: AzureDevOps.File.repository.webUrl
       description: The web URL of the repository.
@@ -2136,10 +2136,10 @@ script:
       description: Display name of the user who pushed the commit / file.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.url
-      description: Identity Reference.
+      description: Identity reference.
     - type: String
       contextPath: AzureDevOps.File.pushedBy._links.avatar.href
-      description: Url for the user's avatar.
+      description: URL for the user's avatar.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.id
       description: ID of the user who pushed the commit / file.
@@ -2148,7 +2148,7 @@ script:
       description: The unique name of the user who pushed the commit.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.imageUrl
-      description: Identity Image.
+      description: Identity image.
     - type: String
       contextPath: AzureDevOps.File.pushedBy.descriptor
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
@@ -2180,15 +2180,15 @@ script:
     description: Retrieve repository files (items) list.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: branch_name
@@ -2211,7 +2211,7 @@ script:
       description: The file object ID.
     - type: String
       contextPath: AzureDevOps.File.gitObjectType
-      description: The file git object type.
+      description: The file Git object type.
     - type: String
       contextPath: AzureDevOps.File.commitId
       description: ID (SHA-1) of the file commit.
@@ -2220,7 +2220,7 @@ script:
       description: The file's path.
     - type: Boolean
       contextPath: AzureDevOps.File.isFolder
-      description: If the item is folder or not.
+      description: If the item is a folder or not.
     - type: String
       contextPath: AzureDevOps.File.contentMetadata.fileName
       description: The file name.
@@ -2231,7 +2231,7 @@ script:
     description: Getting the content file.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
@@ -2239,7 +2239,7 @@ script:
       required: false
       isArray: false
     - name: repository_id
-      description: The repository ID. A default value is taken from the configuration parameters, but the user can override it.
+      description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: branch_name
@@ -2696,7 +2696,7 @@ script:
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
@@ -2892,25 +2892,25 @@ script:
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.Team.id
-      description: Team (Identity) Guid. A Team Foundation ID.
+      description: Team (Identity) GUID. A Team Foundation ID.
     - type: String
       contextPath: AzureDevOps.Team.name
       description: Team name.
     - type: String
       contextPath: AzureDevOps.Team.url
-      description: Team REST API Url.
+      description: Team REST API URL.
     - type: String
       contextPath: AzureDevOps.Team.description
       description: Team description.
     - type: String
       contextPath: AzureDevOps.Team.identityUrl
-      description: Identity REST API Url to this team.
+      description: Identity REST API URL to this team.
     - type: String
       contextPath: AzureDevOps.Team.projectName
       description: The project name.
@@ -2921,11 +2921,11 @@ script:
     description: Get a list of members for a specific team.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: team_id
