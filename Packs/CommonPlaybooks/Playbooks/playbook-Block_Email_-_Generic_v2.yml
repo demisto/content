@@ -346,7 +346,7 @@ tasks:
       description:
         simple: Blocked accounts
       fromType:
-        simple: everyone
+        simple: individual_email_address
       fromValue:
         complex:
           root: inputs.EmailToBlock
