@@ -466,7 +466,7 @@ tasks:
       id: 6bf6a356-7f44-4974-8b3a-dcb14ec01655
       version: -1
       name: Get pull request list
-      description: Retrieve pull requests in repository.
+      description: Retrieve pull requests in the repository.
       script: '|||azure-devops-pull-request-list'
       type: regular
       iscommand: true
