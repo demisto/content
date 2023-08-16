@@ -9,6 +9,7 @@ configuration:
 - display: Server Host
   name: host
   type: 0
+  defaultvalue: logstream.proofpoint.com:443
   required: true
 - display: Cluster ID
   name: cluster_id
