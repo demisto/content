@@ -1274,11 +1274,11 @@ script:
     description: Creates a single work item.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -1349,16 +1349,16 @@ script:
       description: Display name of user created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
-      description: ID of user created the work item.
+      description: ID of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
-      description: The unique name of user created the work item.
+      description: The unique name of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl
       description: Link to the user (created the work item) image.
@@ -1367,10 +1367,10 @@ script:
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedDate
-      description: 'The run changing date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
+      description: 'The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
-      description: Display name of user changed the work item.
+      description: Display name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
       description: The work item url.
@@ -1379,7 +1379,7 @@ script:
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
-      description: ID of user changed the work item.
+      description: ID of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
       description: The unique name of user changed the work item.
@@ -2256,11 +2256,11 @@ script:
       - 'zip'
       defaultValue: 'json'
       name: format
-      description: The file format (json or zip). Default is json.
+      description: The file format (json or zip).
       required: false
       isArray: false
     - name: include_content
-      description: Include item content. Default is True.
+      description: Include item content. 
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2274,7 +2274,7 @@ script:
       description: The file object ID.
     - type: String
       contextPath: AzureDevOps.File.gitObjectType
-      description: The file git object type.
+      description: The file Git object type.
     - type: String
       contextPath: AzureDevOps.File.commitId
       description: ID (SHA-1) of the file commit.
@@ -2288,11 +2288,11 @@ script:
     description: Create a branch.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
