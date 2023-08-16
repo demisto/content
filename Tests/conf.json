@@ -684,11 +684,6 @@
         },
 
         {
-            "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test dev v2i"
-        },
-
-        {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
@@ -2138,6 +2133,11 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test dev",
             "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "MSG-ediscovery-tpb",
+            "instance_names": "ms_graph_security_ediscovery"
         },
         {
             "integrations": "Microsoft Graph",
