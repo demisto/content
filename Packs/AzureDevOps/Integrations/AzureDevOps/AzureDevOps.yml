@@ -909,7 +909,7 @@ script:
       required: true
       isArray: false
     - defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The maximum number of results to retrieve. Minimum value is 1.
       name: limit
     outputs:
     - type: String
