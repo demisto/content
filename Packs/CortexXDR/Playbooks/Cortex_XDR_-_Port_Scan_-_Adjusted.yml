@@ -313,45 +313,6 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "True"
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       RuleDirection:
         simple: inbound
       RuleName:
