@@ -6,8 +6,11 @@ from traceback import format_exc
 from datetime import datetime
 from fastapi import FastAPI, Request, Response, status
 from pydantic import BaseModel
+from fastapi_utils.tasks import repeat_every
 import uvicorn
-
+from uvicorn.logging import AccessFormatter
+from tempfile import NamedTemporaryFile
+from copy import copy
 
 app = FastAPI()
 SYNC_CONTEXT = True
@@ -96,8 +99,28 @@ MARKDOWN_EXTRA_FORMATS = """Too many style in text. you can provide only one sty
 MARKDOWN_EXTRA_MENTIONS = """Too many mentions in text. you can provide only one mention in each message"""
 MISSING_ARGUMENT_JID = """Missing either a user JID  or a channel id"""
 TOO_MANY_JID = """Too many argument you must provide either a user JID  or a channel id and not both """
+BOT_PARAM_CHECK = """if you are using zoom chatbot you must provide all the 3 params botJID, bot_client_id and bot_client_secret
+you can find this values in the Zoom Chatbot app configuration"""
 CLIENT: Zoom_Client
+
 '''CLIENT CLASS'''
+
+
+class ZoomAccessFormatter(AccessFormatter):
+    def get_user_agent(self, scope: Dict) -> str:
+        headers = scope.get('headers', [])
+        user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
+        user_agent = ''
+        if len(user_agent_header) == 1:
+            user_agent = user_agent_header[0][1].decode()
+        return user_agent
+
+    def formatMessage(self, record):
+        recordcopy = copy(record)
+        scope = recordcopy.__dict__['scope']
+        user_agent = self.get_user_agent(scope)
+        recordcopy.__dict__.update({'user_agent': user_agent})
+        return super().formatMessage(recordcopy)
 
 
 class ZoomWebhookData(BaseModel):
@@ -330,6 +353,7 @@ class Client(Zoom_Client):
         )
 
     def zoom_send_notification(self, url_suffix: str, json_data: dict):
+        demisto.debug(f"bot= {self.bot_access_token}")
         return self.error_handled_http_request(
             method='POST',
             url_suffix=url_suffix,
@@ -358,7 +382,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
         if message_filter:
             message = message_filter[0]
             entitlement = message.get('entitlement')
-            reply = message.get('reply', 'Thank you for your response.')
+            reply = message.get('reply', f'Thank you {user_name} for your response {text}.')
             guid, incident_id, task_id = extract_entitlement(entitlement)
             demisto.handleEntitlementForUser(incident_id, guid, user_name, text, task_id)
             demisto.debug(f'message_filter: {message_filter}')
@@ -419,38 +443,93 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     return guid, incident_id, task_id
 
 
-# def check_for_unanswered_questions():
-#     integration_context = get_integration_context(SYNC_CONTEXT)
-#     messages = integration_context.get('messages', None)
-#     if messages:
-#         questions = json.loads(messages)
-#         now = datetime.utcnow()
-#         now_string = datetime.strftime(now, DATE_FORMAT)
-#         updated_questions = []
+@app.on_event("startup")
+@repeat_every(seconds=60 * 10, wait_first=True)
+async def check_for_unanswered_questions():
+    demisto.debug('in check for unanswer messages')
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    messages = integration_context.get('messages', None)
+    if messages:
+        messages = json.loads(messages)
+        now = datetime.utcnow()
+        now_string = datetime.strftime(datetime.utcnow(), DATE_FORMAT)
+        updated_messages = []
 
-#         for question in questions:
-#             if question.get('expiry'):
-#                 # Check if the question expired - if it did, answer it with the default response
-#                 # and remove it
-#                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
-#                 if expiry < now:
-#                     _ = answer_question(question.get('default_response'), question, email='')
-#                     updated_questions.append(question)
-#                     continue
-#             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
-#             # since the last polling time. if not, continue to the next question until it has.
-#             if question.get('last_poll_time'):
-#                 last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
-#                 delta = now - last_poll_time
-#                 minutes = delta.total_seconds() / 60
-#                 sent = question.get('sent', None)
-#                 poll_time_minutes = get_poll_minutes(now, sent)
-#                 if minutes < poll_time_minutes:
-#                     continue
-#             question['last_poll_time'] = now_string
-#             updated_questions.append(question)
-#         if updated_questions:
-#             set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        for message in messages:
+            if message.get('expiry'):
+                # Check if the question expired - if it did, answer it with the default response
+                # and remove it
+                expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
+                if expiry < now:
+                    demisto.debug(f"message expired: {message}")
+                    _ = answer_question(message.get('default_response'), message, email='')
+                    updated_messages.append(message)
+                    continue
+            # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+            # since the last polling time. if not, continue to the next question until it has.
+            # if message.get('last_poll_time'):
+            #     last_poll_time = datetime.strptime(message['last_poll_time'], DATE_FORMAT)
+            #     delta = now - last_poll_time
+            #     minutes = delta.total_seconds() / 60
+            #     sent = question.get('sent', None)
+            #     poll_time_minutes = get_poll_minutes(now, sent)
+            #     if minutes < poll_time_minutes:
+            #         continue
+            message['last_poll_time'] = now_string
+            updated_messages.append(message)
+        if updated_messages:
+            set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def run_log_running(port: int, is_test: bool = False):
+    while True:
+        certificate = demisto.params().get('certificate', '')
+        private_key = demisto.params().get('key', '')
+
+        certificate_path = ''
+        private_key_path = ''
+        try:
+            ssl_args = {}
+
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                ssl_args['ssl_certfile'] = certificate_path
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                ssl_args['ssl_keyfile'] = private_key_path
+
+                demisto.debug('Starting HTTPS Server')
+            else:
+                demisto.debug('Starting HTTP Server')
+
+            integration_logger = IntegrationLogger()
+            integration_logger.buffering = False
+            log_config = dict(uvicorn.config.LOGGING_CONFIG)
+            log_config['handlers']['default']['stream'] = integration_logger
+            log_config['handlers']['access']['stream'] = integration_logger
+            log_config['formatters']['access'] = {
+                '()': ZoomAccessFormatter,
+                'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
+            }
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+            if is_test:
+                time.sleep(5)
+                return 'ok'
+        except Exception as e:
+            demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
+            demisto.updateModuleHealth(f'An error occurred: {str(e)}')
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            time.sleep(5)
 
 
 def long_running(port):
@@ -469,11 +548,10 @@ def long_running(port):
             time.sleep(5)
 
 
-def process_entitlement_reply(
+async def process_entitlement_reply(
     entitlement_reply: str,
     accountId: str,
     robotJid: str,
-    action_text: str,
     toJid: str | None = None,
 ):
     """
@@ -500,13 +578,14 @@ def process_entitlement_reply(
         "robot_jid": robotJid,
         "account_id": accountId
     }
-    CLIENT.zoom_send_notification(url_suffix, json_data_all)
+    await CLIENT.zoom_send_notification(url_suffix, json_data_all)
 
 
 def answer_question(text: str, question: dict, email: str = ''):
     entitlement = question.get('entitlement', '')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
+        demisto.debug("handleEntitlementForUser")
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
@@ -528,7 +607,7 @@ async def handle_listen_error(error: str):
 @app.get('/')
 async def handle_authorization():
     demisto.debug("auto:")
-    return Response(status_code=status.HTTP_200_OK)
+    return Response(status_code=status.HTTP_200_OK, content='WELCOME TO XSOAR ZOOM BOT APP')
 
 
 @app.post('/')
@@ -536,11 +615,18 @@ async def handle_zoom_button_click(request: Request):
     demisto.debug(f"request: {request}")
     request = await request.json()
     demisto.debug(f"request: {request}")
+    # time.sleep(10)
+    # demisto.debug(f"after sleep: {request}")
     event_type = request['event']
     payload = request['payload']
     try:
         if event_type == 'interactive_message_actions':
-            action = payload['actionItem']['value']
+            if payload.get('actionItem', False):
+                action = payload['actionItem']['value']
+            elif payload.get('selectedItems', False):
+                action = payload['selectedItems'][0]['value']
+            else:
+                return Response(status_code=status.HTTP_400_BAD_REQUEST)
             message_id = payload['messageId']
             account_id = payload['accountId']
             robot_jid = payload['robotJid']
@@ -549,12 +635,12 @@ async def handle_zoom_button_click(request: Request):
             demisto.debug(f"message_id: {message_id}")
             entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name)  # type: ignore
             if entitlement_reply:
-                process_entitlement_reply(entitlement_reply, account_id, robot_jid, action, to_jid)
-                #  demisto.updateModuleHealth("")
+                await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid)
+                demisto.updateModuleHealth("")
             demisto.debug(f"button was clicked {action} on message {message_id}")
             return Response(status_code=status.HTTP_200_OK)
         else:
-            return Response(status_code=status.HTTP_200_OK)
+            return Response(status_code=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         await handle_listen_error(f'Error occurred while handel response from Zoom: {e}')
 
@@ -565,7 +651,20 @@ def test_module(client: Client):
     """
     try:
         # running an arbitrary command to test the connection
-        client.zoom_list_users(page_size=1, url_suffix="users")
+        if client.access_token:
+            client.zoom_list_users(page_size=1, url_suffix="users")
+        if client.bot_access_token:
+            json_data = {
+                "robot_jid": client.botJid,
+                "to_jid": "blabla@conference.xmpp.zoom.us",
+                "account_id": client.account_id,
+                "content": {
+                    "head": {
+                        "text": "hi"
+                    }
+                }
+            }
+            client.zoom_send_notification(url_suffix='/im/chat/messages', json_data=json_data)
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -574,6 +673,14 @@ def test_module(client: Client):
             error_message = INVALID_API_SECRET
         elif 'Invalid client_id or client_secret' in error_message:
             error_message = INVALID_ID_OR_SECRET
+        elif 'No channel or user can be found with the given to_jid.' in error_message:
+            return 'ok'
+        elif 'Invalid authorization token.' in error_message:
+            error_message = INVALID_TOKEN
+        elif 'No Chatbot can be found with the given robot_jid value.' in error_message:
+            error_message = INVALID_BOT_ID
+        elif 'Invalid robot_jid value specified in the Request Body.' in error_message:
+            error_message = INVALID_BOT_ID
         else:
             error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
@@ -1073,6 +1180,13 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
                                          account_id: str, client_id: str, client_secret: str):
     if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
         raise DemistoException(EXTRA_PARAMS)
+
+
+def check_authentication_bot_parameters(bot_Jid: str, client_id: str, client_secret: str):
+    if (bot_Jid and client_id and client_secret) or (not bot_Jid and not client_id and not client_secret):
+        return
+    else:
+        raise DemistoException(BOT_PARAM_CHECK)
 
 
 def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
@@ -1864,15 +1978,19 @@ To find the appropriate values, refer to the ChatMessageNextToken located in the
     )
 
 
-def zoom_send_notification_command(client, botJID: str, account_id: str, **args) -> CommandResults:
+def zoom_send_notification_command(client, **args) -> CommandResults:
     demisto.debug(f"args: {args}")
     client = client
-    # message = json.loads(args.get('message', ''))
-    # message2 = args.get('message')
+    botJid = client.botJid
+    account_id = client.account_id
     to = args.get('to')
     channel_id = args.get('channel_id')
-    argToBoolean(args.get('visible_to_user', False))
+    visible_to_user = argToBoolean(args.get('visible_to_user', False))
     zoom_ask = argToBoolean(args.get('zoom_ask', False))
+    entitlement = None
+
+    # if to and re.match(emailRegex, to):
+    #     to = zoom_get_user_id_by_email(client, to) + '@xmpp.zoom.us'
 
     if zoom_ask:
         parsed_message = json.loads(args.get("message", ''))
@@ -1884,8 +2002,6 @@ def zoom_send_notification_command(client, botJID: str, account_id: str, **args)
     else:
         message = {"head": {"type": "message", "text": args.get("message", "")}}
 
-    demisto.debug(f"bot message {parsed_message}")
-
     if (to and channel_id):
         raise DemistoException(TOO_MANY_JID)
     if not to and not channel_id:
@@ -1893,9 +2009,10 @@ def zoom_send_notification_command(client, botJID: str, account_id: str, **args)
 
     url_suffix = '/im/chat/messages'
     json_data_all = {
-        "robot_jid": botJID,
+        "robot_jid": botJid,
         "to_jid": to if to else channel_id,
         "account_id": account_id,
+        # "visible_to_user": str(visible_to_user),
         "content":
             message
     }
@@ -1916,8 +2033,8 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
-    api_key = params.get('creds_api_key', {}).get('password') or params.get('apiKey')
-    api_secret = params.get('creds_api_secret', {}).get('password') or params.get('apiSecret')
+    # api_key = params.get('creds_api_key', {}).get('password') or params.get('apiKey')
+    # api_secret = params.get('creds_api_secret', {}).get('password') or params.get('apiSecret')
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
@@ -1925,24 +2042,23 @@ def main():  # pragma: no cover
     bot_client_secret = params.get('bot_credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    botJID = params.get('botJID')
-    params.get('botEndpointURL')
-    params.get('longRunning', False)
+    botJID = params.get('botJID', None)
+    # long_running_pram = params.get('longRunning', False)
     command = demisto.command()
-    port = int(demisto.params().get('longRunningPort'))
+    port = int(demisto.params().get('longRunningPort', 0))
 
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
-        check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
+        # check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
+        check_authentication_bot_parameters(botJID, bot_client_id, bot_client_secret)
         global CLIENT
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            api_key=api_key,
-            api_secret=api_secret,
+            botJid=botJID,
             account_id=account_id,
             client_id=client_id,
             client_secret=client_secret,
@@ -1951,7 +2067,7 @@ def main():  # pragma: no cover
         )
         CLIENT = client
 
-        demisto.debug(client.bot_access_token)
+        demisto.debug(f"bot token: {client.bot_access_token}")
 
         if command == 'test-module':
             return_results(test_module(client=client))
@@ -1960,7 +2076,7 @@ def main():  # pragma: no cover
 
         '''CRUD commands'''
         if command == 'long-running-execution':
-            long_running(port)
+            run_log_running(port)
         elif command == 'zoom-create-user':
             results = zoom_create_user_command(client, **args)
         elif command == 'zoom-create-meeting':
@@ -2000,7 +2116,7 @@ def main():  # pragma: no cover
         elif command == 'zoom-update-message':
             results = zoom_update_message_command(client, **args)
         elif command == 'zoom-send-notification':
-            results = zoom_send_notification_command(client, botJID, account_id, **args)
+            results = zoom_send_notification_command(client, **args)
 
         else:
             return_error('Unrecognized command: ' + demisto.command())

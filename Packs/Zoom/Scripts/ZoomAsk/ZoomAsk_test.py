@@ -268,3 +268,55 @@ def test_slack_ask_channel_threads(mocker):
         'using-brand': 'SlackV3',
         'channel': 'general',
     }
+# import pytest
+# from unittest.mock import patch, MagicMock
+# from datetime import datetime
+# import dateparser
+
+
+# @pytest.fixture
+# def demisto_mock():
+#     with patch.dict('sys.modules', {'demistomock': MagicMock(), 'CommonServerPython': MagicMock(), 'CommonServerUserPython':
+# MagicMock()}):
+#         yield
+
+# def test_parse_option_text():
+#     assert script_name.parse_option_text("Hello#blue") == ("Hello", "Primary")
+#     assert script_name.parse_option_text("Test#red") == ("Test", "Danger")
+#     assert script_name.parse_option_text("Default Text") == ("Default Text", "Default")
+
+# def test_generate_json_button():
+#     options = ["Option1#blue", "Option2#red", "Option3#white"]
+#     result = script_name.generate_json("Message Text", options, "button")
+#     assert result["head"]["text"] == "Message Text"
+#     assert len(result["body"][0]["items"]) == 3
+#     assert result["body"][0]["items"][0]["value"] == "Option1"
+#     assert result["body"][0]["items"][0]["style"] == "Primary"
+
+# def test_generate_json_dropdown():
+#     options = ["Choice1#blue", "Choice2#white", "Choice3#gray"]
+#     result = script_name.generate_json("Dropdown Message", options, "dropdown")
+#     assert result["body"][0]["text"] == "Dropdown Message"
+#     assert len(result["body"][0]["select_items"]) == 3
+#     assert result["body"][0]["select_items"][0]["value"] == "Choice1"
+
+# def test_main(demisto_mock):
+#     args = {
+#         'message': 'Test Message',
+#         'option1': 'Option 1',
+#         'option2': 'Option 2',
+#         'responseType': 'button',
+#         'lifetime': '2 hours',
+#         'user': 'test.user@example.com'
+#         # Add other args as needed
+#     }
+#     with patch.object(dateparser, 'parse', return_value=datetime.utcnow()):
+#         script_name.demisto.get.return_value = "Entitlement"
+#         script_name.demisto.args.return_value = args
+#         script_name.demisto.executeCommand.return_value = [{'Contents': 'Entitlement'}]
+#         script_name.main()
+
+# # Add more test cases as needed
+
+# if __name__ == '__main__':
+#     pytest.main(['-s', __file__])

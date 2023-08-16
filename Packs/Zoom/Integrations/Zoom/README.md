@@ -19,8 +19,48 @@ This integration was integrated and tested with version 2.0.0 of Zoom
     | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
+    | Long running instance| |False |
+    | Listen Port| |False|
+    | Bot JID| | False|
+    | Bot Client ID (OAuth)| | False|
+    | Bot Client Secret (OAuth)| | False|
+
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+####server configuration
+In the Server Configuration section, verify that the value for the instance.execute.external.<INTEGRATION-INSTANCE-NAME> key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.<INTEGRATION-INSTANCE-NAME> and set the value to true. See the following reference article for further information.
+You can now trigger the webhook URL: <CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>. For example, https://my.demisto.live/instance/execute/webhook. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+
+## Create Zoom ChatBOT app
+1. Navigate to https://marketplace.zoom.us/
+2. Build Team Chat Apps
+
+![enter image description here](doc_file/create-team-chat-app.gif)
+
+1. Enter your XSOAR server URL in all Redirect URLS
+2. In the Team Chat Subscription section under BOT endpoint URL add <CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME> For example, https://my.demisto.live/instance/execute/zoom-bot. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+![enter image description here](doc_file/bot_endpoint_url.gif)
+
+1. Add scope permissions:
+    - Enable Chatbot within Zoom Team Chat Client /imchat:botDelete
+    - Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:adminDelete
+    - View and manage all users' team chat channels /chat_channel:write:admin
+    - View all user information /user:read:admin
+![enter image description here](doc_file/scope.png)
+  
+  
+4. In local test section click on the Add button to test your app and authorize your xsoar app
+ ![enter image description here](doc_file/test.gif)
+
+
+
+
+
+
+
+
 
 ## Commands
 
@@ -1827,3 +1867,38 @@ Searches chat messages or shared files between a user and an individual contact 
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 >| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 
+### zoom-send-notification
+
+***
+Sends messages from your Marketplace Chatbot app on Zoom to either an individual user or to a channel.
+
+#### Base Command
+
+`zoom-send-notification`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to |  The email address or user ID or member ID of the person to send a message.  | Required | 
+| channel_id |  The channel ID of the channel to send a message. | Optional | 
+| message | The message to be sent. Maximum of 1024 characters. | Required | 
+| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional | 
+| zoom_ask | If to send the message as a json or not| Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!zoom-send-notification message=hi to=example@example.com```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>### Message
+>Message sent to Zoom successfully. Message ID is: 20230815153245201_BPK3S3S_aw1

@@ -13,31 +13,6 @@ STYLES_DICT = {
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-# def generate_message_json(text: str, options: list,):
-#     # Create the JSON structure using Python dictionaries and lists
-#     json_data = {
-#         "head": {
-#                 "type": "message",
-#                 "text": text
-#             },
-#         "body": [
-#                 {
-#                     "type": "actions",
-#                     "items": []
-#                 }
-#             ]
-#     }
-#     # Add the options to the "items" list in the JSON
-#     for option_text in options:
-#         item = {
-#             "value": option_text.lower().replace(" ", "_"),  # Creating a simple value based on the text
-#             "style": option_text['style'],  # Default style for all options (modify if needed)
-#             "text": option_text['text']
-#         }
-#         json_data['content']['body'][0]['items'].append(item)
-
-#     return json_data
-
 def parse_option_text(option_text):
     # Function to parse the option text with color information and extract the text and style
     # Format of the option text: "<text>#<color>"
@@ -55,11 +30,11 @@ def generate_json(text, options, response_type):
     if response_type == "button":
         # Generate JSON for button type response
         button_items = []
-        for i, option in enumerate(options):
+        for _i, option in enumerate(options):
             demisto.debug(f"option= {option}")
             option_text, option_style = parse_option_text(option)
             button_item = {
-                "value": f"x0{i+1}",
+                "value": option_text,
                 "style": option_style,
                 "text": option_text
             }
@@ -81,11 +56,11 @@ def generate_json(text, options, response_type):
     elif response_type == "dropdown":
         # Generate JSON for dropdown type response
         select_items = []
-        for i, option in enumerate(options):
+        for _i, option in enumerate(options):
             demisto.debug(f"option= {option}")
             option_text, _ = parse_option_text(option)
             select_item = {
-                "value": f"v{i+1}",
+                "value": option_text,
                 "text": option_text
             }
             select_items.append(select_item)
@@ -96,7 +71,7 @@ def generate_json(text, options, response_type):
                     "select_items": select_items,
                     "text": text,
                     "selected_item": {
-                        "value": "v1"
+                        "value": select_items[0].get('value')
                     },
                     "type": "select"
                 }
@@ -122,7 +97,7 @@ def main():
     reply = demisto.get(demisto.args(), 'reply')
     response_type = demisto.get(demisto.args(), 'responseType')
     lifetime = demisto.get(demisto.args(), 'lifetime')
-    slack_instance = demisto.get(demisto.args(), 'zoomInstance')
+    zoom_instance = demisto.get(demisto.args(), 'zoomInstance')
     try:
         parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
         assert parsed_date is not None, f'could not parse in {lifetime}'
@@ -142,9 +117,9 @@ def main():
     args = {
         'ignoreAddURL': 'true',
     }
-    if slack_instance:
+    if zoom_instance:
         args.update({
-            'using': slack_instance
+            'using': zoom_instance
         })
     user_options = [option1, option2]
     if extra_options:
@@ -157,18 +132,13 @@ def main():
         'expiry': expiry,
         'default_response': default_response
     })
-    # args['message'] = blocks
-
     to = demisto.get(demisto.args(), 'user')
     channel = demisto.get(demisto.args(), 'channel')
-    channel_id = demisto.get(demisto.args(), 'channel_id')
 
     if to:
         args['to'] = to
-    elif channel_id:
-        args['channel_id'] = channel_id
     elif channel:
-        args['channel'] = channel
+        args['channel_id'] = channel
     else:
         return_error('Either a user or a channel must be provided.')
 

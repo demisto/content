@@ -3,8 +3,6 @@ args:
   name: user
 - description: The Zoom channel to which to send the message.
   name: channel
-- description: The Zoom channel ID to which to send the message.
-  name: channel_id
 - description: The message to send to the user or channel.
   name: message
   required: true
@@ -57,7 +55,7 @@ tags:
 - zoom
 timeout: '0'
 type: python
-dockerimage: demisto/fastapi:1.0.0.63688
+dockerimage: devtesting/fastapi:1.0.0.1692011874
 tests:
 - no test - Untestable
 dependson:

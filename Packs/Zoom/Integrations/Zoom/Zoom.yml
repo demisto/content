@@ -1189,7 +1189,6 @@ script:
       type: string
     - name: to
       description: The user to whom to send the message. You must provide this parameter or the channel_id parameter.
-      required: true
       type: string
     - name: channel_id
       description: >
@@ -1207,7 +1206,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:1.0.0.63688
+  dockerimage: devtesting/fastapi:1.0.0.1692011874
   script: "-"
   subtype: python3
   type: python

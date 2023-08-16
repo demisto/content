@@ -1698,3 +1698,43 @@ def test_zoom_get_user_id_by_email(mocker):
     result = zoom_get_user_id_by_email(client, email)
     mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{email}')
     assert result == expected_user_id
+
+
+def test_zoom_send_notification_command(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that the zoom_send_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient", bot_client_secret="mocksecret")
+
+    expected_request_payload = {
+        'message': 'Hello from @dima!',
+        'to': 'channel1',
+        'file_ids': []
+    }
+
+    expected_response = {
+        'id': 'message_id',
+        'contact': "user2@example.com",
+        'channel_name': 'channel_name'
+    }
+
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_message')
+    mock_send_chat_message.return_value = expected_response
+    from Zoom import zoom_send_message_command
+
+    result = zoom_send_message_command(client,
+                                       user_id='user1',
+                                       message='Hello from @dima!',
+                                       to_channel='channel1',
+
+                                       )
+
+    assert result.outputs == expected_response
+    assert mock_send_chat_message.call_args[0][1] == expected_request_payload
