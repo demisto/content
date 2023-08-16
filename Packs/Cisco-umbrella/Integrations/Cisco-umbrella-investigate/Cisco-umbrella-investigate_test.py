@@ -219,25 +219,25 @@ def different_inputs_handling(*args):
 
 
 
-@pytest.mark.parametrize(("data", "expected_score"),(
+@pytest.mark.parametrize(("status","securerank2", "expected_score"),(
     pytest.param({},Common.DBotScore.NONE,id="empty"),
-    pytest.param({"status":None},Common.DBotScore.NONE,id="status None"),
-    pytest.param({"status":0},Common.DBotScore.NONE,id="status 0"),
-    pytest.param({"status":-1},Common.DBotScore.BAD,id="status -1"),
-    pytest.param({"status":1},Common.DBotScore.GOOD,id="status 1"),
-    pytest.param({"status":0,"security_rank2":None},Common.DBotScore.NONE,id="status 0, rank None"),
-    pytest.param({"status":None,"security_rank2":None},Common.DBotScore.NONE,id="status None, rank None"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.GOOD,id="above suspicious threshold"),
-    pytest.param({"status":1, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.GOOD,id="status (1) is stronger than threshold"),
-    pytest.param({"status":-1, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1},Common.DBotScore.BAD,id="status (-1) is stronger than threshold"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD},Common.DBotScore.GOOD,id="equal to suspicious threshold"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD - 1},Common.DBotScore.SUSPICIOUS,id="below suspicious to threshold"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD + 1},Common.DBotScore.SUSPICIOUS,id="above malicious threshold"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD},Common.DBotScore.SUSPICIOUS,id="equal to malicious threshold"),
-    pytest.param({"status":0, "security_rank2":Cisco_umbrella_investigate.MALICIOUS_THRESHOLD - 1},Common.DBotScore.BAD,id="below malicious threshold"),
+    pytest.param(None,None,Common.DBotScore.NONE,id="status None"),
+    pytest.param(0,None,Common.DBotScore.NONE,id="status 0"),
+    pytest.param(-1,None,Common.DBotScore.BAD,id="status -1"),
+    pytest.param(1,None,Common.DBotScore.GOOD,id="status 1"),
+    pytest.param(0,None,Common.DBotScore.NONE,id="status 0, rank None"),
+    pytest.param(None,None,Common.DBotScore.NONE,id="status None, rank None"),
+    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1,Common.DBotScore.GOOD,id="above suspicious threshold"),
+    pytest.param(1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1,Common.DBotScore.GOOD,id="status (1) is stronger than threshold"),
+    pytest.param(-1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD+1,Common.DBotScore.BAD,id="status (-1) is stronger than threshold"),
+    pytest.param(0,Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD,Common.DBotScore.GOOD,id="equal to suspicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD - 1,Common.DBotScore.SUSPICIOUS,id="below suspicious to threshold"),
+    pytest.param(0,Cisco_umbrella_investigate.MALICIOUS_THRESHOLD + 1,Common.DBotScore.SUSPICIOUS,id="above malicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD,Common.DBotScore.SUSPICIOUS,id="equal to malicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD - 1,Common.DBotScore.BAD,id="below malicious threshold"),
 ))
-def test_calculate_domain_dbot_score(data:dict, expected_score:int):
-    assert Cisco_umbrella_investigate.calculate_domain_dbot_score(data) == expected_score
+def test_calculate_domain_dbot_score(status:int|None,securerank2:int|None, expected_score:int):
+    assert Cisco_umbrella_investigate.calculate_domain_dbot_score(status,securerank2) == expected_score
 
 @pytest.mark.parametrize("status",(("","3","none","na","NA","🥲")))
 def test_calculate_domain_dbot_score_unexpected_status(status:str):
