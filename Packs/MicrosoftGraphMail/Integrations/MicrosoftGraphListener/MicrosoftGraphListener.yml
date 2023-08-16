@@ -416,8 +416,8 @@ script:
       isArray: true
       name: attachIDs
     - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
-      isArray: true
       name: attachNames
+      isArray: true
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       name: attachCIDs
       isArray: true
@@ -735,7 +735,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.68914
   isfetch: true
   script: ''
   type: python
