@@ -25,6 +25,21 @@ def test_does_file_exist(mocker):
     assert not flag
 
 
+def test_does_file_exist_azure_devops(mocker):
+    """
+    Given:
+        - A branch name and a content file.
+    When:
+        - In order to know if this file already exists in the repository or not
+    Then:
+        - Returns True if the file exists and false if it doesn't
+    """
+    from CommitFiles import does_file_exist_azure_devops
+    mocker.patch.object(demisto, 'executeCommand', return_value={"Type": 1, "Contents": {}})
+    flag = does_file_exist_azure_devops('demisto', content_file)
+    assert not flag
+
+
 def test_commit_content_item_azure_devops(mocker):
     """
     Given:
