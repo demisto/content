@@ -30,6 +30,8 @@ def test_find_available_branch(pack_name, command_get_branch, mocker):
 
 
 RESPONSE = [{"Contents": {"value": [{"name": "Test/Test"}, {"name": "Test/Test_1"}]}}]
+
+
 @pytest.mark.parametrize('pack_name, response, expected_branch_name', [("Test", RESPONSE, "refs/heads/Test_2")])
 def test_find_available_branch_azure_devops(pack_name, response, expected_branch_name, mocker):
     """
