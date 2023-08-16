@@ -134,4 +134,3 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
         time_mock.assert_called_once_with(expected_sleep)
     else:
         time_mock.assert_not_called()
-
