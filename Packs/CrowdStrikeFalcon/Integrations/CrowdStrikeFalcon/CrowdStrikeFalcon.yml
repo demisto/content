@@ -2423,7 +2423,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2457,7 +2456,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2476,7 +2474,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2492,7 +2489,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2513,7 +2509,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2526,7 +2521,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2552,7 +2546,6 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      type: Unknown
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
