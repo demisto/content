@@ -885,6 +885,7 @@ tasks:
       title: Find the missing incident and answer the questions below
       description: |-
         It seems like we missed an incident that can help understand the current one. Check the Malicious and Suspicious indicators' "related incident" section and find the missed incident.
+        Remember to add the "ID" column, so you can navigate to the incident (use the Table Settings icon).
 
 
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/charlie-day.gif)
