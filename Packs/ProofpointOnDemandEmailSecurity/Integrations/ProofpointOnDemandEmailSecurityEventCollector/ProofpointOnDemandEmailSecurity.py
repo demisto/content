@@ -33,13 +33,16 @@ def fetch_events(connection: Connection) -> list[dict]:
     while len(events) < EVENTS_TO_FETCH:
         try:
             event = json.loads(connection.recv(timeout=60))
-            date = dateparser.parse(event.get("ts"))
+            event_ts = event.get("ts")
+            if not event_ts:
+                raise DemistoException(f"Event does not contain a timestamp: {event}")
+            date = dateparser.parse(event_ts)
             if not date:
-                raise DemistoException(f"Failed to parse date: {event.get('ts')}")
+                raise DemistoException(f"Failed to parse date: {event_ts}")
+            # the `ts` parameter is not always in UTC, so we need to convert it
             event["_time"] = date.astimezone(tz.tzutc()).isoformat()
-            demisto.debug(f"Received event: {event}")
             events.append(event)
-            demisto.debug(f"len of message_events: {len(events)}")
+            demisto.debug(f"Received event. length of events from {connection.remote_address} is: {len(events)}")
         except TimeoutError:
             demisto.debug("Timeout reached when receiving events")
             break
@@ -59,7 +62,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str):
         while True:
             message_events = fetch_events(message_connection)
             maillog_events = fetch_events(maillog_connection)
-            demisto.info("Adding events to XSIAM")
+            demisto.info(f"Adding {len(message_events) + len(maillog_events)} events to XSIAM")
             # Send the events to the XSIAM
             send_events_to_xsiam(message_events, vendor=VENDOR, product=PRODUCT)
             send_events_to_xsiam(maillog_events, vendor=VENDOR, product=PRODUCT)
