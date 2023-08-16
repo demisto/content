@@ -1,0 +1,18 @@
+{
+    "next": null,
+    "results": [
+        {
+            "created_at": "2023-06-27T12:31:05Z",
+            "email": "some_email_address",
+            "domain": "stark.com",
+            "tags": [
+                "family:agenttesla",
+                "collection",
+                "keylogger",
+                "spyware",
+                "stealer",
+                "trojan"
+            ]
+        }
+    ]
+}
