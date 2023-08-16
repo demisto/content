@@ -287,7 +287,7 @@ def return_outputs_custom(readable_output, outputs=None):
         "Contents": outputs,
         "EntryContext": outputs,
     }
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def return_no_mututal_indicators_found_entry():
@@ -384,8 +384,9 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
 def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
-    return_outputs(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
-                   raw_response={})
+    return CommandResults(readable_output=hr,
+                          outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
+                          raw_response={})
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
@@ -408,7 +409,7 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
 
 
 def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str],
-                            from_date: str) -> None:
+                            from_date: str) -> CommandResults:
     """
     Display current incident
     :param incident_df: DataFrame of incident
@@ -426,8 +427,9 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
-                                                   col_incident))
+    return CommandResults(readable_output=tableToMarkdown("Actual Incident",
+                                                          incident_json,
+                                                          col_incident))
 
 
 def load_indicators_for_current_incident(incident_id: str, indicators_types: List[str], min_nb_of_indicators: int,
@@ -476,13 +478,15 @@ def get_incidents_ids_related_to_indicators(indicators, query):
     return incident_ids, False
 
 
-def get_incidents_filtered_from_query(incident_ids, query):
+def get_ids_condition_clause(incident_ids):
     if incident_ids:
-        incident_ids = [f'incident.id:{inc_id}' for inc_id in incident_ids]
-        ids_condition = "(" + " OR ".join(incident_ids) + ")"
-    else:
-        ids_condition = ""
-    query += " AND %s" % ids_condition
+        return "incident.id:(" + " ".join(incident_ids) + ")"
+    return ""
+
+
+def get_incidents_filtered_from_query(incident_ids, query):
+    ids_condition_clause = get_ids_condition_clause(incident_ids)
+    query += " AND %s" % ids_condition_clause
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
         'populateFields': 'id'
@@ -550,7 +554,7 @@ def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: O
     }
     if tag is not None:
         return_entry["Tags"] = [tag]
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def main():
@@ -612,7 +616,8 @@ def main():
     incident_found_bool = (len(similar_incidents) > 0)
 
     if show_actual_incident == 'True':
-        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        command_results = display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        return_results(command_results)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
