@@ -1992,9 +1992,9 @@ def main() -> None:
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
-    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction', ''))
-    close_incident = argToBoolean(params.get('close_incident'))
-    close_alert = argToBoolean(params.get('close_alert'))
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction', 'None'))
+    close_incident = argToBoolean(params.get('close_incident', False))
+    close_alert = argToBoolean(params.get('close_alert', False))
 
     return_v1_output = params.get('output_old_format', False)
 
@@ -2032,6 +2032,7 @@ def main() -> None:
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
             'get-remote-data': get_remote_data_command,
+            'update-remote-system': update_remote_system_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
@@ -2064,8 +2065,6 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
