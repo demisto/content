@@ -224,7 +224,7 @@ script:
     name: azure-devops-user-remove
     outputs: []
   - arguments:
-    - description: The name or ID of the project. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
     - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but the user can override it.
