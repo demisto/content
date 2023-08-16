@@ -6,9 +6,7 @@ import time
 import traceback
 from datetime import datetime
 import urllib3
-
 import requests
-
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
@@ -713,7 +711,7 @@ def get_scanner_info():
     Returns:
         CommandResults: Command object with relevant data.
     """
-    command_result_headers = ['Scanner ID', 'Name', 'Status', 'Timestamp']
+    headers = ['Scanner ID', 'Name', 'Status', 'Timestamp']
     full_url = f'{BASE_URL}/scanners'
     response = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
     response_data = response.json()
@@ -729,10 +727,13 @@ def get_scanner_info():
             'timestamp': scanner['timestamp']
         }
         scanner_data.append(scanner_results)
-    markdown = tableToMarkdown('Scanners', scanner_data, headers=command_result_headers)
+
+    name = 'Scanner Info'
+    t = scanner_data
+    markdown = tableToMarkdown(name, t,
+    headerTransform=underscoreToCamelCase)
     results = CommandResults(
         readable_output = markdown,
-        outputs_key_field = 'status',
         outputs_prefix = 'TenableIO.Scanner',
         outputs = scanner_data,
         raw_response = response_data

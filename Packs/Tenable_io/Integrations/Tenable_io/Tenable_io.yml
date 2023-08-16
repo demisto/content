@@ -9,33 +9,35 @@ configuration:
   required: true
   type: 0
 - display: Access key
+  hidden: true
   name: access-key
-  type: 4
-  hidden: true
   required: false
-- displaypassword: Access key
+  type: 4
+- display: ""
+  displaypassword: Access key
+  hiddenusername: true
   name: credentials_access_key
-  hiddenusername: true
-  type: 9
   required: false
+  type: 9
 - display: Secret key
-  name: secret-key
-  type: 4
   hidden: true
+  name: secret-key
   required: false
-- displaypassword: secret key
-  name: credentials_secret_key
+  type: 4
+- display: ""
+  displaypassword: secret key
   hiddenusername: true
-  type: 9
+  name: credentials_secret_key
   required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable.io
 name: Tenable.io
@@ -46,7 +48,7 @@ script:
         The ID of the folder whose scans should be listed. Scans are stored
         in specific folders on Tenable, e.g.: folderId=8.
       name: folderId
-    - description: 'Limit the results to those that have only changed since this time. Date format will be YYYY-MM-DD format or relational expressions like “7 days ago”.'
+    - description: Limit the results to those that have only changed since this time. Date format will be YYYY-MM-DD format or relational expressions like “7 days ago”.
       name: lastModificationDate
     description: Retrieves scans from the Tenable platform.
     name: tenable-io-list-scans
@@ -118,19 +120,19 @@ script:
       name: scanId
       required: true
     - auto: PREDEFINED
-      defaultValue: 'no'
+      defaultValue: "no"
       description: 'If true, the report will contain remediation and host information for the specified scan. Otherwise, the report will only contain vulnerabilities. Possible values: "yes" and "no".'
       name: detailed
       predefined:
-      - 'yes'
-      - 'no'
+      - "yes"
+      - "no"
     - auto: PREDEFINED
-      defaultValue: 'no'
+      defaultValue: "no"
       description: 'Whether to return the basic details of the specified scan. Possible values: "yes" and "no".'
       name: info
       predefined:
-      - 'yes'
-      - 'no'
+      - "yes"
+      - "no"
     description: Retrieves a scan report for the specified scan.
     name: tenable-io-get-scan-report
     outputs:
@@ -144,7 +146,7 @@ script:
       description: The targets to scan.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: 'The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").'
+      description: The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -303,15 +305,14 @@ script:
       description: The number of times the vulnerability was found.
       type: number
     - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
-      description: 'The current state of the reported vulnerability ("Active", "Fixed", "New", etc.).'
+      description: The current state of the reported vulnerability ("Active", "Fixed", "New", etc.).
       type: string
   - arguments:
     - default: true
       description: The unique ID of the scan.
       name: scanId
       required: true
-    description: |-
-      Checks the status of a specific scan using the scan ID. Possible values: "Running", "Completed", and "Empty" (Ready to run).
+    description: 'Checks the status of a specific scan using the scan ID. Possible values: "Running", "Completed", and "Empty" (Ready to run).'
     name: tenable-io-get-scan-status
     outputs:
     - contextPath: TenableIO.Scan.Id
@@ -388,14 +389,14 @@ script:
       description: Date the asset was last updated.
       type: date
   - arguments:
-    - description: Specifies the number of assets per exported chunk. The range is 100-10000. Tenable does not recommend using a chunk size larger than 5000 as the potential for an error increases above this amount.
-      defaultValue: 100
+    - defaultValue: "100"
+      description: Specifies the number of assets per exported chunk. The range is 100-10000. Tenable does not recommend using a chunk size larger than 5000 as the potential for an error increases above this amount.
       name: chunkSize
-    - description: The interval in seconds between each poll.
-      defaultValue: 10
+    - defaultValue: "10"
+      description: The interval in seconds between each poll.
       name: intervalInSeconds
-    - description: The timeout for the polling in seconds.
-      defaultValue: 600
+    - defaultValue: "600"
+      description: The timeout for the polling in seconds.
       name: timeOut
     - description: When specified, the results returned in the list are limited to assets created later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
       name: createdAt
@@ -411,14 +412,14 @@ script:
       description: When set to true, returns assets which have any value for the deletedAt attribute.
       name: isDeleted
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: Specifies whether the asset is included in the asset count for the Tenable.io instance. If true, returns only licensed assets. If false, returns only unlicensed assets.
       name: isLicensed
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: When specified, the results returned in the list are limited to assets with a first scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
       name: firstScanTime
     - description: When specified, the results returned in the list are limited to assets with a last credentialed scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
@@ -429,25 +430,24 @@ script:
       description: If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID.
       name: serviceNowSysId
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: 'A comma-separated list of sources. Commonly used values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source.'
-      name: sources
       isArray: true
+      name: sources
     - auto: PREDEFINED
       description: If true, returns all assets that have a plugin results associated with it.
       name: hasPluginResults
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: When specified, the results returned in the list are limited to assets with the specified tag category.
       name: tagCategory
     - description: When specified, the results returned in the list are limited to assets with the specified tag value.
       name: tagValue
-    - name: exportUuid
-      description: The export UUID.
+    - description: The export UUID.
       hidden: true
-    polling: true
+      name: exportUuid
     description: Retrieves details for the specified asset to include custom attributes.
     name: tenable-io-export-assets
     outputs:
@@ -667,56 +667,57 @@ script:
     - contextPath: TenableIO.Asset.exposure_score
       description: The Asset Exposure Score (AES) for the asset.
       type: String
+    polling: true
   - arguments:
-    - description: The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000.
-      defaultValue: 50
+    - defaultValue: "50"
+      description: The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000.
       name: numAssets
-    - description: The interval in seconds between each poll.
-      defaultValue: 10
+    - defaultValue: "10"
+      description: The interval in seconds between each poll.
       name: intervalInSeconds
-    - description: The timeout for the polling in seconds.
-      defaultValue: 50
+    - defaultValue: "50"
+      description: The timeout for the polling in seconds.
       name: timeOut
     - auto: PREDEFINED
       description: Specifies whether or not to include unlicensed assets.
       name: includeUnlicensed
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: When specified, restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range.
       name: cidrRange
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were first found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+    - description: When specified, the results returned in the list are limited to vulnerabilities that were first found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.
       name: firstFound
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were fixed between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+    - description: When specified, the results returned in the list are limited to vulnerabilities that were fixed between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.
       name: lastFixed
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were last found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+    - description: When specified, the results returned in the list are limited to vulnerabilities that were last found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.
       name: lastFound
-    - description: The ID of the network object associated with scanners that detected the vulnerabilities you want to export.
+    - defaultValue: 00000000-0000-0000-0000-000000000000
+      description: The ID of the network object associated with scanners that detected the vulnerabilities you want to export.
       name: networkId
-      defaultValue: '00000000-0000-0000-0000-000000000000'
     - description: A comma-separated list of plugin IDs for which you want to filter the vulnerabilities.
-      name: pluginId
       isArray: true
+      name: pluginId
     - auto: PREDEFINED
       description: The plugin type for which you want to filter the vulnerabilities. If not set, export includes all vulnerabilities regardless of plugin type.
       name: pluginType
       predefined:
-      - 'remote'
-      - 'local'
-      - 'combined'
-      - 'settings'
-      - 'summary'
-      - 'third-party'
-      - 'reputation'
+      - remote
+      - local
+      - combined
+      - settings
+      - summary
+      - third-party
+      - reputation
     - description: 'A comma-separated list of severities of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical'
+      isArray: true
       name: severity
-      isArray: true
     - description: 'The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed'
+      isArray: true
       name: since
-      isArray: true
     - description: 'A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only.'
-      name: state
       isArray: true
+      name: state
     - description: When specified, the results returned in the list are limited to assets with the specified tag category.
       name: tagCategory
     - description: When specified, the results returned in the list are limited to assets with the specified tag value.
@@ -725,21 +726,20 @@ script:
       description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal'
       name: vprScoreOperator
       predefined:
-      - 'gte'
-      - 'gt'
-      - 'lte'
-      - 'lt'
-      - 'equal'
-      - 'not equal'
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. VPR values range are 0.1-10.0'
-      name: vprScoreValue
+      - gte
+      - gt
+      - lte
+      - lt
+      - equal
+      - not equal
+    - description: When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. VPR values range are 0.1-10.0
       isArray: true
+      name: vprScoreValue
     - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5'
       name: vprScoreRange
-    - name: exportUuid
-      description: The export UUID.
+    - description: The export UUID.
       hidden: true
-    polling: true
+      name: exportUuid
     description: Retrieves details for the specified asset to include custom attributes.
     name: tenable-io-export-vulnerabilities
     outputs:
@@ -1029,7 +1029,7 @@ script:
       description: A list of all sources (for example, social media channels, the dark web, etc.) where threat events related to this vulnerability occurred.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.product_coverage
-      description: "The relative number of unique products affected by the vulnerability: 'Low', 'Medium', 'High', or 'Very High'."
+      description: 'The relative number of unique products affected by the vulnerability: ''Low'', ''Medium'', ''High'', or ''Very High''.'
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.vpr.updated
       description: The ISO timestamp when Tenable.io last imported the VPR for this vulnerability.
@@ -1088,11 +1088,15 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
+    polling: true
+  - arguments: []
+    description: List the Tenable.io Cloud Scanners
+    name: tenable-io-list-scanners
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.0.0
 tests:
 - Tenable.io test
-fromversion: 5.0.0
