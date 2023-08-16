@@ -124,8 +124,8 @@ class IfElif:
 
 def main():
     try:
-        result = IfElif(**demisto.args()).parse_conditions()
-        return_results(result)
+        if_elif = IfElif(**demisto.args())
+        return_results(if_elif.parse_conditions())
     except Exception as e:
         return_error(f'Error in If-Elif Transformer: {e}')
 
