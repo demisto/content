@@ -12,7 +12,7 @@ This section describes the configuration required on the VMware vCenter server t
 2. In the vCenter Server Management Interface, select **Syslog**.
 3. In the *Forwarding Configuration* section - 
    * If you have not yet configured any remote syslog hosts, click **Configure**. 
-   * If you already have configured hosts previously, Click **Edit**.
+   * If you configured hosts previously, click **Edit**.
 4. From the **Protocol** drop-down menu, select the requested protocol for the syslog forwarding (for example *UDP*).
 5. In the **Port** text box, enter the port number that would be used for communication with the target Cortex XSIAM Broker VM syslog server.
 6. In the *Create Forwarding Configuration* pane, click **Add** to enter another remote syslog server.
