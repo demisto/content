@@ -1075,12 +1075,10 @@ def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int
             return []
     else:
         data = events_list_response
-
     formatted_events = format_outputs_time_attributes_to_iso([event.get('attributes') for event in data])
     for event in formatted_events:
         event['Event ID'] = str(event['Event ID'])  # To avoid overridden by XSOAR since it's a huge number.
     return formatted_events
-
 
 
 def watchlist_entry_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
