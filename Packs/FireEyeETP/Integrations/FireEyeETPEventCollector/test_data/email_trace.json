@@ -56,9 +56,72 @@
       ]
     }
   },
-  "formatted_response_hidden_true": {
+  "paging_response":[
+    {
+      "data": [
+        {
+          "id": "1",
+          "type": "trace",
+          "attributes": {
+            "subject": "test",
+            "acceptedDateTime": "2023-08-01T12:24:21.308",
+            "lastModifiedDateTime": "2023-08-01T12:24:21.308"
+          }
+        },
+        {
+          "id": "2",
+          "type": "trace",
+          "attributes": {
+            "subject": "test",
+            "acceptedDateTime": "2023-08-01T12:25:21.308",
+            "lastModifiedDateTime": "2023-08-01T12:25:21.308"
+          }
+        }
+      ],
+      "meta": {
+        "fromLastModifiedOn": {
+          "start": "2023-08-01T12:24:21.308Z",
+          "end": "2023-08-01T12:25:21.308Z"
+        }
+      }
+    },
+    {
+      "data": [
+        {
+          "id": "2",
+          "type": "trace",
+          "attributes": {
+            "subject": "test",
+            "acceptedDateTime": "2023-08-01T12:25:21.308",
+            "lastModifiedDateTime": "2023-08-01T12:25:21.308"
+          }
+        },
+        {
+          "id": "3",
+          "type": "trace",
+          "attributes": {
+            "acceptedDateTime": "2023-08-01T12:27:21.308",
+            "subject": "test",
+            "lastModifiedDateTime": "2023-08-01T12:27:21.308"
+          }
+        }
+      ],
+      "meta": {
+        "fromLastModifiedOn": {
+          "start": "2023-08-01T12:25:21.308Z",
+          "end": "2023-08-01T12:27:21.308Z"
+        }
+      }
+
+    }
+  ],
+  "formatted_response_hidden_true":  {
+    "_EVENT_STATUS": "modified",
+    "event_type": "trace",
+    "_TIME": "2023-07-19T12:24:21.308000",
     "id": "3yPim9i-68317-08858E251843F5D7B46344849e0",
     "type": "trace",
+    "included": "hidden data",
     "attributes": {
       "verdicts": {
         "AS": "",
@@ -69,6 +132,7 @@
         "ActionYARA": ""
       },
       "domain": "test.com",
+      "subject": "hidden data",
       "acceptedDateTime": "2023-07-19T12:24:19.000",
       "lastModifiedDateTime": "2023-07-19T12:24:21.308",
       "originalMessageID": "<bb47abfc-75cb-4f25-a9b2-34fc931fdc1e@az.westus3.unknown.microsoft.com>",
@@ -85,15 +149,12 @@
         "test@test.com"
       ],
       "emailSize": 89.7
-    },
-    "_EVENT_STATUS": "modified",
-    "event_type": "trace",
-    "_TIME": "2023-07-19T12:24:21308000Z"
+    }
   },
   "formatted_response_hidden_false": {
-    "_EVENT_STATUS": "new",
+    "_EVENT_STATUS": "modified",
     "event_type": "trace",
-    "_TIME": "2017-07-11T04:51:26365000Z",
+    "_TIME": "2023-07-19T12:24:21.308000",
     "id": "3yPim9i-68317-08858E251843F5D7B46344849e0",
     "type": "trace",
     "included": [
@@ -134,3 +195,4 @@
     }
   }
 }
+

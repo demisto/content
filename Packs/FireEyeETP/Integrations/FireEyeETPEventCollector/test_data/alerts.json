@@ -62,7 +62,100 @@
         },
         "type": "alerts"
     },
-
+    "paging_response": [
+        {
+            "data": [
+                {
+                    "id": "1",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:29:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test1"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                },
+                {
+                    "id": "2",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:30:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test1"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "fromLastModifiedOn": {
+                    "start": "2023-08-01T14:29:33.699",
+                    "end": "2023-08-01T14:30:33.699"
+                }
+            }
+        },
+        {
+            "data": [
+                {
+                    "id": "2",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:30:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test3"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                },
+                {
+                    "id": "3",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:34:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test4"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "fromLastModifiedOn": {
+                    "start": "2023-08-01T14:30:33.699",
+                    "end": "2023-08-01T14:34:33.699"
+                }
+            }
+        }
+    ],
     "ok_response_full": {
         "data": [
             {
@@ -273,9 +366,8 @@
         },
         "type": "alerts"
     },
-
     "formatted_response_hidden_false": {
-        "_TIME": "2023-07-18T14:29:33.699",
+        "_TIME": "2023-07-18T14:29:33.699000",
         "_EVENT_STATUS": "modified",
         "event_type": "alert",
         "attributes": {
@@ -326,8 +418,10 @@
             "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
         }
     },
-
     "formatted_response_hidden_true": {
+        "_TIME": "2023-07-18T14:29:33.699000",
+        "_EVENT_STATUS": "modified",
+        "event_type": "alert",
         "attributes": {
             "meta": {
                 "read": true,
@@ -362,8 +456,10 @@
                 "headers": {
                     "cc": "",
                     "to": "Roman <test@test.com>",
-                    "from": "Roman <test@test.com>"
+                    "from": "Roman <test@test.com>",
+                    "subject": "hidden data"
                 },
+                "attachment": "hidden data",
                 "timestamp": {
                     "accepted": "2023-07-18T13:52:01"
                 }
@@ -372,9 +468,7 @@
         "id": "3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc",
         "links": {
             "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
-        },
-        "_EVENT_STATUS": "modified",
-        "event_type": "alert",
-        "_TIME": "2023-07-18T14:29:33699000Z"
+        }
     }
 }
+

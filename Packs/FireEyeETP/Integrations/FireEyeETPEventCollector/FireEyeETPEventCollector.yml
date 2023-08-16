@@ -12,14 +12,14 @@ configuration:
     required: true
     type: 0
     section: Connect
-  - displaypassword: API Secret Key
+  - displaypassword: API Key
     additionalinfo: The API Key allows you to integrate with the FireEye ETP.
     name: credentials
     required: true
     hiddenusername: true
     type: 9
   - defaultvalue: "1000"
-    display: Maximum number of Alerts to fetch.
+    display: Maximum number of Alerts to fetch. 
     name: alerts_max_fetch
     type: 0
     additionalinfo: The maximum number of Alert events to fetch from FireEye ETP.
@@ -51,7 +51,7 @@ configuration:
     type: 8
     section: Collect
     advanced: true
-    additionalinfo: Outbound traffic will be fetched in addition to inbound traffic.
+    additionalinfo: Outbound traffic will be fetched in addition to inbound traffic of the event type. When enabled, the maximum number of events to fetch corresponds to outbound and inbound separately.
   - display: Hide sensitive details from email
     name: hide_sensitive
     type: 8
@@ -79,7 +79,7 @@ script:
             - "true"
             - "false"
           required: true
-      description: Gets events from FireEye ETP.
+      description: Gets events from FireEye ETP. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
       name: fireeye-etp-get-events
   dockerimage: demisto/python3:3.10.12.68300
   isfetchevents: true

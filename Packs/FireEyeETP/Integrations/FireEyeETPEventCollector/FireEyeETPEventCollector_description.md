@@ -18,12 +18,8 @@ Follow these steps to configure API keys:
 For any API access, the following entitlements are required:
 - iam.users.browse
 - iam.orgs.self.read
-
-For accessing alerts APIs, the following additional entitlement is required:
-- etp.alerts.read
-
-For accessing trace APIs, the following additional entitlement is required:
-- etp.email_trace.read
+- etp.alerts.read (For accessing alerts APIs)
+- etp.email_trace.read (For accessing trace APIs)
 
 ## Cloud service regions
 Use the URLs for the region that hosts your Email Security — Cloud service:
