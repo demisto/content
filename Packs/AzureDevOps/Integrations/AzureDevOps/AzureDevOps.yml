@@ -227,7 +227,7 @@ script:
     - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
-    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it.
       name: repository_id
       required: false
     - description: The name of the source branch of the pull request.
