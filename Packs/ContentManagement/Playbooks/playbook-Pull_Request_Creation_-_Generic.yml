@@ -1013,7 +1013,7 @@ inputs:
       root: incident
       accessor: ${incident.cicdazuredevopstargetref}
   required: false
-  description: Mandatory for Azure DevOps. The reference branch or sha commit  to
+  description: Mandatory for Azure DevOps. The reference branch or SHA commit to
     create a new branch from.
   playbookInputQuery:
 outputs: []
