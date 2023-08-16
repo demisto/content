@@ -32,8 +32,8 @@ Azure DevOps
 | --- | --- | --- |--------------|
 | PullRequestTemplate | Pull request description template. |  | Required     |
 | MainBranch | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. |  | Optional     |
-| PackName | The name of the pack |  | Required     |
-| File | The File or Files to commit to the new or updated branch or pr |  | Required     |
+| PackName | The name of the pack. |  | Required     |
+| File | The file or files to commit to the new or updated branch or pull request. |  | Required     |
 
 ## Playbook Outputs
 ---
