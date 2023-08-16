@@ -242,7 +242,7 @@ def create_comment_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "comment": args.get("comment"),
-            "id": args.get("id"),
+            "investigationId": args.get("id"),
         }
     }
 
@@ -1095,7 +1095,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             }
             priority
             type
-            processing_status {
+            processingStatus {
                 assets
                 events
                 alerts
