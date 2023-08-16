@@ -2936,7 +2936,7 @@ script:
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
     - defaultValue: '50'
-      description: The number of results to retrieve. Minimum  value is 1.
+      description: The maximum number of results to retrieve. Minimum value is 1.
       name: limit
     outputs:
     - type: Boolean
