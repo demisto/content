@@ -16,6 +16,8 @@ MIRROR_DIRECTION_MAPPING = {
     "Incoming And Outgoing": "Both",
 }
 
+#!test!
+
 OUT_FIELDS = ['Confidence', 'Criticality', 'Note.Text', 'Note.UpdatedBy', 'Severity.Label', 'VerificationState',
               'Workflow.Status']
 FindingIdentifiers_lIST = ['FindingIdentifiers.Id', 'FindingIdentifiers.ProductArn']
