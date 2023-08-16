@@ -464,7 +464,7 @@ def fetch_incidents():
 
     # update new_last_run and add the event_date of the last event fetched
     if len(final_events) > 0:
-        new_last_run["from_time"] = max(event[event_date] for event in final_events)/1000
+        new_last_run["from_time"] = max(event[event_date] for event in final_events) / 1000
     else:
         # set the to_time to current to_time, if no data recieved
         new_last_run["from_time"] = to_time
