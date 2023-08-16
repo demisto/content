@@ -1282,7 +1282,8 @@ def main():
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES, all_content_packs)) if is_bucket_upload_flow and not packs_flag else \
+    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES,
+                             all_content_packs)) if (is_bucket_upload_flow and not packs_flag) else \
         list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
