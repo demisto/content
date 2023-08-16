@@ -16,7 +16,7 @@ def test_malware_readable_data():
     try:
         malware_readable_data({'name': 'some-name'})
     except KeyError:
-        assert False, 'malware_readable_data method should not fail on dict with name key only'
+        raise AssertionError('malware_readable_data method should not fail on dict with name key only')
 
 
 def test_get_alert_command(mocker, requests_mock):
@@ -54,7 +54,7 @@ def test_get_alert_command(mocker, requests_mock):
                     },
                     'email': {
                         'headers': {
-                            'to': u'\u200b'
+                            'to': '\u200b'
                         },
                         'timestamp': {}
                     }
