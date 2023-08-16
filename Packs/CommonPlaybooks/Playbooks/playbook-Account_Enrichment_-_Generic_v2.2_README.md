@@ -25,20 +25,21 @@ This playbook does not use any integrations.
 ### Scripts
 
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 * Set
 
 ### Commands
 
-* pingone-get-user
-* identitynow-get-accounts
-* ad-get-user
+* xdr-list-risky-users
 * identityiq-search-identities
+* identitynow-get-accounts
+* iam-get-user
+* msgraph-user-get-manager
+* ad-get-user
+* pingone-get-user
+* aws-iam-get-user
 * msgraph-user-get
 * okta-get-user
-* iam-get-user
-* aws-iam-get-user
-* xdr-list-risky-users
-* msgraph-user-get-manager
 
 ## Playbook Inputs
 
@@ -46,7 +47,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Username | The username to enrich. | Account.Username | Optional |
+| Username | The username to enrich. This input also supports usernames with a domain prefix, in the format of "domain\\username". | Account.Username | Optional |
 | Domain | Optional - This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Please provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
 
 ## Playbook Outputs
