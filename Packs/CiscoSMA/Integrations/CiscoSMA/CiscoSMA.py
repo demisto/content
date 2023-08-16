@@ -69,7 +69,7 @@ class Client(BaseClient):
             }
         }
         try:
-            response = self._http_request("POST", "login", json_data=data,)
+            response = self._http_request("POST", "login", json_data=data)
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
@@ -448,8 +448,8 @@ class Client(BaseClient):
             envelopeSenderfilterValue=sender_filter_value,
             envelopeRecipientfilterOperator=recipient_filter_operator,
             envelopeRecipientfilterValue=recipient_filter_value,
-            subjectFilterBy=subject_filter_operator,
-            subjectFilterValue=subject_filter_value,
+            subjectfilterOperator=subject_filter_operator,
+            subjectfilterValue=subject_filter_value,
             ciscoHost=cisco_host,
             searchOption=search_option,
             offset=offset,
@@ -460,7 +460,7 @@ class Client(BaseClient):
             **format_custom_query_args(custom_query),
         )
 
-        return self._http_request("GET", "message-tracking/messages", params=params)
+        return self._http_request("GET", "message-tracking/messages", params=params, quote_params_via=urllib.parse.quote)
 
     def message_details_get_request(
         self,
