@@ -2274,7 +2274,7 @@ script:
       description: The file object ID.
     - type: String
       contextPath: AzureDevOps.File.gitObjectType
-      description: The file git object type.
+      description: The file Git object type.
     - type: String
       contextPath: AzureDevOps.File.commitId
       description: ID (SHA-1) of the file commit.
