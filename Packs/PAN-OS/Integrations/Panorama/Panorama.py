@@ -923,6 +923,10 @@ def panorama_commit(args):
     if force_commit:
         command += '<force></force>'
 
+    description = args.get('description')
+    if description:
+        command += f'<description>{description}</description>'
+
     exclude_device_network = args.get('exclude_device_network_configuration')
     exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
     if exclude_device_network_configuration:
@@ -1822,7 +1826,7 @@ def prettify_address_group(address_group: Dict) -> Dict:
 @logger
 def panorama_get_address_group(address_group_name: str):
     params = {
-        'action': 'show',
+        'action': 'get',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
         'key': API_KEY
