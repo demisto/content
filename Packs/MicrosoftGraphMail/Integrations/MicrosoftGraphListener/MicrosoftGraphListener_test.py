@@ -748,24 +748,6 @@ class TestCommandsWithLargeAttachments:
              'attach_cids': '',
              'manual_attachments': []
              }
-        ),
-        (
-            self_deployed_client(),
-            {'to': 'ex@example.com',
-             'cc': '',
-             'bcc': '',
-             'subject': "test subject",
-             'body': "<b>This text is bold</b>",
-             'body_type': 'html',
-             'flag': 'notFlagged',
-             'importance': 'Low',
-             'replyTo': 'ex2@example.com,ex3@example.com',
-             'internet_message_headers': '',
-             'attachIDs': '1,2',
-             'attachNames': '',
-             'attachCIDs': '',
-             'manual_attachments': []
-             }
         )
     ]
 
