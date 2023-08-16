@@ -555,10 +555,13 @@ def test_test_auth_code_command(mocker, command_to_check):
         assert mock_ediscovery.called
         assert not mock_alerts.called
 
+
 def test_purge_ediscovery_data_command(mocker):
-    mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}) )
+    mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}))
     assert 'eDiscovery purge status is success.' == purge_ediscovery_data_command(client_mocker, {}).readable_output
 
+
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
-    mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []} )
-    assert '### Results:\n**No entries.**\n' == list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
+    mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
+    assert '### Results:\n**No entries.**\n' == \
+           list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
