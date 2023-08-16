@@ -1379,7 +1379,7 @@ script:
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.id
-      description: ID of user changed the work item.
+      description: ID of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
       description: The unique name of user changed the work item.
