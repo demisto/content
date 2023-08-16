@@ -1370,7 +1370,7 @@ script:
       description: 'The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.displayName
-      description: Display name of user changed the work item.
+      description: Display name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.url
       description: The work item url.
