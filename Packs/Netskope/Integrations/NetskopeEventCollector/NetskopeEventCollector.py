@@ -62,7 +62,8 @@ def honor_rate_limiting(headers, endpoint):
     client.
     """
     try:
-        if remaining := headers.get(RATE_LIMIT_REMAINING):
+        if RATE_LIMIT_REMAINING in headers:
+            remaining = headers.get(RATE_LIMIT_REMAINING)
             demisto.debug(f'Remaining rate limit is: {remaining}')
             if int(remaining) <= 0:
                 demisto.debug(f'Rate limiting reached for the endpoint: {endpoint}')
@@ -74,11 +75,6 @@ def honor_rate_limiting(headers, endpoint):
                     # sleep for default 1 second as the rate limit remaining is 0
                     demisto.debug('Did not find a rate limit reset value, going to sleep for 1 second to avoid rate limit error')
                     time.sleep(1)
-
-            elif 'alerts' in endpoint:
-                # This is needed since consecutive requests to alerts tends to fail on 429
-                demisto.debug('Sleeping for 1 seconds between alerts')
-                time.sleep(1)
 
     except ValueError as ve:
         logging.error("Value error when honoring the rate limiting wait time {} {}".format(headers, str(ve)))

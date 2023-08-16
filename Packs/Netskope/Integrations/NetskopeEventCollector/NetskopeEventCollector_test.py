@@ -1,7 +1,11 @@
 import io
 import json
 import re
-from NetskopeEventCollector import Client, ALL_SUPPORTED_EVENT_TYPES
+import time
+
+import pytest
+
+from NetskopeEventCollector import Client, ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET
 
 
 def util_load_json(path):
@@ -69,7 +73,7 @@ def test_get_all_events(requests_mock):
 
     from NetskopeEventCollector import get_all_events
     client = Client(BASE_URL, 'netskope_token', validate_certificate=False, proxy=False)
-    url_matcher = re.compile('https://netskope.example.com/events/dataexport/events')
+    url_matcher = re.compile('https://netskope\.example\.com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
     events, new_last_run = get_all_events(client, FIRST_LAST_RUN, limit=6, is_command=False)
     assert len(events) == 25
@@ -92,8 +96,42 @@ def test_get_events_command(mocker):
     from NetskopeEventCollector import get_events_command
     client = Client(BASE_URL, 'dummy_token', False, False)
     mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
+    mocker.patch.object(time, "sleep")
     results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN, is_command=True)
     assert 'Events List' in results.readable_output
     assert len(events) == 9
     assert results.outputs_prefix == 'Netskope.Event'
     assert results.outputs == MOCK_ENTRY
+
+
+@pytest.mark.parametrize('headers, endpoint, expected_sleep', [
+    ({RATE_LIMIT_REMAINING: 1}, 'test_endpoint', None),
+    ({}, 'test_endpoint', None),
+    ({RATE_LIMIT_REMAINING: 0, RATE_LIMIT_RESET: 2}, 'test_endpoint', 2),
+    ({RATE_LIMIT_REMAINING: 0}, 'test_endpoint', 1),
+])
+def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
+    """
+    Given:
+        Case a: Netskope response headers with RATE_LIMIT_REMAINING = 1
+        Case b: Netskope with response headers
+        Case c: Netskope with response headers RATE_LIMIT_REMAINING = 1 and RATE_LIMIT_RESET = 2
+        Case c: Netskope with response headers RATE_LIMIT_REMAINING = 0
+
+    When:
+        Checking if sleeping is required
+
+    Then:
+        Case a: validate that there is no sleeping
+        Case b: validate that there is no sleeping
+        Case c: validate that we sleep for 2 secs (which is the reset time)
+        Case c: validate that we sleep for 1 sec (which is the default in case not rest time is given)
+    """
+    time_mock = mocker.patch.object(time, "sleep")
+    from NetskopeEventCollector import honor_rate_limiting
+    honor_rate_limiting(headers=headers, endpoint=endpoint)
+    if expected_sleep:
+        time_mock.assert_called_once_with(expected_sleep)
+    else:
+        time_mock.assert_not_called()
+
