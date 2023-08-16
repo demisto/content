@@ -1601,8 +1601,15 @@ tasks:
     scriptarguments:
       Commandline:
         complex:
-          root: inputs.Commandline
+          root: commandline
+          accessor: original
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: commandline.decoded
+                iscontext: true
           - operator: uniq
       ProcessName:
         complex:
@@ -1614,6 +1621,7 @@ tasks:
               item:
                 value:
                   simple: commandline.decoded
+                iscontext: true
           - operator: RegexExtractAll
             args:
               error_if_no_match: {}
@@ -1630,6 +1638,7 @@ tasks:
             args:
               empty_values: {}
               remove_keys: {}
+          - operator: uniq
       StringSimilarityThreashold:
         complex:
           root: inputs.StringSimilarityThreshold
