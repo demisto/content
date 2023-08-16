@@ -37,11 +37,11 @@ def fetch_events(connection: Connection) -> list[dict]:
             if not date:
                 raise DemistoException(f"Failed to parse date: {event.get('ts')}")
             event["_time"] = date.astimezone(tz.tzutc()).isoformat()
-            demisto.info(f"Received event: {event}")
+            demisto.debug(f"Received event: {event}")
             events.append(event)
-            demisto.info(f"len of message_events: {len(events)}")
+            demisto.debug(f"len of message_events: {len(events)}")
         except TimeoutError:
-            demisto.info("Timeout reached when receiving events")
+            demisto.debug("Timeout reached when receiving events")
             break
     return events
 
