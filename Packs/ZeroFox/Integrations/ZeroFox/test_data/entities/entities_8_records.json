@@ -1,0 +1,350 @@
+{
+    "count": 16,
+    "next": "https://api.zerofox.com/1.0/entities/?limit=8&page=2",
+    "previous": null,
+    "num_pages": 2,
+    "entities": [
+        {
+            "id": 560628,
+            "name": "Galaxy Stadium",
+            "email_address": "",
+            "image": "https://cdn.zerofox.com/media/entityimages/9fc59dbc-72f.png",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": false,
+            "policy_id": 63986,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 4,
+                "name": "Locations"
+            },
+            "type_id": 4,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560629,
+            "name": "J.A.R.V.I.S.",
+            "email_address": "",
+            "image": "https://cdn.zerofox.com/media/entityimages/y6r4cjtwhr76w900mwwowruy9ng06agurz01paswrkumgmd8rc44frcxk4uw4afe.jpg",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": false,
+            "policy_id": 63982,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 1,
+                "name": "Brand"
+            },
+            "type_id": 1,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560631,
+            "name": "James Rhodes",
+            "email_address": "some_email_address",
+            "image": "https://cdn.zerofox.com/media/entityimages/d6b7aaa4-a11.jpg",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": true,
+            "policy_id": 63985,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 3,
+                "name": "Executive/VIP"
+            },
+            "type_id": 3,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560633,
+            "name": "Natasha Romanoff",
+            "email_address": "some_email_address",
+            "image": "https://cdn.zerofox.com/media/entityimages/23b9551f-2bb.png",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": true,
+            "policy_id": 63985,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 3,
+                "name": "Executive/VIP"
+            },
+            "type_id": 3,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 6969249,
+            "name": "Peter Parker",
+            "email_address": "some_email_address",
+            "image": "https://cdn.zerofox.com/media/entityimages/kv7b3f5ubcp9s79zigjegevdri4o274mu05h6d7ufijgsvr3pp8aiwalihnuvbi4.jpg",
+            "organization": "",
+            "labels": [],
+            "strict_name_matching": true,
+            "policy_id": 63985,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 3,
+                "name": "Executive/VIP"
+            },
+            "type_id": 3,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560636,
+            "name": "Stark Aviation",
+            "email_address": "some_email_address",
+            "image": "https://cdn.zerofox.com/media/entityimages/f5544e89-d2f.jpg",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": false,
+            "policy_id": 63983,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 1,
+                "name": "Brand"
+            },
+            "type_id": 1,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560638,
+            "name": "Stark Credit Union",
+            "email_address": "",
+            "image": "https://cdn.zerofox.com/media/entityimages/61ce15f6-806.png",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": false,
+            "policy_id": 63983,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 1,
+                "name": "Brand"
+            },
+            "type_id": 1,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        },
+        {
+            "id": 560640,
+            "name": "Stark Email",
+            "email_address": "",
+            "image": "https://cdn.zerofox.com/media/entityimages/5dd8i7n2tlmj7kbmdzkpbdnk7vzl8gtzo90k9e68n0ls8vylyhy11vpnygbzeuxy.png",
+            "organization": "",
+            "labels": [
+                "Stark"
+            ],
+            "strict_name_matching": false,
+            "policy_id": 63988,
+            "profile": null,
+            "enterprise": 4332,
+            "entity_group": {
+                "id": 4636,
+                "name": "Default"
+            },
+            "type": {
+                "id": 7,
+                "name": "Email"
+            },
+            "type_id": 7,
+            "next_account_expiration": null,
+            "next_account_expiration_iso": null,
+            "status": {
+                "id": 1,
+                "name": "enabled",
+                "display_name": "Enabled"
+            },
+            "protection_status": {
+                "id": 1,
+                "name": "protected",
+                "display_name": "Protected"
+            },
+            "source": {
+                "id": 1,
+                "name": "manual",
+                "display_name": "Manual"
+            },
+            "address": "",
+            "phone": "",
+            "description": ""
+        }
+    ]
+}
