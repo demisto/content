@@ -4352,37 +4352,37 @@ script:
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-      - contextPath: CrowdStrike.IDPEntity.IsHuman
-        description: Whether the identity entity is human made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
-        description: Whether the identity entity is programmatic made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsAdmin
-        description: Whether the identity entity is admin made.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
-        description: The identity entity primary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
-        description: The identity entity risk factor type.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
-        description: The identity entity risk factor severity.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskScore
-        description: The identity entity risk score.
-        type: Number
-      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
-        description: The identity entity risk score severity.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
-        description: The identity entity secondary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
-        description: The identity entity email address.
-        type: String
-  dockerimage: demisto/py3-tools:1.0.0.66062
+    - contextPath: CrowdStrike.IDPEntity.IsHuman
+      description: Whether the identity entity is human made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+      description: Whether the identity entity is programmatic made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+      description: Whether the identity entity is admin made.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+      description: The identity entity primary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+      description: The identity entity risk factor type.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+      description: The identity entity risk factor severity.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskScore
+      description: The identity entity risk score.
+      type: Number
+    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+      description: The identity entity risk score severity.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+      description: The identity entity secondary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+      description: The identity entity email address.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.70543
   isfetch: true
   ismappable: true
   isremotesyncin: true

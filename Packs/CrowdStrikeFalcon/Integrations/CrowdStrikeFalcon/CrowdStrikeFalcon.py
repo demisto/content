@@ -799,7 +799,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, time
 
 
 def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None,
-                        timeout: int = 30) -> dict:
+                        timeout: int = DEFAULT_TIMEOUT) -> dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -1124,7 +1124,7 @@ def list_scripts() -> dict:
     return response
 
 
-def get_extracted_file(host_id: str, sha256: str, filename: str | None = None, timeout: int = DEFAULT_TIMEOUT):
+def get_extracted_file(host_id: str, sha256: str, filename: str | None = None, timeout=None):
     """
         Get RTR extracted file contents for specified session and sha256.
         :param host_id: The host agent ID to initialize the RTR session on.
@@ -4215,7 +4215,7 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
     return response
 
 
-def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None, timeout=DEFAULT_TIMEOUT):
+def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None, timeout=None):
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -4289,7 +4289,8 @@ def rtr_read_registry_keys_command(args: dict):
 
     for registry_key in registry_keys:
         full_command = f"{command_type} query {registry_key}"
-        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, timeout, host_ids=host_ids)
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids,
+                                                          timeout=timeout)
         output, file, not_found_host = parse_rtr_stdout_response(host_ids, response, command_type,
                                                                  file_name_suffix=registry_key)
         not_found_hosts.update(not_found_host)
