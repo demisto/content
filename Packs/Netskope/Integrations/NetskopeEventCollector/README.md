@@ -8,18 +8,15 @@
     | --- | --- | --- |
     | Server URL |  | True |
     | API token |  | True |
-    | API Version | The API version to use \(v1 or v2\). | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max events per fetch | The maximum amount of events to retrieve \(up to 30000 events\). | False |
+    | Max events per fetch | The maximum amount of events to retrieve per each event type. For more information about event types see the help section. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Events Limitation
 
-The first fetch is limited to the last 50,000 events (for each event type) due to API limitation.
-
+The collector can handle 10K events per minute on average per each event type  
 
 ## Commands
 
