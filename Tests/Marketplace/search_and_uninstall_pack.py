@@ -6,6 +6,7 @@ import sys
 from datetime import datetime, timedelta
 from time import sleep
 from collections.abc import Callable
+from typing import Any
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
@@ -19,20 +20,20 @@ from Tests.scripts.utils.log_util import install_logging
 ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
 
 
-def generic_retries_request(client: demisto_client,
-                            retries_message: str,
-                            exception_message: str,
-                            prior_message: str,
-                            path: str,
-                            method: str,
-                            request_timeout: int | None = None,
-                            accept: str = 'application/json',
-                            attempts_count: int = 5,
-                            sleep_interval: int = 60,
-                            should_try_handler: Callable = None,
-                            success_handler: Callable = None,
-                            api_exception_handler: Callable = None,
-                            http_exception_handler: Callable = None):
+def generic_request_with_retries(client: demisto_client,
+                                 retries_message: str,
+                                 exception_message: str,
+                                 prior_message: str,
+                                 path: str,
+                                 method: str,
+                                 request_timeout: int | None = None,
+                                 accept: str = 'application/json',
+                                 attempts_count: int = 5,
+                                 sleep_interval: int = 60,
+                                 should_try_handler: Callable[[], bool] | None = None,
+                                 success_handler: Callable[[Any], Any] | None = None,
+                                 api_exception_handler: Callable[[ApiException], Any] | None = None,
+                                 http_exception_handler: Callable[[HTTPError | HTTPWarning], Any] | None = None):
     """
 
     Args:
@@ -55,14 +56,14 @@ def generic_retries_request(client: demisto_client,
 
     """
     try:
-        for attempt in range(attempts_count - 1, -1, -1):
+        for attempt in range(attempts_count):
             try:
                 if should_try_handler and not should_try_handler():
                     # if the method exist and we should not try again.
                     return True, None
 
                 # should_try_handler return True, we are trying to send request.
-                logging.info(f"{prior_message}, Attempt: {attempts_count - attempt}/{attempts_count}")
+                logging.info(f"{prior_message}, attempt: {attempts_count + 1}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
                                                                                      method=method,
@@ -78,13 +79,13 @@ def generic_retries_request(client: demisto_client,
                     return True, None
 
                 else:
-                    logging.info(f"Got bad response for updating status: {response}")
+                    err = f"Got {status_code=}, {headers=}, {response=}"
 
                 if not attempt:
                     # No attempts left, raise an exception that the request failed.
-                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+                    raise Exception(err)
 
-                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
+                logging.warning(err)
 
             except ApiException as ex:
                 if api_exception_handler:
@@ -128,15 +129,15 @@ def check_if_pack_still_installed(client: demisto_client,
         installed_packs_ids = [pack.get('id') for pack in installed_packs]
         return pack_id in installed_packs_ids, None
 
-    return generic_retries_request(client=client,
-                                   retries_message="Failed to get all installed packs.",
-                                   exception_message="Failed to get installed packs.",
-                                   prior_message=f"Checking if pack {pack_id} is still installed",
-                                   path='/contentpacks/metadata/installed',
-                                   method='GET',
-                                   attempts_count=attempts_count,
-                                   sleep_interval=sleep_interval,
-                                   success_handler=success_handler)
+    return generic_request_with_retries(client=client,
+                                        retries_message="Failed to get all installed packs.",
+                                        exception_message="Failed to get installed packs.",
+                                        prior_message=f"Checking if pack {pack_id} is still installed",
+                                        path='/contentpacks/metadata/installed',
+                                        method='GET',
+                                        attempts_count=attempts_count,
+                                        sleep_interval=sleep_interval,
+                                        success_handler=success_handler)
 
 
 def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
@@ -218,15 +219,15 @@ def get_updating_status(client: demisto_client,
         logging.info(f"Got updating status: {updating_status}")
         return True, updating_status
 
-    return generic_retries_request(client=client,
-                                   success_handler=success_handler,
-                                   retries_message="Failed to get installation/update status",
-                                   exception_message="he request to get update status has failed",
-                                   prior_message="Getting installation/update status",
-                                   path='/content/updating',
-                                   method='GET',
-                                   attempts_count=attempts_count,
-                                   sleep_interval=sleep_interval)
+    return generic_request_with_retries(client=client,
+                                        success_handler=success_handler,
+                                        retries_message="Failed to get installation/update status",
+                                        exception_message="he request to get update status has failed",
+                                        prior_message="Getting installation/update status",
+                                        path='/content/updating',
+                                        method='GET',
+                                        attempts_count=attempts_count,
+                                        sleep_interval=sleep_interval)
 
 
 def wait_until_not_updating(client: demisto_client,
@@ -303,17 +304,19 @@ def uninstall_pack(client: demisto_client,
                     "Failed to wait for the server to exit installation/updating status"
                 ) from ex
 
-    return generic_retries_request(client=client,
-                                   retries_message=f'Failed to uninstall pack: {pack_id}',
-                                   exception_message='The request to uninstall packs has failed.',
-                                   prior_message=f'Uninstalling pack {pack_id}',
-                                   path=f'/contentpacks/installed/{pack_id}',
-                                   method='DELETE',
-                                   attempts_count=attempts_count,
-                                   sleep_interval=sleep_interval,
-                                   should_try_handler=should_try_handler,
-                                   success_handler=success_handler,
-                                   api_exception_handler=api_exception_handler)
+    failure_massage = f'Failed to uninstall pack: {pack_id}'
+
+    return generic_request_with_retries(client=client,
+                                        retries_message=failure_massage,
+                                        exception_message=failure_massage,
+                                        prior_message=f'Uninstalling pack {pack_id}',
+                                        path=f'/contentpacks/installed/{pack_id}',
+                                        method='DELETE',
+                                        attempts_count=attempts_count,
+                                        sleep_interval=sleep_interval,
+                                        should_try_handler=should_try_handler,
+                                        success_handler=success_handler,
+                                        api_exception_handler=api_exception_handler)
 
 
 def uninstall_packs(client: demisto_client, pack_ids: list):

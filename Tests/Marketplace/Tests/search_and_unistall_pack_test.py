@@ -153,16 +153,16 @@ def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
         return True, 'success'
 
     success_handler_method = success_handler if ret_value else None
-    res, _ = script.generic_retries_request(client,
-                                            retries_message='test',
-                                            exception_message='test',
-                                            prior_message='test',
-                                            path=path,
-                                            method='GET',
-                                            request_timeout=0,
-                                            sleep_interval=0,
-                                            attempts_count=3,
-                                            success_handler=success_handler_method)
+    res, _ = script.generic_request_with_retries(client,
+                                                 retries_message='test',
+                                                 exception_message='test',
+                                                 prior_message='test',
+                                                 path=path,
+                                                 method='GET',
+                                                 request_timeout=0,
+                                                 sleep_interval=0,
+                                                 attempts_count=3,
+                                                 success_handler=success_handler_method)
 
     assert res == ret_value
     assert request_method.call_count == num_of_retries
