@@ -266,7 +266,7 @@ KV Store stores your data as key-value pairs in collections.  It provides a way 
    
    **!splunk-kv-store-collection-config kv_store_collection_name="test_kvstore" kv_stre_fields="field.src=cidr,field.t=number,field.description=string"**
 
-   **Note:** To see the fields in Splunk, you must install the _Splunk App for Lookup File Editing_ app in Splunk.
+   **Note:** To see the fields in Splunk, you must install the _Splunk App for Lookup File Editing_ app in Splunk. For more information, see [Define a KV Store lookup in Splunk](https://docs.splunk.com/Documentation/Splunk/9.1.0/Knowledge/DefineaKVStorelookupinSplunkWeb#:~:text=Splunk%20Web%20currently,Editing%20on%20Splunkbase).
 
 4. Make the KV Store usable in Splunk queries.
 
