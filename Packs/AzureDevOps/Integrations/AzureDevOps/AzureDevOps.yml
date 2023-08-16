@@ -2398,7 +2398,7 @@ script:
       description: The revision number of the project.
     - type: String
       contextPath: AzureDevOps.Branch.repository.project.visibility
-      description: Indicates whom the project is visible to.
+      description: Indicates to whom the project is visible.
     - type: Date
       contextPath: AzureDevOps.Branch.repository.project.lastUpdateTime
       description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
