@@ -1045,12 +1045,12 @@ tasks:
           left:
             value:
               complex:
-                root: alert.asmtags.Value
+                root: alert.asmtags.value
                 filters:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: alert.asmtags.Value
+                        simple: alert.asmtags.value
                       iscontext: true
                     right:
                       value:
@@ -1169,17 +1169,17 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         simple: n/a
       val2:
         complex:
-          root: alert.asmtags.Value
+          root: alert.asmtags.value
           filters:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: alert.asmtags.Value
+                  simple: alert.asmtags.value
                 iscontext: true
               right:
                 value:
@@ -1199,7 +1199,7 @@ tasks:
       val3:
         complex:
           root: alert.asmtags
-          accessor: Source
+          accessor: source
           transformers:
           - operator: concat
             args:
