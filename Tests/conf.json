@@ -682,6 +682,12 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
+
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test dev v2i"
+        },
+
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,

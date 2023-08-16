@@ -11,7 +11,6 @@ import json
 import demistomock as demisto
 import re
 
-from Packs.MicrosoftGraphSecurity.Integrations.MicrosoftGraphSecurity import MicrosoftGraphSecurity
 
 API_V2 = "Alerts v2"
 API_V1 = "Legacy Alerts"
@@ -26,12 +25,12 @@ def load_json(path):
 
 @pytest.mark.parametrize(
     'api_response, keys_to_replace, expected_output', [
-        ({'keyOne' : {'keyTwo' : {'keyThree' : 'a'}, 'keyFour' : {'keyFive' : 'b'}}},
+        ({'keyOne': {'keyTwo': {'keyThree': 'a'}, 'keyFour': {'keyFive': 'b'}}},
          {},
          {'KeyOne': {'KeyFour': {'KeyFive': 'b'}, 'KeyTwo': {'KeyThree': 'a'}}}),
 
-        ({'keyOne' : {'keyTwo': 'a'}, 'customOverride' : 'a'},
-         {'customOverride' : 'SOMETHING'},
+        ({'keyOne': {'keyTwo': 'a'}, 'customOverride': 'a'},
+         {'customOverride': 'SOMETHING'},
          {'KeyOne': {'KeyTwo': 'a'}, 'SOMETHING': 'a'})
     ])
 def test_capitalize_dict_keys_first_letter(api_response, keys_to_replace, expected_output):
@@ -458,7 +457,7 @@ def test_create_ediscovery_custodian_site_source_command(mocker):
     results = list_ediscovery_custodian_site_sources_command(client_mocker,
                                                              {'case_id': 'case_id', 'custodian_id': 'custodian_id'})
     assert mock.call_args.kwargs['url_suffix'] == \
-           'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
+        'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
     assert not any('@odata.id' in o for o in results.outputs)
     assert results.outputs_prefix == 'MsGraph.CustodianSiteSource'
     assert results.outputs_key_field == 'SiteSourceId'
@@ -498,8 +497,9 @@ def test_created_by_fields_to_hr():
         get the created fields flattened onto main dict
     """
     assert created_by_fields_to_hr(
-        {'Field1' : 'val1','CreatedBy' : {'User' : {'DisplayName' : 'Bob','UserPrincipalName' : 'Frank'}}}) == \
-           {'CreatedByAppName': None,'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank','Field1': 'val1'}
+        {'Field1': 'val1', 'CreatedBy': {'User': {'DisplayName': 'Bob', 'UserPrincipalName': 'Frank'}}}) == \
+        {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
+
 
 def test_list_ediscovery_search_command(mocker):
     """
@@ -515,7 +515,7 @@ def test_list_ediscovery_search_command(mocker):
     mocker.patch.object(client_mocker, "list_ediscovery_search",
                         return_value=raw_response)
 
-    results = list_ediscovery_search_command(client_mocker,{})
+    results = list_ediscovery_search_command(client_mocker, {})
 
     assert results.raw_response == raw_response
     assert results.outputs_key_field == 'SearchId'
@@ -538,13 +538,17 @@ def test_test_auth_code_command(mocker, command_to_check):
     """
     from MicrosoftGraphSecurity import test_auth_code_command
 
-    mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases", return_value=load_json("./test_data/list_cases_response.json"))
+    mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases",
+                                          return_value=load_json("./test_data/list_cases_response.json"))
     mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
-    test_auth_code_command(client_mocker, {'permission_type' : command_to_check})
+    test_auth_code_command(client_mocker, {'permission_type': command_to_check})
 
     if command_to_check == 'alerts':
-        assert not mock_ediscovery.called and mock_alerts.called
+        assert not mock_ediscovery.called
+        assert mock_alerts.called
     elif command_to_check == 'any':
-        assert mock_ediscovery.called and mock_alerts.called
+        assert mock_ediscovery.called
+        assert mock_alerts.called
     elif command_to_check == 'ediscovery':
-        assert mock_ediscovery.called and not mock_alerts.called
+        assert mock_ediscovery.called
+        assert not mock_alerts.called

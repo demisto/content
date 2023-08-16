@@ -7,7 +7,7 @@ from enum import Enum
 import urllib3
 from CommonServerUserPython import *
 
-from typing import Any
+from typing import Any, Optional
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
@@ -1203,7 +1203,7 @@ def test_auth_code_command(client: MsGraphClient, args):
     permissions = args.get('permission_type', 'all')
     if permissions == 'all':
         permissions = "ediscovery, alerts"
-    for permission in map(lambda x: x.strip(), permissions.split(',')):
+    for permission in argToList(permissions):
         try:
             demisto.debug(f'checking permission {permission}')
             match permission:
