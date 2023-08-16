@@ -882,7 +882,7 @@ script:
       description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.uniqueName
-      description: The reviewers user name.
+      description: The user name of the pull request reviewer.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.url
       description: REST URL for this resource.
