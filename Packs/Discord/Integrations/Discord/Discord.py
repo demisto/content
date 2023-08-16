@@ -83,7 +83,9 @@ def test_module(api_key):
 
 def main():
     params = demisto.params()
-    api_key = params.get('api_key')
+    api_key = params.get('credentials', {}).get('password') or params.get('api_key')
+    if not api_key:
+        return_error('Please provide a valid API key')
     channel_id = params.get('channel_id')
     try:
         if demisto.command() == 'discord-send-message':
