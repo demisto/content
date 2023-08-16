@@ -400,7 +400,7 @@ script:
       description: The REST URL for this resource.
       type: String
   - arguments:
-    - description: The name or ID of the project which the pull requests belongs to. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The name or ID of the project which the pull requests belongs to. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
     - description: The name of the repository pull request's target branch. A default value is taken from the configuration parameters, but you can override it.
