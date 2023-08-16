@@ -33,6 +33,7 @@ clone_repository_with_fallback_branch() {
   local exit_code=$?
   if [ ${exit_code} -ne 0 ]; then
     # Failed to clone with branch, try again with fallback_branch.
+    echo "Failed to clone ${repo_name} with branch ${branch}, exit code:${exit_code}, trying to clone with branch ${fallback_branch}!"
     clone_repository "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
