@@ -712,6 +712,7 @@ def publish_message_command(
     :param attributes: message attributes separated by key=val pairs sepearated by ','
     :param data: message data str
     :param client: GoogleClient
+    :param delim_char_attributes: delimiter character between atrribute pairs
     :return: list of topics
     """
     body = get_publish_body(attributes, data, delim_char_attributes)
@@ -746,6 +747,7 @@ def get_publish_body(message_attributes, message_data, delim_char):
     Creates publish messages body from given arguments
     :param message_attributes: message attributes
     :param message_data: message data
+    :param delim_char: delimiter character between atrribute pairs
     :return: publish message body
     """
     message = {}

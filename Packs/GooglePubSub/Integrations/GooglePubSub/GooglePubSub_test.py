@@ -169,7 +169,7 @@ class TestHelperFunctions:
             # invalid message_data
             e_thrown = False
             try:
-                get_publish_body("", message_data={"test": "val"})
+                get_publish_body("", message_data={"test": "val"}, delim_char=",")
             except AttributeError:
                 e_thrown = True
             assert e_thrown
