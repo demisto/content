@@ -10,7 +10,7 @@ clone_repository() {
   local i=1
   echo "Cloning ${repo_name} from branch: ${branch} with ${retry_count} retries"
   for ((i=1; i <= retry_count; i++)); do
-    git clone --depth=1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
+    git clone --depth=1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
       echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again"
       sleep "${sleep_time}"
