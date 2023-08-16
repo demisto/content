@@ -141,7 +141,7 @@ tasks:
       id: ac6b8575-bca4-43a7-88a1-28d659c7d644
       version: -1
       name: Get branch list
-      description: Retrieve repository branches list.
+      description: Retrieve the repository branches list.
       script: '|||azure-devops-branch-list'
       type: regular
       iscommand: true
