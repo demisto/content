@@ -995,4 +995,4 @@ outputs: []
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'
+description: 'This contains the remediation and triage steps for the Quick Start Investigation'
