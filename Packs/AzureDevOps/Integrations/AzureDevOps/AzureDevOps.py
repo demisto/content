@@ -2690,11 +2690,7 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         if isinstance(e, NotFoundError):
             return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
-        # show just the error message if possible
-        try:
-            return_error(json.loads(e.res.text)['message'])  # type: ignore[attr-defined]
-        except Exception as e:
-            return_error(str(e))
+        return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
