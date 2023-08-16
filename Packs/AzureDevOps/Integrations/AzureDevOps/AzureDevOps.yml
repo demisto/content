@@ -1260,7 +1260,7 @@ script:
       description: Link to the work item comments.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.html.href
-      description: Link to the work item html.
+      description: Link to the work item HTML.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.workItemType.href
       description: Link to the work item type.
