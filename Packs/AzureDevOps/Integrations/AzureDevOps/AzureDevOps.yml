@@ -2437,7 +2437,7 @@ script:
       description: The unique name of the user who pushed the commit.
     - type: String
       contextPath: AzureDevOps.Branch.pushedBy.imageUrl
-      description: Identity Image.
+      description: Identity image.
     - type: String
       contextPath: AzureDevOps.Branch.pushedBy.descriptor
       description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
