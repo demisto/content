@@ -21,13 +21,13 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands, and the user can override it by the command argument.
+- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Project Name
   name: project
   type: 0
   defaultvalue:
   required: false
-- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands, and the user can override it by the command argument.
+- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Repository Name
   name: repository
   type: 0
@@ -224,10 +224,10 @@ script:
     name: azure-devops-user-remove
     outputs: []
   - arguments:
-    - description: The name or ID of the project. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
-    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it.
       name: repository_id
       required: false
     - description: The name of the source branch of the pull request.
@@ -313,7 +313,7 @@ script:
       description: The REST URL for this resource.
       type: String
   - arguments:
-    - description: The name or ID of the project. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
     - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but the user can override it.
@@ -1218,19 +1218,19 @@ script:
       description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
-      description: Display name of user activated the work item.
+      description: Display name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id
-      description: ID of user activated the work item.
+      description: ID of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
-      description: The unique name of user activated the work item.
+      description: The unique name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
       description: Link to the user (activated the work item) image.
@@ -1260,7 +1260,7 @@ script:
       description: Link to the work item comments.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.html.href
-      description: Link to the work item html.
+      description: Link to the work item HTML.
     - type: String
       contextPath: AzureDevOps.WorkItem._links.workItemType.href
       description: Link to the work item type.
