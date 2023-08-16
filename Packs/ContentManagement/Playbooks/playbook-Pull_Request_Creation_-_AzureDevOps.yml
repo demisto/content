@@ -817,7 +817,7 @@ tasks:
       id: bfcb6672-680d-4deb-822c-a220fadb3066
       version: -1
       name: Does branch exist?
-      description: Does branch exist?
+      description: Does the branch exist?
       type: condition
       iscommand: false
       brand: ""
