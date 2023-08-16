@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from collections.abc import Callable, Any
+from collections.abc import Callable
 from functools import reduce, partial
 import ast
 import re
@@ -31,25 +31,24 @@ class IfElif:
         self.conditions = self.evaluate(conditions)
 
     def handle_flags(self, flags: list):
-        if flags:
-            self.regex_flags = (
-                re.DOTALL * ('regex_dot_all' in flags)
-                | re.MULTILINE * ('regex_multiline' in flags)
-                | re.IGNORECASE * ('case_insensitive' in flags)
-            )
-            if 'case_insensitive' in flags:
-                def eq(x, y):
-                    return str(x).lower() == str(y).lower()
-                self.operator_functions |= {
-                    ast.Eq: eq,
-                    ast.NotEq: lambda x, y: not eq(x, y),
-                }
-            self.functions = {
-                'regex_match': partial(
-                    re.fullmatch if 'regex_full_match' in flags else re.search,
-                    flags=self.regex_flags
-                )
+        self.regex_flags = (
+            re.DOTALL * ('regex_dot_all' in flags)
+            | re.MULTILINE * ('regex_multiline' in flags)
+            | re.IGNORECASE * ('case_insensitive' in flags)
+        )
+        if 'case_insensitive' in flags:
+            def eq(x, y):
+                return str(x).lower() == str(y).lower()
+            self.operator_functions |= {
+                ast.Eq: eq,
+                ast.NotEq: lambda x, y: not eq(x, y),
             }
+        self.functions = {
+            'regex_match': partial(
+                re.fullmatch if 'regex_full_match' in flags else re.search,
+                flags=self.regex_flags
+            )
+        }
 
     def load_variables(self, variables: str, value: Any):
         self.variables: dict = {}

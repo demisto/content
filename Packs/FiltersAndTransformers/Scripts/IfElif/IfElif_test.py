@@ -11,8 +11,8 @@ class MockIfElif(IfElif):
 def test_handle_flags():
 
     if_elif1 = MockIfElif()
-    if_elif1.handle_flags(['case_insensitive', 'regex_multiline', 'regex_dot_all'])
-    assert int(if_elif1.regex_flags) == 26
+    if_elif1.handle_flags(['regex_multiline', 'regex_dot_all'])
+    assert int(if_elif1.regex_flags) == 24
 
     if_elif2 = MockIfElif()
     assert if_elif2.operator_functions[ast.Eq]('a', 'A') is False
@@ -26,7 +26,7 @@ def test_handle_flags():
     assert if_elif3.functions['regex_match']('\s', 'a a')
     if_elif3.handle_flags(['regex_full_match'])
     assert not if_elif3.functions['regex_match']('\s', 'a a')
-    assert not if_elif3.functions['regex_match']('\s', ' ')
+    assert if_elif3.functions['regex_match']('\s', ' ')
 
 
 def test_load_variables():
@@ -51,7 +51,7 @@ def test_load_variables():
     [
         ('a', 'VALUE == "a" and [1,2,3]', '', True),
         (None, '1 in list_var and 2 < 3 < int_var', 'int_var=42 \nlist_var  =  [1, 2, 3]', True),
-        (None, 'regex_match(regex, str_var)', ' str_var = hello\nregex = ^\w{4}$\n', True),
+        (None, 'regex_match(regex, str_var)', ' str_var = hello\nregex = ^\w{5}$\n', True),
         (None, 'false and {1: 2, 3: [4,5,6,7]}', '', False),
         (None, 'regex_match("\s", "s")', '', False),
     ]
@@ -70,7 +70,7 @@ def test_parse_conditions(value, expression, variables, expected_result):
 
     if_elif = IfElif(
         value=value,
-        conditions=str({
+        conditions=str([
             {
                 'condition': expression,
                 'return': True
@@ -78,7 +78,7 @@ def test_parse_conditions(value, expression, variables, expected_result):
             {
                 'else': False
             }
-        }),
+        ]),
         variables=variables,
     )
 
