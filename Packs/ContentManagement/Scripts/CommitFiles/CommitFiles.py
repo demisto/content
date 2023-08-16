@@ -141,7 +141,8 @@ def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) ->
         return True
     # try to get the file from branch
     response = execute_command('azure-devops-file-list',
-                               args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
+                               args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'},
+                               extract_contents=False)
     files_set = {file.get("path", "") for file in response.get("value", [])}
     for file in files_set:
         if full_path in file:

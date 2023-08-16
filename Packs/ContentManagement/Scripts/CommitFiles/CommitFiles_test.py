@@ -1,6 +1,8 @@
 import os
 import demistomock as demisto
 from CommitFiles import ContentFile
+import pytest
+from CommonServerPython import *
 
 content_file = ContentFile()
 content_file.file_name = 'hello.py'
@@ -21,6 +23,23 @@ def test_does_file_exist(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=[])
     flag = does_file_exist('demisto', content_file)
     assert not flag
+
+
+def test_commit_content_item_azure_devops(mocker):
+    """
+    Given:
+        - A branch name and a content file.
+    When:
+        - Committing the files to azure devops
+    Then:
+        - Ensure Exception is thrown since branch doesn't exist
+    """
+    from CommitFiles import commit_content_item_azure_devops
+    branch_name = 'demisto'
+    mocker.patch.object(demisto, 'executeCommand', return_value={"Type": 1, "Contents": {}})
+    with pytest.raises(DemistoException) as e:
+        commit_content_item_azure_devops(branch_name, content_file, [], [])
+    assert e.value.message == "Failed to find a corresponding branch id to the given branch name."
 
 
 def test_commit_content_item_bitbucket(mocker):
