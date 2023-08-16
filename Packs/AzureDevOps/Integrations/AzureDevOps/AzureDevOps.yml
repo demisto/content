@@ -2410,7 +2410,7 @@ script:
       description: Remote URL path to the repository.
     - type: String
       contextPath: AzureDevOps.Branch.repository.sshUrl
-      description: The ssh URL of the repository.
+      description: The SSH URL of the repository.
     - type: String
       contextPath: AzureDevOps.Branch.repository.webUrl
       description: The web URL of the repository.
