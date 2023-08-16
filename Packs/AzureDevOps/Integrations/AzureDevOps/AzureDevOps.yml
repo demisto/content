@@ -1382,7 +1382,7 @@ script:
       description: ID of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName
-      description: The unique name of user changed the work item.
+      description: The unique name of the user who changed the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl
       description: Link to the user (changed the work item) image.
