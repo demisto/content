@@ -38,4 +38,4 @@ Azure DevOps
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-Creating a branch (with azure-devops-branch-create command) creates a new file due to API limitations ("create_branch.txt").
+Creating a branch (with the azure-devops-branch-create command) creates a new file due to API limitations ("create_branch.txt").
