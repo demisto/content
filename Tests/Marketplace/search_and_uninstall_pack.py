@@ -56,14 +56,14 @@ def generic_request_with_retries(client: demisto_client,
 
     """
     try:
-        for attempt in range(attempts_count):
+        for attempts_left in range(attempts_count - 1, -1, -1):
             try:
                 if should_try_handler and not should_try_handler():
                     # if the method exist and we should not try again.
                     return True, None
 
                 # should_try_handler return True, we are trying to send request.
-                logging.info(f"{prior_message}, attempt: {attempts_count + 1}/{attempts_count}")
+                logging.info(f"{prior_message}, attempts_left: {attempts_count - attempts_left}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
                                                                                      method=method,
@@ -81,7 +81,7 @@ def generic_request_with_retries(client: demisto_client,
                 else:
                     err = f"Got {status_code=}, {headers=}, {response=}"
 
-                if not attempt:
+                if not attempts_left:
                     # No attempts left, raise an exception that the request failed.
                     raise Exception(err)
 
@@ -90,13 +90,13 @@ def generic_request_with_retries(client: demisto_client,
             except ApiException as ex:
                 if api_exception_handler:
                     api_exception_handler(ex)
-                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                if not attempts_left:  # exhausted all attempts, understand what happened and exit.
                     raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
                 logging.debug(f"Process failed, got error {ex}")
             except (HTTPError, HTTPWarning) as http_ex:
                 if http_exception_handler:
                     http_exception_handler(http_ex)
-                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                if not attempts_left:  # exhausted all attempts, understand what happened and exit.
                     raise Exception("Failed to perform http request to the server") from http_ex
                 logging.debug(f"Process failed, got error {http_ex}")
 
