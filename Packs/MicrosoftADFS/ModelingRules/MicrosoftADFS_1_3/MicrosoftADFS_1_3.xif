@@ -95,7 +95,7 @@ filter _collector_type = "WEC"
     xdm.event.type = channel,
     xdm.event.description = message,
     xdm.source.host.hostname = coalesce(host_name, computer_name),
-    xdm.event.original_event_type = event_action,
+    xdm.event.original_event_type = coalesce(task, event_action),
     xdm.observer.type = provider_name,
     xdm.alert.original_alert_id = activity_id,
     xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result));
