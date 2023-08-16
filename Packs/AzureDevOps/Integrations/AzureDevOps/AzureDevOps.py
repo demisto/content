@@ -2247,7 +2247,7 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], proje
     This function converts a branch name to branch id. If the given branch does not exist, returns None.
     """
     branch_list = branch_list_command(client, args, project_args.repository, project_args.project)
-    for branch in branch_list.outputs:  # type: ignore[union-attr]
+    for branch in branch_list.outputs:  # type: ignore[union-attr, attr-defined]
         # two places call this function, one has target_ref as an argument, the other has branch_name
         if branch.get("name").endswith(args.get("target_ref", args.get("branch_name"))):
             return branch.get("objectId")
