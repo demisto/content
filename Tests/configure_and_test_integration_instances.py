@@ -75,6 +75,7 @@ CLOUD_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 SET_SERVER_KEYS = True
 
 
@@ -128,7 +129,7 @@ class CloudServer(Server):
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
         custom_user_agent = get_custom_user_agent(self.build_number)
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -138,7 +139,7 @@ class XSOARServer(Server):
     def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
         self.__client = None
-        self.internal_ip = internal_ip
+        self.internal_ip: str = internal_ip
         self.user_name = user_name
         self.password = password
         self.build_number = build_number
@@ -159,7 +160,7 @@ class XSOARServer(Server):
                                                  username=self.user_name,
                                                  password=self.password)
         custom_user_agent = get_custom_user_agent(self.build_number)
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -192,7 +193,7 @@ class Build(ABC):
         'CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
-    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
+    env_results_path = f'{ARTIFACTS_FOLDER}/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -331,26 +332,29 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
-        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
         Args:
-            pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
-            by previous step of the build.
-            install_packs_one_by_one: Whether to install packs one by one or all together.
+            pack_ids (list | None, optional): Packs to install on the server.
+                If no packs provided, installs packs that were provided by the previous step of the build.
+            multithreading (bool): Whether to install packs in parallel or not.
+            production_bucket (bool): Whether the installation is using production bucket for packs metadata. Defaults to True.
 
         Returns:
-            installed_content_packs_successfully: Whether packs installed successfully
+            bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
-        logging.info(f"Packs ids to install: {pack_ids}")
+        logging.info(f"IDs of packs to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                          install_packs_one_by_one,
-                                                                          )
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                          client=server.client,
+                                                                          hostname=hostname,
+                                                                          multithreading=multithreading,
+                                                                          production_bucket=production_bucket)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -549,7 +553,7 @@ class Build(ABC):
         """
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs()
+        installed_content_packs_successfully = self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -797,7 +801,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(install_packs_one_by_one=True)
+        success = self.install_packs(multithreading=False, production_bucket=True)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -1524,7 +1528,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         # creating this file to indicates that this instance passed post update tests,
         # uses this file in XSOAR destroy instances
         if build and build.__class__ == XSOARBuild:
-            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+            with open(f"{ARTIFACTS_FOLDER}/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
                 pass
 
     return testing_status
@@ -1841,7 +1845,7 @@ def get_packs_with_higher_min_version(packs_names: set[str],
                     their min version is greater than the server version.
     """
     extract_content_packs_path = mkdtemp()
-    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER}/content_packs.zip'
     extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
 
     packs_with_higher_version = set()
