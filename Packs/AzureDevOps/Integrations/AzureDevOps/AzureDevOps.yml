@@ -2941,7 +2941,7 @@ script:
     outputs:
     - type: Boolean
       contextPath: AzureDevOps.TeamMember.isTeamAdmin
-      description: if the member is the team admin.
+      description: Whether the member is the team admin.
     - type: String
       contextPath: AzureDevOps.TeamMember.identity.displayName
       description: The display name of the team member.
