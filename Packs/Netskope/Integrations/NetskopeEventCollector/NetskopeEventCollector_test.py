@@ -75,7 +75,7 @@ def test_get_all_events(requests_mock):
     client = Client(BASE_URL, 'netskope_token', validate_certificate=False, proxy=False)
     url_matcher = re.compile('https://netskope\.example\.com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
-    events, new_last_run = get_all_events(client, FIRST_LAST_RUN, limit=6, is_command=False)
+    events, new_last_run = get_all_events(client, FIRST_LAST_RUN, is_command=False)
     assert len(events) == 25
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
@@ -134,3 +134,30 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
         time_mock.assert_called_once_with(expected_sleep)
     else:
         time_mock.assert_not_called()
+
+
+@pytest.mark.parametrize('last_run_dict, first_fetch, expected_operation_value', [
+    ({}, 1, 1),
+    ({'application': {'operation': 'next'},
+      'alert': {'operation': 'next'},
+      'page': {'operation': 'next'},
+      'audit': {'operation': 'next'},
+      'network': {'operation': 'next'}}, None, 'next'),
+])
+def test_setup_last_run(last_run_dict, first_fetch, expected_operation_value):
+    """
+    Given:
+        Case a: previous empty last run
+        Case a: previous last run with operation= 'next' for all event types
+
+    When:
+        Setting the last run values for the current run
+
+    Then:
+        Case a: make sure all event types in last run are saved with operation= 1
+        Case b: make sure all event types in last run are saved with operation= 'next'
+
+    """
+    from NetskopeEventCollector import setup_last_run
+    last_run = setup_last_run(last_run_dict, first_fetch)
+    assert all([val.get('operation') == expected_operation_value for key, val in last_run.items()])

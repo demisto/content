@@ -11,11 +11,11 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
-# ALL_SUPPORTED_ALERT_TYPES_v2 = ['policy', 'compromisedcredential', 'ctep', 'dlp', 'malsite', 'malware', 'quarantine',
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
 EXECUTION_TIMEOUT_SECONDS = 190  # 3:30 minutes
+
 # Netskope response constants
 WAIT_TIME = 'wait_time'  # Wait time between queries
 RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
