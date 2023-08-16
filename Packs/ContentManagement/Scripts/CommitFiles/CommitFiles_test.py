@@ -35,12 +35,12 @@ def test_does_file_exist_azure_devops(mocker):
         - Returns True if the file exists and false if it doesn't
     """
     from CommitFiles import does_file_exist_azure_devops
-    mocker.patch.object(demisto, 'executeCommand', return_value={"Type": 1, "Contents": {}})
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents": {}}])
     flag = does_file_exist_azure_devops('demisto', content_file)
     assert not flag
 
 
-def test_commit_content_item_azure_devops(mocker):
+def test_1_commit_content_item_azure_devops(mocker):
     """
     Given:
         - A branch name and a content file.
@@ -51,10 +51,30 @@ def test_commit_content_item_azure_devops(mocker):
     """
     from CommitFiles import commit_content_item_azure_devops
     branch_name = 'demisto'
-    mocker.patch.object(demisto, 'executeCommand', return_value={"Type": 1, "Contents": {}})
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents": {}}])
     with pytest.raises(DemistoException) as e:
         commit_content_item_azure_devops(branch_name, content_file, [], [])
     assert e.value.message == "Failed to find a corresponding branch id to the given branch name."
+
+
+def test_2_commit_content_item_azure_devops(mocker):
+    """
+    Given:
+        - A branch name and a content file
+    When:
+        - Committing the files to azure devops
+    Then:
+        - Ensure the last executeCommand called with the expected arguments
+    """
+    from CommitFiles import commit_content_item_azure_devops
+    branch_name = 'demisto'
+    request = mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents":
+                                  {"value": [{"name": "demisto", "objectId": "XXXX", "path": "Test"}]}}])
+    commit_content_item_azure_devops(branch_name, content_file, [], [])
+    request.assert_called_with('azure-devops-file-create', args={'commit_comment': 'hello.py was added.',
+                                                                 'file_path': 'Packs/Hi/Integrations/Folder/hello.py',
+                                                                 'branch_name': 'demisto', 'file_content': 'hello world!',
+                                                                 'branch_id': 'XXXX'})
 
 
 def test_commit_content_item_bitbucket(mocker):
