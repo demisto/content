@@ -1,6 +1,6 @@
 {
     "name": "CTF Cloud Use Case",
-    "description": "Not so easy... Follow the instructions to set up your environment. Enjoy the challenge!"
+    "description": "Not so easy... Follow the instructions to set up your environment. Enjoy the challenge!",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
