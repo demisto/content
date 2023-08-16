@@ -8,7 +8,7 @@ clone_repository() {
   local sleep_time=$4
   local exit_code=0
   local i=1
-  echo "cloning ${repo_name} from branch: ${branch} with ${retry_count} retries"
+  echo "Cloning ${repo_name} from branch: ${branch} with ${retry_count} retries"
   for ((i=1; i <= retry_count; i++)); do
     git clone --depth=1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
@@ -43,7 +43,7 @@ clone_repository_with_fallback_branch() {
       return 0
     fi
   else
-    echo "successfully cloned ${repo_name} with branch:${branch}"
+    echo "Successfully cloned ${repo_name} with branch:${branch}"
     return 0
   fi
 }
