@@ -1,0 +1,172 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "ZeroFox Mapping",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "metadata"
+                },
+                "Alert Category": {
+                    "simple": "alert_type"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Source": {
+                    "simple": "network"
+                },
+                "Event Type": {
+                    "simple": "alert_type"
+                },
+                "External Status": {
+                    "simple": "status"
+                },
+                "Rule Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "rule_name",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Threat Name": {
+                    "simple": "rule_name"
+                },
+                "URLs": {
+                    "simple": "offending_content_url"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "simple": "notes"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "informational"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "high"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "critical"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "ZeroFox Mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
