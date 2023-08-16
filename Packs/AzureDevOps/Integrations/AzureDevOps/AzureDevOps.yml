@@ -897,7 +897,7 @@ script:
       required: false
       isArray: false
     - name: project_name
-      description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
+      description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: repository_id
