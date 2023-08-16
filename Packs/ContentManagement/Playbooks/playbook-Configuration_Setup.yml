@@ -1237,4 +1237,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-system: true
+marketplaces:
+- xsoar
