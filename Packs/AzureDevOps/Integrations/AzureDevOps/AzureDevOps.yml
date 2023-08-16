@@ -876,7 +876,7 @@ script:
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.id
-      description: Pull-request reviewers IDs.
+      description: ID of the pull request reviewer.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.displayName
       description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
