@@ -34,7 +34,8 @@ def stringSimilarity(first_string: str, second_string: str, similarity_threshold
             "SimilarityScore": similarity_ratio
         }
 
-    return CommandResults("StringSimilarity", ["StringA", "StringB"], results)
+        return CommandResults("StringSimilarity", ["StringA", "StringB"], results)
+    return None
 
 
 def main():

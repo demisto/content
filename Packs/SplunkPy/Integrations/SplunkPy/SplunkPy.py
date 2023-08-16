@@ -1198,7 +1198,7 @@ def reset_enriching_fetch_mechanism():
             del integration_context[field]
     set_integration_context(integration_context)
     demisto.setLastRun({})
-    demisto.results("Enriching fetch mechanism was reset successfully.")
+    return_results("Enriching fetch mechanism was reset successfully.")
 
 
 # =========== Enriching Fetch Mechanism ===========
@@ -1464,7 +1464,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
             continue
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
-    demisto.results(types_map)
+    return types_map
 
 
 def get_cim_mapping_field_command():
@@ -1615,14 +1615,12 @@ def get_cim_mapping_field_command():
         }
     }
 
-    fields = {
+    return {
         'Notable Data': notable,
         'Drilldown Data': drilldown,
         'Asset Data': asset,
         'Identity Data': identity
     }
-
-    demisto.results(fields)
 
 
 # =========== Mapping Mechanism ===========
@@ -2138,17 +2136,11 @@ def splunk_job_create_command(service: client.Service, args: dict):
     }
     search_job = service.jobs.create(query, **search_kwargs)
 
-    entry_context = {
-        'Splunk.Job': search_job.sid
-    }
-    demisto.results(
-        {
-            "Type": 1,
-            "ContentsFormat": formats['text'],
-            "Contents": f"Splunk Job created with SID: {search_job.sid}",
-            "EntryContext": entry_context,
-        }
-    )
+    return_results(CommandResults(
+        outputs_prefix='Splunk',
+        readable_output=f"Splunk Job created with SID: {search_job.sid}",
+        outputs={'Job': search_job.sid}
+    ))
 
 
 def splunk_results_command(service: client.Service, args: dict):
@@ -2160,18 +2152,20 @@ def splunk_results_command(service: client.Service, args: dict):
     except HTTPError as error:
         msg = error.message if hasattr(error, 'message') else str(error)
         if error.status == 404:
-            demisto.results(f"Found no job for sid: {sid}")
+            return f"Found no job for sid: {sid}"
         else:
             return_error(msg, error)
     else:
         for result in results.JSONResultsReader(job.results(count=limit, output_mode=OUTPUT_MODE_JSON)):
             if isinstance(result, results.Message):
-                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+                res.append({"Splunk message": json.dumps(result.message)})
             elif isinstance(result, dict):
                 # Normal events are returned as dicts
                 res.append(result)
-
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        return_results(CommandResults(
+            raw_response=json.dumps(res),
+            content_format=EntryFormat.JSON,
+        ))
 
 
 def parse_time_to_minutes():
@@ -2204,22 +2198,24 @@ def splunk_get_indexes_command(service: client.Service):
     for index in indexes:
         index_json = {'name': index.name, 'count': index["totalEventCount"]}
         indexesNames.append(index_json)
-    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
-                     'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+    return_results(CommandResults(
+        content_format=EntryFormat.JSON,
+        raw_response=json.dumps(indexesNames),
+        readable_output=tableToMarkdown("Splunk Indexes names", indexesNames, '')
+    ))
 
 
 def splunk_submit_event_command(service: client.Service, args: dict):
     try:
         index = service.indexes[args['index']]
     except KeyError:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Found no Splunk index: " + args['index']})
+        return_error(f'Found no Splunk index: {args["index"]}')
 
     else:
         data = args['data']
         data_formatted = data.encode('utf8')
         r = index.submit(data_formatted, sourcetype=args['sourcetype'], host=args['host'])
-        demisto.results(f'Event was created in Splunk index: {r.name}')
+        return_results(f'Event was created in Splunk index: {r.name}')
 
 
 def splunk_submit_event_hec(
@@ -2285,7 +2281,7 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     if 'Success' not in response_info.text:
         return_error('Could not send event to Splunk ' + response_info.text.encode('utf8'))
     else:
-        demisto.results('The event was sent successfully to Splunk.')
+        return_results('The event was sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
@@ -2310,12 +2306,9 @@ def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str
                                           auth_token=auth_token, sessionKey=session_key)
 
     if 'success' not in response_info or not response_info['success']:
-        demisto.results({
-            'ContentsFormat': formats['text'],
-            'Type': entryTypes['error'],
-            'Contents': "Could not update notable events: " + args.get('eventIDs', '') + ' : ' + str(response_info)})
+        return_error(f'Could not update notable events: {args.get("eventIDs", "")}: {str(response_info)}')
     else:
-        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+        return_results(f'Splunk ES Notable events: {response_info.get("message")}')
 
 
 def splunk_job_status(service: client.Service, args: dict) -> CommandResults | None:
@@ -2323,10 +2316,10 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults | N
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
-            demisto.results(f"Not found job for SID: {sid}")
+        if str(error) == 'HTTP 404 Not Found -- Unknown sid.':
+            return CommandResults(readable_output=f"Not found job for SID: {sid}")
         else:
-            return_error(error.message, error)  # pylint: disable=no-member
+            return_error(error)  # pylint: disable=no-member
         return None
     else:
         status = job.state.content.get('dispatchState')
@@ -2346,8 +2339,12 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults | N
 def splunk_parse_raw_command(args: dict):
     raw = args.get('raw', '')
     rawDict = rawToDict(raw)
-    ec = {'Splunk.Raw.Parsed': rawDict}
-    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
+    return_results(CommandResults(
+        outputs_prefix='Splunk.Raw.Parsed',
+        raw_response=json.dumps(rawDict),
+        outputs=rawDict,
+        content_format=EntryFormat.JSON
+    ))
 
 
 def test_module(service: client.Service, params: dict) -> None:
@@ -2441,6 +2438,30 @@ def kv_store_collection_config(service: client.Service, args: dict) -> CommandRe
     )
 
 
+def kv_store_collection_create_transform(service: client.Service, args: dict) -> CommandResults:
+    collection_name = args['kv_store_collection_name']
+    fields = args.get('supported_fields')
+    if not fields:
+        kv_store = service.kvstore[collection_name]
+        default_keys = get_keys_and_types(kv_store).keys()
+        if not default_keys:
+            raise DemistoException('Please provide supported_fields or run first splunk-kv-store-collection-config')
+        default_keys = (key.replace('field.', '').replace('index.', '') for key in default_keys)
+        fields = f"_key,{','.join(default_keys)}"
+
+    transforms = service.confs["transforms"]
+    params = {
+        "external_type": "kvstore",
+        "collection": collection_name,
+        "namespace": service.namespace,
+        "fields_list": fields
+    }
+    transforms.create(name=collection_name, **params)
+    return CommandResults(
+        readable_output=f"KV store collection transforms {collection_name} created successfully"
+    )
+
+
 def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict:
     if json_data.startswith('[') and json_data.endswith(']'):
         record: Record = kv_data_service_client._post(
@@ -2458,36 +2479,39 @@ def kv_store_collection_add_entries(service: client.Service, args: dict) -> None
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     batch_kv_upload(service.kvstore[kv_store_collection_name].data, kv_store_data)
-    timeline = None
+    indicators_timeline = None
     if indicator_path:
         kv_store_data = json.loads(kv_store_data)
-        indicator = extract_indicator(indicator_path,
-                                      kv_store_data if isinstance(kv_store_data, list) else [kv_store_data])
-        timeline = {
-            'Value': indicator,
-            'Message': f'Indicator added to {kv_store_collection_name} store in Splunk',
-            'Category': 'Integration Update'
-        }
-    return_outputs(f"Data added to {kv_store_collection_name}", timeline=timeline)
+        indicators = extract_indicator(indicator_path,
+                                       kv_store_data if isinstance(kv_store_data, list) else [kv_store_data])
+        indicators_timeline = IndicatorsTimeline(
+            indicators=indicators,
+            category='Integration Update',
+            message=f'Indicator added to {kv_store_collection_name} store in Splunk'
+        )
+    return_results(CommandResults(
+        readable_output=f"Data added to {kv_store_collection_name}",
+        indicators_timeline=indicators_timeline
+    ))
 
 
 def kv_store_collections_list(service: client.Service) -> None:
     app_name = service.namespace['app']
     names = [x.name for x in service.kvstore.iter()]
-    human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
-    entry_context = {"Splunk.CollectionList": names}
-    return_outputs(human_readable, entry_context, entry_context)
+    readable_output = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
+    return_results(CommandResults(
+        outputs_prefix='Splunk.CollectionList',
+        outputs=names,
+        readable_output=readable_output,
+        raw_response=names
+    ))
 
 
 def kv_store_collection_data_delete(service: client.Service, args: dict) -> None:
     kv_store_collection_name = args['kv_store_collection_name'].split(',')
     for store in kv_store_collection_name:
         service.kvstore[store].data.delete()
-    return_outputs(
-        f"The values of the {args['kv_store_collection_name']} were deleted successfully",
-        {},
-        {},
-    )
+    return_results(f"The values of the {args['kv_store_collection_name']} were deleted successfully")
 
 
 def kv_store_collection_delete(service: client.Service, args: dict) -> CommandResults:
@@ -2515,12 +2539,18 @@ def kv_store_collection_data(service: client.Service, args: dict) -> None:
         store = service.kvstore[stores[i]]
 
         if store_res:
-            human_readable = tableToMarkdown(name=f"list of collection values {store.name}",
-                                             t=store_res)
-            return_outputs(human_readable, {'Splunk.KVstoreData': {store.name: store_res}}, store_res)
+            readable_output = tableToMarkdown(name=f"list of collection values {store.name}",
+                                              t=store_res)
+            return_results(
+                CommandResults(
+                    outputs_prefix='Splunk.KVstoreData',
+                    outputs={store.name: store_res},
+                    readable_output=readable_output,
+                    raw_response=store_res
+                )
+            )
         else:
-
-            return_outputs(get_kv_store_config(store), {}, {})
+            return_results(get_kv_store_config(store))
 
 
 def kv_store_collection_delete_entry(service: client.Service, args: dict) -> None:
@@ -2531,12 +2561,15 @@ def kv_store_collection_delete_entry(service: client.Service, args: dict) -> Non
     store_res = next(get_store_data(service))
     indicators = extract_indicator(indicator_path, store_res) if indicator_path else []
     store.data.delete(query=query)
-    timeline = {
-        'Value': ','.join(indicators),
-        'Message': f'Indicator deleted from {store_name} store in Splunk',
-        'Category': 'Integration Update'
-    }
-    return_outputs(f'The values of the {store_name} were deleted successfully', timeline=timeline)
+    indicators_timeline = IndicatorsTimeline(
+        indicators=indicators,
+        category='Integration Update',
+        message=f'Indicator deleted from {store_name} store in Splunk'
+    ) if indicators else None
+    return_results(CommandResults(
+        readable_output=f'The values of the {store_name} were deleted successfully',
+        indicators_timeline=indicators_timeline
+    ))
 
 
 def check_error(service: client.Service, args: dict) -> None:
@@ -2686,7 +2719,7 @@ def main():  # pragma: no cover
     # The command command holds the command sent from the user.
     if command == 'test-module':
         test_module(service, params)
-        demisto.results('ok')
+        return_results('ok')
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
     elif command == 'splunk-search':
@@ -2718,6 +2751,8 @@ def main():  # pragma: no cover
             return_results(kv_store_collection_create(service, args))
         elif command == 'splunk-kv-store-collection-config':
             return_results(kv_store_collection_config(service, args))
+        elif command == 'splunk-kv-store-collection-create-transform':
+            return_results(kv_store_collection_create_transform(service, args))
         elif command == 'splunk-kv-store-collection-delete':
             return_results(kv_store_collection_delete(service, args))
         elif command == 'splunk-kv-store-collections-list':
@@ -2734,9 +2769,9 @@ def main():  # pragma: no cover
 
     elif command == 'get-mapping-fields':
         if argToBoolean(params.get('use_cim', False)):
-            get_cim_mapping_field_command()
+            return_results(get_cim_mapping_field_command())
         else:
-            get_mapping_fields_command(service, mapper, params)
+            return_results(get_mapping_fields_command(service, mapper, params))
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=args,
