@@ -6,7 +6,7 @@ from string import Template
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.logger import logging_setup
-from demisto_sdk.commands.common.tools import get_marketplace_to_core_packs
+from demisto_sdk.commands.common.tools import get_marketplace_to_core_packs, str2bool
 
 from Tests.scripts.find_pack_dependencies_changes import DEPENDENCIES_FIELDS, DIFF_FILENAME
 from Tests.scripts.github_client import GithubPullRequest
@@ -40,43 +40,55 @@ def parse_args() -> Namespace:
     options.add_argument('--github-token', required=True, help='A GitHub API token')
     options.add_argument('--current-sha', required=True, help='Current branch commit SHA')
     options.add_argument('--current-branch', required=True, help='Current branch name')
+    options.add_argument(
+        '--mandatory-only',
+        type=str2bool,
+        help='If true, shows only new/modified mandatory dependencies',
+        default=False,
+    )
     return options.parse_args()
 
 
-def get_summary(diff: dict, core_packs: set) -> str:
+def get_summary(diff: dict, core_packs: set, mandatory_only: bool) -> str:
     """Logs and returns a string reperesentation of the pack dependencies changes.
 
-    `diff` is expected to contain key-value pairs of pack IDs and their changes.
-    The data is expected to be in the following structure:
-    {
-        "pack_id": {
-            "added": {
-                "dependencies": {  // first-level dependencies
-                    "dep_id": {
-                        "display_name": str,
-                        "mandatory": bool,
-                        ...
-                    }
+    Args:
+        diff (dict): key-value pairs of pack IDs and their changes.
+            The data is expected to be in the following structure:
+            {
+                "pack_id": {
+                    "added": {
+                        "dependencies": {  // first-level dependencies
+                            "dep_id": {
+                                "display_name": str,
+                                "mandatory": bool,
+                                ...
+                            }
+                        },
+                        "allLevelDependencies": {
+                            "dep_id": {
+                                "display_name": str,
+                                "mandatory": bool,
+                                ...
+                            }
+                        }
+                    },
+                    "removed": {...},
+                    "modified": {...}
                 },
-                "allLevelDependencies": {
-                    "dep_id": {
-                        "display_name": str,
-                        "mandatory": bool,
-                        ...
-                    }
-                }
-            },
-            "removed": {...},
-            "modified": {...}
-        },
-        ...
-    }
+                ...
+            }
+        core_packs (set): A set of all core packs in a marketplace.
+        mandatory_only (bool): If true, returns a compact version of the summary
+            that includes only new/modified mandatory dependencies.
     """
     s = ""
 
     pack_data: dict[str, dict[str, dict]]
     for pack_id, pack_data in diff.items():
         for change_type, change_data in pack_data.items():
+            if change_type == "removed" and mandatory_only:
+                continue
             for dep_field in DEPENDENCIES_FIELDS:
                 if dependencies_data := change_data.get(dep_field):
                     core_pack = " (core pack)" if pack_id in core_packs else ""
@@ -85,20 +97,23 @@ def get_summary(diff: dict, core_packs: set) -> str:
                         f"level dependencies of pack **{pack_id}{core_pack}**:\n"
                     )
                     for dep_id, dep_data in dependencies_data.items():
-                        s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
-                            dep_id=dep_id,
-                            m_level=BOOL_TO_M_LEVEL[dep_data["mandatory"]],
-                        )
+                        if (mandatory := dep_data["mandatory"]) or not mandatory_only:
+                            s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
+                                dep_id=dep_id,
+                                m_level=BOOL_TO_M_LEVEL[mandatory],
+                            )
     if s:
         logger.info(s)
     return s
 
 
-def aggregate_summaries(artifacts_folder: str) -> dict:
+def aggregate_summaries(artifacts_folder: str, mandatory_only: bool = False) -> dict:
     """Aggregates summaries of pack dependencies changes in all marketplaces.
 
     Args:
         artifacts_folder (str): The artifacts folder.
+        mandatory_only (bool, default: False): If true, prints a compact version of the summary
+            that includes only new/modified mandatory dependencies.
 
     Returns:
         dict: a key-value pairs of marketplaces and their pack dependencies changes' summary.
@@ -109,7 +124,7 @@ def aggregate_summaries(artifacts_folder: str) -> dict:
         diff_path = Path(artifacts_folder) / marketplace.value / DIFF_FILENAME
         if diff_path.is_file():
             diff = json.loads(diff_path.read_text())
-            if summary := get_summary(diff, core_packs[marketplace]):
+            if summary := get_summary(diff, core_packs[marketplace], mandatory_only):
                 summaries[marketplace.value] = summary
     return summaries
 
@@ -126,7 +141,7 @@ def format_summaries_to_single_comment(summaries: dict) -> str:
 
 def main():  # pragma: no cover
     args = parse_args()
-    summaries = aggregate_summaries(args.artifacts_folder)
+    summaries = aggregate_summaries(args.artifacts_folder, args.mandatory_only)
     pull_request = GithubPullRequest(
         args.github_token,
         sha1=args.current_sha,
