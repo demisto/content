@@ -1230,7 +1230,7 @@ script:
       description: ID of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName
-      description: The unique name of user activated the work item.
+      description: The unique name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl
       description: Link to the user (activated the work item) image.
