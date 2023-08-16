@@ -70,4 +70,4 @@ winlogbeat.event_logs:
 
 **Note:** You can customize what will be collected by removing the "name" and "ignore_older" lines of the specific event type.
 
-1. Press **Create** to save the new template.
+5. Press **Create** to save the new template.
