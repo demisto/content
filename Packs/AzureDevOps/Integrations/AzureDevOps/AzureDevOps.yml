@@ -822,7 +822,7 @@ script:
       description: The ID of the pull request reviewer.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.uniqueName
-      description: The reviewers user name.
+      description: The user name of the reviewer.
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.imageUrl
       description: Link to the reviewers user image.
