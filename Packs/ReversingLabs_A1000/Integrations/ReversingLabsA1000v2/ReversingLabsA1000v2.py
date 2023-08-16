@@ -1,6 +1,7 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
+
 VERSION = "v2.3.0"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
