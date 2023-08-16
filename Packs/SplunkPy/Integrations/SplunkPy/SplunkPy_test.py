@@ -1165,7 +1165,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         'eventIDs': 'ID100',
         'owner': 'dbot'
     }
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(splunk, 'return_error')
 
     requests_mock.post(f'{test_base_url}services/notable_update', json='ValueError: Invalid owner value.')
 
@@ -1176,9 +1176,9 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         args=test_args
     )
 
-    assert demisto.results.call_count == 1
-    error_message = demisto.results.call_args[0][0]['Contents']
-    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
+    assert splunk.return_error.call_count == 1
+    error_message = splunk.return_error.call_args[0][0]
+    assert error_message == 'Could not update notable events: ID100: ValueError: Invalid owner value.'
 
 
 @pytest.mark.parametrize('args, params, call_count, success', [
@@ -1368,10 +1368,7 @@ IDENTITY = {
 
 def test_get_cim_mapping_field_command(mocker):
     """ Scenario: When the mapping is based on Splunk CIM. """
-    mocker.patch.object(demisto, 'results')
-    splunk.get_cim_mapping_field_command()
-    fields = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
+    fields = splunk.get_cim_mapping_field_command()
     assert fields == {
         'Notable Data': NOTABLE,
         'Drilldown Data': DRILLDOWN,

@@ -5,12 +5,12 @@ import demistomock as demisto
 
 
 def util_open_file(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -531,7 +531,7 @@ def test_single_thread_reply(email_code, mocker):
     - Validate that if no email_code is provided, 'get_unique_code' is called to generate one
     """
 
-    def get_reply_body_side_effect(notes, incident_id, attachments):  # noqa
+    def get_reply_body_side_effect(notes, incident_id, attachments, reputation_calc_async):  # noqa
         return 'Email body.', '<html><body>Email body.</body></html>'
 
     from SendEmailReply import single_thread_reply
