@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 from collections import deque
 from copy import copy
@@ -13,8 +15,6 @@ from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]

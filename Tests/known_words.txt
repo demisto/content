@@ -239,3 +239,8 @@ GCP
 Qradar
 XSIAM
 fromversion
+xpanse
+JavaScript
+sdk
+RFC
+

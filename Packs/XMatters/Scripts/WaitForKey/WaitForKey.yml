@@ -5,8 +5,7 @@ name: WaitForKey
 script: ''
 type: python
 tags: []
-comment: 'A simple loop to inspect the context for a specific key. If the key is not
-  found after "iterations" loops, the script exits with a message. '
+comment: 'A simple loop to inspect the context for a specific key. If the key is not found after "iterations" loops, the script exits with a message. '
 enabled: true
 args:
 - name: context_key
@@ -19,8 +18,7 @@ args:
   defaultValue: "10"
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

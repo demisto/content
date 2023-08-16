@@ -1,9 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import urllib.parse
 from typing import Any, Dict, Optional
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def exists_indicator(indicator: str) -> bool:

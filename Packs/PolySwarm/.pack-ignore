@@ -2,11 +2,11 @@
 ignore=RM104
 
 [file:PolySwarmV2.yml]
-ignore=IN144,IN145
-
+ignore=IN144
 
 [file:PolySwarmV2_image.png]
 ignore=IM111
 
 [file:PolySwarm_image.png]
 ignore=IM111
+

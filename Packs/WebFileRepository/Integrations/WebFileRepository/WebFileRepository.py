@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import fnmatch
 import gzip
@@ -21,9 +23,7 @@ from typing import (IO, Any, Callable, Dict, Generator, List, Optional, Set,
                     Tuple, Union)
 
 import bottle
-import demistomock as demisto  # noqa: F401
 from bottle import BaseRequest, HTTPResponse
-from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 

@@ -36,8 +36,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -46,15 +46,15 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   type: python
   subtype: python3
   script: '-'
@@ -919,5 +919,4 @@ script:
       description: Quota Expiration Status
       type: boolean
     description: Queries the SlashNext cloud database and retrieves the details of API quota.
-  runonce: false
 fromversion: 5.0.0

@@ -19,21 +19,20 @@ category: Utilities
 configuration:
 - name: apiKey
   display: API Key
-  required: false
   defaultvalue:
   type: 4
-  additionalinfo: No API key is required for up to 1,000 requests per day at 1 request
-    per second. For higher limits, please use an API key.
+  additionalinfo: No API key is required for up to 1,000 requests per day at 1 request per second. For higher limits, please use an API key.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   additionalinfo:
+  required: false
 description: >
   Query MAC Vendors for vendor names when providing a MAC address.
 
@@ -43,14 +42,9 @@ description: >
 script:
   commands:
   - arguments:
-    - default: false
-      isArray: false
-      name: mac
-      description: MAC address to lookup. Can be any of the formats;  00-11-22-33-44-55,
-        00:11:22:33:44:55, 00.11.22.33.44.55, 001122334455, 0011.2233.4455
+    - name: mac
+      description: MAC address to lookup. Can be any of the formats;  00-11-22-33-44-55, 00:11:22:33:44:55, 00.11.22.33.44.55, 001122334455, 0011.2233.4455
       required: true
-      secret: false
-    deprecated: false
     description: Resolves a MAC address to a vendor name.
     name: macvendors-lookup-mac
     outputs:
@@ -60,13 +54,11 @@ script:
     - contextPath: MACVendors.vendor
       description: Vendor Name
       type: string
-  isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
 fromversion: "6.0.0"
 tests:
 - No tests (auto formatted)

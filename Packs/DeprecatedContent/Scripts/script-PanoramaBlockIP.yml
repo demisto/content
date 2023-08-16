@@ -96,7 +96,6 @@ outputs:
   type: string
 scripttarget: 0
 deprecated: true
-runonce: false
 dependson:
   must:
   - panorama

@@ -16,24 +16,24 @@ configuration:
   name: clientId
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Client Secret
   name: clientSecret
   type: 4
-  required: false
   defaultvalue: ''
   hidden: true
+  required: false
 - displaypassword: Client Secret
   display: Client ID
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 
+  required: false
 script:
   script: ''
   type: javascript

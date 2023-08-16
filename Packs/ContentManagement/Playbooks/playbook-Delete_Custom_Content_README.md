@@ -31,6 +31,7 @@ core-api-download
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | dry_run | If true, will not actually delete any content entities. | true | Required |
+| instance_name | Core REST API instance name to use. |  | Optional |
 
 ## Playbook Outputs
 

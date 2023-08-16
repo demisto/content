@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # imports
 import calendar
 
-import demistomock as demisto  # noqa: F401
 import duo_client
-from CommonServerPython import *  # noqa: F401
 # Setup
 
 HOST = demisto.getParam('hostname')

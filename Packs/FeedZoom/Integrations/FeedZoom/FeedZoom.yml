@@ -26,8 +26,8 @@ configuration:
   - certificates.starfieldtech.com
   - crl.starfieldtech.com
   - ocsp.starfieldtech.com
-  required: false
   type: 16
+  required: false
 - additionalinfo: All Zoom Clients. User's web browser
   defaultvalue: '*.zoom.us,*.cloudfront.net'
   display: Firewall rules for Zoom website
@@ -35,19 +35,19 @@ configuration:
   options:
   - '*.zoom.us'
   - '*.cloudfront.net'
-  required: false
   type: 16
+  required: false
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Good
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -69,18 +69,18 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -90,20 +90,20 @@ configuration:
   name: feedFetchInterval
   defaultvalue: '240'
   type: 19
-  required: false
   additionalinfo: Setting a more frequent fetch interval may cause errors from the vendor.
+  required: false
 - display: Tags
   name: feedTags
   defaultvalue: ""
   type: 0
-  required: false
   additionalinfo: Supports CSV values.
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -124,7 +124,6 @@ script:
     description: Gets indicators from the feed.
   dockerimage: demisto/btfl-soup:1.0.1.45563
   feed: true
-  runonce: false
   subtype: python3
 tests:
 - FeedZoom_Test

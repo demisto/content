@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import base64
 from datetime import datetime
@@ -8,8 +10,6 @@ import dateutil.parser
 import urllib3
 
 # Local imports
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # Disable insecure warnings

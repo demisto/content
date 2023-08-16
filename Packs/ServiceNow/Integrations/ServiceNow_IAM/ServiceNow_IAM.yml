@@ -9,45 +9,45 @@ configuration:
   type: 0
 - display: ServiceNow API Version (e.g. 'v1'). Specify this value to use an endpoint version other than the latest.
   name: api_version
-  required: false
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
-  required: false
   type: 8
+  required: false
 - defaultvalue: User Profile - ServiceNow (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -64,25 +64,16 @@ name: ServiceNow IAM
 script:
   commands:
   - arguments:
-    - default: false
-      description: User Profile indicator details.
-      isArray: false
+    - description: User Profile indicator details.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party
-        integration will be active.
-      isArray: false
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a user in ServiceNow.
     execution: true
     name: iam-create-user
@@ -118,27 +109,17 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party
-        integration will be active.
-      isArray: false
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
@@ -173,15 +154,10 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a single user resource.
-    execution: false
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
@@ -215,13 +191,9 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Disable an active user.
     execution: true
     name: iam-disable-user
@@ -256,15 +228,9 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields within the application.
-      Used for outgoing-mapping through the Get Schema option.
-    execution: false
+  - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3
