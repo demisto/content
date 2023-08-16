@@ -1678,27 +1678,26 @@ Retrieve the reviewers for a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestReviewer.count | Number | Count of reviewers. | 
-| AzureDevOps.PullRequestReviewer.value.reviewerUrl | String | URL to retrieve information about this identity. | 
-| AzureDevOps.PullRequestReviewer.value.vote | Number | Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected. | 
-| AzureDevOps.PullRequestReviewer.value.hasDeclined | Boolean | Whether the pull request has been declined. | 
-| AzureDevOps.PullRequestReviewer.value.isRequired | Boolean | Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests. | 
-| AzureDevOps.PullRequestReviewer.value.isFlagged | Boolean | A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests. | 
-| AzureDevOps.PullRequestReviewer.value.displayName | String | This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider. | 
-| AzureDevOps.PullRequestReviewer.value.url | String | REST URL for this resource. | 
-| AzureDevOps.PullRequestReviewer.value._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
-| AzureDevOps.PullRequestReviewer.value.id | String | Pull-request reviewers IDs. | 
-| AzureDevOps.PullRequestReviewer.value.uniqueName | String | The reviewers user name. | 
-| AzureDevOps.PullRequestReviewer.value.imageUrl | String | Link to the reviewers user image. | 
+| AzureDevOps.PullRequestReviewer.reviewerUrl | String | URL to retrieve information about this identity. | 
+| AzureDevOps.PullRequestReviewer.vote | Number | Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected. | 
+| AzureDevOps.PullRequestReviewer.hasDeclined | Boolean | Whether the pull request has been declined. | 
+| AzureDevOps.PullRequestReviewer.isRequired | Boolean | Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests. | 
+| AzureDevOps.PullRequestReviewer.isFlagged | Boolean | A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests. | 
+| AzureDevOps.PullRequestReviewer.displayName | String | This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider. | 
+| AzureDevOps.PullRequestReviewer.url | String | REST URL for this resource. | 
+| AzureDevOps.PullRequestReviewer._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.PullRequestReviewer.id | String | Pull-request reviewers IDs. | 
+| AzureDevOps.PullRequestReviewer.uniqueName | String | The reviewers user name. | 
+| AzureDevOps.PullRequestReviewer.imageUrl | String | Link to the reviewers user image. | 
 
-### azure-devops-pull-request-reviewer-create
+### azure-devops-pull-request-reviewer-add
 
 ***
 Add a reviewer to a pull request.
 
 #### Base Command
 
-`azure-devops-pull-request-reviewer-create`
+`azure-devops-pull-request-reviewer-add`
 
 #### Input
 
@@ -1749,16 +1748,15 @@ Get the commits for the specified pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Commit.count | Number | Count of commits. | 
-| AzureDevOps.Commit.value.commitId | String | ID \(SHA-1\) of the commit. | 
-| AzureDevOps.Commit.value.author.name | String | Name of the commit author. | 
-| AzureDevOps.Commit.value.author.email | String | Email address of the commit author. | 
-| AzureDevOps.Commit.value.author.date | Date | Date of the commit operation. | 
-| AzureDevOps.Commit.value.committer.name | String | Name of the commit committer. | 
-| AzureDevOps.Commit.value.committer.email | String | Email address of the commit committer. | 
-| AzureDevOps.Commit.value.committer.date | Date | Date of the commit operation. | 
-| AzureDevOps.Commit.value.comment | String | Comment or message of the commit. | 
-| AzureDevOps.Commit.value.url | String | REST URL for this resource. | 
+| AzureDevOps.Commit.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.Commit.author.name | String | Name of the commit author. | 
+| AzureDevOps.Commit.author.email | String | Email address of the commit author. | 
+| AzureDevOps.Commit.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.Commit.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.Commit.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.comment | String | Comment or message of the commit. | 
+| AzureDevOps.Commit.url | String | REST URL for this resource. | 
 
 ### azure-devops-commit-list
 
@@ -1783,18 +1781,17 @@ Retrieve git commits for a project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Commit.count | Number | Count of commits. | 
-| AzureDevOps.Commit.value.commitId | String | ID \(SHA-1\) of the commit. | 
-| AzureDevOps.Commit.value.author.name | String | Name of the commit author. | 
-| AzureDevOps.Commit.value.author.email | String | Email address of the commit author. | 
-| AzureDevOps.Commit.value.author.date | Date | Date of the commit operation. | 
-| AzureDevOps.Commit.value.committer.name | String | Name of the commit committer. | 
-| AzureDevOps.Commit.value.committer.email | String | Email address of the commit committer. | 
-| AzureDevOps.Commit.value.committer.date | Date | Date of the commit operation. | 
-| AzureDevOps.Commit.value.comment | String | Comment or message of the commit. | 
-| AzureDevOps.Commit.value.changeCounts | Number | Counts of the types of changes \(edits, deletes, etc.\) included with the commit. | 
-| AzureDevOps.Commit.value.url | String | REST URL for this resource. | 
-| AzureDevOps.Commit.value.remoteUrl | String | Remote URL path to the commit. | 
+| AzureDevOps.Commit.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.Commit.author.name | String | Name of the commit author. | 
+| AzureDevOps.Commit.author.email | String | Email address of the commit author. | 
+| AzureDevOps.Commit.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.Commit.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.Commit.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.comment | String | Comment or message of the commit. | 
+| AzureDevOps.Commit.changeCounts | Number | Counts of the types of changes \(edits, deletes, etc.\) included with the commit. | 
+| AzureDevOps.Commit.url | String | REST URL for this resource. | 
+| AzureDevOps.Commit.remoteUrl | String | Remote URL path to the commit. | 
 
 ### azure-devops-commit-get
 
@@ -2316,23 +2313,22 @@ Retrieve repository files (items) list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.File.count | Number | Count of files. | 
-| AzureDevOps.File.value.objectId | String | The file object ID. | 
-| AzureDevOps.File.value.gitObjectType | String | The file git object type. | 
-| AzureDevOps.File.value.commitId | String | ID \(SHA-1\) of the file commit. | 
-| AzureDevOps.File.value.path | String | The file's path. | 
-| AzureDevOps.File.value.isFolder | Boolean | If the item is folder or not. | 
-| AzureDevOps.File.value.contentMetadata.fileName | String | The file name. | 
-| AzureDevOps.File.value.url | String | URL link to the item. | 
+| AzureDevOps.File.objectId | String | The file object ID. | 
+| AzureDevOps.File.gitObjectType | String | The file git object type. | 
+| AzureDevOps.File.commitId | String | ID \(SHA-1\) of the file commit. | 
+| AzureDevOps.File.path | String | The file's path. | 
+| AzureDevOps.File.isFolder | Boolean | If the item is folder or not. | 
+| AzureDevOps.File.contentMetadata.fileName | String | The file name. | 
+| AzureDevOps.File.url | String | URL link to the item. | 
 
-### azure-devops-file-content-get
+### azure-devops-file-get
 
 ***
 Getting the content file.
 
 #### Base Command
 
-`azure-devops-file-content-get`
+`azure-devops-file-get`
 
 #### Input
 
@@ -2342,7 +2338,9 @@ Getting the content file.
 | project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
 | repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
 | branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
-| file_name | The file name. | Required | 
+| file_name | The file name. | Required |
+| format | The file format (json or zip). Default is json. Possible values are: json, zip. Default is json. | Optional | 
+| include_content | Include item content. Default is True. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 
@@ -2352,11 +2350,7 @@ Getting the content file.
 | AzureDevOps.File.gitObjectType | String | The file git object type. | 
 | AzureDevOps.File.commitId | String | ID \(SHA-1\) of the file commit. | 
 | AzureDevOps.File.path | String | The file's path. | 
-| AzureDevOps.File.content | String | The file's content. | 
-| AzureDevOps.File.url | String | URL link to the item. | 
-| AzureDevOps.File._links.self.href | String | Link to the file. | 
-| AzureDevOps.File._links.repository.href | String | Link to the repository. | 
-| AzureDevOps.File._links.blob.href | String | Link to the blob. | 
+| AzureDevOps.File.content | String | The file content. | 
 
 ### azure-devops-branch-create
 
@@ -2455,7 +2449,7 @@ Create a thread in a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
+| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. |
 | AzureDevOps.PullRequestThread.id | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequestThread.publishedDate | Date | The date the thread was published. | 
 | AzureDevOps.PullRequestThread.lastUpdatedDate | Date | Last update date. | 
@@ -2509,7 +2503,7 @@ Update a thread in a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
+| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. |
 | AzureDevOps.PullRequestThread.id | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequestThread.publishedDate | Date | The date the thread was published. | 
 | AzureDevOps.PullRequestThread.lastUpdatedDate | Date | Last update date. | 
@@ -2561,66 +2555,65 @@ Retrieve all threads in a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestThread.value.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
-| AzureDevOps.PullRequestThread.value.id | Number | The ID of the pull request. | 
-| AzureDevOps.PullRequestThread.value.publishedDate | Date | The date the thread was published. | 
-| AzureDevOps.PullRequestThread.value.lastUpdatedDate | Date | Last update date. | 
-| AzureDevOps.PullRequestThread.value.comments.id | Number | The ID of the comments. | 
-| AzureDevOps.PullRequestThread.value.comments.parentCommentId | Number | An enumeration of the parent commit IDs for this commit. | 
-| AzureDevOps.PullRequestThread.value.comments.author.displayName | String | The display name of the comments creator. | 
-| AzureDevOps.PullRequestThread.value.comments.author.url | String | URL to retrieve information about this identity. | 
-| AzureDevOps.PullRequestThread.value.comments.author._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
-| AzureDevOps.PullRequestThread.value.comments.author.id | String | The ID of the thread author. | 
-| AzureDevOps.PullRequestThread.value.comments.author.uniqueName | String | The unique name of the thread author. | 
-| AzureDevOps.PullRequestThread.value.comments.author.imageUrl | String | Link to the thread author user image. | 
-| AzureDevOps.PullRequestThread.value.comments.author.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
-| AzureDevOps.PullRequestThread.value.comments.content | String | The comments content. | 
-| AzureDevOps.PullRequestThread.value.comments.publishedDate | Date | The date the comments were published. | 
-| AzureDevOps.PullRequestThread.value.comments.lastUpdatedDate | Date | Last update date. | 
-| AzureDevOps.PullRequestThread.value.comments.lastContentUpdatedDate | Date | The date the comment's content was last updated. | 
-| AzureDevOps.PullRequestThread.value.comments.commentType | String | The comment type at the time of creation. | 
-| AzureDevOps.PullRequestThread.value.comments.usersLiked | Unknown | A list of the users who have liked this comment. | 
-| AzureDevOps.PullRequestThread.value.comments._links.self.href | String | A collection of related REST reference links. | 
-| AzureDevOps.PullRequestThread.value.comments._links.repository.href | String | Link to the repository where the comments are. | 
-| AzureDevOps.PullRequestThread.value.comments._links.threads.href | String | Link to the threads. | 
-| AzureDevOps.PullRequestThread.value.comments._links.pullRequests.href | String | Link to the pull request. | 
-| AzureDevOps.PullRequestThread.value.threadContext | Unknown | Extended context information unique to pull requests. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewThreadType.$type | String | The type of the code review thread. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewThreadType.$value | String | The content in the code review thread. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumAdded.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumAdded.$value | Number | Number of code reviewers updated the pull request. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumChanged.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumChanged.$value | Number | Number of code reviewers changed the pull request. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumDeclined.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumDeclined.$value | Number | Number of code reviewers declined the pull request. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumRemoved.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedNumRemoved.$value | Number | Number of code reviewers are removed. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedAddedIdentity.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedAddedIdentity.$value | String | Number of code reviewers added identity. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedByIdentity.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedByIdentity.$value | String | Number of code reviewers updated by identity. | 
-| AzureDevOps.PullRequestThread.value.identities.1.displayName | String | The display name of the pull request thread creator. | 
-| AzureDevOps.PullRequestThread.value.identities.1.url | String | Link to the the pull request thread creator. | 
-| AzureDevOps.PullRequestThread.value.identities.1._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
-| AzureDevOps.PullRequestThread.value.identities.1.id | String | The ID of the pull request thread creator. | 
-| AzureDevOps.PullRequestThread.value.identities.1.uniqueName | String | The user name of the pull request thread creator. | 
-| AzureDevOps.PullRequestThread.value.identities.1.imageUrl | String | Link to the pull request thread creator user image. | 
-| AzureDevOps.PullRequestThread.value.identities.1.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
-| AzureDevOps.PullRequestThread.value.isDeleted | Boolean | Specify if the thread is deleted which happens when all comments are deleted. | 
-| AzureDevOps.PullRequestThread.value._links.self.href | String | Link to the thread. | 
-| AzureDevOps.PullRequestThread.value._links.repository.href | String | Link to the repository. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedToRequired.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedToRequired.$value | String | Number of code reviewers were changed to required. | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedIdentity.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.CodeReviewReviewersUpdatedChangedIdentity.$value | String | Number of code reviewers changed the identity. | 
-| AzureDevOps.PullRequestThread.value.status | String | The status of the comment thread. | 
-| AzureDevOps.PullRequestThread.value.properties | Unknown | Properties associated with the thread as a collection of key-value pairs. | 
-| AzureDevOps.PullRequestThread.value.identities | Unknown | Set of identities related to this thread. | 
-| AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value | Number | Supports markdown number. | 
-| AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type | String | A number \(Int32\). | 
-| AzureDevOps.PullRequestThread.value.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value | String | The unique ID of the Team Foundation. | 
-| AzureDevOps.PullRequestThread.count | Number | The number of threads in the pull request. | 
+| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
+| AzureDevOps.PullRequestThread.id | Number | The ID of the pull request. | 
+| AzureDevOps.PullRequestThread.publishedDate | Date | The date the thread was published. | 
+| AzureDevOps.PullRequestThread.lastUpdatedDate | Date | Last update date. | 
+| AzureDevOps.PullRequestThread.comments.id | Number | The ID of the comments. | 
+| AzureDevOps.PullRequestThread.comments.parentCommentId | Number | An enumeration of the parent commit IDs for this commit. | 
+| AzureDevOps.PullRequestThread.comments.author.displayName | String | The display name of the comments creator. | 
+| AzureDevOps.PullRequestThread.comments.author.url | String | URL to retrieve information about this identity. | 
+| AzureDevOps.PullRequestThread.comments.author._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.PullRequestThread.comments.author.id | String | The ID of the thread author. | 
+| AzureDevOps.PullRequestThread.comments.author.uniqueName | String | The unique name of the thread author. | 
+| AzureDevOps.PullRequestThread.comments.author.imageUrl | String | Link to the thread author user image. | 
+| AzureDevOps.PullRequestThread.comments.author.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.PullRequestThread.comments.content | String | The comments content. | 
+| AzureDevOps.PullRequestThread.comments.publishedDate | Date | The date the comments were published. | 
+| AzureDevOps.PullRequestThread.comments.lastUpdatedDate | Date | Last update date. | 
+| AzureDevOps.PullRequestThread.comments.lastContentUpdatedDate | Date | The date the comment's content was last updated. | 
+| AzureDevOps.PullRequestThread.comments.commentType | String | The comment type at the time of creation. | 
+| AzureDevOps.PullRequestThread.comments.usersLiked | Unknown | A list of the users who have liked this comment. | 
+| AzureDevOps.PullRequestThread.comments._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.PullRequestThread.comments._links.repository.href | String | Link to the repository where the comments are. | 
+| AzureDevOps.PullRequestThread.comments._links.threads.href | String | Link to the threads. | 
+| AzureDevOps.PullRequestThread.comments._links.pullRequests.href | String | Link to the pull request. | 
+| AzureDevOps.PullRequestThread.threadContext | Unknown | Extended context information unique to pull requests. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$type | String | The type of the code review thread. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$value | String | The content in the code review thread. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$value | Number | Number of code reviewers updated the pull request. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$value | Number | Number of code reviewers changed the pull request. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$value | Number | Number of code reviewers declined the pull request. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$value | Number | Number of code reviewers are removed. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$value | String | Number of code reviewers added identity. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$value | String | Number of code reviewers updated by identity. | 
+| AzureDevOps.PullRequestThread.identities.1.displayName | String | The display name of the pull request thread creator. | 
+| AzureDevOps.PullRequestThread.identities.1.url | String | Link to the the pull request thread creator. | 
+| AzureDevOps.PullRequestThread.identities.1._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.PullRequestThread.identities.1.id | String | The ID of the pull request thread creator. | 
+| AzureDevOps.PullRequestThread.identities.1.uniqueName | String | The user name of the pull request thread creator. | 
+| AzureDevOps.PullRequestThread.identities.1.imageUrl | String | Link to the pull request thread creator user image. | 
+| AzureDevOps.PullRequestThread.identities.1.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.PullRequestThread.isDeleted | Boolean | Specify if the thread is deleted which happens when all comments are deleted. | 
+| AzureDevOps.PullRequestThread._links.self.href | String | Link to the thread. | 
+| AzureDevOps.PullRequestThread._links.repository.href | String | Link to the repository. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$value | String | Number of code reviewers were changed to required. | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$value | String | Number of code reviewers changed the identity. | 
+| AzureDevOps.PullRequestThread.status | String | The status of the comment thread. | 
+| AzureDevOps.PullRequestThread.properties | Unknown | Properties associated with the thread as a collection of key-value pairs. | 
+| AzureDevOps.PullRequestThread.identities | Unknown | Set of identities related to this thread. | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value | Number | Supports markdown number. | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value | String | The unique ID of the Team Foundation. | 
 
 ### azure-devops-project-team-list
 
@@ -2642,14 +2635,13 @@ Get a list of teams.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Team.value.id | String | Team \(Identity\) Guid. A Team Foundation ID. | 
-| AzureDevOps.Team.value.name | String | Team name. | 
-| AzureDevOps.Team.value.url | String | Team REST API Url. | 
-| AzureDevOps.Team.value.description | String | Team description. | 
-| AzureDevOps.Team.value.identityUrl | String | Identity REST API Url to this team. | 
-| AzureDevOps.Team.value.projectName | String | The project name. | 
-| AzureDevOps.Team.value.projectId | String | The project ID. | 
-| AzureDevOps.Team.count | Number | The count of properties in the collection. | 
+| AzureDevOps.Team.id | String | Team \(Identity\) Guid. A Team Foundation ID. | 
+| AzureDevOps.Team.name | String | Team name. | 
+| AzureDevOps.Team.url | String | Team REST API Url. | 
+| AzureDevOps.Team.description | String | Team description. | 
+| AzureDevOps.Team.identityUrl | String | Identity REST API Url to this team. | 
+| AzureDevOps.Team.projectName | String | The project name. | 
+| AzureDevOps.Team.projectId | String | The project ID. | 
 
 ### azure-devops-team-member-list
 
@@ -2674,15 +2666,14 @@ Get a list of members for a specific team.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.TeamMember.value.isTeamAdmin | Boolean | if the member is the team admin. | 
-| AzureDevOps.TeamMember.value.identity.displayName | String | The display name of the team member. | 
-| AzureDevOps.TeamMember.value.identity.url | String | URL to retrieve information about this member. | 
-| AzureDevOps.TeamMember.value.identity._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
-| AzureDevOps.TeamMember.value.identity.id | String | ID of the team member. | 
-| AzureDevOps.TeamMember.value.identity.uniqueName | String | The unique name of team member. | 
-| AzureDevOps.TeamMember.value.identity.imageUrl | String | Link to the team member image. | 
-| AzureDevOps.TeamMember.value.identity.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
-| AzureDevOps.TeamMember.count | Number | Count of the team members. | 
+| AzureDevOps.TeamMember.isTeamAdmin | Boolean | if the member is the team admin. | 
+| AzureDevOps.TeamMember.identity.displayName | String | The display name of the team member. | 
+| AzureDevOps.TeamMember.identity.url | String | URL to retrieve information about this member. | 
+| AzureDevOps.TeamMember.identity._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.TeamMember.identity.id | String | ID of the team member. | 
+| AzureDevOps.TeamMember.identity.uniqueName | String | The unique name of team member. | 
+| AzureDevOps.TeamMember.identity.imageUrl | String | Link to the team member image. | 
+| AzureDevOps.TeamMember.identity.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
 
 ### azure-devops-blob-zip-get
 

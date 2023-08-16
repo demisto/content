@@ -2708,7 +2708,7 @@ script:
       required: true
     outputs:
     - type: Unknown
-      contextPath: AzureDevOps.PullRequestThread.value.pullRequestThreadContext
+      contextPath: AzureDevOps.PullRequestThread.pullRequestThreadContext
       description: Extended context information unique to pull requests.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.id
