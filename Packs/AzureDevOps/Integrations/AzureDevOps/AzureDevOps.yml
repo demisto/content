@@ -2380,7 +2380,7 @@ script:
       description: The URL of the repository.
     - type: String
       contextPath: AzureDevOps.Branch.repository.project.id
-      description: The ID of the Project.
+      description: The ID of the project.
     - type: String
       contextPath: AzureDevOps.Branch.repository.project.name
       description: The name of the project.
