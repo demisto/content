@@ -940,7 +940,7 @@ script:
       contextPath: AzureDevOps.Commit.url
       description: REST URL for this resource.
   - name: azure-devops-commit-list
-    description: Retrieve git commits for a project.
+    description: Retrieve Git commits for a project.
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
