@@ -27,7 +27,7 @@ configuration:
   type: 0
   defaultvalue:
   required: false
-- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands, and the user can override it by the command argument.
+- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Repository Name
   name: repository
   type: 0
