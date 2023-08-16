@@ -2260,7 +2260,7 @@ script:
       required: false
       isArray: false
     - name: include_content
-      description: Include item content. Default is True.
+      description: Include item content. 
       required: false
       isArray: false
       auto: PREDEFINED
