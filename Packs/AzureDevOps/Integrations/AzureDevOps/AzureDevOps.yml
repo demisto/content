@@ -1349,7 +1349,7 @@ script:
       description: Display name of user created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
