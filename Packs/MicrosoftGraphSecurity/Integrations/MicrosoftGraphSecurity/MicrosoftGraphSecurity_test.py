@@ -1,10 +1,11 @@
 import itertools
+from types import SimpleNamespace
 
 from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
     Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
     list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
-    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command
+    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -552,3 +553,7 @@ def test_test_auth_code_command(mocker, command_to_check):
     elif command_to_check == 'ediscovery':
         assert mock_ediscovery.called
         assert not mock_alerts.called
+
+def test_purge_ediscovery_data_command(mocker):
+    mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}) )
+    assert 'eDiscovery purge status is success.' == purge_ediscovery_data_command(client_mocker, {}).readable_output
