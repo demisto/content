@@ -126,7 +126,7 @@ def check_if_pack_still_installed(client: demisto_client,
     def success_handler(response_data):
         installed_packs = ast.literal_eval(response_data)
         installed_packs_ids = [pack.get('id') for pack in installed_packs]
-            return (True, None) if pack_id in installed_packs_ids else (False, None)
+        return pack_id in installed_packs_ids, None
 
     return generic_retries_request(client=client,
                                    retries_message="Failed to get all installed packs.",
