@@ -749,7 +749,7 @@ script:
       description: Pipeline folder.
       type: String
   - arguments:
-    - description: The name of the organization project. A default value is taken from the configuration parameters, but the user can override it.
+    - description: The name of the organization project. A default value is taken from the configuration parameters, but you can override it.
       name: project
       required: false
     - description: The name of the project repository. A default value is taken from the configuration parameters, but the user can override it.
