@@ -1355,7 +1355,7 @@ script:
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.id
-      description: ID of user created the work item.
+      description: ID of the user who created the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName
       description: The unique name of user created the work item.
