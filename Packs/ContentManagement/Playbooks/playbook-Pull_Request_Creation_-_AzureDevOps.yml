@@ -1179,7 +1179,7 @@ inputs:
 - key: File
   value: {}
   required: true
-  description: The File or Files to commit to the new or updated branch or pr
+  description: The file or files to commit to the new or updated branch or pull request.
   playbookInputQuery:
 - key: Azure DevOps target ref
   value:
