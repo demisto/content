@@ -1218,7 +1218,7 @@ script:
       description: 'The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName
-      description: Display name of user activated the work item.
+      description: Display name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
       description: The work item url.
