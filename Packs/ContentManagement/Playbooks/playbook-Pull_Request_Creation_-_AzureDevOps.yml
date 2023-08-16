@@ -1187,7 +1187,7 @@ inputs:
       root: incident
       accessor: azuredevopstargetref
   required: true
-  description: The reference to create a new branch from
+  description: The reference to create a new branch from.
   playbookInputQuery: null
 outputs: []
 tests:
