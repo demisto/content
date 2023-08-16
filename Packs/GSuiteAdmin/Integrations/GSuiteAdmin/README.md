@@ -614,6 +614,26 @@ There is no context output for this command.
 >All access tokens deleted for 297408095146-fug707qsjv4ikron0hugpevbrjhkmsk7.apps.googleusercontent.com.
 
 
+### gsuite-user-signout
+***
+ Signs a user out of all web and device sessions and reset their sign-in cookies.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.security`
+
+#### Base Command
+
+`gsuite-user-signout`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_key | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### gsuite-datatransfer-list
 ***
 Lists the transfers for a customer by source user, destination user, or status.

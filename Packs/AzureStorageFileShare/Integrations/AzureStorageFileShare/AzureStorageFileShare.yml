@@ -11,9 +11,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Create and Manage Azure FileShare Files and Directories.
 display: Azure Storage FileShare
 name: Azure Storage FileShare
@@ -208,7 +210,7 @@ script:
     description: Delete file from Share.
     execution: true
     name: azure-storage-fileshare-file-delete
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

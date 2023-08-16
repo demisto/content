@@ -369,13 +369,11 @@ class TestRFClient:
         )
 
         demisto.callingContext = {
-            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
-            'other': 'data',
+            'context': {'ExecutionContext': 'to be removed', 'Incidents': []}
         }
 
         assert client._get_writeback_data() == {
-            'context': {'other': 'data'},
-            'other': 'data',
+            'context': {'Incidents': []}
         }
 
     #
@@ -409,7 +407,7 @@ class TestRFClient:
         )
 
         mock_calling_context = {
-            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
+            'context': {'ExecutionContext': 'to be removed', 'Incidents': []},
             'other': 'data',
         }
         demisto.callingContext = mock_calling_context
@@ -426,8 +424,7 @@ class TestRFClient:
             'demisto_command': mock_command_name,
             'demisto_args': mock_command_args,
             'callingContext': {
-                'context': {'other': 'data'},
-                'other': 'data',
+                'context': {'Incidents': []},
             },
         }
 

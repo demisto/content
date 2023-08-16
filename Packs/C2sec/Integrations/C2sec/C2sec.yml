@@ -17,10 +17,12 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Default domain name
   name: domainName
   type: 0
@@ -29,10 +31,12 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 script:
   script: '-'
   type: python

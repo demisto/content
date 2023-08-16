@@ -443,7 +443,9 @@ def test_github_trigger_workflow(mocker):
     GitHub.BASE_URL = 'https://github.com'
     GitHub.USE_SSL = True
     GitHub.TOKEN = '123456'
-    mocker.patch.object(demisto, 'args', return_value={'owner': 'demisto', 'repository': 'test', 'workflow': 'nightly.yml'})
+    mock_args = {'owner': 'demisto', 'repository': 'test', 'workflow': 'nightly.yml',
+                 'inputs': '{\"release_changes\": \"* Fixed an issue.\n* Added a feature.\"}'}
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
     mocker_results = mocker.patch('GitHub.return_results')
 
     with requests_mock.Mocker() as m:

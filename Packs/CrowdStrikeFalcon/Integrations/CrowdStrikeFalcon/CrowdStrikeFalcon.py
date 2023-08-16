@@ -2579,13 +2579,13 @@ def fetch_incidents():
         else:
             incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                         'resources')
-
-        raw_res = get_incidents_entities(incidents_ids)
-        if raw_res is not None and "resources" in raw_res:
-            for incident in demisto.get(raw_res, "resources"):
-                incident['incident_type'] = incident_type
-                incident_to_context = incident_to_incident_context(incident)
-                incidents.append(incident_to_context)
+        if incidents_ids:
+            raw_res = get_incidents_entities(incidents_ids)
+            if raw_res is not None and "resources" in raw_res:
+                for incident in demisto.get(raw_res, "resources"):
+                    incident['incident_type'] = incident_type
+                    incident_to_context = incident_to_incident_context(incident)
+                    incidents.append(incident_to_context)
 
         incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
                                                              fetch_limit=fetch_limit, id_field='name')

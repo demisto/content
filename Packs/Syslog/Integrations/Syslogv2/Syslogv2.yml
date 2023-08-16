@@ -11,24 +11,28 @@ configuration:
   type: 9
   section: Connect
   displaypassword: Private Key
+  required: false
 - display: Certificate
   additionalinfo: Required for TLS
   name: certificate
   type: 12
   section: Connect
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
   type: 14
   additionalinfo: Required for TLS
   section: Connect
   hidden: true
+  required: false
 - display: Message Regex Filter For Incidents Creation.
   additionalinfo: Creates an incident in Cortex XSOAR for every received log message that matches this regex.
   name: message_regex
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: "514"
   display: Port mapping
   name: longRunningPort
@@ -43,6 +47,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: A Syslog server enables automatically opening incidents from Syslog clients. This integration supports filtering logs to convert to incidents, or alternatively converting all logs.
 display: Syslog v2
 name: Syslog v2

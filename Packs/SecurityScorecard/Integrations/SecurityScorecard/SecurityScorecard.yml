@@ -21,31 +21,38 @@ configuration:
 - name: isFetch
   display: Fetch incidents
   type: 8
+  required: false
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
   defaultvalue: "1440"
   type: 19
+  required: false
 - name: max_fetch
   display: Fetch Limit
   defaultvalue: '50'
   type: 0
   additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
+  required: false
 - name: first_fetch
   display: First fetch
   defaultvalue: 2 days
   type: 0
   additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
+  required: false
 - name: incidentType
   display: Incident type
   defaultvalue: SecurityScorecard Alert
   type: 13
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
+  required: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

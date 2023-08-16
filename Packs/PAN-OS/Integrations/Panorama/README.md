@@ -5684,7 +5684,7 @@ Gets information from all PAN-OS systems in the topology.
 
 ### pan-os-platform-get-device-groups
 ***
-Gets the operational information of the device groups in the topology.
+Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
 
 
 #### Base Command
@@ -8964,3 +8964,22 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The tag with name "testtag" was deleted successfully.
+
+### pan-os-list-device-groups
+
+***
+Returns a list of all device groups from Panorama.
+#### Base Command
+
+`pan-os-list-device-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.DeviceGroupNames | string | The list of device groups. |
