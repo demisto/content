@@ -698,6 +698,7 @@ def publish_message_command(
     project_id: str,
     data: str = None,
     attributes: str = None,
+    delim_char_attributes: str = None,
 ) -> Tuple[str, dict, dict]:
     """
     Publishes message in the topic
@@ -713,7 +714,7 @@ def publish_message_command(
     :param client: GoogleClient
     :return: list of topics
     """
-    body = get_publish_body(attributes, data)
+    body = get_publish_body(attributes, data, delim_char_attributes)
     published_messages = client.publish_message(project_id, topic_id, body)
 
     output = []
@@ -740,7 +741,7 @@ def publish_message_command(
     )
 
 
-def get_publish_body(message_attributes, message_data):
+def get_publish_body(message_attributes, message_data, delim_char):
     """
     Creates publish messages body from given arguments
     :param message_attributes: message attributes
@@ -752,7 +753,7 @@ def get_publish_body(message_attributes, message_data):
         # convert to base64 string
         message["data"] = base64.b64encode(message_data.encode("utf8")).decode('utf8')
     if message_attributes:
-        message["attributes"] = attribute_pairs_to_dict(message_attributes)
+        message["attributes"] = attribute_pairs_to_dict(message_attributes, delim_char)
     body = {"messages": [message]}
     return body
 

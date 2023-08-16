@@ -105,6 +105,10 @@ script:
       name: attributes
     - description: Project ID.
       name: project_id
+    - description: Set delimiter of attributes split
+      name: delim_char_attributes
+      defaultValue: ','
+      type: unknown
     description: Publish a message in a topic.
     name: gcp-pubsub-topic-publish-message
     outputs:
