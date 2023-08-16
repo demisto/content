@@ -374,7 +374,7 @@
                         "isVisible": true
                     },
                     {
-						"fieldId": "incident_azuredevopstargetref",
+						"fieldId": "incident_cicdazuredevopstargetref",
 						"isVisible": true
 					}
                 ],
