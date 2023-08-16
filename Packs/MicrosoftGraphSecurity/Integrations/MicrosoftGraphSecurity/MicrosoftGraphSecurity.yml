@@ -1626,4 +1626,5 @@ tests:
 - Microsoft Graph Security Test dev v2i
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2
+- MSG-ediscovery-tpb
 fromversion: 5.0.0
