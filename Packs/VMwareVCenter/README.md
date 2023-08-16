@@ -18,7 +18,7 @@ This section describes the configuration required on the VMware vCenter server t
 6. In the *Create Forwarding Configuration* pane, click **Add** to enter another remote syslog server.
 7. Click **Save**.
  
-For additional details, see [Forward vCenter Server Log Files to Remote Syslog Server](https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.monitoring.doc/GUID-9633A961-A5C3-4658-B099-B81E0512DC21.html)] 
+For additional details, see [Forward vCenter Server Log Files to Remote Syslog Server](https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.monitoring.doc/GUID-9633A961-A5C3-4658-B099-B81E0512DC21.html)
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
