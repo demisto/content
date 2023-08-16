@@ -1097,7 +1097,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "add_python_version_graph"
-resolved_reference = "f7b17fc6027305fc04ef3f1995458e453d8e0808"
+resolved_reference = "bd9bb9ecc54ace66e657610b8bb3dbf26d54c1cb"
 
 [[package]]
 name = "deprecated"
