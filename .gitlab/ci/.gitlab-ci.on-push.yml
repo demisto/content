@@ -424,7 +424,7 @@ update-dependencies-changes:
   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
   when: always
   script:
-    - python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only
+    - python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
 
 slack-notify-nightly-build:
   extends:

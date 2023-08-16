@@ -46,7 +46,7 @@ def test_get_summary() -> None:
             }
         }
     }
-    assert script_module.get_summary(diff) == (
+    assert script_module.get_summary(diff, set(), mandatory_only=False) == (
         "- In the first-level dependencies of pack **3CXDesktopApp_Supply_Chain_Attack**:\n"
         "   - The dependency **MajorBreachesInvestigationandResponse** was changed to *optional*.\n"
         "- In the all-level dependencies of pack **3CXDesktopApp_Supply_Chain_Attack**:\n"
