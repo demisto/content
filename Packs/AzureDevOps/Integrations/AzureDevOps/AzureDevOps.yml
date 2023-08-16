@@ -1221,7 +1221,7 @@ script:
       description: Display name of the user who activated the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url
-      description: The work item url.
+      description: The work item URL.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href
       description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
