@@ -217,3 +217,132 @@ A list of inventory items returned by the request.
 >|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|
 >|---|---|---|---|---|---|---|
 >| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |
+### aws-ssm-association-list
+
+***
+Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule.
+
+#### Base Command
+
+`aws-ssm-association-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AssociationNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.Association.Name | String | The name of the SSM document. | 
+| AWS.SSM.Association.AssociationName | String | The association name. | 
+| AWS.SSM.Association.InstanceId | String | The managed node ID. | 
+| AWS.SSM.Association.AssociationId | String | The ID created by the system when crating an association. An association is a binding between a document and a set of targets with a schedule. | 
+| AWS.SSM.Association.AssociationVersion | String | The association version. | 
+| AWS.SSM.Association.DocumentVersion | String | The version of the document used in the association. | 
+| AWS.SSM.Association.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Association.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Association.LastExecutionDate | String | The date on which the association was last run. | 
+| AWS.SSM.Association.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. | 
+| AWS.SSM.Association.Overview.DetailedStatus | String | A detailed status of the association. | 
+| AWS.SSM.Association.Overview.AssociationStatusAggregatedCount | String | Returns the number of targets for the association status. For example, if you created an association with two managed nodes, and one of them was successful, this would return the count of managed nodes by status. | 
+| AWS.SSM.Association.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. The schedule runs in Coordinated Universal Time \(UTC\). | 
+| AWS.SSM.Association.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
+
+#### Command example
+```!aws-ssm-association-list ```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Association": {
+                 "Associations": [
+                    {
+                        "Name": "AWS-GatherSoftwareInventory",
+                        "AssociationId": "AssociationId_test",
+                        "AssociationVersion": "1",
+                        "Targets": [
+                            {
+                                "Key": "InstanceIds",
+                                "Values": [
+                                    "instanceId_test1",
+                                    "instanceId_test2"
+                                ]
+                            }
+                        ],
+                        "LastExecutionDate": "2023-07-25 18:51:28.607000+03:00",
+                        "Overview": {
+                            "Status": "Pending",
+                            "DetailedStatus": "Associated"
+                        },
+                        "ScheduleExpression": "rate(30 minutes)",
+                        "AssociationName": "test"
+                    },
+                    {
+                        "Name": "AWSQuickSetup-CreateAndAttachIAMToInstance",
+                        "AssociationId": "AssociationId_test",
+                        "AssociationVersion": "1",
+                        "Targets": [
+                            {
+                                "Key": "ParameterValues",
+                                "Values": [
+                                    "instanceId_test1"
+                                ]
+                            }
+                        ],
+                        "LastExecutionDate": "2023-08-13 14:49:38+03:00",
+                        "Overview": {
+                            "Status": "Failed",
+                            "DetailedStatus": "Failed",
+                            "AssociationStatusAggregatedCount": {
+                                "Failed": 1
+                            }
+                        },
+                        "ScheduleExpression": "rate(30 days)",
+                        "AssociationName": "AWS-QuickSetup-SSMHost-AttachIAMToInstance"
+                    },
+                    {
+                        "Name": "AWS-GatherSoftwareInventory",
+                        "AssociationId": "AssociationId_test",
+                        "AssociationVersion": "1",
+                        "Targets": [
+                            {
+                                "Key": "InstanceIds",
+                                "Values": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "LastExecutionDate": "2023-07-25 18:54:37.936000+03:00",
+                        "Overview": {
+                            "Status": "Pending",
+                            "DetailedStatus": "Associated"
+                        },
+                        "ScheduleExpression": "rate(30 minutes)",
+                        "AssociationName": "Inventory-Association"
+                    }
+                ],
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS SSM Association
+>|Association id|Association version|Document name|Last execution date|Resource status count|Status|
+>|---|---|---|---|---|---|
+>| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:51:28.607000+03:00 |  | Pending |
+>| AssociationId_test | 1 | AWSQuickSetup-CreateAndAttachIAMToInstance | 2023-08-13 14:49:38+03:00 | Failed: 1 | Failed |
+>| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:54:37.936000+03:00 |  | Pending |
+
+       
+       
+
+
