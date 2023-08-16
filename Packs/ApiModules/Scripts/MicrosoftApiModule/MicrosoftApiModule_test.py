@@ -179,7 +179,7 @@ def test_page_not_found_error(mocker):
 
 def test_epoch_seconds(mocker):
     mocker.patch.object(MicrosoftClient, '_get_utcnow', return_value=datetime.datetime(2019, 12, 24, 14, 12, 0, 586636))
-    mocker.patch.object(MicrosoftClient, '_get_utcfromtimestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
+    mocker.patch.object(MicrosoftClient, '_get_utc_from_timestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
     integer = MicrosoftClient.epoch_seconds()
     assert integer == 1577196720
 
@@ -522,8 +522,7 @@ def test_create_api_metrics(mocker, response, result):
     mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
-    client = retry_on_rate_limit_client(True)
-    client.create_api_metrics(response)
+    MicrosoftClient.create_api_metrics(response)
 
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get('Contents') == 'Metrics reported successfully.'
