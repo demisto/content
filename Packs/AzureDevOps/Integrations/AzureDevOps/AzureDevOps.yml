@@ -2428,7 +2428,7 @@ script:
       description: Identity reference.
     - type: String
       contextPath: AzureDevOps.Branch.pushedBy._links.avatar.href
-      description: Url for the user's avatar.
+      description: URL for the user's avatar.
     - type: String
       contextPath: AzureDevOps.Branch.pushedBy.id
       description: ID of the user who pushed the commit / file.
