@@ -16,29 +16,36 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token (CB Response)
   name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - display: API Key (CB Defense)
   name: apikey
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Key (CB Defense)
   name: credentials_api_key
   hiddenusername: true
   type: 9
+  required: false
 - display: Connector ID (CB Defense)
   name: connector
   defaultvalue: ""
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

@@ -11,25 +11,31 @@ configuration:
   name: key
   type: 4
   hidden: true
+  required: false
 - name: key_creds
   type: 9
   displaypassword: Panorama API Key
   hiddenusername: true
+  required: false
 - display: BPA Access Token
   name: token
   type: 4
   hidden: true
+  required: false
 - name: token_creds
   type: 9
   displaypassword: BPA Access Token
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks BPA
 name: BPA

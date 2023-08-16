@@ -22,78 +22,93 @@ configuration:
   name: file_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: CVE Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the CVE malicious.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: IP Threshold
   additionalinfo: Minimum risk score from RF to consider the IP malicious.
   name: ip_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: Domain Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: URL Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: Vulnerability Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: vulnerability_threshold
   defaultvalue: "65"
   type: 0
+  required: false
 - display: Collective Insights
   name: collective_insights
   defaultvalue: "On"
   type: 15
   required: true
-  additionalinfo: The Recorded Future Intelligence Cloud aggregates data related to indicators, incidents and detections from correlations, driving collective insights to better identify threats. Unattributable data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud.
+  additionalinfo: The Recorded Future Platform tracks trends and facilitates new insights on detections to better identify threats. See trends and track metrics over time using the Recorded Future Platform. This feature will store XSOAR enrichments based on playbooks. This feature permits additional analytics to track trends and identify new insights with the Recorded Future Intelligence Cloud. Please refer to the Help section for information about fields collected for Collective Insights.
   options:
   - "On"
   - "Off"
 - display: Trust any certificate (not secure)
-  name: unsecure
+  name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   defaultvalue: "false"
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Rule names to fetch alerts by
   additionalinfo: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.
   name: rule_names
   type: 12
+  required: false
 - display: Alert Statuses to include in the fetch
   name: fetch_statuses
   type: 0
   additionalinfo: 'Comma-separated alert statuses (e.g. "unassigned,assigned,pending,actionable,no-action,tuning"). If empty, the default value of "no-action" will be used.'
   defaultvalue: "no-action"
+  required: false
 - display: Update alert status on fetch.
   name: update_status
   defaultvalue: "true"
   type: 8
   additionalinfo: If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration.
+  required: false
 - display: First fetch time
   additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
   defaultvalue: 24 hours
   name: first_fetch
   type: 0
+  required: false
 - name: incidentType
   display: 'Incident type'
   type: 13
   defaultvalue: Recorded Future Alert
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
+  required: false
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   name: integrationReliability
@@ -107,6 +122,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - name: feedExpirationPolicy
   display: ''
   defaultvalue: indicatorType
@@ -116,19 +132,22 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - display: Incidents Fetch Interval
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
+  required: false
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   commands:
   - name: domain
     description: Gets a quick indicator of the risk associated with a domain.

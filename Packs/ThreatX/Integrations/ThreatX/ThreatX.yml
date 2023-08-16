@@ -12,14 +12,17 @@ configuration:
   name: customer_name
   type: 0
   hidden: true
+  required: false
 - display: API Key
   name: api_key
   type: 4
   hidden: true
+  required: false
 - name: credentials
   type: 9
   display: Customer Name
   displaypassword: API Key
+  required: false
 - defaultvalue: '70'
   display: IP Threshold. Minimum risk score from ThreatX to consider the IP malicious.
   name: dbot_threshold
@@ -29,11 +32,13 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
 
+  required: false
 description: The ThreatX integration allows automated enforcement and intel gathering actions.
 display: ThreatX
 name: ThreatX

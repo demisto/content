@@ -1023,3 +1023,21 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
 >| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
+
+
+### msgraph-device-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-device-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

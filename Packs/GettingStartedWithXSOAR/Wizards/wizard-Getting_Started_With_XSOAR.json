@@ -1,0 +1,274 @@
+{
+  "id": "Getting Started With XSOAR",
+  "version": -1,
+  "modified": "2023-07-11T11:55:54.250933+03:00",
+  "fromVersion": "6.9.0",
+  "name": "Getting Started With XSOAR",
+  "description": "Welcome to the Getting Started with XSOAR Wizard! This will serve as your step-by-step walk through on Getting your XSOAR server up and running",
+  "dependency_packs": [{
+      "name": "Sample Incident Generator",
+      "min_required": 1,
+      "packs": [
+      {
+        "name": "sampleSiem",
+        "display_name": "Sample Incident Generator"
+      }
+      ]
+    },
+    {
+      "name": "Sandbox",
+      "min_required": 0,
+      "packs": [{
+          "name": "Palo_Alto_Networks_WildFire",
+          "display_name": "Palo Alto Networks WildFire"
+        },
+        {
+          "name": "CrowdStrikeFalconX",
+          "display_name": "CrowdStrike Falcon X"
+        },
+        {
+          "name": "JoeSecurity",
+          "display_name": "Joe Security"
+        }
+      ]
+    },
+    {
+      "name": "Messaging",
+      "min_required": 0,
+      "packs": [{
+          "name": "MicrosoftExchangeOnPremise",
+          "display_name": "Microsoft Exchange On-Premise"
+        },
+        {
+          "name": "Gmail",
+          "display_name": "Gmail"
+        },
+        {
+          "name": "MicrosoftGraphMail",
+          "display_name": "Microsoft Graph Mail"
+        },
+        {
+          "name": "MailSenderNew",
+          "display_name": "Mail Sender (NEW)"
+        },
+        {
+          "name": "MailListener",
+          "display_name": "Mail Listener"
+        }
+      ]
+    },
+    {
+      "name": "Case Management",
+      "min_required": 0,
+      "packs": [{
+          "name": "Jira",
+          "display_name": "Atlassian Jira v2"
+        },
+        {
+          "name": "ServiceNow",
+          "display_name": "ServiceNow v2"
+        }
+      ]
+    },
+    {
+      "name": "Data Enrichment & Threat Intelligence",
+      "min_required": 0,
+      "packs": [{
+          "name": "AutoFocus",
+          "display_name": "Palo Alto Networks AutoFocus"
+        },
+        {
+          "name": "VirusTotal",
+          "display_name": "VirusTotal"
+        },
+        {
+          "name": "FeedMitreAttackv2",
+          "display_name": "Mitre Attack v2"
+        },
+        {
+          "name": "Unit42Intel",
+          "display_name": "Unit 42 Intel"
+        },
+        {
+          "name": "FeedTorExitAddresses",
+          "display_name": "Tor Exit Addresses Feed"
+        },
+        {
+          "name": "FeedOffice365",
+          "display_name": "Office 365 Feed"
+        },
+        {
+          "name": "Feedsslabusech",
+          "display_name": "Abuse.ch SSL Blacklist Feed"
+        }
+      ]
+    },
+    {
+      "name": "Network Security",
+      "min_required": 0,
+      "packs": [{
+        "name": "PAN-OS",
+        "display_name": "PAN-OS by Palo Alto Networks"
+        }
+      ]
+    }
+  ],
+  "wizard": {
+    "fetching_integrations": [{
+      "priority": 1,
+      "name": "Sample Incident Generator",
+      "action": {
+        "existing": "Update your current instance to work with the new Case incident type: \n1. Enable fetching. \n2. Set the Incident type field to Case. \n3. Set the Mapper field to 'Case Management - Generic Mapper'. \n4. Change the Fetch Interval to Hourly (so you don't flood your XSOAR instance with Alerts. You can disable this later, we just need some sample data to show you the ropes",
+        "new": "Set up a new 'Sample Incident Generator' instance to start fetching sample incidents: \n1. Enable fetching. \n2. Set the Incident type field to Case. \n3. Set the Mapper field to 'Case Management - Generic Mapper'. \n4. Change the Fetch Interval to Hourly (so you don't flood your XSOAR instance with Alerts. You can disable this later, we just need some sample data to show you the ropes"
+      },
+      "description": "Set up the 'Sample Incident Generator' integration to begin fetching sample alerts to quickly learn the basics of XSOAR."
+    }],
+    "set_playbook": [{
+      "name": "Case Management - Generic v2"
+    }],
+    "supporting_integrations": [{
+        "name": "WildFire-v2",
+        "action": {
+          "existing": "Configure 'Wildfire' to enable file detonation to improve investigation.",
+          "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
+        },
+        "description": "Configure Wildfire to enable file detonation to improve investigation."
+      },
+      {
+        "name": "JoeSecurityV2",
+        "action": {
+          "existing": "Configure 'Joe Security V2' to enable file detonation to improve investigation.",
+          "new": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
+        },
+        "description": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
+      },
+      {
+        "name": "EWS Mail Sender",
+        "action": {
+          "existing": "Configure 'EWS Mail Sender' to enable email notifications.",
+          "new": "Configure 'EWS Mail Sender' to enable email notifications."
+        },
+        "description": "Configure 'EWS Mail Sender' to enable email notifications."
+      },
+      {
+        "name": "Gmail",
+        "action": {
+          "existing": "Configure 'Gmail' to enable email notifications.",
+          "new": "Configure 'Gmail' to enable email notifications."
+        },
+        "description": "Configure 'Gmail' to enable email notifications."
+      },
+      {
+        "name": "MicrosoftGraphMail",
+        "action": {
+          "existing": "Configure 'Microsoft Graph Mail' to enable email notifications.",
+          "new": "Configure 'Microsoft Graph Mail' to enable email notifications."
+        },
+        "description": "Configure 'Microsoft Graph Mail' to enable email notifications."
+      },
+      {
+        "name": "ServiceNow v2",
+        "action": {
+          "existing": "Configure 'ServiceNow v2' to open a ticket for a true positive incident.",
+          "new": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+        },
+        "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+      },
+      {
+        "name": "jira-v2",
+        "action": {
+          "existing": "Configure 'jira-v2' to open a ticket for a true positive incident.",
+          "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
+        },
+        "description": "Configure 'jira-v2' to open a ticket for a true positive incident."
+      },
+      {
+        "name": "AutoFocus V2",
+        "action": {
+          "existing": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'AutoFocus v2' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "VirusTotal (API v3)",
+        "action": {
+          "existing": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "MITRE ATT&CK v2",
+        "action": {
+          "existing": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
+        },
+        "description": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
+      },
+      {
+        "name": "Splunk",
+        "action": {
+          "existing": "Configure 'Splunk' to fetch notables, events, or run queries.",
+          "new": "Enable 'Splunk' to fetch notables, events, or run queries"
+        },
+        "description": "Configure 'Splunk' to fetch notables, events, or run queries."
+      },
+      {
+        "name": "Unit 42 Intel",
+        "action": {
+          "existing": "Configure 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license.",
+          "new": "Enable 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license."
+        },
+        "description": "Configure 'Unit 42 Intel' to fetch Indicators, Campaigns, Threat Actors, Malware, etc from our Unit 42 Threat Research team.  Note - This feed requires the Autofocus key that came with the TIM license."
+      },
+      {
+        "name": "PAN-OS by Palo Alto Network",
+        "action": {
+          "existing": "Configure 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!",
+          "new": "Enable 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!"
+        },
+        "description": "Configure 'Pan-OS' to Create and manage custom security rules on Palo Alto Networks NGFWs. Query PAN-OS Logs, Manage EDLS, and More!"
+      },
+      {
+        "name": "Tor Exit Addresses Feed",
+        "action": {
+          "existing": "Configure 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity",
+          "new": "Enable 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity"
+        },
+        "description": "Configure 'Tor Exit Addresses Feed' to fetch Tor Exit Address Indicators. Malicious cyber actors use Tor to mask their identity when engaging in malicious cyber activity"
+      },
+      {
+        "name": "Office 365 Feed",
+        "action": {
+          "existing": "Configure 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API.",
+          "new": "Enable 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API."
+        },
+        "description": "Configure 'Office 365 Feed' to fetch IP and URL Indicators provided by the Microsoft read-only API."
+      },
+       {
+        "name": "Abuse.ch SSL Blacklist Feed",
+        "action": {
+          "existing": "Configure 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate.",
+          "new": "Enable 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate."
+        },
+        "description": "Configure 'Abuse.ch SSL Blacklist Feed' which contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate."
+      },
+      {
+        "name": "Mail Listener",
+        "action": {
+          "existing": "Configure 'Mail Listener' to listen to mail box and fetch emails that can be used to trigger an incident",
+          "new": "Enable 'Mail Listener' to listen to a mail box and fetch emails that can be used to trigger an incident"
+        },
+        "description": "Configure 'Mail Listener' to listen to mail box and fetch emails that can be used to trigger an incident"
+      }
+    ],
+    "next": [{
+      "name": "Enable Your Use Case",
+      "action": {
+        "existing": "Enable the fetching integrations to start ingesting sample data and to automatically run the playbook!",
+        "new": "Enable the fetching integrations to start ingesting sample data and to automatically run the playbook!"
+      }
+    }]
+  }
+}

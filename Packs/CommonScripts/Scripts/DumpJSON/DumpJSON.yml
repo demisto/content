@@ -19,6 +19,6 @@ outputs:
   description: The JSON object as string.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

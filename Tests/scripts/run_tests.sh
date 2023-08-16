@@ -18,8 +18,13 @@ RETVAL=$?
 
 if [ $RETVAL -eq 0 ]; then
   role="$(echo -e "$1" | tr -d '[:space:]')"
-  filepath="./Tests/is_build_passed_${role}.txt"
+  echo $role
+  filepath="$ARTIFACTS_FOLDER/is_build_passed_${role}.txt"
   touch "$filepath"
+fi
+
+if [ "${IS_NIGHTLY}" = true ]; then
+  exit 0
 fi
 
 exit $RETVAL

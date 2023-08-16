@@ -12,6 +12,7 @@ configuration:
   display: Nexthink Engine Port (e.g. 1671)
   name: port
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
@@ -19,9 +20,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Nexthink helps IT teams deliver on the promise of the modern digital workplace. Nexthink is the only solution to provide enterprises with a way to visualize, act and engage across the entire IT ecosystem to lower IT cost and improve digital employee experience.
 display: Nexthink
 name: Nexthink

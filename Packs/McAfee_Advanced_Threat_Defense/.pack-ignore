@@ -10,3 +10,5 @@ ignore=BA108,BA109,IN124
 [file:McAfee_Advanced_Threat_Defense_image.png]
 ignore=IM111
 
+[known_words]
+McAfee

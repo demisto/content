@@ -10,6 +10,7 @@ configuration:
 - display: Lacework Sub-Account Name (If Required)
   name: lacework_subaccount
   type: 0
+  required: false
 - display: Lacework API Key
   name: lacework_api_key
   required: true
@@ -32,9 +33,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)
   name: lacework_event_history
@@ -47,6 +50,7 @@ configuration:
   - '6'
   - '7'
   type: 15
+  required: false
 description: Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 display: Lacework
 name: Lacework

@@ -6,8 +6,14 @@ configuration:
 - additionalinfo: The content of the generated `credentials.json` file. (Read the docs for further information)
   display: JSON credentials
   name: credentials_json
-  required: true
   type: 4
+  hidden: true
+  required: false
+- name: credentials
+  type: 9
+  displaypassword: JSON credentials
+  hiddenusername: true
+  required: false
 - additionalinfo: Can be overwriten in commands execution.
   display: Default project
   name: default_project
@@ -941,7 +947,7 @@ script:
       required: true
     description: Cancel operation by operation name.
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.9467
+  dockerimage: demisto/google-k8s-engine:1.0.0.64696
   runonce: false
   script: '-'
   subtype: python3

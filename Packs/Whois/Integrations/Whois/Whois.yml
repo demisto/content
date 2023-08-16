@@ -11,18 +11,23 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
+  additionalinfo: If set, failed command results will be returned as warnings instead of errors.
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
+  hidden: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -45,6 +50,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: The number of seconds to wait each iteration when getting a Rate Limit response.
   defaultvalue: '120'
   display: Rate Limit Wait Seconds
@@ -52,6 +58,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Suppress Rate Limit errors
   additionalinfo: "Whether Rate Limit errors should be supressed or not."
   defaultvalue: "false"
@@ -59,6 +66,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -574,7 +582,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.63627
+  dockerimage: demisto/ippysocks-py3:1.0.0.68853
   runonce: false
   script: '-'
   subtype: python3
@@ -582,3 +590,4 @@ script:
 tests:
 - whois_test
 fromversion: 5.0.0
+defaultEnabled: false

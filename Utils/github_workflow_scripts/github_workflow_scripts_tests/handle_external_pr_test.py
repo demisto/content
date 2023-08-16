@@ -1,5 +1,9 @@
 import os
 import pytest
+from handle_external_pr import (
+    is_requires_security_reviewer,
+    SECURITY_CONTENT_ITEMS
+)
 
 
 @pytest.mark.parametrize(
@@ -95,3 +99,47 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
+
+
+@pytest.mark.parametrize('pr_files,expected', [
+    ([f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[0]}/{SECURITY_CONTENT_ITEMS[0].lower()}-Hello_World_Alert-V2.yml"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'], False),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[1]}/{SECURITY_CONTENT_ITEMS[1].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[2]}/{SECURITY_CONTENT_ITEMS[2].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[3]}/{SECURITY_CONTENT_ITEMS[3].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[4]}/{SECURITY_CONTENT_ITEMS[4].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[5]}/{SECURITY_CONTENT_ITEMS[5].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[6]}/{SECURITY_CONTENT_ITEMS[6].lower()}-Hello_World_Alert-V2.json"], True),
+    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[7]}/{SECURITY_CONTENT_ITEMS[7].lower()}-Hello_World_Alert-V2.json"], True)
+])
+def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
+    """
+    Test to check whether a security reviewer is needed depending on the PR changed files.
+
+    Given: a list of file paths
+
+    When:
+        - Case A: The provided file is a Playbook.
+        - Case B: The provided file is an integration.
+        - Case C: The provided files are an integration and an incident type.
+        - Case D: The provided files are an integration and an incident field.
+        - Case E: The provided files are an integration and an indicator type.
+        - Case F: The provided files are an integration and an indicator field.
+        - Case G: The provided files are an integration and a layout.
+        - Case H: The provided files are an integration and a classifier.
+        - Case I: The provided files are an integration and a wizard.
+
+    Then:
+        - Case A: Requires a security engineer review.
+        - Case B: Doesn't require a security engineer review.
+        - Cases C-I: Requires a security engineer review.
+    """
+
+    assert is_requires_security_reviewer(pr_files) == expected

@@ -664,3 +664,19 @@ Update an alert's state.
 | --- | --- | --- |
 | AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken on the alert. | 
 | AzureSecurityCenter.Alert.ID | string | The alert ID. | 
+### azure-sc-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-sc-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

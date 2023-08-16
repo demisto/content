@@ -16,6 +16,7 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: token
   type: 4
@@ -23,16 +24,19 @@ configuration:
   hidden: true
   section: Connect
 
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Generates a Palo Alto Networks WildFire PDF report. For internal use with the TIM Sample Analysis feature.
 display: Palo Alto Networks WildFire Reports
 name: WildFire-Reports

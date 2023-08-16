@@ -86,7 +86,7 @@
         },
       "RequestHeaders": {
           "type": "string",
-          "is_array": true
+          "is_array": false
         },
       "WAFAttackScore": {
           "type": "int",

@@ -25,7 +25,7 @@ dependson:
   must:
   - demisto-api-post
   - demisto-api-get
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
 - No test - unit test

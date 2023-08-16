@@ -35,15 +35,17 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   commands:
   - name: cs-falcon-sandbox-scan
     polling: true
