@@ -943,7 +943,7 @@ script:
     description: Retrieve Git commits for a project.
     arguments:
     - name: organization_name
-      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but the user can override it.
+      description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
       required: false
       isArray: false
     - name: project_name
