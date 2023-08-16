@@ -567,7 +567,7 @@ def main():
     if not verify_ssl:
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         load_client_cert_and_key(ssl_context, params)
 
@@ -576,7 +576,7 @@ def main():
             client.select_folder(folder)
             if demisto.command() == 'test-module':
                 result = script_test_module(client)
-                demisto.results(result)
+                return_results(result)
             elif demisto.command() == 'mail-listener-list-emails':
                 return_results(list_emails(client=client,
                                            first_fetch_time=first_fetch_time,
