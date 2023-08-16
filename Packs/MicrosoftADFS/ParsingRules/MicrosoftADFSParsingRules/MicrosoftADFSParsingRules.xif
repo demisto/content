@@ -1,4 +1,4 @@
-[INGEST:vendor="microsoft", product="adfs", target_dataset="microsoft_adfs_raw", no_hit=keep]
-filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND (_collector_type = "WEC" OR to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207"))
+[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_adfs_raw", no_hit=keep]
+filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND _collector_type = "WEC"
 | alter 
     _time = time_created
