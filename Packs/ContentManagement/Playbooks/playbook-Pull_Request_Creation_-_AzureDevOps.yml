@@ -303,9 +303,9 @@ tasks:
       version: -1
       name: Suggest branch name
       description: |
-        The script gets the pack name as input and suggests an available branch name, for example:
-        pack name is "MyPack" the branch name will be "MyPack".
-        If a branch with the name "MyPack" exists, the script return "MyPack_1".
+        The script gets the pack name as input and suggests an available branch name. For example:
+        If pack name is "MyPack", the branch name will be "MyPack".
+        If a branch with the name "MyPack" exists, the script will return "MyPack_1".
       scriptName: SuggestBranchName
       type: regular
       iscommand: false
