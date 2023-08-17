@@ -373,18 +373,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.28.27"
+version = "1.28.28"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.27-py3-none-any.whl", hash = "sha256:8da9621931291b6c261fdaae465f05737c16519b9667d8463181cb8b88444572"},
-    {file = "boto3-1.28.27.tar.gz", hash = "sha256:a336cf53a6d86ee6d27b2f6d8b78ec9b320209127e5126359881bbd68f33d0b9"},
+    {file = "boto3-1.28.28-py3-none-any.whl", hash = "sha256:57d618f03bd269ebef6287dd4ed86ddaa1d53a4021008ad3267c6097be17e172"},
+    {file = "boto3-1.28.28.tar.gz", hash = "sha256:4a435fdbd77628e3d32cfbc8b6225e779d8f789027fadb6a51fe1b456e15ef54"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.27,<1.32.0"
+botocore = ">=1.31.28,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -393,14 +393,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.27"
+version = "1.31.28"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.27-py3-none-any.whl", hash = "sha256:13af1588023750c9bc66d202bb5a934c9412a7dc52587532264ab725c42c2c50"},
-    {file = "botocore-1.31.27.tar.gz", hash = "sha256:739d09e13751e3b9b0f341b5ffe5bf8d0452b8769d435c4084ee88739d42b7f7"},
+    {file = "botocore-1.31.28-py3-none-any.whl", hash = "sha256:d6310826e37ba0209e904d691638b8e848342ec17f5187568ca02ad092c55c45"},
+    {file = "botocore-1.31.28.tar.gz", hash = "sha256:1fcfbd23c7f1f66f16c5c1a1e8565ee8ff68429cc0ee9d2acfb1b55739584cbd"},
 ]
 
 [package.dependencies]
@@ -1097,7 +1097,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "add_python_version_graph"
-resolved_reference = "ddba1daa743eb8622b25d333866f3896a9bfa204"
+resolved_reference = "087296ebbabf5bb9bbe974af9070d8b688fbe92c"
 
 [[package]]
 name = "deprecated"
@@ -5238,14 +5238,14 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "shellingham"
-version = "1.5.2"
+version = "1.5.3"
 description = "Tool to Detect Surrounding Shell"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "shellingham-1.5.2-py2.py3-none-any.whl", hash = "sha256:db9b385e903ebfe07958f6df493d47d4432ff5bed71e75ed3e613ace090be5f3"},
-    {file = "shellingham-1.5.2.tar.gz", hash = "sha256:95946024df2db98c83382606a9ae875f613b15c950c980a3bf7a5adde40e7720"},
+    {file = "shellingham-1.5.3-py2.py3-none-any.whl", hash = "sha256:419c6a164770c9c7cfcaeddfacb3d31ac7a8db0b0f3e9c1287679359734107e9"},
+    {file = "shellingham-1.5.3.tar.gz", hash = "sha256:cb4a6fec583535bc6da17b647dd2330cf7ef30239e05d547d99ae3705fd0f7f8"},
 ]
 
 [[package]]
