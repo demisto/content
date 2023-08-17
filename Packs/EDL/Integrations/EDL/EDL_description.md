@@ -47,6 +47,15 @@ To access the Generic Export Indicators Service by instance name, make sure *Ins
 
 </~XSOAR>
 
+#### Note:
+When using more than one server in High Availability (HA) mode, the External Dynamic List (EDL) should be configured to listen on a route, not on a port.
+
+In "route" listen mode, a request received by any of the app servers will be redirected to the one currently running the NGINX container.
+This does not happen in "port" listen mode, that's why "route" mode should be used.
+
+If the app server running the container fails, the container should restart on a different app server.
+Failover time should be about 1 minute plus the container startup time.
+
 ### Modify Request Parameters Through the URL
 Use the following arguments in the URL to change the request:
 

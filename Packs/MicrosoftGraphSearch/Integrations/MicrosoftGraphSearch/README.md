@@ -54,3 +54,21 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SearchContent | unknown | OneDrive or SharePoint content returned from the search | 
+
+### msgraph-search-generate-login-url
+
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-search-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

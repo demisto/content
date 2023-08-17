@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # type: ignore
+# mypy: ignore-errors
 from typing import Any, Dict, Tuple
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
