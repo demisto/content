@@ -11,17 +11,15 @@ comment: A transformer for if-elif-else logic.
 enabled: true
 args:
 - name: value
-  description: Replaces any instance of the literal "#VALUE" in the "conditions" argument.
+  description: The object from which to grab values, for the whole context use "${.}"
   required: true
 - name: conditions
   description: |-
-    A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".
-    The last value can be any valid JSON object.
+    A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).
+    The last dictionary should have the key "else" which can hold any valid JSON object to be returned if no "condition" was true.
   required: true
-- name: variables
-  description: Variables to be used in the "conditions" argument in the format "variable = ${context.path}", each variable on it's own line.
 - name: flags
-  description: Flags to control comparison and regular expression behavior.
+  description: 'Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match'
   isArray: true
   auto: PREDEFINED
   predefined:

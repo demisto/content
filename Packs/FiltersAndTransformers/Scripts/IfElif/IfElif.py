@@ -3,7 +3,6 @@ from CommonServerPython import *
 from collections.abc import Callable
 from functools import reduce, partial
 import ast
-import re
 
 
 class IfElif:
@@ -25,10 +24,9 @@ class IfElif:
         ast.USub: lambda x: -x,
     }
 
-    def __init__(self, value, conditions, variables='', flags=None):
-        self.load_variables(variables, value)
+    def __init__(self, value, conditions, flags=None):
         self.handle_flags(argToList(flags))
-        self.conditions = self.evaluate(conditions)
+        self.load_conditions_with_values(conditions, value)
 
     def handle_flags(self, flags: list):
         self.regex_flags = (
@@ -36,35 +34,24 @@ class IfElif:
             | re.MULTILINE * ('regex_multiline' in flags)
             | re.IGNORECASE * ('case_insensitive' in flags)
         )
-        if 'case_insensitive' in flags:
-            def eq(x, y):
-                return str(x).lower() == str(y).lower()
-            self.operator_functions |= {
-                ast.Eq: eq,
-                ast.NotEq: lambda x, y: not eq(x, y),
-            }
         self.functions = {
             'regex_match': partial(
                 re.fullmatch if 'regex_full_match' in flags else re.search,
                 flags=self.regex_flags
             )
         }
+        if 'case_insensitive' in flags:
+            def eq(x, y):
+                return repr(x).lower() == repr(y).lower()
+            self.operator_functions |= {
+                ast.Eq: eq,
+                ast.NotEq: lambda x, y: not eq(x, y),
+            }
 
-    def load_variables(self, variables: str, value: Any):
-        self.variables: dict = {}
-        for assign in variables.splitlines():
-            left, right = assign.strip().split('=', 1)
-            try:
-                right = ast.literal_eval(right)
-            except Exception:  # is a string
-                right = right.strip()
-            self.variables[left.strip()] = right
-        self.variables |= {
-            'true': True,
-            'false': False,
-            'null': None,
-            'VALUE': value,
-        }
+    def load_conditions_with_values(self, conditions, values):
+        def from_value(keys: re.Match):
+            return repr(demisto.dt(values, keys[1]))
+        self.conditions = re.compile('#{([\s\S]+?)}').sub(from_value, conditions)
 
     def get_value(self, node):
         match type(node):
@@ -78,7 +65,7 @@ class IfElif:
                     for key, value in zip(node.keys, node.values)
                 }
             case ast.Name:
-                return self.variables[node.id]
+                return json.loads(node.id)
             case ast.Call:
                 return self.functions[node.func.id](*map(self.get_value, node.args))
             case ast.Compare:
@@ -109,7 +96,7 @@ class IfElif:
         return self.get_value(parsed.body)
 
     def parse_conditions(self):
-        *conditions, default = self.conditions
+        *conditions, default = self.evaluate(self.conditions)
         result = next(
             (
                 condition['return']

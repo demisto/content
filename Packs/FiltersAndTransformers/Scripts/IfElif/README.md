@@ -17,7 +17,7 @@ The ***"Get" value*** of the transformer can be retrieved using the keyword `VAL
   },
   {
     "condition": "regex_match('\d+', VALUE)",
-    "return": variable2
+    "return": 
   },
   {
     "else": default_value
@@ -25,12 +25,6 @@ The ***"Get" value*** of the transformer can be retrieved using the keyword `VAL
 ]
 ```
 
-##### variables:
-```bash
-variable1 = ${path.to.context}
-variable2 = ${another.path.to.context}
-default_value = ${default.value}
-```
 ##### flags:
 ```
 case_insensitive,regex_dot_all,regex_multiline
@@ -83,4 +77,4 @@ case_insensitive,regex_dot_all,regex_multiline
 ## Outputs
 
 ---
-There are no context outputs for this script.
+There are no outputs for this script.
