@@ -717,7 +717,7 @@ def test_build_logs_query():
     from Panorama import build_logs_query
 
     urls_as_string = "demisto.com, paloaltonetworks.com"
-    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None)
+    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None, None)
     expected = "((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))"
     assert response == expected
 
