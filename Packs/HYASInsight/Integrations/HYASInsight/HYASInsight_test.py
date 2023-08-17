@@ -1,6 +1,5 @@
 import pytest
 import json
-import io
 
 from HYASInsight import Client, get_passive_dns_records_by_indicator, get_dynamic_dns_records_by_indicator, \
     get_whois_records_by_indicator, get_whois_current_records_by_domain, get_malware_samples_records_by_indicator, \
@@ -18,7 +17,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -315,7 +314,7 @@ def test_get_ssl_certificate_record_by_indicator(mocker, raw_response, expected)
         'indicator_value': 'chennaigastrosurgeon.com',
         'limit': 1})
     command_results_hash = get_ssl_certificate_records_by_indicator(client, {
-        'indicator_type': 'hash',
+        'indicator_type': 'sha1',
         'indicator_value': 'd1af9e1d6c892a56b34d88b1f75a84941252caff',
         'limit': 1})
     context_ip = command_results_ipv4.to_context()['Contents']

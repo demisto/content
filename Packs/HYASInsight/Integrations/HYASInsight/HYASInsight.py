@@ -1,4 +1,3 @@
-from typing import Tuple, Callable, List
 from urllib3 import disable_warnings
 from CommonServerPython import *
 
@@ -86,7 +85,7 @@ class Client(BaseClient):
 
     def fetch_data_from_hyas_api(self, end_point: str, ind_type: str,
                                  ind_value: str, current: bool,
-                                 req_method: str, limit=0) -> List[Dict]:
+                                 req_method: str, limit=0) -> list[Dict]:
         """
 
         :param limit: "limit the number of records returned, default to 50"
@@ -101,7 +100,7 @@ class Client(BaseClient):
                           limit)
 
     def query(self, end_point: str, ind_type: str, ind_value: str,
-              current: bool, method: str, limit: int) -> List[Dict]:
+              current: bool, method: str, limit: int) -> list[Dict]:
         """
 
         :param limit: "limit the number of records returned, default to 50"
@@ -228,10 +227,9 @@ def check_valid_hash_type(hash_type: list, hash_value: str, check_all: bool = Fa
             if not re.match(sha256Regex, hash_value):
                 raise ValueError(
                     f'Invalid indicator_value: {hash_value} for indicator_type {SHA256_PARAM}')
-        elif SHA512_PARAM in hash_type:
-            if not re.match(sha512Regex, hash_value):
-                raise ValueError(
-                    f'Invalid indicator_value: {hash_value} for indicator_type {SHA512_PARAM}')
+        elif SHA512_PARAM in hash_type and not re.match(sha512Regex, hash_value):
+            raise ValueError(
+                f'Invalid indicator_value: {hash_value} for indicator_type {SHA512_PARAM}')
     else:
         if re.match(md5Regex, hash_value) or re.match(sha1Regex, hash_value) \
                 or re.match(sha256Regex, hash_value) or re.match(sha512Regex, hash_value):
@@ -304,8 +302,8 @@ def get_command_title_string(sub_context: str, indicator_type: str,
     return INTEGRATION_CONTEXT_NAME + " " + sub_context + " records for " + indicator_type + " : " + indicator_value
 
 
-def get_flatten_json_response(raw_api_response: List[Dict], endpoint: str) -> \
-        List[Dict]:
+def get_flatten_json_response(raw_api_response: list[Dict], endpoint: str) -> \
+        list[Dict]:
     """
 
     :param raw_api_response: raw_api response from the API
@@ -325,7 +323,7 @@ def get_flatten_json_response(raw_api_response: List[Dict], endpoint: str) -> \
 
 
 @logger
-def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def passive_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -352,7 +350,7 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -362,7 +360,7 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def dynamic_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def dynamic_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -378,7 +376,7 @@ def dynamic_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -388,7 +386,7 @@ def dynamic_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def whois_historic_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -411,7 +409,7 @@ def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -421,7 +419,7 @@ def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def whois_current_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -446,7 +444,7 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -456,7 +454,7 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def malware_samples_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def malware_samples_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -472,7 +470,7 @@ def malware_samples_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -482,14 +480,14 @@ def malware_samples_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def associated_ips_lookup_to_markdown(results: List, title: str) -> str:
+def associated_ips_lookup_to_markdown(results: list, title: str) -> str:
     headers = 'Associated IPs'
     out = results
     return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
-def associated_domains_lookup_to_markdown(results: List[Dict],
+def associated_domains_lookup_to_markdown(results: list[Dict],
                                           title: str) -> str:
     headers = 'Associated Domains'
     out = results
@@ -497,7 +495,7 @@ def associated_domains_lookup_to_markdown(results: List[Dict],
 
 
 @logger
-def c2_attribution_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def c2_attribution_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -517,7 +515,7 @@ def c2_attribution_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -527,7 +525,7 @@ def c2_attribution_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def passive_hash_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def passive_hash_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -537,7 +535,7 @@ def passive_hash_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -547,7 +545,7 @@ def passive_hash_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def ssl_certificate_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def ssl_certificate_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -599,7 +597,7 @@ def ssl_certificate_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -609,7 +607,7 @@ def ssl_certificate_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
 
 @logger
-def open_source_indicators_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def open_source_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
     # print(results)
     keys = [
@@ -636,7 +634,7 @@ def open_source_indicators_lookup_to_markdown(results: List[Dict], title: str) -
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -646,7 +644,7 @@ def open_source_indicators_lookup_to_markdown(results: List[Dict], title: str) -
 
 
 @logger
-def device_geo_indicators_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def device_geo_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -663,7 +661,7 @@ def device_geo_indicators_lookup_to_markdown(results: List[Dict], title: str) ->
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -673,7 +671,7 @@ def device_geo_indicators_lookup_to_markdown(results: List[Dict], title: str) ->
 
 
 @logger
-def sinkhole_indicators_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def sinkhole_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
     keys = [
@@ -689,7 +687,7 @@ def sinkhole_indicators_lookup_to_markdown(results: List[Dict], title: str) -> s
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = dict()  # type: Dict[str, Any]
+        row = {}  # type: Dict[str, Any]
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
@@ -1017,7 +1015,7 @@ def get_whois_records_by_indicator(client, args):
 
 @logger
 def get_whois_current_records_by_domain(client, args):
-    whois_current_record: List[Any] = []
+    whois_current_record: list[Any] = []
     indicator_type = DOMAIN_PARAM
     indicator_value = args.get('domain')
     check_valid_indicator_value(indicator_type, indicator_value)
@@ -1098,7 +1096,7 @@ def get_associated_domains_by_hash(client, args):
     api_response = client.fetch_data_from_hyas_api(end_point, indicator_type,
                                                    indicator_value, False,
                                                    'POST')
-    associated_domains: List[str] = [str(obj['domain']) for obj in api_response if 'domain' in obj]
+    associated_domains: list[str] = [str(obj['domain']) for obj in api_response if 'domain' in obj]
     outputs = {'md5': indicator_value, 'domains': associated_domains}
     return CommandResults(
         readable_output=associated_domains_lookup_to_markdown(
