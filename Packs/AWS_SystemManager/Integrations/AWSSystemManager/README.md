@@ -346,3 +346,129 @@ Returns all State Manager associations in the current Amazon Web Services accoun
        
 
 
+### aws-ssm-association-get
+
+***
+Describes the association for the specified target or managed node. if the association was established using the Targets parameter, the association details must be retrieved using the associated ID. this command must provide either association id or instance_id and document_name
+
+#### Base Command
+
+`aws-ssm-association-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| document_name | The name of the SSM document. | Optional | 
+| instance_id | The managed node ID. | Optional | 
+| association_id | The association ID for which information is requested. | Optional | 
+| association_version | Specify the association version to retrieve. To view the latest version, either specify $LATEST for this parameter, or omit this parameter. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Association.AssociationDescription.Name | String | The name of the SSM document. | 
+| AWS.SSM.Association.AssociationDescription.InstanceId | String | The managed node ID. | 
+| AWS.SSM.Association.AssociationDescription.AssociationVersion | String | The association version. | 
+| AWS.SSM.Association.AssociationDescription.Date | String | The date when the association was made. | 
+| AWS.SSM.Association.AssociationDescription.LastUpdateAssociationDate | String | The date when the association was last updated. | 
+| AWS.SSM.Association.AssociationDescription.Status.Date | String | The date when the status changed. | 
+| AWS.SSM.Association.AssociationDescription.Status.Name | String | The status. | 
+| AWS.SSM.Association.AssociationDescription.Status.Message | String | The reason for the status. | 
+| AWS.SSM.Association.AssociationDescription.Status.AdditionalInfo | String | A user-defined string. | 
+| AWS.SSM.Association.AssociationDescription.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. | 
+| AWS.SSM.Association.AssociationDescription.Overview.DetailedStatus | String | A detailed status of the association. | 
+| AWS.SSM.Association.AssociationDescription.Overview.AssociationStatusAggregatedCount | Number | Returns the number of targets for the association status. For example, if an association was created with two managed nodes, and one of them was successful, this would return the count of managed nodes by status. | 
+| AWS.SSM.Association.AssociationDescription.DocumentVersion | String | The document version. | 
+| AWS.SSM.Association.AssociationDescription.AutomationTargetParameterName | String | Choose the parameter that will define how the automation will branch out. This target is required for associations that use an Automation runbook and target resources by using rate controls. Automation is a capability of Amazon Web Services Systems Manager. | 
+| AWS.SSM.Association.AssociationDescription.Parameters | Dictionary | A description of the parameters for a document. | 
+| AWS.SSM.Association.AssociationDescription.AssociationId | String | The association ID. | 
+| AWS.SSM.Association.AssociationDescription.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Association.AssociationDescription.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Association.AssociationDescription.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. | 
+| AWS.SSM.Association.AssociationDescription.OutputLocation | unknown | An S3 bucket where to store the output details of the request. | 
+| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
+| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
+| AWS.SSM.Association.AssociationDescription.LastExecutionDate | String | The date on which the association was last run. | 
+| AWS.SSM.Association.AssociationDescription.LastSuccessfulExecutionDate | String | The last date on which the association was successfully run. | 
+| AWS.SSM.Association.AssociationDescription.AssociationName | String | The association name. | 
+| AWS.SSM.Association.AssociationDescription.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. | 
+| AWS.SSM.Association.AssociationDescription.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. | 
+| AWS.SSM.Association.AssociationDescription.ComplianceSeverity | String | The severity level that is assigned to the association. | 
+| AWS.SSM.Association.AssociationDescription.SyncCompliance | String | The mode for generating association compliance. AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by direct call to the PutComplianceItems API operation. By default, all associations use AUTO mode. | 
+| AWS.SSM.Association.AssociationDescription.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
+| AWS.SSM.Association.AssociationDescription.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents your associations are gated under. The associations only run when that change calendar is open. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Association.AssociationDescription.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
+| AWS.SSM.Association.AssociationDescription.TargetMaps | List | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
+| AWS.SSM.Association.AssociationDescription.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Association.AssociationDescription.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Association.AssociationDescription.TriggeredAlarms.Name | String | The CloudWatch alarm that was invoked during the association. | 
+| AWS.SSM.Association.AssociationDescription.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
+
+#### Command example
+```!aws-ssm-association-get association_id=association_id```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Association": {
+                "AssociationDescription": {
+                    "ApplyOnlyAtCronInterval": false,
+                    "AssociationId": "association_id",
+                    "AssociationName": "AWS-QuickSetup-SSMHost",
+                    "AssociationVersion": "1",
+                    "AutomationTargetParameterName": "InstanceId",
+                    "Date": "2023-02-14T11:48:24.511000+00:00",
+                    "DocumentVersion": "$DEFAULT",
+                    "LastExecutionDate": "2023-08-13T11:49:38+00:00",
+                    "LastSuccessfulExecutionDate": "2023-02-14T11:48:48+00:00",
+                    "LastUpdateAssociationDate": "2023-02-14T11:48:24.511000+00:00",
+                    "Name": "AWSQuickSetup",
+                    "Overview": {
+                        "AssociationStatusAggregatedCount": {
+                            "Failed": 1
+                        },
+                        "DetailedStatus": "Failed",
+                        "Status": "Failed"
+                    },
+                    "Parameters": {
+                        "AutomationAssumeRole": [
+                            "automation_assume_role"
+                        ],
+                        "IsPolicyAttachAllowed": [
+                            "false"
+                        ]
+                    },
+                    "ScheduleExpression": "rate(30 days)",
+                    "Targets": [
+                        {
+                            "Key": "ParameterValues",
+                            "Values": [
+                                "instance_id"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Association
+>|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|Resource status count|Schedule expression|Status|
+>|---|---|---|---|---|---|---|---|---|---|
+>| association_id | AWS-QuickSetup | 1 | 2023-02-14T11:48:24.511000+00:00 | AWSQuickSetup | $DEFAULT | 2023-08-13T11:49:38+00:00 | Failed: 1 | rate(30 days) | Failed |
+

@@ -8,9 +8,22 @@ import re
 """ CONSTANTS """
 
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
-REGEX_INSTANCE_ID = r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)"
+
+REGEX_PATTERNS = {
+    "association_id": (r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+                       "Invalid association id: {association_id}"),
+    "association_version": (r"([$]LATEST)|([1-9][0-9]*)", "Invalid association version: {association_version}"),
+    "instance_id": (r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)", "Invalid instance id: {instance_id}"),
+    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}")
+}
 
 """ Helper functions """
+
+
+def validate_args(args: Dict[str, Any]) -> None:
+    for arg_name, (regex_pattern, error_message) in REGEX_PATTERNS.items():
+        if (arg_value := args.get(arg_name)) and not re.search(regex_pattern, arg_value):
+            raise DemistoException(error_message.format(**{arg_name: arg_value}))
 
 
 def config_aws_session(args: dict[str, str], aws_client: AWSClient):
@@ -39,21 +52,42 @@ def config_aws_session(args: dict[str, str], aws_client: AWSClient):
     )
 
 
-def convert_last_execution_date_to_str(response: dict) -> dict:
+def convert_datetime_to_iso(response: dict[str, Any]) -> dict[str, Any]:
     """
-    Converts the 'LastExecutionDate' value in the response from a datetime object to a string.
+    Converts datetime objects in a response dictionary to ISO formatted strings.
 
     Args:
-        response: A dictionary representing the response from the AWS SSM 'list_associations' API.
+        response (dict): The response dictionary.
 
     Returns:
-        A dictionary with the same keys and values as the input dictionary, except that the 'LastExecutionDate'
-        value is converted to a string.
+        dict: The response dictionary with datetime objects converted to ISO formatted strings.
     """
-    for association in response.get("Associations", []):
-        last_execution_date = association.get("LastExecutionDate")
-        if isinstance(last_execution_date, datetime):
-            association["LastExecutionDate"] = last_execution_date.isoformat()
+    def convert_date(date: Any) -> Any:
+        if isinstance(date, datetime):
+            return date.isoformat()
+        return date
+
+    def convert_association(association: dict[str, Any]) -> dict[str, Any]:
+        association["LastExecutionDate"] = convert_date(association.get("LastExecutionDate"))
+        return association
+
+    def convert_association_description(association_description: Dict[str, Any]) -> Dict[str, Any]:
+        if (date := association_description.get("Date")):
+            association_description["Date"] = convert_date(date)
+        if (date := dict_safe_get(association_description, ["Status", "Date"])):
+            association_description["Status"]["Date"] = convert_date(date)
+        if (last_execution_date := association_description.get("LastExecutionDate")):
+            association_description["LastExecutionDate"] = convert_date(last_execution_date)
+        if (last_successful_execution_date := association_description.get("LastSuccessfulExecutionDate")):
+            association_description["LastSuccessfulExecutionDate"] = convert_date(last_successful_execution_date)
+        if (lastUpdate_association_date := association_description.get('LastUpdateAssociationDate')):
+            association_description['LastUpdateAssociationDate'] = convert_date(lastUpdate_association_date)
+        return association_description
+
+    if associations := response.get("Associations"):
+        response["Associations"] = [convert_association(association) for association in associations]
+    elif association_description := response.get("AssociationDescription"):
+        response["AssociationDescription"] = convert_association_description(association_description)
 
     return response
 
@@ -218,8 +252,7 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
             for entry in entries
         ]
 
-    if (instance_id := args["instance_id"]) and not re.search(REGEX_INSTANCE_ID, instance_id):
-        raise DemistoException(f"Invalid instance id: {instance_id}")
+    validate_args(args)
 
     kwargs = {
         "InstanceId": args["instance_id"],
@@ -287,7 +320,7 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
         kwargs["NextToken"] = next_token
     response: dict[str, list] = ssm_client.list_associations(**kwargs)
     response.pop("ResponseMetadata")
-    response = convert_last_execution_date_to_str(response)
+    response = convert_datetime_to_iso(response)
 
     command_results = []
 
@@ -311,7 +344,55 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
     return command_results
 
 
+def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
+    def _parse_association(association: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "Document name": association.get("Name"),
+            "Document version": association.get("DocumentVersion"),
+            "Association name": association.get("AssociationName"),
+            "Association id": association.get("AssociationId"),
+            "Association version": association.get("AssociationVersion"),
+            "Last execution date": association.get("LastExecutionDate"),
+            "Resource status count": dict_safe_get(association, ["Overview", "AssociationStatusAggregatedCount"]),
+            "Status": dict_safe_get(association, ["Overview", "Status"]),
+            "Create date": association.get("Date"),
+            "Schedule expression": association.get("ScheduleExpression"),
+        }
+    association_id = args.get("association_id")
+    association_version = args.get("association_version")
+    instance_id = args.get("instance_id")
+    document_name = args.get("document_name")
+
+    validate_args(args)
+
+    if not bool(association_id or (instance_id and document_name)):
+        raise DemistoException("This command  must provide either association id or instance_id and document_name.")
+
+    kwargs = {
+        "AssociationId": association_id,
+        "AssociationVersion": association_version,
+        "InstanceId": instance_id,
+        "Name": document_name,
+    }
+    kwargs = {key: value for key, value in kwargs.items() if value is not None}
+
+    response = ssm_client.describe_association(**kwargs)
+    response = convert_datetime_to_iso(response)
+    response.pop("ResponseMetadata")
+
+    return CommandResults(
+        outputs=response,
+        outputs_key_field="AssociationId",
+        outputs_prefix="AWS.SSM.Association",
+        readable_output=tableToMarkdown(
+            name="Association",
+            t=_parse_association(response.get("AssociationDescription", {}))
+        ),
+    )
+
+
 def test_module(ssm_client) -> str:
+    ssm_client.list_associations(MaxResults=1)
     return "ok"
 
 
@@ -325,8 +406,8 @@ def main():
     aws_role_arn = params.get("roleArn")
     aws_role_session_name = params.get("roleSessionName")
     aws_role_session_duration = params.get("sessionDuration")
-    aws_access_key_id = params.get("credentials", {}).get("identifier")
-    aws_secret_access_key = params.get("credentials", {}).get("password")
+    aws_access_key_id = dict_safe_get(params, ["credentials", "identifier"])
+    aws_secret_access_key = dict_safe_get(params, ["credentials", "password"])
     aws_role_policy = None  # added it for using AWSClient class without changing the code
     timeout = params["timeout"]
     retries = params["retries"]
@@ -367,6 +448,8 @@ def main():
                 return_results(list_inventory_entry_command(ssm_client, args))
             case "aws-ssm-association-list":
                 return_results(list_associations_command(ssm_client, args))
+            case "aws-ssm-association-get":
+                return_results(get_association_command(ssm_client, args))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 

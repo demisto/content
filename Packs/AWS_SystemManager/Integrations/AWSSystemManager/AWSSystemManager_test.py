@@ -7,7 +7,7 @@ from AWSSystemManager import (
     get_inventory_command,
     list_inventory_entry_command,
     list_associations_command,
-    convert_last_execution_date_to_str,
+    convert_datetime_to_iso,
     next_token_command_result
 )
 from CommonServerPython import CommandResults, DemistoException
@@ -93,7 +93,7 @@ def test_convert_last_execution_date(data: dict, expected_response: dict) -> Non
         - The response from the function is expected to be equal to the 'expected_response'
           dictionary, with 'LastExecutionDate' values formatted consistently.
     """
-    response = convert_last_execution_date_to_str(data)
+    response = convert_datetime_to_iso(data)
     assert response == expected_response
 
 
