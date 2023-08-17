@@ -3247,18 +3247,14 @@ def test_list_risky_users_hosts_command_raise_exception(
     mocker, command: str, id_: str
 ):
     """
-    Test case to verify if the 'list_risky_users_or_host_command' function raises the expected exception.
+    Given:
+    - XDR API error indicating that the user / host was not found
 
-    Args:
-        mocker (Any): The mocker object to patch the 'risk_score_user_or_host' method.
-        command (str): The command to be tested ('user' or 'host').
-        id_ (str): The ID parameter for the command.
+    When:
+    - executing the list_risky_users_or_host_command function
 
-    Raises:
-        DemistoException: If the expected exception is not raised or the error message doesn't match.
-
-    Returns:
-        None
+    Then:
+    - make sure a message indicating that the user was not found is returned
     """
 
     client = CoreClient(
@@ -3277,11 +3273,9 @@ def test_list_risky_users_hosts_command_raise_exception(
             message="id 'test' was not found", res=MockException(500)
         ),
     )
-    with pytest.raises(
-        DemistoException,
-        match="Error: id test was not found. Full error message: id 'test' was not found"
-    ):
-        list_risky_users_or_host_command(client, command, {id_: "test"})
+
+    result = list_risky_users_or_host_command(client, command, {id_: "test"})
+    assert result.readable_output == 'The user test was not found'
 
 
 def test_list_user_groups_command(mocker):
