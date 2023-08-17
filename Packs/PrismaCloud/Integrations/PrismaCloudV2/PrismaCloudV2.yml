@@ -113,7 +113,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.12.68714
   isfetch: true
-  ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   commands:
