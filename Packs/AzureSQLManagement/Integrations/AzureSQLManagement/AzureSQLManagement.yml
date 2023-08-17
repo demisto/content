@@ -102,7 +102,7 @@ script:
     name: azure-sql-auth-start
   - description: Run this command to complete the authorization process. Should be used after running the azure-sql-auth-start command.
     name: azure-sql-auth-complete
-  - description: Run this command if you need to rerun the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-sql-auth-reset
   - description: Tests the connectivity to the Azure SQL Management.
     name: azure-sql-auth-test
