@@ -269,15 +269,9 @@ class Client(BaseClient):
                 lines = res_data.get('response')
                 result = lines.iter_lines()
                 if self.encoding is not None:
-                    result = map(
-                        lambda x: x.decode(self.encoding).encode('utf_8'),
-                        result
-                    )
+                    result = (x.decode(self.encoding).encode('utf_8') for x in result)
                 else:
-                    result = map(
-                        lambda x: x.decode('utf_8'),
-                        result
-                    )
+                    result = (x.decode('utf_8') for x in result)
                 if self.ignore_regex is not None:
                     result = filter(
                         lambda x: self.ignore_regex.match(x) is None,  # type: ignore[arg-type]
@@ -288,8 +282,8 @@ class Client(BaseClient):
 
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
-        for attribute in attributes.keys():
-            if attribute in self.custom_fields_mapping.keys() or attribute in [TAGS, TLP_COLOR]:
+        for attribute in attributes:
+            if attribute in self.custom_fields_mapping or attribute in [TAGS, TLP_COLOR]:
                 if attribute in [TAGS, TLP_COLOR]:
                     created_custom_fields[attribute] = attributes[attribute]
                 else:
@@ -357,13 +351,12 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
-    if feed_config:
-        if 'indicator' in feed_config:
-            indicator = feed_config['indicator']
-            if 'regex' in indicator:
-                indicator['regex'] = re.compile(indicator['regex'])
-            if 'transform' not in indicator:
-                indicator['transform'] = r'\g<0>'
+    if feed_config and 'indicator' in feed_config:
+        indicator = feed_config['indicator']
+        if 'regex' in indicator:
+            indicator['regex'] = re.compile(indicator['regex'])
+        if 'transform' not in indicator:
+            indicator['transform'] = r'\g<0>'
 
     if 'fields' in feed_config:
         fields = feed_config['fields']
@@ -372,10 +365,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 field = {f: {}}
                 if 'regex' in fattrs:
                     field[f]['regex'] = re.compile(fattrs['regex'])
-                if 'transform' not in fattrs:
-                    field[f]['transform'] = r'\g<0>'
-                else:
-                    field[f]['transform'] = fattrs['transform']
+                field[f]['transform'] = fattrs.get('transform', '\\g<0>')
                 fields_to_extract.append(field)
 
     line = line.strip()
@@ -418,17 +408,17 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
     indicators = []
 
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all([next(iter(iterator.values())).get('no_update', False) for iterator in iterators])
+    no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
 
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines.get('result', []):
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
-                    if 'lastseenbysource' in attributes.keys():
+                    if 'lastseenbysource' in attributes:
                         attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
-                    if 'firstseenbysource' in attributes.keys():
+                    if 'firstseenbysource' in attributes:
                         attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
@@ -450,7 +440,7 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                             relationships_of_indicator = [relationships_lst.to_indicator()]
                             indicator_data['relationships'] = relationships_of_indicator
 
-                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes.keys():
+                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
                         custom_fields = client.custom_fields_creator(attributes)
                         indicator_data["fields"] = custom_fields
 
