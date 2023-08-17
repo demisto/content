@@ -33,15 +33,22 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
-    def fetch_alerts(self, max_fetch, time_frame):
-        params = {'aql': f'in:alerts timeFrame:"{time_frame} seconds"',
-                  'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        return self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+    def fetch_by_aql_query(self, aql_query: str, max_fetch: int, time_frame: None | int = None):
+        params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
+        if time_frame:  # if there is a time frame thats relative to last run
+            params['aql'] += f' timeFrame:"{time_frame} seconds"'
 
-    def fetch_threats(self, max_fetch, time_frame):
-        params = {'aql': f'in:activity type:"Threat Detected" timeFrame:"{time_frame} seconds"',
-                  'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        return self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        # make first request to get first page of threat activity
+        raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        results = raw_response.get('data', {}).get('results', [])
+
+        # perform pagination if needed, will cycle through all pages and add results to results list
+        while (next := raw_response.get('data', '').get('next')):
+            params['from'] = next
+            raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+            results.extend(raw_response.get('data', {}).get('results', []))
+
+        return results
 
     def is_valid_access_token(self, access_token):
         try:
@@ -102,6 +109,7 @@ def get_events(client, alert_status):
 
 
 def min_datetime(last_fetch_time, fetch_start_time_param):
+    # TODO: remove if not used
     if not isinstance(last_fetch_time, datetime) or not isinstance(fetch_start_time_param, datetime):
         raise DemistoException(f'last_fetch_time or fetch_start_time_param is not a valid date: {last_fetch_time}')
     comparable_datetime = datetime(year=last_fetch_time.year, month=last_fetch_time.month,
@@ -137,31 +145,47 @@ def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param, lo
     next_run = {}
 
     if 'Alerts' in log_types_to_fetch:
-        alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
-        alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
-        alerts_response = client.fetch_alerts(max_fetch=max_fetch, time_frame=alerts_fetch_start_time_in_seconds)
-        alerts = dedup_alerts(alerts_response.get('data', {}).get('results', []), last_run.get('alerts_last_fetch_ids', []))
-        events.extend(alerts)
-        alerts_last_fetch_time = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
-        alerts_last_fetch_ids = [alert.get('alertId') for alert in alerts]
-        next_run['alerts_last_fetch_ids'] = alerts_last_fetch_ids
-        next_run['alerts_last_fetch_time'] = alerts_last_fetch_time
+        if last_run:
+            alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
+            alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
+        else:
+            alerts_fetch_start_time_in_seconds = None
+
+        alerts_response = client.fetch_by_aql_query(
+            aql_query='in:alerts',
+            max_fetch=max_fetch,
+            time_frame=alerts_fetch_start_time_in_seconds
+        )
+
+        if alerts_response:
+            alerts = dedup_alerts(alerts_response, last_run.get('alerts_last_fetch_ids', []))
+            next_run['alerts_last_fetch_ids'] = [alert.get('alertId') for alert in alerts]
+            next_run['alerts_last_fetch_time'] = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
+            events.extend(alerts)
 
     if 'Threats' in log_types_to_fetch:
-        threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
-        threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
-        threats_response = client.fetch_threats(max_fetch=max_fetch, time_frame=threats_fetch_start_time_in_seconds)
-        threats = dedup_threats(threats_response.get('data', {}).get('results', []), last_run.get('threats_last_fetch_ids', []))
-        events.extend(threats)
-        threats_last_fetch_time = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
-        threats_last_fetch_ids = [threat.get('activityUUID') for threat in threats]
-        next_run['threats_last_fetch_ids'] = threats_last_fetch_ids
-        next_run['threats_last_fetch_time'] = threats_last_fetch_time
+        if last_run:
+            threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
+            threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
+        else:
+            threats_fetch_start_time_in_seconds = None
+
+        threats_response = client.fetch_by_aql_query(
+            aql_query='in:activity type:"Threat Detected"',
+            max_fetch=max_fetch,
+            time_frame=threats_fetch_start_time_in_seconds
+        )
+
+        if threats_response:
+            threats = dedup_threats(threats_response, last_run.get('threats_last_fetch_ids', []))
+            next_run['threats_last_fetch_ids'] = [threat.get('activityUUID') for threat in threats]
+            next_run['threats_last_fetch_time'] = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
+            events.extend(threats)
 
     next_run['access_token'] = client._access_token
 
-    demisto.debug(f'########## next_run: {next_run}')
-    demisto.debug(f'########## events: {events}')
+    demisto.debug(f'debug-log: next_run: {next_run}')
+    demisto.debug(f'debug-log: events: {events}')
     return events, next_run
 
 
