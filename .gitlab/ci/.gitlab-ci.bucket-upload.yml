@@ -555,8 +555,6 @@ upload-packs-to-xsoar-saas-marketplace:
     - section_end "Zip Content Packs From GCS"
     - job-done
 
-force-pack-upload:
-
 xsoar-force-pack-upload:
   needs: [ "xsoar-prepare-testing-bucket-upload-flow" ]
   variables:
