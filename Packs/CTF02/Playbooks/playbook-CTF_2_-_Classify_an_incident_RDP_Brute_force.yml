@@ -1075,11 +1075,15 @@ tasks:
           simple: |-
             Run the following command from your endpoint and enter the received indicator from your command.
 
-            MacOS users:
+            *MacOS users*:
+
             curl  -u admin:admin https://edl-<your tenant hostname>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
 
-            Windows users (Powershell):
+            *Windows users (Powershell)*:
+
             (iwr -Uri 'https://edl-<your tenant hostname>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
+
+            Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer>)
 
             Note: *if you are on Windows 10, and see an error, start Internet Explorer once, then re-run command*
         required: false
@@ -1092,7 +1096,7 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer> ) '
+        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer>)'
         readonly: false
       title: Using EDLs to export indicators
       description: "The Export Indicator Generic Service can be very useful but that integration needs setup and is not enabled by default. To save time, this has been done for you in advance.\nCheck the command provided to you in the question. \nRun it from your personal terminal on your machine.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/matrix.gif)"
