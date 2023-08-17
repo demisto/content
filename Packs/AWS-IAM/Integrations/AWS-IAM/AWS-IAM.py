@@ -1035,18 +1035,48 @@ def tag_role_command(args, client):
                                f"\nencountered the following exception: {str(e)}")
 
 
-def list_attached_role_policies(args: dict, client) -> CommandResults:
-    try:
-        response = client.list_attached_role_policies(**args)
-        return CommandResults(
-            raw_response=response,
-            outputs_prefix='AWS.IAM.AttachedPolicies',
-            readable_output=tableToMarkdown(name="Attached Policies",
-                                            t=response.get("AttachedPolicies")))
+def list_attached_role_policies(args: dict, client) -> list[CommandResults]:
+    aws_args = {"RoleName": (role_name := args["roleName"])}
 
+    for demisto_key, aws_key in (
+        ("pathPrefix", "PathPrefix"),
+        ("marker", "Marker"),
+        ("maxItems", "MaxItems")
+    ):  # optional keys, renaming to match AWS API
+        if (value := args.get(demisto_key)) is not None:
+            aws_args[aws_key] = value
+
+    try:
+        raw_response = client.list_attached_role_policies(**aws_args)
     except Exception as e:
         raise DemistoException(f"Couldn't list role policies with {args}\n"
                                f"encountered the following exception: {str(e)}") from e
+
+    policies = [
+        policy | {"RoleName": role_name}
+        for policy in raw_response["AttachedPolicies"]
+    ]
+
+    query_outputs = {k:v for k, v in raw_response.items() if k in ("IsTruncated", "Marker")}
+    return [
+        CommandResults(
+            # Main result - here be policies
+            raw_response=raw_response,
+            outputs=policies,
+            outputs_prefix='AWS.IAM.Roles.AttachedPolicies.Policies',
+            readable_output=tableToMarkdown(
+                name=f"Attached Policies for Role {role_name}",
+                t=policies,
+            )),
+        CommandResults(
+            # Secondary result object, for querying the next ones (if necessary)
+            raw_response=raw_response,
+            outputs=query_outputs,
+            outputs_prefix="AWS.IAM.Roles.AttachedPolicies.Query",
+            readable_output=tableToMarkdown(f"Attached Policies Query for {role_name}",
+                                            t=query_outputs)
+        )
+    ]
 
 
 def tag_user_command(args, client):
