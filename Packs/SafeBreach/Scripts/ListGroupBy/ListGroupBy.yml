@@ -15,7 +15,7 @@ args:
 - defaultValue: ','
   description: Separator to use in the merged value.
   name: separator
-comment: Group an output field from a list using multiple keys.
+comment: Deprecated. No available replacement.
 commonfields:
   id: ListGroupBy
   version: -1
@@ -33,4 +33,5 @@ tags:
 type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true
