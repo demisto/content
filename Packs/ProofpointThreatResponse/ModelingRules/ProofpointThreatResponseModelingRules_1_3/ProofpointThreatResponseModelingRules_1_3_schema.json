@@ -7,6 +7,12 @@
     "events": {
       "type": "string",
       "is_array": false
+      
+    },
+    "hosts": {
+      "type": "string",
+      "is_array": false
+      
     }
   }
 }
