@@ -1508,7 +1508,8 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  - arguments:
+  - name: aws-iam-list-attached-role-policies
+    arguments:
     - description: The name (friendly name, not ARN) of the role to list attached policies for.
       name: roleName
       required: true
@@ -1518,8 +1519,7 @@ script:
       description: The total number of items to return in the command's output.
     - name: marker
       description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
-    description: 
-    name: aws-iam-list-attached-role-policies
+    description: List all managed policies that are attached to the specified IAM role.
     outputs:
     - contextPath: AWS.IAM.AttachedRolePolicies.Policies.PolicyName
       description: The Policy name.
@@ -1533,7 +1533,7 @@ script:
     - contextPath: AWS.IAM.AttachedRolePolicies.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.67319
+  dockerimage: demisto/boto3py3:1.0.0.71373
   runonce: false
   script: '-'
   subtype: python3
