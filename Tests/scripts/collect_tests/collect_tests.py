@@ -63,6 +63,7 @@ class CollectionReason(str, Enum):
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
+    PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -437,6 +438,20 @@ class TestCollector(ABC):
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
                     is_nightly=is_nightly,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
+
+    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload) -> Optional[CollectionResult]:
+        result = []
+        for pack_id in packs_to_upload:
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_id,
+                    reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
+                    reason_description="",
+                    allow_incompatible_marketplace=False,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
@@ -1151,6 +1166,21 @@ class UploadBranchCollector(BranchTestCollector):
         return result
 
 
+class SpecificPacksTestCollector(TestCollector):
+    def __init__(
+            self,
+            packs_to_upload: str,
+            marketplace: MarketplaceVersions,
+            graph: bool = False,
+    ):
+        super().__init__(marketplace, graph=graph)
+        self.packs_to_upload = packs_to_upload
+
+    def _collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = super()._collect_specific_marketplace_compatible_packs(self.packs_to_upload)
+        return result
+
+
 class NightlyTestCollector(TestCollector, ABC):
     def collect(self) -> CollectionResult | None:
         result: CollectionResult | None = super().collect()
@@ -1243,6 +1273,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         result = []
         for modeling_rule in self.id_set.modeling_rules:
             try:
+                logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
                 path = PATHS.content_path / modeling_rule.file_path_str
                 pack_id = modeling_rule.pack_id
                 result.append(self._collect_pack_for_modeling_rule(
@@ -1352,6 +1383,9 @@ if __name__ == '__main__':
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
+    parser.add_argument('-up', '--pack_names', help="Packs to upload, will only collect what is related to them", default='',
+                        required=False)
+
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
 
@@ -1367,6 +1401,7 @@ if __name__ == '__main__':
     nightly = args.nightly
     service_account = args.service_account
     graph = args.graph
+    pack_to_upload = args.pack_names
     collector: TestCollector
 
     if args.changed_pack_path:
@@ -1375,6 +1410,8 @@ if __name__ == '__main__':
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
+        elif pack_to_upload:
+            collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace, graph)
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 

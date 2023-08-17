@@ -1962,7 +1962,7 @@ class TestPanoramaCommitCommand:
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         'action': 'partial',
         'cmd': '<commit><device-group><entry '
-               'name="some_device"/></device-group><partial><admin>'
+               'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
                '<member>some_admin_name</member></admin></partial></commit>',
         'key': 'APIKEY',
         'type': 'commit'
@@ -2007,7 +2007,8 @@ class TestPanoramaCommitCommand:
                                             'description': 'a simple commit', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry '
-                                                   'name="some_device"/></device-group><partial><admin>'
+                                                   'name="some_device"/></device-group><description>a simple commit</description>'
+                                                   '<partial><admin>'
                                                    '<member>some_admin_name</member></admin></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
@@ -7164,3 +7165,14 @@ def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_valu
             assert request_mock.call_args.kwargs['body']['action'] == 'edit'
             assert request_mock.call_args.kwargs['body']['element'] == params_element
             assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+
+
+def test_list_device_groups_names(mocker):
+    from Panorama import list_device_groups_names
+
+    mocker.patch('Panorama.get_device_groups_names', return_value=['Test-Device', 'Test-Device-2'])
+
+    result = list_device_groups_names()
+
+    assert result.outputs == ['Test-Device', 'Test-Device-2']
+    assert result.readable_output == '### Device Group Names:\n|Group Name|\n|---|\n| Test-Device |\n| Test-Device-2 |\n'
