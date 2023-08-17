@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 57f204df-1821-4dbc-81ff-7e901ad2b846
+    taskid: cddcecb1-6ca5-4373-86db-f513d704a96b
     type: collection
     task:
-      id: 57f204df-1821-4dbc-81ff-7e901ad2b846
+      id: cddcecb1-6ca5-4373-86db-f513d704a96b
       version: -1
       name: Check the pack's playbook
       description: |2+
@@ -118,7 +118,6 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-      - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -160,22 +159,6 @@ tasks:
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: If this playbook runs, what will be the output of the tasks?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: se_summit_2023
-        - simple: <none>
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Check the advanced settings of the playbook.
         readonly: false
       title: Check the Playbooks
       description: |-
@@ -243,7 +226,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: "Try to check the integration's python, search for custom integration -> which starts with 'ohmy' . Oh and remember that the answer isn't always on the wall...."
+        tooltip: Try to check the integration's python, search for custom integration -> which starts with 'ohmy' . Oh and remember that the answer isn't always on the wall....
         readonly: false
       title: Integration Settings
       description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you (which was also customized). \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/fcb6f8b4a01e1eefd59cd0814b7c39662d42c510/Packs/ctf01/doc_files/integration_2.gif) "
@@ -524,52 +507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: ba4a4963-18a6-4067-8c49-e7a1c773f6f1
-    type: regular
-    task:
-      id: ba4a4963-18a6-4067-8c49-e7a1c773f6f1
-      version: -1
-      name: 'Check your answer #Q3'
-      description: |-
-        Question #3:
-        If this playbook runs, what will be the output of the tasks?
-      scriptName: CTF_1
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      question_ID:
-        simple: "03"
-      secret:
-        complex:
-          root: Check the Playbooks.Answers
-          accessor: "1"
-          transformers:
-          - operator: toLowerCase
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1215
+          "x": 265,
+          "y": 1205
         }
       }
     note: false
@@ -852,19 +791,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2765,
-        "width": 810,
-        "x": 50,
+        "width": 380,
+        "x": 265,
         "y": 50
       }
     }
   }
+system: true
 inputs: []
 outputs: []
 tests:
