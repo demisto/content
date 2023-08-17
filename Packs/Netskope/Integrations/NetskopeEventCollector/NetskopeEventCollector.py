@@ -115,7 +115,8 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
-def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int, start_time: datetime):
+def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int,
+                                         execution_start_time: datetime):
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     wait_time: int = 0
     events: list[dict] = []
@@ -124,7 +125,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
     while len(events) < limit:
 
         # If the execution exceeded the timeout we will break
-        if is_execution_time_exceeded(start_time=start_time):
+        if is_execution_time_exceeded(start_time=execution_start_time):
             return events, True
 
         # Wait time between queries
@@ -167,19 +168,19 @@ def setup_last_run(last_run_dict: dict, first_fetch: str) -> dict:
     return last_run_dict
 
 
-def get_all_events(client: Client, last_run: dict, limit: int, is_command: bool) -> Tuple[list, dict]:
+def get_all_events(client: Client, last_run: dict, limit: int) -> Tuple[list, dict]:
     # We add the instance name to the index so several instances could run in parallel without effecting each other
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
 
     all_types_events_result = []
-    start_time = datetime.utcnow()
+    execution_start_time = datetime.utcnow()
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         event_type_operation = last_run.get(event_type, {}).get('operation')
 
         events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
                                                                 operation=event_type_operation, limit=limit,
-                                                                start_time=start_time)
+                                                                execution_start_time=execution_start_time)
         all_types_events_result.extend(prepare_events(events, event_type))
         last_run[event_type] = {'operation': 'next'}
 
