@@ -835,7 +835,12 @@ script:
       isArray: false
       name: case_id
       required: true
-    description: Close an eDiscovery case. Before you can delete a case, you must first delete all holds listed on the holds page of the case. That includes deleting holds with a status of Off. Default hold policies can only be deleted when the hold is turned off. You must close an active case to turn off any default hold policies in the case. Once the holds are turned off for default hold policies, they can be deleted.
+    description: |-
+      When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here's what happens when you close a case:
+      If the case contains any eDiscovery holds, they'll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
+      Closing a case only turns off the holds that are associated with that case. If other holds are placed on a content location (such as a Litigation Hold, a retention policy, or a hold from a different eDiscovery (Standard) case) those holds will still be maintained.
+      The case is still listed on the eDiscovery (Standard) page in the Microsoft Purview compliance portal. The details, holds, searches, and members of a closed case are retained.
+      You can edit a case after it's closed. For example, you can add or remove members, create searches, and export search results. The primary difference between active and closed cases is that eDiscovery holds are turned off when a case is closed.
     execution: false
     name: msg-close-ediscovery-case
   - arguments:
@@ -1417,7 +1422,7 @@ script:
     name: msg-create-ediscovery-search
     outputs:
     - contextPath: MsGraph.eDiscoverySearch.ContentQuery
-      description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      description: 'The query string in KQL (Keyword Query Language) query. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
       description: Name of the application who created the eDiscovery search.
@@ -1447,7 +1452,7 @@ script:
       description: The display name of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
-      description: ''
+      description: 'The last date and time the eDiscovery search was modified.'
       type: Date
     - contextPath: MsGraph.eDiscoverySearch.SearchId
       description: The ID for the eDiscovery search.
