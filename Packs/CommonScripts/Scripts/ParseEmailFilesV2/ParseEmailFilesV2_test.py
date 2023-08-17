@@ -583,27 +583,25 @@ def test_smime_without_to_from_subject(mocker):
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
 
 
-def test_unknown_file_type(mocker):
+@pytest.mark.parametrize('file_type', ['application/pkcs7-mime', 'macintosh hfs', 'message/rfc822', 'multipart/alternative',
+                                       'multipart/mixed', 'multipart/related', 'multipart/signed', 'rfc 822 mail',
+                                       'smtp mail', 'utf-8 (with bom) text'])
+def test_known_file_type(mocker, file_type):
     """
     Given:
-        Unknown file format
+        Supported file formats
     When:
         Parsing the file
     Then:
-        An error of "Unknown file format" is returned
+        return
     """
-    file_type = "Unknown file format  last mounted by: 'paOX', created: \
+    file_type = f"{file_type} last mounted by: 'paOX', created: \
         Fri Nov 23 19:35:05 2068, last modified: Wed Feb 13 03:39:57 2097, block \
         size: 1, number of blocks: 1, free blocks: 1"
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file(f'{file_type}e.eml', info="good"))
     mocker.patch.object(demisto, 'results')
-    mocker.patch('ParseEmailFilesV2.extract_file_info', return_value=(file_type, 'path', 'unknown file example'))
-    gotexception = False
-    try:
-        main()
-    except SystemExit:
-        gotexception = True
+    mocker.patch('ParseEmailFilesV2.extract_file_info', return_value=(file_type, 'path', ' file example'))
+    main()
     results = demisto.results.call_args[0][0]['Contents']
-    assert gotexception
     assert 'Unknown file format:' in results
