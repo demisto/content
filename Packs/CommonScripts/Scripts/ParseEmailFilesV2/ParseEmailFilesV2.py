@@ -60,7 +60,7 @@ def save_file(file_name, file_content) -> str:
     created_file = fileResult(file_name, file_content)
     file_id = created_file.get('FileID')
     attachment_internal_path = demisto.investigation().get('id') + '_' + file_id
-    demisto.results(created_file)
+    return_results(created_file)
 
     return attachment_internal_path
 
