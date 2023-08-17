@@ -1110,6 +1110,7 @@ class TestRFClient:
 
         assert response == mock_call_response
 
+
 class TestActions:
     def test_init(self, mocker):
         from RecordedFuture import Actions
@@ -1775,7 +1776,7 @@ class TestActions:
             return_value=mock_process_result_actions_return_value,
         )
 
-        result = actions.detection_rules_command()
+        result = actions.collective_insight_command()
         mock_submit_detection_to_collective_insight.assert_called_once_with()
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
