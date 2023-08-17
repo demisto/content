@@ -948,3 +948,231 @@ def test_fetch_incidents(mocker, prisma_cloud_v2_client, last_run, params, incid
     mocker.patch('PrismaCloudV2.fetch_request', return_value=(incidents, fetched_ids, updated_last_run_time))
     assert fetch_incidents(prisma_cloud_v2_client, last_run, params) == \
         (incidents, expected_fetched_ids, expected_updated_last_run_time)
+
+
+''' MIRRORING FUNCTIONS TESTS '''
+
+
+@pytest.fixture
+@patch('PrismaCloudV2.Client.generate_auth_token')
+def prisma_cloud_v2_mirroring_client(mocker):
+    from PrismaCloudV2 import HEADERS, REQUEST_CSPM_AUTH_HEADER
+    headers = HEADERS
+    headers[REQUEST_CSPM_AUTH_HEADER] = AUTH_HEADER
+
+    return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
+                  username='username', password='password', mirror_direction="Incoming And Outgoing",
+                  close_incident=True, close_alert=True)
+
+
+def test_get_modified_remote_data_command(mocker, prisma_cloud_v2_mirroring_client):
+    """
+    Given
+        - arguments - lastUpdate time.
+        - raw prisma cloud alerts (alert_search_request raw response).
+    When
+        - Running the get_modified_remote_data_command.
+    Then
+        - Verify that the returned value is a list of incidents IDs that were modified since the lastUpdate time.
+    """
+    from PrismaCloudV2 import get_modified_remote_data_command
+    mocker.patch('PrismaCloudV2.Client.alert_search_request', return_value={'items': input_data.alert_search_request_response})
+    last_update = '2023-08-16T08:17:09Z'
+    args = {'lastUpdate': last_update}
+    params = {'filters': 'alert.status=open,alert.status=dismissed,alert.status=snoozed,alert.status=resolved'}
+
+    result = get_modified_remote_data_command(client=prisma_cloud_v2_mirroring_client,
+                                              args=args,
+                                              params=params)
+
+    assert result.modified_incident_ids == ['P-1111111', 'P-1111112', 'P-1111113']
+
+
+@pytest.mark.parametrize('raw_response, expected_updated_object', [
+    (input_data.alert_get_details_request_dismissed_alert_raw_response,
+     input_data.get_remote_alert_data_dismissed_alert_updated_object),
+    (input_data.alert_get_details_request_snoozed_alert_raw_response,
+     input_data.get_remote_alert_data_snoozed_alert_updated_object),
+    (input_data.alert_get_details_request_resolved_alert_raw_response,
+     input_data.get_remote_alert_data_resolved_alert_updated_object),
+    (input_data.alert_get_details_request_reopened_alert_raw_response,
+     input_data.get_remote_alert_data_reopened_alert_updated_object),
+])
+def test_get_remote_alert_data(mocker, prisma_cloud_v2_mirroring_client, raw_response, expected_updated_object):
+    """
+    Given
+        1. Raw response of the alert_get_details_request with data of a dismissed alert.
+        2. Raw response of the alert_get_details_request with data of a snoozed alert.
+        3. Raw response of the alert_get_details_request with data of a resolved alert.
+        4. Raw response of the alert_get_details_request with data of a reopened alert.
+
+    When
+        - Running the get_remote_alert_data function.
+    Then
+        - Verify that the updated_object is as expected.
+    """
+    from PrismaCloudV2 import get_remote_alert_data
+    remote_alert_id = 'test id'
+    mocker.patch('PrismaCloudV2.Client.alert_get_details_request',
+                 return_value=raw_response)
+    alert_details, updated_object = get_remote_alert_data(prisma_cloud_v2_mirroring_client, remote_alert_id)
+
+    assert alert_details == raw_response
+    assert updated_object == expected_updated_object
+
+
+@pytest.mark.parametrize('updated_mirrored_object, function_calls', [
+    (input_data.get_remote_alert_data_dismissed_alert_updated_object, [1, 0]),
+    (input_data.get_remote_alert_data_snoozed_alert_updated_object, [1, 0]),
+    (input_data.get_remote_alert_data_resolved_alert_updated_object, [1, 0]),
+    (input_data.get_remote_alert_data_reopened_alert_updated_object, [0, 1]),
+])
+def test_set_xsoar_incident_entries(mocker, prisma_cloud_v2_mirroring_client, updated_mirrored_object, function_calls):
+    """
+        Given
+            1. A mirrored updated_object of a dismissed alert.
+            2. A mirrored updated_object of a snoozed alert.
+            3. A mirrored updated_object of a resolved alert.
+            4. A mirrored updated_object of a re-opened alert.
+
+        When
+            - Running the set_xsoar_incident_entries function.
+        Then
+            1-3. Verify that the close_incident_in_xsoar function was called once,
+                 and that the reopen_incident_in_xsoar function wasn't called.
+            4. Verify that the reopen_incident_in_xsoar function was called once,
+               and that the close_incident_in_xsoar function wasn't called.
+    """
+    from PrismaCloudV2 import set_xsoar_incident_entries
+
+    mock_close_xsoar_incident = mocker.patch('PrismaCloudV2.close_incident_in_xsoar', return_value=None)
+    mock_reopen_xsoar_incident = mocker.patch('PrismaCloudV2.reopen_incident_in_xsoar', return_value=None)
+    set_xsoar_incident_entries(updated_mirrored_object, 'P-1111111')
+
+    assert mock_close_xsoar_incident.call_count == function_calls[0]
+    assert mock_reopen_xsoar_incident.call_count == function_calls[1]
+
+
+@pytest.mark.parametrize('mirrored_status, mirrored_dismissal_note', [
+    ('dismissed', 'test_dismissed'),
+    ('snoozed', 'test_snoozed'),
+    ('resolved', 'test_resolved'),
+    ('resolved', ''),
+])
+def test_close_incident_in_xsoar(mirrored_status, mirrored_dismissal_note):
+    """
+        Given
+            - A mirrored remoter alert id, a status and a dismissal note.
+        When
+            - Running the close_incident_in_xsoar function.
+        Then
+            - Verify that the close xsoar entry created as expected.
+    """
+    from PrismaCloudV2 import close_incident_in_xsoar
+    remote_alert_id = 'test id'
+    close_entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+
+    close_entry_contents = close_entry.get('Contents')
+    assert close_entry_contents.get('dbotIncidentClose') is True
+    assert close_entry_contents.get('rawCloseReason') == mirrored_status
+    assert close_entry_contents.get('closeReason') == f'Alert was {mirrored_status} on Prisma Cloud.'
+    if not mirrored_dismissal_note:  # resolved (case 4)
+        assert close_entry_contents.get('closeNotes') == 'resolved'
+    else:
+        assert close_entry_contents.get('closeNotes') == mirrored_dismissal_note
+
+
+def test_reopen_incident_in_xsoar():
+    """
+        Given
+            - A mirrored remote alert id.
+        When
+            - Running the reopen_incident_in_xsoar function.
+        Then
+            - Verify that the reopen xsoar entry created as expected.
+    """
+    from PrismaCloudV2 import reopen_incident_in_xsoar
+    remote_alert_id = 'test id'
+    reopen_entry = reopen_incident_in_xsoar(remote_alert_id)
+
+    close_entry_contents = reopen_entry.get('Contents')
+    assert close_entry_contents.get('dbotIncidentReopen') is True
+
+
+@pytest.mark.parametrize('mirrored_data, updated_object, expected_entry', [
+    (input_data.alert_get_details_request_dismissed_alert_raw_response,
+     input_data.get_remote_alert_data_dismissed_alert_updated_object,
+     input_data.dismissed_closed_xsoar_entry),
+    (input_data.alert_get_details_request_snoozed_alert_raw_response,
+     input_data.get_remote_alert_data_snoozed_alert_updated_object,
+     input_data.snoozed_closed_xsoar_entry),
+    (input_data.alert_get_details_request_resolved_alert_raw_response,
+     input_data.get_remote_alert_data_resolved_alert_updated_object,
+     input_data.resolved_closed_xsoar_entry),
+    (input_data.alert_get_details_request_reopened_alert_raw_response,
+     input_data.get_remote_alert_data_reopened_alert_updated_object,
+     input_data.reopened_closed_xsoar_entry),
+])
+def test_get_remote_data_command(mocker, prisma_cloud_v2_mirroring_client, mirrored_data, updated_object, expected_entry):
+    """
+        Given
+            - A mirrored data, updated object (the object containing only the fields that should be mirrored) of a:
+                1. Dismissed alert
+                2. Snoozed alert
+                3. Resolved alert
+                4. Re-opened alert
+        When
+            - Running the get_remote_data_command.
+        Then
+            - Verify that the GetRemoteDataResponse object contains the updated object as the mirrored_object,
+              and the expected xsoar entry.
+
+    """
+    from PrismaCloudV2 import get_remote_data_command
+
+    args = {'id': 'test id', 'lastUpdate': '2023-08-16T08:17:09Z'}
+
+    mocker.patch('PrismaCloudV2.get_remote_alert_data', return_value=(mirrored_data, updated_object))
+
+    result = get_remote_data_command(prisma_cloud_v2_mirroring_client, args)
+    entry = result.entries[0].get('Contents')
+    if 'closed' in entry:  # removing the closed field cause time fields could be problematic for testing
+        entry.pop('closed')
+    assert entry == expected_entry
+    assert result.mirrored_object == updated_object
+
+
+@pytest.mark.parametrize('mirrored_data, updated_object', [
+    (input_data.alert_get_details_request_dismissed_alert_raw_response,
+     input_data.get_remote_alert_data_dismissed_alert_updated_object,),
+    (input_data.alert_get_details_request_reopened_alert_raw_response,
+     input_data.get_remote_alert_data_reopened_alert_updated_object),
+])
+def test_get_remote_data_command_close_incident_false(mocker, prisma_cloud_v2_mirroring_client, mirrored_data, updated_object):
+    """
+        Given
+            - A mirrored data, updated object (the object containing only the fields that should be mirrored) of an alert:
+                1. Closed alert.
+                2. Reopened alert.
+            - A client with the field close_incident = False (which indicates that the user doest want to close or to re-open
+              xsaor incidents as part of the mirror in process).
+        When
+            - Running the get_remote_data_command.
+        Then
+            - Verify that the GetRemoteDataResponse object contains the updated object as the mirrored_object,
+              and no XSOAR entries (because we don't want to close\re-open the mirrored incident).
+
+    """
+    from PrismaCloudV2 import get_remote_data_command
+
+    args = {'id': 'test id', 'lastUpdate': '2023-08-16T08:17:09Z'}
+
+    mocker.patch('PrismaCloudV2.get_remote_alert_data', return_value=(mirrored_data, updated_object))
+
+    # Set the incident_close integration parameter to False:
+    prisma_cloud_v2_mirroring_client.close_incident = False
+
+    result = get_remote_data_command(prisma_cloud_v2_mirroring_client, args)
+
+    assert result.entries == []
+    assert result.mirrored_object == updated_object
