@@ -1255,7 +1255,7 @@ tasks:
         simple: "13"
       secret:
         complex:
-          root: To keep your company secured - Make some remediation.Answers
+          root: Keep your company secure with remediation.Answers
           accessor: "0"
           transformers:
           - operator: LastArrayElement
@@ -1431,7 +1431,7 @@ tasks:
         tooltip: Use the `CloudTrail` context key to retrieve the right values for the integration commands.
         readonly: false
       title: Create a remediation playbook
-      description: "As an automation platform, we need to provide automated tools for our analysts. Our SecOps team left for vacation and didn't finish one of the playbooks, and we hoped you could finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\", add your student ID number to the playbook name, and finish the tasks. Don't detach the playbook, just copy it with your name.\n- Remove the created user from the Admins group in our AWS project\n- Delete the newly created user.\n- Kill the EC2 instance that was created by the attacker. \n- Remember that you need to provide inputs with the right context path keys so each task can run properly. Use the playbook debugger to import the Cortex XDR IAM incident context into your playground and run the playbook from there. Here is a short gif on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you finished the playbook properly, the tasks will give you the final flag.\nHelp kick out the attacker from our organization once and for all!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
+      description: "As an automation platform, we need to provide automated tools for our analysts. Our SecOps team left for vacation and didn't finish one of the playbooks, and we hoped you could finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\", add your student ID number to the playbook name, and finish the tasks. Don't detach the playbook, just copy it with your name.\n- Remove the created user from the Admins group in our AWS project\n- Delete the newly created user.\n- Kill the EC2 instance that was created by the attacker. \n- Remember that you need to provide inputs with the right context path keys so each task can run properly. Use the playbook debugger to import the Cortex XDR IAM incident context into your playground and run the playbook from there. Here is a short gif on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you finished the playbook properly, the tasks will give you the final flag.\nHelp kick out the attacker from our organization once and for all! \n\n\n ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
