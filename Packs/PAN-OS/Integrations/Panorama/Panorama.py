@@ -923,6 +923,10 @@ def panorama_commit(args):
     if force_commit:
         command += '<force></force>'
 
+    description = args.get('description')
+    if description:
+        command += f'<description>{description}</description>'
+
     exclude_device_network = args.get('exclude_device_network_configuration')
     exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
     if exclude_device_network_configuration:
