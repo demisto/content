@@ -979,6 +979,7 @@ To set up the mirroring:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 
-**Important Note:** 
-To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
+**Important Notes:** 
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
+- Required permissions: Admins
 
