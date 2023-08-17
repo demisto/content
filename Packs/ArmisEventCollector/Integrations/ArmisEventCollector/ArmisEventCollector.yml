@@ -15,12 +15,6 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: First fetch time
-  defaultvalue: 3 days
-  name: first_fetch
-  required: true
-  type: 0
-  section: Collect
 - display: Number of events to fetch per fetch.
   name: max_fetch
   type: 0

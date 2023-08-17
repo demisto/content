@@ -12,12 +12,14 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'armis'
 PRODUCT = 'armis'
+API_V1_ENDPOINT = '/api/v1'
+DEFAULT_MAX_FETCH = 1000
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API - this Client implements API calls"""
+    """Client class to interact with Armis API - this Client implements API calls"""
 
     def __init__(self, base_url, api_key, access_token, verify=False, proxy=False):
         self._api_key = api_key
@@ -60,19 +62,16 @@ class Client(BaseClient):
             "Accept": "application/json"
         }
         params = {"secret_key": self._api_key}
-        # response = requests.request(
-        #     url=urljoin(base_url, 'access_token'),
-        #     headers=headers, params=params, method='POST').json()
         response = self._http_request(url_suffix='/access_token/', method='POST', params=params, headers=headers)
         if access_token := response.get('data', {}).get('access_token'):
             return access_token
         else:
-            raise DemistoException('Could not get access token form get_access_token().')
+            raise DemistoException('Could not generate access token.')
 
 
 def test_module(client: Client) -> str:
     """
-    Tests API connectivity and authentication
+    Tests API connectivity and authentication.
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
@@ -97,6 +96,9 @@ def get_events(client, alert_status):
     )
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
+
+
+''' HELPER FUNCTIONS '''
 
 
 def min_datetime(last_fetch_time, fetch_start_time_param):
@@ -163,9 +165,6 @@ def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param, lo
     return events, next_run
 
 
-''' MAIN FUNCTION '''
-
-
 def add_time_to_events(events):
     """
     Adds the _time key to the events.
@@ -180,22 +179,19 @@ def add_time_to_events(events):
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-def main() -> None:
-    """
-    main function, parses params and runs command functions
-    """
+''' MAIN FUNCTION '''
 
+
+def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
     access_token = last_run.get('access_token')
     api_key = params.get('credentials', {}).get('password')
-    base_url = urljoin(params.get('server_url'), '/api/v1')
+    base_url = urljoin(params.get('server_url'), API_V1_ENDPOINT)
     verify_certificate = not params.get('insecure', True)
-    max_fetch = arg_to_number(params.get('max_fetch', 1000))
-    first_fetch = params.get('first_fetch', '3 days')
-    fetch_start_time_param = arg_to_datetime(first_fetch)
+    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH))
     proxy = params.get('proxy', False)
     log_types_to_fetch = argToList(params.get('log_types_to_fetch', []))
 
@@ -216,21 +212,21 @@ def main() -> None:
                 client=client,
                 max_fetch=max_fetch,
                 last_run=last_run,
-                fetch_start_time_param=fetch_start_time_param,
+                fetch_start_time_param=datetime.now(),
                 log_types_to_fetch=log_types_to_fetch,
             )
 
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            if command in ('fetch-events'):
+                add_time_to_events(events)
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
 
             demisto.setLastRun(next_run)
         else:
             return_error(f'Command {command} does not exist for this integration.')
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
