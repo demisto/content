@@ -45,7 +45,7 @@ def fetch_events(connection: Connection) -> list[dict]:
             events.append(event)
             demisto.debug(f"Received event. length of events from {connection.id} is: {len(events)}")
         except TimeoutError:
-            demisto.debug("Timeout reached when receiving events. Returning the events received so far.")
+            demisto.debug(f"Reached the end of time windows to collect events. Collected {len(events)} events.")
             break
     return events
 
