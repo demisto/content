@@ -75,6 +75,9 @@ class Boto3Client:
     def get_access_key_last_used(self):
         pass
 
+    def list_attached_role_policies(self):
+        pass
+
 
 @pytest.mark.parametrize('args, res', PAGINATION_CHECK)
 def test_list_user_policies(mocker, args, res):
@@ -430,3 +433,40 @@ def test_create_tag_dicts_list(tags_ls, expected_output):
        """
     tags_dicts_ls = AWS_IAM.create_tag_dicts_list(tags_ls)
     assert expected_output == tags_dicts_ls
+
+
+def test_list_attached_role_policies(mocker):
+    """
+    Given:
+        args = {'roleName': 'test-role'}.
+    When:
+        Calling list_attached_role_policies
+    Then:
+        Ensure outputs_prefix is 'AWS.IAM.AttachedPolicies'.
+        Check readable_output for formatted attached policies.
+        Confirm raw_response matches predefined response.
+    """
+    args = {'roleName': 'test-role'}
+    response = {
+        'AttachedPolicies': [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1'},
+                             {'PolicyName': 'policy2', 'PolicyArn': 'Arn2'}],
+        'IsTruncated': True,
+        'Marker': 'some_marker'
+    }
+
+    client = Boto3Client()
+    mocker.patch.object(client, "list_attached_role_policies", return_value=response)
+
+    result = AWS_IAM.list_attached_role_policies(args, client)
+
+    assert result.outputs_prefix == 'AWS.IAM.AttachedPolicies'
+    assert result.readable_output == "\n".join(
+        (
+            '### Attached Policies',
+            '|PolicyArn|PolicyName|',
+            '|---|---|',
+            '| Arn1 | policy1 |',
+            '| Arn2 | policy2 |',
+            ''
+        ))
+    assert result.raw_response == response

@@ -3,10 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import botocore.exceptions
 
 from datetime import datetime, date
-import urllib3.util
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 SERVICE = 'iam'
 
@@ -1038,6 +1035,20 @@ def tag_role_command(args, client):
                                f"\nencountered the following exception: {str(e)}")
 
 
+def list_attached_role_policies(args: dict, client) -> CommandResults:
+    try:
+        response = client.list_attached_role_policies(**args)
+        return CommandResults(
+            raw_response=response,
+            outputs_prefix='AWS.IAM.AttachedPolicies',
+            readable_output=tableToMarkdown(name="Attached Policies",
+                                            t=response.get("AttachedPolicies")))
+
+    except Exception as e:
+        raise DemistoException(f"Couldn't list role policies with {args}\n"
+                               f"encountered the following exception: {str(e)}") from e
+
+
 def tag_user_command(args, client):
     """
     Add the given tags to the given user.
@@ -1341,7 +1352,8 @@ def main():     # pragma: no cover
             return_results(untag_role_command(args, client))
         elif command == 'aws-iam-get-access-key-last-used':
             return_results(get_access_key_last_used_command(args, client))
-
+        elif command == 'aws-iam-list-attached-role-policies':
+            return_results(list_attached_role_policies(args, client))
     except Exception as e:
         LOG(str(e))
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
