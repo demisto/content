@@ -72,7 +72,7 @@ tasks:
       brand: ""
       id: d9dc9817-b316-4a94-89ea-a2b40736d15d
       iscommand: false
-      name: '//TODO -  Terminate the spined  by the attacker EC2 insistence '
+      name: '//TODO -  Terminate the EC2 instance spun by the attacker'
       type: regular
       version: -1
     taskid: d9dc9817-b316-4a94-89ea-a2b40736d15d
