@@ -592,7 +592,9 @@ def test_unknown_file_type(mocker):
     Then:
         An error of "Unknown file format" is returned
     """
-    file_type = "Unknown file format  last mounted by: 'paOX', created: Fri Nov 23 19:35:05 2068, last modified: Wed Feb 13 03:39:57 2097, block size: 1, number of blocks: 1, free blocks: 1"
+    file_type = "Unknown file format  last mounted by: 'paOX', created: \
+        Fri Nov 23 19:35:05 2068, last modified: Wed Feb 13 03:39:57 2097, block \
+        size: 1, number of blocks: 1, free blocks: 1"
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
     mocker.patch.object(demisto, 'results')
@@ -605,5 +607,3 @@ def test_unknown_file_type(mocker):
     results = demisto.results.call_args[0][0]['Contents']
     assert gotexception
     assert 'Unknown file format:' in results
-
-
