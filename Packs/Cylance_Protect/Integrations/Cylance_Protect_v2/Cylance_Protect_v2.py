@@ -1063,8 +1063,9 @@ def download_threat_request(hash):  # pragma: no cover
 
     uri = '{}/{}/{}'.format(URI_THREATS, "download", hash)
     res = api_call(uri=uri, method='get', access_token=access_token)
-    if not res['url']:
-        return_error('No url was found')
+    if not isinstance(res, dict) or not res.get('url'):
+        error_msg = f'No url was found - {res}' if isinstance(res, str) else 'No url was found'
+        return_error(error_msg)
     return res['url']
 
 
