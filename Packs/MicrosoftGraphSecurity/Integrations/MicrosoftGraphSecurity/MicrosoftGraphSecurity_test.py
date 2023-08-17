@@ -7,7 +7,8 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
-    release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command
+    release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
+    create_ediscovery_non_custodial_data_source_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -598,3 +599,25 @@ def test_reopen_ediscovery_case_command(mocker):
     mocker.patch.object(client_mocker, 'reopen_edsicovery_case', return_value=None)
     assert reopen_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
            .readable_output == 'Case with id caseid was reopened successfully.'
+
+
+@pytest.mark.parametrize('site, email, should_error', [('exists', None, False),
+                                                       ('', 'Exists', False),
+                                                       ('exists', 'also exists', True),
+                                                       (None, None, True)])
+def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker, site, email, should_error):
+    """
+    Given:
+        Arguments that arent valid for this command
+    When:
+        Calling the command
+    Then
+        An exception is raised
+
+    """
+    mocker.patch.object(client_mocker, 'create_ediscovery_non_custodial_data_source', return_value=None)
+    try:
+        create_ediscovery_non_custodial_data_source_command(client_mocker, {'site' : site, 'email' : email})
+        assert not should_error
+    except ValueError:
+        assert should_error
