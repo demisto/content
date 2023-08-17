@@ -6,20 +6,29 @@ from requests import Response
 from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 import gzip
+from pydantic import BaseModel
 
 disable_warnings()
 
 VENDOR = "symantec"
-PRODUCT = "wss"
+PRODUCT = "swg"
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
-REGEX_DETECT_LOG = re.compile(r"^(?!#)")
+
+
+class LastRun(BaseModel):
+    start_time: str | None
+    token: str | None
+    time_of_last_fetched_event: str | None
+    events_suspected_duplicates: list[str] | None
 
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, verify, proxy) -> None:
         headers: dict[str, str] = {"X-APIUsername": username, "X-APIPassword": password}
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(
+            base_url=base_url, verify=verify, proxy=proxy, headers=headers, timeout=180
+        )
 
     def get_logs(self, params: dict[str, Any]):
         return self._http_request(
@@ -30,13 +39,16 @@ class Client(BaseClient):
         )
 
 
+""" HELPER FUNCTIONS """
+
+
 def get_start_and_ent_date(
-    args: dict[str, str], last_run: dict[str, str]
+    args: dict[str, str], start_date: str | None
 ) -> tuple[int, int]:
     now = datetime.now()
 
     start_date = int(
-        last_run.get("start_date")
+        start_date
         or date_to_timestamp(
             arg_to_datetime(args.get("since")) or (now - timedelta(minutes=1))
         )
@@ -58,55 +70,138 @@ def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
     return status, token
 
 
-def extract_logs_from_response(response: Response) -> list[str]:
-    logs: list[str] = []
-    file_names: list[str] = []
+def extract_logs_from_response(response: Response) -> list[bytes]:
+    logs: list[bytes] = []
     try:
         with ZipFile(BytesIO(response.content)) as outer_zip:
             for file in outer_zip.infolist():
                 if file.filename.lower().endswith(".gz"):
-                    file_names.append(file.filename.lower())
                     with outer_zip.open(file) as nested_zip_file, gzip.open(
                         nested_zip_file, "rb"
                     ) as f:
-                        log = f.readlines()
-                        for line in log:
-                            if REGEX_DETECT_LOG.match(line.decode()):
-                                logs.append(line.decode())
-    except BadZipFile:
-        demisto.debug("No logs were returned from the API")
+                        logs.extend(f.readlines())
+    except BadZipFile as e:
+        demisto.debug(f"The external file type is not of type ZIP: Error: {e}")
         pass
     return logs
 
 
+def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
+    return ("start_date" in last_run) and ("since" not in args)
+
+
+def is_duplicate(
+    id_: str,
+    cur_time: str,
+    time_of_last_fetched_event: str,
+    events_suspected_duplicates: list[str],
+) -> bool:
+    if cur_time > time_of_last_fetched_event:
+        return False
+    return not (
+        cur_time == time_of_last_fetched_event
+        and id_ not in events_suspected_duplicates
+    )
+
+
+def organize_of_events(
+    logs: list[bytes],
+    token_expired: bool,
+    time_of_last_fetched_event: str,
+    events_suspected_duplicates: list[str],
+) -> tuple[list[str], str, list[str]]:
+    events: list[str] = []
+    max_time = time_of_last_fetched_event
+    max_values = events_suspected_duplicates
+
+    for log in logs:
+        event = log.decode()
+        if event.startswith("#"):
+            continue
+        parts = event.split(" ")
+        id_ = parts[-1]
+        cur_time = f"{parts[1]} {parts[2]}"
+
+        if token_expired and not (
+            is_duplicate(
+                id_,
+                cur_time,
+                time_of_last_fetched_event,
+                events_suspected_duplicates,
+            )
+        ):
+            continue
+        if cur_time > max_time:
+            max_time = cur_time
+            max_values = [id_]
+        elif cur_time == max_time:
+            max_values.append(id_)
+        events.append(event)
+
+    return events, max_time, max_values
+
+
+""" FETCH EVENTS """
+
+
 def get_events_command(
-    client: Client, args: dict[str, str], last_run: dict[str, str]
-) -> tuple[list[str], dict[str, str]]:
+    client: Client, args: dict[str, str], last_run_model: LastRun, is_first_fetch: bool
+) -> tuple[list[str], LastRun]:
+    """
+    ...
+    """
+    logs: list[bytes] = []
+    token_expired: bool = False
 
-    logs: list[str] = []
-    start_date, end_date = get_start_and_ent_date(args=args, last_run=last_run)
-    params = {"startDate": start_date, "endDate": end_date, "token": "none"}
-
+    start_date, end_date = get_start_and_ent_date(
+        args=args, start_date=last_run_model.start_time
+    )
+    params: dict[str, Union[str, int]] = {
+        "startDate": start_date,
+        "endDate": end_date,
+        "token": last_run_model.token or "none",
+    }
     demisto.debug(f"start fetch from {start_date} to {end_date}")
 
     status = "more"
-    token: str | None = None
     while status != "done":
-        if token:
-            params["token"] = token
-
         try:
             res = client.get_logs(params=params)
-        except Exception as e:
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 410:
+                token_expired = True
+                params["token"] = "none"
+                continue
             raise e
 
-        status, token = get_status_and_token_from_res(res)
+        status, params["token"] = get_status_and_token_from_res(res)
+
+        if is_first_fetch:
+            continue
         logs.extend(extract_logs_from_response(res))
 
-    last_run.update({"start_date": str(end_date + 1)})
+    (
+        events,
+        time_of_last_fetched_event,
+        events_suspected_duplicates,
+    ) = organize_of_events(
+        logs,
+        token_expired,
+        last_run_model.time_of_last_fetched_event or "",
+        last_run_model.events_suspected_duplicates or [],
+    )
+
+    new_last_run_model = LastRun(
+        **{
+            "start_date": str(end_date + 1),
+            "token": params["token"],
+            "time_of_last_fetched_event": time_of_last_fetched_event,
+            "events_suspected_duplicates": events_suspected_duplicates,
+        }
+    )
 
     demisto.debug(f"End fetch from {start_date} to {end_date} with {len(logs)} logs")
-    return logs, last_run
+    return events, new_last_run_model
 
 
 def test_module(client: Client):
@@ -139,7 +234,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
         elif command == "symantec-get-events":
             should_update_last_run = False
-            events, _ = get_events_command(client, args, last_run={})
+            events, _ = get_events_command(client, args, LastRun(**{}), False)
             t = [{"logs": event} for event in events]
             # By default return as an md table
             # when the argument `should_push_events` is set to true
@@ -151,7 +246,9 @@ def main() -> None:  # pragma: no cover
             should_push_events = True
             should_update_last_run = True
             last_run = demisto.getLastRun()
-            events, last_run = get_events_command(client, params, last_run=last_run)
+            events, last_run = get_events_command(
+                client, params, LastRun(**last_run), is_first_fetch(last_run, args)
+            )
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 

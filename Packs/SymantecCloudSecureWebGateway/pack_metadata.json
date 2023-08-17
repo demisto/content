@@ -1,5 +1,5 @@
 {
-    "name": "Symantec Web Security Service",
+    "name": "Symantec Cloud Secure Web Gateway",
     "description": "",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["wss", "swg", "web security service"],
     "marketplaces": [
         "marketplacev2"
     ]
