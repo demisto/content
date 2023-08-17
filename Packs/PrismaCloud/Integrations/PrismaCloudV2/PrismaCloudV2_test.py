@@ -1307,8 +1307,8 @@ def test_close_alert_in_prisma_cloud(mocker, prisma_cloud_v2_mirroring_client):
     close_alert_in_prisma_cloud(prisma_cloud_v2_mirroring_client, incident_ids_to_close, delta)
 
     assert mock_alert_dismiss_request.call_args.kwargs == \
-           {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
-            'time_range': time_filter,
+        {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
+         'time_range': time_filter,
             'alert_ids': incident_ids_to_close}
 
 

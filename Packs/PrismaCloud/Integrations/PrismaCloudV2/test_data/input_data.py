@@ -354,16 +354,16 @@ alert_get_details_request_reopened_alert_raw_response = {'id': 'test id', 'statu
                                                          'alertTime': '2023-08-16T11:39:36Z', 'firstSeen': '2023-08-16T11:39:36Z'}
 
 get_remote_alert_data_dismissed_alert_updated_object = {'status': 'dismissed', 'reason': 'USER_DISMISSED',
-                                                         'dismissalNote': 'test dismiss', 'policy': {'name': 'alert name'}}
+                                                        'dismissalNote': 'test dismiss', 'policy': {'name': 'alert name'}}
 
 get_remote_alert_data_snoozed_alert_updated_object = {'status': 'snoozed', 'reason': 'USER_SNOOZED',
-                                                       'dismissalNote': 'test snooze', 'policy': {'name': 'alert name'}}
+                                                      'dismissalNote': 'test snooze', 'policy': {'name': 'alert name'}}
 
 get_remote_alert_data_resolved_alert_updated_object = {'status': 'resolved', 'reason': 'RESOLVED', 'dismissalNote': '',
-                                                        'policy': {'name': 'alert name'}}
+                                                       'policy': {'name': 'alert name'}}
 
 get_remote_alert_data_reopened_alert_updated_object = {'status': 'open', 'reason': 'USER_REOPENED', 'dismissalNote': '',
-                                                        'policy': {'name': 'alert name'}}
+                                                       'policy': {'name': 'alert name'}}
 
 dismissed_closed_xsoar_entry = {'dbotIncidentClose': True,
                                 'rawCloseReason': 'dismissed',
@@ -381,6 +381,3 @@ resolved_closed_xsoar_entry = {'dbotIncidentClose': True,
                                'closeNotes': 'resolved'}
 
 reopened_closed_xsoar_entry = {'dbotIncidentReopen': True}
-
-
-
