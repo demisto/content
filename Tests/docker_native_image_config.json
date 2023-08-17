@@ -29,7 +29,7 @@
                 "chromium",
                 "tesseract"
             ],
-            "docker_ref":"demisto/py3-native:8.3.0.62286"
+            "docker_ref":"demisto/py3-native:8.3.0.69120"
         },
         "native:dev":{
             "supported_docker_images":[
@@ -112,6 +112,14 @@
             ]
         },
         {
+            "id":"Intezer v2",
+            "reason":"Issue: CIAC-7861",
+            "ignored_native_images":[
+                "native:8.3",
+                "native:candidate"
+            ]
+        },
+        {
             "id":"FindEmailCampaign",
             "reason":"Issue: CIAC-7837",
             "ignored_native_images":[
@@ -155,6 +163,13 @@
         {
             "id":"Intezer v2",
             "reason":"Lint and UT depend on intezer-sdk package",
+            "ignored_native_images":[
+                "native:8.3"
+            ]
+        },
+        {
+            "id":"SlackV3",
+            "reason":"Issue: CIAC-7854",
             "ignored_native_images":[
                 "native:8.3"
             ]
