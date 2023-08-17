@@ -434,7 +434,7 @@ def convert_to_dict(arr: list):
     return new_dict
 
 
-def fetch_incidents(client: Client) -> str:
+def fetch_incidents(client: Client, *args) -> str:
     params = demisto.params()
     tags = params.get('tags', '')
     if tags == 'None':
