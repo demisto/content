@@ -85,7 +85,7 @@ configuration:
   type: 0
   section: Connect
   required: false
-- additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization process.
+- additionalinfo: Get the authorization code from steps 3-5 in the self deployed authorization process.
   displaypassword: Authorization code
   name: auth_code
   hiddenusername: true
@@ -789,7 +789,7 @@ script:
     execution: false
     name: msg-auth-test
   - arguments: []
-    description: Generate the login url used for Authorization code flow.
+    description: Generate the login URL used for authorization code flow.
     execution: false
     name: msg-generate-login-url
   - arguments:
@@ -810,28 +810,28 @@ script:
     name: msg-create-ediscovery-case
     outputs:
     - contextPath: MsGraph.eDiscoveryCase.CaseId
-      description: 'The id of the eDiscovery case.'
+      description: The ID of the eDiscovery case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CaseStatus
-      description: 'The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. For details, see the following table.'
+      description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
       description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
-      description: 'The case description.'
+      description: The case description.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.DisplayName
-      description: 'The case name.'
+      description: The case name.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ExternalId
-      description: 'The external case number for customer reference.'
+      description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
       description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -839,7 +839,7 @@ script:
     execution: false
     name: msg-close-ediscovery-case
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -847,7 +847,7 @@ script:
     execution: false
     name: msg-reopen-ediscovery-case
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -855,7 +855,7 @@ script:
     execution: false
     name: msg-delete-ediscovery-case
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -875,11 +875,11 @@ script:
     execution: false
     name: msg-update-ediscovery-case
   - arguments:
-    - description: The id of the eDiscovery case. If provided only this id will be returned.
+    - description: The ID of the eDiscovery case. If provided, only this ID will be returned.
       isArray: false
       name: case_id
       required: false
-    - description: The max number of results to return. Default is 50.
+    - description: The maximum number of results to return. 
       isArray: false
       name: limit
       required: false
@@ -897,37 +897,37 @@ script:
     name: msg-list-ediscovery-cases
     outputs:
     - contextPath: MsGraph.eDiscoveryCase.CaseId
-      description: 'The id of the eDiscovery case.'
+      description: The ID of the eDiscovery case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CaseStatus
-      description: 'The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. For details, see the following table.'
+      description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
       description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
-      description: 'The case description.'
+      description: The case description.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.DisplayName
-      description: 'The case name.'
+      description: The case name.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ExternalId
-      description: 'The external case number for customer reference.'
+      description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
       description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName
-      description: 'The user who closed the case.'
+      description: The user who closed the case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedBy.User.DisplayName
-      description: 'The user who last modified the case.'
+      description: The user who last modified the case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ClosedDateTime
       description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -940,36 +940,36 @@ script:
     name: msg-create-ediscovery-custodian
     outputs:
     - contextPath: MsGraph.eDiscoveryCustodian.CreatedDateTime
-      description: 'Date and time when the custodian was added to the case.'
+      description: Date and time when the custodian was added to the case.
       type: Date
     - contextPath: MsGraph.eDiscoveryCustodian.CustodianId
-      description: 'The ID for the custodian in the specified case. Read-only.'
+      description: The ID for the custodian in the specified case. Read-only.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.CustodianStatus
-      description: 'Status of the custodian. Possible values are: active, released.'
+      description: Status of the custodian. Possible values are: active, released.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.DisplayName
-      description: 'Display name of the custodian.'
+      description: Display name of the custodian.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.Email
-      description: 'Email address of the custodian.'
+      description: Email address of the custodian.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.HoldStatus
       description: 'The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.LastModifiedDateTime
-      description: 'Date and time the custodian object was last modified.'
+      description: Date and time the custodian object was last modified.
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case. If provided only this id will be returned.
+    - description: The ID of the custodian on the given eDiscovery case. If provided, only this ID will be returned.
       isArray: false
       name: custodian_id
       required: false
-    - description: Number of total results to return. Default is 50.
+    - description: Number of total results to return. 
       isArray: false
       name: limit
       required: false
@@ -987,35 +987,35 @@ script:
     name: msg-list-ediscovery-custodians
     outputs:
     - contextPath: MsGraph.eDiscoveryCustodian.CreatedDateTime
-      description: 'Date and time when the custodian was added to the case.'
+      description: Date and time when the custodian was added to the case.
       type: Date
     - contextPath: MsGraph.eDiscoveryCustodian.CustodianId
-      description: 'The ID for the custodian in the specified case. Read-only.'
+      description: The ID for the custodian in the specified case. Read-only.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.CustodianStatus
       description: 'Status of the custodian. Possible values are: active, released.'
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.DisplayName
-      description: 'Display name of the custodian.'
+      description: Display name of the custodian.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.Email
-      description: 'Email address of the custodian.'
+      description: Email address of the custodian.
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.HoldStatus
-      description: 'The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial.'
+      description: 'The hold status of the custodian. The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.eDiscoveryCustodian.LastModifiedDateTime
-      description: 'Date and time the custodian object was last modified.'
+      description: Date and time the custodian object was last modified.
       type: Date
     - contextPath: MsGraph.eDiscoveryCustodian.ReleasedDateTime
-      description: 'Date and time the custodian was released from the case.'
+      description: Date and time the custodian was released from the case.
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
@@ -1023,11 +1023,11 @@ script:
     execution: false
     name: msg-release-ediscovery-custodian
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
@@ -1035,11 +1035,11 @@ script:
     execution: false
     name: msg-activate-ediscovery-custodian
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
@@ -1047,7 +1047,7 @@ script:
       isArray: false
       name: email
       required: true
-    - description: 'Specifies which sources are included in this group. Possible values are: mailbox, site.'
+    - description: Specifies which sources are included in this group.
       isArray: true
       name: included_sources
       required: true
@@ -1061,25 +1061,25 @@ script:
     name: msg-create-ediscovery-custodian-user-source
     outputs:
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName
-      description: 'The name of the application who created the userSource.'
+      description: The name of the application who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.ID
-      description: 'The id of the application who created the userSource.'
+      description: The ID of the application who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.DisplayName
-      description: 'The name of the user who created the userSource.'
+      description: The name of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.ID
-      description: 'The id of the user who created the userSource.'
+      description: The ID of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the userSource.'
+      description: Internet-style login name of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedDateTime
-      description: 'The date and time the userSource was created.'
+      description: The date and time the userSource was created.
       type: Date
     - contextPath: MsGraph.CustodianUserSource.DisplayName
-      description: 'The display name associated with the mailbox and site.'
+      description: The display name associated with the mailbox and site.
       type: String
     - contextPath: MsGraph.CustodianUserSource.Email
       description: Email address of the user's mailbox.
@@ -1091,18 +1091,18 @@ script:
       description: 'Specifies which sources are included in this group. Possible values are: mailbox, site.'
       type: String
     - contextPath: MsGraph.CustodianUserSource.UserSourceId
-      description: 'The ID of the userSource. This is not the ID of the actual group.'
+      description: The ID of the userSource. This is not the ID of the actual group.
       type: String
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
-    - description: URL of the site; for example, https://contoso.sharepoint.com/sites/HumanResources.
+    - description: URL of the site, for example, https://contoso.sharepoint.com/sites/HumanResources.
       isArray: false
       name: site
       required: true
@@ -1111,46 +1111,46 @@ script:
     name: msg-create-ediscovery-custodian-site-source
     outputs:
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName
-      description: 'The name of the application who created the sieSource.'
+      description: The name of the application who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.ID
-      description: 'The id of the application who created the sieSource.'
+      description: The ID of the application who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName
-      description: 'The name of the user who created the sieSource.'
+      description: The name of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.ID
-      description: 'The id of the user who created the sieSource.'
+      description: The ID of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the siteSource.'
+      description: Internet-style login name of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedDateTime
-      description: 'The date and time the siteSource was created.'
+      description: The date and time the siteSource was created.
       type: Date
     - contextPath: MsGraph.CustodianSiteSource.DisplayName
-      description: 'The display name of the siteSource. This will be the name of the SharePoint site.'
+      description: The display name of the siteSource. This will be the name of the SharePoint site.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.HoldStatus
       description: 'The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.CustodianSiteSource.SiteSourceId
-      description: 'The ID of the siteSource.'
+      description: The ID of the siteSource.
       type: String
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
-    - description: The id of the userSource. If provided only this id will be returned.
+    - description: The ID of the userSource. If provided, only this ID will be returned.
       isArray: false
       name: user_source_id
       required: false
-    - description: Number of total results to return. Default is 50.
+    - description: Number of total results to return. 
       isArray: false
       name: limit
       required: false
@@ -1168,25 +1168,25 @@ script:
     name: msg-list-ediscovery-custodian-user-sources
     outputs:
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName
-      description: 'The name of the application who created the userSource.'
+      description: The name of the application who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.ID
-      description: 'The id of the application who created the userSource.'
+      description: The ID of the application who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.DisplayName
-      description: 'The name of the user who created the userSource.'
+      description: The name of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.ID
-      description: 'The id of the user who created the userSource.'
+      description: The ID of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the userSource.'
+      description: Internet-style login name of the user who created the userSource.
       type: String
     - contextPath: MsGraph.CustodianUserSource.CreatedDateTime
-      description: 'The date and time the userSource was created.'
+      description: The date and time the userSource was created.
       type: Date
     - contextPath: MsGraph.CustodianUserSource.DisplayName
-      description: 'The display name associated with the mailbox and site.'
+      description: The display name associated with the mailbox and site.
       type: String
     - contextPath: MsGraph.CustodianUserSource.Email
       description: Email address of the user's mailbox.
@@ -1201,22 +1201,22 @@ script:
       description: The URL of the user's OneDrive for Business site. Read-only.
       type: String
     - contextPath: MsGraph.CustodianUserSource.UserSourceId
-      description: 'The ID of the userSource. This is not the ID of the actual group.'
+      description: The ID of the userSource. This is not the ID of the actual group.
       type: String
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the custodian on the given eDiscovery case.
+    - description: The ID of the custodian on the given eDiscovery case.
       isArray: false
       name: custodian_id
       required: true
-    - description: The id of the siteSource. If provided only this id will be returned.
+    - description: The ID of the siteSource. If provided, only this ID will be returned.
       isArray: false
       name: site_source_id
       required: false
-    - description: Number of total results to return. Default is 50.
+    - description: Number of total results to return. 
       isArray: false
       name: limit
       required: false
@@ -1234,47 +1234,47 @@ script:
     name: msg-list-ediscovery-custodian-site-sources
     outputs:
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName
-      description: 'The name of the application who created the sieSource.'
+      description: The name of the application who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.ID
-      description: 'The id of the application who created the sieSource.'
+      description: The ID of the application who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName
-      description: 'The name of the user who created the sieSource.'
+      description: The name of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.ID
-      description: 'The id of the user who created the sieSource.'
+      description: The ID of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the siteSource.'
+      description: Internet-style login name of the user who created the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.CreatedDateTime
-      description: 'The date and time the siteSource was created.'
+      description: The date and time the siteSource was created.
       type: Date
     - contextPath: MsGraph.CustodianSiteSource.DisplayName
-      description: 'The display name of the siteSource. This will be the name of the SharePoint site.'
+      description: The display name of the siteSource. This will be the name of the SharePoint site.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.HoldStatus
       description: 'The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.CustodianSiteSource.SiteSourceId
-      description: 'The ID of the siteSource.'
+      description: The ID of the siteSource.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.Site.ID
-      description: 'The unique identifier of the item. Read-only.'
+      description: The unique identifier of the item. Read-only.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.Site.WebUrl
-      description: 'URL that displays the item in the browser. Read-only.'
+      description: URL that displays the item in the browser. Read-only.
       type: String
     - contextPath: MsGraph.CustodianSiteSource.Site.CreatedDate
-      description: 'The date and time the siteSource was created.'
+      description: The date and time the siteSource was created.
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: URL of the site; for example, https://contoso.sharepoint.com/sites/HumanResources.
+    - description: URL of the site, for example, https://contoso.sharepoint.com/sites/HumanResources.
       isArray: false
       name: site
       required: false
@@ -1287,36 +1287,36 @@ script:
     name: msg-create-ediscovery-non-custodial-data-source
     outputs:
     - contextPath: MsGraph.NoncustodialDataSource.CreatedDateTime
-      description: 'Created date and time of the nonCustodialDataSource.'
+      description: Created date and time of the nonCustodialDataSource.
       type: Date
     - contextPath: MsGraph.NoncustodialDataSource.DataSourceId
-      description: 'Unique identifier of the nonCustodialDataSource.'
+      description: Unique identifier of the nonCustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.DataSourceStatus
       description: 'Latest status of the nonCustodialDataSource. Possible values are: Active, Released.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.DisplayName
-      description: 'Display name of the noncustodialDataSource.'
+      description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
       description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
-      description: 'Last modified date and time of the nonCustodialDataSource.'
+      description: Last modified date and time of the nonCustodialDataSource.
       type: Date
     - contextPath: MsGraph.NoncustodialDataSource.ReleasedDateTime
-      description: 'Date and time that the nonCustodialDataSource was released from the case.'
+      description: Date and time that the nonCustodialDataSource was released from the case.
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the dataSource. If provided only this id will be returned.
+    - description: The ID of the dataSource. If provided, only this ID will be returned.
       isArray: false
       name: data_source_id
       required: false
-    - description: The max number of results to return. Default is 50.
+    - description: The maximum number of results to return. 
       isArray: false
       name: limit
       required: false
@@ -1333,59 +1333,59 @@ script:
     name: msg-list-ediscovery-non-custodial-data-sources
     outputs:
     - contextPath: MsGraph.NoncustodialDataSource.CreatedDateTime
-      description: 'Created date and time of the nonCustodialDataSource.'
+      description: Created date and time of the nonCustodialDataSource.
       type: Date
     - contextPath: MsGraph.NoncustodialDataSource.DataSourceId
-      description: 'Unique identifier of the nonCustodialDataSource.'
+      description: Unique identifier of the nonCustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.DataSourceStatus
       description: 'Latest status of the nonCustodialDataSource. Possible values are: Active, Released.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.DisplayName
-      description: 'Display name of the noncustodialDataSource.'
+      description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
       description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
-      description: 'Last modified date and time of the nonCustodialDataSource.'
+      description: Last modified date and time of the nonCustodialDataSource.
       type: Date
     - contextPath: MsGraph.NoncustodialDataSource.ReleasedDateTime
-      description: 'Date and time that the nonCustodialDataSource was released from the case.'
+      description: Date and time that the nonCustodialDataSource was released from the case.
       type: Date
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: A comma seperated list of custodians ids to apply a hold to.
+    - description: A comma-separated list of custodians IDs to apply a hold to.
       isArray: true
       name: custodian_id
       required: true
     description: |-
       Start the process of applying hold on eDiscovery custodians.
       Available return statuses: 
-      notApplied - The custodian is not on Hold (all sources in it are not on hold).
-      applied - The custodian is on Hold (all sources are on hold).
-      applying - The custodian is in applying hold state (applyHold operation triggered).
+      notApplied - The custodian is not on hold (all sources in it are not on hold).
+      applied - The custodian is on hold (all sources are on hold).
+      applying - The custodian is in applying the hold state (applyHold operation triggered).
       removing - The custodian is in removing the hold state(removeHold operation triggered).
-      partial - The custodian is in mixed state where some sources are on hold and some not on hold or error state.
+      partial - The custodian is in a mixed state where some sources are on hold and some not on hold or error state.
     execution: false
     name: msg-apply-hold-ediscovery-custodian
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: A comma seperated list of custodians ids to remove a hold from.
+    - description: A comma-separated list of custodians IDs to remove a hold from.
       isArray: true
       name: custodian_id
       required: true
-    description: Start the process of removing hold from eDiscovery custodians.
+    description: Start the process of removing a hold from eDiscovery custodians.
     execution: false
     name: msg-remove-hold-ediscovery-custodian
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
@@ -1397,7 +1397,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: The query string used for the search. The query string in KQL (Keyword Query Language) format. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
+    - description: The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
       isArray: false
       name: content_query
       required: false
@@ -1420,44 +1420,44 @@ script:
       description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
-      description: 'Name of the application who created the eDiscovery search.'
+      description: Name of the application who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.ID
-      description: 'ID of the application who created the eDiscovery search.'
+      description: ID of the application who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName
-      description: 'Name of the user who created the eDiscovery search.'
+      description: Name of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.ID
-      description: 'ID of the user who created the eDiscovery search.'
+      description: ID of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the eDiscovery search.'
+      description: Internet-style login name of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedDateTime
-      description: 'The date and time the eDiscovery search was created.'
+      description: The date and time the eDiscovery search was created.
       type: Date
     - contextPath: MsGraph.eDiscoverySearch.DataSourceScopes
       description: 'When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.'
       type: String
     - contextPath: MsGraph.eDiscoverySearch.Description
-      description: 'The description of the eDiscovery search.'
+      description: The description of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.DisplayName
-      description: 'The display name of the eDiscovery search.'
+      description: The display name of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
       description: ''
       type: Date
     - contextPath: MsGraph.eDiscoverySearch.SearchId
-      description: 'The ID for the eDiscovery search.'
+      description: The ID for the eDiscovery search.
       type: String
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the eDiscovery search.
+    - description: The ID of the eDiscovery search.
       isArray: false
       name: search_id
       required: true
@@ -1469,7 +1469,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: The query string used for the search. The query string in KQL (Keyword Query Language) format. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
+    - description: The query string used for the search. The format of the query string is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
       isArray: false
       name: content_query
       required: false
@@ -1492,11 +1492,11 @@ script:
       isArray: false
       name: case_id
       required: true
-    - description: The id of the eDiscovery search. If provided only this id will be returned.
+    - description: The ID of the eDiscovery search. If provided, only this ID will be returned.
       isArray: false
       name: search_id
       required: false
-    - description: The max number of results to return. Default is 50.
+    - description: The maximum number of results to return. 
       isArray: false
       name: limit
       required: false
@@ -1514,62 +1514,62 @@ script:
     name: msg-list-ediscovery-searchs
     outputs:
     - contextPath: MsGraph.eDiscoverySearch.ContentQuery
-      description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
-      description: 'Name of the application who created the eDiscovery search.'
+      description: Name of the application who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.ID
-      description: 'ID of the application who created the eDiscovery search.'
+      description: ID of the application who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName
-      description: 'Name of the user who created the eDiscovery search.'
+      description: Name of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.ID
-      description: 'ID of the user who created the eDiscovery search.'
+      description: ID of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who created the eDiscovery search.'
+      description: Internet-style login name of the user who created the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedDateTime
-      description: 'The date and time the eDiscovery search was created.'
+      description: The date and time the eDiscovery search was created.
       type: Date
     - contextPath: MsGraph.eDiscoverySearch.DataSourceScopes
       description: 'When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.'
       type: String
     - contextPath: MsGraph.eDiscoverySearch.Description
-      description: 'The description of the eDiscovery search.'
+      description: The description of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.DisplayName
-      description: 'The display name of the eDiscovery search.'
+      description: The display name of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.SearchId
-      description: 'The ID for the eDiscovery search.'
+      description: The ID for the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
-      description: 'The last date and time the eDiscovery search was modified.'
+      description: The last date and time the eDiscovery search was modified.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.Application.DisplayName
-      description: 'Name of the application who last modified the eDiscovery search.'
+      description: Name of the application who last modified the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.Application.ID
-      description: 'ID of the application who last modified the eDiscovery search.'
+      description: ID of the application who last modified the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.DisplayName
-      description: 'Name of the user who last modified the eDiscovery search.'
+      description: Name of the user who last modified the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.ID
-      description: 'ID of the user who last modified the eDiscovery search.'
+      description: ID of the user who last modified the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.UserPrincipalName
-      description: 'Internet-style login name of the user who last modified the eDiscovery search.'
+      description: Internet-style login name of the user who last modified the eDiscovery search.
       type: String
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the eDiscovery search.
+    - description: The ID of the eDiscovery search.
       isArray: false
       name: search_id
       required: false
@@ -1577,22 +1577,22 @@ script:
     execution: true
     name: msg-delete-ediscovery-search
   - arguments:
-    - description: The id of the eDiscovery case.
+    - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    - description: The id of the eDiscovery search.
+    - description: The ID of the eDiscovery search.
       isArray: false
       name: search_id
       required: true
-    - description: The id of the eDiscovery search.
+    - description: The ID of the eDiscovery search.
       isArray: false
       name: purge_type
       required: false
       auto: PREDEFINED
       predefined:
       - permanentlyDelete
-    - description: The id of the eDiscovery search.
+    - description: The ID of the eDiscovery search.
       isArray: false
       name: purge_areas
       required: false
