@@ -103,7 +103,10 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Comma separated query (e.g., field1=value1,field2=value2)
+      description: Custom fields for incident creation. Comma sparated query or custom-fields-separator sparated query. (e.g., field1=value1,field2=value2).
+    - name: custom-fields-separator
+      description: A custom delimeter to use for the custom-fields, dont use '=' as a delimiter.
+      defaultValue: ','
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
