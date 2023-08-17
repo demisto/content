@@ -1,0 +1,31 @@
+{
+  "type": "bundle",
+  "id": "bundle--0e1f27a8-8f16-423b-a344-9640568b85fd",
+  "objects": [
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--07b5f0de-cdb7-4572-8d12-e9e4ead832f8",
+      "created": "2023-09-21T13:42:45.053437Z",
+      "modified": "2023-09-21T13:42:45.053437Z",
+      "name": "Malicious IP",
+      "pattern": "[ipv4-addr:value = '1.2.3.4']",
+      "pattern_type": "stix",
+      "pattern_version": "2.1",
+      "valid_from": "2023-09-21T13:42:45.053437Z"
+    },
+    {
+      "type": "report",
+      "spec_version": "2.1",
+      "id": "report--3aae43d9-eae7-4423-bc13-83f81ccf82a2",
+      "created": "2023-09-21T13:42:45.057114Z",
+      "modified": "2023-09-21T13:42:45.057114Z",
+      "name": "My Report",
+      "description": "This is a report.",
+      "published": "2023-09-06T20:03:00Z",
+      "object_refs": [
+        "indicator--07b5f0de-cdb7-4572-8d12-e9e4ead832f8"
+      ]
+    }
+  ]
+}
