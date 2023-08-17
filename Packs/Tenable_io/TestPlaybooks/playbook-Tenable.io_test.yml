@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f719c97e-827c-4b3a-8d90-15d4d944de7f
+    taskid: 2a8ea8d7-fc77-4104-8059-4de9874c0fe7
     type: start
     task:
-      id: f719c97e-827c-4b3a-8d90-15d4d944de7f
+      id: 2a8ea8d7-fc77-4104-8059-4de9874c0fe7
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b4be35a2-c6c2-43f0-80df-cf78f23b2921
+    taskid: e5b07211-3c08-4203-8828-b4a8449d948b
     type: regular
     task:
-      id: b4be35a2-c6c2-43f0-80df-cf78f23b2921
+      id: e5b07211-3c08-4203-8828-b4a8449d948b
       version: -1
       name: tenable-io-list-scans
       description: Retrive scans from the Tenable platform.
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b823f1ef-0065-4698-882a-f888eac8b9aa
+    taskid: 15756edb-296a-4c16-8459-6b8947f49f5a
     type: regular
     task:
-      id: b823f1ef-0065-4698-882a-f888eac8b9aa
+      id: 15756edb-296a-4c16-8459-6b8947f49f5a
       version: -1
       name: tenable-io-get-scan-status
       description: 'Check the status of a specific scan using its ID. The status can
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 25d1d634-916b-49a4-85b1-f78ed2aa9f90
+    taskid: e8e416e2-87d8-481c-81a1-7067f6ab1d71
     type: regular
     task:
-      id: 25d1d634-916b-49a4-85b1-f78ed2aa9f90
+      id: e8e416e2-87d8-481c-81a1-7067f6ab1d71
       version: -1
       name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 207d061b-ea1f-4c0e-8d49-de23521a1e8e
+    taskid: ccd80e24-0b34-4387-8c14-a0439031f6b3
     type: regular
     task:
-      id: 207d061b-ea1f-4c0e-8d49-de23521a1e8e
+      id: ccd80e24-0b34-4387-8c14-a0439031f6b3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 31fc1025-789c-4d47-811b-1b9ff3b6dc23
+    taskid: 97d4cdbe-354d-4cf5-815e-526cc33af179
     type: regular
     task:
-      id: 31fc1025-789c-4d47-811b-1b9ff3b6dc23
+      id: 97d4cdbe-354d-4cf5-815e-526cc33af179
       version: -1
       name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
@@ -222,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 002b1bc8-8bf1-4852-8db3-50acdbf66267
+    taskid: c3ea6b10-1adb-4539-85e1-f897d2a1ccfe
     type: regular
     task:
-      id: 002b1bc8-8bf1-4852-8db3-50acdbf66267
+      id: c3ea6b10-1adb-4539-85e1-f897d2a1ccfe
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
@@ -260,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c1497579-2385-45af-8b68-6187baad6227
+    taskid: 09a70694-12f6-44e1-86b3-76371d172e36
     type: regular
     task:
-      id: c1497579-2385-45af-8b68-6187baad6227
+      id: 09a70694-12f6-44e1-86b3-76371d172e36
       version: -1
       name: Tenable-io-export-assets
       description: Retrieves details for the specified asset to include custom attributes.
@@ -297,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 4d6e868c-7d5f-4d0c-80ab-9178c72a2b8b
+    taskid: b0488d35-5a4b-4b3e-858d-43c54d28a888
     type: regular
     task:
-      id: 4d6e868c-7d5f-4d0c-80ab-9178c72a2b8b
+      id: b0488d35-5a4b-4b3e-858d-43c54d28a888
       version: -1
       name: Tenable-io-export-vulnerability
       description: Retrieves details for the specified asset to include custom attributes.
@@ -332,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f759ff5e-828d-48c6-8d5a-332fc4527923
+    taskid: b1353dec-47ad-4833-8ae8-fd2942d5d376
     type: condition
     task:
-      id: f759ff5e-828d-48c6-8d5a-332fc4527923
+      id: b1353dec-47ad-4833-8ae8-fd2942d5d376
       version: -1
       name: Verify vulnerabilities
       type: condition
@@ -370,10 +370,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fcc96894-3cc8-4b31-8bd3-b08aef458cde
+    taskid: e9b3a100-5e5b-428c-877a-26dd3fb8b942
     type: condition
     task:
-      id: fcc96894-3cc8-4b31-8bd3-b08aef458cde
+      id: e9b3a100-5e5b-428c-877a-26dd3fb8b942
       version: -1
       name: Verify assets
       type: condition
@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f00cabbd-de80-45b2-890d-61c82f8dcabf
+    taskid: 1ce016d5-80af-4005-8dbf-8785b39c121e
     type: title
     task:
-      id: f00cabbd-de80-45b2-890d-61c82f8dcabf
+      id: 1ce016d5-80af-4005-8dbf-8785b39c121e
       version: -1
       name: Done
       type: title
@@ -435,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ee1b63da-40f0-4102-86a2-cf36557f9c89
+    taskid: e06b064b-c26d-4125-8ee3-c2111dc11878
     type: regular
     task:
-      id: ee1b63da-40f0-4102-86a2-cf36557f9c89
+      id: e06b064b-c26d-4125-8ee3-c2111dc11878
       version: -1
       name: Run get-scan-history Command
       description: Lists the individual runs of the specified scan.
@@ -453,7 +453,7 @@ tasks:
       excludeRollover:
         simple: "true"
       limit:
-        simple: "1"
+        simple: "20"
       scanId:
         complex:
           root: TenableIO.Scan
@@ -495,10 +495,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9c7d1767-1f11-428a-8253-7105527f8083
+    taskid: 4d2d7fbd-eb29-42b7-84e6-b692d3e3ba4e
     type: regular
     task:
-      id: 9c7d1767-1f11-428a-8253-7105527f8083
+      id: 4d2d7fbd-eb29-42b7-84e6-b692d3e3ba4e
       version: -1
       name: Run list-scan-filters Command
       description: Lists the filtering, sorting, and pagination capabilities available
@@ -528,10 +528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 0883f54e-9123-4368-835d-f6223420de1e
+    taskid: cc10f48a-204b-4a51-8e71-69ded5e54112
     type: regular
     task:
-      id: 0883f54e-9123-4368-835d-f6223420de1e
+      id: cc10f48a-204b-4a51-8e71-69ded5e54112
       version: -1
       name: Run export-scan Command
       description: Export and download a scan report.
@@ -548,9 +548,43 @@ tasks:
       format:
         simple: CSV
       historyId:
-        simple: ${TenableIO.ScanHistory.id}
+        complex:
+          root: TenableIO.ScanHistory
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableIO.ScanHistory.status
+                iscontext: true
+              right:
+                value:
+                  simple: completed
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       historyUuid:
-        simple: ${TenableIO.ScanHistory.scan_uuid}
+        complex:
+          root: TenableIO.ScanHistory
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableIO.ScanHistory.status
+                iscontext: true
+              right:
+                value:
+                  simple: completed
+          accessor: scan_uuid
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       scanId:
         complex:
           root: TenableIO.Scan
@@ -588,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fe841822-b4d5-4598-8c4d-115c7308d9be
+    taskid: 0679e8ba-cb2e-4050-8c24-39861f642962
     type: condition
     task:
-      id: fe841822-b4d5-4598-8c4d-115c7308d9be
+      id: 0679e8ba-cb2e-4050-8c24-39861f642962
       version: -1
       name: Verify list scan filters
       type: condition
