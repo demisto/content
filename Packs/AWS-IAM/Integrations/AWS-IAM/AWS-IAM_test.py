@@ -470,3 +470,9 @@ def test_list_attached_role_policies(mocker):
             ''
         ))
     assert result.raw_response == response
+    assert result.to_context()['Contents'] == {
+        'AttachedPolicies': [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1'},
+                             {'PolicyName': 'policy2', 'PolicyArn': 'Arn2'}],
+        'IsTruncated': True,
+        'Marker': 'some_marker'
+    }
