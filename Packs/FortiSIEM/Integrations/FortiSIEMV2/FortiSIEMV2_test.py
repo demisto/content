@@ -689,7 +689,7 @@ def test_get_related_events_for_fetch_command(events_mock_response, expected_res
     """
     Fetching events per incident.
     Given:
-        - Incident ID wit/out events.
+        - Incident ID with/without events.
     When:
         - get_related_events_for_fetch_command is running.
     Then:
