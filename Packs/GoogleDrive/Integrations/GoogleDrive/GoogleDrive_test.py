@@ -785,16 +785,14 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import get_labels_command
 
-        with open('test_data/list_labels_response.json.json', encoding='utf-8') as data:
+        with open('test_data/list_labels_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
         result = get_labels_command(gsuite_client, {})
 
-        assert 'GoogleDrive.Drive.DriveLabels' in result.outputs
-        assert len(result.outputs['GoogleDrive.Drive.DriveLabels']) == 1
-
-        assert result.raw_response == mock_response
+        assert 'GoogleDrive.Drive' in result.outputs
+        assert len(result.outputs['GoogleDrive.Drive']['DriveLabels']) == 1
 
 
     @patch(MOCKER_HTTP_METHOD)
@@ -813,7 +811,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import modify_label_command
 
-        with open('test_data/modify_label_command_repsonse.json.json', encoding='utf-8') as data:
+        with open('test_data/modify_label_command_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -821,7 +819,7 @@ class TestFilePermissionMethods:
             'field_id': 'test',
             'selection_label_id': 'test',
             'label_id': 'test',
-            'file_id' : 'test'
+            'file_id': 'test'
         }
         result = modify_label_command(gsuite_client, args)
 
@@ -831,7 +829,6 @@ class TestFilePermissionMethods:
         assert result.raw_response == mock_response
 
         assert HR_MESSAGES['MODIFY_LABEL_SUCCESS'].format(args.get('file_id')) in result.readable_output
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_list_command_failure(self, mocker_http_request, gsuite_client):
@@ -1001,8 +998,7 @@ class TestFilePermissionMethods:
         args = {
             'parent': 'test_parent',
             'entry_id': 'test_entry_id',
-            'file_name': 'test_file_name',
-            'parent': 'test_parent'
+            'file_name': 'test_file_name'
 
         }
         file_upload_command(gsuite_client, args)

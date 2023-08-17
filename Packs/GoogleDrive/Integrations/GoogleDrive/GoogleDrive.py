@@ -41,6 +41,7 @@ HR_MESSAGES: dict[str, str] = {
     'EXCEPTION_GENERIC': 'Exception handling a {} request: {}',
     'MODIFY_LABEL_SUCCESS': 'Modify label successfully assigned to {}.',
     'GET_LABEL_SUCCESS': 'Label successfully retrieved.',
+    'GET_LABELS_SUCCESS': 'Labels successfully retrieved.',
 }
 
 SCOPES: dict[str, list[str]] = {
@@ -152,7 +153,7 @@ OUTPUT_PREFIX: dict[str, str] = {
     'GOOGLE_DRIVE_FILE_PERMISSION_HEADER': 'GoogleDrive.FilePermission',
     'FILE_PERMISSION': 'FilePermission',
 
-    'LABELS': 'DriveLabels'
+    'LABELS': 'GoogleDrive.Labels'
 
 }
 
@@ -1240,9 +1241,12 @@ def modify_label_command(client: 'GSuiteClient', args: dict[str, str]) -> Comman
                                   response,
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
+    outputs_context = {
+        OUTPUT_PREFIX['LABELS']: response
+    }
 
     return CommandResults(
-        outputs=response,
+        outputs=outputs_context,
         readable_output=table_hr_md,
     )
 
@@ -1256,13 +1260,22 @@ def get_file_labels_command(client: 'GSuiteClient', args: dict[str, str]) -> Com
 
     response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
 
+    outputs_context = {
+        OUTPUT_PREFIX['LABELS']: response,
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: {
+                'id': args.get('file_id'),
+            },
+        }
+    }
+
     table_hr_md = tableToMarkdown(HR_MESSAGES['GET_LABEL_SUCCESS'].format(args.get('file_id')),
-                                  response,
+                                  response['labels'],
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
 
     return CommandResults(
-        outputs=response,
+        outputs=outputs_context,
         readable_output=table_hr_md,
     )
 
@@ -1280,11 +1293,13 @@ def get_labels_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandR
         OUTPUT_PREFIX['LABELS']: response
     }
 
-    outputs: dict = {
-        OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: outputs_context
-    }
+    table_hr_md = tableToMarkdown(HR_MESSAGES['GET_LABELS_SUCCESS'],
+                                  response['labels'],
+                                  headerTransform=pascalToSpace,
+                                  removeNull=False)
     return CommandResults(
-        outputs=outputs
+        readable_output=table_hr_md,
+        outputs=outputs_context
     )
 
 
