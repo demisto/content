@@ -1,0 +1,394 @@
+id: Breach Investigation-SpyCloud
+version: -1
+name: Breach Investigation-SpyCloud
+description: SpyCloud Breach playbook gets executed on the occurrence of the incident SpyCloud Breach Data type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 07e052c5-4aac-44f1-81ce-dc2a6e8ac9db
+    type: start
+    task:
+      id: 07e052c5-4aac-44f1-81ce-dc2a6e8ac9db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: aa9590f2-bfae-4076-867c-720a52396531
+    type: condition
+    task:
+      id: aa9590f2-bfae-4076-867c-720a52396531
+      version: -1
+      name: Check Active User
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudemailusername
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudemailusername
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 68b38d0b-6101-4dbe-8713-6329f2a72ed2
+    type: condition
+    task:
+      id: 68b38d0b-6101-4dbe-8713-6329f2a72ed2
+      version: -1
+      name: 'Check Password '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 977d0213-777c-4fe1-863b-d2f7a359d5a5
+    type: condition
+    task:
+      id: 977d0213-777c-4fe1-863b-d2f7a359d5a5
+      version: -1
+      name: Raise Password Reset
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2e920f04-b488-488b-8696-918fc7a764bd
+    type: regular
+    task:
+      id: 2e920f04-b488-488b-8696-918fc7a764bd
+      version: -1
+      name: setIncident
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comment:
+        simple: Password Reset Done
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a7bba8c4-6d24-4453-8059-674e4ae8cfe5
+    type: title
+    task:
+      id: a7bba8c4-6d24-4453-8059-674e4ae8cfe5
+      version: -1
+      name: Exit Playbook
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 435679bf-6e10-4ddf-8f64-b7facfa37a99
+    type: title
+    task:
+      id: 435679bf-6e10-4ddf-8f64-b7facfa37a99
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 64ddcdcb-2d76-468f-8b48-a02565433432
+    type: condition
+    task:
+      id: 64ddcdcb-2d76-468f-8b48-a02565433432
+      version: -1
+      name: Check Password Length
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: StringLength.Result
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d1cb0f1e-9072-4fea-8265-582307d96598
+    type: regular
+    task:
+      id: d1cb0f1e-9072-4fea-8265-582307d96598
+      version: -1
+      name: StringLength
+      description: Returns the length of  the string passed as argument
+      scriptName: StringLength
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      str:
+        simple: ${incident.spycloudpasswordplaintext}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 90e3e0d1-ec15-4faf-84e8-b660425ba338
+    type: title
+    task:
+      id: 90e3e0d1-ec15-4faf-84e8-b660425ba338
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.83
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

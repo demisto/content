@@ -1,0 +1,82 @@
+comment: This Script execute spycloud-watchlist-command and create incident objects.
+commonfields:
+  id: SpycloudWatchlistData
+  version: -1
+name: SpycloudWatchlistData
+args:
+- name: since
+  defaultValue: -1days
+  description: This parameter allows you to define the starting point for a date range query on the spycloud_publish_date field. Example:-  YYYY-MM-DD, -1days
+- name: until
+  defaultValue: now
+  description: |-
+    This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
+     Example:-  YYYY-MM-DD, -1days
+- name: since_modification_date
+  defaultValue: -1days
+  description: This parameter allows you to define the starting point for a date range query on when an already published record was modified (record_modification_date). Example:-  YYYY-MM-DD, -1days
+- name: until_modification_date
+  defaultValue: now
+  description: |-
+    This parameter allows you to define the ending point for a date range query on the when an already published record was modified (record_modification_date).
+- name: type
+  auto: PREDEFINED
+  description: This parameter lets you filter results by type. The allowed values are 'corporate' for corporate records, and 'infected' for infected user records (from botnet data). If no value has been provided the API function will, by default, return all record types.
+  predefined:
+  - corporate
+  - infected
+- name: watchlist_type
+  auto: PREDEFINED
+  description: This parameters lets you filter results for only emails or only domains on your watchlist. If no value has been provided, the API will return all watchlist types.
+  predefined:
+  - domain
+  - email
+  - ip
+  - subdomain
+- name: severity
+  defaultValue: 20,25
+  description: |-
+    This parameter allows you to filter based on the numeric severity code.
+    Possible values are:
+    2 -> Email only severity. This record is part of an email-only list.
+    5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
+    20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
+    25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+- default: false
+  description: This parameter allows you to filter based on a particular breach source.
+  isArray: false
+  name: source_id
+  required: false
+- default: false
+  description: If hashing is enabled for your API key, you have the option to provide a 10 to 24 character, high entropy salt otherwise the pre-configured salt will be used.
+  isArray: false
+  name: salt
+  required: false
+  secret: false
+outputs:
+- contextPath: Watchlist.Data.type
+  description: Incident Type.
+  type: string
+- contextPath: Watchlist.Data.name
+  description: Name of the Incident.
+  type: string
+- contextPath: Watchlist.Data.rawJSON
+  description: Response object of watchlist command.
+  type: string
+- contextPath: Watchlist.Data.severity
+  description: Severity of the incident.
+  type: number
+- contextPath: Watchlist.Data.custom_fields
+  description: Custom fields of spycloud incidents.
+  type: string
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
