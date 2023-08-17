@@ -8791,7 +8791,7 @@ if 'requests' in sys.modules:
                 can vary)
 
             :type quote_params_via: ``callable``
-            :param quote_params_via: How to quote the params. By default, spaces are replaced with '+' and ‘/’ to %2F.
+            :param quote_params_via: How to quote the params. By default, spaces are replaced with '+' and ‘/’ to '%2F'.
             see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
 
             :return: Depends on the resp_type parameter
