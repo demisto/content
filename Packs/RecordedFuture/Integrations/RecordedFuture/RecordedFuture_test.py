@@ -1083,6 +1083,32 @@ class TestRFClient:
 
         assert response == mock_call_response
 
+    def test_submit_collective_insight(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'collective_insight'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {'response': {'data': 'collective insight response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.submit_detection_to_collective_insight()
+
+        mock_call.assert_called_once_with(url_suffix='/v2/collective-insights/detections')
+
+        assert response == mock_call_response
 
 class TestActions:
     def test_init(self, mocker):
@@ -1725,6 +1751,32 @@ class TestActions:
 
         result = actions.detection_rules_command()
         mock_get_detection_rules.assert_called_once_with()
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_collective_insight_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_collective_insight'
+
+        mock_submit_detection_to_collective_insight = mocker.patch.object(
+            client, 'submit_detection_to_collective_insight', return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.detection_rules_command()
+        mock_submit_detection_to_collective_insight.assert_called_once_with()
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         assert result == mock_process_result_actions_return_value
