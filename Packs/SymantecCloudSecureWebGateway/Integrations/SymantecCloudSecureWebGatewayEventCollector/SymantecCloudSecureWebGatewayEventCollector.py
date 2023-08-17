@@ -76,18 +76,31 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
         with ZipFile(BytesIO(response.content)) as outer_zip:
             for file in outer_zip.infolist():
                 if file.filename.lower().endswith(".gz"):
-                    with outer_zip.open(file) as nested_zip_file, gzip.open(
-                        nested_zip_file, "rb"
-                    ) as f:
-                        logs.extend(f.readlines())
+                    try:
+                        with outer_zip.open(file) as nested_zip_file, gzip.open(
+                            nested_zip_file, "rb"
+                        ) as f:
+                            logs.extend(f.readlines())
+                    except Exception as e:
+                        demisto.debug(
+                            f"Crashed at the stage of opening the internal files on {file.filename} file, Error: {e}"
+                        )
+                else:
+                    demisto.debug(
+                        f"One of the internal files is not of gzip type, file name is {file.filename}"
+                    )
     except BadZipFile as e:
-        demisto.debug(f"The external file type is not of type ZIP: Error: {e}")
+        demisto.debug(
+            f"The external file type is not of type ZIP, Error: {e}, the response.content is {BytesIO(response.content)}"
+        )
         pass
+    except Exception as e:
+        raise ValueError(f"There is no specific error for the crash, Error: {e}")
     return logs
 
 
 def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
-    return ("start_date" in last_run) and ("since" not in args)
+    return ("start_date" not in last_run) and ("since" not in args)
 
 
 def is_duplicate(
@@ -161,7 +174,9 @@ def get_events_command(
         "endDate": end_date,
         "token": last_run_model.token or "none",
     }
-    demisto.debug(f"start fetch from {start_date} to {end_date}")
+    demisto.debug(
+        f"start fetch from {start_date} to {end_date} with {last_run_model.token or 'none'}"
+    )
 
     status = "more"
     while status != "done":
@@ -169,14 +184,24 @@ def get_events_command(
             res = client.get_logs(params=params)
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 410:
+                demisto.debug(f"The token has expired: {e}")
                 token_expired = True
                 params["token"] = "none"
                 continue
+            elif e.res is not None and e.res.status_code == 423:
+                demisto.debug(f"API access is blocked: {e}")
+            elif e.res is not None and e.res.status_code == 429:
+                demisto.debug(f"Crashed on limit of api calls: {e}")
             raise e
 
         status, params["token"] = get_status_and_token_from_res(res)
-
+        demisto.debug(f"The status is {status}")
         if is_first_fetch:
+            demisto.debug(
+                "The current fetch is the first fetch, "
+                "the collector ignores all events that return from the api, "
+                "and will start collecting them from the next time onwards"
+            )
             continue
         logs.extend(extract_logs_from_response(res))
 
@@ -191,14 +216,24 @@ def get_events_command(
         last_run_model.events_suspected_duplicates or [],
     )
 
+    if time_of_last_fetched_event:
+        start_date_for_next_fetch = date_to_timestamp(
+            date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
+        )
+    else:
+        start_date_for_next_fetch = start_date
+
     new_last_run_model = LastRun(
-        start_date=str(end_date + 1),
-        token=params["token"],
+        start_date=str(start_date_for_next_fetch),
+        token=str(params["token"]),
         time_of_last_fetched_event=time_of_last_fetched_event,
         events_suspected_duplicates=events_suspected_duplicates,
     )
 
-    demisto.debug(f"End fetch from {start_date} to {end_date} with {len(logs)} logs")
+    demisto.debug(
+        f"End fetch from {start_date} to {end_date} with {len(events)} events,"
+        f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
+    )
     return events, new_last_run_model
 
 
@@ -244,9 +279,10 @@ def main() -> None:  # pragma: no cover
             should_push_events = True
             should_update_last_run = True
             last_run = demisto.getLastRun()
-            events, last_run = get_events_command(
+            events, last_run_model = get_events_command(
                 client, params, LastRun(**last_run), is_first_fetch(last_run, args)
             )
+            last_run = last_run_model._asdict()
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
