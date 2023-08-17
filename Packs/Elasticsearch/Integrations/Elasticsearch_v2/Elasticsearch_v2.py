@@ -57,7 +57,7 @@ RAW_QUERY = param.get('raw_query', '')
 FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
-TIME_METHOD = param.get('time_method', 'Simple-Date')
+TIME_METHOD = param.get('time_method', 'Timestamp-Milliseconds')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
@@ -886,6 +886,9 @@ def main():
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
                          '\nError message: {}'.format(demisto.command(), str(e)), error=e)
+        if 'failed to parse date field' in str(e):
+            return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
+                         error=e)
         return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=e)
 
 

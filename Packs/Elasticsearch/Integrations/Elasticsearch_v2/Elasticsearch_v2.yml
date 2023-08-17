@@ -67,7 +67,7 @@ configuration:
   advanced: true
   required: false
 - display: Time field type
-  defaultvalue: 'Simple-Date'
+  defaultvalue: 'Timestamp-Milliseconds'
   name: time_method
   type: 15
   options:
