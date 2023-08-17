@@ -138,16 +138,16 @@ validate-content-conf:
     expire_in: 30 days
     reports:
       junit:
-        - /builds/xsoar/content/artifacts/succeeded_tests.xml
+        - ${ARTIFACTS_FOLDER}/succeeded_tests.xml
     paths:
-      - /builds/xsoar/content/artifacts/succeeded_tests.xml
+      - ${ARTIFACTS_FOLDER}/succeeded_tests.xml
   script:
     - !reference [.download-demisto-conf]
-    - !reference [.create-release-notes-and-common-docs]
     - python ./Tests/scripts/produce_junit_report.py --output-path $ARTIFACTS_FOLDER/succeeded_tests.xml
     - job-done
 
 # FIXME
+#    - !reference [.create-release-notes-and-common-docs]
 #    - section_start "Create or update content graph" --collapsed
 #
 #    - echo "Updating the content graph"
