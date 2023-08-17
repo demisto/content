@@ -54,7 +54,7 @@ script:
     name: azure-risky-users-auth-start
   - description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
     name: azure-risky-users-auth-complete
-  - description: Reruns the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-risky-users-auth-reset
   - arguments:
     - auto: PREDEFINED
@@ -308,7 +308,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.49599
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

@@ -550,7 +550,7 @@ script:
     - contextPath: SixgillDarkfeed.Postid.external_reference
       description: Link to the IOC on Virustotal and an abstraction of the number of detections; MITRE ATT&CK tactics and techniques.
       type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.63753
+  dockerimage: demisto/sixgill:1.0.0.66910
   runonce: false
   script: '-'
   subtype: python3

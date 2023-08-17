@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import contextlib
 from CommonServerUserPython import *
 
-from typing import Any, Union
+from typing import Any
 from MicrosoftApiModule import *
 import urllib3
 
@@ -70,7 +70,8 @@ class AzureWAFClient:
             tenant_id=tenant_id,
             enc_key=enc_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-waf",
         )
 
         self.ms_client = MicrosoftClient(**client_args)
@@ -275,7 +276,7 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     Updates the policy if exists, otherwise creates a new policy.
     """
 
-    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: Union[str, dict]) -> None:
+    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
         """ A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
         if len(keys) == 1:
             base_dict[keys[0]] = value
@@ -467,7 +468,7 @@ def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
     top_md = []
     for subscription_id in subscription_ids:
         subscription_to_resource_groups_dict = {}
-        for subscription_id_key in subscription_id.keys():
+        for subscription_id_key in subscription_id:
             resource_groups_md = []
             for group_resource in subscription_id.get(subscription_id_key, {}):
                 resource_group_md = format_resource_group_dict(group_resource)
@@ -493,20 +494,13 @@ def resource_group_list_command(client: AzureWAFClient, **args) -> CommandResult
     limit = args.get('limit', 50)
     results = client.resource_group_list(subscription_ids, tag, limit)
     for res in results:
-        for key in res.keys():
+        for key in res:
             sub_dict = {key: res.get(key, {})}
             resource_groups.append(sub_dict)
     return CommandResults(readable_output=resourcegroups_to_md(resource_groups),
                           outputs=resource_groups,
                           outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.ResourceGroup',
                           raw_response=resource_groups)
-
-
-@logger
-def reset_auth(client: AzureWAFClient):
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-waf-auth-start** and **!azure-waf-auth-complete**.')
 
 
 @logger
@@ -529,6 +523,7 @@ def test_module(client, params):
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client, params)
         return 'ok'
+    return None
 
 
 ''' MAIN FUNCTION '''
@@ -544,7 +539,6 @@ def main() -> None:
         'azure-waf-auth-start': start_auth,
         'azure-waf-auth-complete': complete_auth,
         'azure-waf-auth-test': test_connection,
-        'azure-waf-auth-reset': reset_auth,
         'azure-waf-resource-group-list': resource_group_list_command,
     }
     params = demisto.params()
@@ -578,6 +572,8 @@ def main() -> None:
             return_results(generate_login_url(client.ms_client))
         elif command == 'azure-waf-subscriptions-list':
             return_results(subscriptions_list_command(client))
+        elif command == 'azure-waf-auth-reset':
+            return_results(reset_auth())
         else:
             return_results(demisto_commands[command](client, **args))
 

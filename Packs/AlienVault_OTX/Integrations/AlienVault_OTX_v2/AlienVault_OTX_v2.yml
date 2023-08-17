@@ -537,7 +537,7 @@ script:
     - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   type: python
