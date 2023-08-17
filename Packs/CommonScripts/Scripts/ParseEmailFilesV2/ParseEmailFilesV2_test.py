@@ -584,9 +584,20 @@ def test_smime_without_to_from_subject(mocker):
 
 
 def test_unknown_file_type(mocker):
+    """
+    Given:
+        Unknown file format
+    When:
+        Parsing the file
+    Then:
+        An error of "Unknown file format" is returned
+    """
+    file_type = "Unknown file format  last mounted by: 'paOX', created: Fri Nov 23 19:35:05 2068, last modified: Wed Feb 13 03:39:57 2097, block size: 1, number of blocks: 1, free blocks: 1"
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
     mocker.patch.object(demisto, 'results')
+    mocker.patch('ParseEmailFilesV2.extract_file_info', return_value=(file_type, 'path', 'unknown file example'))
+    gotexception = False
     try:
         main()
     except SystemExit:
@@ -594,3 +605,5 @@ def test_unknown_file_type(mocker):
     results = demisto.results.call_args[0][0]['Contents']
     assert gotexception
     assert 'Unknown file format:' in results
+
+
