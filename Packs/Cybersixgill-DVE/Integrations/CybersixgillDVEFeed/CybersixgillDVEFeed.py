@@ -1,4 +1,5 @@
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -14,7 +15,7 @@ from sixgill.sixgill_constants import FeedStream
 from sixgill.sixgill_utils import is_indicator
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ CONSTANTS """
 INTEGRATION_NAME = "Sixgil_DVE_Feed"

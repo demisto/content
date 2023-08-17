@@ -1,4 +1,5 @@
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -10,7 +11,7 @@ from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequ
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"

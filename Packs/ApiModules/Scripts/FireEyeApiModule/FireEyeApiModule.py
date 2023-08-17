@@ -1,7 +1,8 @@
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
