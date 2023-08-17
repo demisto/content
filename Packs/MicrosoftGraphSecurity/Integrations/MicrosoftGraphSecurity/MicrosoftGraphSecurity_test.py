@@ -500,7 +500,7 @@ def test_created_by_fields_to_hr():
     """
     assert created_by_fields_to_hr(
         {'Field1': 'val1', 'CreatedBy': {'User': {'DisplayName': 'Bob', 'UserPrincipalName': 'Frank'}}}) == \
-           {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
+        {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
 
 
 def test_list_ediscovery_search_command(mocker):
