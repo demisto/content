@@ -371,11 +371,11 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
 
     except Exception as e:
         # 429 error can only be raised when the Elasticsearch instance encountered an error
-        if '429' in str(e):
+        if '[429] Failed with error' in str(e):
             version = demisto.demistoVersion()
-            demisto.error('Encountered issue in Elastic Search query. Restarting container and trying again.')
             # NG + XSIAM can recover from a shutdown
             if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
+                demisto.error('Encountered issue in Elastic Search query. Restarting container and trying again.')
                 exit()
         demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
 
