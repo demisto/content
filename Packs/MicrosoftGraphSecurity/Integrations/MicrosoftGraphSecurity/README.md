@@ -934,7 +934,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Custodian with id 0af7ca2b84bc4cff930d5d301cc4caf3 Case was released from case with id 84abfff1-dd69-4559-8f4e-8225e0d505c5 successfully.
+>Custodian with id 0af7ca2b84bc4cff930d5d301cc4caf3 was released from case with id 84abfff1-dd69-4559-8f4e-8225e0d505c5 successfully.
 
 ### msg-create-ediscovery-custodian-site-source
 

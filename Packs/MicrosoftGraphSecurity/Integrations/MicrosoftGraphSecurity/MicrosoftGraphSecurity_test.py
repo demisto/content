@@ -6,7 +6,8 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
     list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
-    list_ediscovery_non_custodial_data_source_command
+    list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
+    release_ediscovery_custodian_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -565,3 +566,24 @@ def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
     assert '### Results:\n**No entries.**\n' == \
            list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
+
+
+def test_list_ediscovery_case_command(mocker):
+    raw_response = load_json("./test_data/list_cases_response.json")
+    mocker.patch.object(client_mocker, 'list_ediscovery_cases',
+                        return_value=raw_response)
+    results = list_ediscovery_case_command(client_mocker, {})
+    assert len(raw_response['value']) == len(results.outputs)
+    assert all(output['CreatedDateTime'] in results.readable_output for output in results.outputs)
+
+
+def test_activate_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'activate_edsicovery_custodian', return_value=None)
+    assert activate_ediscovery_custodian_command(client_mocker, {'case_id' : 'caseid', 'custodian_id' : 'custodian_id'})\
+               .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
+
+
+def test_release_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'release_edsicovery_custodian', return_value=None)
+    assert release_ediscovery_custodian_command(client_mocker, {'case_id' : 'caseid', 'custodian_id' : 'custodian_id'})\
+               .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'

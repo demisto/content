@@ -1048,7 +1048,7 @@ def release_ediscovery_custodian_command(client: MsGraphClient, args):
     """
     """
     client.release_edsicovery_custodian(args.get('case_id'), args.get('custodian_id'))
-    return CommandResults(readable_output=f'Custodian with id {args.get("custodian_id")} Case was released from '
+    return CommandResults(readable_output=f'Custodian with id {args.get("custodian_id")} was released from '
                                           f'case with id {args.get("case_id")} successfully.')
 
 
