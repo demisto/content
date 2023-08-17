@@ -6,7 +6,7 @@
         "Stamus Networks DoC": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "StamusFamily": {
+                "Threat Family Name": {
                     "simple": "family"
                 },
                 "StamusFamilyDescription": {
@@ -42,10 +42,10 @@
                 "StamusThreatLink": {
                     "simple": "threat_link"
                 },
-                "StamusTimestamp": {
+                "Start Time": {
                     "simple": "timestamp"
                 },
-                "StamusThreat": {
+                "Threat Name": {
                     "simple": "threat"
                 }
             }
