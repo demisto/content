@@ -1,28 +1,28 @@
 ### A transformer for "if else-if else" logic.
 
-This transformer simulates an *"if else-if else"* tree using a JSON provided in the ***conditions*** argument.
+<!-- This transformer simulates an *"if else-if else"* tree using a JSON provided in the ***conditions*** argument.
 The JSON should be list of dictionaries where all but the last have the keys "*condition*", which contains a boolean expression, and "return", which contains the value to return if "*condition*" is evaluated to be true. The last dictionary should have only the key "else" which is the value to return if all "*condition*"s were false.
 Context values can be added as variables in the *variables* argument using the `var = ${context.key}` syntax. Each variable assignment must be on it's own line.
-The ***"Get" value*** of the transformer can be retrieved using the keyword `VALUE`
+The ***"Get" value*** of the transformer can be retrieved using the keyword `VALUE` -->
 
 ### Example:
 ---
 
 ##### conditions:
 ```json
-[
-  {
-    "condition": "variable1 >= 5 and VALUE == 'Yes'",
-    "return": "a string"
-  },
-  {
-    "condition": "regex_match('\d+', VALUE)",
-    "return": 
-  },
-  {
-    "else": default_value
-  }
-]
+// [
+//   {
+//     "condition": "variable1 >= 5 and  == 'Yes'",
+//     "return": "a string"
+//   },
+//   {
+//     "condition": "regex_match('\d+', VALUE)",
+//     "return": 
+//   },
+//   {
+//     "else": default_value
+//   }
+// ]
 ```
 
 ##### flags:
@@ -65,14 +65,14 @@ case_insensitive,regex_dot_all,regex_multiline
 | Cortex XSOAR Version | 6.9.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Replaces any instance of the literal `#VALUE` in the "conditions" argument. |
-| conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".<br/>The last value can be any valid JSON object. |
-| variables | Variables to be used in the "conditions" argument in the format "variable = ${context.path}", each variable on it's own line. |
-| flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match|
+| value | The object from which to grab values, for the whole context use "$\{.\}" |
+| conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).<br/>The last dictionary should have the key "else" which can hold any valid JSON object to be returned if no "condition" was true. |
+| flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match |
 
 ## Outputs
 
