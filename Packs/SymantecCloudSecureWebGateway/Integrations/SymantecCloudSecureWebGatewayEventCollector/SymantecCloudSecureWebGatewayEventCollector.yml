@@ -35,7 +35,7 @@ script:
     arguments:
     - name: since
       description: Occurrence time of the least recent event to include (inclusive).
-      defaultValue: 1 days
+      defaultValue: 3 hours
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
