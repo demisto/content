@@ -368,7 +368,7 @@
     },
     "formatted_response_hidden_false": {
         "_TIME": "2023-07-18T14:29:33.699000",
-        "_EVENT_STATUS": "modified",
+        "_ENTRY_STATUS": "modified",
         "event_type": "alert",
         "attributes": {
             "meta": {
@@ -420,7 +420,7 @@
     },
     "formatted_response_hidden_true": {
         "_TIME": "2023-07-18T14:29:33.699000",
-        "_EVENT_STATUS": "modified",
+        "_ENTRY_STATUS": "modified",
         "event_type": "alert",
         "attributes": {
             "meta": {

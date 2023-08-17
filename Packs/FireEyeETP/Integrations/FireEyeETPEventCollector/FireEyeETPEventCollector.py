@@ -418,7 +418,7 @@ def format_alerts(events: list[dict], hide_sensitive: bool):
         create_time = datetime.fromisoformat(demisto.get(event_data, 'attributes.meta.last_modified_on'))
 
         if create_time:
-            event_data['_EVENT_STATUS'] = 'modified' if datetime.fromisoformat(demisto.get(
+            event_data['_ENTRY_STATUS'] = 'modified' if datetime.fromisoformat(demisto.get(
                 event_data, 'attributes.alert.timestamp')) < create_time else 'new'  # handle missing fields?
             event_data['_TIME'] = create_time.isoformat()
         else:
@@ -437,7 +437,7 @@ def format_email_trace(events: list[dict], hide_sensitive: bool):
     for event_data in events:
         create_time = datetime.fromisoformat(demisto.get(event_data, 'attributes.lastModifiedDateTime'))
         if create_time:
-            event_data['_EVENT_STATUS'] = 'modified' if datetime.fromisoformat(demisto.get(
+            event_data['_ENTRY_STATUS'] = 'modified' if datetime.fromisoformat(demisto.get(
                 event_data, 'attributes.acceptedDateTime')) < create_time else 'new'
             event_data['_TIME'] = create_time.isoformat()
         else:

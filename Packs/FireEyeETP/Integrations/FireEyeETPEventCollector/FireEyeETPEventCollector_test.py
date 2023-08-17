@@ -142,13 +142,22 @@ def mock_client():
 
 
 @ freeze_time("2023-07-18 11:34:30")
-def test_fetch_alerts(mocker):
+@ pytest.mark.parametrize('hide_sensitive, alert_expected, trace_expected, activity_expected', (
+                          pytest.param(True,
+                                       'formatted_response_hidden_true', 'formatted_response_hidden_true',
+                                       'formatted_response', id="Hide sensitive"),
+                          pytest.param(False,
+                                       'formatted_response_hidden_false', 'formatted_response_hidden_false',
+                                       'formatted_response', id="Do not hide sensitive")
+                          ))
+def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, activity_expected):
     """
     Given: mocked client, mocked responses and expected event structure,
     When: fetching incidents
     Then: Testing the formatted events are as required.
     """
-    # Test case 1: Check if the alerts fetch
+    client = mock_client()
+    client.hide_sensitive = hide_sensitive
     mocked_alert_data = util_load_json('test_data/alerts.json')
     mocked_trace_data = util_load_json('test_data/email_trace.json')
     mocked_activity_data = util_load_json('test_data/activity_log.json')
@@ -157,7 +166,7 @@ def test_fetch_alerts(mocker):
         FireEyeETPEventCollector.EventType('email_trace', 1000, outbound=False),
         FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
     ]
-    collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types_to_run)
+    collector = FireEyeETPEventCollector.EventCollector(client, event_types_to_run)
     mocker.patch.object(FireEyeETPEventCollector.Client, 'get_alerts', side_effect=[
                         mocked_alert_data['ok_response_single_data'], {'data': []}])
     mocker.patch.object(FireEyeETPEventCollector.Client, 'get_email_trace', side_effect=[
@@ -168,9 +177,9 @@ def test_fetch_alerts(mocker):
         demisto_last_run=LAST_RUN_MULTIPLE_EVENT,
         first_fetch=datetime.now(),
     )
-    assert events[0] == mocked_alert_data['formatted_response_hidden_true']
-    assert events[1] == mocked_trace_data['formatted_response_hidden_true']
-    assert events[2] == mocked_activity_data['formatted_response']
+    assert events[0] == mocked_alert_data[alert_expected]
+    assert events[1] == mocked_trace_data[trace_expected]
+    assert events[2] == mocked_activity_data[activity_expected]
 
 
 FAKE_ISO_DATE_CASES = [

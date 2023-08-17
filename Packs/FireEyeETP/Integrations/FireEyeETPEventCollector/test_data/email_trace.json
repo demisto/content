@@ -116,7 +116,7 @@
     }
   ],
   "formatted_response_hidden_true":  {
-    "_EVENT_STATUS": "modified",
+    "_ENTRY_STATUS": "modified",
     "event_type": "trace",
     "_TIME": "2023-07-19T12:24:21.308000",
     "id": "3yPim9i-68317-08858E251843F5D7B46344849e0",
@@ -152,7 +152,7 @@
     }
   },
   "formatted_response_hidden_false": {
-    "_EVENT_STATUS": "modified",
+    "_ENTRY_STATUS": "modified",
     "event_type": "trace",
     "_TIME": "2023-07-19T12:24:21.308000",
     "id": "3yPim9i-68317-08858E251843F5D7B46344849e0",
