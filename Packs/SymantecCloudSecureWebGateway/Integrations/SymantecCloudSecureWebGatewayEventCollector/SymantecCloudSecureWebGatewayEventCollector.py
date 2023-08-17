@@ -1,3 +1,4 @@
+from typing import NamedTuple
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -6,7 +7,6 @@ from requests import Response
 from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 import gzip
-from pydantic import BaseModel
 
 disable_warnings()
 
@@ -16,11 +16,11 @@ REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 
 
-class LastRun(BaseModel):
-    start_time: str | None
-    token: str | None
-    time_of_last_fetched_event: str | None
-    events_suspected_duplicates: list[str] | None
+class LastRun(NamedTuple):
+    start_date: str | None = None
+    token: str | None = None
+    time_of_last_fetched_event: str | None = None
+    events_suspected_duplicates: list[str] | None = None
 
 
 class Client(BaseClient):
@@ -154,7 +154,7 @@ def get_events_command(
     token_expired: bool = False
 
     start_date, end_date = get_start_and_ent_date(
-        args=args, start_date=last_run_model.start_time
+        args=args, start_date=last_run_model.start_date
     )
     params: dict[str, Union[str, int]] = {
         "startDate": start_date,
@@ -192,12 +192,10 @@ def get_events_command(
     )
 
     new_last_run_model = LastRun(
-        **{
-            "start_date": str(end_date + 1),
-            "token": params["token"],
-            "time_of_last_fetched_event": time_of_last_fetched_event,
-            "events_suspected_duplicates": events_suspected_duplicates,
-        }
+        start_date=str(end_date + 1),
+        token=params["token"],
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        events_suspected_duplicates=events_suspected_duplicates,
     )
 
     demisto.debug(f"End fetch from {start_date} to {end_date} with {len(logs)} logs")
