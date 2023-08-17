@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
+from demisto_sdk.commands.common.tools import get_pack_metadata
 
 from git import Repo
 
