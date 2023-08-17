@@ -199,15 +199,14 @@ def calculate_domain_dbot_score(status: int | None, securerank2: int | None) -> 
             return Common.DBotScore.BAD
         case 1:
             return Common.DBotScore.GOOD
-        case 0 | None:  # todo check None
-            # When status is 0, security_rank2 is used
+        case 0 | None:
+            # in these cases, security_rank2 is used
             if securerank2 is None:
                 return Common.DBotScore.NONE
 
-            if (malicious_threshold := arg_to_number(
-                demisto.args().get('threshold', MALICIOUS_THRESHOLD),
-                    arg_name="threshold",)) is None:
-                raise RuntimeError(f"Cannot convert {malicious_threshold=} to number")
+            if (threshold := demisto.args().get('threshold', MALICIOUS_THRESHOLD)) is None  \
+                    or (malicious_threshold := arg_to_number(threshold)) is None:
+                raise RuntimeError(f"Cannot convert {threshold=} to number")
 
             if securerank2 < malicious_threshold:
                 return Common.DBotScore.BAD
