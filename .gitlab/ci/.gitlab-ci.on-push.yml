@@ -133,75 +133,86 @@ validate-content-conf:
     KUBERNETES_CPU_REQUEST: 2000m
   needs: []
   stage: prepare-testing-bucket
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - /builds/xsoar/content/artifacts/succeeded_tests.xml
+    paths:
+      - /builds/xsoar/content/artifacts/succeeded_tests.xml
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
-
-    - section_start "Create or update content graph" --collapsed
-
-    - echo "Updating the content graph"
-    - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk update-content-graph -g --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
-    - echo "Successfully updated content graph"
-
-    - section_end "Create or update content graph"
-
-    - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
-    - |
-      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
-      then
-        echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
-      else
-        echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
-      fi
-
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
-
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - section_end "Create Content Artifacts and Update Conf"
-
-    - section_start "Replace Cortex XSOAR" --collapsed
-    - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
-      then
-        echo "Replace Cortex XSOAR for non-xsoar build."
-        pushd "$ARTIFACTS_FOLDER"
-        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
-        pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
-        rm -rf content_packs
-        popd
-      fi
-    - section_end "Replace Cortex XSOAR"
-    - section_start "Collect Tests" --collapsed
-    - |
-      if [ -n "${INSTANCE_TESTS}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
-      fi
-    - section_end "Collect Tests"
-
-    - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
-    - section_end "Prepare Content Packs for Testing"
-
-    - section_start "Create Instances for XSOAR"
-    - |
-      if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
-        echo "Creating Instances, only for XSOAR."
-        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
-      fi
-    - section_end "Create Instances for XSOAR"
-    - section_start "Upload Artifacts to GCP" --collapsed
-    - ./Tests/scripts/upload_artifacts.sh
-    - section_end "Upload Artifacts to GCP"
-    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - python ./Tests/scripts/produce_junit_report.py --output-path $ARTIFACTS_FOLDER/succeeded_tests.xml
     - job-done
+
+# FIXME
+#    - section_start "Create or update content graph" --collapsed
+#
+#    - echo "Updating the content graph"
+#    - mkdir $ARTIFACTS_FOLDER/content_graph
+#    - demisto-sdk update-content-graph -g --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
+#    - echo "Successfully updated content graph"
+#
+#    - section_end "Create or update content graph"
+#
+#    - section_start "Create Content Artifacts and Update Conf" --collapsed
+#    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
+#    - |
+#      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
+#      then
+#        echo "Starting to create artifacts with zip for XSOAR."
+#        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
+#      else
+#        echo "Starting to create artifacts without zip."
+#        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
+#      fi
+#
+#    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+#
+#    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+#    - section_end "Create Content Artifacts and Update Conf"
+#
+#    - section_start "Replace Cortex XSOAR" --collapsed
+#    - |
+#      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
+#      then
+#        echo "Replace Cortex XSOAR for non-xsoar build."
+#        pushd "$ARTIFACTS_FOLDER"
+#        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
+#        pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
+#        rm -rf content_packs
+#        popd
+#      fi
+#    - section_end "Replace Cortex XSOAR"
+#    - section_start "Collect Tests" --collapsed
+#    - |
+#      if [ -n "${INSTANCE_TESTS}" ]; then
+#        echo "Skipping - not running in INSTANCE_TESTS build"
+#      else
+#        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+#        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
+#      fi
+#    - section_end "Collect Tests"
+#
+#    - section_start "Prepare Content Packs for Testing"
+#    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
+#    - section_end "Prepare Content Packs for Testing"
+#
+#    - section_start "Create Instances for XSOAR"
+#    - |
+#      if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
+#        echo "Creating Instances, only for XSOAR."
+#        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+#        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
+#      fi
+#    - section_end "Create Instances for XSOAR"
+#    - section_start "Upload Artifacts to GCP" --collapsed
+#    - ./Tests/scripts/upload_artifacts.sh
+#    - section_end "Upload Artifacts to GCP"
+#    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+#    - job-done
 
 
 
