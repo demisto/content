@@ -8,7 +8,7 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
-    create_ediscovery_non_custodial_data_source_command
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -501,7 +501,7 @@ def test_created_by_fields_to_hr():
     """
     assert created_by_fields_to_hr(
         {'Field1': 'val1', 'CreatedBy': {'User': {'DisplayName': 'Bob', 'UserPrincipalName': 'Frank'}}}) == \
-        {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
+           {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
 
 
 def test_list_ediscovery_search_command(mocker):
@@ -579,26 +579,26 @@ def test_list_ediscovery_case_command(mocker):
 
 def test_activate_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'activate_edsicovery_custodian', return_value=None)
-    assert activate_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'})\
-           .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
+    assert activate_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
+               .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
 
 
 def test_release_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'release_edsicovery_custodian', return_value=None)
-    assert release_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'})\
-           .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
+    assert release_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
+               .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
 
 
 def test_close_ediscovery_case_command(mocker):
     mocker.patch.object(client_mocker, 'close_edsicovery_case', return_value=None)
     assert close_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
-           .readable_output == 'Case with id caseid was closed successfully.'
+               .readable_output == 'Case with id caseid was closed successfully.'
 
 
 def test_reopen_ediscovery_case_command(mocker):
     mocker.patch.object(client_mocker, 'reopen_edsicovery_case', return_value=None)
     assert reopen_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
-           .readable_output == 'Case with id caseid was reopened successfully.'
+               .readable_output == 'Case with id caseid was reopened successfully.'
 
 
 @pytest.mark.parametrize('site, email, should_error', [('exists', None, False),
@@ -617,7 +617,12 @@ def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker
     """
     mocker.patch.object(client_mocker, 'create_ediscovery_non_custodial_data_source', return_value=None)
     try:
-        create_ediscovery_non_custodial_data_source_command(client_mocker, {'site' : site, 'email' : email})
+        create_ediscovery_non_custodial_data_source_command(client_mocker, {'site': site, 'email': email})
         assert not should_error
     except ValueError:
         assert should_error
+
+
+def test_empty_list_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'list_ediscovery_custodians', return_value={})
+    assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == '### Results:\n**No entries.**\n'
