@@ -586,7 +586,7 @@ def test_activate_ediscovery_custodian_command(mocker):
 def test_release_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'release_edsicovery_custodian', return_value=None)
     assert release_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
-               .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
+           .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
 
 
 def test_close_ediscovery_case_command(mocker):
