@@ -20,7 +20,7 @@ REGEX_PATTERNS = {
 """ Helper functions """
 
 
-def validate_args(args: Dict[str, Any]) -> None:
+def validate_args(args: dict[str, Any]) -> None:
     for arg_name, (regex_pattern, error_message) in REGEX_PATTERNS.items():
         if (arg_value := args.get(arg_name)) and not re.search(regex_pattern, arg_value):
             raise DemistoException(error_message.format(**{arg_name: arg_value}))
@@ -62,33 +62,12 @@ def convert_datetime_to_iso(response: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict: The response dictionary with datetime objects converted to ISO formatted strings.
     """
-    def convert_date(date: Any) -> Any:
-        if isinstance(date, datetime):
-            return date.isoformat()
-        return date
-
-    def convert_association(association: dict[str, Any]) -> dict[str, Any]:
-        association["LastExecutionDate"] = convert_date(association.get("LastExecutionDate"))
-        return association
-
-    def convert_association_description(association_description: Dict[str, Any]) -> Dict[str, Any]:
-        if (date := association_description.get("Date")):
-            association_description["Date"] = convert_date(date)
-        if (date := dict_safe_get(association_description, ["Status", "Date"])):
-            association_description["Status"]["Date"] = convert_date(date)
-        if (last_execution_date := association_description.get("LastExecutionDate")):
-            association_description["LastExecutionDate"] = convert_date(last_execution_date)
-        if (last_successful_execution_date := association_description.get("LastSuccessfulExecutionDate")):
-            association_description["LastSuccessfulExecutionDate"] = convert_date(last_successful_execution_date)
-        if (lastUpdate_association_date := association_description.get('LastUpdateAssociationDate')):
-            association_description['LastUpdateAssociationDate'] = convert_date(lastUpdate_association_date)
-        return association_description
-
-    if associations := response.get("Associations"):
-        response["Associations"] = [convert_association(association) for association in associations]
-    elif association_description := response.get("AssociationDescription"):
-        response["AssociationDescription"] = convert_association_description(association_description)
-
+    def datetime_to_string(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return obj
+    response_str = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response_str)
     return response
 
 

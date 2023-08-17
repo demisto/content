@@ -8,7 +8,9 @@ from AWSSystemManager import (
     list_inventory_entry_command,
     list_associations_command,
     convert_datetime_to_iso,
-    next_token_command_result
+    next_token_command_result,
+    validate_args,
+    get_association_command
 )
 from CommonServerPython import CommandResults, DemistoException
 
@@ -29,6 +31,9 @@ class MockClient:
     def list_associations(self, **kwargs):
         pass
 
+    def describe_association(self, **kwargs):
+        pass
+
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
@@ -36,6 +41,20 @@ def util_load_json(path):
 
 
 """ Tests For The Helper Functions """
+
+
+@pytest.mark.parametrize(
+    'args, expected_error_message',
+    [
+        ({'instance_id': 'test_id'}, 'Invalid instance id: test_id'),
+        ({'document_name': '@_name'}, 'Invalid document name: @_name'),
+        ({'association_id': 'test_id'}, 'Invalid association id: test_id'),
+        ({'association_version': 'test_version'}, 'Invalid association version: test_version'),
+    ]
+)
+def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
+    with pytest.raises(DemistoException, match=expected_error_message):
+        validate_args(args)
 
 
 @pytest.mark.parametrize(
@@ -76,10 +95,24 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
         (
             {"Associations": [{"LastExecutionDate": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000)}]},
             {"Associations": [{"LastExecutionDate": "2023-07-25T18:51:28.607000"}]},
+        ),
+        (
+            {
+                "AssociationDescription":
+                {
+                    "LastExecutionDate": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000),
+                    'Date': datetime.datetime(2023, 7, 25, 18, 51, 28, 607000)
+                }
+            },
+            {
+                "AssociationDescription": {
+                    "LastExecutionDate": "2023-07-25T18:51:28.607000", "Date": "2023-07-25T18:51:28.607000"
+                }
+            }
         )
     ]
 )
-def test_convert_last_execution_date(data: dict, expected_response: dict) -> None:
+def test_convert_datetime_to_iso(data: dict, expected_response: dict) -> None:
     """
     Given:
         data (dict): The input dictionary containing 'LastExecutionDate' values to be tested.
@@ -298,4 +331,20 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
         '| AssociationId_test | 1 | AWSQuickSetup-CreateAndAttachIAMToInstance | 2023-08-13 14:49:38+03:00 | Failed: 1 | Failed |'
         '\n'
         '| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:54:37.936000+03:00 |  | Pending |\n'
+    )
+
+
+def test_get_association_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/association_description.json")
+    mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
+    response = get_association_command(MockClient, {"instance_id": "i-0a00aaa000000000a", 'document_name': 'test_name'})
+    mock_response.pop("ResponseMetadata")
+    assert response.outputs == mock_response
+    assert response.readable_output == (
+        '### Association\n'
+        '|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|'
+        'Resource status count|Schedule expression|Status|\n'
+        '|---|---|---|---|---|---|---|---|---|---|\n'
+        '| association_id | Moishy | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT '
+        '| 2023-07-25T18:51:28.607000+03:00 |  | rate(30 minutes) | Pending |\n'
     )
