@@ -49,7 +49,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: se_summit_2023
+        simple: "the flag is: playbooksareawesome"
     separatecontext: false
     continueonerrortype: ""
     view: |-

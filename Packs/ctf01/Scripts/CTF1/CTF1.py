@@ -67,7 +67,7 @@ To re-run this task -> Click on "Complete Task" -> clear the Secret value using 
 
 answers = {
     "01" : ["4","four","04"],
-    "02" : ["se_summit_2023","se summit 2023"],
+    "02" : ["playbooksareawesome","playbooks are awesome"],
     "03" : ["<none>","none","nothing"],
     "04" : ["ctf 01","ctf01"],
     "05" : ["reportsarecool"],
