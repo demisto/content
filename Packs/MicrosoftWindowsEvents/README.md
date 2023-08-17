@@ -45,29 +45,18 @@ If you wish to collect only **Security** logs please select the "Windows Securit
 In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
  ```bash
 winlogbeat.event_logs:
-  - name: Application
-    processors:
-      - add_fields:
-          fields:
-            vendor: microsoft
-            product: windows
-    id: application-logs
-  - name: System
-    processors:
-      - add_fields:
-          fields:
-            vendor: microsoft
-            product: windows
-    id: system-logs
 - name: Security
-    processors:
-      - add_fields:
-          fields:
-            vendor: microsoft
-            product: windows
+    ignore_older: 1h
     id: security-logs
+  - name: System
+    ignore_older: 1h
+    id: system-logs
+  - name: Application
+    ignore_older: 1h
+    id: application-logs
 ```
 
 **Note:** You can customize what will be collected by removing the "name" and "ignore_older" lines of the specific event type.
 
 5. Press **Create** to save the new template.
+  
