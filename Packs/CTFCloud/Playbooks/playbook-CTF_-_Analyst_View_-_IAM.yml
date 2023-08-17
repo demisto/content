@@ -1834,7 +1834,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: You have finished the Cloud IAM CTF Challange.Answers.0
+              simple: You have finished the Cloud IAM CTF challenge.Answers.0
             iscontext: true
           right:
             value:
