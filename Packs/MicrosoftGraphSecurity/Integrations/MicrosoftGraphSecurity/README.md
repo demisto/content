@@ -43,6 +43,8 @@ EDiscovery:
     | Application ID or Client ID | The app registration ID. | True |
     | Token or Tenant ID | The tenant ID. | True |
     | Key or Client Secret | The app registration secret. | False |
+    | Authorization code | Get the authorization code from steps 3-5 in the self deployed authorization process.| False |
+    | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
     | Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
@@ -450,16 +452,16 @@ Lists edicovery cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. If provided only this id will be returned. | Optional | 
-| limit | The max number of results to return. Default is 50. Default is 50. | Optional | 
+| case_id | The ID of the eDiscovery case. If provided, only this id will be returned. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCase.CaseId | String | The id of the eDiscovery case. | 
-| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. For details, see the following table. | 
+| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. | 
+| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError. | 
 | MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
 | MsGraph.eDiscoveryCase.Description | String | The case description. | 
 | MsGraph.eDiscoveryCase.DisplayName | String | The case name. | 
@@ -612,8 +614,8 @@ Create a new eDiscovery case. This command only creates an eDiscovery (Premium) 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCase.CaseId | String | The id of the eDiscovery case. | 
-| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. For details, see the following table. | 
+| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. | 
+| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. | 
 | MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
 | MsGraph.eDiscoveryCase.Description | String | The case description. | 
 | MsGraph.eDiscoveryCase.DisplayName | String | The case name. | 
@@ -663,7 +665,7 @@ Update an eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
 | display_name | The name of the eDiscovery case. | Required | 
 | description | The case description. | Optional | 
 | external_id | The external case number for customer reference. | Optional | 
@@ -683,7 +685,12 @@ There is no context output for this command.
 ### msg-close-ediscovery-case
 
 ***
-Close an eDiscovery case. Before you can delete a case, you must first delete all holds listed on the holds page of the case. That includes deleting holds with a status of Off. Default hold policies can only be deleted when the hold is turned off. You must close an active case to turn off any default hold policies in the case. Once the holds are turned off for default hold policies, they can be deleted.
+Close an eDiscovery case. 
+When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here's what happens when you close a case:
+      If the case contains any eDiscovery holds, they'll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
+      Closing a case only turns off the holds that are associated with that case. If other holds are placed on a content location (such as a Litigation Hold, a retention policy, or a hold from a different eDiscovery (Standard) case) those holds will still be maintained.
+      The case is still listed on the eDiscovery (Standard) page in the Microsoft Purview compliance portal. The details, holds, searches, and members of a closed case are retained.
+      You can edit a case after it's closed. For example, you can add or remove members, create searches, and export search results. The primary difference between active and closed cases is that eDiscovery holds are turned off when a case is closed.
 
 #### Base Command
 
@@ -693,7 +700,7 @@ Close an eDiscovery case. Before you can delete a case, you must first delete al
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
 
 #### Context Output
 
@@ -720,7 +727,7 @@ Reopen an eDiscovery case. When you reopen an eDiscovery (Premium) case, any hol
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
 
 #### Context Output
 
@@ -747,7 +754,7 @@ Delete an eDiscovery case. Before you can delete a case, you must first delete a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
 
 #### Context Output
 
@@ -774,7 +781,7 @@ Create a new ediscoveryCustodian object. After the custodian object is created, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
 | email | Custodian's primary SMTP address. | Required | 
 
 #### Context Output
@@ -832,9 +839,9 @@ List custodians on a given eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. If provided only this id will be returned. | Optional | 
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the custodian on the given eDiscovery case. If provided, only this ID will be returned. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -846,7 +853,7 @@ List custodians on a given eDiscovery case.
 | MsGraph.eDiscoveryCustodian.CustodianStatus | String | Status of the custodian. Possible values are: active, released. | 
 | MsGraph.eDiscoveryCustodian.DisplayName | String | Display name of the custodian. | 
 | MsGraph.eDiscoveryCustodian.Email | String | Email address of the custodian. | 
-| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial. | 
+| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian. The possible values are: notApplied, applied, applying, removing, partial. | 
 | MsGraph.eDiscoveryCustodian.LastModifiedDateTime | Date | Date and time the custodian object was last modified. | 
 | MsGraph.eDiscoveryCustodian.ReleasedDateTime | Date | Date and time the custodian was released from the case. | 
 
@@ -893,8 +900,8 @@ Activate a custodian that has been released from a case to make them part of the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
 
 #### Context Output
 
@@ -921,8 +928,8 @@ Release a custodian from a case. For details, see <https://learn.microsoft.com/e
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
 
 #### Context Output
 
@@ -949,18 +956,18 @@ Create a new siteSource object associated with an eDiscovery custodian. Use the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
 | site | URL of the site; for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The id of the application who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The id of the user who created the sieSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. | 
 | MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. | 
 | MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. | 
 | MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. | 
@@ -1018,26 +1025,26 @@ Create a new userSource object associated with an eDiscovery custodian. Use the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
 | email | SMTP address of the user. | Required | 
-| included_sources | Specifies which sources are included in this group. Possible values are: mailbox, site. Possible values are: mailbox, site, mailbox, site. | Required | 
+| included_sources | Specifies which sources are included in this group. Possible values are: mailbox, site, mailbox, site. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The id of the application who created the userSource. | 
+| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The id of the user who created the userSource. | 
+| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. | 
 | MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. | 
 | MsGraph.CustodianUserSource.Email | String | Email address of the user's mailbox. | 
 | MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. | 
 | MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. | 
-| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not the ID of the actual group. | 
+| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. | 
 
 #### Command example
 
@@ -1092,10 +1099,10 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
-| user_source_id | The id of the userSource. If provided only this id will be returned. | Optional | 
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
+| user_source_id | The ID of the userSource. If provided, only this id will be returned. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -1103,9 +1110,9 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The id of the application who created the userSource. | 
+| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The id of the user who created the userSource. | 
+| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. | 
 | MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. | 
 | MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. | 
@@ -1113,7 +1120,7 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 | MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. | 
 | MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. | 
 | MsGraph.CustodianUserSource.SiteWebUrl | String | The URL of the user's OneDrive for Business site. Read-only. | 
-| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not the ID of the actual group. | 
+| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. | 
 
 #### Command example
 
@@ -1169,9 +1176,9 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | The id of the custodian on the given eDiscovery case. | Required | 
-| site_source_id | The id of the siteSource. If provided only this id will be returned. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
+| site_source_id | The ID of the siteSource. If provided, only this id will be returned. | Optional | 
 | limit | Number of total results to return. Default is 50. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
@@ -1179,10 +1186,10 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The id of the application who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the sieSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The id of the user who created the sieSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. | 
 | MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. | 
 | MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. | 
 | MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. | 
@@ -1235,8 +1242,8 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 ***
 Start the process of applying hold on eDiscovery custodians.
 Available return statuses: 
-notApplied - The custodian is not on Hold (all sources in it are not on hold).
-applied - The custodian is on Hold (all sources are on hold).
+notApplied - The custodian is not on hold (all sources in it are not on hold).
+applied - The custodian is on hold (all sources are on hold).
 applying - The custodian is in applying hold state (applyHold operation triggered).
 removing - The custodian is in removing the hold state(removeHold operation triggered).
 partial - The custodian is in mixed state where some sources are on hold and some not on hold or error state.
@@ -1249,8 +1256,8 @@ partial - The custodian is in mixed state where some sources are on hold and som
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | A comma seperated list of custodians ids to apply a hold to. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | A comma-seperated list of custodians ids to apply a hold to. | Required | 
 
 #### Context Output
 
@@ -1277,8 +1284,8 @@ Start the process of removing hold from eDiscovery custodians.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| custodian_id | A comma seperated list of custodians ids to remove a hold from. | Required | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | A comma-seperated list of custodians ids to remove a hold from. | Required | 
 
 #### Context Output
 
@@ -1305,8 +1312,8 @@ Create a new eDiscoveryNoncustodialDataSource object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| site | URL of the site; for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| site | URL of the site, for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Optional | 
 | email | Email address of the user's mailbox. | Optional | 
 
 #### Context Output
@@ -1364,9 +1371,9 @@ Get a list of the non-custodial data sources and their properties.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| data_source_id | The id of the dataSource. If provided only this id will be returned. | Optional | 
-| limit | The max number of results to return. Default is 50. Default is 50. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| data_source_id | The ID of the dataSource. If provided, only this id will be returned. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -1424,17 +1431,17 @@ Create a new eDiscoverySearch object.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| case_id | The id of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
+| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
 | display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required | 
 | description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional | 
-| content_query | The query string used for the search. The query string in KQL (Keyword Query Language) format. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
+| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
 | data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | 
+| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see  see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | 
 | MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName | String | Name of the application who created the eDiscovery search. | 
 | MsGraph.eDiscoverySearch.CreatedBy.Application.ID | String | ID of the application who created the eDiscovery search. | 
 | MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName | String | Name of the user who created the eDiscovery search. | 
@@ -1444,7 +1451,7 @@ Create a new eDiscoverySearch object.
 | MsGraph.eDiscoverySearch.DataSourceScopes | String | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources. | 
 | MsGraph.eDiscoverySearch.Description | String | The description of the eDiscovery search. | 
 | MsGraph.eDiscoverySearch.DisplayName | String | The display name of the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedDateTime | Date |  | 
+| MsGraph.eDiscoverySearch.LastModifiedDateTime | Date | The last date and time the eDiscovery search was modified. | 
 | MsGraph.eDiscoverySearch.SearchId | String | The ID for the eDiscovery search. | 
 
 #### Command example
@@ -1501,11 +1508,11 @@ Update an eDiscoverySearch object.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| case_id | The id of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
-| search_id | The id of the eDiscovery search.                                                                                                                                                                                                                                                                                                                  | Required | 
+| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
+| search_id | The ID of the eDiscovery search.                                                                                                                                                                                                                                                                                                                  | Required | 
 | display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required | 
 | description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional | 
-| content_query | The query string used for the search. The query string in KQL (Keyword Query Language) format. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
+| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
 | data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional | 
 
 #### Context Output
@@ -1533,9 +1540,9 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| search_id | The id of the eDiscovery search. If provided only this id will be returned. | Optional | 
-| limit | The max number of results to return. Default is 50. Default is 50. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. If provided, only this id will be returned. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 | all_results | Show all results if true. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -1634,10 +1641,10 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| search_id | The id of the eDiscovery search. | Required | 
-| purge_type | The id of the eDiscovery search. Possible values are: permanentlyDelete. | Optional | 
-| purge_areas | The id of the eDiscovery search. Possible values are: teamsMessages. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. | Required | 
+| purge_type | The ID of the eDiscovery search. Possible values are: permanentlyDelete. | Optional | 
+| purge_areas | The ID of the eDiscovery search. Possible values are: teamsMessages. | Optional | 
 
 #### Context Output
 
@@ -1664,8 +1671,8 @@ Delete an eDiscoverySearch object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The id of the eDiscovery case. | Required | 
-| search_id | The id of the eDiscovery search. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. | Optional | 
 
 #### Context Output
 
@@ -1682,7 +1689,7 @@ There is no context output for this command.
 ### msg-generate-login-url
 
 ***
-Generate the login url used for Authorization code flow.
+Generate the login URL used for authorization code flow.
 
 #### Base Command
 
