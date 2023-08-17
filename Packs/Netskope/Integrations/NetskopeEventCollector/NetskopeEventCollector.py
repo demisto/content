@@ -195,13 +195,13 @@ def get_all_events(client: Client, last_run: dict, limit: int) -> Tuple[list, di
 
 
 def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
-    fetch_events_command(client, last_run, max_fetch=max_fetch, is_command=True)
+    fetch_events_command(client, last_run, max_fetch=max_fetch)
     return 'ok'
 
 
-def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, is_command: bool) -> Tuple[CommandResults, list]:
+def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
     limit = arg_to_number(args.get('limit')) or 50
-    events, _ = fetch_events_command(client=client, last_run=last_run, max_fetch=limit, is_command=is_command)
+    events, _ = fetch_events_command(client=client, last_run=last_run, max_fetch=limit)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -220,8 +220,8 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, is_
     return results, events
 
 
-def fetch_events_command(client, last_run, max_fetch, is_command):  # pragma: no cover
-    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, is_command=is_command)
+def fetch_events_command(client, last_run, max_fetch):  # pragma: no cover
+    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch)
     return events, new_last_run
 
 
@@ -256,7 +256,7 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command_name == 'netskope-get-events':
-            results, events = get_events_command(client, demisto.args(), last_run, is_command=True)
+            results, events = get_events_command(client, demisto.args(), last_run)
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)  # type: ignore
             return_results(results)
@@ -266,7 +266,7 @@ def main() -> None:  # pragma: no cover
             start = datetime.utcnow()
             try:
                 demisto.debug(f'Sending request with last run {last_run}')
-                events, new_last_run = fetch_events_command(client, last_run, max_fetch, is_command=False)
+                events, new_last_run = fetch_events_command(client, last_run, max_fetch)
             finally:
                 demisto.debug(f'sending {len(events)} to xsiam')
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)

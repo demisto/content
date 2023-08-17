@@ -97,7 +97,7 @@ def test_get_events_command(mocker):
     client = Client(BASE_URL, 'dummy_token', False, False)
     mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
     mocker.patch.object(time, "sleep")
-    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN, is_command=True)
+    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN)
     assert 'Events List' in results.readable_output
     assert len(events) == 9
     assert results.outputs_prefix == 'Netskope.Event'
