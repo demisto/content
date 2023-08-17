@@ -1,7 +1,7 @@
 import uuid
 import pytest
-from ProofpointOnDemandEmailSecurity import fetch_events, json, demisto
-import ProofpointOnDemandEmailSecurity
+from ProofpointOnDemandEmailSecurityEventCollector import fetch_events, json, demisto
+import ProofpointOnDemandEmailSecurityEventCollector
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def test_fetch_events(mocker, connection):
         - Ensure that the function converts the timestamp to UTC
         - Ensure that the function skips and prints debug logs if TimeoutError is raised
     """
-    mocker.patch.object(ProofpointOnDemandEmailSecurity, "EVENTS_TO_FETCH", 2)
+    mocker.patch.object(ProofpointOnDemandEmailSecurityEventCollector, "EVENTS_TO_FETCH", 2)
     events = fetch_events(connection)
     assert len(events) == 2
     assert events[0]["message"] == "Test message 1"
