@@ -7,7 +7,7 @@ import urllib3
 from github.Repository import Repository
 from github.PullRequest import PullRequest
 from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
-from Utils.github_workflow_scripts.utils import timestamped_print
+from Utils.github_workflow_scripts.utils import timestamped_print, get_support_level
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
@@ -25,25 +25,6 @@ def arguments_handler():
     parser.add_argument('-p', '--pr_number', help='The PR number to check if the label exists.')
     parser.add_argument('-g', '--github_token', help='The GitHub token to authenticate the GitHub client.')
     return parser.parse_args()
-
-
-def get_support_level(pack_dirs: set[str]) -> set[str]:
-    """
-    Get the pack support levels from the pack metadata.
-
-    Args:
-        pack_dirs (set): paths to the packs that were changed
-    """
-    packs_support_levels = set()
-
-    for pack_dir in pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
-        else:
-            print(f'Could not find pack support level for pack {pack_dir}')
-
-    return packs_support_levels
 
 
 def get_pack_support_level(file_paths: list[str]) -> str:
