@@ -29,34 +29,30 @@ def test_handle_flags():
     assert if_elif3.functions['regex_match']('\s', ' ')
 
 
-def test_load_variables():
-
-    if_elif = MockIfElif()
-    if_elif.load_variables(
-        variables='int_var=42 \n str_var = hello  \nlist_var  =  [1, 2, 3]',
-        value='some_value'
-    )
-
-    assert if_elif.variables['int_var'] == 42
-    assert if_elif.variables['str_var'] == 'hello'
-    assert if_elif.variables['list_var'] == [1, 2, 3]
-    assert if_elif.variables['true'] is True
-    assert if_elif.variables['false'] is False
-    assert if_elif.variables['null'] is None
-    assert if_elif.variables['VALUE'] == 'some_value'
-
-
 @pytest.mark.parametrize(
-    'value, expression, variables, expected_result',
+    'expression, expected_result',
     [
-        ('a', 'VALUE == "a" and [1,2,3]', '', True),
-        (None, '1 in list_var and 2 < 3 < int_var', 'int_var=42 \nlist_var  =  [1, 2, 3]', True),
-        (None, 'regex_match(regex, str_var)', ' str_var = hello\nregex = ^\w{5}$\n', True),
-        (None, 'false and {1: 2, 3: [4,5,6,7]}', '', False),
-        (None, 'regex_match("\s", "s")', '', False),
+        ('1 < 2', True),
+        ('1 > 2', False),
+        ('1 <= 2 <= 2', True),
+        ('2 >= 2 >= 1', True),
+        ('1 == 2', False),
+        ('1 == 1', True),
+        ('1 != 1', False),
+        ('1 != 2', True),
+        ('1 and 1 and 0', False),
+        ('1 or 0', True),
+        ('1 or 0 or 0 or null or []', True),
+        ('not 1', False),
+        ('not false', True),
+        ('1 not in [1,2,3,4,5]', False),
+        ('1 in [1,2,3,4,5]', True),
+        ('(true and not false and (0 or 2) in {2:3})'
+         ' and (1 not in [[[1]]] or false)'
+         ' and (1 < 2 < 3 > 2 > 1) in [true, null]', True),
     ]
 )
-def test_parse_conditions(value, expression, variables, expected_result):
+def test_parse_conditions(expression, expected_result):
     """
     Given:
         - A boolean expression as a string.
@@ -69,7 +65,7 @@ def test_parse_conditions(value, expression, variables, expected_result):
     """
 
     if_elif = IfElif(
-        value=value,
+        value=None,
         conditions=str([
             {
                 'condition': expression,
@@ -79,7 +75,6 @@ def test_parse_conditions(value, expression, variables, expected_result):
                 'else': False
             }
         ]),
-        variables=variables,
     )
 
     result = if_elif.parse_conditions()
@@ -93,7 +88,9 @@ def test_parse_conditions(value, expression, variables, expected_result):
         'unknown_word or 1',
         '__import__("os").system("RM -RF /")',
         '1 if 0 else 2',
-        'sys.exit()'
+        'sys.exit()',
+        '1 < "hi"',
+        '"a" < [1,2,3]'
     ]
 )
 def test_evaluate_error(expression):
