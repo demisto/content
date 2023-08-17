@@ -15,10 +15,10 @@
     "incident_field_values": {
       "type": "string",
       "is_array": false
-    },      
+    },
     "emails": {
       "type": "string",
       "is_array": false
-    }
-}
+    }            
+  }
 }
