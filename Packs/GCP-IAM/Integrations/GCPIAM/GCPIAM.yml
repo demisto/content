@@ -8,6 +8,7 @@ configuration:
   required: true
   type: 9
   hiddenusername: true
+  display: ''
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1235,9 +1236,19 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.55175
+  - arguments:
+    - description: 'The email address of the privilege-bearing service account for which the short-lived token is created. '
+      name: service_account_email
+      required: true
+    - defaultValue: '3600'
+      description: Lifetime of the Access Token in seconds
+      name: lifetime
+      required: true
+    description: Create a short-lived access token
+    name: gcp-iam-service-account-generate-access-token
+  dockerimage: demisto/google-api-py3:1.0.0.71457
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0

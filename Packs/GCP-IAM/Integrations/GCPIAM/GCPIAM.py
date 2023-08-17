@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 # type: ignore
 # pylint: disable=no-member
 import copy
@@ -21,14 +23,16 @@ class Client:
 
         if proxy or verify_certificate:
             http_client = credentials.authorize(self.get_http_client_with_proxy(proxies))
-            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
-            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
-            self.iam_service = discovery.build('iam', 'v1', http=http_client)
+            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
+            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
+            self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
         else:
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
     def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
         proxy_info = None
@@ -812,6 +816,31 @@ class Client:
 
         """
         request = self.iam_service.projects().serviceAccounts().keys().delete(name=key_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_generate_access_token_request(self, service_account_email: str, lifetime: str) -> dict:
+        """
+        Create a short-lived access token
+        Args:
+            service_account_email (str): E-Mail of the Service Account for wich the token should be generated
+
+            lifetime (str): Lifetime of the token in seconds. Like 3600
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        resource_name = "projects/-/serviceAccounts/{}".format(service_account_email)
+        body = {
+            "scope": [
+                "https://www.googleapis.com/auth/cloud-platform"
+            ],
+            "lifetime": lifetime
+        }
+
+        request = self.iam_credentials.projects().serviceAccounts().generateAccessToken(name=resource_name, body=body)
         response = request.execute()
 
         return response
@@ -2919,6 +2948,40 @@ def gcp_iam_service_account_key_disable_command(client: Client, args: Dict[str, 
     return command_results_list
 
 
+def gcp_iam_service_account_generate_access_token_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Create a serivce account short-lived access token
+
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    service_account_email = args.get('service_account_email')
+    lifetime = args.get('lifetime')
+
+    response = client.gcp_iam_service_account_generate_access_token_request(service_account_email, lifetime)
+
+    readable_output = tableToMarkdown("Accesstoken for: {}".format(service_account_email),
+                                      response,
+                                      headers=["accessToken", "expireTime"],
+                                      headerTransform=pascalToSpace
+                                      )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCPIAM.ServiceAccountAccessToken',
+        outputs_key_field='name',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, Any]) -> list:
     """
     Delete service account key.
@@ -3838,6 +3901,7 @@ def main() -> None:
             'gcp-iam-service-account-keys-get': gcp_iam_service_account_keys_get_command,
             'gcp-iam-service-account-key-enable': gcp_iam_service_account_key_enable_command,
             'gcp-iam-service-account-key-disable': gcp_iam_service_account_key_disable_command,
+            'gcp-iam-service-account-generate-access-token': gcp_iam_service_account_generate_access_token_command,
             'gcp-iam-service-account-key-delete': gcp_iam_service_account_key_delete_command,
             'gcp-iam-organization-role-create': gcp_iam_organization_role_create_command,
             'gcp-iam-organization-role-update': gcp_iam_organization_role_update_command,
