@@ -19,9 +19,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAPPING: dict = {
-    "compromised/account": {
+    "compromised/account_group": {
         "date":
-            "dateDetected",
+            "dateFirstSeen",
         "name":
             "login",
         "prefix":
@@ -29,18 +29,18 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": "cnc.url", "main_field_type": "URL"
+                    "main_field": "events.cnc.url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "cnc.domain", "main_field_type": "Domain"
+                    "main_field": "events.cnc.domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                    "main_field": "events.cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["events.cnc.ipv4.asn", "events.cnc.ipv4.countryName", "events.cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
                 {
-                    "main_field": "client.ipv4.ip",
+                    "main_field": "events.client.ipv4.ip",
                 }
             ]
     },
@@ -1270,7 +1270,7 @@ def main():
         )
 
         commands = {
-            "gibtia-get-compromised-account-info": get_info_by_id_command("compromised/account"),
+            "gibtia-get-compromised-account-info": get_info_by_id_command("compromised/account_group"),
             "gibtia-get-compromised-card-info": get_info_by_id_command("compromised/card"),
             "gibtia-get-compromised-mule-info": get_info_by_id_command("compromised/mule"),
             "gibtia-get-compromised-imei-info": get_info_by_id_command("compromised/imei"),
