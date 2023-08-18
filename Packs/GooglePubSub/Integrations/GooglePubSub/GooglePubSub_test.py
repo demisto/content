@@ -192,7 +192,7 @@ class TestHelperFunctions:
                 - return a body with no messages
             """
             expected = {"messages": [{}]}
-            assert expected == get_publish_body("", "")
+            assert expected == get_publish_body("", "", "")
 
         def test_get_publish_body__valid(self):
             """
@@ -219,7 +219,7 @@ class TestHelperFunctions:
                 "messages": [{"data": expected_data, "attributes": expected_attributes, "delim_char": expected_delim_char}]
             }
             assert expected == get_publish_body(
-                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE,
+                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE, delim_char=",",
             )
 
     class TestAttributePairsToDict:
