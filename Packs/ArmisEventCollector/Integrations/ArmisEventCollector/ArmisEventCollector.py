@@ -34,6 +34,16 @@ class Client(BaseClient):
         self._access_token = access_token
 
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, time_frame: None | int = None):
+        """ Fetches alerts or threats by passed AQL query.
+
+        Args:
+            aql_query (str): AQL query request parameter for the API call.
+            max_fetch (int): Max number of alerts/threats to fetch.
+            time_frame (None | int, optional): Time frame in seconds to fetch alerts/threats from. Defaults to None.
+
+        Returns:
+            list[dict]: List of alerts/threats objects represented as dictionaries.
+        """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
         if time_frame:  # if there is a time frame thats relative to last run
             params['aql'] += f' timeFrame:"{time_frame} seconds"'
@@ -42,7 +52,7 @@ class Client(BaseClient):
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
-        # perform pagination if needed, will cycle through all pages and add results to results list
+        # perform pagination if needed,  cycle through all pages and add results to results list
         while (next := raw_response.get('data', '').get('next')):
             params['from'] = next
             raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
@@ -51,6 +61,14 @@ class Client(BaseClient):
         return results
 
     def is_valid_access_token(self, access_token):
+        """ Checks if current available access token is valid.
+
+        Args:
+            access_token (str): Access token to validate.
+
+        Returns:
+            Boolean: True if access token is valid, False otherwise.
+        """
         try:
             headers = {
                 'Authorization': f'{access_token}',
@@ -64,6 +82,13 @@ class Client(BaseClient):
         return True
 
     def get_access_token(self):
+        """ Generates access token for Armis API.
+
+        Raises:
+            DemistoException: If access token could not be generated.
+        Returns:
+            str: Access token.
+        """
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json"
@@ -97,6 +122,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client, alert_status):
+    # TODO: needs to be implemented
     events = client.search_events(
         prev_id=0,
         alert_status=alert_status
@@ -122,6 +148,19 @@ def min_datetime(last_fetch_time, fetch_start_time_param):
 
 
 def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
+    """ Calculates the fetch start time.
+
+    Args:
+        last_fetch_time (str): Last fetch time (from last run).
+        fetch_start_time_param (datetime): Fetch start time parameter.
+                                           (this parameter initialed with datetime.now() in the main function).
+
+    Raises:
+        DemistoException: If the transformation of last_fetch_time to datetime object failed.
+
+    Returns:
+        datetime: Fetch start time value for current fetch cycle.
+    """
     if last_fetch_time:
         last_fetch_time = arg_to_datetime(last_fetch_time)
         if not isinstance(last_fetch_time, datetime):
@@ -132,14 +171,28 @@ def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
 
 
 def dedup_alerts(alerts, alerts_last_fetch_ids):
+    # TODO: needs to be tested
     return [alert for alert in alerts if alert.get('alertId') not in alerts_last_fetch_ids]
 
 
 def dedup_threats(threats, threats_last_fetch_ids):
+    # TODO: needs to be tested
     return [threat for threat in threats if threat.get('activityUUID') not in threats_last_fetch_ids]
 
 
-def fetch_events(client: Client, max_fetch, last_run, fetch_start_time_param, log_types_to_fetch):
+def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time_param: datetime, log_types_to_fetch: list[str]):
+    """ Fetches events from Armis API.
+
+    Args:
+        client (Client): Armis client to use for API calls.
+        max_fetch (int): Max number of alerts/threats to fetch.
+        last_run (dict): Last run dictionary.
+        fetch_start_time_param (datetime): Fetch start time parameter.
+        log_types_to_fetch (list[str]): List of log types to fetch.
+
+    Returns:
+        (list[dict], dict) : List of fetched events and next run dictionary.
+    """
     events = []
     now = datetime.now()
     next_run = {}
@@ -215,7 +268,7 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
     base_url = urljoin(params.get('server_url'), API_V1_ENDPOINT)
     verify_certificate = not params.get('insecure', True)
-    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH))
+    max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
     log_types_to_fetch = argToList(params.get('log_types_to_fetch', []))
 
