@@ -1,0 +1,415 @@
+id: If-Elif Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: If-Elif Test
+description: If Elif test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c329149-c1f6-4ba1-8ef7-a5cd46dd870d
+    type: start
+    task:
+      id: 7c329149-c1f6-4ba1-8ef7-a5cd46dd870d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: efa6217c-f561-4f01-87df-393f79224804
+    type: regular
+    task:
+      id: efa6217c-f561-4f01-87df-393f79224804
+      version: -1
+      name: Set context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: IfElif
+      value:
+        simple: |-
+          {
+              "embedded_str": {
+                  "key1": {
+                      "key2": "value"
+                  }
+              },
+              "embedded_int": {
+                  "key1": {
+                      "key2": 1
+                  }
+              },
+              "embedded_dict": {
+                  "key1": {
+                      "key2": {
+                          "key3": [
+                              1,
+                              2,
+                              3
+                          ]
+                      }
+                  }
+              },
+              "success": "success"
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 85d94a20-024a-41bd-8ce8-be988d15ede8
+    type: title
+    task:
+      id: 85d94a20-024a-41bd-8ce8-be988d15ede8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b5128de0-58bf-4a39-89a6-d48930721b4c
+    type: regular
+    task:
+      id: b5128de0-58bf-4a39-89a6-d48930721b4c
+      version: -1
+      name: With regex_full_match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{IfElif.embedded_int.key1.key2} < 5 and 'YES' == 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "regex_match('\\w{5}', #{IfElif.embedded_str.key1.key2} '1')",
+                          "return":"error"
+                        },
+                        {
+                          "condition": "regex_match('\\w{5}', #{IfElif.embedded_str.key1.key2})",
+                          "return": #{IfElif.success}
+                        },
+                        {
+                          "else": "error"
+                        }
+                      ]
+              flags:
+                value:
+                  simple: regex_full_match
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2f654efc-9421-4fd9-8d3a-b0d3f2cf88f8
+    type: regular
+    task:
+      id: 2f654efc-9421-4fd9-8d3a-b0d3f2cf88f8
+      version: -1
+      name: With case_insensitive
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{IfElif.embedded_int.key1.key2} < 5 and 'YES' != 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "regex_match('VaLuE',  #{IfElif.embedded_str.key1.key2}) and 'a' == 'A' ",
+                          "return": #{IfElif.success}
+                        },
+                        {
+                          "else": "error2"
+                        }
+                      ]
+              flags:
+                value:
+                  simple: case_insensitive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0b2da5be-50ff-411d-87e3-b67293c15658
+    type: regular
+    task:
+      id: 0b2da5be-50ff-411d-87e3-b67293c15658
+      version: -1
+      name: With dict, from key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: IfElif
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{embedded_int.key1.key2} < 5 and 'YES' == 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "#{embedded_dict} == {'key1':{'key2':{'key3':[1,2,3]}}}",
+                          "return": #{success}
+                        },
+                        {
+                          "else": "error"
+                        }
+                      ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5d2bc261-f927-463b-8b18-9aaadd8c28ae
+    type: condition
+    task:
+      id: 5d2bc261-f927-463b-8b18-9aaadd8c28ae
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: results
+            iscontext: true
+          right:
+            value:
+              simple: success
+      - - operator: hasLength
+          left:
+            value:
+              simple: results
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 69375d81-496f-40b7-86e7-f5aed6611040
+    type: regular
+    task:
+      id: 69375d81-496f-40b7-86e7-f5aed6611040
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

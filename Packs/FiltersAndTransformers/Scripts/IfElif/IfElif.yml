@@ -36,4 +36,4 @@ dockerimage: demisto/python3:3.10.12.68714
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:
-- No tests (auto formatted)
+- If-Elif Test
