@@ -1,0 +1,54 @@
+commonfields:
+  id: MakePair
+  version: -1
+name: MakePair
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: |-
+  This transformer will create a list of dictionary by aggregating elements from two arrays.
+  The one is given by `value` (with `array1_key`), another is given by `array2` (with `array2_key`).
+enabled: true
+args:
+- name: value
+  description: The array1
+  isArray: true
+- name: array1_key
+  description: The key or path to get values from the array1 (value)
+- name: array2
+  description: The array2
+  isArray: true
+- name: array2_key
+  description: The key or path to get values from the array2
+- name: output_name1
+  required: true
+  description: The key name in the output dictionary to which each of element of the array1 are given
+- name: output_name2
+  required: true
+  description: The key name in the output dictionary to which each of element of the array2 are given
+- name: determine_output_length_by
+  auto: PREDEFINED
+  predefined:
+  - shorter
+  - longer
+  - array1
+  - array2
+  description: How to deal with different size lists. (Choose from shorter, longer, array1, or array2)
+  defaultValue: shorter
+- name: merge_dict
+  auto: PREDEFINED
+  predefined:
+  - array1
+  - array2
+  - array1<array2
+  - array2<array1
+  description: When each element is given in a dictionary, specify the array it will be merged into (Choose from array1, array2, array1<array2, or array2<array1).
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

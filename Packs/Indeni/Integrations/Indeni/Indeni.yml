@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Server URL
   name: url
   required: true
@@ -18,56 +18,47 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-- additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled.
-    If false, all issues will be pulled.
+  required: false
+- additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled. If false, all issues will be pulled.
   defaultvalue: 'true'
   display: Only Pull Palo Alto Networks Vulnerability Issues
   name: onlyPullPanCveIssues
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
-  hidden: false
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: INFO
   display: Lowest Issue Severity To Pull
-  hidden: false
   name: issueSeverity
   options:
   - CRITICAL
   - ERROR
   - WARN
   - INFO
-  required: false
   type: 15
+  required: false
 - defaultvalue: '20'
   display: Number of issues to pull per fetch
-  hidden: false
   name: maxPullSize
-  required: false
   type: 0
+  required: false
 description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
 display: Indeni
 name: Indeni
 script:
   commands:
   - arguments:
-    - default: false
-      description: device id string
-      isArray: false
+    - description: device id string
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: get the device information
-    execution: false
     name: indeni-get-device-info
     outputs:
     - contextPath: Indeni.DeviceInfo.DeviceId
@@ -98,15 +89,10 @@ script:
       description: '# of info alerts on the device'
       type: number
   - arguments:
-    - default: false
-      description: the id of the alert
-      isArray: false
+    - description: the id of the alert
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Get detailed alert info
-    execution: false
     name: indeni-get-alert-info
     outputs:
     - contextPath: Indeni.AlertInfo.AlertId
@@ -122,15 +108,10 @@ script:
       description: the alert type unique identifier
       type: string
   - arguments:
-    - default: false
-      description: identifier for alert type
-      isArray: false
+    - description: identifier for alert type
       name: alert_type_identifier
       required: true
-      secret: false
-    deprecated: false
     description: Get summary of given alert type for all devices
-    execution: false
     name: indeni-get-alert-summary
     outputs:
     - contextPath: Indeni.AffectedDevices.AlertType
@@ -143,64 +124,39 @@ script:
       description: Id of the affected device
       type: String
   - arguments:
-    - default: false
-      description: the id of the alert
-      isArray: false
+    - description: the id of the alert
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: the content of the note
-      isArray: false
+    - description: the content of the note
       name: note
       required: true
-      secret: false
-    deprecated: false
     description: Post a note to a given issue id
-    execution: false
     name: indeni-post-note
   - arguments:
-    - default: false
-      description: the alert id of the issue
-      isArray: false
+    - description: the alert id of the issue
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Archive an issue for the given alert id
-    execution: false
     name: indeni-archive-issue
   - arguments:
-    - default: false
-      description: the alert id of the issue
-      isArray: false
+    - description: the alert id of the issue
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Unarchive an existing issue
-    execution: false
     name: indeni-unarchive-issue
   - arguments:
-    - default: false
-      description: The id of the alert
-      isArray: false
+    - description: The id of the alert
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the notes from issue
-    execution: false
     name: indeni-get-notes
     outputs:
     - contextPath: Indeni.AlertInfo.Note
       description: Notes for the given issue
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   longRunning: true
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

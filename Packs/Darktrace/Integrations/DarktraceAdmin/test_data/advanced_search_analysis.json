@@ -1,0 +1,53 @@
+{
+    "took": 0,
+    "timed_out": false,
+    "_shards": {
+      "total": 2,
+      "successful": 2,
+      "skipped": 0,
+      "failed": 0
+  }, "hits": {
+      "total": 8001,
+      "max_score": 0,
+      "hits": [
+        {
+        "count": 6314,
+        "id": "192.168.0.88"
+        },
+        {
+        "count": 3594,
+        "id": "192.168.1.4"
+        },
+        {
+        "count": 45,
+        "id": "fe80::5041:ff:fe01:ffb7"
+        },
+        {
+        "count": 45,
+        "id": "fe80::e4e5:eeff:fef0:6293"
+        },
+        {
+        "count": 2,
+        "id": "192.168.16.5"
+        }]
+    },
+    "aggregations": {
+      "score": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": 53,
+            "doc_count": 6574
+  }
+  ]
+  } },
+    "darktraceChildError": "",
+    "kibana": {
+      "index": "logstash-darktrace-2020.02.20",
+      "per_page": 50,
+      "time": {
+        "from": "2020-02-20T17:00:00.000Z",
+        "to": "2020-02-20T17:15:00.000Z"
+      }
+  } }

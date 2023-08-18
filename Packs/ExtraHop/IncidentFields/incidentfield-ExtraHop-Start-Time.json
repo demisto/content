@@ -1,0 +1,32 @@
+{
+    "id": "incident_extrahoprevealxstarttime",
+    "version": -1,
+    "modified": "2023-02-17T12:25:18.21240337+05:30",
+    "name": "ExtraHop Reveal(x) Start Time",
+    "ownerOnly": false,
+    "description": "The start time of detection.",
+    "cliName": "extrahoprevealxstarttime",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "ExtraHop Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

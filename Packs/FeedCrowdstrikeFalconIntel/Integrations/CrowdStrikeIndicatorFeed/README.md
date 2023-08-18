@@ -29,6 +29,9 @@ CrowdStrike Falcon Intel Indicator Feed
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     
 4. Click **Test** to validate the URLs, token, and connection.
+
+**Note**: To change the fetch start time , use the `crowdstrike-reset-fetch-indicators` command after setting the desired time in `First Fetch Time` parameter.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
@@ -357,7 +360,7 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 
 ### crowdstrike-reset-fetch-indicators
 ***
-WARNING: This command will reset your fetch history.
+Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.
 
 #### Base Command
 

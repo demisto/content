@@ -1,8 +1,9 @@
 id: get_file_sample_from_path_-_generic
 version: -1
 name: Get File Sample From Path - Generic
+deprecated: true
 description: |-
-  Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+  Deprecated. Use `Get File Sample From Path - Generic V3` instead. Returns a file sample to the war-room from a path on an endpoint using one or more integrations
 
   inputs:
   * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)

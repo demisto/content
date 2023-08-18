@@ -1,0 +1,22 @@
+{
+    "description": "SentinelOne mirror out mapper.",
+    "feed": false,
+    "id": "SentinelOne - Outgoing Mapper",
+    "mapping": {
+        "SentinelOne Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+				"sentinelonethreatstatus": {
+					"simple": "incidentStatus"
+				},
+				"sentinelonethreatanalystverdict": {
+					"simple": "analystVerdict"
+				}
+            }
+        }
+    },
+    "name": "SentinelOne - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

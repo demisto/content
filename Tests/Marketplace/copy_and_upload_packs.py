@@ -11,10 +11,11 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, store_successful_and_failed_packs_in_ci_artifacts, \
     get_upload_data
-from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.Marketplace.pack_readme_handler import copy_readme_images
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_.]+\.zip$)')
@@ -62,38 +63,40 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         storage_base_path (str): the path to upload the index to.
         build_bucket_base_path (str): the path in the build bucket of the index.
     """
+    logging.info('Starting the copy index function')
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
 
-        # disabling caching for prod index blob
-        prod_index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
-        prod_index_blob = production_bucket.blob(prod_index_storage_path)
-        prod_index_blob.cache_control = "no-cache,max-age=0"
-        prod_index_json_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.json")
-        prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
-        prod_index_json_blob.cache_control = "no-cache,max-age=0"
-
         if build_current_index_generation == build_index_generation:
-            copied_index = build_bucket.copy_blob(
-                blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
-            )
-            if copied_index.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
-            else:
-                logging.error("Failed copying index.zip from build index - blob does not exist.")
-                sys.exit(1)
-            copied_index_json_blob = build_bucket.blob(
-                os.path.join(build_bucket_base_path, f"{GCPConfig.INDEX_NAME}.json")
-            )
-            copied_index_json = build_bucket.copy_blob(
-                blob=copied_index_json_blob, destination_bucket=production_bucket, new_name=prod_index_json_storage_path
-            )
-            if copied_index_json.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.json to storage.")
-            else:
-                logging.error("Failed copying index.json from build index - blob does not exist.")
-                sys.exit(1)
+            # copy index.zip from build to prod
+            index_name = f'{GCPConfig.INDEX_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_name)
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_name)
+
+            # copy index.json from build to prod
+            index_json_name = f"{GCPConfig.INDEX_NAME}.json"
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_json_name)
+            build_index_json_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_json_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_json_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_json_name)
+
+            # copy index_v2.zip from build to prod
+            index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_v2_name)
+            build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
@@ -106,8 +109,29 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         shutil.rmtree(index_folder_path)
 
 
+def init_index_prod_bucket(storage_base_path, production_bucket, index_name):
+    # disabling caching for prod index blob
+    prod_index_storage_path = os.path.join(storage_base_path, index_name)
+    prod_index_blob = production_bucket.blob(prod_index_storage_path)
+    prod_index_blob.cache_control = "no-cache,max-age=0"
+    logging.info(f'Init prod bucket at {prod_index_storage_path}')
+    return prod_index_storage_path
+
+
+def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, prod_index_storage_path, index_name):
+    copied_index = build_bucket.copy_blob(
+        blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
+    )
+    if copied_index.exists():
+        logging.success(f"Finished uploading {index_name=} to storage.")
+    else:
+        logging.error("Failed copying index.zip from build index - blob does not exist.")
+        sys.exit(1)
+
+
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
-                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
+                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str,
+                             marketplace: str = 'xsoar'):
     """Uploads the corepacks.json file to the target bucket. This files contains all of the server's core packs, under
      the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
 
@@ -118,45 +142,91 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
         storage_base_path (str): the path to upload the corepacks.json to.
         build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
-    # download the corepacks.json stored in the build bucket to temp dir
-    build_corepacks_file_path = os.path.join(build_bucket_base_path, GCPConfig.CORE_PACK_FILE_NAME)
-    build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
+    corepacks_files = [GCPConfig.CORE_PACK_FILE_NAME]
+    corepacks_files.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
+    logging.debug(f"Updating the following corepacks files: {corepacks_files}")
+    for corepacks_file in corepacks_files:
+        build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file)
+        build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
 
-    if not build_corepacks_blob.exists():
-        logging.critical(f"{GCPConfig.CORE_PACK_FILE_NAME} is missing in {build_bucket.name} bucket, exiting...")
+        if not build_corepacks_blob.exists():
+            logging.critical(f"{corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
+            sys.exit(1)
+
+        logging.info(f"Uploading corepacks file {corepacks_file} to bucket.")
+
+        if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
+            # change the storage paths to the prod bucket
+            temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
+            build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
+            corepacks_file_content = load_json(temp_corepacks_file_path)
+
+            corepacks_list = corepacks_file_content.get('corePacks', [])
+            try:
+                bucket_corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
+                                                      LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in
+                                         corepacks_list]
+            except IndexError:
+                corepacks_list_str = '\n'.join(corepacks_list)
+                logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
+                                  f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
+                                  f"List of build bucket corepacks paths:\n{corepacks_list_str}, exiting...")
+                sys.exit(1)
+
+            # construct core pack data with public gcs urls
+            core_packs_data = {
+                'corePacks': bucket_corepacks_list,
+                'upgradeCorePacks': corepacks_file_content.get('upgradeCorePacks', []),
+                'buildNumber': build_number,
+            }
+
+            # upload core pack json file to gcs
+            prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
+            prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
+            prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+
+        else:  # upload of a versioned corepacks file
+            prod_corepacks_storage_path = os.path.join(storage_base_path, corepacks_file)
+            copied_corepacks_file = build_bucket.copy_blob(
+                blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
+            )
+            if not copied_corepacks_file.exists():
+                logging.error(f"Failed copying {corepacks_file} from build bucket to production bucket - blob"
+                              f" does not exist, exiting...")
+                sys.exit(1)
+        logging.success(f"Finished uploading {corepacks_file} to bucket.")
+
+
+def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str,
+                             build_bucket_base_path: str):
+    """Uploads the versions-metadata.json file to the target bucket. This file contains information related to
+    different server versions, such as a mapping between server versions and the matching corepacks files.
+
+     Args:
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
+        storage_base_path (str): the path to upload the corepacks.json to.
+        build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+    """
+    build_file_path = os.path.join(build_bucket_base_path, GCPConfig.VERSIONS_METADATA_FILE)
+    build_blob = build_bucket.blob(build_file_path)
+
+    if not build_blob.exists():
+        logging.critical(f"{GCPConfig.VERSIONS_METADATA_FILE} is missing in {build_bucket.name} bucket, exiting...")
         sys.exit(1)
 
-    temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
-    build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
-    corepacks_file = load_json(temp_corepacks_file_path)
-
-    # change the storage paths to the prod bucket
-    corepacks_list = corepacks_file.get('corePacks', [])
-    try:
-        corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
-                                       LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
-    except IndexError:
-        corepacks_list_str = '\n'.join(corepacks_list)
-        logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
-                          f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
-                          f"List of build bucket corepacks paths:\n{corepacks_list_str}")
+    prod_versions_metadata_storage_path = os.path.join(storage_base_path, GCPConfig.VERSIONS_METADATA_FILE)
+    copied_versions_metadata = build_bucket.copy_blob(
+        blob=build_blob, destination_bucket=production_bucket, new_name=prod_versions_metadata_storage_path
+    )
+    if copied_versions_metadata.exists():
+        logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA_FILE} to storage.")
+    else:
+        logging.error(f"Failed copying {GCPConfig.VERSIONS_METADATA_FILE} from build bucket - blob does not exist, exiting...")
         sys.exit(1)
-
-    # construct core pack data with public gcs urls
-    core_packs_data = {
-        'corePacks': corepacks_list,
-        'upgradeCorePacks': corepacks_file.get('upgradeCorePacks', []),
-        'buildNumber': build_number
-    }
-
-    # upload core pack json file to gcs
-    prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
-    prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
-    prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-
-    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
 def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path: str):
@@ -373,76 +443,82 @@ def main():
     for pack in packs_list:
         task_status = pack.load_user_metadata()
         if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if marketplace not in pack.marketplaces:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
-            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         packs_for_current_marketplace.append(pack)
 
     # Starting iteration over packs
+    pack: Pack
     for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
-            pack.status = pack_status
+            pack.status = pack_status  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_integration_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_author_image(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_preview_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
-        task_status = pack.copy_readme_images(
-            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
+        if marketplace == XSIAM_MP:
+            task_status = pack.copy_dynamic_dashboard_images(
+                production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+            if not task_status:
+                pack.status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
             production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
             production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if pack.name in pc_successful_packs_dict:
-            pack.status = PackStatus.SUCCESS.name
+            pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
         elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
-            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name  # type: ignore[misc]
 
+    copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
+
+    # copy versions-metadata from build bucket to prod bucket
+    upload_versions_metadata(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # finished iteration over content packs
     copy_index(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,

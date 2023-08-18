@@ -1,0 +1,10 @@
+!aws-lambda-list-functions
+!aws-lambda-get-function functionName="test_echo"
+!aws-lambda-get-account-settings
+!aws-lambda-invoke functionName="test_echo" logType="Tail" payload="{\"value\":\"test\"}"
+!aws-lambda-get-policy functionName=test
+!aws-lambda-list-versions-by-function functionName=test
+!aws-lambda-get-function-url-config functionName=test
+!aws-lambda-get-function-configuration functionName=test
+!aws-lambda-delete-function functionName="test"
+!aws-lambda-delete-function-url-config functionName="test"

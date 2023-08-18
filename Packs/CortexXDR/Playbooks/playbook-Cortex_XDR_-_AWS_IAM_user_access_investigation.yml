@@ -1,7 +1,8 @@
 id: Cortex XDR - AWS IAM user access investigation
 version: -1
 name: Cortex XDR - AWS IAM user access investigation
-description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM\
+description: "Deprecated. Use `Cortex XDR - Cloud IAM User Access Investigation` instead.
+  Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM\
   \ user`s access key is used suspiciously to access the cloud environment. \nThe\
   \ following alerts are supported for AWS environments.\n- Penetration testing tool\
   \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
@@ -11,6 +12,7 @@ description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IA
   \ the beta phase might include non-backward compatible features. We appreciate your\
   \ feedback on the quality and usability of the content to help us identify issues,\
   \ fix them, and continually improve.\n"
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

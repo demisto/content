@@ -1,0 +1,14 @@
+{
+  "version_map": {
+    "8.3.0": {
+      "core_packs_file": "corepacks-8.3.0.json",
+      "core_packs_file_is_locked": false,
+      "file_version": "1"
+    },
+    "8.4.0": {
+      "core_packs_file": "corepacks-8.4.0.json",
+      "core_packs_file_is_locked": false,
+      "file_version": "1"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ResecurityMonitoring
+  version: -1
+configuration:
+- defaultvalue: https://app.resecurity.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: 'This package allows retrieving asset monitoring results from monitoring tasks that can be configured in Context and Risk platforms.'
+display: 'Resecurity Monitoring'
+name: ResecurityMonitoring
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Monitor Task ID.
+      name: monitor_task_id
+      required: true
+    - description: Page number. The results will be returned only for specified page if param value is not empty.
+      name: page
+    - description: "Page size. Possible range of values: 1 - 50. Default value is 20."
+      name: page_size
+    - description: Limit of the records in dataset. Default value is 1000.
+      name: limit
+    - description: "Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results"
+      name: mode
+    description: 'Retrieve monitoring results from a specific monitor task'
+    name: resecurity-get-task-monitor-results-data-breaches
+    outputs:
+    - contextPath: Resecurity.DataBreach.id
+      description: 'Data breach ID'
+      type: String
+    - contextPath: Resecurity.DataBreach.query
+      description: 'The query for which the result was found'
+      type: String
+    - contextPath: Resecurity.DataBreach.detection_date
+      description: 'Data breach detection date'
+      type: Number
+    - contextPath: Resecurity.DataBreach.email
+      description: 'Data breach email'
+      type: String
+    - contextPath: Resecurity.DataBreach.username
+      description: 'Data breach username'
+      type: String
+    - contextPath: Resecurity.DataBreach.password
+      description: 'Data breach password'
+      type: String
+    - contextPath: Resecurity.DataBreach.password_hash
+      description: 'Data breach password hash'
+      type: String
+    - contextPath: Resecurity.DataBreach.salt
+      description: 'Data breach salt'
+      type: String
+    - contextPath: Resecurity.DataBreach.ip
+      description: 'Data breach IP address'
+      type: String
+    - contextPath: Resecurity.DataBreach.source_name
+      description: 'Data breach source name'
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

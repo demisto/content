@@ -3,6 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: Prisma Cloud Remediation - GCP Compute Engine Misconfiguration
 description: |
+  Deprecated. Use Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud GCP Compute Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -570,4 +571,5 @@ inputs:
   description: Grab the Prima Cloud policy Id.
 outputs: []
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import fnmatch
 import json
 import re
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union, Callable
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 DEFAULT_ALGORITHM = 'literal'
 DEFAULT_PRIORITY = 'first_match'
@@ -342,6 +342,9 @@ class Translator:
                  Note: Returns True if the value matched to any of special wildcard patterns even in regex.
         """
         if algorithm == 'literal':
+            if isinstance(value, (dict, list)):
+                return False
+
             value = '' if value is None else str(value)
             if pattern not in self.__wildcards:
                 if pattern != value:
@@ -350,6 +353,9 @@ class Translator:
             if any(x == value for x in exclusions):
                 return False
         elif algorithm in ('wildcard', 'regex', 'regmatch'):
+            if isinstance(value, (dict, list)):
+                return False
+
             value = '' if value is None else str(value)
             regex_match = None
             if pattern not in self.__wildcards:
@@ -472,11 +478,10 @@ class Translator:
 
             # Get a value for pattern matching
             comparison_value = demisto_get(obj_value, path)
-            if not isinstance(comparison_value, (dict, list)):
-                matched_output, matched = self.translate(
-                    comparison_value, mapping, priority, algorithm)
-                if matched:
-                    return matched_output, matched
+            matched_output, matched = self.translate(
+                comparison_value, mapping, priority, algorithm)
+            if matched:
+                return matched_output, matched
         return obj_value, False
 
 

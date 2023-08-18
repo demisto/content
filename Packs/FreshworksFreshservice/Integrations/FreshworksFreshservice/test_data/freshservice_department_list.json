@@ -1,0 +1,94 @@
+{
+    "departments": [
+        {
+            "description": "Support Team",
+            "custom_fields": {},
+            "id": 1,
+            "name": "Customer Support",
+            "created_at": "departments[0]_created_at",
+            "updated_at": "departments[0]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "Beast, Being and Spirit Divisions, and Pest Advisory Bureau.",
+            "custom_fields": {},
+            "id": 21000315199,
+            "name": "Department for the Regulation and Control of Magical Creatures",
+            "created_at": "departments[1]_created_at",
+            "updated_at": "departments[1]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": [
+                "creatures.ministryofmagic.gov"
+            ]
+        },
+        {
+            "description": "Development Team",
+            "custom_fields": {},
+            "id": 21000263160,
+            "name": "Development",
+            "created_at": "departments[2]_created_at",
+            "updated_at": "departments[2]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "Finance Team",
+            "custom_fields": {},
+            "id": 21000263163,
+            "name": "Finance",
+            "created_at": "departments[3]_created_at",
+            "updated_at": "departments[3]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "HR Team",
+            "custom_fields": {},
+            "id": 21000263164,
+            "name": "HR",
+            "created_at": "departments[4]_created_at",
+            "updated_at": "departments[4]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "IT Service Team",
+            "custom_fields": {},
+            "id": 21000263166,
+            "name": "IT",
+            "created_at": "departments[5]_created_at",
+            "updated_at": "departments[5]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "Operations Team",
+            "custom_fields": {},
+            "id": 21000263165,
+            "name": "Operations",
+            "created_at": "departments[6]_created_at",
+            "updated_at": "departments[6]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        },
+        {
+            "description": "Sales Team",
+            "custom_fields": {},
+            "id": 21000263161,
+            "name": "Sales",
+            "created_at": "departments[7]_created_at",
+            "updated_at": "departments[7]_updated_at",
+            "prime_user_id": null,
+            "head_user_id": null,
+            "domains": []
+        }
+    ]
+}

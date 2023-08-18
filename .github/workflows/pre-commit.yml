@@ -4,27 +4,75 @@ on: pull_request
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+
     steps:
+    - name: Install poetry
+      uses: Gr1N/setup-poetry@v8
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    
-    - name: Changed Files
-      id: changed-files
-      uses: tj-actions/changed-files@v34.4.0
-    - name: quote changed Files
-      id: quote-changed-files
-      run:
-        # We need to surround quotes in the changed files
-        # Example: "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
-        echo files=$(echo ${{ steps.changed-files.outputs.all_changed_files }} | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/") >> $GITHUB_OUTPUT
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+        cache: 'poetry'
     
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Cache Pre commit
+      id: cache-pre-commit
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
+
     - name: run pre-commit
-      uses: pre-commit/action@v3.0.0
-      with: 
-        extra_args: '--files ${{ steps.quote-changed-files.outputs.files }}'
+      run: |
+        source .venv/bin/activate
+        npm install
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        check_name: Unit Test Report
+        report_paths: |
+            **/Packs/**/Integrations/**/.report_pytest.xml
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        detailed_summary: true
+        annotate_only: true
+
+    - name: "Check coverage.xml exists"
+
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "coverage.xml"
+      
+
+    - name: Code Coverage Report
+      if: steps.check_files.outputs.files_exists == 'true'
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: "coverage.xml"
+        badge: true
+        format: markdown
+        output: both
+        thresholds: '70 80'
+        
+
+    - name: Append coverage to summary
+      if: always()
+      id: append-coverage
+      run: |
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"

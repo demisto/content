@@ -1,0 +1,309 @@
+{"test_1": {
+    "version": "0.1.0",
+    "status": "success",
+    "data_grouped": true,
+    "total_supported_items": 10000,
+    "total_ungrouped_items": 644,
+    "total_items": 644,
+    "next_page_token": "next_page_token",
+    "data": [
+        {
+            "group_val": "nongroup",
+            "asset_type_string": "AwsUser",
+            "data": {
+                "remediation_cli": [
+                    "How to remove AwsUser:",
+                    ">1.",
+                    ">2."
+                ],
+                "mitre_category": "initial access",
+                "recommendation": "Remove {AwsUser} user.",
+                "details": "Remove unused IAM users",
+                "auto_remediation_actions": [
+                    "AWS-IAM-002"
+                ],
+                "title": "Inactive User",
+                "remediation_console": [
+                    "**Instructions**.",
+                    ">1.",
+                    ">2.",
+                    ">3."
+                ],
+                "mitre_technique": [
+                    "Valid Accounts (T1078)"
+                ]
+            },
+            "alert_labels": [
+                "mitre: initial access"
+            ],
+            "configuration": {},
+            "is_compliance": false,
+            "group_type_string": "NonGroup",
+            "description": "Inactive User",
+            "recommendation": "Remove Trent user.",
+            "source": "Trent",
+            "group_type": "AwsUser",
+            "cluster_type": "AwsUser",
+            "type": "aws_inactive_user",
+            "group_unique_id": "group_unique_id",
+            "cloud_account_id": "cloud_account_id",
+            "type_string": "Inactive User",
+            "asset_name": "Trent",
+            "account_name": "account_name",
+            "asset_type": "AwsUser",
+            "context": "control",
+            "details": "Remove unused IAM users.",
+            "model": {
+                "data": {
+                    "User": {
+                        "MfaActive": false,
+                        "PasswordEnabled": false,
+                        "UserId": "UserId",
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "Name": "Trent"
+                    },
+                    "AwsUser": {
+                        "Policies": {
+                            "models": [],
+                            "remaining": 0
+                        },
+                        "AccessKey1Active": true,
+                        "Cert1Active": false,
+                        "AccessKey1RecentlyRotated": false,
+                        "AccessKey2RecentlyUsed": false,
+                        "Name": "Trent",
+                        "AuthorizedServices": {
+                            "models": [],
+                            "remaining": 0
+                        },
+                        "AccessKey1RecentlyUsed": false,
+                        "PasswordRecentlyUsed": false,
+                        "Cert2Active": false,
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "AccessKey1Id": "AccessKey1Id",
+                        "Arn": "arn",
+                        "AccessKey2Active": false,
+                        "AccessKey1LastRotated": "2022-07-14T00:00:00+00:00"
+                    },
+                    "Inventory": {
+                        "NewSubCategory": "Users",
+                        "OrcaScore": 3.0,
+                        "Category": "Users and Access",
+                        "UiUniqueField": "UiUniqueField",
+                        "BlastRadius": "{}",
+                        "NewCategory": "Identity and Access",
+                        "OrcaTags": "{}",
+                        "Name": "Trent",
+                        "Zones": [],
+                        "Score": 3,
+                        "DetectedCrownJewelScore": 0,
+                        "ModelTags": "{\"Category\": \"Identity and Access\", \"SubCategory\": \"Users\"}",
+                        "SubCategory": "Users",
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "Region": "eu-central-1",
+                        "Observations": [],
+                        "RiskLevel": "low",
+                        "Tags": "{}",
+                        "RelatedCompliances": [],
+                        "AccessEndpoints": "[]"
+                    }
+                },
+                "name": "Trent",
+                "asset_unique_id": "asset_unique_id",
+                "id": "id",
+                "type": "AwsUser"
+            },
+            "state": {
+                "severity": "hazardous",
+                "last_updated": "2023-03-13T00:00:00+00:00",
+                "last_seen": "2023-03-14T00:00:00+00:00",
+                "in_verification": false,
+                "low_since": null,
+                "created_at": "2023-03-13T00:00:00+00:00",
+                "score": 3,
+                "risk_level": "low",
+                "orca_score": 3.6,
+                "alert_id": "orca-91523",
+                "high_since": "2022-10-13T00:00:00+00:00",
+                "status_time": "2023-03-13T00:00:00+00:00",
+                "status": "open",
+                "verification_status": null
+            },
+            "rule_query": "[AwsUser with Name != '<root_account>' and CreationTime not in Last 90 days] without (PasswordLastUsed or AccessKey1LastUsedDate or AccessKey2LastUsedDate) in last 90 days",
+            "cluster_unique_id": "cluster_unique_id",
+            "cluster_name": "Trent",
+            "subject_type": "AwsUser",
+            "group_name": "Trent",
+            "level": 0,
+            "is_rule": true,
+            "cloud_provider": "aws",
+            "organization_name": "Partners",
+            "type_key": "type_key",
+            "cloud_vendor_id": "cloud_vendor_id",
+            "rule_id": "rule_id",
+            "asset_category": "Users and Access",
+            "asset_state": "enabled",
+            "organization_id": "organization_id",
+            "asset_unique_id": "asset_unique_id",
+            "cloud_provider_id": "cloud_provider_id",
+            "category": "IAM misconfigurations",
+            "cloud_account_type": "Regular",
+            "asset_vendor_id": "asset_vendor_id"
+        }
+    ],
+    "has_next_page_token": true
+},
+"test_2":  {
+    "version": "0.1.0",
+    "status": "success",
+    "data_grouped": true,
+    "total_supported_items": 10000,
+    "total_ungrouped_items": 644,
+    "total_items": 644,
+    "data": [
+        {
+            "group_val": "nongroup",
+            "asset_type_string": "AwsUser",
+            "data": {
+                "remediation_cli": [
+                    "How to remove AwsUser:",
+                    ">1.",
+                    ">2."
+                ],
+                "mitre_category": "initial access",
+                "recommendation": "Remove {AwsUser} user.",
+                "details": "Remove unused IAM users",
+                "auto_remediation_actions": [
+                    "AWS-IAM-002"
+                ],
+                "title": "Inactive User",
+                "remediation_console": [
+                    "**Instructions**.",
+                    ">1.",
+                    ">2.",
+                    ">3."
+                ],
+                "mitre_technique": [
+                    "Valid Accounts (T1078)"
+                ]
+            },
+            "alert_labels": [
+                "mitre: initial access"
+            ],
+            "configuration": {},
+            "is_compliance": false,
+            "group_type_string": "NonGroup",
+            "description": "Inactive User",
+            "recommendation": "Remove Trent user.",
+            "source": "Trent",
+            "group_type": "AwsUser",
+            "cluster_type": "AwsUser",
+            "type": "aws_inactive_user",
+            "group_unique_id": "group_unique_id",
+            "cloud_account_id": "cloud_account_id",
+            "type_string": "Inactive User",
+            "asset_name": "Trent",
+            "account_name": "account_name",
+            "asset_type": "AwsUser",
+            "context": "control",
+            "details": "Remove unused IAM users.",
+            "model": {
+                "data": {
+                    "User": {
+                        "MfaActive": false,
+                        "PasswordEnabled": false,
+                        "UserId": "UserId",
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "Name": "Trent"
+                    },
+                    "AwsUser": {
+                        "Policies": {
+                            "models": [],
+                            "remaining": 0
+                        },
+                        "AccessKey1Active": true,
+                        "Cert1Active": false,
+                        "AccessKey1RecentlyRotated": false,
+                        "AccessKey2RecentlyUsed": false,
+                        "Name": "Trent",
+                        "AuthorizedServices": {
+                            "models": [],
+                            "remaining": 0
+                        },
+                        "AccessKey1RecentlyUsed": false,
+                        "PasswordRecentlyUsed": false,
+                        "Cert2Active": false,
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "AccessKey1Id": "AccessKey1Id",
+                        "Arn": "arn",
+                        "AccessKey2Active": false,
+                        "AccessKey1LastRotated": "2022-07-14T00:00:00+00:00"
+                    },
+                    "Inventory": {
+                        "NewSubCategory": "Users",
+                        "OrcaScore": 3.0,
+                        "Category": "Users and Access",
+                        "UiUniqueField": "UiUniqueField",
+                        "BlastRadius": "{}",
+                        "NewCategory": "Identity and Access",
+                        "OrcaTags": "{}",
+                        "Name": "Trent",
+                        "Zones": [],
+                        "Score": 3,
+                        "DetectedCrownJewelScore": 0,
+                        "ModelTags": "{\"Category\": \"Identity and Access\", \"SubCategory\": \"Users\"}",
+                        "SubCategory": "Users",
+                        "CreationTime": "2022-07-14T00:00:00+00:00",
+                        "Region": "eu-central-1",
+                        "Observations": [],
+                        "RiskLevel": "low",
+                        "Tags": "{}",
+                        "RelatedCompliances": [],
+                        "AccessEndpoints": "[]"
+                    }
+                },
+                "name": "Trent",
+                "asset_unique_id": "asset_unique_id",
+                "id": "id",
+                "type": "AwsUser"
+            },
+            "state": {
+                "severity": "hazardous",
+                "last_updated": "2023-03-13T00:00:00+00:00",
+                "last_seen": "2023-03-14T00:00:00+00:00",
+                "in_verification": false,
+                "low_since": null,
+                "created_at": "2023-03-13T00:00:00+00:00",
+                "score": 3,
+                "risk_level": "low",
+                "orca_score": 3.6,
+                "alert_id": "orca-91523",
+                "high_since": "2022-10-13T00:00:00+00:00",
+                "status_time": "2023-03-13T00:00:00+00:00",
+                "status": "open",
+                "verification_status": null
+            },
+            "rule_query": "[AwsUser with Name != '<root_account>' and CreationTime not in Last 90 days] without (PasswordLastUsed or AccessKey1LastUsedDate or AccessKey2LastUsedDate) in last 90 days",
+            "cluster_unique_id": "cluster_unique_id",
+            "cluster_name": "Trent",
+            "subject_type": "AwsUser",
+            "group_name": "Trent",
+            "level": 0,
+            "is_rule": true,
+            "cloud_provider": "aws",
+            "organization_name": "Partners",
+            "type_key": "type_key",
+            "cloud_vendor_id": "cloud_vendor_id",
+            "rule_id": "rule_id",
+            "asset_category": "Users and Access",
+            "asset_state": "enabled",
+            "organization_id": "organization_id",
+            "asset_unique_id": "asset_unique_id",
+            "cloud_provider_id": "cloud_provider_id",
+            "category": "IAM misconfigurations",
+            "cloud_account_type": "Regular",
+            "asset_vendor_id": "asset_vendor_id"
+        }
+    ],
+    "has_next_page_token": false}
+}

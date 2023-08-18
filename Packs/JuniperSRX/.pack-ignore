@@ -1,0 +1,9 @@
+[file:JuniperSRXModelingRules.yml]
+ignore=MR108
+
+[file:JuniperSRX_1_3.yml]
+ignore=MR108
+
+[file:JuniperSRX.yml]
+ignore=PR101
+

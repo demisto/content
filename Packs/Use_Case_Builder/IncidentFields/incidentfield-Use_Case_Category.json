@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasecategory",
+    "closeForm": false,
+    "content": true,
+    "description": "Select Use Case Category",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasecategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Category",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "Phishing",
+        "Malware",
+        "Case Management",
+        "Data Enrichment and Threat Intel",
+        "Network Security",
+        "Other"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

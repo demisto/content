@@ -1,0 +1,60 @@
+[
+    {
+        "id": 997222,
+        "start_time": 1673508360001,
+        "update_time": 1673514000000,
+        "end_time": 1673508450000,
+        "mod_time": 1673518450000,
+        "title": "Rare SSH Port",
+        "description": "[VMware A5F9B5](https://dummy-base-url.com/extrahop/#/metrics/devices/6c078a2ea98c42378048f72636c371c8.005056a5f9b50000/overview?from=1673508360&interval_type=DT&until=1673508450) sent data on the following non-standard SSH port, SSH:7234. Devices across the network rarely establish SSH sessions on this port.",
+        "categories": [
+            "sec.command",
+            "sec.attack"
+        ],
+        "risk_score": 60,
+        "type": "rare_ssh_port",
+        "properties": {
+            "ports": [
+                "SSH:7234",
+                "SSH:22"
+            ]
+        },
+        "participants": [],
+        "ticket_id": "54799",
+        "assignee": "admin",
+        "status": "in_progress",
+        "resolution": null,
+        "mitre_tactics": [
+            {
+                "id": "TA0008",
+                "name": "Lateral Movement",
+                "url": "https://attack.mitre.org/tactics/TA0008"
+            },
+            {
+                "id": "TA0011",
+                "name": "Command and Control",
+                "url": "https://attack.mitre.org/tactics/TA0011"
+            }
+        ],
+        "mitre_techniques": [
+            {
+                "id": "T1021",
+                "name": "Remote Services",
+                "url": "https://attack.mitre.org/techniques/T1021",
+                "legacy_ids": [
+                    "T1021"
+                ]
+            },
+            {
+                "id": "T1571",
+                "name": "Non-Standard Port",
+                "url": "https://attack.mitre.org/techniques/T1571",
+                "legacy_ids": [
+                    "T1065"
+                ]
+            }
+        ],
+        "appliance_id": 0,
+        "is_user_created": false
+    }
+]

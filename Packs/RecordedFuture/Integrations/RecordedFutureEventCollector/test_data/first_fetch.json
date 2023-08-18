@@ -1,0 +1,82 @@
+{
+  "data": {
+    "results": [
+      {
+        "review": {
+          "assignee": null,
+          "statusDate": "2023-02-20T05:05:00.115Z",
+          "statusInPortal": "Pending",
+          "status": "pending",
+          "noteDate": null,
+          "statusChangeBy": "a1b2c3@integration.recordedfuture.com",
+          "noteAuthor": null,
+          "note": null
+        },
+        "url": "https://app.recordedfuture.com/live/sc/notification/?id=333333",
+        "rule": {
+          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?rule=rule",
+          "owner_id": "uhash:123456",
+          "owner_name": "Palo Alto Networks - Partne",
+          "id": "444444",
+          "organisation_name": "Palo Alto Networks - Partne",
+          "organisation_id": "uhash:456789",
+          "owner_organisation_details": {
+            "organisations": [
+              {
+                "organisation_id": "uhash:123456",
+                "organisation_name": "Palo Alto Networks - Partne"
+              }
+            ],
+            "enterprise_id": "uhash:456789",
+            "enterprise_name": "Palo Alto Networks - Partne"
+          },
+          "name": "Vulnerability Intelligence from Insikt Group"
+        },
+        "triggered": "2023-02-20T05:04:19.601Z",
+        "id": "333333",
+        "title": "Vulnerability Intelligence from Insikt Group - 11 new references in 11 documents",
+        "type": "REFERENCE"
+      },
+      {
+        "review": {
+          "assignee": null,
+          "statusDate": "2023-02-20T05:05:00.188Z",
+          "statusInPortal": "Pending",
+          "status": "pending",
+          "noteDate": null,
+          "statusChangeBy": "a1b2c3@integration.recordedfuture.com",
+          "noteAuthor": null,
+          "note": null
+        },
+        "url": "https://app.recordedfuture.com/live/sc/notification/?id=111111",
+        "rule": {
+          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?rule=rule",
+          "owner_id": "uhash:123456",
+          "owner_name": "Palo Alto Networks - Partne",
+          "id": "222222",
+          "organisation_name": "Palo Alto Networks - Partne",
+          "organisation_id": "uhash:456789",
+          "owner_organisation_details": {
+            "organisations": [
+              {
+                "organisation_id": "uhash:123456",
+                "organisation_name": "Palo Alto Networks - Partne"
+              }
+            ],
+            "enterprise_id": "uhash:456789",
+            "enterprise_name": "Palo Alto Networks - Partne"
+          },
+          "name": "Leaked Email Monitoring"
+        },
+        "triggered": "2023-02-20T05:04:16.724Z",
+        "id": "111111",
+        "title": "Leaked Email Monitoring - 50 new references in 2 documents",
+        "type": "EVENT"
+      }
+    ]
+  },
+  "counts": {
+    "returned": 2,
+    "total": 3
+  }
+}

@@ -42,18 +42,25 @@ At end of the process, you will see a message that you logged in successfully.
 ## Configure AzureWAF on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureWAF.
+2. Search for Azure Web Application Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | App ID | False |
+    | App ID |  | False |
+    | Default Subscription ID |  | True |
+    | Default Resource Group Name |  | True |
+    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
+    | Tenant ID (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Authorization code |  | False |
     | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | subscription_id | Subscription ID | True |
-    | resource_group_name | Default Resource Group Name | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -73,7 +80,8 @@ Retrieves protection policies within a resource group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional | 
-| resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| resource_group_names | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 | verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional | 
 
@@ -181,6 +189,8 @@ Retrieves all the WAF policies in a subscription.
 | --- | --- | --- |
 | verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of policies to be shown. (This will only affect visualized data, not context.). Default is 10. | Optional | 
+| subscription_id | Comma-separated list of subscription IDs. Will override the default subscription ID. | Optional | 
+
 
 
 #### Context Output
@@ -285,7 +295,8 @@ Creates or updates a policy with a specified rule set name within a resource gro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required | 
-| resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| resource_group_names | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 | managed_rules | Describes the managedRules structure. | Required | 
 | resource_id | Resource ID. | Optional | 
 | location | Describes the resource location. | Optional | 
@@ -391,6 +402,7 @@ Deletes a policy.
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required | 
 | resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 
 
 #### Context Output
@@ -531,3 +543,56 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+### azure-waf-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-waf-subscriptions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.Subscription.authorizationSource | String | Subscription authorization source. | 
+| AzureWAF.Subscription.displayName | String | Subscription display name. | 
+| AzureWAF.Subscription.id | String | Subscription ID with subscriptions prefix. | 
+| AzureWAF.Subscription.subscriptionId | String | Subscription ID. | 
+| AzureWAF.Subscription.locationPlacementId | String | Placmement ID of subscription. | 
+| AzureWAF.Subscription.tenantId | String | The tenatnt ID of the subscription. | 
+
+### azure-waf-resource-group-list
+
+***
+Gets all the resource groups for a subscription.
+
+#### Base Command
+
+`azure-waf-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
+| tag | You can filter by tag names and values. For example, to filter for a tag name and value, tagName=tagValue'. | Optional | 
+| limit | Maximum number of resource groups to fetch. Default is "50". Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.ResourceGroup.id | String | Resource group ID. | 
+| AzureWAF.ResourceGroup.location | String | Resource group location. | 
+| AzureWAF.ResourceGroup.name | String | Resource group name. | 
+| AzureWAF.ResourceGroup.type | String | Resource group type. | 
+| AzureWAF.ResourceGroup.properties | String | Resource group properties. | 
+| AzureWAF.ResourceGroup.tags | String | Resource group tags. | 

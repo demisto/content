@@ -34,14 +34,14 @@ def test_module(client):  # pragma: no cover
 
 def file_enrichment_command(client, file_hash):
     try:
-        response = client.get_file_reputation(file_hash)
-        response = json.dumps(response)
-        if("attributes" in response):
-            responseJson = json.loads(response)
+        responseJson = client.get_file_reputation(file_hash)
+        if "attributes" in responseJson['data']:
             md = '# Stairwell Inception\n'
             file_md5 = responseJson['data']['attributes']['md5']
+            file_sha1 = responseJson['data']['attributes']['sha1']
             file_sha256 = responseJson['data']['attributes']['sha256']
             md += f'MD5: {file_md5}\n'
+            md += f'SHA1: {file_sha1}\n'
             md += f'SHA256: {file_sha256}\n'
 
             # List the filename(s) if present
@@ -60,9 +60,22 @@ def file_enrichment_command(client, file_hash):
                 md += f'Filename(s): {filenames_string}\n'
 
             # Count the number of assets if there are seen assets
-            if responseJson['data']['attributes']['inception']['assets']:
-                seen_assets = len(responseJson['data']['attributes']['inception']['assets'])
-                md += f'Seen Assets: {seen_assets}\n'
+            if responseJson['data']['attributes']['occurrences']:
+                seen_envs = len(responseJson['data']['attributes']['occurrences'])
+                # Orgs may have multiple environments, especially partners
+                if seen_envs > 1:
+                    env_list = []
+                    for indEnv in responseJson['data']['attributes']['occurrences']:
+                        asset_count = len(indEnv['assets'])
+                        envName = indEnv['environment']['name']
+                        seen_str = envName + '(' + str(asset_count) + ')'
+                        env_list.append(seen_str)
+                    env_string = (', '.join([str(x) for x in env_list]))
+                    md += f'Seen_Assets: {env_string}\n'
+                else:
+                    seen_assets = len(responseJson['data']['attributes']['occurrences'][0]['assets'])
+                    seen_env = responseJson['data']['attributes']['occurrences'][0]['environment']['name']
+                    md += f'Seen Assets: {seen_env}({seen_assets})\n'
 
             # Show matching YARA intelligence if present
             if responseJson['data']['attributes']['crowdsourced_yara_results']:
@@ -72,16 +85,15 @@ def file_enrichment_command(client, file_hash):
                 yara_string = (', '.join([str(x) for x in yara_rules]))
                 md += f'Matching YARA Intel: {yara_string}\n'
 
-            # Create readable output if AV results exist
-            if responseJson['data']['attributes']['last_analysis_results']:
-                avResults = responseJson['data']['attributes']['last_analysis_results']
-                md += '### AV Scanning Results\n'
-                md += 'Engine Name|Result\n'
-                md += '---|---\n'
-                for indAv in avResults:
-                    engine_name = avResults[indAv]['engine_name']
-                    result = avResults[indAv]['result']
-                    md += f'{engine_name}|{result}\n'
+            # Show Mal-Eval result
+            mal_eval_output = responseJson['data']['attributes']['mal_eval_result']
+            if mal_eval_output:
+                if mal_eval_output['label']:
+                    mal_eval_label = mal_eval_output['label']
+                    md += f'Mal-Eval Label: {mal_eval_label}\n'
+                if mal_eval_output['probability_bucket']:
+                    mal_eval_prob = mal_eval_output['probability_bucket']
+                    md += f'Mal-Eval Malicious Likelihood: {mal_eval_prob}\n'
             results = CommandResults(
                 readable_output=md,
                 outputs_prefix='Inception.File_Details',

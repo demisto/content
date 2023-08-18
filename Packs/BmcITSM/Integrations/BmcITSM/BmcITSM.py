@@ -1,9 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # type: ignore
+# mypy: ignore-errors
 from copy import deepcopy
 from typing import Callable, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 SERVICE_REQUEST = "service request"

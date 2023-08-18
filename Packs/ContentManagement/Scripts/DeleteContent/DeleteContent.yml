@@ -1,52 +1,34 @@
 args:
-- default: false
-  description: The content items ids to delete, in a JSON format.
-  isArray: false
+- description: The content items ids to delete, in a JSON format.
   name: include_ids_dict
-  required: false
-  secret: false
-- default: false
-  description: The content items IDs to preserve, in a JSON format.
-  isArray: false
+- description: The content items IDs to preserve, in a JSON format.
   name: exclude_ids_dict
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
-  description: If set to true, the flow will work as usuall except that no content items will be deleted from the system.
-  isArray: false
+  description: If set to true, the flow will work as usual except that no content items will be deleted from the system.
   name: dry_run
   required: true
-  secret: false
   predefined:
   - 'true'
   - 'false'
 - auto: PREDEFINED
-  default: false
   defaultValue: 'true'
   description: If true, verify certificates when accessing github.
-  isArray: false
   name: verify_cert
   required: true
-  secret: false
   predefined:
   - 'true'
   - 'false'
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: If true, skip system proxy settings.
-  isArray: false
   name: skip_proxy
   required: true
-  secret: false
   predefined:
   - 'true'
   - 'false'
 commonfields:
   id: DeleteContent
   version: -1
-enabled: false
 name: DeleteContent
 comment: Delete content to keep XSOAR tidy.
 outputs:
@@ -60,14 +42,13 @@ outputs:
   description: Deletion status
   type: String
 script: '-'
-system: false
 tags:
 - configuration
 - Content Management
 timeout: 3600
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

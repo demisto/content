@@ -5,167 +5,108 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   defaultvalue: Varonis DSP Incident
+  required: false
 - display: The FQDN/IP the integration should connect to
-  hidden: false
   name: url
   required: true
   type: 0
 - display: Name of Varonis user
-  hidden: false
   name: credentials
   required: true
   type: 9
 - display: Use system proxy settings
-  hidden: false
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum value is 50
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: 1 week
   display: First fetch time
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
-  hidden: false
   name: severity
   options:
   - Low
   - Medium
   - High
-  required: false
   type: 15
+  required: false
 - display: Varonis threat model name
   additionalinfo: Comma-separated list of threat model names of alerts to fetch
-  hidden: false
   name: threat_model
-  required: false
   type: 0
+  required: false
 - defaultvalue: Open
   display: Varonis alert status
-  hidden: false
   name: status
   options:
   - Open
   - Under Investigation
   - Closed
-  required: false
   type: 15
+  required: false
 description: Streamline alerts and related forensic information from Varonis DSP
 display: Varonis Data Security Platform
 name: VaronisDataSecurityPlatform
 script:
   commands:
   - arguments:
-    - default: false
-      description: List of requested threat models to retrieve
+    - description: List of requested threat models to retrieve
       isArray: true
       name: threat_model_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The max number of alerts to retrieve (up to 50)
-      isArray: false
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Start time of alert range
-      isArray: false
+    - description: Start time of alert range
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: End time of alert range
-      isArray: false
+    - description: End time of alert range
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: List of required alerts status
+    - description: List of required alerts status
       isArray: true
       name: alert_status
-      required: false
-      secret: false
-    - default: false
-      description: List of required alerts severity
+    - description: List of required alerts severity
       isArray: true
       name: alert_severity
-      required: false
-      secret: false
-    - default: false
-      description: List of required alerts device name
+    - description: List of required alerts device name
       isArray: true
       name: device_name
-      required: false
-      secret: false
-    - default: false
-      description: User domain name (cannot be provided without user_name)
-      isArray: false
+    - description: User domain name (cannot be provided without user_name)
       name: user_domain_name
-      required: false
-      secret: false
-    - default: false
-      description: List of users (up to 5)
+    - description: List of users (up to 5)
       isArray: true
       name: user_name
-      required: false
-      secret: false
-    - default: false
-      description: List of sam account names (up to 5)
+    - description: List of sam account names (up to 5)
       isArray: true
       name: sam_account_name
-      required: false
-      secret: false
-    - default: false
-      description: List of emails (up to 5)
+    - description: List of emails (up to 5)
       isArray: true
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: Number of days you want the search to go back to
-      isArray: false
+    - description: Number of days you want the search to go back to
       name: last_days
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether alerts should be ordered in newest to oldest order
-      isArray: false
+    - description: Indicates whether alerts should be ordered in newest to oldest order
       name: descending_order
-      required: false
-      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Get alerts from Varonis DA
-    execution: false
     name: varonis-get-alerts
     outputs:
     - contextPath: Varonis.Alert.ID
@@ -181,15 +122,13 @@ script:
       description: Alert severity
       type: String
     - contextPath: Varonis.Alert.Category
-      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion\
-        \ \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
+      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
       type: String
     - contextPath: Varonis.Alert.Country
       description: Name of the country from which the event occurred
       type: String
     - contextPath: Varonis.Alert.State
-      description: Name of the state or regional subdivision from which the event
-        occurred
+      description: Name of the state or regional subdivision from which the event occurred
       type: String
     - contextPath: Varonis.Alert.Status
       description: |-
@@ -209,13 +148,10 @@ script:
         - Other
       type: String
     - contextPath: Varonis.Alert.BlacklistLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred
       type: Boolean
     - contextPath: Varonis.Alert.AbnormalLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated is new or abnormal to the organization, the user and peers,
-        or only the user
+      description: Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user
       type: Boolean
     - contextPath: Varonis.Alert.NumOfAlertedEvents
       description: Number of events with alerts
@@ -242,12 +178,10 @@ script:
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
     - contextPath: Varonis.Alert.On.ContainsSensitiveData
-      description: Filters according to whether the resource on which the event was
-        performed is sensitive (including subfolders)
+      description: Filters according to whether the resource on which the event was performed is sensitive (including subfolders)
       type: Boolean
     - contextPath: Varonis.Alert.On.Platform
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint
       type: String
     - contextPath: Varonis.Alert.On.Asset
       description: Path of the alerted asset
@@ -271,35 +205,25 @@ script:
       description: Number of records on the page
       type: Number
   - arguments:
-    - default: false
-      description: Requested alerts
+    - description: Requested alerts
       isArray: true
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
       predefined:
       - Open
       - Under Investigation
-      default: false
       description: Alert new status
-      isArray: false
       name: status
       required: true
-      secret: false
-    deprecated: false
     description: Update alert status
-    execution: false
     name: varonis-update-alert-status
   - arguments:
-    - default: false
-      description: Requested alerts
+    - description: Requested alerts
       isArray: true
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The reason the alert was closed
       predefined:
       - Resolved
@@ -308,43 +232,24 @@ script:
       - Account misclassification
       - Legitimate activity
       - Other
-      isArray: false
       name: close_reason
       required: true
-      secret: false
-    deprecated: false
     description: Close the alert
-    execution: false
     name: varonis-close-alert
   - arguments:
-    - default: false
-      description: List of alert IDs
+    - description: List of alert IDs
       isArray: true
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of alerts to retrieve (up to 5k)
-      isArray: false
+    - description: Maximum number of alerts to retrieve (up to 5k)
       name: max_results
-      required: false
-      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether events should be ordered in newest to oldest order
-      isArray: false
+    - description: Indicates whether events should be ordered in newest to oldest order
       name: descending_order
-      required: false
-      secret: false
-    deprecated: false
     description: Get events applied to specific alerts
-    execution: false
     name: varonis-get-alerted-events
     outputs:
     - contextPath: Varonis.Event.Type
@@ -366,15 +271,13 @@ script:
       description: Name of the country from which the event occurred
       type: String
     - contextPath: Varonis.Event.State
-      description: Name of the state or regional subdivision from which the event
-        occurred
+      description: Name of the state or regional subdivision from which the event occurred
       type: String
     - contextPath: Varonis.Event.ExternalIP
       description: Device external IP
       type: String
     - contextPath: Varonis.Event.Details.IsBlacklist
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred
       type: Boolean
     - contextPath: Varonis.Event.Details.Operation
       description: |-
@@ -429,12 +332,10 @@ script:
       description: Type of object on which the event was performed
       type: String
     - contextPath: Varonis.Event.OnObject.Platform
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint
       type: String
     - contextPath: Varonis.Event.OnObject.IsSensitive
-      description: 'Indicates whether the resource on which the event was performed
-        is sensitive '
+      description: 'Indicates whether the resource on which the event was performed is sensitive '
       type: Boolean
     - contextPath: Varonis.Event.OnObject.FileServerOrDomain
       description: File server of object on which the event was performed
@@ -474,10 +375,7 @@ script:
       description: Number of records on the page
       type: Number
   dockerimage: demisto/ntlm:1.0.0.31381
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

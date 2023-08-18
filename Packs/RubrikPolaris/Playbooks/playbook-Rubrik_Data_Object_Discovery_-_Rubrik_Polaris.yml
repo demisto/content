@@ -1,0 +1,491 @@
+id: Rubrik Data Object Discovery - Rubrik Polaris
+version: -1
+name: Rubrik Data Object Discovery - Rubrik Polaris
+description: Data discovery of the object available in the incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9867ced6-90ea-4b87-8280-85e9c8c4f21d
+    type: start
+    task:
+      id: 9867ced6-90ea-4b87-8280-85e9c8c4f21d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d244504c-e513-4199-838b-a79e7100ca0d
+    type: regular
+    task:
+      id: d244504c-e513-4199-838b-a79e7100ca0d
+      version: -1
+      name: Search the global objects
+      description: Search for Rubrik discovered objects of any type, return zero or more matches.
+      script: '|||rubrik-polaris-object-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      object_name:
+        complex:
+          root: inputs.object_name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c60c5f84-8825-43ce-87ee-8b14f1d23eed
+    type: condition
+    task:
+      id: c60c5f84-8825-43ce-87ee-8b14f1d23eed
+      version: -1
+      name: Is there an Object Name?
+      description: Checks whether object_name input is available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: edfd9bf9-47b5-4193-8757-32c0d6c45ce7
+    type: condition
+    task:
+      id: edfd9bf9-47b5-4193-8757-32c0d6c45ce7
+      version: -1
+      name: Is there an Object ID?
+      description: Checks whether object_id input is available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 43540747-cb7d-429b-8542-81efb7a20711
+    type: title
+    task:
+      id: 43540747-cb7d-429b-8542-81efb7a20711
+      version: -1
+      name: Done
+      description: |-
+        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+        !PrettyPrint value=${incident}
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 52634a05-f285-4ca6-87aa-10461ce1e984
+    type: regular
+    task:
+      id: 52634a05-f285-4ca6-87aa-10461ce1e984
+      version: -1
+      name: List the snapshots for all objects
+      description: Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
+      script: '|||rubrik-polaris-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.object_id
+      sort_order:
+        simple: DESC
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f1a53250-ca47-48ff-8d3e-c75dad4810f1
+    type: condition
+    task:
+      id: f1a53250-ca47-48ff-8d3e-c75dad4810f1
+      version: -1
+      name: Is Snapshot data returned?
+      description: Checks certain fields related to Snapshot.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: date
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 50a7b3da-9f69-4513-8198-4d571770df80
+    type: regular
+    task:
+      id: 50a7b3da-9f69-4513-8198-4d571770df80
+      version: -1
+      name: Data not found
+      description: Prints text to war room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      value:
+        simple: No data for this type was obtained
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 31981a2d-f11c-4551-8e5c-0db3ac0afdd5
+    type: regular
+    task:
+      id: 31981a2d-f11c-4551-8e5c-0db3ac0afdd5
+      version: -1
+      name: Input required
+      description: Prints an error entry with a message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      message:
+        simple: Either object_name or object_id input must be provided.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 01bffd73-36f2-4211-8981-21f0307f65bd
+    type: condition
+    task:
+      id: 01bffd73-36f2-4211-8981-21f0307f65bd
+      version: -1
+      name: Is Rubrik Polaris Integration enabled?
+      description: Skips the playbook if no enabled Rubrik Polaris integration is found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e8c6ff52-9e92-4e81-8d2f-d48e9396ce26
+    type: playbook
+    task:
+      id: e8c6ff52-9e92-4e81-8d2f-d48e9396ce26
+      version: -1
+      name: Rubrik List Snapshots - Rubrik Polaris
+      description: List snapshots for all objects.
+      playbookName: Rubrik List Snapshots - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      object_id:
+        complex:
+          root: RubrikPolaris.GlobalSearchObject
+          accessor: id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1362.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+  - key: object_name
+    value:
+      complex:
+        root: incident
+        accessor: rubrikpolarisobjectname
+    required: false
+    description: Name of the object to discover.
+    playbookInputQuery:
+  - key: object_id
+    value:
+      complex:
+        root: incident
+        accessor: rubrikpolarisfid
+    required: false
+    description: ID of the object to discover.
+    playbookInputQuery:
+outputs: []
+tests:
+- RubrikPolaris-Test
+fromversion: 6.0.0

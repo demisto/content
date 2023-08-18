@@ -28,12 +28,11 @@ subtype: python3
 dependson:
   must:
   - '|||demisto-api-get'
-runonce: false
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2

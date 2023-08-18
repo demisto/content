@@ -264,17 +264,13 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
     integrations = []
-    is_nightly_integration = False
     test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             test_skipped_integration.append(integration)
-
-        if integration in nightly_integrations:
-            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -282,7 +278,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return test_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations
 
 
 def extract_filtered_tests():
@@ -338,7 +334,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.warning(f"assuming server version is {default_version}.")
         return default_version
 
-    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
+    instances_ami_names = {env.get('ImageName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
         logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
                         f' Assuming server version is {default_version}')
@@ -350,19 +346,21 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 
 def extract_server_numeric_version(instances_ami_name, default_version):
-    # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
-                                   instances_ami_name)
-    extracted_version = [match.replace('_', '.') for match in extracted_version]
+    try:
+        server_numeric_version = re.search(
+            r'server-image-(?:ga-)?(?P<version>[a-z0-9\-]+)-(?P<build_number>\d+)-(?P<creation_date>\d{4}-\d{2}-\d{2})',
+            instances_ami_name
+        ).group('version')
+    except (AttributeError, IndexError) as e:
+        logging.info(f'Got exception when trying to get the server version. Setting server version to {default_version=}.'
+                     f' Given {instances_ami_name=}. Exact error is {str(e)}')
+        return default_version
 
-    if extracted_version:
-        server_numeric_version = extracted_version[0]
+    if server_numeric_version == 'master':
+        logging.info('Server version: Master')
+        return default_version
     else:
-        if 'Master' in instances_ami_name:
-            logging.info('Server version: Master')
-            return default_version
-        else:
-            server_numeric_version = default_version
+        server_numeric_version = server_numeric_version.replace('-', '.')
 
     # make sure version is three-part version
     if server_numeric_version.count('.') == 1:
@@ -376,7 +374,7 @@ def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
     env_json = load_env_results_json()
-    instances_ips = [(env.get('Role'), f"localhost:{env.get('TunnelPort')}") for env in env_json]
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS', '')) for env in env_json]
     return instances_ips
 
 
@@ -557,7 +555,7 @@ def workflow_still_running(workflow_id: str) -> bool:
         try:
             workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
                                                      headers={'Accept': 'application/json'},
-                                                     auth=(CIRCLE_STATUS_TOKEN, ''))
+                                                     auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
             workflow_details_response.raise_for_status()
         except Exception:
             logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')

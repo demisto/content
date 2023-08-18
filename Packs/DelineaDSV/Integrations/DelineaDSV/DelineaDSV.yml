@@ -8,48 +8,37 @@ configuration:
   required: true
   type: 0
 - display: Username
-  hidden: false
   name: client_id
   required: true
   type: 0
 - display: Password
-  hidden: false
   name: client_secret
   required: true
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
 display: DelineaDSV
 name: DelineaDSV
 script:
   commands:
   - arguments:
-    - default: false
-      description: Secret name for DSV
-      isArray: false
+    - description: Secret name for DSV
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Getting a secret fom DSV
-    execution: false
     name: dsv-secret-get
     outputs:
     - contextPath: secret
       description: Received JSON object secret
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

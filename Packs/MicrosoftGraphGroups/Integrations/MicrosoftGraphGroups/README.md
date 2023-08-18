@@ -1114,5 +1114,25 @@ There are no context output for this command.
 <p>
 User {user_id} was removed from the Group {group_id} successfully.
 </p>
+
+<h3 id="msgraph-groups-auth-reset">8. msgraph-groups-auth-reset</h3>
+<hr>
+<p>Run this command if for some reason you need to rerun the authentication process.</p>
+<h5>Base Command</h5>
+<p>
+  <code>msgraph-groups-auth-reset</code>
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
+
+<h5>Input</h5>
+
+<p>There are no input arguments for this command.&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+
+<h2>Additional Information</h2><h2>Troubleshooting</h2>
+
+<h2>Known Limitations</h2>
+<p>
+<a href="https://learn.microsoft.com/en-us/graph/api/resources/groups-overview?view=graph-rest-1.0&tabs=http">As per</a>, Microsoft also supports dynamic distribution groups which cannot be managed or retrieved through Microsoft Graph.
+</p>

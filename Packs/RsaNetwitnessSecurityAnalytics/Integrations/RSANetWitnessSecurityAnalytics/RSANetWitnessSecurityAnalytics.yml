@@ -6,10 +6,7 @@ system: true
 fromversion: 5.0.0
 display: RSA NetWitness Security Analytics
 category: Analytics & SIEM
-description: RSA Security Analytics, compatible with prior to v11. A distributed and
-  modular system that enables highly flexible deployment architectures that scale
-  with the needs of the organization. Security Analytics allows administrators to
-  collect two types of data from the network infrastructure, packet data and log data.
+description: RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
 configuration:
 - display: Server Url (192.168.56.101)
   name: url
@@ -20,12 +17,20 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
-  required: true
+  hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- display: Username
+  name: credentials
+  type: 9
+  displaypassword: Password
+  section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -46,8 +51,7 @@ script:
     deprecated: true
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain
-        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
     - name: page
       description: The default is 1. Indicates the page number of incidents
     - name: start
@@ -55,21 +59,13 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example:
-        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example:
-        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
-      description: '[optinal boolean] By default alerts and events related to incident
-        not loaded. If loadAlerts is true, then command will load all alerts and their
-        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
-        alert XHR request send to SA.'
+      description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
     description: Fetches incidents by filter
   - name: nw-login
     arguments: []
@@ -111,41 +107,33 @@ script:
       description: Filter of time range in which events occured
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
     - name: collectionName
       description: '[optional]'
     - name: predicateIds
       description: '[optional]'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
-      description: 'The unique meta id for this field. If nw-get-events was called
-        this will be your starting id for this distinct value'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
     - name: mid2
-      description: 'The unique meta id for this field. If nw-get-events was called
-        this will be your ending id for this distinct value.'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
       description: '[optional number] Default set to 1. The page number'
     - name: start
-      description: '[optional number] Default set to 0. The starting index of event
-        in page.'
+      description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events
-        per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page'
     - name: sort
       description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value
-        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: nw-get-available-assignees
     deprecated: true
@@ -165,26 +153,20 @@ script:
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       description: '[optional string] Default set to "50". '
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute nw-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces
-        in it. In order to get list of events you can use nw-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet
-        Decoder, etc.) from which the events are. You can view the list of devices
-        by executing the command nw-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components
     - name: priority
       required: true
       auto: PREDEFINED
@@ -197,10 +179,7 @@ script:
     - name: summary
       description: Summary of the incident
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Creating new incident
     execution: true
   - name: nw-add-events-to-incident
@@ -212,26 +191,18 @@ script:
       description: '[string] Existing incident id. '
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must
-        not include spaces in it. In order to get list of events you can use nw-get-events.
-        Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events. Example: "23,12,3"'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       required: true
       description: '[number] Severity of the incident. Example: 50'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder,
-        Packet Decoder, etc.) from which the events are. You can view the list of
-        devices by executing the command nw-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: This command will add new events to existing incident
     execution: true
   - name: nw-update-incident
@@ -239,16 +210,13 @@ script:
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma
-        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
     - name: name
       description: '[optional string] Set name if incident name has been changed'
     - name: summary
       description: '[optional string] Updated incident summary'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute nw-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
     - name: comment
       description: '[optional string] Add a journal entry describing your changes'
     - name: status
@@ -269,15 +237,11 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been
-        changed'
+      description: '[optional priority] Set priority if incident priority has been changed'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
   - name: fetch-incidents
@@ -294,11 +258,9 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
-        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date.
-        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
     description: Return single alert by id
     deprecated: true
@@ -311,13 +273,11 @@ script:
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
     - name: eventId
       required: true
       description: '[number] Id of the event'
-    description: Returns two entries. One is event details json and the second is
-      event/session content
+    description: Returns two entries. One is event details json and the second is event/session content
   - name: nw-get-incident-details
     deprecated: true
     arguments:
@@ -337,8 +297,7 @@ script:
   - name: netwitness-im-list-incidents
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain
-        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
     - name: page
       description: The default is 1. Indicates the page number of incidents
     - name: start
@@ -346,21 +305,13 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example:
-        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example:
-        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component
-        command. If this argument is not filled/passed, the script will automatically
-        get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
-      description: '[optinal boolean] By default alerts and events related to incident
-        not loaded. If loadAlerts is true, then command will load all alerts and their
-        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
-        alert XHR request send to SA.'
+      description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
     description: Fetches incidents by filter
     outputs:
     - contextPath: Netwitness.Incident.Id
@@ -448,41 +399,33 @@ script:
       description: Filter of time range in which events occured
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
     - name: collectionName
       description: '[optional]'
     - name: predicateIds
       description: '[optional]'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
-      description: 'The unique meta id for this field. If nw-get-events was called
-        this will be your starting id for this distinct value'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
     - name: mid2
-      description: 'The unique meta id for this field. If nw-get-events was called
-        this will be your ending id for this distinct value.'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
       description: '[optional number] Default set to 1. The page number'
     - name: start
-      description: '[optional number] Default set to 0. The starting index of event
-        in page.'
+      description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events
-        per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page'
     - name: sort
       description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value
-        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: netwitness-im-get-available-assignees
     arguments: []
@@ -500,26 +443,20 @@ script:
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       description: '[optional string] Default set to "50". '
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute netwitness-im-get-available-assignees to get the list of users.
-        Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces
-        in it. In order to get list of events you can use netwitness-im-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet
-        Decoder, etc.) from which the events are. You can view the list of devices
-        by executing the command netwitness-im-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components
     - name: priority
       required: true
       auto: PREDEFINED
@@ -532,10 +469,7 @@ script:
     - name: summary
       description: Summary of the incident
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component
-        command. If this argument is not filled/passed, the script will automatically
-        get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Creating new incident
     outputs:
     - contextPath: Netwitness.Incident.Id
@@ -557,42 +491,31 @@ script:
       description: '[string] Existing incident id. '
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must
-        not include spaces in it. In order to get list of events you can use netwitness-im-get-events.
-        Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events. Example: "23,12,3"'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       required: true
       description: '[number] Severity of the incident. Example: 50'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder,
-        Packet Decoder, etc.) from which the events are. You can view the list of
-        devices by executing the command netwitness-im-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component
-        command. If this argument is not filled/passed, the script will automatically
-        get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: This command will add new events to existing incident
     execution: true
   - name: netwitness-im-update-incident
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma
-        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
     - name: name
       description: '[optional string] Set name if incident name has been changed'
     - name: summary
       description: '[optional string] Updated incident summary'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute netwitness-im-get-available-assignees to get the list of users.
-        Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
     - name: comment
       description: '[optional string] Add a journal entry describing your changes'
     - name: status
@@ -613,15 +536,11 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been
-        changed'
+      description: '[optional priority] Set priority if incident priority has been changed'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component
-        command. If this argument is not filled/passed, the script will automatically
-        get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
   - name: netwitness-im-get-alerts
@@ -634,11 +553,9 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
-        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date.
-        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: netwitness-im-get-alert-details
     description: Return single alert by id
     arguments:
@@ -680,8 +597,7 @@ script:
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
     - name: eventId
       required: true
       description: '[number] Id of the event'

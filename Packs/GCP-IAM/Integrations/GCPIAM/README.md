@@ -2484,3 +2484,48 @@ There is no context output for this command.
 ```!gcp-iam-project-iam-policy-remove project_name="projects/project-name-3" role="roles/anthosidentityservice.serviceAgent"```
 #### Human Readable Output
 >Project projects/project-name-3 IAM policies updated successfully.
+
+### gcp-iam-tagbindings-list
+***
+List tag bindings (key value pair) applied to a project/folder/organization object.
+
+
+#### Base Command
+
+`gcp-iam-tagbindings-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent |  The name of the resource to list tag bindings under. For example, setting this field to 'folders/1234' would list all tags directly applied to that folder. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCPIAM.TagBindings.key | String | Tag bindings key. | 
+| GCPIAM.TagBindings.value | String | Tag bindings value. | 
+
+#### Command example
+```!gcp-iam-tagbindings-list parent="//cloudresourcemanager.googleapis.com/folders/111111111111"```
+#### Context Example
+```json
+{
+    "GCP": {
+        "IAM": {
+            "TagBindings": {
+                "key": "environment",
+                "value": "non-production"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Project projects/project-name-1 information:
+>|key|value|
+>|---|---|
+>| environment | non-production |

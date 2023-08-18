@@ -18,8 +18,7 @@ args:
   required: true
   description: DT expression.
 scripttarget: 0
-runonce: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474

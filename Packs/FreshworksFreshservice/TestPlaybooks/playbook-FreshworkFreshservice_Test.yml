@@ -1,0 +1,4805 @@
+id: FreshworkFreshservice
+version: -1
+fromversion: 6.8.0
+name: FreshworkFreshservice
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b21a1da-7551-413b-8ee1-4ffbab951efb
+    type: start
+    task:
+      id: 8b21a1da-7551-413b-8ee1-4ffbab951efb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1b847832-2073-4920-84dc-40d9e2480598
+    type: regular
+    task:
+      id: 1b847832-2073-4920-84dc-40d9e2480598
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0f4d6831-401b-4cf4-8038-1450aef81a3c
+    type: regular
+    task:
+      id: 0f4d6831-401b-4cf4-8038-1450aef81a3c
+      version: -1
+      name: freshservice-ticket-list
+      script: FreshworkFreshservice|||freshservice-ticket-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ticket_id:
+        simple: 200
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 21a42295-fd86-4799-890c-18960d4d6397
+    type: condition
+    task:
+      id: 21a42295-fd86-4799-890c-18960d4d6397
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.subject
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: cdd423e7-a56a-4d4d-8ebf-380c4313762b
+    type: regular
+    task:
+      id: cdd423e7-a56a-4d4d-8ebf-380c4313762b
+      version: -1
+      name: freshservice-ticket-create
+      script: FreshworkFreshservice|||freshservice-ticket-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      description:
+        simple: abc
+      email:
+        simple: email@qmasters.co
+      priority:
+        simple: Low
+      status:
+        simple: Pending
+      subject:
+        simple: abc
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e0081049-810c-4b1f-8e10-e8dedd68c736
+    type: condition
+    task:
+      id: e0081049-810c-4b1f-8e10-e8dedd68c736
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: de18f478-518d-496d-8f3e-336faca8fb4d
+    type: regular
+    task:
+      id: de18f478-518d-496d-8f3e-336faca8fb4d
+      version: -1
+      name: freshservice-ticket-update
+      script: FreshworkFreshservice|||freshservice-ticket-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      category:
+        simple: Software
+      ticket_id:
+        simple: 84
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0a48c010-67af-4387-83df-24ce53120350
+    type: condition
+    task:
+      id: 0a48c010-67af-4387-83df-24ce53120350
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 12428ef1-8f30-4602-8829-83de8517e2ab
+    type: regular
+    task:
+      id: 12428ef1-8f30-4602-8829-83de8517e2ab
+      version: -1
+      name: freshservice-ticket-delete
+      script: FreshworkFreshservice|||freshservice-ticket-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ticket_id:
+        simple: 563
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ec7f3d45-797e-4c89-8522-c91f1b691eaf
+    type: regular
+    task:
+      id: ec7f3d45-797e-4c89-8522-c91f1b691eaf
+      version: -1
+      name: freshservice-ticket-task-list
+      script: FreshworkFreshservice|||freshservice-ticket-task-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ticket_id:
+        simple: 84
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 95c05179-9926-4ea7-8c35-7df1da875eff
+    type: condition
+    task:
+      id: 95c05179-9926-4ea7-8c35-7df1da875eff
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 61b5812a-d2a0-4f42-824f-cd1b36f7f6df
+    type: regular
+    task:
+      id: 61b5812a-d2a0-4f42-824f-cd1b36f7f6df
+      version: -1
+      name: freshservice-ticket-task-create
+      script: FreshworkFreshservice|||freshservice-ticket-task-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      description:
+        simple: 'description'
+      due_date:
+        simple: '2023-05-06'
+      notify_before:
+        simple: '3 days'
+      ticket_id:
+        simple: 84
+      title:
+        simple: 'test'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d58b1c6a-ab0e-4236-8e08-915f10e23a54
+    type: condition
+    task:
+      id: d58b1c6a-ab0e-4236-8e08-915f10e23a54
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 436c9d01-a799-48f7-8a85-fb8185886283
+    type: regular
+    task:
+      id: 436c9d01-a799-48f7-8a85-fb8185886283
+      version: -1
+      name: freshservice-ticket-task-update
+      script: FreshworkFreshservice|||freshservice-ticket-task-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      status:
+        simple: In Progress
+      task_id:
+        simple: 32
+      ticket_id:
+        simple: 84
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e04054c1-3d1e-470e-8473-806c82387b43
+    type: condition
+    task:
+      id: e04054c1-3d1e-470e-8473-806c82387b43
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 45aabedd-acce-4369-8e8d-e273b7f8ed41
+    type: regular
+    task:
+      id: 45aabedd-acce-4369-8e8d-e273b7f8ed41
+      version: -1
+      name: freshservice-ticket-task-delete
+      script: FreshworkFreshservice|||freshservice-ticket-task-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      task_id:
+        simple: 31
+      ticket_id:
+        simple: 84
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 746fbb31-1a0a-4155-8cb8-e082faa522e9
+    type: regular
+    task:
+      id: 746fbb31-1a0a-4155-8cb8-e082faa522e9
+      version: -1
+      name: freshservice-ticket-conversation-list
+      script: FreshworkFreshservice|||freshservice-ticket-conversation-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      ticket_id:
+        simple: 6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 86733c33-e925-4578-8e6d-3bde5fc89e68
+    type: condition
+    task:
+      id: 86733c33-e925-4578-8e6d-3bde5fc89e68
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body_text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.ticket_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: ba06625e-1e94-4275-8709-e3434426ebd5
+    type: regular
+    task:
+      id: ba06625e-1e94-4275-8709-e3434426ebd5
+      version: -1
+      name: freshservice-ticket-conversation-reply-create
+      script: FreshworkFreshservice|||freshservice-ticket-conversation-reply-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      body:
+        simple: body
+      ticket_id:
+        simple: 6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1555f418-94e7-489b-813f-57c7ba9a9cf2
+    type: condition
+    task:
+      id: 1555f418-94e7-489b-813f-57c7ba9a9cf2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body_text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.ticket_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8b43216e-f262-45f0-8ef0-78b914aff15a
+    type: regular
+    task:
+      id: 8b43216e-f262-45f0-8ef0-78b914aff15a
+      version: -1
+      name: freshservice-ticket-conversation-note-create
+      script: FreshworkFreshservice|||freshservice-ticket-conversation-note-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      body:
+        simple: body
+      ticket_id:
+        simple: 6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e39dcd86-2398-4acd-893a-29bfba77489a
+    type: condition
+    task:
+      id: e39dcd86-2398-4acd-893a-29bfba77489a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.body_text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.ticket_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Note.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6ba7e545-38bb-4bec-8bdb-628df19c2c79
+    type: regular
+    task:
+      id: 6ba7e545-38bb-4bec-8bdb-628df19c2c79
+      version: -1
+      name: freshservice-ticket-conversation-update
+      script: FreshworkFreshservice|||freshservice-ticket-conversation-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      body:
+        simple: body
+      conversation_id:
+        simple: 21008417031
+      ticket_id:
+        simple: 6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 95e5a047-91f5-49ef-8062-ce4e6c0f301c
+    type: condition
+    task:
+      id: 95e5a047-91f5-49ef-8062-ce4e6c0f301c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.body_text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.ticket_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Ticket.Conversation.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d08cf362-04ff-4fb1-8e9c-36288b6c679b
+    type: regular
+    task:
+      id: d08cf362-04ff-4fb1-8e9c-36288b6c679b
+      version: -1
+      name: freshservice-ticket-conversation-delete
+      script: FreshworkFreshservice|||freshservice-ticket-conversation-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      conversation_id:
+        simple: 21008417037
+      ticket_id:
+        simple: 84
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: fcace017-6020-42b0-8236-fe5b6f3fc6dc
+    type: regular
+    task:
+      id: fcace017-6020-42b0-8236-fe5b6f3fc6dc
+      version: -1
+      name: freshservice-problem-list
+      script: FreshworkFreshservice|||freshservice-problem-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 57571fff-0063-4ba6-8078-24981856f7dd
+    type: condition
+    task:
+      id: 57571fff-0063-4ba6-8078-24981856f7dd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 72f7b70a-6201-4ac4-86b2-9ab358a64d91
+    type: regular
+    task:
+      id: 72f7b70a-6201-4ac4-86b2-9ab358a64d91
+      version: -1
+      name: freshservice-problem-create
+      script: FreshworkFreshservice|||freshservice-problem-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      description:
+        simple: 'description'
+      due_by:
+        simple: '2023-04-04T22:00:00Z'
+      email:
+        simple: email@qmasters.co
+      impact:
+        simple: Medium
+      priority:
+        simple: Medium
+      status:
+        simple: Open
+      subject:
+        simple: 'subject'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9138c3ee-67d5-441e-82ae-ab9066e03288
+    type: condition
+    task:
+      id: 9138c3ee-67d5-441e-82ae-ab9066e03288
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3f6fe88b-c960-41fa-8066-02f3988cbd72
+    type: regular
+    task:
+      id: 3f6fe88b-c960-41fa-8066-02f3988cbd72
+      version: -1
+      name: freshservice-problem-update
+      script: FreshworkFreshservice|||freshservice-problem-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      priority:
+        simple: Urgent
+      problem_id:
+        simple: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 58a967bd-fc23-4e63-8bb7-6bb176e60044
+    type: condition
+    task:
+      id: 58a967bd-fc23-4e63-8bb7-6bb176e60044
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6a30dd96-0d38-4826-89d0-966063dce200
+    type: regular
+    task:
+      id: 6a30dd96-0d38-4826-89d0-966063dce200
+      version: -1
+      name: freshservice-problem-delete
+      script: FreshworkFreshservice|||freshservice-problem-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      problem_id:
+        simple: 326
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 7e22e8de-e278-49b0-83e9-b9739e08b6b5
+    type: regular
+    task:
+      id: 7e22e8de-e278-49b0-83e9-b9739e08b6b5
+      version: -1
+      name: freshservice-problem-task-list
+      script: FreshworkFreshservice|||freshservice-problem-task-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      problem_id:
+        simple: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: df6a9468-4475-4213-86c9-9c4ce2aa8480
+    type: condition
+    task:
+      id: df6a9468-4475-4213-86c9-9c4ce2aa8480
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6b4caac3-a118-417f-8234-3c087246f633
+    type: regular
+    task:
+      id: 6b4caac3-a118-417f-8234-3c087246f633
+      version: -1
+      name: freshservice-problem-task-create
+      script: FreshworkFreshservice|||freshservice-problem-task-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      description:
+        simple: 'description'
+      due_date:
+        simple: '2023-05-06'
+      notify_before:
+        simple: "2023-04-06"
+      problem_id:
+        simple: 2
+      title:
+        simple: 'test'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 12005799-8963-43cd-870b-be7efdf1dbd1
+    type: condition
+    task:
+      id: 12005799-8963-43cd-870b-be7efdf1dbd1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 37846bb6-f149-47a4-8554-25ac67363843
+    type: regular
+    task:
+      id: 37846bb6-f149-47a4-8554-25ac67363843
+      version: -1
+      name: freshservice-problem-task-update
+      script: FreshworkFreshservice|||freshservice-problem-task-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      problem_id:
+        simple: 2
+      task_id:
+        simple: 6
+      description:
+        simple: description
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 506be6b2-0a7a-4790-8750-d4b20edfd4d2
+    type: condition
+    task:
+      id: 506be6b2-0a7a-4790-8750-d4b20edfd4d2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Problem.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 29a7d274-36fe-4106-848d-6d968e5f1266
+    type: regular
+    task:
+      id: 29a7d274-36fe-4106-848d-6d968e5f1266
+      version: -1
+      name: freshservice-problem-task-delete
+      script: FreshworkFreshservice|||freshservice-problem-task-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      problem_id:
+        simple: 2
+      task_id:
+        simple: 46
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 7cf902c0-37c6-4697-8696-82888a0d8198
+    type: regular
+    task:
+      id: 7cf902c0-37c6-4697-8696-82888a0d8198
+      version: -1
+      name: freshservice-change-list
+      script: FreshworkFreshservice|||freshservice-change-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 716391e6-5eed-4568-8ef3-afb3c246eac4
+    type: condition
+    task:
+      id: 716391e6-5eed-4568-8ef3-afb3c246eac4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.change_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 63d989e9-a1f8-4f7a-8279-6f0cbbc37525
+    type: regular
+    task:
+      id: 63d989e9-a1f8-4f7a-8279-6f0cbbc37525
+      version: -1
+      name: freshservice-change-create
+      script: FreshworkFreshservice|||freshservice-change-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      change_type:
+        simple: Standard
+      description:
+        simple: description
+      impact:
+        simple: Medium
+      planned_end_date:
+        simple: '2023-05-01'
+      planned_start_date:
+        simple: '2023-04-04'
+      priority:
+        simple: Medium
+      email:
+        simple: email@qmasters.co
+      risk:
+        simple: Medium
+      status:
+        simple: Open
+      subject:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: d95e8b54-02fb-4bbb-86e8-67cc6bf221af
+    type: condition
+    task:
+      id: d95e8b54-02fb-4bbb-86e8-67cc6bf221af
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.change_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 4a1fec12-59a0-4bc4-84e7-17279e27a4de
+    type: regular
+    task:
+      id: 4a1fec12-59a0-4bc4-84e7-17279e27a4de
+      version: -1
+      name: freshservice-change-update
+      script: FreshworkFreshservice|||freshservice-change-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      category:
+        simple: Travel
+      change_id:
+        simple: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: f3771fb2-4840-4cc5-8ba7-9a14af3641f2
+    type: condition
+    task:
+      id: f3771fb2-4840-4cc5-8ba7-9a14af3641f2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.change_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.requester_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e285f766-b8ce-4549-8e0c-fcdb594e8bf6
+    type: regular
+    task:
+      id: e285f766-b8ce-4549-8e0c-fcdb594e8bf6
+      version: -1
+      name: freshservice-change-delete
+      script: FreshworkFreshservice|||freshservice-change-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      change_id:
+        simple: 8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 21e1f1bd-c4a3-4d2a-8ca9-5fd7b8d02bc6
+    type: regular
+    task:
+      id: 21e1f1bd-c4a3-4d2a-8ca9-5fd7b8d02bc6
+      version: -1
+      name: freshservice-change-task-list
+      script: FreshworkFreshservice|||freshservice-change-task-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      change_id:
+        simple: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 7d3f411f-6477-48ba-85a2-317bb8c31701
+    type: condition
+    task:
+      id: 7d3f411f-6477-48ba-85a2-317bb8c31701
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 103ed42d-81be-4f16-87d7-66839e50e864
+    type: regular
+    task:
+      id: 103ed42d-81be-4f16-87d7-66839e50e864
+      version: -1
+      name: freshservice-change-task-create
+      script: FreshworkFreshservice|||freshservice-change-task-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      change_id:
+        simple: 2
+      description:
+        simple: description
+      due_date:
+        simple: '2023-05-05'
+      notify_before:
+        simple: '3 days'
+      title:
+        simple: title
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 5760f8bc-596e-4bb8-8c4f-afba4330a0d8
+    type: condition
+    task:
+      id: 5760f8bc-596e-4bb8-8c4f-afba4330a0d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 07eb678c-c308-49da-8b19-eb46e23d61b1
+    type: regular
+    task:
+      id: 07eb678c-c308-49da-8b19-eb46e23d61b1
+      version: -1
+      name: freshservice-change-task-update
+      script: FreshworkFreshservice|||freshservice-change-task-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      change_id:
+        simple: 2
+      status:
+        simple: In Progress
+      task_id:
+        simple: 8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 7d7b9017-d355-4cd9-8247-7e8cbb20c305
+    type: condition
+    task:
+      id: 7d7b9017-d355-4cd9-8247-7e8cbb20c305
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Change.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 8d33d2fd-b5bf-429a-80d8-b18e7092c9a1
+    type: regular
+    task:
+      id: 8d33d2fd-b5bf-429a-80d8-b18e7092c9a1
+      version: -1
+      name: freshservice-change-task-delete
+      script: FreshworkFreshservice|||freshservice-change-task-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      change_id:
+        simple: 2
+      task_id:
+        simple: 8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: adb72b05-eb9e-408e-8b16-23ce6a1e052d
+    type: regular
+    task:
+      id: adb72b05-eb9e-408e-8b16-23ce6a1e052d
+      version: -1
+      name: freshservice-release-list
+      script: FreshworkFreshservice|||freshservice-release-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7fc72a2f-ae0b-471e-8b91-f9af33d22839
+    type: condition
+    task:
+      id: 7fc72a2f-ae0b-471e-8b91-f9af33d22839
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.release_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 3b458696-2447-4aac-85bf-01886805fa85
+    type: regular
+    task:
+      id: 3b458696-2447-4aac-85bf-01886805fa85
+      version: -1
+      name: freshservice-release-create
+      script: FreshworkFreshservice|||freshservice-release-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      description:
+        simple: description
+      planned_end_date:
+        simple: '2023-05-20T16:18:46Z'
+      planned_start_date:
+        simple: '2019-04-20T16:18:46Z'
+      priority:
+        simple: Medium
+      release_type:
+        simple: Standard
+      status:
+        simple: Open
+      subject:
+        simple: subject
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 880de525-4319-45df-81f5-17f2a0f8dfbb
+    type: condition
+    task:
+      id: 880de525-4319-45df-81f5-17f2a0f8dfbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.release_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 602012b6-762f-4fdb-8cd7-77050986aefb
+    type: regular
+    task:
+      id: 602012b6-762f-4fdb-8cd7-77050986aefb
+      version: -1
+      name: freshservice-release-update
+      script: FreshworkFreshservice|||freshservice-release-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      priority:
+        simple: Medium
+      release_id:
+        simple: 8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 02c60ff4-b3fd-4ae9-8c8c-75cdd8e478fe
+    type: condition
+    task:
+      id: 02c60ff4-b3fd-4ae9-8c8c-75cdd8e478fe
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_start_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.planned_end_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.release_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: a6057951-0aa9-45b5-879f-4eb3792b6e82
+    type: regular
+    task:
+      id: a6057951-0aa9-45b5-879f-4eb3792b6e82
+      version: -1
+      name: freshservice-release-delete
+      script: FreshworkFreshservice|||freshservice-release-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      release_id:
+        simple: 88
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: e2b85590-85b4-4aa8-8e54-d88be73823ba
+    type: regular
+    task:
+      id: e2b85590-85b4-4aa8-8e54-d88be73823ba
+      version: -1
+      name: freshservice-release-task-list
+      script: FreshworkFreshservice|||freshservice-release-task-list
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      release_id:
+        simple: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 1be72533-2359-407f-8e77-26721f93397c
+    type: condition
+    task:
+      id: 1be72533-2359-407f-8e77-26721f93397c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 7e55fe80-c52b-4343-8952-1cb2e75089ec
+    type: regular
+    task:
+      id: 7e55fe80-c52b-4343-8952-1cb2e75089ec
+      version: -1
+      name: freshservice-release-task-create
+      script: FreshworkFreshservice|||freshservice-release-task-create
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      description:
+        simple: description
+      due_date:
+        simple: '2023-05-05'
+      notify_before:
+        simple: '1 week'
+      release_id:
+        simple: 2
+      title:
+        simple: title
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 8fa2a529-11a9-4a52-863a-9c717b8c558f
+    type: condition
+    task:
+      id: 8fa2a529-11a9-4a52-863a-9c717b8c558f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 1d2a9189-4d72-45b9-8fad-aa0d633c9677
+    type: regular
+    task:
+      id: 1d2a9189-4d72-45b9-8fad-aa0d633c9677
+      version: -1
+      name: freshservice-release-task-update
+      script: FreshworkFreshservice|||freshservice-release-task-update
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      release_id:
+        simple: 2
+      task_id:
+        simple: 8
+      description:
+        simple: description
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 9ef7c195-1bf7-4e53-8603-149b8d220901
+    type: condition
+    task:
+      id: 9ef7c195-1bf7-4e53-8603-149b8d220901
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.due_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.notify_before
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Release.Task.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 221510ef-006d-4de6-8eb7-45ab387db3c4
+    type: regular
+    task:
+      id: 221510ef-006d-4de6-8eb7-45ab387db3c4
+      version: -1
+      name: freshservice-release-task-delete
+      script: FreshworkFreshservice|||freshservice-release-task-delete
+      type: regular
+      iscommand: true
+      brand: FreshworkFreshservice
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      release_id:
+        simple: 2
+      task_id:
+        simple: 8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: b20ce614-455f-4c17-8f8a-ed4aa22f241a
+    type: regular
+    task:
+      id: b20ce614-455f-4c17-8f8a-ed4aa22f241a
+      version: -1
+      name: freshservice-requester-list
+      script: FreshworkFreshservice|||freshservice-requester-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 4aa55184-bd30-4280-85e9-dadd6b14cc46
+    type: condition
+    task:
+      id: 4aa55184-bd30-4280-85e9-dadd6b14cc46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshservice.Requester.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.primary_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.time_format
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Requester.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: f044e7ab-a7d5-4ea1-8460-681a7900b3a1
+    type: regular
+    task:
+      id: f044e7ab-a7d5-4ea1-8460-681a7900b3a1
+      version: -1
+      name: freshservice-agent-list
+      script: FreshworkFreshservice|||freshservice-agent-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: b60e2b07-9392-4dd5-8de9-f1382e978e66
+    type: condition
+    task:
+      id: b60e2b07-9392-4dd5-8de9-f1382e978e66
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshservice.Agent.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.last_active_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.last_login_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Agent.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 0007385f-a0a7-4f10-8216-66203c0ef48b
+    type: regular
+    task:
+      id: 0007385f-a0a7-4f10-8216-66203c0ef48b
+      version: -1
+      name: freshservice-role-list
+      script: FreshworkFreshservice|||freshservice-role-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: d7d149d9-41dc-425c-8c73-030dc00077c6
+    type: condition
+    task:
+      id: d7d149d9-41dc-425c-8c73-030dc00077c6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.updated_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshservice.Role.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Role.role_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: a0079c30-6893-4a3d-8366-95773cf11c66
+    type: regular
+    task:
+      id: a0079c30-6893-4a3d-8366-95773cf11c66
+      version: -1
+      name: freshservice-vendor-list
+      script: FreshworkFreshservice|||freshservice-vendor-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: fc2cb426-854e-479c-8d91-2732026ddf79
+    type: condition
+    task:
+      id: fc2cb426-854e-479c-8d91-2732026ddf79
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.address.line1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.address.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.address.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.address.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.address.zipcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Vendor.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: f6ea1979-7acb-473e-8f3b-6ab6a92034b2
+    type: regular
+    task:
+      id: f6ea1979-7acb-473e-8f3b-6ab6a92034b2
+      version: -1
+      name: freshservice-software-list
+      script: FreshworkFreshservice|||freshservice-software-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 935e8aab-ea77-4239-8db7-86a9963e0bef
+    type: condition
+    task:
+      id: 935e8aab-ea77-4239-8db7-86a9963e0bef
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.user_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.publisher_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.workspace_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.application_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Software.managed_by_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 090e9927-1303-48f8-8734-9a0789a5a343
+    type: regular
+    task:
+      id: 090e9927-1303-48f8-8734-9a0789a5a343
+      version: -1
+      name: freshservice-asset-list
+      script: FreshworkFreshservice|||freshservice-asset-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 417bc232-8f4a-4b0a-87f8-1bc5d794a7c2
+    type: condition
+    task:
+      id: 417bc232-8f4a-4b0a-87f8-1bc5d794a7c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.display_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.asset_type_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.author_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.usage_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.asset_tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.end_of_life
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Asset.workspace_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 4747fa4c-f50d-49d9-8e2a-6a8bae0dc831
+    type: regular
+    task:
+      id: 4747fa4c-f50d-49d9-8e2a-6a8bae0dc831
+      version: -1
+      name: freshservice-purchase-order-list
+      script: FreshworkFreshservice|||freshservice-purchase-order-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 5d1a093c-48a5-49e1-899f-2b7b7eb25371
+    type: condition
+    task:
+      id: 5d1a093c-48a5-49e1-899f-2b7b7eb25371
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.po_number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.total_cost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.expected_delivery_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.vendor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.PurchaseOrder.workspace_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 75a6c494-3d2c-4c3b-83fd-f33e18ca5da1
+    type: regular
+    task:
+      id: 75a6c494-3d2c-4c3b-83fd-f33e18ca5da1
+      version: -1
+      name: freshservice-agent-group-list
+      script: FreshworkFreshservice|||freshservice-agent-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 37bbe9ed-5894-464f-8cc4-4062b7b29580
+    type: condition
+    task:
+      id: 37bbe9ed-5894-464f-8cc4-4062b7b29580
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.workspace_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.AgentGroup.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: e1d6eccf-a304-430a-83ed-b63398797e0b
+    type: regular
+    task:
+      id: e1d6eccf-a304-430a-83ed-b63398797e0b
+      version: -1
+      name: freshservice-department-list
+      script: FreshworkFreshservice|||freshservice-department-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: bc78948c-5596-43a9-8110-cfa36aed9817
+    type: condition
+    task:
+      id: bc78948c-5596-43a9-8110-cfa36aed9817
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Department.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Department.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Department.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Department.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.Department.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 7803190d-0538-4a8d-80be-6f11d8ce9ecf
+    type: regular
+    task:
+      id: 7803190d-0538-4a8d-80be-6f11d8ce9ecf
+      version: -1
+      name: freshservice-requester-field-list
+      script: FreshworkFreshservice|||freshservice-requester-field-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: baf03767-3386-4b13-8a56-d8d541e88cd0
+    type: condition
+    task:
+      id: baf03767-3386-4b13-8a56-d8d541e88cd0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Freshservice.RequesterField.label_for_requesters
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 49e26c0f-1c8b-4d5e-87d8-fc0b17dbbe3b
+    type: regular
+    task:
+      id: 49e26c0f-1c8b-4d5e-87d8-fc0b17dbbe3b
+      version: -1
+      name: get-mapping-fields
+      script: FreshworkFreshservice|||get-mapping-fields
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: d344090b-0c8d-4c89-865c-7c1cbd67245f
+    type: regular
+    task:
+      id: d344090b-0c8d-4c89-865c-7c1cbd67245f
+      version: -1
+      name: get-remote-data
+      script: FreshworkFreshservice|||get-remote-data
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 2e6740bd-daaf-4076-86c7-f37e6e190913
+    type: regular
+    task:
+      id: 2e6740bd-daaf-4076-86c7-f37e6e190913
+      version: -1
+      name: get-modified-remote-data
+      script: FreshworkFreshservice|||get-modified-remote-data
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: f18ee9b8-c87b-4d1f-8678-cd7f2c67362d
+    type: title
+    task:
+      id: f18ee9b8-c87b-4d1f-8678-cd7f2c67362d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 18015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: FreshworkFreshservice playbook

@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 import mimetypes
 import sys
 
 import dateparser
-from CommonServerPython import *  # noqa: F401
 import urllib3
 
-import demistomock as demisto  # noqa: F401
 
 urllib3.disable_warnings()
 
@@ -1107,9 +1107,10 @@ class Client(BaseClient):
         return alarm_details, response
 
     def alarm_drilldown_request(self, alarm_id):  # pragma: no cover
-        response = self._http_request('GET', f'drilldown/{alarm_id}')
+        headers = self._headers | {'content-type': 'application/json'}
+        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers)
 
-        drilldown_results = response.get('DrillDownResults')
+        drilldown_results = response.get('Data', {}).get('DrillDownResults')
         return drilldown_results, response
 
     def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,

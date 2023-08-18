@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 '''IMPORTS'''
 import traceback
 from typing import Any, Dict
+import urllib3
 
 
 # from _collections import defaultdict
@@ -573,7 +574,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(urljoin(url, '/wolken-secure/'), verify_certificate, proxy, headers=headers,
                                 auth=None, clientId=clientId, domain=domain, serviceAccount=serviceAccount,
                                 refresh_token=refresh_token)

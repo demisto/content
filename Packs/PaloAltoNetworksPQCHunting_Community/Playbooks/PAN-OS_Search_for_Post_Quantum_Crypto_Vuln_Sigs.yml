@@ -1,0 +1,1218 @@
+id: PAN-OS Search for Post Quantum Crypto Vuln Sigs
+version: -1
+name: PAN-OS Search for Post Quantum Crypto Vuln Sigs
+description: Search Vuln Sigs in Threat Logs for use of Post Quantum Crypto Signatures
+tags:
+- custom
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c56e7183-4290-41f1-8568-92114bd73611
+    type: start
+    task:
+      id: c56e7183-4290-41f1-8568-92114bd73611
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8766f46c-0f43-4cb1-897d-94accd827553
+    type: regular
+    task:
+      id: 8766f46c-0f43-4cb1-897d-94accd827553
+      version: -1
+      name: Send Email Notification using send-mail
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      body:
+        simple: |-
+          Post Quantum Crypto Vuln Signatures located in log events by XSOAR
+
+          Incident ID ${incident.id}
+      subject:
+        simple: XSOAR - IncidentID ${incident.id} - PAN-OS Post Quantum Crypto Threat Logs Detected
+      to:
+        simple: ${inputs.notify_email}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d6976caa-7eb7-4681-8abe-2f1f7c60bcf1
+    type: regular
+    task:
+      id: d6976caa-7eb7-4681-8abe-2f1f7c60bcf1
+      version: -1
+      name: pan-os-query-logs
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      log-type:
+        simple: threat
+      number_of_logs:
+        simple: ${inputs.num_logs}
+      query:
+        complex:
+          root: inputs.threat_ids
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ( threatid eq
+              suffix:
+                value:
+                  simple: ' )'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 740
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7d3b08da-98ab-4db7-8cc2-c9d847f0048a
+    type: condition
+    task:
+      id: 7d3b08da-98ab-4db7-8cc2-c9d847f0048a
+      version: -1
+      name: Event Source Selector
+      description: Check for which log source to query for threat logs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      CDL:
+      - "21"
+      PAN-OS:
+      - "17"
+      Splunk:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: PAN-OS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.log_source
+            iscontext: true
+          right:
+            value:
+              simple: panos
+    - label: CDL
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.log_source
+            iscontext: true
+          right:
+            value:
+              simple: cdl
+    - label: Splunk
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.log_source
+            iscontext: true
+          right:
+            value:
+              simple: splunk
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b4b0ca01-00b8-47e8-84f7-e1edecb589ed
+    type: condition
+    task:
+      id: b4b0ca01-00b8-47e8-84f7-e1edecb589ed
+      version: -1
+      name: Integration PAN-OS Exists and Active
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PAN-OS
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 68bf8639-750b-4570-86c0-f74bdf9e6fb3
+    type: regular
+    task:
+      id: 68bf8639-750b-4570-86c0-f74bdf9e6fb3
+      version: -1
+      name: cdl-query-threat-logs
+      description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+      script: '|||cdl-query-threat-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      limit:
+        simple: ${inputs.num_logs}
+      query:
+        complex:
+          root: inputs.threat_ids
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ( threat_id =
+              suffix:
+                value:
+                  simple: ' )'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or'
+      time_range:
+        simple: ${inputs.time_range_hours} hours
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 740
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c1681b02-1d31-4510-8195-12d483f04c58
+    type: regular
+    task:
+      id: c1681b02-1d31-4510-8195-12d483f04c58
+      version: -1
+      name: SIEM Search Generic >> CHANGEME
+      description: Generic SIEM query placeholder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4b76d004-e719-4da7-8589-ba6a2747257c
+    type: condition
+    task:
+      id: 4b76d004-e719-4da7-8589-ba6a2747257c
+      version: -1
+      name: Integration SIEM Exists and Active
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SIEM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5eb54f70-6845-46d1-8434-67a368464b67
+    type: condition
+    task:
+      id: 5eb54f70-6845-46d1-8434-67a368464b67
+      version: -1
+      name: Integration Cortex Data Lake Exists and Active
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Data Lake
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: fe884f43-1b91-4c4c-806e-e8136aa43779
+    type: title
+    task:
+      id: fe884f43-1b91-4c4c-806e-e8136aa43779
+      version: -1
+      name: PQC Exists in Threat Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 364a6fde-2629-4029-8a70-9a581afd7f49
+    type: regular
+    task:
+      id: 364a6fde-2629-4029-8a70-9a581afd7f49
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 4fafb4ac-b2e3-4d2b-8420-74a06ad345a4
+    type: condition
+    task:
+      id: 4fafb4ac-b2e3-4d2b-8420-74a06ad345a4
+      version: -1
+      name: Integration Send-Mail Exists and Active
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 50ab90e0-8cc4-46b0-8030-83d16d506200
+    type: title
+    task:
+      id: 50ab90e0-8cc4-46b0-8030-83d16d506200
+      version: -1
+      name: End Notification Send
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 73b9a9b5-486f-43df-86ce-f25f2195ffe3
+    type: title
+    task:
+      id: 73b9a9b5-486f-43df-86ce-f25f2195ffe3
+      version: -1
+      name: Insert Other Notification Systems
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: dacd7866-108f-44b8-8780-4acfbaaa7d7d
+    type: condition
+    task:
+      id: dacd7866-108f-44b8-8780-4acfbaaa7d7d
+      version: -1
+      name: Results Exist >> CHANGEME
+      description: Are there results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.log_source
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 66f80e2d-9862-48be-8b88-aaee210f3ab5
+    type: regular
+    task:
+      id: 66f80e2d-9862-48be-8b88-aaee210f3ab5
+      version: -1
+      name: Print No Results
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      value:
+        simple: "No WildFire Results for query: \n${inputs.af_query}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: b03d75e5-18f2-40c3-8c35-fd639ab426d6
+    type: condition
+    task:
+      id: b03d75e5-18f2-40c3-8c35-fd639ab426d6
+      version: -1
+      name: Do We have Threat IDs?
+      description: Check for Threat Signature IDs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "74"
+      "YES":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.threat_ids
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ae53c7c3-e512-411f-820d-8eecc1ead3b7
+    type: condition
+    task:
+      id: ae53c7c3-e512-411f-820d-8eecc1ead3b7
+      version: -1
+      name: Results Exist
+      description: Are there results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CDL.Logging.Threat.SessionID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: a201cd91-d4f0-446e-8875-f468cc450bbf
+    type: condition
+    task:
+      id: a201cd91-d4f0-446e-8875-f468cc450bbf
+      version: -1
+      name: Results Exist
+      description: Are there results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Panorama.Monitor.Logs.SessionID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: f3eef0db-981a-48ae-8ae5-824c2b8f62d8
+    type: title
+    task:
+      id: f3eef0db-981a-48ae-8ae5-824c2b8f62d8
+      version: -1
+      name: End Query Yes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: cf532e27-2261-4386-8bc6-c115ccb66e64
+    type: title
+    task:
+      id: cf532e27-2261-4386-8bc6-c115ccb66e64
+      version: -1
+      name: End Query No
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: fd18cf8c-c54f-4b5d-8644-494e67c392b2
+    type: regular
+    task:
+      id: fd18cf8c-c54f-4b5d-8644-494e67c392b2
+      version: -1
+      name: Manual Review
+      description: Pause for manual ticket review
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 38302bdd-1ff5-41e6-8fd5-e3483bd8fb25
+    type: regular
+    task:
+      id: 38302bdd-1ff5-41e6-8fd5-e3483bd8fb25
+      version: -1
+      name: No ThreatID Entered for Query
+      description: |-
+        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+        !PrettyPrint value=${incident}
+      scriptName: PrettyPrint
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      value:
+        simple: Review playbook inputs for ThreatID to search for, none found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: ac3ea266-4e49-4c0c-89f3-179b66e52116
+    type: regular
+    task:
+      id: ac3ea266-4e49-4c0c-89f3-179b66e52116
+      version: -1
+      name: Print Results to WarRoom
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      value:
+        complex:
+          root: CDL.Logging.Threat
+          accessor: ThreatName
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1120
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 59f3e09d-153e-4120-8db8-01d5d5f139b1
+    type: regular
+    task:
+      id: 59f3e09d-153e-4120-8db8-01d5d5f139b1
+      version: -1
+      name: Print Results to WarRoom
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      value:
+        complex:
+          root: Panorama.Monitor.Logs
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1120
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 7c8ecf2d-6034-42a4-8451-2bd71ad860f8
+    type: regular
+    task:
+      id: 7c8ecf2d-6034-42a4-8451-2bd71ad860f8
+      version: -1
+      name: Print Results to WarRoom >> CHANGEME
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.log_source
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: c6dda23c-e78e-4721-8eed-9f33e2f1c0ec
+    type: condition
+    task:
+      id: c6dda23c-e78e-4721-8eed-9f33e2f1c0ec
+      version: -1
+      name: Email Notification Address Exists
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.notify_email
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_PAN-OS": 0.84,
+      "65_72_#default#": 0.9,
+      "70_72_#default#": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2695,
+        "width": 2080,
+        "x": 10,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: notify_email
+  value:
+    simple:
+  required: false
+  description: Send email notification for new malware
+  playbookInputQuery:
+- key: log_source
+  value:
+    simple: cdl
+  required: false
+  description: |-
+    where should we poll for Log Events to investigate
+    panos
+    cdl
+    siem
+  playbookInputQuery:
+- key: threat_ids
+  value:
+    simple: 93486,93487,93488,93489,93490,93492,93494,93496,93497,93498,93499,93500,93501,93502,93503,93504,93505,93506,93507
+  required: false
+  description: threat ID to search for as CSV list
+  playbookInputQuery:
+- key: time_range_hours
+  value:
+    simple: "24"
+  required: false
+  description: how many hours back to query for events in hours
+  playbookInputQuery:
+- key: num_logs
+  value:
+    simple: "100"
+  required: false
+  description: how many logs to bring back
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

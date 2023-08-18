@@ -58,6 +58,12 @@ To fetch Securonix Incident follow the next steps:
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, dbotMirrorTags and securonixcloseincident.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. If you detach the out-of-the-box mapper and make changes to it, the pack does not automatically get updates.
 - If you are using a custom incident type, you also need to create custom corresponding incoming mappers.
+- Following new fields are introduced in the response of the incident to enable the mirroring:
+  - **mirror_direction**: This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_tags**: This field determines what would be the tag needed to mirror the XSOAR entry out to Securonix. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_instance**: This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+  - **close_sx_incident**: This field determines whether to close the respective Securonix incident once fetched in the XSOAR based on the instance configuration. It is required for closing the respective incident on Securonix. This will be used in the playbook to close the securonix incident.
+
 
 
 #### Securonix Threat

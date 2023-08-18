@@ -1,0 +1,61 @@
+{
+  "FileName": "name",
+  "Results": [
+    {
+      "Rating": "7.84",
+      "Word": "cryptominer"
+    },
+    {
+      "Rating": "7.47",
+      "Word": "cybersecurity"
+    },
+    {
+      "Rating": "7.44",
+      "Word": "registry"
+    },
+    {
+      "Rating": "7.44",
+      "Word": "download"
+    },
+    {
+      "Rating": "7.35",
+      "Word": "botnets"
+    },
+    {
+      "Rating": "7.35",
+      "Word": "exploit"
+    },
+    {
+      "Rating": "7.25",
+      "Word": "miner"
+    },
+    {
+      "Rating": "7.17",
+      "Word": "bios"
+    },
+    {
+      "Rating": "6.95",
+      "Word": "crypto"
+    },
+    {
+      "Rating": "6.46",
+      "Word": "microcomputer"
+    },
+    {
+      "Rating": "6.41",
+      "Word": "technical"
+    },
+    {
+      "Rating": "6.39",
+      "Word": "propaganda"
+    },
+    {
+      "Rating": "6.37",
+      "Word": "subroutine"
+    },
+    {
+      "Rating": "6.36",
+      "Word": "attacker"
+    }
+  ]
+}

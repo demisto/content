@@ -1,0 +1,613 @@
+id: TestMBsPlaybook
+name: TestMBsPlaybook
+version: -1
+fromversion: 6.6.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '5a6fac94-985c-4b0a-8c6e-6ba82a4826dd'
+    type: start
+    task:
+      id: '5a6fac94-985c-4b0a-8c6e-6ba82a4826dd'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '64727c0b-1889-4c8f-af6b-bf9c38650402'
+    type: regular
+    task:
+      id: '64727c0b-1889-4c8f-af6b-bf9c38650402'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '0fd13a5e-1b8b-49bc-ae3c-9ed4b8caeea6'
+    type: regular
+    task:
+      id: '0fd13a5e-1b8b-49bc-ae3c-9ed4b8caeea6'
+      version: -1
+      name: darktrace-get-model-breach
+      description: ''
+      script: DarktraceMBs|||darktrace-get-model-breach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '13b8b244-6b00-485e-b568-c452a7aa9c77'
+    type: condition
+    task:
+      id: '13b8b244-6b00-485e-b568-c452a7aa9c77'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.commentCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.did
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.macaddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.devicelabel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '9bbd0539-5328-4a00-b791-eb24a5ba3ba4'
+    type: regular
+    task:
+      id: '9bbd0539-5328-4a00-b791-eb24a5ba3ba4'
+      version: -1
+      name: darktrace-get-model-breach-comments
+      description: ''
+      script: DarktraceMBs|||darktrace-get-model-breach-comments
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '7ab15b85-9ca6-4a9a-899a-4775acadaf8e'
+    type: condition
+    task:
+      id: '7ab15b85-9ca6-4a9a-899a-4775acadaf8e'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.Comment.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.Comment.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.Comment.time
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 'a018de9a-222b-4f12-bdd6-21257e309999'
+    type: regular
+    task:
+      id: 'a018de9a-222b-4f12-bdd6-21257e309999'
+      version: -1
+      name: darktrace-acknowledge-model-breach
+      description: ''
+      script: DarktraceMBs|||darktrace-acknowledge-model-breach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '516c3773-e28e-476c-bebb-86b481522dbe'
+    type: condition
+    task:
+      id: '516c3773-e28e-476c-bebb-86b481522dbe'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged.message
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'e5fd8879-64ff-44fd-bac6-aca62b2ee768'
+    type: regular
+    task:
+      id: 'e5fd8879-64ff-44fd-bac6-aca62b2ee768'
+      version: -1
+      name: darktrace-post-comment-to-model-breach
+      description: ''
+      script: DarktraceMBs|||darktrace-post-comment-to-model-breach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 'c0406b15-364e-4a0b-9c3d-76952f093d08'
+    type: condition
+    task:
+      id: 'c0406b15-364e-4a0b-9c3d-76952f093d08'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.commented
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.response
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '2dbe7500-affa-4416-bce5-dbdc817ed4cd'
+    type: regular
+    task:
+      id: '2dbe7500-affa-4416-bce5-dbdc817ed4cd'
+      version: -1
+      name: darktrace-unacknowledge-model-breach
+      description: ''
+      script: DarktraceMBs|||darktrace-unacknowledge-model-breach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: 'ffe29b49-b5e3-4681-9578-d902f0e4e9fd'
+    type: condition
+    task:
+      id: 'ffe29b49-b5e3-4681-9578-d902f0e4e9fd'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged.message
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '95d6fb79-ef03-4712-82b2-eddee871f651'
+    type: regular
+    task:
+      id: '95d6fb79-ef03-4712-82b2-eddee871f651'
+      version: -1
+      name: darktrace-get-model-breach-connections
+      description: ''
+      script: DarktraceMBs|||darktrace-get-model-breach-connections
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '9e5f2ea3-e791-4b26-95c7-7296e54f68d6'
+    type: condition
+    task:
+      id: '9e5f2ea3-e791-4b26-95c7-7296e54f68d6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '49d29b99-2404-437b-bc91-38871d80649b'
+    type: regular
+    task:
+      id: '49d29b99-2404-437b-bc91-38871d80649b'
+      version: -1
+      name: darktrace-get-model
+      description: ''
+      script: DarktraceMBs|||darktrace-get-model
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '678b8202-8fb4-48ab-aa8d-8ab487d9de24'
+    type: condition
+    task:
+      id: '678b8202-8fb4-48ab-aa8d-8ab487d9de24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.Model
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '47bddcd4-0d2d-4de1-9117-7bc126b09da0'
+    type: regular
+    task:
+      id: '47bddcd4-0d2d-4de1-9117-7bc126b09da0'
+      version: -1
+      name: darktrace-get-model-component
+      description: ''
+      script: DarktraceMBs|||darktrace-get-model-component
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '75afdc2e-8e0a-4fe0-ae84-520f727544cd'
+    type: condition
+    task:
+      id: '75afdc2e-8e0a-4fe0-ae84-520f727544cd'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.Model.Component
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: 'c7662d00-95fe-46d5-aaa9-9ad52281835a'
+    type: title
+    task:
+      id: 'c7662d00-95fe-46d5-aaa9-9ad52281835a'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
+description: Playbook to test the Darktrace Model Breach Integration

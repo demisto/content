@@ -1,0 +1,23 @@
+{
+  "from": 1675749690000,
+  "until": 1675751490000,
+  "warnings": [],
+  "edges": [
+    {
+      "from": 206,
+      "to": 3564,
+      "weight": 36,
+      "annotations": {
+        "protocols": [
+          {
+            "weight": 36,
+            "protocol": [
+              "IPv4",
+              "ICMP"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

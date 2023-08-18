@@ -20,12 +20,13 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, \
+    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context, is_integration_command_execution
 
 try:
     from StringIO import StringIO
@@ -1776,20 +1777,21 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_outputs_without_outputs_prefix(self):
+    @pytest.mark.parametrize('outputs, prefix', [([], None), ([], ''), ({}, '.')])
+    def test_outputs_without_outputs_prefix(self, outputs, prefix):
         """
         Given
-        - outputs as a list without output_prefix
+        - outputs as a list without output_prefix, or with a period output prefix.
 
         When
-        - Returins results
+        - Returns results.
 
         Then
         - Validate a ValueError is raised.
         """
         from CommonServerPython import CommandResults
         with pytest.raises(ValueError, match='outputs_prefix'):
-            CommandResults(outputs=[])
+            CommandResults(outputs=outputs, outputs_prefix=prefix)
 
     def test_with_tags(self):
         from CommonServerPython import CommandResults
@@ -3324,6 +3326,7 @@ regexes_test = [
     (ipv4Regex, '192.256.1.1', False),
     (ipv4Regex, '192.256.1.1.1', False),
     (ipv4Regex, '192.168.1.1/12', False),
+    (ipv4Regex, '', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
     (ipv4cidrRegex, '192.168.1.1.1/30', False),
     (ipv4cidrRegex, '192.168.1.b/30', False),
@@ -3543,7 +3546,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('1[.]1[.]1[.]1', 'IP'),
     ('test[@]test.com', 'Email'),
     ('https[:]//www[.]test[.]com/abc', 'URL'),
-    ('test[.]com', 'Domain')
+    ('test[.]com', 'Domain'),
+    ('https://192.168.1.1:8080', 'URL'),
 ]
 
 
@@ -3729,7 +3733,6 @@ INVALID_URL_INDICATORS = [
     'google.com*',
     '1.1.1.1',
     'path/path',
-    '1.1.1.1:8080',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
@@ -4257,6 +4260,69 @@ def test_get_x_content_info_headers(mocker):
     assert headers['X-Content-Name'] == test_brand
 
 
+def test_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is a script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (without the execution metrics entry)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+    assert demisto_results_mock.call_count == 2
+
+
+def test_integration_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is an integration command
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 3 times (with the execution metrics entry included)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'integration'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 19},
+    ]
+    return_results(mock_command_results)
+    execution_metrics_entry_found = False
+    for call_args in demisto_results_mock.call_args_list:
+        if execution_metrics_entry_found:
+            break
+        for args in call_args.args:
+            if execution_metrics_entry_found:
+                break
+            execution_metrics_entry_found = args["Type"] != 19
+
+    assert execution_metrics_entry_found
+    assert demisto_results_mock.call_count == 3
+
+
 def test_return_results_multiple_command_results(mocker):
     """
     Given:
@@ -4400,31 +4466,20 @@ class TestExecuteCommand:
         When:
             - Calling execute_command.
         Then:
-            - Assert that the original error is returned to War-Room (using demisto.results).
-            - Assert an error is returned to the War-Room.
-            - Function ends the run using SystemExit.
+            - Assert that DemistoException is raised with the original error.
         """
         from CommonServerPython import execute_command, EntryType
         error_entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
-            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
             {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
         ]
-        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
-                                                   return_value=error_entries)
-        demisto_results_mock = mocker.patch.object(demisto, 'results')
 
-        with raises(SystemExit, match='0'):
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
+
+        with raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
-        assert demisto_results_mock.call_count == 1
-        # first call, args (not kwargs), first argument
-        error_text = demisto_results_mock.call_args_list[0][0][0]['Contents']
-        assert 'Failed to execute bad.' in error_text
-        assert 'error number 1' in error_text
-        assert 'error number 2' in error_text
-        assert 'not an error' not in error_text
 
     @staticmethod
     def test_failure_integration(monkeypatch):
@@ -7702,27 +7757,28 @@ class TestFetchWithLookBack:
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 2, 'first_fetch': '40 minutes', 'look_back': None}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
-         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 3, 'time': INCIDENTS[3]['created']}),
-
-        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+         [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+                                     'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
-         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
         Given:
@@ -7756,7 +7812,6 @@ class TestFetchWithLookBack:
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         incidents_phase2 = self.example_fetch_incidents(time_aware)
-
         assert incidents_phase2 == result_phase2
 
     def mock_dateparser(self, date_string, settings):
@@ -7774,9 +7829,9 @@ class TestFetchWithLookBack:
         [
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]],
-                    [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+                    [INCIDENTS[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS[0]], 2
             ),
             (
@@ -7788,24 +7843,32 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
+                    [NEW_INCIDENTS[0]], 2
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 30*60},
                     [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
                     {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
                     [NEW_INCIDENTS[0]], 2
             ),
+
             (
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
 
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
-                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    [INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7817,11 +7880,10 @@ class TestFetchWithLookBack:
             ),
             (
                     {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
-                                                                                                  INCIDENTS_TIME_AWARE[3],
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                   INCIDENTS_TIME_AWARE[4]], [],
                     {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
@@ -7829,7 +7891,7 @@ class TestFetchWithLookBack:
                     [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
@@ -7868,7 +7930,6 @@ class TestFetchWithLookBack:
         for inc in incidents_phase1:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
-        next_run_phase1 = self.LAST_RUN['time']
         source_incidents = incidents[:index] + new_incidents + incidents[index:]
         if time_aware:
             self.INCIDENTS_TIME_AWARE = source_incidents
@@ -7882,10 +7943,7 @@ class TestFetchWithLookBack:
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
         assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
 
-        if len(incidents_phase2) >= params.get('limit'):
-            assert next_run_phase1 == self.LAST_RUN['time']
-        else:
-            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+        assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
 
         for inc in incidents_phase2:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
@@ -7922,7 +7980,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -7942,7 +8000,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-02T10:13:00',
                     'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': ''}
@@ -7963,8 +8021,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
-                    'limit': 12,
+                    'time': '2022-04-03T10:13:00',
+                    'limit': 9,
                     'found_incident_ids': {'1': '', '2': '', '3': '',
                                            '4': '', '5': '', '6': '',
                                            '7': '', '8': '', '9': ''}
@@ -7987,7 +8045,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8007,7 +8065,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 3,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': ''}
                 },
                 {
@@ -8026,8 +8084,8 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-02T10:12:00',
-                    'limit': 6,
+                    'time': '2022-04-03T10:13:00',
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
                 }
@@ -8049,7 +8107,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-01T10:11:00',
+                    'time': '2022-04-01T10:13:00',
                     'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
@@ -8073,7 +8131,7 @@ class TestFetchWithLookBack:
                     'incidents': [],
                     'fetch_limit': 3,
                     'start_fetch_time': '2022-04-02T10:12:00',
-                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'end_fetch_time': '2022-04-07T10:13:00',
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
@@ -8081,7 +8139,7 @@ class TestFetchWithLookBack:
                     'increase_last_run_time': True
                 },
                 {
-                    'time': '2022-04-07T10:11:00',
+                    'time': '2022-04-07T10:13:00',
                     'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
@@ -8414,6 +8472,7 @@ class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict, log_error
     test_data = events_dict
     test_log_data = log_error
+    orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
     def get_license_custom_field_mock(arg):
@@ -8422,8 +8481,9 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
+
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
@@ -8434,6 +8494,8 @@ class TestSendEventsToXSIAMTest:
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
             Case e: an empty list of events.
+            Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            ( currently the Ideal event size is 1 Mib)
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
@@ -8441,6 +8503,7 @@ class TestSendEventsToXSIAMTest:
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
             Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_events_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -8462,6 +8525,10 @@ class TestSendEventsToXSIAMTest:
             Case e:
                 - No request to XSIAM API was made.
                 - The number of events reported to the module health - 0.
+            Case f:
+                - The events data was compressed correctly. Expecting to see that last chunk sent.
+                - The data format remained as json.
+                - The number of events reported to the module health - 2. For the last chunk.
         """
         if not IS_PY3:
             return
@@ -8478,10 +8545,11 @@ class TestSendEventsToXSIAMTest:
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
-        number_of_events = self.test_data[events_use_case]['number_of_events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
+        chunk_size = self.test_data[events_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
+                             chunk_size=chunk_size)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']
@@ -8826,6 +8894,32 @@ def test_append_metrics(mocker):
     assert len(results) == 1
 
 
+def test_convert_dict_values_bytes_to_str():
+    """
+    Given:
+        Dictionary contains bytes objects
+
+    When:
+        Creating outputs for commands
+
+    Then:
+        assert all bytes objects have been converted to strings
+    """
+
+    input_dict = {'some_key': b'some_value',
+                  'some_key1': [b'some_value'],
+                  'some_key2': {'some_key': [b'some_value'],
+                                'some_key1': b'some_value'}
+                  }
+    expected_output_dict = {'some_key': 'some_value',
+                            'some_key1': ['some_value'],
+                            'some_key2': {'some_key': ['some_value'],
+                                          'some_key1': 'some_value'}
+                            }
+    actual_output = convert_dict_values_bytes_to_str(input_dict)
+    assert actual_output == expected_output_dict
+
+
 @pytest.mark.parametrize(
     'filename',
     ['/test', '\\test', ',test', ':test', 't/est.pdf', '../../test.xslx', '~test.png']
@@ -8897,3 +8991,92 @@ def test_replace_spaces_in_credential(credential, expected):
 
     result = replace_spaces_in_credential(credential)
     assert result == expected
+
+
+TEST_RESPONSE_TO_CONTEXT_DATA = [
+    (
+        {"id": "111"}, {"ID": "111"}, {}
+    ),
+    (
+        {"test": [1]}, {"Test": [1]}, {}
+    ),
+    (
+        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}, {}
+    ),
+    (
+        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}, {}
+    ),
+    (
+        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}], {}
+    ),
+    (
+        "test", "test", {}
+    ),
+    (
+        {"test_func": "test"}, {"TestFunc": "test"}, {}
+    ),
+    (
+        {"testid": "test"}, {"TestID": "test"}, {"testid": "TestID"}
+    ),
+    (
+        {"testid": "test", "id": "test_id", "test": "test_val"}, {"TestID": "test", "ID": "test_id", "Test": "test_val"},
+        {"testid": "TestID"}
+    )
+]
+
+
+@pytest.mark.parametrize('response, expected_results, user_predefiend_keys', TEST_RESPONSE_TO_CONTEXT_DATA)
+def test_response_to_context(response, expected_results, user_predefiend_keys):
+    """
+    Given:
+        A response and user_predefiend_keys dict.
+        Case 1: a response dict with a key "id".
+        Case 2: a response dict with a list as a value.
+        Case 3: a response dict with a list of dicts as a value.
+        Case 4: a response dict with a dict as a value.
+        Case 5: a response list.
+        Case 6: a response string.
+        Case 7: a response dict with a key with underscore.
+        Case 8: a response dict and a user_predefiend_keys dict,
+                where the key of the response dict is in the user_predefiend_keys dict.
+        Case 9: a response dict with 3 keys and a user_predefiend_keys dict,
+                where one key of the response dict is in the user_predefiend_keys dict.
+                where one key of the response dict is in the predefined_keys dict.
+                where one key of the response is not in any predefined dict.
+    When:
+        Running response_to_context function.
+    Then:
+        Test - Assert the function created the dict formatted succesfuly.
+        Case 1: Should transfom key to "ID".
+        Case 2: Should attempt to transform only the dict key.
+        Case 3: Should attempt to transform only the dict inside the list.
+        Case 4: Should attempt to transform both the given dict key and the keys of the nested dict.
+        Case 5: Should modify the dict inside the list.
+        Case 6: Should return the input as is.
+        Case 7: Should remove the underscore and capitalize the first letters of both words.
+        Case 8: Should change the key according to the user_predefiend_keys dict.
+        Case 9: Should change the first key according to the user_predefiend_keys dict,
+                the second key according to predefined_keys, and the third regularly.
+    """
+    assert response_to_context(response, user_predefiend_keys) == expected_results
+
+
+class TestIsIntegrationCommandExecution:
+    def test_with_script_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+        assert is_integration_command_execution() == False
+
+    def test_with_integration_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
+        assert is_integration_command_execution() == True
+    data_test_problematic_cases = [
+        None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
+        {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
+        {'context': {'ExecutedCommands': [{}]}}
+    ]
+
+    @pytest.mark.parametrize('calling_context_mock', data_test_problematic_cases)
+    def test_problematic_cases(self, mocker, calling_context_mock):
+        mocker.patch.object(demisto, 'callingContext', calling_context_mock)
+        assert is_integration_command_execution() == True
+        

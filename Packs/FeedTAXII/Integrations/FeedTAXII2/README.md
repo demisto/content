@@ -27,6 +27,7 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Key File as Text | Add a key file as text to connect to the TAXII server | False |
 | Max STIX Objects Per Poll | Set the number of stix object that will be requested with each taxii poll \(http request\). A single fetch is made of several taxii polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the "requested limit". | False |
 | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
+| Update custom fields | Choose whether to import the XSOAR custom fields. Note: this might overwrite the data pulled from other sources. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Tags | Supports CSV values. | False |

@@ -1,15 +1,16 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import hashlib
 import hmac
 import json
 import time
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 BASE_URL = None
 API_KEY = None

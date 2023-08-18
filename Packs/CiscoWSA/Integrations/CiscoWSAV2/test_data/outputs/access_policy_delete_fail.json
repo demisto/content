@@ -1,0 +1,37 @@
+{
+    "success_list": [],
+    "failure_list": [
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ronhadad1"
+        },
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ron"
+        },
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ronhadad"
+        },
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ronnn"
+        },
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ron3"
+        },
+        {
+            "status": 404,
+            "message": "policy name does not exist.",
+            "policy_name": "ron2213321"
+        }
+    ],
+    "success_count": 0,
+    "failure_count": 6
+}

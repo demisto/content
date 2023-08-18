@@ -1186,5 +1186,168 @@ The following commands were removed in this version:
 * ***threatvault-antispyware-signature-search*** - replaced by ***threatvault-threat-signature-search***.
 * ***threatvault-signature-search-results***.
 
+
+### threatvault-atp-batch-report-get
+
+***
+Retrieve the Advanced Threat Prevention (ATP) report by report id in batch mode. Batch limit is 100 entries. Get one or more ATP reports. Must provide one or more report IDs
+
+#### Base Command
+
+`threatvault-atp-batch-report-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | Provides the ATP report by matching the report id . | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatVault.ATP.Report | string | ThreatVault ATP Report ID | 
+| ThreatVault.ATP.Report.err_msg | string | ThreatVault error message | 
+| ThreatVault.ATP.Report.panos_info.csp_id | string | ATP Report CSP | 
+| ThreatVault.ATP.Report.panos_info.fw_addr_v4 | string | ATP Report firewall IP | 
+| ThreatVault.ATP.Report.panos_info.fw_app_version | string | ATP Report content version | 
+| ThreatVault.ATP.Report.panos_info.fw_hostname | string | ATP Report firewall name | 
+| ThreatVault.ATP.Report.panos_info.fw_model | string | ATP Report firewall model | 
+| ThreatVault.ATP.Report.panos_info.fw_sw_version | string | ATP Report firewall PAN-OS | 
+| ThreatVault.ATP.Report.report_id | string | ATP Report ID | 
+| ThreatVault.ATP.Report.session_info.flow_info.daddr | string | ATP Report Session Flow destination IP | 
+| ThreatVault.ATP.Report.session_info.flow_info.dport | string | ATP Report Session Flow destination Port | 
+| ThreatVault.ATP.Report.session_info.flow_info.saddr | string | ATP Report Session Flow source IP | 
+| ThreatVault.ATP.Report.session_info.flow_info.sport | string | ATP Report Session Flow source Port | 
+| ThreatVault.ATP.Report.session_info.session_id | string | ATP Report session ID | 
+| ThreatVault.ATP.Report.session_info.session_timestamp | string | ATP Report session timestamp | 
+| ThreatVault.ATP.Report.transaction_data.payload_sha256 | string | ATP Report transaction payload sha256 | 
+| ThreatVault.ATP.Report.transaction_data.transaction_id | string | ATP Report transaction payload ID | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.verdict | string | ATP Report transaction verdict | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.detection_service | string | ATP Report transaction detection service | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Method | string | ATP Report transaction payload method | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.User-Agent | string | ATP Report transaction payload user-agent | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Cookie | string | ATP Report transaction payload cookie | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Accept | string | ATP Report transaction payload accept | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Host | string | ATP Report transaction payload host | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.URI | string | ATP Report transaction payload URI | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Cache-Control | string | ATP Report transaction payload cache-control | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Version | string | ATP Report transaction payload version | 
+| ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Connection | string | ATP Report transaction payload connection | 
+
+#### Command example
+```!threatvault-atp-batch-report-get report_id="a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a"```
+
+#### Context Example
+```json
+{
+    "ThreatVault": {
+        "ATP": {
+            "Report": {
+                "err_msg": "",
+                "panos_info": {
+                    "csp_id": "123456",
+                    "fw_addr_v4": "192.168.2.46",
+                    "fw_app_version": "8662-7785",
+                    "fw_hostname": "vm50",
+                    "fw_model": "PA-VM",
+                    "fw_serial": "12345678",
+                    "fw_sw_version": "10.2.3"
+                },
+                "report_id": "a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a",
+                "session_info": {
+                    "flow_info": {
+                        "daddr": "1.2.3.4",
+                        "dport": "80",
+                        "saddr": "4.3.2.1",
+                        "sport": "55437"
+                    },
+                    "session_id": "289",
+                    "session_timestamp": "2023-01-11T19:11:11Z"
+                },
+                "transaction_data": [
+                    {
+                        "detection_results": [
+                            {
+                                "details": {
+                                    "payload_info": {
+                                        "Accept": "*/*",
+                                        "Cache-Control": "no-cache",
+                                        "Connection": "Keep-Alive",
+                                        "Cookie": "fH9DkfzA8HcEpU2cjbeyzGkckEEgP8keITqyztlb2DQAc0KEoNy/XqlI0F8PmdPpn5n2kXdQgqg5/wrEIaGd421084U=",
+                                        "Host": "1.2.3.4",
+                                        "Method": "GET",
+                                        "URI": "/visit.js",
+                                        "User-Agent": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)",
+                                        "Version": "HTTP/1.1"
+                                    }
+                                },
+                                "detection_service": "Cobalt Strike HTTP",
+                                "verdict": 1
+                            }
+                        ],
+                        "payload_sha256": "b595e79f6420db35632c23d49ca287bc07690456ea61fb5d9c9896fd9aceecd9",
+                        "transaction_id": 0
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Advanced Threat Prevention Report ID: a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a
+>|panos_info|fw_hostname: abc\nfw_addr_v4: 192.168.2.1\nfw_app_version: 8662-7785\nfw_sw_version: 10.2.3|
+>|report_id|a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a|
+>|sesion_info|session_id: 289\nsession_timestamp: 2023-01-11T19:11:11z|
+>|transaction_data|{'transaction_id: 0, 'payload_sha256':'b595e79f6420db35632c23d49ca287bc07690456ea61fb5d9c9896fd9aceecd9', 'detection_results': [{'detection_service': 'Cobalt strike HTTP'}] }|
+
+### threatvault-atp-report-pcap-get
+
+***
+Retrieve the Advanced Threat Prevention (ATP) analysis report PCAP by reportID
+
+#### Base Command
+
+`threatvault-atp-report-pcap-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | Retrieve the ATP report sample (packet capture) by report id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatVault.ATP.PCAP.ID | string | Threatvault ATP PCAP ID | 
+| ThreatVault.ATP.PCAP.Name | string | Threatvault ATP PCAP Name | 
+
+#### Command example
+```!threatvault-atp-report-pcap-get report_id="5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b"```
+
+#### Context Example
+```json
+{
+    "ThreatVault": {
+        "ATP": {
+            "PCAP": {
+                "ID": "5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b",
+                "Name": "5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b.pcap"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Advanced Threat Prevention PCAP Download:
+>|ID|5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b|
+>|Name|5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b.pcap|
+
 ## Additional Considerations for this version
 Note: The Threat Vault API key is **not** the same as the Auto Focus API key. Make sure you have the required API key, as instructed on the integration configuration page.

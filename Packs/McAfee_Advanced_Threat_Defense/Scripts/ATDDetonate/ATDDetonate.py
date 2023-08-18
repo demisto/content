@@ -1,7 +1,6 @@
-from time import sleep
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from time import sleep
 
 
 def main():
@@ -53,7 +52,7 @@ def main():
         istate = demisto.get(resp[0], 'Contents.results.istate')
 
         # find status
-        if int(istate) in [1, 2]:
+        if istate and int(istate) in [1, 2]:
             atdDone = True
         # continue loop
         else:

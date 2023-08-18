@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Release Request"
+    ],
+    "caseInsensitive": true,
+    "cliName": "freshworksfreshserviceplannedenddate",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshserviceplannedenddate",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Planned End Date",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

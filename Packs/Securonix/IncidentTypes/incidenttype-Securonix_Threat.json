@@ -6,7 +6,7 @@
     "name": "Securonix Threat",
     "prevName": "Securonix Threat",
     "color": "#4DB6AC",
-    "playbookId": "Fetch Threat Violations - Securonix",
+    "playbookId": "Fetch All Violations - Securonix",
     "hours": 0,
     "days": 0,
     "weeks": 0,

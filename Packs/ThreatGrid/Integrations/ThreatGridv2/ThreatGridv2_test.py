@@ -475,13 +475,17 @@ def test_upload_sample_command(requests_mock, mock_client):
 
     requests_mock.post(url=url, json=mock_response)
 
-    result = upload_sample_command(mock_client, {'url': 'url'})
+    result = upload_sample_command(mock_client, {
+        'url': 'url',
+        'private': True
+    })
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
     assert result.outputs.get('id') == 'data_id'
     assert result.outputs.get('sha256') == 'data_sha256'
     assert result.outputs.get('status') == 'data_status'
     assert result.outputs.get('state') == 'data_state'
+    assert result.outputs.get('private') is True
 
 
 @pytest.mark.parametrize('url_prefix ,args, outputs_prefix', [

@@ -1,12 +1,23 @@
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 from typing import Dict, Any, List
+from requests import Response  # Used to typing Response as a return from functions
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
+
+
+class NotFoundError(Exception):
+    """Exception raised when an error is encountered that does
+    not have an error message, like with a waitress error"""
+
+
+class ProcessingError(Exception):
+    """Exception raised when a 500 error is returned from the API
+    with a json body containing an error code and message"""
 
 
 class Client(BaseClient):
@@ -30,7 +41,12 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
 
-        response = self._http_request('POST', '/xpanse_remediation_rules/rules/', json_data=request_data)
+        response = self._http_request(
+            "POST",
+            "/xpanse_remediation_rules/rules/",
+            json_data=request_data,
+            error_handler=get_api_error,
+        )
 
         return response
 
@@ -43,9 +59,16 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external services.
         """
-        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
+        data = {
+            "request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}
+        }
 
-        response = self._http_request('POST', '/assets/get_external_services/', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_external_services/",
+            json_data=data,
+            error_handler=get_api_error,
+        )
 
         return response
 
@@ -60,7 +83,12 @@ class Client(BaseClient):
         """
         data = {"request_data": {"service_id_list": service_id_list}}
 
-        response = self._http_request('POST', '/assets/get_external_service', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_external_service",
+            json_data=data,
+            error_handler=get_api_error,
+        )
 
         return response
 
@@ -72,11 +100,18 @@ class Client(BaseClient):
         """
         data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_external_ip_address_ranges/",
+            json_data=data,
+            error_handler=get_api_error,
+        )
 
         return response
 
-    def get_external_ip_address_range_request(self, range_id_list: List[str]) -> Dict[str, Any]:
+    def get_external_ip_address_range_request(
+        self, range_id_list: List[str]
+    ) -> Dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -87,11 +122,18 @@ class Client(BaseClient):
         """
         data = {"request_data": {"range_id_list": range_id_list}}
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_external_ip_address_range/",
+            json_data=data,
+            error_handler=get_api_error,
+        )
 
         return response
 
-    def list_asset_internet_exposure_request(self, search_params: List[dict]) -> Dict[str, Any]:
+    def list_asset_internet_exposure_request(
+        self, search_params: List[dict]
+    ) -> Dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -100,13 +142,22 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of internet exposure assets.
         """
-        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
+        data = {
+            "request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}
+        }
 
-        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_assets_internet_exposure/",
+            json_data=data,
+            error_handler=get_api_error,
+        )
 
         return response
 
-    def get_asset_internet_exposure_request(self, asm_id_list: List[str]) -> Dict[str, Any]:
+    def get_asset_internet_exposure_request(
+        self, asm_id_list: List[str]
+    ) -> Dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
@@ -117,12 +168,86 @@ class Client(BaseClient):
         """
         data = {"request_data": {"asm_id_list": asm_id_list}}
 
-        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
+        response = self._http_request(
+            "POST",
+            "/assets/get_asset_internet_exposure/",
+            json_data=data,
+            error_handler=get_api_error,
+        )
+
+        return response
+
+    def start_remediation_confirmation_scan(
+        self, alert_internal_id: int, service_id: str, attack_surface_rule_id: str
+    ) -> Response:
+        """Retrieves ID of active (running) scan if it already exists for the given service; otherwise, creates new a scan.
+
+        Args:
+            alert_internal_id (str): _description_
+            service_id (str): _description_
+            attack_surface_rule_id (str): _description_
+
+        Returns:
+            Dict[str, Any]: dictionary containing response information that includes a scan ID.
+        """
+
+        data = {
+            "request_data": {
+                "filters": [
+                    {
+                        "field": "attack_surface_rule_id",
+                        "operator": "EQ",
+                        "value": attack_surface_rule_id,
+                    },
+                    {
+                        "field": "alert_internal_id",
+                        "operator": "EQ",
+                        "value": alert_internal_id,
+                    },
+                    {"field": "service_id", "operator": "EQ", "value": service_id},
+                ]
+            }
+        }
+
+        response = self._http_request(
+            method="POST",
+            url_suffix="remediation_confirmation_scanning/requests/get_or_create/",
+            json_data=data,
+            resp_type="response",
+            error_handler=get_api_error,
+        )
+
+        return response
+
+    def get_remediation_confirmation_scan_status(self, scan_id: str) -> Response:
+        """Retrieves ID of active (running) scan if it already exists for the given service; otherwise, creates new a scan.
+
+        Args:
+            alert_internal_id (str): _description_
+            service_id (str): _description_
+            attack_surface_rule_id (str): _description_
+
+        Returns:
+            Dict[str, Any]: dictionary containing response information that includes a scan ID.
+        """
+        data = {
+            "request_data": {
+                "filters": [{"field": "id", "operator": "EQ", "value": scan_id}]
+            }
+        }
+
+        response = self._http_request(
+            method="POST",
+            url_suffix="/remediation_confirmation_scanning/requests/get/",
+            json_data=data,
+            resp_type="response",
+            error_handler=get_api_error,
+        )
 
         return response
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def format_asm_id(formatted_response: List[dict]) -> List[dict]:
@@ -138,16 +263,44 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
     if formatted_response:
         for entry in formatted_response:
-            if entry.get('asm_ids'):
-                entry['asm_ids'] = entry['asm_ids'][0]
+            if entry.get("asm_ids"):
+                entry["asm_ids"] = entry["asm_ids"][0]
 
     return formatted_response
 
 
-''' COMMAND FUNCTIONS '''
+def get_api_error(response: Response):
+    """Raises a formatted error based on the response from the base_error file from the server.
+
+    Args:
+        response: Response object from an API endpoint.
+    Raises:
+        NotFoundError: Exception for when an API endpoint
+            returns an error that does not have a corresponding error message.
+        ProcessingError: Exception for when an API endpoint returns an error message.
+    """
+    error_code, error_message, extra_message, rcs_err_msg = "", "", "", ""
+    try:
+        json_response = response.json()
+        error_code = json_response.get("reply", {}).get("err_code", {})
+        error_message = json_response.get("reply", {}).get("err_msg", {})
+        extra_message = json_response.get("reply", {}).get("err_extra", {})
+        rcs_err_msg = f"{error_message}. {extra_message}"
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        if "Forbidden" not in str(err):
+            raise ProcessingError(f"{error_code} - Received error message: '{rcs_err_msg}'.")
+        else:
+            pass
+    except (AttributeError, TypeError) as err:
+        if "Forbidden" not in str(err):
+            raise NotFoundError(f"{type(err).__name__} - {str(err)}")
 
 
-def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+""" COMMAND FUNCTIONS """
+
+
+def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-remediation-rule command: Returns list of remediation path rules.
 
@@ -162,35 +315,53 @@ def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains list of remediation path rules.
     """
-    asm_rule_id = str(args.get('asm_rule_id'))
-    sort_by_creation_time = args.get('sort_by_creation_time')
+    asm_rule_id = str(args.get("asm_rule_id"))
+    sort_by_creation_time = args.get("sort_by_creation_time")
 
     # create list of search parameters or pass empty list.
     search_params = []
     if asm_rule_id:
-        search_params.append({"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id})
+        search_params.append(
+            {"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id}
+        )
     if sort_by_creation_time:
-        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
-                        'search_to': DEFAULT_SEARCH_LIMIT, "sort": {"field": "created_at", "keyword": sort_by_creation_time}}}
+        request_data = {
+            "request_data": {
+                "filters": search_params,
+                "search_from": 0,
+                "search_to": DEFAULT_SEARCH_LIMIT,
+                "sort": {"field": "created_at", "keyword": sort_by_creation_time},
+            }
+        }
     else:
-        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
-                        'search_to': DEFAULT_SEARCH_LIMIT}}
+        request_data = {
+            "request_data": {
+                "filters": search_params,
+                "search_from": 0,
+                "search_to": DEFAULT_SEARCH_LIMIT,
+            }
+        }
 
     response = client.list_remediation_rule_request(request_data)
-    parsed = response.get('reply', {}).get('remediation_rules')
-    markdown = tableToMarkdown('Remediation Rules', parsed, removeNull=True, headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("remediation_rules")
+    markdown = tableToMarkdown(
+        "Remediation Rules",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.RemediationRule',
-        outputs_key_field='rule_id',
+        outputs_prefix="ASM.RemediationRule",
+        outputs_key_field="rule_id",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
@@ -206,36 +377,47 @@ def list_external_service_command(client: Client, args: Dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external
         services.
     """
-    ip_address = args.get('ip_address')
-    domain = args.get('domain')
-    is_active = args.get('is_active')
-    discovery_type = args.get('discovery_type')
+    ip_address = args.get("ip_address")
+    domain = args.get("domain")
+    is_active = args.get("is_active")
+    discovery_type = args.get("discovery_type")
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
-        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        search_params.append(
+            {"field": "ip_address", "operator": "eq", "value": ip_address}
+        )
     if domain:
         search_params.append({"field": "domain", "operator": "contains", "value": domain})
     if is_active:
-        search_params.append({"field": "is_active", "operator": "in", "value": [is_active]})
+        search_params.append(
+            {"field": "is_active", "operator": "in", "value": [is_active]}
+        )
     if discovery_type:
-        search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
+        search_params.append(
+            {"field": "discovery_type", "operator": "in", "value": [discovery_type]}
+        )
 
     response = client.list_external_service_request(search_params)
-    parsed = response.get('reply', {}).get('external_services')
-    markdown = tableToMarkdown('External Services', parsed, removeNull=True, headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("external_services")
+    markdown = tableToMarkdown(
+        "External Services",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.ExternalService',
-        outputs_key_field='service_id',
+        outputs_prefix="ASM.ExternalService",
+        outputs_key_field="service_id",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def get_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
@@ -250,26 +432,33 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
         that contains external service information.
     """
     # assume that only one service_id was passed in or fail.
-    service_id = str(args.get('service_id'))
+    service_id = str(args.get("service_id"))
     service_id_list = service_id.split(",")
     if len(service_id_list) > 1:
         raise ValueError("This command only supports one service_id at this time")
 
     response = client.get_external_service_request(service_id_list)
-    parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('External Service', parsed, removeNull=True, headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("details")
+    markdown = tableToMarkdown(
+        "External Service",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.ExternalService',
-        outputs_key_field='service_id',
+        outputs_prefix="ASM.ExternalService",
+        outputs_key_field="service_id",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def list_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_ip_address_range_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
     """
     asm-list-external-ip-address-range command: Returns list of external ip ranges.
 
@@ -282,21 +471,27 @@ def list_external_ip_address_range_command(client: Client, args: Dict[str, Any])
         that contains external IP address ranges.
     """
     response = client.list_external_ip_address_range_request()
-    parsed = response.get('reply', {}).get('external_ip_address_ranges')
-    markdown = tableToMarkdown('External IP Address Ranges', parsed, removeNull=True,
-                               headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("external_ip_address_ranges")
+    markdown = tableToMarkdown(
+        "External IP Address Ranges",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.ExternalIpAddressRange',
-        outputs_key_field='range_id',
+        outputs_prefix="ASM.ExternalIpAddressRange",
+        outputs_key_field="range_id",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_ip_address_range_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
     """
     asm-get-external-ip-address-range command: Returns details of single external ip range.
     Returns error if more than one range_id was provided in comma separated format.
@@ -311,27 +506,33 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
         that contains external ip range information.
     """
     # assume that only one range_id was passed in or fail.
-    range_id = str(args.get('range_id'))
+    range_id = str(args.get("range_id"))
     range_id_list = range_id.split(",")
     if len(range_id_list) > 1:
         raise ValueError("This command only supports one range_id at this time")
 
     response = client.get_external_ip_address_range_request(range_id_list)
-    parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True,
-                               headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("details")
+    markdown = tableToMarkdown(
+        "External IP Address Range",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.ExternalIpAddressRange',
-        outputs_key_field='range_id',
+        outputs_prefix="ASM.ExternalIpAddressRange",
+        outputs_key_field="range_id",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_asset_internet_exposure_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
     """
     asm-list-asset-internet-exposure command: Returns list of external internet exposures.
 
@@ -347,38 +548,52 @@ def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains external internet exposures.
     """
-    ip_address = args.get('ip_address')
-    name = args.get('name')
-    asm_type = args.get('type')
-    has_active_external_services = args.get('has_active_external_services')
+    ip_address = args.get("ip_address")
+    name = args.get("name")
+    asm_type = args.get("type")
+    has_active_external_services = args.get("has_active_external_services")
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
-        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        search_params.append(
+            {"field": "ip_address", "operator": "eq", "value": ip_address}
+        )
     if name:
         search_params.append({"field": "name", "operator": "contains", "value": name})
     if asm_type:
         search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
     if has_active_external_services:
-        search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
+        search_params.append(
+            {
+                "field": "has_active_external_services",
+                "operator": "in",
+                "value": [has_active_external_services],
+            }
+        )
 
     response = client.list_asset_internet_exposure_request(search_params)
-    formatted_response = response.get('reply', {}).get('assets_internet_exposure')
+    formatted_response = response.get("reply", {}).get("assets_internet_exposure", [])
     parsed = format_asm_id(formatted_response)
-    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True,
-                               headerTransform=string_to_table_header)
+    markdown = tableToMarkdown(
+        "Asset Internet Exposures",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.AssetInternetExposure',
-        outputs_key_field='asm_ids',
+        outputs_prefix="ASM.AssetInternetExposure",
+        outputs_key_field="asm_ids",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
 
 
-def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_asset_internet_exposure_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
     """
     asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
     Returns error if more than one asm_id was provided in comma separated format.
@@ -393,24 +608,155 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
         that contains internet exposure information.
     """
     # assume that only one asm_id was passed in or fail.
-    asm_id = str(args.get('asm_id'))
+    asm_id = str(args.get("asm_id"))
     asm_id_list = asm_id.split(",")
     if len(asm_id_list) > 1:
         raise ValueError("This command only supports one asm_id at this time")
 
     response = client.get_asset_internet_exposure_request(asm_id_list)
-    parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True,
-                               headerTransform=string_to_table_header)
+    parsed = response.get("reply", {}).get("details")
+    markdown = tableToMarkdown(
+        "Asset Internet Exposure",
+        parsed,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
-        outputs_prefix='ASM.AssetInternetExposure',
-        outputs_key_field='asm_ids',
+        outputs_prefix="ASM.AssetInternetExposure",
+        outputs_key_field="asm_ids",
         outputs=parsed,
         raw_response=response,
-        readable_output=markdown
+        readable_output=markdown,
     )
 
     return command_results
+
+
+def start_remediation_confirmation_scan_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
+    """
+    asm-start-remediation-confirmation-scan command: Starts a new scan or gets an existing scan ID.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the ID of the Remediation Confirmation Scan.
+    """
+    service_id = str(args.get("service_id"))
+    attack_surface_rule_id = str(args.get("attack_surface_rule_id"))
+    alert_internal_id = int(args.get("alert_internal_id", ""))
+    if alert_internal_id < 0:
+        raise ValueError(
+            f"Expected a non-negative integer, but got {alert_internal_id}."
+        )
+
+    response = client.start_remediation_confirmation_scan(
+        alert_internal_id=alert_internal_id,
+        service_id=service_id,
+        attack_surface_rule_id=attack_surface_rule_id,
+    )
+
+    demisto.debug(response.status_code)
+
+    json_response = response.json()
+    formatted_outputs = json_response.get("reply", {})
+
+    if response.status_code == 201:
+        formatted_outputs.update({"scan_creation_status": "created"})
+    elif response.status_code == 200:
+        formatted_outputs.update({"scan_creation_status": "existing"})
+
+    markdown = tableToMarkdown(
+        "Creation of Remediation Confirmation Scan",
+        formatted_outputs,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        outputs_prefix="ASM.RemediationScan",
+        outputs_key_field="",
+        outputs=formatted_outputs,
+        raw_response=json_response,
+        readable_output=markdown,
+    )
+    return command_results
+
+
+@polling_function(name=demisto.command(),
+                  interval=arg_to_number(demisto.args().get('interval_in_seconds', 600)),
+                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 11000)),
+                  requires_polling_arg=False  # This means it will always be default to poll, poll=true
+                  )
+def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], client: Client):
+    """
+    asm-get-remediation-confirmation-scan-status command: Polls for status of an existing remediation confirmation scan.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
+
+    Returns:
+        PollResult: A ``PollResult`` object that is then passed to ``return_results``,
+        that contains the ID of the Remediation Confirmation Scan and a success or failure message.
+    """
+    scan_id = str(args.get("scan_id"))
+    response = client.get_remediation_confirmation_scan_status(scan_id=scan_id)
+    json_response = response.json()
+    scan_status = json_response.get('reply').get('status')
+
+    if scan_status == "IN_PROGRESS":
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(
+                outputs_prefix="ASM.RemediationScan",
+                outputs_key_field="scan_id",
+                readable_output="Waiting for remediation confirmation scan to finish..."
+            ),
+            continue_to_poll=True,
+            args_for_next_run={"scan_id": scan_id, **args}
+        )
+    elif scan_status == "SUCCESS":
+        formatted_outputs = json_response.get("reply", {})
+        markdown = tableToMarkdown(
+            "Status of Remediation Confirmation Scan",
+            formatted_outputs,
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        )
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output=markdown,
+        )
+        return PollResult(
+            response=command_results,
+            continue_to_poll=False)
+    elif scan_status == "FAILED_TIMEOUT" or scan_status == "FAILED_ERROR":
+        formatted_outputs = json_response.get("reply", {})
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output="The remediation confirmation scan timed out or failed."
+        )
+        return PollResult(response=command_results, continue_to_poll=False)
+    else:
+        formatted_outputs = json_response.get("reply", {})
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output="The remediation confirmation scan timed out or failed."
+        )
+        return PollResult(response=command_results, continue_to_poll=False)
 
 
 def test_module(client: Client) -> None:
@@ -429,11 +775,11 @@ def test_module(client: Client) -> None:
     try:
         client.list_external_service_request([])
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            raise DemistoException('Authorization Error: make sure API Key is correctly set')
+        if "Forbidden" in str(e):
+            raise DemistoException("Authorization Error: make sure API Key is correctly set")
         else:
             raise e
-    return_results('ok')
+    return_results("ok")
 
 
 def main() -> None:
@@ -444,54 +790,54 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
-        creds = params.get('credentials', {})
-        api = creds.get('password', '')
-        auth_id = creds.get('identifier', '')
+        creds = params.get("credentials", {})
+        api = creds.get("password", "")
+        auth_id = creds.get("identifier", "")
         headers = {
-            'Authorization': f'{api}',
-            'x-xdr-auth-id': f'{auth_id}',
-            'Content-Type': 'application/json'
+            "Authorization": f"{api}",
+            "x-xdr-auth-id": f"{auth_id}",
+            "Content-Type": "application/json",
         }
 
-        proxy = params.get('proxy', False)
+        proxy = params.get("proxy", False)
         handle_proxy()
-        verify_certificate = not params.get('insecure', False)
+        verify_certificate = not params.get("insecure", False)
 
         url_suffix = "/public_api/v1"
-        url = params.get('url', '')
+        url = params.get("url", "")
         add_sensitive_log_strs(api)
         base_url = urljoin(url, url_suffix)
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+        )
 
         commands = {
-            'asm-list-external-service': list_external_service_command,
-            'asm-get-external-service': get_external_service_command,
-            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
-            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
-            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
-            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
-            'asm-list-remediation-rule': list_remediation_rule_command
+            "asm-list-external-service": list_external_service_command,
+            "asm-get-external-service": get_external_service_command,
+            "asm-list-external-ip-address-range": list_external_ip_address_range_command,
+            "asm-get-external-ip-address-range": get_external_ip_address_range_command,
+            "asm-list-asset-internet-exposure": list_asset_internet_exposure_command,
+            "asm-get-asset-internet-exposure": get_asset_internet_exposure_command,
+            "asm-list-remediation-rule": list_remediation_rule_command,
+            "asm-start-remediation-confirmation-scan": start_remediation_confirmation_scan_command,
+            "asm-get-remediation-confirmation-scan-status": get_remediation_confirmation_scan_status_command,
         }
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client)
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](args, client))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

@@ -1,0 +1,40 @@
+[INGEST:vendor="arista", product="switch", target_dataset="arista_switch_raw", no_hit=keep]
+// extract the ts (timestamp) string representation from the raw log
+filter _raw_log ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+|-]\d{2}:\d{2}"
+| alter tmp_raw_ts = arrayindex(regextract(_raw_log, "<\d+>(.+?)\s+\S+\s+\w+\:\s"), 0)
+
+// assert the timestamp contains a valid RFC 3339 timezone ( either Z or [+|-]HH:MM )
+| filter tmp_raw_ts ~= "\d+[Zz]{1}$|\d+[\+\-]{1}\d{2}:\d{2}"
+
+// process RFC 3339 compliant timestamps 
+| filter tmp_raw_ts ~= "[12]\d{3}\-[01]\d{1}\-[0123]\d{1}[\s\S]{1}\d{2}:\d{2}:\d{2}\.?\d{0,6}" 
+
+| alter // extract the different tmp_timestamp components 
+    tmp_date = arrayindex(regextract(tmp_raw_ts, "(\d{4}\-\d{2}\-\d{2}).{1}\d{2}:\d{2}:\d{2}"), 0),
+    tmp_time = arrayindex(regextract(tmp_raw_ts, "\d{4}\-\d{2}\-\d{2}.{1}(\d{2}:\d{2}:\d{2})"), 0),
+    tmp_fraction = arrayindex(regextract(tmp_raw_ts, "\d{4}\-\d{2}\-\d{2}.{1}\d{2}:\d{2}:\d{2}\.(\d{1,3})"), 0),
+    tmp_num_offset = arrayindex(regextract(tmp_raw_ts, "\d+([+-]{1}\d{2}:\d{2})$"), 0),
+    tmp_zulu_offset = arrayindex(regextract(tmp_raw_ts, "\d+([Zz]{1})$"), 0) 
+
+// assert tz (time zone) is properly initialized in expected format 
+| alter tmp_tz_offset = if(tmp_zulu_offset != null, "+00:00", tmp_num_offset)
+| filter tmp_tz_offset != null 
+
+// format string representation as %Y-%m-%dT%H:%M:%S[+|-]HH:MM 
+| alter tmp_formatted_ts = concat(tmp_date, "T", tmp_time, tmp_tz_offset) 
+
+// convert the formatted string timestamp field to a dt (datetime) type field 
+| alter _tmp_dt_timestamp = parse_timestamp("%FT%T%Ez", tmp_formatted_ts)
+
+// right-pad the fraction part with zeros if necessary to format it to be 3 digits long for ms (milliseconds)
+| alter tmp_fraction = if(tmp_fraction = null, "0", tmp_fraction)
+| alter tmp_fraction_len = len(tmp_fraction)
+| alter tmp_fraction_suffix = if(tmp_fraction_len = 1, "00", tmp_fraction_len = 2, "0", "")
+| alter tmp_ms_str = concat(tmp_fraction, tmp_fraction_suffix)
+
+// add ms (millisecond) fraction part to epoch representation of the ts 
+| alter tmp_epoch_ms = to_integer(concat(to_string(to_epoch(_tmp_dt_timestamp, "SECONDS")), tmp_ms_str))
+| alter _time = to_timestamp(tmp_epoch_ms, "MILLIS")
+
+// remove temporary utility fields
+| fields -_tmp_dt_timestamp, tmp_*;

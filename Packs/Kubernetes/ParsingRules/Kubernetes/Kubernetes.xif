@@ -1,0 +1,15 @@
+[INGEST:vendor="kubernetes", product="kubernetes", target_dataset="kubernetes_kubernetes_raw", no_hit=keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ss.E*SZ. For example: "2021-01-01T10:00:00.123456Z".
+filter _raw_log ~= "requestReceivedTimestamp\":\"\d+-\d+\-\d+T\d+:\d+:\d+\.\d{3,}Z"
+| alter
+    tmp_datetime_extract = arraystring(regextract(_raw_log, "requestReceivedTimestamp\":\"(\d+-\d+\-\d+T\d+:\d+:\d+)\.\d{3}"), ""),
+    tmp_milli_extract = arraystring(regextract(_raw_log, "requestReceivedTimestamp\":\"\d+-\d+\-\d+T\d+:\d+:\d+\.(\d{3})"), "")
+| alter
+    tmp_datetime_replex = replex(tmp_datetime_extract, "T", " ")
+| alter
+    tmp_time_to_epoch = to_string(to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", tmp_datetime_replex)))
+| alter
+    tmp_time_with_mili = arraystring(arraycreate(tmp_time_to_epoch, tmp_milli_extract), "")
+| alter
+    _time = to_timestamp(to_integer(tmp_time_with_mili), "millis")
+| fields -tmp_datetime_extract, tmp_milli_extract, tmp_datetime_replex, tmp_time_to_epoch, tmp_time_with_mili;

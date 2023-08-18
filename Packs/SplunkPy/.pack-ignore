@@ -10,27 +10,21 @@ ignore=RM106
 [file:classifier-mapper-incoming-SplunkPy.json]
 ignore=BA101
 
-[file:playbook-SplunkPySearch_Test.yml]
-ignore=auto-test
-
-[file:SplunkPy_KV_commands.yml]
-ignore=auto-test
-
-[file:playbook-SplunkTest2.yml]
-ignore=auto-test
-
-[file:playbook-SplunkPy-Test-V2.yml]
-ignore=auto-test
-
-
 [file:SplunkPy_image.png]
 ignore=IM111
 
 [known_words]
-Splunk
-SplunkPy
-HEC
+splunk
+splunkpy
+hec
 splunk-search
 
 [file:classifier-SplunkPy.json]
 ignore=BA101
+
+[file:SplunkShowIdentity.yml]
+ignore=BA124
+
+[file:SplunkShowAsset.yml]
+ignore=BA124
+

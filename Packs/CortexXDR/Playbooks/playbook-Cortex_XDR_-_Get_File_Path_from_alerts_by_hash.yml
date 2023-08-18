@@ -35,12 +35,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '1':
     id: '1'
-    taskid: 8cbdbc4c-c7d0-4fe7-8175-bc443d0af042
+    taskid: 1d4bd04b-dd85-4695-8145-b720b30dc4a4
     type: regular
     task:
-      id: 8cbdbc4c-c7d0-4fe7-8175-bc443d0af042
+      id: 1d4bd04b-dd85-4695-8145-b720b30dc4a4
       version: -1
       name: Set Actor Process Path for this hash
       description: |-
@@ -65,7 +66,7 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256
@@ -74,6 +75,7 @@ tasks:
                 value:
                   simple: inputs.NonFoundHashes
                 iscontext: true
+              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -99,12 +101,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '2':
     id: '2'
-    taskid: 5e7d4423-7ec7-4dd1-8b99-a3c6a7081e16
+    taskid: f7844d06-6e77-4d28-83d2-e158790e9120
     type: regular
     task:
-      id: 5e7d4423-7ec7-4dd1-8b99-a3c6a7081e16
+      id: f7844d06-6e77-4d28-83d2-e158790e9120
       version: -1
       name: Set Target Process Path for this hash
       description: |-
@@ -129,7 +132,7 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.alerts.action_file_sha256
@@ -138,6 +141,7 @@ tasks:
                 value:
                   simple: inputs.NonFoundHashes
                 iscontext: true
+              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -163,12 +167,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
-    taskid: b3a00d09-38eb-4954-8d4f-80c81480a892
+    taskid: fa68eb2b-9eb4-4ff1-8d81-42f9c44f0ec8
     type: regular
     task:
-      id: b3a00d09-38eb-4954-8d4f-80c81480a892
+      id: fa68eb2b-9eb4-4ff1-8d81-42f9c44f0ec8
       version: -1
       name: Set Actor Process Path for this hash
       description: |-
@@ -193,7 +198,7 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_sha256
@@ -202,6 +207,7 @@ tasks:
                 value:
                   simple: inputs.NonFoundHashes
                 iscontext: true
+              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -227,6 +233,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
     taskid: a9194954-c6f4-4a5c-8f8b-dfb9ee94b7cc
@@ -254,6 +261,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -268,7 +276,9 @@ view: |-
   }
 inputs:
 - key: NonFoundHashes
-  value: {}
+  value:
+    complex:
+      root: NonFoundHashes
   required: false
   description: List of hashes to run against.
   playbookInputQuery:
@@ -279,3 +289,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

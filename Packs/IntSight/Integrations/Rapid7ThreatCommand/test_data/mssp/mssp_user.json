@@ -1,0 +1,14 @@
+[
+    {
+        "_id": "5b4c9b905abb6179bb277a4f",
+        "Email": "example@gmail.com",
+        "Role": "Analyst",
+        "IsDeleted": false
+    },
+    {
+        "_id": "5b4c9b905dsfsdabb6179bb277a4f",
+        "Email": "test@test.com",
+        "Role": "Analyst",
+        "IsDeleted": true
+    }
+]

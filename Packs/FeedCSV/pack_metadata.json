@@ -2,7 +2,7 @@
     "name": "CSV Feed",
     "description": "Indicators feed from a CSV file",
     "support": "xsoar",
-    "currentVersion": "1.1.27",
+    "currentVersion": "1.1.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,8 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Generic Feed"
     ],
     "useCases": [],
     "keywords": [

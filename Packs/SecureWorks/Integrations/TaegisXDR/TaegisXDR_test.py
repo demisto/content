@@ -6,19 +6,23 @@ from TaegisXDR import (
     Client,
     execute_playbook_command,
     fetch_alerts_command,
+    fetch_assets_command,
     create_comment_command,
     fetch_comment_command,
     fetch_comments_command,
     update_comment_command,
+    fetch_endpoint_command,
     fetch_incidents,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
     fetch_users_command,
     fetch_playbook_execution_command,
+    isolate_asset_command,
     create_investigation_command,
     update_investigation_command,
     archive_investigation_command,
     unarchive_investigation_command,
+    update_alert_status_command,
     test_module as connectivity_test,
 )
 
@@ -100,6 +104,33 @@ def test_fetch_alerts_by_id(requests_mock):
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
+
+
+def test_fetch_assets(requests_mock):
+    """Tests taegis-fetch-assets command function
+    """
+
+    client = mock_client(requests_mock, FETCH_ASSETS_RESPONSE)
+    args = {
+        "page": 0,
+        "page_size": 1,
+    }
+
+    response = fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == [TAEGIS_ASSET]
+
+    # Test allowed search fields
+    args = {
+        "host_id": TAEGIS_ASSET["hostId"]
+    }
+    response = fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_ASSET
+    assert len(response.outputs) == len([TAEGIS_ASSET])
+
+    # Asset Query Failure
+    client = mock_client(requests_mock, FETCH_ASSETS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch assets:"):
+        assert fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_create_comment(requests_mock):
@@ -213,6 +244,27 @@ def test_update_comment(requests_mock):
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to locate/update comment:"):
         assert update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_fetch_endpoint(requests_mock):
+    """Tests taegis-fetch-endpoint command function
+    """
+    client = mock_client(requests_mock, FETCH_ENDPOINT_RESPONSE)
+
+    # comment_id not set
+    with pytest.raises(ValueError, match="Cannot fetch endpoint information, missing id"):
+        assert fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    args = {"id": "110d1fd3a23c95c0120d0d10451cb001"}
+
+    # Successful fetch - Endpoint found
+    response = fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == FETCH_ENDPOINT_RESPONSE["data"]["assetEndpointInfo"]
+
+    # Endpoint not found
+    client = mock_client(requests_mock, FETCH_ENDPOINT_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch endpoint information"):
+        assert fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_connectivity(requests_mock):
@@ -436,6 +488,31 @@ def test_unarchive_investigation(requests_mock):
         assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
+def test_isolate_asset(requests_mock):
+    """Tests taegis-isolate-asset command function
+    """
+    client = mock_client(requests_mock, ISOLATE_ASSET_RESPONSE)
+
+    # asset id not set
+    with pytest.raises(ValueError, match="Cannot isolate asset, missing id"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+    args = {"id": TAEGIS_ASSET["id"]}
+
+    # reason not set
+    with pytest.raises(ValueError, match="Cannot isolate asset, missing reason"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    args["reason"] = "My isolation reason"
+
+    # Successful isolation
+    response = isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == ISOLATE_ASSET_RESPONSE["data"]["isolateAsset"]
+
+    # Endpoint not found
+    client = mock_client(requests_mock, ISOLATE_ASSET_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to isolate asset"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
 def test_fetch_users(requests_mock):
     client = mock_client(requests_mock, FETCH_USERS_RESPONSE)
     args = {
@@ -471,3 +548,33 @@ def test_fetch_users(requests_mock):
     invalid_fields = r"id MUST be in 'auth0|12345' format"
     with pytest.raises(ValueError, match=invalid_fields):
         assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_update_alert_status(requests_mock):
+    """Tests taegis-update-alert-status command function
+    """
+    client = mock_client(requests_mock, UPDATE_ALERT_STATUS_RESPONSE)
+
+    args = {"ids": TAEGIS_ALERT['id']}
+
+    # alert ids not set
+    with pytest.raises(ValueError, match="Alert IDs must be defined"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # status not set
+    with pytest.raises(ValueError, match="Alert status must be defined"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["status"] = "Bad Status"
+    with pytest.raises(ValueError, match="The provided status, Bad Status, is not valid for updating an alert"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Successful update
+    args["status"] = "NOT_ACTIONABLE"
+    response = update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == UPDATE_ALERT_STATUS_RESPONSE["data"]["alertsServiceUpdateResolutionInfo"]
+
+    # Alert not updated
+    client = mock_client(requests_mock, UPDATE_ALERT_STATUS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to locate/update alert"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)

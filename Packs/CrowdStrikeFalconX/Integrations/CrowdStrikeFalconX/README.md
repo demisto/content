@@ -1887,6 +1887,8 @@ Gets reputation info for one or more files, by their sha256 hash.
 ***
 Submits a URL or FTP for sandbox analysis.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 

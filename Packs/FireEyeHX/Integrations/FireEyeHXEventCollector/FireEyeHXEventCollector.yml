@@ -1,0 +1,66 @@
+category: Analytics & SIEM
+description: Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
+display: FireEye HX Event Collector
+name: FireEye HX Event Collector
+commonfields:
+  id: FireEye HX Event Collector
+  version: -1
+configuration:
+- display: Server URL (e.g., https://192.168.0.1:3000)
+  name: url
+  required: true
+  type: 0
+- display: User Name
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: The maximum number of events per fetch.
+  additionalinfo: The maximum number of events to fetch every time fetch is executed.
+  defaultvalue: 1000
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: The first fetch time, e.g., 1 hour, 3 days
+  display: First Fetch Time
+  defaultvalue: 3 days
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+script:
+  commands:
+  - description: Manual command to fetch events and display them.
+    name: fireeye-hx-get-events
+    arguments:
+    - name: limit
+      description: The maximum number of events to get.
+    - name: since
+      description: Occurrence time of the least recent event to include (inclusive).
+      defaultValue: 3 days
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0

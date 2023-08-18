@@ -1,0 +1,47 @@
+args:
+- description: A comma-separated list of emails.
+  isArray: true
+  name: email_values
+- description: A comma-separated list of MD5 hashes.
+  isArray: true
+  name: md5_values
+- description: A comma-separated list of IPs.
+  isArray: true
+  name: ip_values
+- description: A comma-separated list of URLs.
+  isArray: true
+  name: url_values
+- description: A comma-separated list of domains.
+  isArray: true
+  name: domain_values
+- description: The indicator type (Itype) of the emails provided. By default the type will be “Malware Email” (mal_email).
+  name: email_indicator_type
+- description: The indicator type (Itype) of the hashes provided. By default the type will be “Malware MD5” (mal_md5).
+  name: md5_indicator_type
+- description: The indicator type (Itype) of the ip provided. By default the type will be “Malware IP” (mal_ip).
+  name: ip_indicator_type
+- description: The indicator type (Itype) of the URLs  provided. By default the type will be “Malware URL” (mal_url).
+  name: url_indicator_type
+- description: The indicator type (Itype) of the domains provided. By default the type will be “Malware Domain” (mal_domain).
+  name: domain_indicator_type
+- description: The indicators query, based lucene search syntax.
+  name: indicator_query
+comment: "Builds A JSON array based on the values provided by the user for the 'threatstream-import-indicator-without-approval' command."
+commonfields:
+  id: ThreatstreamBuildIocImportJson
+  version: -1
+name: ThreatstreamBuildIocImportJson
+outputs:
+- contextPath: ThreatstreamBuildIocImportJson
+  description: The string output represents a JSON object.
+  type: String
+script: '-'
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.11.54132
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

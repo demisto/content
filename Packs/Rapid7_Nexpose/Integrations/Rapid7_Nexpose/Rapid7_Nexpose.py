@@ -1,12 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
-
-import demistomock as demisto
-from CommonServerPython import *
 
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
@@ -28,6 +27,7 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
+
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
@@ -1554,10 +1554,12 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the started scan.
         """
-        post_data = {
+        post_data: dict = {
             "name": scan_name,
-            "hosts": hosts
         }
+
+        if hosts:
+            post_data["hosts"] = hosts
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scans",
@@ -2288,7 +2290,6 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
 
 def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
-
     """
     Find the date and ID for the last scan of an asset.
 
@@ -4924,31 +4925,10 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
         client=client,
     )
 
-    if not name:
-        name = f"scan {datetime.now()}"
-
-    if hosts:
-        hosts_list = argToList(hosts)
-
-    else:
-        assets = client.get_site_assets(site.id)
-
-        hosts_list = []
-
-        for asset in assets:
-            if asset.get("ip") and asset["ip"] not in hosts_list:
-                hosts_list.append(asset["ip"])
-
-            # In some cases there is an IP address in the "addresses" field, but not in the "ip" field.
-            elif asset.get("addresses"):
-                for address in asset["addresses"]:
-                    if address.get("ip") and address["ip"] not in hosts_list:
-                        hosts_list.append(address["ip"])
-
     scan_response = client.start_site_scan(
         site_id=site.id,
-        scan_name=name,
-        hosts=hosts_list,
+        scan_name=name if name else f"scan {datetime.now()}",
+        hosts=argToList(hosts) if hosts else None,
     )
 
     if not scan_response or "id" not in scan_response:
@@ -5377,11 +5357,22 @@ def main():  # pragma: no cover
         command = demisto.command()
         handle_proxy()
 
+        # A workaround for fixing compatibility issues when upgrading existing instances that are < 1.2.0.
+        # ('token' field was converted from type 0 to type 9)
+        token = None
+
+        if params.get("token"):
+            if isinstance(params["token"], str):
+                token = params["token"]
+
+            elif params["token"].get("identifier"):
+                token = params["token"]["identifier"]
+
         client = Client(
             url=params["server"],
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
-            token=params.get("token", {}).get("identifier"),
+            token=token,
             verify=not params.get("unsecure")
         )
 

@@ -2,4 +2,8 @@
 ignore=BA109
 
 [known_words]
-Stealthwatch
+stealthwatch
+
+[file:CiscoStealthwatch.yml]
+ignore=MR108
+

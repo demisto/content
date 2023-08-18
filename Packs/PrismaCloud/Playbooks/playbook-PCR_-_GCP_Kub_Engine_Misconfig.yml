@@ -3,6 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration
 description: |
+  Deprecated. Use Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud GCP Kubernetes Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -666,4 +667,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

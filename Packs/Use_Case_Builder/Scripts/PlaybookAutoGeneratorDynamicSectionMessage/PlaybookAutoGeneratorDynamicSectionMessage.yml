@@ -1,0 +1,21 @@
+commonfields:
+  id: PlaybookAutoGeneratorDynamicSectionMessage
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+comment: ''
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: PlaybookAutoGeneratorDynamicSectionMessage
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.10.0
+tests:
+- Run all tests

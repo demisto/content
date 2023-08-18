@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Removed the *from* argument from the **send-mail***, **reply-mail***  commands as they are not allowed in Single User."}

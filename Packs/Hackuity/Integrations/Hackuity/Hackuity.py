@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 import dateutil.parser
-import demistomock as demisto
 import requests
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from funcy import get_in, identity, set_in
 
@@ -31,14 +31,12 @@ class Client(BaseClient):
         self,
         url: str,
         namespace: str,
-        login: str,
-        password: str,
+        apikey: str,
         verify: bool = True,
         proxy: bool = True,
     ):
         self.namespace = namespace
-        self.login = login
-        self.password = password
+        self.apikey = apikey
         base_url = f"{url.rstrip('/')}/api/v1"
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
@@ -70,11 +68,10 @@ class Client(BaseClient):
         json_data: Dict[str, Any] = None,
         resp_type: str = "json",
     ):  # pragma: no cover
-        access_token = self.get_access_token()
         headers = {
-            "authorization": f"Bearer {access_token}",
             "content-type": "application/json",
             "user-agent": USER_AGENT,
+            "authorization": f"Basic {self.apikey}",
         }
         demisto.info(f"API call: HTTP {method} on {url_suffix}")
         return self._http_request(
@@ -85,55 +82,6 @@ class Client(BaseClient):
             resp_type=resp_type,
             error_handler=self.http_error_handler,
         )
-
-    def get_access_token(self) -> str:
-        """Get an access token from integration cache or by loggin in"""
-        integration_context = get_integration_context()
-        access_token = integration_context.get("access_token")
-        access_token_expiration = integration_context.get("access_token_expiration", 0)
-
-        # use already existing access token if possible
-        if access_token and time.time() < access_token_expiration:
-            return access_token
-
-        # log in
-        demisto.info("API login")
-        try:
-            response = self._http_request(
-                method="POST",
-                url_suffix="/authentication/idp/oauth2/token",
-                data={
-                    "grant_type": "password",
-                    "scope": self.namespace,
-                    "username": self.login,
-                    "password": self.password,
-                },
-                headers={
-                    "content-type": "application/x-www-form-urlencoded",
-                    "user-agent": USER_AGENT,
-                },
-            )
-        except DemistoException as e:
-            # extract error description in case of OAuth error
-            try:
-                error_description = e.res.json()["error_description"]
-            except Exception:
-                raise e  # failled to get error description
-            # format error message
-            raise DemistoException(
-                message=f"Authentication error: {error_description}",
-                exception=e.exception,
-                res=e.res,
-            ) from e
-
-        set_integration_context(
-            {
-                # clear other keys to force refresh
-                "access_token": response["access_token"],
-                "access_token_expiration": int(time.time()) + response["expires_in"],
-            }
-        )
-        return response["access_token"]
 
     def get_user_id(self) -> str:
         """Get the id of the user"""
@@ -373,7 +321,7 @@ def none_or_apply(item: Optional[str], apply: Callable[[str], T]) -> Optional[T]
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
     # excption formating in case of authentication error
-    # is already done in client.get_access_token
+    # is already done in client.http_error_handler
     set_integration_context({})  # reset cache
     client.fetch_user()
     return "ok"
@@ -445,6 +393,12 @@ def hackuity_search_findings_command(
                 (
                     ["findingStatus", "subState"],
                     ["Status", "SubState"],
+                ),
+                (
+                    ["findingStatus", "lastClosedAt"],
+                    ["Status", "LastClosedAt"],
+                    None,
+                    format_date,
                 ),
                 (
                     ["findingStatus", "score", "hyScore"],
@@ -652,10 +606,10 @@ def hackuity_dashboard_data_command(
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
 
-    url = demisto.params()["url"]
-    namespace = demisto.params()["namespace"]
-    login = demisto.params()["login"]["identifier"]
-    password = demisto.params()["login"]["password"]
+    params = demisto.params()
+    url = params.get("url")
+    namespace = params.get("namespace")
+    apikey = params.get("login", {}).get("password")
 
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
@@ -678,8 +632,7 @@ def main() -> None:  # pragma: no cover
         client = Client(
             url=url,
             namespace=namespace,
-            login=login,
-            password=password,
+            apikey=apikey,
             verify=verify_certificate,
             proxy=proxy,
         )

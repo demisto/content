@@ -7,7 +7,7 @@
     "description": "UUID for ASM Service",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmserviceid",
     "isReadOnly": false,
     "locked": false,

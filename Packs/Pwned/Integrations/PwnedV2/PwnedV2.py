@@ -4,28 +4,25 @@ from CommonServerPython import *
 
 import re
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
+params = demisto.params()
+VENDOR = 'Have I Been Pwned? V2'
+MAX_RETRY_ALLOWED = params.get('max_retry_time', -1)
+API_KEY = params.get('credentials_api_key', {}).get('password') or params.get('api_key')
+USE_SSL = not params.get('insecure', False)
+BASE_URL = 'https://haveibeenpwned.com/api/v3'
+DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get('default_dbot_score_email') == 'SUSPICIOUS' else 3
+DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
+
 
 ''' GLOBALS/PARAMS '''
 
+
 VENDOR = 'Have I Been Pwned? V2'
-MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
-API_KEY = demisto.params().get('api_key')
-USE_SSL = not demisto.params().get('insecure', False)
-
-BASE_URL = 'https://haveibeenpwned.com/api/v3'
-HEADERS = {
-    'hibp-api-key': API_KEY,
-    'user-agent': 'DBOT-API',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
-
-DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
-DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
-
 SUFFIXES = {
     "email": '/breachedaccount/',
     "domain": '/breaches?domain=',
@@ -49,7 +46,12 @@ def http_request(method, url_suffix, params=None, data=None):
             verify=USE_SSL,
             params=params,
             data=data,
-            headers=HEADERS
+            headers={
+                'hibp-api-key': API_KEY,
+                'user-agent': 'DBOT-API',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         )
 
         if res.status_code != 429:
@@ -64,7 +66,7 @@ def http_request(method, url_suffix, params=None, data=None):
             wait_amount = wait_regex.group()
         else:
             demisto.error('failed extracting wait time will use default (5). Res body: {}'.format(res.text))
-            wait_amount = 5
+            wait_amount = '5'
         if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
             return_error('Max retry time has exceeded.')
         time.sleep(int(wait_amount))
@@ -329,25 +331,31 @@ def pwned_username(username_list):
     return api_res_list
 
 
-command = demisto.command()
-LOG('Command being called is: {}'.format(command))
-try:
-    handle_proxy()
-    set_retry_end_time()
-    commands = {
-        'test-module': test_module,
-        'email': pwned_email_command,
-        'pwned-email': pwned_email_command,
-        'domain': pwned_domain_command,
-        'pwned-domain': pwned_domain_command,
-        'pwned-username': pwned_username_command
-    }
+def main():
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
+    command = demisto.command()
+    LOG(f'Command being called is: {command}')
+    try:
+        handle_proxy()
+        set_retry_end_time()
+        commands = {
+            'test-module': test_module,
+            'email': pwned_email_command,
+            'pwned-email': pwned_email_command,
+            'domain': pwned_domain_command,
+            'pwned-domain': pwned_domain_command,
+            'pwned-username': pwned_username_command
+        }
+        if command in commands:
+            md_list, ec_list, api_email_res_list = commands[command](demisto.args())
+            for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
+                return_outputs(md, ec, api_paste_res)
 
-    if command in commands:
-        md_list, ec_list, api_email_res_list = commands[command](demisto.args())
-        for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
-            return_outputs(md, ec, api_paste_res)
+    # Log exceptions
+    except Exception as e:
+        return_error(str(e))
 
-# Log exceptions
-except Exception as e:
-    return_error(str(e))
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

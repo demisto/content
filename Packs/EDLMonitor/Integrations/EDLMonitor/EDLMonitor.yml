@@ -1,0 +1,96 @@
+category: Utilities
+commonfields:
+  id: EDL Monitor
+  version: -1
+configuration:
+- additionalinfo: Timeout (in seconds) for how long to wait for EDL response before detecting as down (default 2 minutes)
+  defaultvalue: "120"
+  display: 'Timeout:'
+  name: timeout
+  type: 0
+  required: false
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  section: Connect
+  type: 8
+  required: false
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  section: Connect
+  type: 8
+  required: false
+- defaultvalue: smtp.gmail.com
+  display: 'Email server:'
+  name: emailServer
+  type: 0
+  required: false
+- display: Email username
+  displaypassword: Email password
+  name: emailCredentials
+  type: 9
+  required: false
+description: This integration can monitor EDLs by emailing the content of an EDL as a zipped file to a specified user at an interval (when run with a job), and/or simply monitor the EDL for availability and email the user if the EDL is not available in other playbooks
+display: EDL Monitor
+name: EDL Monitor
+script:
+  commands:
+  - arguments:
+    - description: EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name)
+      name: EDL
+      required: true
+      type: textArea
+    - description: EDL username, for auth to the EDL (optional)
+      name: EDL_username
+      type: textArea
+    - description: EDL password, for auth to the EDL (optional)
+      name: EDL_password
+      type: textArea
+    description: Gets the current contents of an EDL
+    name: get-edl-contents
+  - arguments:
+    - description: EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name)
+      name: EDL
+      required: true
+      type: textArea
+    - description: Email address that you want to send the EDL contents to
+      name: Email
+      required: true
+      type: textArea
+    - description: EDL username, for auth to the EDL (optional)
+      name: EDL_username
+      type: textArea
+    - description: EDL password, for auth to the EDL (optional)
+      name: EDL_password
+      type: textArea
+    description: Gets the current contents of an EDL and emails it to a specified email address
+    name: email-edl-contents
+  - arguments:
+    - description: EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name)
+      name: EDL
+      required: true
+      type: textArea
+    - description: EDL username, for auth to the EDL (optional).
+      name: EDL_username
+      type: textArea
+    - description: EDL password, for auth to the EDL (optional).
+      name: EDL_password
+      type: textArea
+    - description: Email.
+      name: Email
+      type: textArea
+    description: Return the response code of the EDL
+    name: check-status
+    outputs:
+    - contextPath: ResponseCode
+      description: The response code.
+      type: number
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

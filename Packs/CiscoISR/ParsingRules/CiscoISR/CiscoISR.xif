@@ -1,0 +1,10 @@
+[INGEST:vendor="cisco", product="isr", target_dataset="cisco_isr_raw", no_hit = keep]
+// Support only date time of format: MMM dd YYYY hh:mm:ss.nnn UTC or format: MMM dd hh:mm:ss.nnn UTC. For example: "Jan 01 10:00:00.123 UTC" or "Jan 01 2021 10:00:00.123 UTC"
+filter _raw_log ~= "\:[\s|\s\*]+\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3}\sUTC" or _raw_log ~= "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"
+| alter
+        tmp_time1 = arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0),
+        tmp_Year = format_timestamp("%Y",_insert_time),
+        tmp_time2 = to_string(arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0))
+| alter tmp_time_concat = to_string(concat(tmp_Year, " ",tmp_time1))
+| alter _time = if(tmp_time2 != null, parse_timestamp("%b %d %Y %H:%M:%E3S",tmp_time2), tmp_time_concat != null, parse_timestamp("%Y %b %d %H:%M:%E3S", tmp_time_concat), _insert_time)
+| fields -tmp_time1, tmp_time_concat, tmp_Year, tmp_time2;

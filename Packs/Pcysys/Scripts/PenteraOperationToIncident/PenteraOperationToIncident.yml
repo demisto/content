@@ -22,8 +22,9 @@ outputs:
   type: unknown
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.11.58677
 runas: DBotWeakRole
 comment: Groups Pentera Full Actions Reports by Operation Type to generate an output usable in creating incidents
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

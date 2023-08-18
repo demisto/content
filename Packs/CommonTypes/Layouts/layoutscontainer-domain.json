@@ -168,57 +168,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "techname",
-                                "height": 22,
-                                "id": "7cb5a1e0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techcountry",
-                                "height": 22,
-                                "id": "7fad0ff0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techorganization",
-                                "height": 22,
-                                "id": "82471bc0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techemail",
-                                "height": 22,
-                                "id": "83db5050-9861-11eb-a24d-4941fb0e06df",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "billing",
-                                "height": 22,
-                                "id": "89ebbe30-9861-11eb-a24d-4941fb0e06df",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "blocked",
                                 "height": 22,
                                 "id": "fe587b20-76c1-11ec-ad89-f112118947c2",
-                                "index": 7,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -227,7 +180,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 8,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -236,7 +189,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 9,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -245,7 +198,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "0ade4320-a751-11eb-8813-85174f038837",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "button",
                                 "startCol": 0,
                                 "args": {
@@ -262,7 +215,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "08a25ce0-a751-11eb-8813-85174f038837",
-                                "index": 10,
+                                "index": 11,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "button",
                                 "startCol": 1,
@@ -544,51 +497,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "techname",
-                                "height": 22,
-                                "id": "ca0b4d00-9861-11eb-a24d-4941fb0e06df",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techcountry",
-                                "height": 22,
-                                "id": "cb505020-9861-11eb-a24d-4941fb0e06df",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techorganization",
-                                "height": 22,
-                                "id": "cd02e220-9861-11eb-a24d-4941fb0e06df",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "techemail",
-                                "height": 22,
-                                "id": "cf7568c0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "billing",
-                                "height": 22,
-                                "id": "dad405f0-9861-11eb-a24d-4941fb0e06df",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
@@ -738,5 +646,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
+    "toVersion": "6.9.9",
     "description": ""
 }

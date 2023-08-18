@@ -619,11 +619,11 @@ tasks:
       body:
         simple: test-playbook
       from:
-        simple: testbox@demistodev.onmicrosoft.com
+        simple: testbox2@demistodev.onmicrosoft.com
       subject:
         simple: test-playbook
       to:
-        simple: testbox@demistodev.onmicrosoft.com
+        simple: testbox2@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {

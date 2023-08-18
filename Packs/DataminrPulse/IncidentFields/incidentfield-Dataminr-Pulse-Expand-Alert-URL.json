@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulseexpandalerturl",
+    "version": -1,
+    "modified": "2023-01-30T12:19:34.744417448+05:30",
+    "name": "Dataminr Pulse Expand Alert URL",
+    "ownerOnly": false,
+    "cliName": "dataminrpulseexpandalerturl",
+    "type": "url",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

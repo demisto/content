@@ -776,5 +776,7 @@ outputs:
     playbook or tagged using approved black, approved white etc.
   type: string
 quiet: true
+marketplaces:
+- xsoar
 tests:
 - No test

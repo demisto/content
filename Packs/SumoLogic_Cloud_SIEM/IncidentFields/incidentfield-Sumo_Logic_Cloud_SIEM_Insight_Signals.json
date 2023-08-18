@@ -1,9 +1,10 @@
 {
     "associatedToAll": false,
-    "associatedTypes": ["Sumo Logic Insight"],
+    "associatedTypes": [
+        "Sumo Logic Insight"
+    ],
     "id": "incident_sumologiccloudsieminsightsignals",
     "version": -1,
-    "itemVersion": "",
     "fromVersion": "6.2.0",
     "name": "Sumo Logic Cloud SIEM Insight Signals",
     "ownerOnly": false,
@@ -13,13 +14,8 @@
     "closeForm": false,
     "editForm": false,
     "required": false,
-    "script": "",
-    "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": true,
-    "selectValues": null,
-    "validationRegex": "",
-    "x2_fields": "",
     "useAsKpi": false,
     "locked": false,
     "system": false,
@@ -27,7 +23,6 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "systemAssociatedTypes": null,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
@@ -83,7 +78,7 @@
         {
             "key": "sumourl",
             "displayName": "SumoURL",
-            "type": "url",
+            "type": "URL",
             "required": false,
             "script": "",
             "width": 150,
@@ -101,6 +96,5 @@
         {}
     ],
     "sla": 0,
-    "threshold": 72,
-    "breachScript": ""
+    "threshold": 72
 }

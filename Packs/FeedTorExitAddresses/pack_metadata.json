@@ -2,7 +2,7 @@
     "name": "Tor Exit Addresses Feed",
     "description": "Tor is free software and an open network that helps you defend against\n  traffic analysis, a form of network surveillance that threatens personal freedom\n  and privacy, confidential business activities and relationships, and state security.",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,8 +11,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-    "Getting Started",
-    "Threat Intelligence Management"
+        "Getting Started",
+        "Threat Intelligence Management",
+        "Free Feed",
+        "Plug & Fetch"
     ],
     "useCases": [],
     "keywords": [],

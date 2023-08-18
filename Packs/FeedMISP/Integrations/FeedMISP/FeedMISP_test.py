@@ -2,15 +2,16 @@ import json
 import pytest
 import demistomock as demisto
 
-from CommonServerPython import DemistoException, ThreatIntel
+from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
 from FeedMISP import clean_user_query, build_indicators_iterator, \
-    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator
+    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
+    update_indicator_fields, get_ip_type
 
 
 def test_build_indicators_iterator_success():
     """
      Given
-         - A list of attributes returned from MISP
+        - A list of attributes returned from MISP
      When
          - Attributes are well formed
      Then
@@ -370,3 +371,80 @@ def test_update_indicators_iterator_indicators_before_timestamp_different_query(
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': old_query})
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert added_indicators_iterator == indicators_iterator
+
+
+@pytest.mark.parametrize(
+    "indicator, feed_tags, expected_calls",
+    [
+        (
+            {
+                "value": "some_value",
+                "type": "IP",
+                "service": "MISP",
+                "fields": {},
+                "rawJSON": {
+                    "value": {
+                        "Tag": [
+                            {
+                                "name": 'misp-galaxy:mitre-attack-pattern="Some Value - R1234"',
+                            }
+                        ]
+                    }
+                },
+            },
+            None,
+            1,
+        ),
+        (
+            {
+                "value": "some_value",
+                "type": "IP",
+                "service": "MISP",
+                "fields": {},
+                "rawJSON": {"value": {}},
+            },
+            ["test", "test2"],
+            1,
+        ),
+        (
+            {
+                "value": "some_value",
+                "type": "IP",
+                "service": "MISP",
+                "fields": {},
+                "rawJSON": {"value": {}},
+            },
+            None,
+            0,
+        ),
+    ],
+)
+def test_update_indicator_fields(
+    mocker, indicator: dict, feed_tags: list | None, expected_calls: int
+):
+    """
+    Given:
+        - indicator and feed_tags argument
+    When:
+        - the update_indicator_fields function runs
+    Then:
+        - Ensure the update_indicator_fields function is called
+          if the feed_tags argument is passed even though the indicator has no tag.
+        - Ensure the update_indicator_fields function is called when the indicator has tag.
+        - Ensure the update_indicator_fields function is not called
+          when the indicator has no tag and no feed_tags argument is sent.
+    """
+    handle_tags_fields_mock = mocker.patch("FeedMISP.handle_tags_fields")
+
+    update_indicator_fields(indicator, None, "test", feed_tags)
+    assert handle_tags_fields_mock.call_count == expected_calls
+
+
+@pytest.mark.parametrize('indicator, indicator_type', [
+    ({'value': '1.1.1.1'}, FeedIndicatorType.IP),
+    ({'value': '1.1.1.1/24'}, FeedIndicatorType.CIDR),
+    ({'value': '2001:0db8:85a3:0000:0000:8a2e:0370:7334'}, FeedIndicatorType.IPv6),
+    ({'value': '2001:0db8:85a3:0000:0000:8a2e:0370:7334/64'}, FeedIndicatorType.IPv6CIDR),
+])
+def test_get_ip_type(indicator, indicator_type):
+    assert get_ip_type(indicator) == indicator_type
