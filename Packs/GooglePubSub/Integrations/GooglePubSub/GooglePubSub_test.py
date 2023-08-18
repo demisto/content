@@ -214,11 +214,12 @@ class TestHelperFunctions:
             attrs_str = f"{key_1}={val_1},{key_2}={val_2}"
             expected_attributes = {key_1: val_1, key_2: val_2}
             expected_data = TestHelperFunctions.ENCODED_B64_MESSAGE
+            expected_delim_char = ","
             expected = {
-                "messages": [{"data": expected_data, "attributes": expected_attributes}]
+                "messages": [{"data": expected_data, "attributes": expected_attributes, "delim_char": expected_delim_char}]
             }
             assert expected == get_publish_body(
-                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE
+                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE,
             )
 
     class TestAttributePairsToDict:
