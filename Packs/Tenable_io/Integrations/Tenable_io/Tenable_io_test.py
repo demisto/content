@@ -195,6 +195,8 @@ def test_get_asset_details_command(mocker, requests_mock):
     ('2.5-3.5', 2.5, 3.5),
     ('0.1-3', 0.1, 3),
     ('0.1 - 3', 0.1, 3),
+    ('0-1', 'exception', 'exception'),
+    ('3-100', 'exception', 'exception'),
     ('0', 'exception', 'exception'),
     ('3-0', 'exception', 'exception')
 ])
@@ -209,11 +211,10 @@ def test_validate_range(range_str, expected_lower_range_bound, expected_upper_ra
     """
     from Tenable_io import validate_range
 
-    if isinstance(expected_lower_range_bound, str) and isinstance(expected_upper_range_bound, str):
-        with pytest.raises(DemistoException) as de:
+    if expected_lower_range_bound == expected_upper_range_bound == 'exception':
+        err_msg = 'Please specify a valid vprScoreRange. The VPR values range is 0.1-10.0.'
+        with pytest.raises(DemistoException, match=err_msg):
             lower_range_bound, upper_range_bound = validate_range(range_str)
-
-        assert de.value.message == 'Please specify valid vprScoreRange. VPR values range are 0.1-10.0.'
     else:
         lower_range_bound, upper_range_bound = validate_range(range_str)
         assert lower_range_bound == expected_lower_range_bound
@@ -364,7 +365,7 @@ def test_export_assets_command(mocker, args, return_value_export_request_with_ex
     from Tenable_io import export_assets_command
     import Tenable_io
     from test_data.response_and_results import export_assets_response
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     mocker.patch.object(Tenable_io, 'export_request', return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
     mocker.patch.object(Tenable_io, 'export_request_with_export_uuid',
                         return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})

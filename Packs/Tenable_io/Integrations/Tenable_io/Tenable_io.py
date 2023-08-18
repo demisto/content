@@ -1093,16 +1093,10 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
         Range if valid else raise DemistoException.
     """
     if range:
-        range_without_spaces = range.strip()
-        nums_list = range_without_spaces.split("-")
-        if len(nums_list) < 2:
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        elif float(nums_list[0]) > float(nums_list[1]):
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        elif float(nums_list[0]) < 0.1 or float(nums_list[1]) > 10.0:
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        else:
-            return float(nums_list[0]), float(nums_list[1])
+        nums = tuple(map(float, range.split("-")))
+        if len(nums) != 2 or not 0.1 <= nums[0] <= nums[1] <= 10.0:
+            raise DemistoException('Please specify a valid vprScoreRange. The VPR values range is 0.1-10.0.')
+        return nums  # type: ignore
     return None, None
 
 
