@@ -142,11 +142,11 @@ validate-content-conf:
     paths:
       - ${ARTIFACTS_FOLDER}/succeeded_tests.xml
   script:
-    - !reference [.download-demisto-conf]
     - python ./Tests/scripts/produce_junit_report.py --output-path $ARTIFACTS_FOLDER/succeeded_tests.xml
     - job-done
 
 # FIXME
+#    - !reference [.download-demisto-conf]
 #    - !reference [.create-release-notes-and-common-docs]
 #    - section_start "Create or update content graph" --collapsed
 #
