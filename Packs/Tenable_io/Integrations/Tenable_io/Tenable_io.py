@@ -162,20 +162,6 @@ if not USE_PROXY:
 
 class Client(BaseClient):
 
-    def client_error_handler(self, res):
-        try:
-            msg = res.json()
-            return_results(CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=tableToMarkdown(
-                    f'Error in Tenable.io API call [{res.status_code}] - {res.reason}\n',
-                    msg, list(msg), lambda x: x.title()
-                )
-            ))
-            sys.exit(0)
-        except ValueError:
-            super().client_error_handler(res)
-
     def list_scan_filters(self):
         return self._http_request(
             'GET', 'filters/scans/reports')
