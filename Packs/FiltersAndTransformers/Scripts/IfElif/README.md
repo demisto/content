@@ -1,38 +1,12 @@
-### A transformer for "if else-if else" logic.
+### A transformer for if-elif-else logic.
 
-<!-- This transformer simulates an *"if else-if else"* tree using a JSON provided in the ***conditions*** argument.
-The JSON should be list of dictionaries where all but the last have the keys "*condition*", which contains a boolean expression, and "return", which contains the value to return if "*condition*" is evaluated to be true. The last dictionary should have only the key "else" which is the value to return if all "*condition*"s were false.
-Context values can be added as variables in the *variables* argument using the `var = ${context.key}` syntax. Each variable assignment must be on it's own line.
-The ***"Get" value*** of the transformer can be retrieved using the keyword `VALUE` -->
+The **If-Elif** transformer simulates a python *"if elif else"* tree using a JSON provided in the ***conditions*** argument.
+The JSON should be a list of dictionaries where all but the last have the keys "*condition*", which hols a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. The last dictionary should have only the key "else" which holds the value to return if all "*condition*"s were false.
+Context values are retrieved from the value entered in the ***value (Get)*** of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the ***value (Get)*** argument.
 
-### Example:
----
+#### Supported operators for conditions:
 
-##### conditions:
-```json
-// [
-//   {
-//     "condition": "variable1 >= 5 and  == 'Yes'",
-//     "return": "a string"
-//   },
-//   {
-//     "condition": "regex_match('\d+', VALUE)",
-//     "return": 
-//   },
-//   {
-//     "else": default_value
-//   }
-// ]
-```
-
-##### flags:
-```
-case_insensitive,regex_dot_all,regex_multiline
-```
----
-##### Supported Operators:
-
-**Comparison operators** will work like Python operator:
+**Comparison operators** work like Python operators:
 | Operator | Name | Example |
 | --- | --- | --- |
 | == | Equal | x == y |
@@ -44,14 +18,45 @@ case_insensitive,regex_dot_all,regex_multiline
 | in | In | x in y|
 | not in | Not in | x not in y|
 
-**Logical operators** also follow Python syntax:
+**Logical operators** also follow the Python syntax:
 | Operator | Description | Example |
 | --- | --- | --- |
 | and | Returns True if both statements are true | x < 5 and x < 10 |
 | or | Returns True if one of the statements is true | x < 5 or x < 4 |
 | not | Reverse the result, returns False if the result is true | not(x < 5 and x < 10) |
 
-**regular expressions** are implemented with the "regex_match" function, in the format: "regex_match(\<pattern>, \<string>)". The behavior of the function is controlled with the ***flags*** argument. 
+**Regular expressions** are implemented with the "regex_match" function, in the format: `regex_match('pattern', 'string')`. The behavior of the function is controlled with the ***flags*** argument.
+
+**Literal strings** should preferably be surrounded by single quotes.
+
+### Example:
+---
+##### value (Get):
+```
+${.}
+```
+
+##### conditions:
+```json
+[
+  {
+    "condition": "#{number} >= 5 and #{path.to.string} == 'Yes'",
+    "return": "1"
+  },
+  {
+    "condition": "regex_match('\d+', #{some.value})",
+    "return": #{value.to.return}
+  },
+  {
+    "else": #{default.value}
+  }
+]
+```
+
+##### flags:
+```
+case_insensitive,regex_dot_all,regex_multiline
+```
 
 
 ## Script Data
@@ -70,8 +75,8 @@ case_insensitive,regex_dot_all,regex_multiline
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The object from which to grab values, for the whole context use "$\{.\}" |
-| conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).<br/>The last dictionary should have the key "else" which can hold any valid JSON object to be returned if no "condition" was true. |
+| value | The object from which to grab values, for the full context use "$\{.\}" |
+| conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).<br/>The last dictionary should have the key "else" which can hold any valid JSON object to return if no "condition" was true. |
 | flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match |
 
 ## Outputs
