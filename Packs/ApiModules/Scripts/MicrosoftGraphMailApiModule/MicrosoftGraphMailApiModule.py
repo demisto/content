@@ -36,7 +36,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
                  **kwargs):
-        super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph, **kwargs)
+        super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
+                         command_prefix="msgraph-mail",
+                         **kwargs)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -232,6 +234,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             # didn't reach the end of the loop, set the current_directory_level_folders to folder children
             current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''),
                                                                         overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+        return None
 
     def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False) -> list:
         """
@@ -612,7 +615,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             list: list of all pages
         """
         responses = [response]
-        for i in range(page_count - 1):
+        for _i in range(page_count - 1):
             next_link = response.get('@odata.nextLink')
             if next_link:
                 response = self.http_request('GET', full_url=next_link, url_suffix=None)
@@ -946,10 +949,7 @@ class GraphMailUtils:
         :rtype: ``dict``
         """
         if command in ['create-draft', 'send-mail']:
-            if args.get('htmlBody', None):
-                email_body = args.get('htmlBody')
-            else:
-                email_body = args.get('body', '')
+            email_body = args.get('htmlBody') if args.get('htmlBody', None) else args.get('body', '')
             processed_args = {
                 'to_recipients': argToList(args.get('to')),
                 'cc_recipients': argToList(args.get('cc')),

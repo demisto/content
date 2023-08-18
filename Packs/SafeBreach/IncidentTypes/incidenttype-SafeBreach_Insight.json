@@ -1,6 +1,5 @@
 {
     "autorun": true,
-    "closureScript": "",
     "color": "#753ffa",
     "days": 0,
     "daysR": 0,
@@ -11,10 +10,8 @@
     "id": "SafeBreach Insight",
     "locked": false,
     "name": "SafeBreach Insight",
-    "preProcessingScript": "",
     "readonly": false,
     "reputationCalc": 1,
-    "sortValues": null,
     "system": false,
     "version": -1,
     "weeks": 0,
