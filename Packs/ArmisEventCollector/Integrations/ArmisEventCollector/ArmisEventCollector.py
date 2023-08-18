@@ -83,15 +83,15 @@ def test_module(client: Client) -> str:
     successful.
     Raises exceptions if something goes wrong.
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): Armis client to use for API calls.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        client.fetch_alerts(1, 1)
+        client.fetch_by_aql_query('in:alerts', 1)
 
     except Exception as e:
-        raise DemistoException(f'Error while testing: {e}') from e
+        raise DemistoException(f'Error in test-module: {e}') from e
 
     return 'ok'
 
