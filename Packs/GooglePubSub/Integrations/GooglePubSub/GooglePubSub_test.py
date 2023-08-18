@@ -177,7 +177,7 @@ class TestHelperFunctions:
             # invalid message_attributes
             e_thrown = False
             try:
-                get_publish_body(message_attributes={"test": "val"}, message_data="")
+                get_publish_body(message_attributes={"test": "val"}, message_data="", delim_char=",")
             except AttributeError:
                 e_thrown = True
             assert e_thrown
@@ -214,9 +214,8 @@ class TestHelperFunctions:
             attrs_str = f"{key_1}={val_1},{key_2}={val_2}"
             expected_attributes = {key_1: val_1, key_2: val_2}
             expected_data = TestHelperFunctions.ENCODED_B64_MESSAGE
-            expected_delim_char = ","
             expected = {
-                "messages": [{"data": expected_data, "attributes": expected_attributes, "delim_char": expected_delim_char}]
+                "messages": [{"data": expected_data, "attributes": expected_attributes}]
             }
             assert expected == get_publish_body(
                 attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE, delim_char=",",
