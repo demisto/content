@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import urllib3
+from urllib import parse
 from string import Template
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
@@ -329,11 +330,16 @@ class Client(BaseClient):
         self.limit = None
         self.proxy = proxy
         self.span_fetch_threadpool = 10
+        self.app_url = ""
+        self.ignore_status_code_tuples = []
         self.environments = None
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
 
     def set_security_score_category_list(self, securityScoreCategoryList):
         self.securityScoreCategoryList = securityScoreCategoryList
+
+    def set_app_url(self, app_url):
+        self.app_url = app_url
 
     def set_threat_category_list(self, threatCategoryList):
         self.threatCategoryList = threatCategoryList
@@ -378,6 +384,47 @@ class Client(BaseClient):
 
     def set_environments(self, environments):
         self.environments = environments
+
+    def __parse_status_code_strings(self, status_code_list_string: str):
+        if status_code_list_string is None:
+            return []
+        _status_code_list_string = status_code_list_string.rstrip().lstrip()
+        if _status_code_list_string == "":
+            return []
+        range_tuple_list = []
+        ranges = status_code_list_string.split(",")
+        for range in ranges:
+            bounds = range.split("-")
+            lower = -1
+            upper = -1
+            bounds_len = len(bounds)
+            if bounds_len > 2:
+                demisto.log(f"Invalid status code range {range}. Ignoring.")
+                continue
+            if bounds_len > 0:
+                try:
+                    lower = int(bounds[0].lstrip().rstrip())
+                    upper = lower
+                except ValueError as e:
+                    demisto.log(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
+                    continue
+            if bounds_len > 1:
+                try:
+                    upper = int(bounds[1].lstrip().rstrip())
+                except ValueError as e:
+                    demisto.log(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
+                    continue
+            if lower < 100 or lower > 599 or upper < 100 or upper > 599 or lower > upper:
+                demisto.log(f"Invalid status code range {range}. Ignoring.")
+                continue
+            range_tuple_list.append((lower, upper))
+        return range_tuple_list
+
+    def is_ignored_status_code(self, status_code: int):
+        return any(status_code in range(lower, upper + 1) for lower, upper in self.ignore_status_code_tuples)
+
+    def set_ignore_status_codes(self, status_code_list_string):
+        self.ignore_status_code_tuples = self.__parse_status_code_strings(status_code_list_string)
 
     def graphql_query(self, query, params={}, verify=False):
         demisto.debug("Entered from graphql_query")
@@ -538,17 +585,17 @@ class Client(BaseClient):
         endtime=datetime.now(),
     ):
         query = self.get_threat_events_query(starttime, endtime)
-        demisto.debug("Query is: " + query)
+        demisto.debug(f"Query is: {query}")
         result = self.graphql_query(query)
         if Helper.is_error(result, "data", "explore", "results"):
-            msg = "Error Object: " + json.dumps(result)
+            msg = f"Error Object: {json.dumps(result)}"
             demisto.error(msg)
             raise Exception(msg)
 
         results = result["data"]["explore"]["results"]
 
-        demisto.info("Retrieved: " + str(len(results)) + " Domain Events")
-        demisto.debug("Result is:" + json.dumps(results, indent=2))
+        demisto.info(f"Retrieved: {len(results)} Domain Events")
+        demisto.debug(f"Result is:{json.dumps(results, indent=2)}")
 
         events = []
         first = True
@@ -558,16 +605,20 @@ class Client(BaseClient):
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
                     demisto.info(
-                        "Couldn't find traceId in Domain Event: "
-                        + json.dumps(domain_event, indent=2)
+                        f"Couldn't find traceId in Domain Event: {json.dumps(domain_event, indent=2)}"
                     )
                     continue
+
                 if Helper.is_error(domain_event, "spanId", "value"):
                     demisto.info(
-                        "Couldn't find spanId in Domain Event: "
-                        + json.dumps(domain_event, indent=2)
+                        f"Couldn't find spanId in Domain Event: {json.dumps(domain_event, indent=2)}"
                     )
                     continue
+
+                if ("statusCode" in domain_event and "value" in domain_event["statusCode"]):
+                    status_code = domain_event["statusCode"]["value"]
+                    if (self.is_ignored_status_code(status_code)):
+                        continue
 
                 trace_id = domain_event["traceId"]["value"]
                 span_id = domain_event["spanId"]["value"]
@@ -594,9 +645,10 @@ class Client(BaseClient):
         api_endpoint_details = self.get_api_endpoint_details(
             api_id_list, starttime, endtime
         )
-        api_endpoint_details_map = {}
-        for api_endpoint_detail in api_endpoint_details:
-            api_endpoint_details_map[api_endpoint_detail["id"]] = api_endpoint_detail
+        api_endpoint_details_map = {
+            api_endpoint_detail["id"]: api_endpoint_detail
+            for api_endpoint_detail in api_endpoint_details
+        }
         api_endpoint_details = None
 
         for domain_event, future in future_list:
@@ -649,7 +701,8 @@ class Client(BaseClient):
                     domain_event["ipAddressType"] = "External"
 
             if (
-                domain_event["apiId"] is not None
+                "apiId" in domain_event
+                and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
                 and domain_event["apiId"]["value"] in api_endpoint_details_map
@@ -676,18 +729,30 @@ class Client(BaseClient):
             if "apiType" not in domain_event:
                 domain_event["apiType"] = "Unknown"
 
+            if ("id" in domain_event and "value" in domain_event["id"] and self.app_url != ""
+                    and "environment" in domain_event and "value" in domain_event["environment"]):
+                domain_event["eventUrl"] = (
+                    f"{self.app_url}/security-event/"
+                    + domain_event["id"]["value"]
+                    + "?time=90d&env="
+                    + parse.quote(domain_event["environment"]["value"])
+                )
+
+            else:
+                domain_event["eventUrl"] = None
+
             if Helper.is_error(trace_results, "data", "spans", "results"):
-                msg = "Error Object: " + json.dumps(result) + ". Couldn't get the Span."
+                msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
                 demisto.info(msg)
             else:
-                demisto.info("Found Span with id: " + span_id + ". Adding to Event.")
+                demisto.info(f"Found Span with id: {span_id}. Adding to Event.")
                 domain_event["spans"] = trace_results["data"]["spans"]["results"]
                 events.append(domain_event)
                 if first:
                     first = False
-                    demisto.info("Domain Event: " + json.dumps(domain_event, indent=3))
+                    demisto.info(f"Domain Event: {json.dumps(domain_event, indent=3)}")
                 demisto.debug(
-                    "Complete Domain Event is: " + json.dumps(domain_event, indent=2)
+                    f"Complete Domain Event is: {json.dumps(domain_event, indent=2)}"
                 )
 
         return events
@@ -746,9 +811,11 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         incident = {
             "name": item["name"],
             "displayname": item["displayname"],
+            "eventUrl": item["eventUrl"],
             "country": item["country"],
             "sourceip": item["sourceip"],
             "riskscore": item["riskscore"],
+            "ipAddressType": item["ipAddressType"],
             "severity": XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY.get(
                 item["severity"], IncidentSeverity.UNKNOWN
             ),
@@ -783,7 +850,6 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: dict = {}
         first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
         securityScoreCategoryList = demisto.params().get("securityScoreCategory")
         threatCategoryList = demisto.params().get("threatCategory")
@@ -791,7 +857,9 @@ def main() -> None:
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
         limit = int(demisto.params().get("max_fetch", 100))
         span_fetch_threadpool = int(demisto.params().get("span_fetch_threadpool", 10))
+        app_url = demisto.params().get("app_url", "https://app.traceable.ai")
         ipCategoriesList = demisto.params().get("ipCategories")
+        ignoreStatusCodes = demisto.params().get("ignoreStatusCodes", "400-499")
 
         _env = demisto.params().get("environment")
 
@@ -800,9 +868,7 @@ def main() -> None:
             environments = argToList(_env)
 
         apikey = demisto.params().get("credentials", {}).get("password")
-        headers["Authorization"] = apikey
-        headers["Content-Type"] = "application/json"
-
+        headers: dict = {"Authorization": apikey, "Content-Type": "application/json"}
         client = Client(
             base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
@@ -814,6 +880,8 @@ def main() -> None:
         client.set_environments(environments)
         client.set_span_fetch_threadpool(span_fetch_threadpool)
         client.set_ip_categories_list(ipCategoriesList)
+        client.set_app_url(app_url)
+        client.set_ignore_status_codes(ignoreStatusCodes)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":
@@ -831,7 +899,6 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(
             f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
