@@ -69,11 +69,14 @@ def create_jira_issue(jira_server: JIRA,
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
     link_to_issue = None
     searched_issue = None
+    jira_issue = None
     if use_existing_issue := (len(search_issues) == 1):
         searched_issue = search_issues[0]
         if searched_issue.get_field("resolution"):
             resolution_date = datetime.strptime(searched_issue.get_field("resolutiondate"), JIRA_TIME_FORMAT)
-            if use_existing_issue := (resolution_date and (now - resolution_date) <= timedelta(days=options.max_days_to_reopen)):
+            if use_existing_issue := (resolution_date
+                                      and (now - resolution_date)
+                                      <= timedelta(days=options.max_days_to_reopen)):  # type: ignore[assignment]
 
                 #  Get the available transitions for the issue
                 transitions = jira_server.transitions(searched_issue)
@@ -87,14 +90,17 @@ def create_jira_issue(jira_server: JIRA,
                 if unresolved_transition:
                     jira_server.transition_issue(searched_issue, unresolved_transition['id'])
                 else:
-                    logging.error(f"Failed to find the 'Backlog' transition for issue {searched_issue.key}")
+                    logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
+                                  f"transition for issue {searched_issue.key}")
+                    jira_issue = None
                     use_existing_issue = False
 
             else:
                 link_to_issue = searched_issue
-    if use_existing_issue:
+
+    if jira_issue is not None:
         jira_issue = searched_issue
-        jira_server.add_comment(issue=jira_issue.key, body=description)
+        jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
                                               summary=summary,
@@ -104,7 +110,7 @@ def create_jira_issue(jira_server: JIRA,
                                               labels=['nightly'],
                                               **JIRA_DEFAULTS_FIELDS
                                               )
-        # Create a back link to the previous issue
+        # Create a back link to the previous issue, which is resolved.
         if link_to_issue:
             jira_server.create_issue_link(type="Relates", inwardIssue=jira_issue.key,
                                           outwardIssue=link_to_issue.key)
