@@ -10,8 +10,7 @@ API_KEY=$(jq -r ".[\"$CLOUD_CHOSEN_MACHINE_ID\"]" < "$XSIAM_API_KEYS")
 XSIAM_TOKEN=$(jq -r ".[\"$CLOUD_CHOSEN_MACHINE_ID\"]" < "$XSIAM_TOKENS")
 CURRENT_DIR=$(pwd)
 
-
-MODELING_RULES_ARRAY=($(cat "$ARTIFACTS_FOLDER"/modeling_rules_to_test.txt))
+MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"))
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="$CURRENT_DIR/Packs/$modeling_rule/*_testdata.json"
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
@@ -24,10 +23,27 @@ for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   fi
 done
 
-if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
-    echo "There was a problem reading the list of modeling rules that require testing from '$ARTIFACTS_FOLDER/modeling_rules_to_test.txt'"
+if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
+    echo "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
     exit 1
 fi
 
-echo "Testing Modeling Rules"
-demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive $(echo "$MODELING_RULES_TO_TEST")
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
+echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS_FILE_NAME}"
+
+demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" \
+  --xsiam-token="$XSIAM_TOKEN" --non-interactive --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}" \
+  "${MODELING_RULES_TO_TEST}"
+exit_code=$?
+
+if [[ $exit_code -ne 0 ]]; then
+  echo "Failed to test modeling rules"
+  if [ -z "${NIGHTLY}" ]; then
+    echo "This is not a nightly build, converting the results to Jira issues and exiting with 0"
+    python3 "${CURRENT_DIR}/Tests/scripts/convert_modeling_rules_test_results_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
+    exit $? # exit with the exit code of the python script
+  else
+    exit 1
+  fi
+fi
+
