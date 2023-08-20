@@ -7,6 +7,7 @@ from requests import Response
 from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 import gzip
+import pytz
 
 disable_warnings()
 
@@ -45,8 +46,22 @@ class Client(BaseClient):
 def get_start_and_ent_date(
     args: dict[str, str], start_date: str | None
 ) -> tuple[int, int]:
-    now = datetime.now()
+    """
+    returns `start_date` and `end_date`
 
+    Args:
+        args (dict[str, str]): The args when the fetch manually activated by the `symantec-get-events` command
+        start_date (str | None): start_date which is stored in the last_run object from the second run onwards
+
+    Returns:
+        tuple[int, int]: start_date, end_date
+    """
+    # set the end_date to the current time
+    now = datetime.now().astimezone(pytz.utc)
+
+    # If there is no `start_date` stored in the `last_run` object
+    # and no start time in the args, sets the `start_date` to one
+    # minute before the current time
     start_date = int(
         start_date
         or date_to_timestamp(
@@ -54,12 +69,22 @@ def get_start_and_ent_date(
         )
     )
 
+    # convert the end_date to timestamp
     end_date = date_to_timestamp(date_str_or_dt=now)
 
     return start_date, end_date
 
 
 def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
+    """
+    extract the status and token from the response by regex
+
+    Args:
+        response (Response)
+
+    Returns:
+        tuple[str, str]: status, token
+    """
     status = ""
     token = ""
     if status_match := REGEX_FOR_STATUS.search(str(response.content)):
@@ -71,10 +96,24 @@ def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
 
 
 def extract_logs_from_response(response: Response) -> list[bytes]:
+    """
+    - Extracts the data from the zip file returned from the API
+      and then extracts the events from the gzip files into a list of events as bytes
+    - When there is no zip file returns an empty list
+
+    Args:
+        response (Response)
+
+    Returns:
+        list[bytes]: list of events as bytes
+    """
     logs: list[bytes] = []
     try:
+        # extract the ZIP file
         with ZipFile(BytesIO(response.content)) as outer_zip:
+            # iterate all gzip files
             for file in outer_zip.infolist():
+                # check if the file is gzip
                 if file.filename.lower().endswith(".gz"):
                     try:
                         with outer_zip.open(file) as nested_zip_file, gzip.open(
@@ -83,24 +122,38 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
                             logs.extend(f.readlines())
                     except Exception as e:
                         demisto.debug(
-                            f"Crashed at the stage of opening the internal files on {file.filename} file, Error: {e}"
+                            f"Crashed at the open the internal file {file.filename} file, Error: {e}"
                         )
-                else:
+                else:  # the file is not gzip
                     demisto.debug(
                         f"One of the internal files is not of gzip type, file name is {file.filename}"
                     )
     except BadZipFile as e:
-        demisto.debug(
-            f"The external file type is not of type ZIP, Error: {e}, the response.content is {BytesIO(response.content)}"
-        )
-        pass
+        try:
+            # checks whether no events returned
+            if response.content.decode().startswith("X-sync"):
+                demisto.debug("No events returned from the api")
+            else:
+                demisto.debug(
+                    f"The external file type is not of type ZIP, Error: {e},"
+                    "the response.content is {}".format(response.content)
+                )
+        except Exception:
+            demisto.debug(
+                f"The external file type is not of type ZIP, Error: {e},"
+                "the response.content is {}".format(response.content)
+            )
     except Exception as e:
         raise ValueError(f"There is no specific error for the crash, Error: {e}")
     return logs
 
 
 def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
-    return ("start_date" not in last_run) and ("since" not in args)
+    """
+    Returns True if this fetch is a first fetch,
+    Returns False if it is manually run by the `symantec-get-events` command or is a second fetch and later
+    """
+    return (not last_run.get("start_date")) and ("since" not in args)
 
 
 def is_duplicate(
@@ -109,8 +162,22 @@ def is_duplicate(
     time_of_last_fetched_event: str,
     events_suspected_duplicates: list[str],
 ) -> bool:
+    """
+    Checks whether the event already fetched if so returns True otherwise False
+
+    Args:
+        id_ (str): id of the event
+        cur_time (str): the time of the event
+        time_of_last_fetched_event (str): The time of the last event that already fetched
+        events_suspected_duplicates (list[str]): The ids of all events from the latest time of the last fetch
+    """
+
+    # The event time is later than the late time of the last fetch
     if cur_time > time_of_last_fetched_event:
         return False
+
+    # The time of the event is equal to the late time of the last fetch,
+    # checks if its id is there is in the list of events that have already been fetched
     return not (
         cur_time == time_of_last_fetched_event
         and id_ not in events_suspected_duplicates
@@ -127,6 +194,7 @@ def organize_of_events(
     max_time = time_of_last_fetched_event
     max_values = events_suspected_duplicates
 
+    demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
         event = log.decode()
         if event.startswith("#"):
@@ -135,7 +203,7 @@ def organize_of_events(
         id_ = parts[-1]
         cur_time = f"{parts[1]} {parts[2]}"
 
-        if token_expired and not (
+        if token_expired and (
             is_duplicate(
                 id_,
                 cur_time,
@@ -151,6 +219,7 @@ def organize_of_events(
             max_values.append(id_)
         events.append(event)
 
+    demisto.debug(f"The len of the events after filter {len(events)}")
     return events, max_time, max_values
 
 
@@ -174,6 +243,7 @@ def get_events_command(
         "endDate": end_date,
         "token": last_run_model.token or "none",
     }
+
     demisto.debug(
         f"start fetch from {start_date} to {end_date} with {last_run_model.token or 'none'}"
     )
@@ -196,6 +266,19 @@ def get_events_command(
 
         status, params["token"] = get_status_and_token_from_res(res)
         demisto.debug(f"The status is {status}")
+
+        if status == "abort":
+            demisto.debug(
+                f"the status is {status}, the fetch will start again with the same values"
+            )
+            if is_first_fetch:
+                return [], LastRun(**{})
+            logs = []
+            if params["token"] == "none":
+                token_expired = True
+            params["token"] = last_run_model.token or "none"
+            continue
+
         if is_first_fetch:
             demisto.debug(
                 "The current fetch is the first fetch, "
