@@ -10,6 +10,7 @@ configuration:
 - display: Server port (e.g., 9060)
   name: serverPort
   type: 0
+  required: false
 - display: Cisco ISE username
   name: credentials
   required: true
@@ -17,9 +18,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Next-generation secure network access.
 display: Cisco ISE
 name: Cisco ISE
@@ -275,7 +278,7 @@ script:
       required: true
     description: Queries an IP address and returns its session data from an active endpoint.
     name: cisco-ise-get-session-data-by-ip
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   type: python

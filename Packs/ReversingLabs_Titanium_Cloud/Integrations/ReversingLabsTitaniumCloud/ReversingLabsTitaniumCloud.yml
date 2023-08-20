@@ -12,6 +12,7 @@ configuration:
   display: Base URL for extended RL Data
   name: baserl
   type: 0
+  required: false
 - display: Credentials
   name: credentials
   required: true
@@ -20,9 +21,11 @@ configuration:
   display: Return extended data if available
   name: extended
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. Use the ReversingLabs TitaniumCloud v2 integration instead.
 display: ReversingLabs TitaniumCloud (Deprecated)
 name: ReversingLabs Titanium Cloud

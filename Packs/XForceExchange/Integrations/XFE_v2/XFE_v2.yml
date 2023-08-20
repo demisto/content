@@ -30,25 +30,31 @@ configuration:
   display: IP Threshold. Minimum risk score for the IP to be considered malicious (ranges from 1 to 10).
   name: ip_threshold
   type: 0
+  required: false
 - defaultvalue: '7'
   display: URL Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: url_threshold
   type: 0
+  required: false
 - defaultvalue: '5'
   display: CVE Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: cve_threshold
   type: 0
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
 name: XFE_v2
@@ -463,7 +469,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

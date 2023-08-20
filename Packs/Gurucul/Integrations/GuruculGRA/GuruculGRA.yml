@@ -19,24 +19,30 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "25"
   type: 0
+  required: false
 script:
   script: ''
   type: python

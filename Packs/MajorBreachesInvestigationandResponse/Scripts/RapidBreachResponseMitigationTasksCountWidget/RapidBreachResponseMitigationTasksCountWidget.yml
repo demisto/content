@@ -1,7 +1,7 @@
 commonfields:
   id: RapidBreachResponse-MitigationTasksCount-Widget
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: RapidBreachResponse-MitigationTasksCount-Widget
 runas: DBotWeakRole

@@ -20,29 +20,36 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: 'IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown'
   name: ip_threshold
   defaultvalue: High
   type: 0
+  required: false
 - display: 'URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown'
   name: url_threshold
   defaultvalue: High
   type: 0
+  required: false
 - display: 'File threshold. Minimum maliciousness confidence level to consider the file malicious: High, Medium, Low, Safe, Unknown'
   name: file_threshold
   defaultvalue: High
   type: 0
+  required: false
 - display: 'Email threshold. Minimum maliciousness confidence level to consider the email address malicious: High, Medium, Low, Safe, Unknown'
   name: email_threshold
   defaultvalue: High
   type: 0
+  required: false
 - display: 'Domain threshold. Minimum maliciousness confidence level to consider the domain malicious: High, Medium, Low, Safe, Unknown'
   name: domain_threshold
   defaultvalue: High
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -56,6 +63,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -65,10 +73,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 script:
   script: ''
   type: python

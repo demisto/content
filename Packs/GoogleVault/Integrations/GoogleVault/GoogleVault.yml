@@ -11,18 +11,22 @@ configuration:
   name: auth_json
   type: 4
   hidden: true
+  required: false
 - name: auth_json_creds
   type: 9
   displaypassword: Authentication file contents
   hiddenusername: true
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Archiving and eDiscovery for G Suite.
 display: Google Vault
 name: google-vault

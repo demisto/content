@@ -27,11 +27,13 @@ configuration:
   type: 0
   defaultvalue: 1000
   section: Collect
+  required: false
 - display: First fetch time interval
   name: after
   type: 0
   defaultvalue: 3 days
   section: Collect
+  required: false
 - display: The event types to include.
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
@@ -43,16 +45,19 @@ configuration:
   - git
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ""
   type: python

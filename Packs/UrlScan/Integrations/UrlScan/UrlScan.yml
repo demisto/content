@@ -12,6 +12,7 @@ configuration:
   hiddenusername: true
   display: ''
   section: Connect
+  required: false
 - additionalinfo: Determines the visibility level of the scan.
   display: Scan Visibility
   name: scan_visibility
@@ -43,12 +44,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: User Agent
   name: useragent
   type: 0
   additionalinfo: User Agent to perform requests
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
@@ -56,16 +59,19 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Enable public submissions by default.
   name: is_public
@@ -73,12 +79,14 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: API Key (only required for scanning URLs)
   name: apikey
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io

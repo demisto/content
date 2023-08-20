@@ -12,29 +12,37 @@ configuration:
   name: api-key
   type: 4
   hidden: true
+  required: false
 - name: api-key_creds
   type: 9
   displaypassword: API Token
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Previous days to fetch
   name: fetch_time
   type: 0
   defaultvalue: '7'
+  required: false
 - display: Credentials
   name: credentials
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: an incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Soc Statuses to Fetch
   name: soc_status
@@ -45,6 +53,7 @@ configuration:
   - False Positive
   - Escalated
   type: 16
+  required: false
 description: Perch is a co-managed threat detection and response platform.
 display: Perch
 name: Perch

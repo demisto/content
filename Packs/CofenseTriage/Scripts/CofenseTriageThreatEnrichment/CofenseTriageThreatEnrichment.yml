@@ -18,7 +18,7 @@ subtype: python3
 dependson:
   must:
   - '|||cofense-threat-indicator-list'
-dockerimage: demisto/python3:3.10.12.62631
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
