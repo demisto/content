@@ -8,7 +8,7 @@
             "type": "string",
             "is_array": false
         },
-        "_EVENT_STATUS": {
+        "_ENTRY_STATUS": {
             "type": "string",
             "is_array": false
         },
@@ -29,7 +29,7 @@
             "is_array": false
         },
         "_TIME": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }
