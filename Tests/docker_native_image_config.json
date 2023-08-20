@@ -161,13 +161,6 @@
             ]
         },
         {
-            "id":"Intezer v2",
-            "reason":"Lint and UT depend on intezer-sdk package",
-            "ignored_native_images":[
-                "native:8.3"
-            ]
-        },
-        {
             "id":"SlackV3",
             "reason":"Issue: CIAC-7854",
             "ignored_native_images":[
