@@ -98,8 +98,8 @@ configuration:
   name: feedTags
   type: 0
   required: false
-description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
-display: BitcoinAbuse Feed
+description: Deprecated. No available replacement.
+display: BitcoinAbuse Feed (Deprecated)
 name: BitcoinAbuse
 script:
   commands:
@@ -127,12 +127,14 @@ script:
       name: abuse_type_other
     description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is required when 'abuse_type' is other
     name: bitcoinabuse-report-address
+    deprecated: true
   - arguments:
     - defaultValue: "50"
       description: The maximum number of results to return.
       name: limit
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
+    deprecated: true
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isFetchSamples: true
@@ -141,4 +143,5 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- BitcoinAbuse-test
+- No tests (deprecated)
+deprecated: true
