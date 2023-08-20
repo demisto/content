@@ -152,4 +152,5 @@ curl --request POST \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
+  --form "variables[SDK_REF]=${SDK_REF}" \
   "$BUILD_TRIGGER_URL"
