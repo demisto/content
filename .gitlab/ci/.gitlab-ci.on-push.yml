@@ -541,7 +541,7 @@ xsiam_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
     UNREMOVABLE_PACKS: "Base"
-    JIRA_COMPONENT: "Test Failure"
+    JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
     JIRA_PROJECT_ID: "CIAC"
