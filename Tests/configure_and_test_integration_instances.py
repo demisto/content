@@ -880,7 +880,7 @@ class CloudBuild(Build):
                     self=server.client, method='POST',
                     path='/contentpacks/marketplace/sync?hard=true')
             except Exception as e:
-                logging.error(f'Filed to sync marketplace. Error: {e}')
+                logging.error(f'Failed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
         sleep_time = 120
         logging.info(f'sleeping for {sleep_time} seconds')
