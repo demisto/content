@@ -79,7 +79,6 @@
         {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
-
         },
         {
             "integrations": [
@@ -1491,7 +1490,6 @@
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
             "timeout": 200
-
         },
         {
             "integrations": "WildFire-v2",
@@ -3508,7 +3506,6 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
-
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -3669,12 +3666,6 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "BitcoinAbuse",
-            "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 200
         },
         {
             "integrations": "ExpanseV2",
@@ -5479,8 +5470,8 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-          "integrations":  "Cylance Protect v2",
-          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
             "integrations": [
@@ -6098,7 +6089,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests":[
+    "reputation_tests": [
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",
