@@ -869,7 +869,7 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        self.auth_code_reconfigured = self.is_auth_code_reconfigured()
+        self.auth_code_reconfigured = self.is_auth_code_reconfigured(integration_context.get('auth_code', ''))
         if self.auth_code_reconfigured:
             demisto.debug("Auth code reconfigured, saving new auth code to integration context")
             integration_context['auth_code'] = self.auth_code
@@ -1393,11 +1393,10 @@ class MicrosoftClient(BaseClient):
 and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
-    def is_auth_code_reconfigured(self) -> bool:
+    def is_auth_code_reconfigured(self, auth_code) -> bool:
         # Case of oproxy
         if self.auth_type == OPROXY_AUTH_TYPE:
             return False
-        auth_code = get_integration_context().get('auth_code', '')
         # Case of the next times or after reconfigured the auth_code
         if auth_code and self.auth_code:
             is_reconfigured = auth_code != self.auth_code
