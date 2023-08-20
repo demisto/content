@@ -1,31 +1,31 @@
 import pytest
-from IfElif import IfElif
+from IfElif import ConditionParser
 import ast
 import json
 
 
-class MockIfElif(IfElif):
+class MockConditionParser(ConditionParser):
     def __init__(self, *args, **kwargs) -> None:
         self.functions = {}
 
 
-def test_handle_flags():
+def test_modify_functions_with_flags():
 
-    if_elif1 = MockIfElif()
-    if_elif1.handle_flags(['regex_multiline', 'regex_dot_all'])
+    if_elif1 = MockConditionParser()
+    if_elif1.modify_functions_with_flags(['regex_multiline', 'regex_dot_all'])
     assert int(if_elif1.regex_flags) == 24
 
-    if_elif2 = MockIfElif()
+    if_elif2 = MockConditionParser()
     assert if_elif2.operator_functions[ast.Eq]('a', 'A') is False
     assert if_elif2.operator_functions[ast.NotEq]('a', 'A') is True
-    if_elif2.handle_flags(['case_insensitive'])
+    if_elif2.modify_functions_with_flags(['case_insensitive'])
     assert if_elif2.operator_functions[ast.Eq]('a', 'A') is True
     assert if_elif2.operator_functions[ast.NotEq]('a', 'A') is False
 
-    if_elif3 = MockIfElif()
-    if_elif3.handle_flags([])
+    if_elif3 = MockConditionParser()
+    if_elif3.modify_functions_with_flags([])
     assert if_elif3.functions['regex_match']('\s', 'a a')
-    if_elif3.handle_flags(['regex_full_match'])
+    if_elif3.modify_functions_with_flags(['regex_full_match'])
     assert not if_elif3.functions['regex_match']('\s', 'a a')
     assert if_elif3.functions['regex_match']('\s', ' ')
 
@@ -66,7 +66,7 @@ def test_parse_conditions(expression, expected_result):
         - Parse the expression and return it's boolean value.
     """
 
-    if_elif = IfElif(
+    if_elif = ConditionParser(
         value=None,
         conditions=json.dumps([
             {
@@ -107,4 +107,4 @@ def test_evaluate_error(expression):
         - Raise an error.
     """
     with pytest.raises(Exception):
-        MockIfElif().evaluate(expression)
+        MockConditionParser().evaluate(expression)

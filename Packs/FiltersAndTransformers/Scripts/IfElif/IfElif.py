@@ -5,7 +5,7 @@ from functools import reduce, partial
 import ast
 
 
-class IfElif:
+class ConditionParser:
     operator_functions: dict[type, Callable] = {
         # comparison operators:
         ast.Eq: lambda x, y: x == y,
@@ -31,10 +31,10 @@ class IfElif:
         self.functions: dict[str, Callable] = {
             'from_value': lambda x: demisto.dt(value, x)
         }
-        self.handle_flags(argToList(flags))
+        self.modify_functions_with_flags(argToList(flags))
         self.load_conditions(conditions)
 
-    def handle_flags(self, flags: list):
+    def modify_functions_with_flags(self, flags: list):
         self.regex_flags = (
             re.DOTALL * ('regex_dot_all' in flags)
             | re.MULTILINE * ('regex_multiline' in flags)
@@ -127,7 +127,7 @@ class IfElif:
 
 def main():
     try:
-        if_elif = IfElif(**demisto.args())
+        if_elif = ConditionParser(**demisto.args())
         return_results(if_elif.parse_conditions())
     except Exception as e:
         return_error(f'Error in If-Elif Transformer: {e}')
