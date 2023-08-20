@@ -202,7 +202,7 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     """
     Given: a Mocked response of calls to API
     When: Running fetch on activity log type
-    Then: Validate we fetch correct number of results, meaning: 
+    Then: Validate we fetch correct number of results, meaning:
         1. No dups
         2. All events arrived
     """
