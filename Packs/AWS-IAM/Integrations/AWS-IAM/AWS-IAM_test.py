@@ -455,9 +455,9 @@ def test_get_user_not_found_user_exception(mocker):
     Given:
     - user_name - user name to retrieve policies for.
     When:
-    - After running a list_user_policies command
+    - After running a get_user command
     Then:
-    - Ensure that the returned list includes only the policies the user posses.
+    - Ensure that no exception was raised, and assert the readable output.
     """
     client = Boto3Client()
     args = {'userName': 'userName'}
