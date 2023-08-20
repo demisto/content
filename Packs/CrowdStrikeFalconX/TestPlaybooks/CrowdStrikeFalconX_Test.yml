@@ -1169,7 +1169,7 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: falsecs-fx-download-ioc
+    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
