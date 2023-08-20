@@ -1247,6 +1247,7 @@ def modify_label_command(client: 'GSuiteClient', args: dict[str, str]) -> Comman
 
     return CommandResults(
         outputs=outputs_context,
+        raw_response=response,
         readable_output=table_hr_md,
     )
 

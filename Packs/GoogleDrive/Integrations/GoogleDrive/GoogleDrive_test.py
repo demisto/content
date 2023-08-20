@@ -794,7 +794,6 @@ class TestFilePermissionMethods:
         assert 'GoogleDrive.Drive' in result.outputs
         assert len(result.outputs['GoogleDrive.Drive']['DriveLabels']) == 1
 
-
     @patch(MOCKER_HTTP_METHOD)
     def test_modify_labels_command(self, mocker_http_request, gsuite_client):
         """
@@ -823,8 +822,9 @@ class TestFilePermissionMethods:
         }
         result = modify_label_command(gsuite_client, args)
 
-        assert 'modifiedLabels' in result.outputs
-        assert result.outputs.get('modifiedLabels')[0].get('id') == 'vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb'
+        assert 'modifiedLabels' in result.outputs.get('GoogleDrive.Labels')
+        assert result.outputs.get('GoogleDrive.Labels').get('modifiedLabels')[0].get('id') \
+               == 'vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb'
 
         assert result.raw_response == mock_response
 
