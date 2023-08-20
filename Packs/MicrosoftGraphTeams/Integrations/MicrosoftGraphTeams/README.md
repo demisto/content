@@ -265,3 +265,39 @@ Tests connectivity to Microsoft Graph Teams.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-teams-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-teams-auth-reset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-teams-generate-login-url
+
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-teams-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

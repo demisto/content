@@ -29,7 +29,7 @@ class MsGraphClient:
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
                                          resource=resource, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key)
+                                         private_key=private_key, command_prefix='msgraph-teams')
         self.handle_error = handle_error
 
         self.delegated_user = delegated_user
@@ -457,6 +457,7 @@ def test_function(client, _):
                             "Please enable the integration and run the !msgraph-teams-test command in order to test it")
 
     client.ms_client.http_request(method='GET', url_suffix='chats')
+    return_results(CommandResults(readable_output='✅ Success!'))
     return response, None, None
 
 
@@ -683,9 +684,6 @@ def main():
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
-        raise DemistoException('Please provide both Application redirect URI and Authorization code '
-                               'for Authorization Code flow, or None for the Client Credentials flow')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
@@ -715,7 +713,12 @@ def main():
                                               auth_code=auth_code, handle_error=handle_error,
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key, delegated_user=delegated_user)
-        run_command(commands, command, client, demisto.args(), tries)
+        if command == 'msgraph-teams-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
+        elif command == 'msgraph-teams-auth-reset':
+            return_results(reset_auth())
+        else:
+            run_command(commands, command, client, demisto.args(), tries)
 
     except Exception as e:
         return_error(str(e))
