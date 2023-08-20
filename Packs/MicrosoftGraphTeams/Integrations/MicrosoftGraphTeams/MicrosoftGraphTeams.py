@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Optional, Union
 
 
 ''' IMPORTS '''
@@ -19,8 +18,8 @@ urllib3.disable_warnings()
 class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code, handle_error, certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None, delegated_user: Optional[str] = None
+                 redirect_uri, auth_code, handle_error, certificate_thumbprint: str | None = None,
+                 private_key: str | None = None, delegated_user: str | None = None
                  ):
 
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
@@ -101,7 +100,7 @@ class MsGraphClient:
             list: list of all pages
         """
         responses = [response]
-        for i in range(page_count - 1):
+        for _i in range(page_count - 1):
             next_link = response.get('@odata.nextLink')
             if next_link:
                 response = self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
@@ -110,7 +109,7 @@ class MsGraphClient:
                 return responses
         return responses
 
-    def list_chats(self, user_id: str = None, odata: str = None, limit: str = '20') -> Union[dict, list]:
+    def list_chats(self, user_id: str = None, odata: str = None, limit: str = '20') -> dict | list:
         """Returning all chats from given user
 
         Args:
@@ -187,7 +186,7 @@ class MsGraphClient:
         }
         return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=json_data)
 
-    def list_members(self, chat_id: str, user_id: str = None) -> Union[dict, list]:
+    def list_members(self, chat_id: str, user_id: str = None) -> dict | list:
         """Returning all members from given chat
 
         Args:
@@ -227,7 +226,7 @@ class MsGraphClient:
 
         return True
 
-    def list_messages(self, chat_id: str, user_id: str = None, limit: str = '50') -> Union[dict, list]:
+    def list_messages(self, chat_id: str, user_id: str = None, limit: str = '50') -> dict | list:
         """Returning all mails from given user
 
         Args:
@@ -270,7 +269,7 @@ class MsGraphClient:
 ''' HELPER FUNCTIONS '''
 
 
-def build_chat_object(raw_response: Union[dict, list], user_id: str = None):
+def build_chat_object(raw_response: dict | list, user_id: str = None):
     """Building chat entry context
     Getting a list from build_chat_object
 
@@ -307,7 +306,7 @@ def build_chat_object(raw_response: Union[dict, list], user_id: str = None):
             entry['UserID'] = user_id
         return entry
 
-    chat_list = list()
+    chat_list = []
     if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
             # raw_response is a list containing multiple pages or one page
@@ -326,7 +325,7 @@ def build_chat_object(raw_response: Union[dict, list], user_id: str = None):
     return chat_list
 
 
-def build_member_object(raw_response: Union[dict, list], chat_id: str) -> Union[dict, list]:
+def build_member_object(raw_response: dict | list, chat_id: str) -> dict | list:
     """Building member entry context
     Getting a list from build_member_object
 
@@ -361,7 +360,7 @@ def build_member_object(raw_response: Union[dict, list], chat_id: str) -> Union[
             entry['ChatID'] = chat_id
         return entry
 
-    member_list = list()
+    member_list = []
     if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
             # raw_response is a list containing multiple pages or one page
@@ -380,7 +379,7 @@ def build_member_object(raw_response: Union[dict, list], chat_id: str) -> Union[
     return member_list
 
 
-def build_message_object(raw_response: Union[dict, list], chat_id: str) -> Union[dict, list]:
+def build_message_object(raw_response: dict | list, chat_id: str) -> dict | list:
     """Building message entry context
     Getting a list from build_message_object
 
@@ -418,7 +417,7 @@ def build_message_object(raw_response: Union[dict, list], chat_id: str) -> Union
             entry['ChatID'] = chat_id
         return entry
 
-    message_list = list()
+    message_list = []
     if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
             # raw_response is a list containing multiple pages or one page
