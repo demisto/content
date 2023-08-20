@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 
 ''' IMPORTS '''
@@ -240,7 +240,7 @@ def get_auth_headers(access_key, private_key):
         return_error(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
 
     if arg is None:
         if required is True:
@@ -259,13 +259,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
         return int(date.timestamp())
 
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
 
     if arg is None:
         if required is True:
@@ -280,7 +280,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def fetch_incidents(client, last_run: dict[str, int], first_fetch_time: Optional[int]):
+def fetch_incidents(client, last_run: dict[str, int], first_fetch_time: int | None):
     max_results = arg_to_int(
         arg=demisto.params().get('max_fetch'),
         arg_name='max_fetch',

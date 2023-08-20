@@ -428,17 +428,17 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                         "rawJSON": attributes,
                     }
                     if create_relationships and client.feed_url_to_config.get(url, {}).get('relationship_name') and \
-                        attributes.get('relationship_entity_b'):
-                            relationships_lst = EntityRelationship(
-                                name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
-                                entity_a=value,
-                                entity_a_type=indicator_type,
-                                entity_b=attributes.get('relationship_entity_b'),
-                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                    client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
-                            )
-                            relationships_of_indicator = [relationships_lst.to_indicator()]
-                            indicator_data['relationships'] = relationships_of_indicator
+                            attributes.get('relationship_entity_b'):
+                        relationships_lst = EntityRelationship(
+                            name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
+                            entity_a=value,
+                            entity_a_type=indicator_type,
+                            entity_b=attributes.get('relationship_entity_b'),
+                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
+                        )
+                        relationships_of_indicator = [relationships_lst.to_indicator()]
+                        indicator_data['relationships'] = relationships_of_indicator
 
                     if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
                         custom_fields = client.custom_fields_creator(attributes)

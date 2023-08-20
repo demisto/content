@@ -3,7 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import Callable, Optional, Any
+from typing import Any
+from collections.abc import Callable
 from collections import OrderedDict
 import traceback
 import requests
@@ -112,7 +113,7 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
     return fields
 
 
-def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None):
+def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
     indicator: dict[str, Any] = {}
     try:
         ext_obj = stix_obj.get("external_references", [])
@@ -141,7 +142,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
 
 
 def fetch_indicators_command(
-    client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: Optional[str] = None
+    client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: str | None = None
 ):
     indicators_list = []
     try:
