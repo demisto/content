@@ -3,8 +3,6 @@ import datetime
 import pytest
 import importlib
 import demistomock as demisto
-import botocore.session
-import botocore.errorfactory
 
 AWS_IAM = importlib.import_module("AWS-IAM")
 
