@@ -2758,6 +2758,34 @@ script:
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
     - name: user_id
       description: The user's primary email address
+    outputs:
+    - contextPath: GoogleDrive.File.File.id
+      description: 'The ID of the file.'
+      type: String
+    - contextPath: GoogleDrive.Labels.kind
+      description: 'The type of resource. This is always drive#labelList'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.id
+      description: 'The ID of the label field selected'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.kind
+      description: 'The kind of this field. This is always drive#labelField'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selection
+      description: 'The label field selected.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.valueType
+      description: 'The type of data this label is representing.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.id
+      description: 'The label id of the label to set'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.kind
+      description: 'The type of resource. This is always drive#label'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.revisionId
+      description: 'The revision id of the label'
+      type: String
   dockerimage: demisto/googleapi-python3:1.0.0.68850
   isfetch: true
   runonce: false
