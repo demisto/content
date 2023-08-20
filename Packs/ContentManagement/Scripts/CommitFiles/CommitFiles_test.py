@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 import demistomock as demisto
 from CommitFiles import ContentFile
 import pytest
@@ -57,14 +59,14 @@ def test_1_commit_content_item_azure_devops(mocker):
     assert e.value.message == "Failed to find a corresponding branch id to the given branch name."
 
 
-def test_2_commit_content_item_azure_devops(mocker):
+def test_2_commit_content_item_azure_devops_creating_file(mocker):
     """
     Given:
         - A branch name and a content file
     When:
         - Committing the files to azure devops
     Then:
-        - Ensure the last executeCommand called with the expected arguments
+        - Ensure the last executeCommand (azure-devops-file-create) called with the expected arguments
     """
     from CommitFiles import commit_content_item_azure_devops
     branch_name = 'demisto'
@@ -72,6 +74,27 @@ def test_2_commit_content_item_azure_devops(mocker):
                                   {"value": [{"name": "demisto", "objectId": "XXXX", "path": "Test"}]}}])
     commit_content_item_azure_devops(branch_name, content_file, [], [])
     request.assert_called_with('azure-devops-file-create', args={'commit_comment': 'hello.py was added.',
+                                                                 'file_path': 'Packs/Hi/Integrations/Folder/hello.py',
+                                                                 'branch_name': 'demisto', 'file_content': 'hello world!',
+                                                                 'branch_id': 'XXXX'})
+
+
+def test_3_commit_content_item_azure_devops_updating_file(mocker):
+    """
+    Given:
+        - A branch name and a content file
+    When:
+        - Committing the files to azure devops
+    Then:
+        - Ensure the last executeCommand (azure-devops-file-update) called with the expected arguments
+    """
+    mocker.patch("CommitFiles.files_path", [str(Path(content_file.path_to_file, content_file.file_name))])
+    from CommitFiles import commit_content_item_azure_devops
+    branch_name = 'demisto'
+    request = mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents":
+                                  {"value": [{"name": "demisto", "objectId": "XXXX", "path": "Test"}]}}])
+    commit_content_item_azure_devops(branch_name, content_file, [], [])
+    request.assert_called_with('azure-devops-file-update', args={'commit_comment': 'hello.py was updated.',
                                                                  'file_path': 'Packs/Hi/Integrations/Folder/hello.py',
                                                                  'branch_name': 'demisto', 'file_content': 'hello world!',
                                                                  'branch_id': 'XXXX'})
