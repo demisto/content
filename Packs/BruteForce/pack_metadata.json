@@ -16,6 +16,14 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
