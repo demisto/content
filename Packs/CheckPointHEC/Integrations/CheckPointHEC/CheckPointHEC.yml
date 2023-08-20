@@ -237,7 +237,7 @@ script:
     description: Get email ids with same sender and/or subject
     arguments:
     - name: date_range
-      description: Range to search for emails
+      description: Range to search for emails (1 day, 2 weeks, etc.)
       required: true
     - name: sender
       description: Search emails with this sender
@@ -255,7 +255,8 @@ script:
       description: Customer portal name
       required: true
     - name: entity
-      description: Email id to apply action over
+      description: One or multiple Email ids to apply action over
+      isArray: true
       required: true
     - name: action
       description: Action to perform (quarantine or restore)

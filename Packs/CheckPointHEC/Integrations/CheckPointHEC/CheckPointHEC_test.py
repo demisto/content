@@ -1,7 +1,5 @@
 import json
 
-import pytest
-
 import demistomock as demisto
 from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_email_info,
                            checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action,
@@ -178,15 +176,16 @@ def test_checkpointhec_get_entity_fail(mocker):
         proxy=False
     )
 
-    mocker.patch.object(
+    get_entity = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
     )
 
     entity = '00000000000000000000000000000001'
-    with pytest.raises(Exception, match=f'Entity with id {entity} not found'):
-        checkpointhec_get_entity(client, entity)
+    result = checkpointhec_get_scan_info(client, entity)
+    get_entity.assert_called_once()
+    assert result.readable_output == f'Entity with id {entity} not found'
 
 
 def test_checkpointhec_get_email_info_success(mocker):
@@ -219,15 +218,16 @@ def test_checkpointhec_get_email_info_fail(mocker):
         proxy=False
     )
 
-    mocker.patch.object(
+    get_entity = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
     )
 
     entity = '00000000000000000000000000000001'
-    with pytest.raises(Exception, match=f'Entity with id {entity} not found'):
-        checkpointhec_get_email_info(client, entity)
+    result = checkpointhec_get_scan_info(client, entity)
+    get_entity.assert_called_once()
+    assert result.readable_output == f'Entity with id {entity} not found'
 
 
 def test_checkpointhec_get_scan_info_success(mocker):
@@ -260,15 +260,16 @@ def test_checkpointhec_get_scan_info_fail(mocker):
         proxy=False
     )
 
-    mocker.patch.object(
+    get_entity = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
     )
 
     entity = '00000000000000000000000000000001'
-    with pytest.raises(Exception, match=f'Entity with id {entity} not found'):
-        checkpointhec_get_scan_info(client, entity)
+    result = checkpointhec_get_scan_info(client, entity)
+    get_entity.assert_called_once()
+    assert result.readable_output == f'Entity with id {entity} not found'
 
 
 def test_checkpointhec_search_emails(mocker):
@@ -310,7 +311,7 @@ def test_checkpointhec_send_action(mocker):
     )
 
     result = checkpointhec_send_action(
-        client, 'mt-rnd-ng-6', 'avananlab', '00000000000000000000000000000002', 'restore'
+        client, 'mt-rnd-ng-6', 'avananlab', ['00000000000000000000000000000002'], 'restore'
     )
     send_action.assert_called_once()
     assert result.outputs == {'task': mock_response['responseData'][0]['taskId']}
@@ -332,7 +333,7 @@ def test_checkpointhec_get_action_result(mocker):
         return_value=mock_response,
     )
 
-    result = checkpointhec_get_action_result(client, 'mt-rnd-ng-6', 'avananlab', 1691525788820900)
+    result = checkpointhec_get_action_result(client, 'mt-rnd-ng-6', 'avananlab', '1691525788820900')
     get_task.assert_called_once()
     assert result.outputs == mock_response['responseData']
 

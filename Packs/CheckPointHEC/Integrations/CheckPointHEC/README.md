@@ -155,7 +155,7 @@ Get email ids with same sender and/or subject
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| date_range | Range to search for emails. | Required | 
+| date_range | Range to search for emails (1 day, 2 weeks, etc.). | Required | 
 | sender | Search emails with this sender. | Optional | 
 | subject | Search emails with this subject. | Optional | 
 
@@ -180,7 +180,7 @@ Quarantine or restore an email
 | --- | --- | --- |
 | farm | Customer farm. | Required | 
 | customer | Customer portal name. | Required | 
-| entity | Email id to apply action over. | Required | 
+| entity | One or multiple Email ids to apply action over. | Required | 
 | action | Action to perform (quarantine or restore). Possible values are: quarantine, restore. | Required | 
 
 #### Context Output

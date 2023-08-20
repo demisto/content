@@ -132,8 +132,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def send_action(self, entities: str | list, action: str, scope: str):
-        entities = entities if isinstance(entities, list) else [entities]
+    def send_action(self, entities: list, action: str, scope: str):
         request_data = {
             'entityIds': entities,
             'entityType': 'office365_emails_email',
@@ -149,7 +148,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def get_task(self, task: int, scope: str):
+    def get_task(self, task: str, scope: str):
         return self._call_api(
             'GET',
             f'task/{task}',
@@ -172,7 +171,11 @@ def test_module(client: Client):
 def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
-        last_fetch, _ = parse_date_range(first_fetch, DATE_FORMAT)
+        last_fetch = dateparser.parse(first_fetch, date_formats=[DATE_FORMAT])
+    if last_fetch:
+        last_fetch = last_fetch.isoformat()
+    else:
+        raise Exception('Could not get last fetch')
     result = client.query_events(start_date=last_fetch)
     events = result['responseData'][:min(max_fetch, len(result['responseData']))]
 
@@ -227,8 +230,10 @@ def checkpointhec_get_email_info(client: Client, entity: str) -> CommandResults:
             outputs_key_field='internetMessageId',
             outputs=entities[0]['entityPayload']
         )
-
-    raise Exception(f'Entity with id {entity} not found')
+    else:
+        return CommandResults(
+            readable_output=f'Entity with id {entity} not found'
+        )
 
 
 def checkpointhec_get_scan_info(client: Client, entity: str) -> CommandResults:
@@ -243,57 +248,76 @@ def checkpointhec_get_scan_info(client: Client, entity: str) -> CommandResults:
             outputs_prefix='CheckPointHEC.ScanResult',
             outputs=outputs
         )
-
-    raise Exception(f'Entity with id {entity} not found')
+    else:
+        return CommandResults(
+            readable_output=f'Entity with id {entity} not found'
+        )
 
 
 def checkpointhec_search_emails(client: Client, date_range: str, sender: str = None, subject: str = None) -> CommandResults:
     if not sender and not subject:
         raise Exception('One param to search emails by sender or subject is required')
 
-    start_date, _ = parse_date_range(date_range, DATE_FORMAT)
-    result = client.search_emails(start_date, sender, subject)
-    if entities := result['responseData']:
-        ids = [entity['entityInfo']['entityId'] for entity in entities]
+    start_date = dateparser.parse(date_range, date_formats=[DATE_FORMAT])
+    if start_date:
+        result = client.search_emails(start_date.isoformat(), sender, subject)
+        if entities := result['responseData']:
+            ids = [entity['entityInfo']['entityId'] for entity in entities]
+            return CommandResults(
+                outputs_prefix='CheckPointHEC.SearchResult',
+                outputs={'ids': ids}
+            )
+        else:
+            return CommandResults(
+                readable_output=f'Error searching with {sender=} and/or {subject=}'
+            )
+    else:
         return CommandResults(
-            outputs_prefix='CheckPointHEC.SearchResult',
-            outputs={'ids': ids}
+            readable_output=f'Could not establish start date with {date_range=} {sender=} and/or {subject=}'
         )
 
-    raise Exception(f'Error searching with {sender=} and/or {subject=}')
 
-
-def checkpointhec_send_action(client: Client, farm: str, customer: str, entities: str | list, action: str) -> CommandResults:
+def checkpointhec_send_action(client: Client, farm: str, customer: str, entities: list, action: str) -> CommandResults:
     result = client.send_action(entities, action, scope=f'{farm}:{customer}')
     if resp := result['responseData']:
         return CommandResults(
             outputs_prefix='CheckPointHEC.Task',
             outputs={'task': resp[0]['taskId']}
         )
+    else:
+        return CommandResults(
+            readable_output='Task not queued successfully'
+        )
 
-    raise Exception('Task not queued successfully')
 
-
-def checkpointhec_get_action_result(client: Client, farm: str, customer: str, task: int) -> CommandResults:
+def checkpointhec_get_action_result(client: Client, farm: str, customer: str, task: str) -> CommandResults:
     result = client.get_task(task, scope=f'{farm}:{customer}')
     if resp := result['responseData']:
         return CommandResults(
             outputs_prefix='CheckPointHEC.ActionResult',
             outputs=resp
         )
-
-    raise Exception(f'Cannot get results about task with id {task}')
+    else:
+        return CommandResults(
+            readable_output=f'Cannot get results about task with id {task}'
+        )
 
 
 def checkpointhec_send_notification(client: Client, entity: str, emails: List[str]) -> CommandResults:
     result = client.send_notification(entity, emails)
-    return CommandResults(
-        outputs_prefix='CheckPointHEC.Notification',
-        outputs=result
-    )
+    if result.get('ok'):
+        return CommandResults(
+            outputs_prefix='CheckPointHEC.Notification',
+            outputs=result
+        )
+    else:
+        return CommandResults(
+            readable_output='Error sending notification email'
+        )
 
 
 def main() -> None:  # pragma: no cover
+    args = demisto.args()
     params = demisto.params()
     base_url = params.get('url')
     client_id = params.get('client_id', {}).get('password')
@@ -314,37 +338,31 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-incidents':
-            args = demisto.args()
             first_fetch = params.get('first_fetch')
             max_fetch = int(args.get('max_fetch', 10))
             fetch_incidents(client, first_fetch, max_fetch)
         elif command == 'checkpointhec-get-entity':
-            args = demisto.args()
             return_results(checkpointhec_get_entity(client, args.get('entity')))
         elif command == 'checkpointhec-get-email-info':
-            args = demisto.args()
             return_results(checkpointhec_get_email_info(client, args.get('entity')))
         elif command == 'checkpointhec-get-scan-info':
-            args = demisto.args()
             return_results(checkpointhec_get_scan_info(client, args.get('entity')))
         elif command == 'checkpointhec-search-emails':
-            args = demisto.args()
             return_results(checkpointhec_search_emails(
                 client, args.get('date_range'), args.get('sender'), args.get('subject')
             ))
         elif command == 'checkpointhec-send-action':
-            args = demisto.args()
+            entities = argToList(args.get('entity'))
             return_results(checkpointhec_send_action(
-                client, args.get('farm'), args.get('customer'), args.get('entity'), args.get('action')
+                client, args.get('farm'), args.get('customer'), entities, args.get('action')
             ))
         elif command == 'checkpointhec-get-action-result':
-            args = demisto.args()
             return_results(checkpointhec_get_action_result(
                 client, args.get('farm'), args.get('customer'), args.get('task')
             ))
         elif command == 'checkpointhec-send-notification':
-            args = demisto.args()
-            return_results(checkpointhec_send_notification(client, args.get('entity'), args.get('emails')))
+            emails = argToList(args.get('emails'))
+            return_results(checkpointhec_send_notification(client, args.get('entity'), emails))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
