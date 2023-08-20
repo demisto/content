@@ -2704,35 +2704,60 @@ script:
   - name: google-drive-file-modify-label
     description: Modify labels to file.
     arguments:
-      - name: file_id
-        description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      - name: user_id
-        description: The user's primary email address
-      - name: label_id
-        description: The label id to set for the file
-      - name: field_id
-        description: the field id of the label to set
-      - name: selection_label_id
-        description: the label id to set for the field
-      - auto: PREDEFINED
-        defaultValue: "false"
-        description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
-        name: remove_label
-        predefined:
-          - "true"
-          - "false"
+    - name: file_id
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+    - name: user_id
+      description: The user's primary email address
+    - name: label_id
+      description: The label id to set for the file
+    - name: field_id
+      description: the field id of the label to set
+    - name: selection_label_id
+      description: the label id to set for the field
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      name: remove_label
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: GoogleDrive.Labels.kind
+      description: 'The type of resource. This is always drive#modifyLabelsResponse'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.id
+      description: 'The ID of the label field selected'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.kind
+      description: 'Kind of resource this is, in this case drive#labelField'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.selection
+      description: 'Selected label.'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.valueType
+      description: 'The type of data this label is representing.'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.id
+      description: 'The label id of the label to set'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.kind
+      description: 'The type of resource. This is always drive#label'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.revisionId
+      description: ''
+      type: String
   - name: google-drive-get-labels
     description: Google Drive get labels.
     arguments:
-      - name: user_id
-        description: The user's primary email address
+    - name: user_id
+      description: The user's primary email address
   - name: google-drive-get-file-labels
     description: Modify labels to file.
     arguments:
-      - name: file_id
-        description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
-      - name: user_id
-        description: The user's primary email address
+    - name: file_id
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+    - name: user_id
+      description: The user's primary email address
   dockerimage: demisto/googleapi-python3:1.0.0.68850
   isfetch: true
   runonce: false
