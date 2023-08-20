@@ -489,7 +489,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-Incident 4 has been updated
+```Incident 4 has been updated```
 
 ### xdr-insert-parsed-alert
 ***
