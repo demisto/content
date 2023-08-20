@@ -10,9 +10,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-#  ########### FORMAT RESULTS TEST ################
-
-
 EVENT_CASES = [
     (
         FireEyeETPEventCollector.EventType('alerts', 20, 200, outbound=False),  # event config
