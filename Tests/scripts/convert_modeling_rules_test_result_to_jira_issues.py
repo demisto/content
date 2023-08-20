@@ -52,7 +52,7 @@ def create_jira_issue(jira_server: JIRA,
     build_markdown_link = f"[Nightly{build_id_hash}|{build_url}]" if build_id else f"Nightly{build_id_hash}"
     description = f"""
         *{properties['pack_id']}* - *{properties['modeling_rule_file_name']}* failed in {build_markdown_link}
-        
+
         ||Tests||Result||
         |Total|{test_suite.tests}|
         |Failed|{test_suite.failures}|
