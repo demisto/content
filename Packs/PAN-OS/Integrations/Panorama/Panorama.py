@@ -923,6 +923,10 @@ def panorama_commit(args):
     if force_commit:
         command += '<force></force>'
 
+    description = args.get('description')
+    if description:
+        command += f'<description>{description}</description>'
+
     exclude_device_network = args.get('exclude_device_network_configuration')
     exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
     if exclude_device_network_configuration:
@@ -5227,7 +5231,7 @@ def build_array_query(query: str, arg_string: str, string: str, operator: str):
 def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_: Optional[str],
                      zone_src: Optional[str], zone_dst: Optional[str], time_generated: Optional[str],
                      action: Optional[str], port_dst: Optional[str], rule: Optional[str], url: Optional[str],
-                     filedigest: Optional[str]):
+                     filedigest: Optional[str], time_generated_after: Optional[str],):
     query = ''
     if address_src:
         query += build_array_query(query, address_src, 'addr.src', 'in')
@@ -5254,9 +5258,15 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
             query += ' and '
         query += build_array_query(query, port_dst, 'port.dst', 'eq')
     if time_generated:
+        date = dateparser.parse(time_generated)
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(time_generated leq ' + time_generated + ')'
+        query += '(time_generated leq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'  # type: ignore
+    if time_generated_after:
+        date = dateparser.parse(time_generated_after)
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(time_generated geq \'' + date.strftime("%Y/%m/%d %H:%M:%S") + '\')'  # type: ignore
     if action:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -5279,7 +5289,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
-                        zone_src: str, zone_dst: str, time_generated: str, action: str,
+                        zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str,  action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
@@ -5300,7 +5310,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
                 'The ip argument cannot be used with the address-source or the address-destination arguments.')
         params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
-                                           port_dst, rule, url, filedigest)
+                                           port_dst, rule, url, filedigest, time_generated_after)
     if number_of_logs:
         params['nlogs'] = number_of_logs
 
@@ -5331,6 +5341,7 @@ def panorama_query_logs_command(args: dict):
     zone_src = args.get('zone-src')
     zone_dst = args.get('zone-dst')
     time_generated = args.get('time-generated')
+    time_generated_after = args.get('time-generated-after')
     action = args.get('action')
     port_dst = args.get('port-dst')
     rule = args.get('rule')
@@ -5342,13 +5353,13 @@ def panorama_query_logs_command(args: dict):
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
-                      or time_generated or action or port_dst or rule or url or filedigest):
+                      or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
             raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
         result: PanosResponse = PanosResponse(
             panorama_query_logs(
                 log_type, number_of_logs, query, address_src, address_dst, ip_,
-                zone_src, zone_dst, time_generated, action,
+                zone_src, zone_dst, time_generated, time_generated_after, action,
                 port_dst, rule, url, filedigest
             ),
             illegal_chars=illegal_chars,
