@@ -1134,7 +1134,7 @@ script:
       description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.Reason
-      description: This field requires a state to determine what values are allowed.
+      description: This reason for the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
       description: Display name of the user assigned to the work item.
@@ -1340,7 +1340,7 @@ script:
       description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.Reason
-      description: This field requires a state to determine what values are allowed.
+      description: This reason for the work item.
     - type: Date
       contextPath: AzureDevOps.WorkItem.fields.System.CreatedDate
       description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
@@ -1513,7 +1513,7 @@ script:
       description: Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.Reason
-      description: This field requires a state to determine what values are allowed.
+      description: This reason for the work item.
     - type: String
       contextPath: AzureDevOps.WorkItem.fields.System.AssignedTo.displayName
       description: Display name of user assigned to the work item.
