@@ -25,6 +25,7 @@ class IfElif:
     }
 
     def __init__(self, value, conditions, flags=None):
+        self.conditions: list
         self.handle_flags(argToList(flags))
         self.load_conditions_with_values(conditions, value)
 
@@ -52,7 +53,7 @@ class IfElif:
         def from_value(keys: re.Match):
             return repr(demisto.dt(values, keys[1]))
         conditions = re.compile('#{([\s\S]+?)}').sub(from_value, conditions)
-        self.conditions: list = self.evaluate(conditions)
+        self.conditions = self.evaluate(conditions)
 
     def get_value(self, node):
         match type(node):
