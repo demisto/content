@@ -55,6 +55,7 @@ For example, Key=Owner,Value=SysAdmin.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ssm-inventory-get
 
 ***
@@ -92,8 +93,11 @@ Query inventory information. This includes managed node status, such as Stopped 
 | AWS.SSM.Inventory.Entities.Data.Content.InstanceId | String | The managed node ID. | 
 
 #### Command example
+
 ```!aws-ssm-inventory-get limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -137,6 +141,7 @@ Query inventory information. This includes managed node status, such as Stopped 
 #### Human Readable Output
 
 >### AWS SSM Inventory
+
 >|Id|Instance Id|Computer Name|Platform Type|Platform Name|Agent version|IP address|Resource Type|
 >|---|---|---|---|---|---|---|---|
 >| i-test1 |  |  |  |  |  |  |  |
@@ -180,8 +185,11 @@ A list of inventory items returned by the request.
 | AWS.SSM.InventoryEntry.Entries.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
 
 #### Command example
+
 ```!aws-ssm-inventory-entry-list instance_id=test type_name=AWS:InstanceInformation```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -214,9 +222,11 @@ A list of inventory items returned by the request.
 #### Human Readable Output
 
 >### AWS SSM Inventory
+
 >|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|
 >|---|---|---|---|---|---|---|
 >| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |
+
 ### aws-ssm-association-list
 
 ***
@@ -254,8 +264,11 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 | AWS.SSM.Association.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
 
 #### Command example
+
 ```!aws-ssm-association-list ```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -336,6 +349,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 #### Human Readable Output
 
 >### AWS SSM Association
+
 >|Association id|Association version|Document name|Last execution date|Resource status count|Status|
 >|---|---|---|---|---|---|
 >| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:51:28.607000+03:00 |  | Pending |
@@ -415,8 +429,11 @@ Describes the association for the specified target or managed node. if the assoc
 | AWS.SSM.Association.AssociationDescription.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
 
 #### Command example
+
 ```!aws-ssm-association-get association_id=association_id```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -468,6 +485,7 @@ Describes the association for the specified target or managed node. if the assoc
 #### Human Readable Output
 
 >### Association
+
 >|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|Resource status count|Schedule expression|Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >| association_id | AWS-QuickSetup | 1 | 2023-02-14T11:48:24.511000+00:00 | AWSQuickSetup | $DEFAULT | 2023-08-13T11:49:38+00:00 | Failed: 1 | rate(30 days) | Failed |
@@ -525,8 +543,11 @@ Retrieves all versions of an association for a specific association ID.
 | AWS.SSM.AssociationVersion.AssociationVersions.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
 
 #### Command example
+
 ```!aws-ssm-association-version-list association_id=association_id```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -569,6 +590,7 @@ Retrieves all versions of an association for a specific association ID.
 #### Human Readable Output
 
 >### Association Versions
+
 >|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule expression|Targets|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| association_id | 2023-02-14T11:48:24.511000+00:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br/>	***values***: arn/AWS-QuickSetup<br/>**IsPolicyAttachAllowed**:<br/>	***values***: false | rate(30 days) | **-**	***Key***: ParameterValues<br/>	**Values**:<br/>		***values***: instance_id | 1 |

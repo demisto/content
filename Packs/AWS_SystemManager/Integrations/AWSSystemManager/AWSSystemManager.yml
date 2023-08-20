@@ -160,10 +160,10 @@ script:
   - arguments:
     - description: 'The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command.'
       name: instance_id
-      required: True
+      required: true
     - description: The type of inventory item to get information for.
       name: type_name
-      required: True
+      required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
       defaultvalue: 50
@@ -272,7 +272,7 @@ script:
       name: instance_id
     - description: The association ID for which information is requested.
       name: association_id
-    - description: Specify the association version to retrieve. To view the latest version, either specify $LATEST for this parameter, or omit this parameter. 
+    - description: Specify the association version to retrieve. To view the latest version, either specify $LATEST for this parameter, or omit this parameter.
       name: association_version
     description: Describes the association for the specified target or managed node. if the association was established using the Targets parameter, the association details must be retrieved using the associated ID. this command must provide either association id or instance_id and document_name
     name: aws-ssm-association-get
@@ -321,7 +321,7 @@ script:
       type: String
     - contextPath: AWS.SSM.Association.AssociationDescription.Parameters
       description: A description of the parameters for a document.
-      type: Dictionary 
+      type: Dictionary
     - contextPath: AWS.SSM.Association.AssociationDescription.AssociationId
       description: The association ID.
       type: String
@@ -414,7 +414,7 @@ script:
   - arguments:
     - description: The association ID for which want to view all versions.
       name: association_id
-      required: True
+      required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
       defaultvalue: 50
@@ -518,7 +518,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.68490
+  dockerimage: demisto/boto3py3:1.0.0.71685
 fromversion: 6.9.0
 marketplaces:
 - xsoar
