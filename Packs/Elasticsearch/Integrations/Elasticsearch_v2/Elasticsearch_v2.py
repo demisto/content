@@ -89,7 +89,7 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
     mapping = es.indices.get_mapping(index=index)
-    datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
+    datetime_field = mapping.get(index, {}).get('mappings', {}).get('properties', {}).get(field, {})
 
     return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
 
