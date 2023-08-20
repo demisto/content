@@ -3276,23 +3276,24 @@ The query logs in Panorama.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data. | Required | 
-| query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
-| time-generated | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44". | Optional | 
-| addr-src | The source address. | Optional | 
-| addr-dst | The destination address. | Optional | 
-| ip | The source or destination IP address. | Optional | 
-| zone-src | The source zone. | Optional | 
-| zone-dst | The destination source. | Optional | 
-| action | The rule action. | Optional | 
-| port-dst | The destination port. | Optional | 
-| rule | The rule name, for example "Allow all outbound". | Optional | 
-| url | The URL, for example "safebrowsing.googleapis.com". | Optional | 
-| filedigest | The file hash (for WildFire logs only). | Optional | 
-| number_of_logs | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100. | Optional | 
-| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
-| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
-| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+| log-type          | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data.                                | Required | 
+| query             | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
+| time-generated    | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44", 3 days ago.                                             | Optional | 
+| time-generated-after| The time the log was generated from the timestamp and later then it.<br/>For example "2019/08/11 01:10:44", 3 days ago.                                           | Optional | 
+| addr-src          | The source address.                                                                                                                                               | Optional | 
+| addr-dst          | The destination address.                                                                                                                                          | Optional | 
+| ip                | The source or destination IP address.                                                                                                                             | Optional | 
+| zone-src          | The source zone.                                                                                                                                                  | Optional | 
+| zone-dst          | The destination source.                                                                                                                                           | Optional | 
+| action            | The rule action.                                                                                                                                                  | Optional | 
+| port-dst          | The destination port.                                                                                                                                             | Optional | 
+| rule              | The rule name, for example "Allow all outbound".                                                                                                                  | Optional | 
+| url               | The URL, for example "safebrowsing.googleapis.com".                                                                                                               | Optional | 
+| filedigest        | The file hash (for WildFire logs only).                                                                                                                           | Optional | 
+| number_of_logs    | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100.                                                       | Optional | 
+| polling           | Whether to use polling. Possible values are: true, false. Default is false.                                                                                       | Optional | 
+| timeout           | The timeout (in seconds) when polling. Default is 120.                                                                                                            | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional | 
 
 
 #### Context Output
@@ -5684,7 +5685,7 @@ Gets information from all PAN-OS systems in the topology.
 
 ### pan-os-platform-get-device-groups
 ***
-Gets the operational information of the device groups in the topology.
+Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
 
 
 #### Base Command
@@ -8964,3 +8965,22 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The tag with name "testtag" was deleted successfully.
+
+### pan-os-list-device-groups
+
+***
+Returns a list of all device groups from Panorama.
+#### Base Command
+
+`pan-os-list-device-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.DeviceGroupNames | string | The list of device groups. |

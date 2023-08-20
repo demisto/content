@@ -169,7 +169,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   isfetch: true
   script: ''
