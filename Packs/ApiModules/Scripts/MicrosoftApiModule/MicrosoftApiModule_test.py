@@ -732,6 +732,14 @@ def test_generate_login_url():
 
 
 def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
+    """
+    Given:
+        - The auth code was reconfigured
+    When:
+        - Calling function get_access_token
+    Then:
+        - Ensure the access token is as expected in the body of the request and in the integration context
+    """
     context = {'auth_code': AUTH_CODE, 'access_token': TOKEN,
                'valid_until': 3605, 'current_refresh_token': REFRESH_TOKEN}
 
@@ -742,13 +750,13 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
-    auth_code = 'reconfigured_auth_code'
+    new_auth_code = 'reconfigured_auth_code'
     resource = None
     ok_codes = OK_CODES
     grant_type = AUTHORIZATION_CODE
 
     client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
-                             grant_type=grant_type, auth_code=auth_code,
+                             grant_type=grant_type, auth_code=new_auth_code,
                              resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
     requests_mock.post(
@@ -760,10 +768,10 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
         'client_secret': CLIENT_SECRET,
         'redirect_uri': REDIRECT_URI,
         'grant_type': AUTHORIZATION_CODE,
-        'code': auth_code,
+        'code': new_auth_code,
     }
 
     assert client.get_access_token()
     req_body = requests_mock._adapter.last_request._request.body
     assert urllib.parse.urlencode(body) == req_body
-    assert demisto.getIntegrationContext().get('auth_code') == auth_code
+    assert demisto.getIntegrationContext().get('auth_code') == new_auth_code
