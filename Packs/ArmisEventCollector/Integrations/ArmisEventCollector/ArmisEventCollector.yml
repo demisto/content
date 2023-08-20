@@ -17,6 +17,7 @@ configuration:
   type: 9
 - display: Number of events to fetch per fetch.
   name: max_fetch
+  additionalinfo: The maximum number of events to fetch per event type.
   type: 0
   defaultvalue: 1000
   section: Collect
@@ -47,6 +48,9 @@ script:
       - 'true'
       - 'false'
       required: true
+    - description: The date from which to fetch events. the format should be YYYY-MM-DD, if not specified, the current date will be used.
+      name: from_date
+      required: false
     description: Manual command to fetch and display events.
     name: armis-get-events
   runonce: false
