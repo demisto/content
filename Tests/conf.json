@@ -21,6 +21,31 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "T1036 - Masquerading - Test",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3"
+        },
+	    {
+            "playbookID": "T1059 - Command and Scripting Interpreter - Test",
+            "integrations": "LOLBAS Feed"
+        },
+		{
+            "playbookID": "Containment Plan - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+		{
+            "playbookID": "Enrichment for Verdict - Test",
+			"integrations": [
+				"Active Directory Query v2",
+				"VirusTotal (API v3)"
+			],
+			"instance_names": [
+				"active_directory_ninja",
+				"virus_total_v3"
+			]
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
