@@ -1,6 +1,5 @@
 id: If-Elif Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: If-Elif Test
 description: If Elif test playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -106,6 +106,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -413,3 +414,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.9.0
