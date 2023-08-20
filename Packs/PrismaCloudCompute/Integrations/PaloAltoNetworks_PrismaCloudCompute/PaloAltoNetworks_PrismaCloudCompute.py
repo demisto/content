@@ -580,7 +580,7 @@ def fetch_incidents(client):
                     # Set the severity to the highest vulnerability, take the first from the list
                     severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
-                elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
+                elif alert_type in (ALERT_TYPE_COMPLIANCE, ALERT_TYPE_AUDIT):
                     # E.g. "Prisma Cloud Compute Alert - Incident"
                     name += camel_case_transformer(a.get('type'))
                     # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
