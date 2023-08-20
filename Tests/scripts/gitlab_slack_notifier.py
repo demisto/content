@@ -1,16 +1,17 @@
 import argparse
-from datetime import datetime, timedelta
 import logging
 import os
+from datetime import datetime, timedelta
 from typing import Tuple, Optional
-import gitlab
-from slack_sdk import WebClient
-from junitparser import TestCase, TestSuite, JUnitXml, Skipped, Error
 
-from Tests.Marketplace.marketplace_services import get_upload_data
-from Tests.Marketplace.marketplace_constants import BucketUploadFlow
-from Tests.scripts.utils.log_util import install_logging
+import gitlab
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
+from junitparser import TestSuite, JUnitXml
+from slack_sdk import WebClient
+
+from Tests.Marketplace.marketplace_constants import BucketUploadFlow
+from Tests.Marketplace.marketplace_services import get_upload_data
+from Tests.scripts.utils.log_util import install_logging
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -72,24 +73,34 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
     return artifact_data
 
 
+def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
+
+    properties = {prop.name: prop.value for prop in test_suite.properties()}
+
+    return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
+
+
 def test_modeling_rules_results(artifact_folder, title):
     failed_test_modeling_rules = get_artifact_data(artifact_folder, 'modeling_rules_results.xml')
     if not failed_test_modeling_rules:
         return []
-    xml = JUnitXml.fromstring(failed_test_modeling_rules)
+    xml = JUnitXml.fromstring(bytes(failed_test_modeling_rules, 'utf-8'))
     content_team_fields = []
 
+    failed_test_suites = []
+    total_test_suites = 0
     for test_suite in xml.iterchildren(TestSuite):
+        total_test_suites += 1
         if test_suite.failures or test_suite.errors:
-            content_team_fields.append({
-                "title": f"{title} - Failed Tests - ({len(test_suite)}",
-                "value": '',
-                "short": False
-            })
-            create_jira_issue(jira_server, test_suite, options, now)
-        else:
-            logging.info(f"Skipped creating Jira issue for {test_suite.name}")
+            failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
+    if failed_test_suites:
+        content_team_fields.append({
+            "title": f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})",
+            "value": ' ,'.join(failed_test_suites),
+            "short": False
+        })
 
+    return content_team_fields
 
 
 def test_playbooks_results(artifact_folder, title):
@@ -135,11 +146,13 @@ def unit_tests_results():
     slack_results = []
     if failing_tests:
         failing_test_list = failing_tests.split('\n')
-        slack_results.append({
-            "title": f'{"Failed Unit Tests"} - ({len(failing_test_list)})',
-            "value": ', '.join(failing_test_list),
-            "short": False
-        })
+        slack_results.append(
+            {
+                "title": f'Failed Unit Tests - ({len(failing_test_list)})',
+                "value": ', '.join(failing_test_list),
+                "short": False,
+            }
+        )
     return slack_results
 
 
@@ -218,6 +231,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     if 'content nightly' in triggering_workflow_lower:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
+        content_fields += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
         missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
