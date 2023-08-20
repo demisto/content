@@ -10,70 +10,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-EVENT_CASES = [
-    (
-        FireEyeETPEventCollector.EventType('alerts', 20, 200, outbound=False),  # event config
-        True,  # hidden param
-        'test_data/alerts.json',  # path to mocked data
-        "formatted_response_hidden_true"  # name of expected response key
-    ),
-    (
-        FireEyeETPEventCollector.EventType('alerts', 20, 200, outbound=False),  # event config
-        False,  # hidden param
-        'test_data/alerts.json',  # path to mocked data
-        "formatted_response_hidden_false"  # name of expected response key
-    ),
-    (
-        FireEyeETPEventCollector.EventType('alerts', 20, 200, outbound=True),
-        True,  # hidden param
-        'test_data/alerts.json',
-        "formatted_response_hidden_true"  # name of expected response key
-    ),
-    (
-        FireEyeETPEventCollector.EventType('alerts', 20, 200, outbound=True),
-        False,  # hidden param
-        'test_data/alerts.json',
-        "formatted_response_hidden_false"  # name of expected response key
-    ),
-    (
-        FireEyeETPEventCollector.EventType('activity_log', 20, 200, outbound=False),
-        True,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response"
-    ),
-    (
-        FireEyeETPEventCollector.EventType('activity_log', 20, 200, outbound=True),
-        True,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response"
-    ),
-    (
-        FireEyeETPEventCollector.EventType('email_trace', 20, 200, outbound=False),
-        True,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response_hidden_true"
-    ),
-    (
-        FireEyeETPEventCollector.EventType('email_trace', 20, 200, outbound=True),
-        True,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response_hidden_true"
-    ),
-    (
-        FireEyeETPEventCollector.EventType('email_trace', 20, 200, outbound=False),
-        False,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response_hidden_false"
-    ),
-    (
-        FireEyeETPEventCollector.EventType('email_trace', 20, 200, outbound=True),
-        False,  # hidden param
-        'test_data/activity_log.json',
-        "formatted_response_hidden_false"
-    ),
-
-]
-
 LAST_RUN_MULTIPLE_EVENT = {'Last Run': {
     "alerts": {
         "last_fetch_last_ids": ['a', 'b'],
@@ -96,7 +32,7 @@ LAST_RUN_ONE_EVENT = {'Last Run': {
     },
 }}
 
-LAST_RUN_EMPTY = {}
+LAST_RUN_EMPTY: dict = {}
 LAST_RUN_DICT_CASES = [
     (LAST_RUN_MULTIPLE_EVENT,  # case when multiple events exists.
      [
