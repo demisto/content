@@ -1,0 +1,19 @@
+[
+  {
+    "context": "",
+    "data": "{}",
+    "datetime": "2022-09-30T06:29:34.293Z",
+    "domain": "string",
+    "domain_2tld": "string",
+    "first_seen": "2022-09-30T06:29:34.293Z",
+    "ipv4": "string",
+    "ipv6": "string",
+    "last_seen": "2022-09-30T06:29:34.293Z",
+    "md5": "",
+    "sha1": "31fc5acafc10fe5743d03ebec268fbcd62ed5ac6",
+    "sha256": "",
+    "source_name": "Rapid7 Open Data SSL Certificates",
+    "source_url": "https://opendata.rapid7.com/sonar.ssl/",
+    "uri": ""
+  }
+]
