@@ -451,9 +451,7 @@ def translate_severity(sev):
 
     if sev == 'Critical':
         return 4
-    elif sev == 'High':
-        return 3
-    elif sev == 'Important':
+    elif sev in ['High', 'Important']:
         return 3
     elif sev == 'Medium':
         return 2
@@ -542,11 +540,11 @@ def fetch_incidents(client):
     Returns:
         list of incidents
     """
-    incidents = []
     if is_command_is_fetch():
         demisto.debug("is_command_is_fetch = true, calling list_incidents")
         alerts = client.list_incidents()
 
+        incidents = []
         if alerts:
             for a in alerts:
                 alert_type = a.get('kind')
