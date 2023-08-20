@@ -876,7 +876,6 @@ class CloudBuild(Build):
             to_bucket = f'{marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
-<<<<<<< HEAD
                 try:
                     subprocess.run(cmd.split(), stdout=outfile, stderr=outfile, check=True)
                     logging.info('Finished copying successfully.')
@@ -890,18 +889,6 @@ class CloudBuild(Build):
             logging.info('Finished copying successfully.')
         else:
             logging.error('Failed to copy or sync marketplace bucket.')
-=======
-                subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
-            try:
-                # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # were added, they will not appear on the cloud marketplace without sync.
-                _ = demisto_client.generic_request_func(
-                    self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync?hard=true')
-            except Exception as e:
-                logging.error(f'Failed to sync marketplace. Error: {e}')
-        logging.info('Finished copying successfully.')
->>>>>>> 2f9dc09cd1 (typo fix (#29064))
         sleep_time = 120
         logging.info(f'sleeping for {sleep_time} seconds')
         sleep(sleep_time)
