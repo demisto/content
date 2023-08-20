@@ -51,7 +51,8 @@ class IfElif:
     def load_conditions_with_values(self, conditions, values):
         def from_value(keys: re.Match):
             return repr(demisto.dt(values, keys[1]))
-        self.conditions = re.compile('#{([\s\S]+?)}').sub(from_value, conditions)
+        conditions = re.compile('#{([\s\S]+?)}').sub(from_value, conditions)
+        self.conditions: list = self.evaluate(conditions)
 
     def get_value(self, node):
         match type(node):
@@ -96,7 +97,7 @@ class IfElif:
         return self.get_value(parsed.body)
 
     def parse_conditions(self):
-        *conditions, default = self.evaluate(self.conditions)
+        *conditions, default = self.conditions
         result = next(
             (
                 condition['return']
