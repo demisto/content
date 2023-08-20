@@ -3,7 +3,7 @@ commonfields:
   id: ArmisEventCollector
   version: -1
 configuration:
-- defaultvalue: https://acme.armis.com/
+- defaultvalue: https://<armis-instance>.armis.com
   display: Server URL
   name: server_url
   required: true
@@ -15,7 +15,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Number of events to fetch per fetch.
+- display: Number of events to fetch per type
   name: max_fetch
   additionalinfo: The maximum number of events to fetch per event type.
   type: 0
@@ -30,6 +30,7 @@ configuration:
 - display: Log types to fetch
   name: log_types_to_fetch
   section: Collect
+  required: true
   type: 16
   options:
   - Alerts
@@ -42,7 +43,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to true in order to create events, otherwise the command will only display them. Default is false.
+      description: Set this argument to true in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
       - 'true'
