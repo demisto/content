@@ -280,7 +280,7 @@ class Client(BaseClient):
                     )
                 if self.ignore_regex is not None:
                     result = filter(
-                        lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
+                        lambda x: self.ignore_regex.match(x) is None,  # type: ignore[arg-type]
                         result
                     )
                 results.append({url: {'result': result, 'no_update': res_data.get('no_update')}})

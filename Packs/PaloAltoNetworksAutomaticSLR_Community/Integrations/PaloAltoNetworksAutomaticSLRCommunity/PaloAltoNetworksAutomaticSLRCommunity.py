@@ -507,9 +507,6 @@ def main():
 
     try:
 
-        if ngfw_tls_verify is False or csp_tls_verify is False:
-            requests.packages.urllib3.disable_warnings()
-
         # Establish PANOS XMLAPI Class Connector
         xmlapi = PanOSXMLAPI(ngfw_host, ngfw_port, ngfw_api_key, ngfw_tls_verify, ngfw_timeout, system_proxy,
                              system_verbose)

@@ -3788,7 +3788,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         if command == 'test-module':
             return test_module(service_account_key)
 
