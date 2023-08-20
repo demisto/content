@@ -5,8 +5,9 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
 
 ## Note
-The `message-search-alerts` command does not filter alerts of the `Office 365` provider because of API limitations.\
-For more info, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
+For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 
 ### Required Permissions
 Legacy Alerts:
@@ -136,19 +137,19 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 
 #### Human Readable Output
 
-## Using Legacy Alerts:
+>## Using Legacy Alerts:
 
-### Microsoft Security Graph Alerts
-|ID|Vendor|Provider|Title|Category|Severity|CreatedDate|EventDate|Status|
-|---|---|---|---|---|---|---|---|---|
-| id | Microsoft | IPC | Atypical travel | ImpossibleTravel | high | 2023-03-30T20:45:14.259Z | 2023-03-30T15:07:21.4705248Z | newAlert |
+>### Microsoft Security Graph Alerts
+>|ID|Vendor|Provider|Title|Category|Severity|CreatedDate|EventDate|Status|
+>|---|---|---|---|---|---|---|---|---|
+>| id | Microsoft | IPC | Atypical travel | ImpossibleTravel | high | 2023-03-30T20:45:14.259Z | 2023-03-30T15:07:21.4705248Z | newAlert |
 
-## Using Alerts v2:
+>## Using Alerts v2:
 
-### Microsoft Security Graph Alerts
-|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
-|---|---|---|---|---|---|---|---|---|---|
-| id | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
+>### Microsoft Security Graph Alerts
+>|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
+>|---|---|---|---|---|---|---|---|---|---|
+>| id | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
 ### msg-get-alert-details
 
@@ -257,41 +258,41 @@ Get details for a specific alert.
 
 #### Human Readable Output
 
-## Using Legacy Alerts:
+>## Using Legacy Alerts:
 
-### Microsoft Security Graph Alerts
-## Microsoft Security Graph Alert Details - <alert_id>
-### Basic Properties
-|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status|Title|
-|---|---|---|---|---|---|---|---|---|
-| <azure_tenant_id> | None | 2022-10-03T03:39:21.7562976Z | Created for test | 2022-09-26T05:01:02.839216Z | 2022-09-26T05:01:02.839216Z | medium | newAlert | test alert |
-### Customer Provided Comments for Alert
-- comment
-- comment
-### File Security States for Alert
-|FileHash|Name|Path|
-|---|---|---|
-| <file_hash> | crond | /usr/sbin |
-### Host Security States for Alert
-|Fqdn|OS|PrivateIPAddress|PublicIPAddress|RiskScore|
-|---|---|---|---|---|
-| `<fqdn>` | CentOS | <private_ip_address> | <public_ip_address> | medium |
-### User Security States for Alert
-|AccountName|EmailRole|
-|---|---|
-| root | unknown |
-### Vendor Information for Alert
-|Provider|SubProvider|Vendor|
-|---|---|---|
-| Microsoft Defender ATP | MicrosoftDefenderATP | Microsoft |
+>### Microsoft Security Graph Alerts
+>## Microsoft Security Graph Alert Details - <alert_id>
+>### Basic Properties
+>|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status|Title|
+>|---|---|---|---|---|---|---|---|---|
+>| <azure_tenant_id> | None | 2022-10-03T03:39:21.7562976Z | Created for test | 2022-09-26T05:01:02.839216Z | 2022-09-26T05:01:02.839216Z | medium | newAlert | test alert |
+>### Customer Provided Comments for Alert
+>- comment
+>- comment
+>### File Security States for Alert
+>|FileHash|Name|Path|
+>|---|---|---|
+>| <file_hash> | crond | /usr/sbin |
+>### Host Security States for Alert
+>|Fqdn|OS|PrivateIPAddress|PublicIPAddress|RiskScore|
+>|---|---|---|---|---|
+>| `<fqdn>` | CentOS | <private_ip_address> | <public_ip_address> | medium |
+>### User Security States for Alert
+>|AccountName|EmailRole|
+>|---|---|
+>| root | unknown |
+>### Vendor Information for Alert
+>|Provider|SubProvider|Vendor|
+>|---|---|---|
+>| Microsoft Defender ATP | MicrosoftDefenderATP | Microsoft |
 
-## Using Alerts v2:
+>## Using Alerts v2:
 
-### Microsoft Security Graph Alerts
-## Microsoft Security Graph Alert Details - <alert_id>
-|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
-|---|---|---|---|---|---|---|---|---|---|
-| <alert_id> | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
+>### Microsoft Security Graph Alerts
+>## Microsoft Security Graph Alert Details - <alert_id>
+>|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
+>|---|---|---|---|---|---|---|---|---|---|
+>| <alert_id> | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
 ### msg-update-alert
 
@@ -327,7 +328,7 @@ Update an editable alert property within any integrated solution to keep alert s
 
 #### Human Readable Output
 
-Alert <alert_id> has been successfully updated.
+>Alert <alert_id> has been successfully updated.
 
 ### msg-create-alert-comment
 
@@ -356,10 +357,28 @@ Relevant only for Alerts v2, create a comment for an existing alert.
 
 #### Human Readable Output
 
-### Microsoft Security Graph Create Alert Comment - <alert_id>
+>### Microsoft Security Graph Create Alert Comment - <alert_id>
 
-|comment|createdByDisplayName|createdDate|
-|---|---|---|
-| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T10:57:18.5231438Z |
-| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T11:01:31.7427859Z |
-| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T13:30:22.3995128Z |
+>|comment|createdByDisplayName|createdDate|
+>|---|---|---|
+>| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T10:57:18.5231438Z |
+>| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T11:01:31.7427859Z |
+>| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T13:30:22.3995128Z |
+
+
+### ms-graph-security-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`ms-graph-security-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

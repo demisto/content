@@ -11,25 +11,32 @@ configuration:
 - display: Custom Api Key (using for API version 6)
   name: custom_credentials
   type: 9
+  required: false
 - display: Api Key (Api/Live Response key using for API version 3)
   name: live_response_credentials
   type: 9
+  required: false
 - additionalinfo: The organization unique key. This is required for all use cases (and for fetching incidents) except the policy use cases.
   display: Organization Key
   name: organization_key
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Type of alert to be fetched.
   defaultvalue: all
   display: The type of the alert
@@ -39,6 +46,7 @@ configuration:
   - cbanalytics
   - devicecontrol
   type: 15
+  required: false
 - additionalinfo: Category of alert to be fetched (THREAT, MONITORED). If nothing is selected he is fetching from all categories.
   display: The category of the alert.
   name: category
@@ -46,18 +54,22 @@ configuration:
   - THREAT
   - MONITORED
   type: 16
+  required: false
 - additionalinfo: The alerts related to a specific device, represented by its ID.
   display: Device id
   name: device_id
   type: 0
+  required: false
 - additionalinfo: The alerts related to a specific policy, represented by its ID.
   display: Policy id
   name: policy_id
   type: 0
+  required: false
 - additionalinfo: The alerts related to a specific device, represented by its username.
   display: Device username
   name: device_username
   type: 0
+  required: false
 - additionalinfo: The minimum severity of the alerts to be fetched.
   display: Minimum severity
   name: min_severity
@@ -73,18 +85,22 @@ configuration:
   - '9'
   - '10'
   type: 15
+  required: false
 - additionalinfo: Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank.
   display: Query
   name: query
   type: 0
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
+  required: false
 description: Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
 display: Carbon Black Endpoint Standard v2
 name: Carbon Black Endpoint Standard
@@ -1551,7 +1567,7 @@ script:
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'

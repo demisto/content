@@ -10,13 +10,16 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - name: User
   displaypassword: API Key
   hiddenusername: true
   type: 9
+  required: false
 description: Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats and outbound malicious communication from compromised internal devices.
 display: Netscout Arbor Edge Defense
 name: NetscoutAED
@@ -795,7 +798,7 @@ script:
       required: true
     description: Removes one or more hosts or CIDRs from the outbound allow list.
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

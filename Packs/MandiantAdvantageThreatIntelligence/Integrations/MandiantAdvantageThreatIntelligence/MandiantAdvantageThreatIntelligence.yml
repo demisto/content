@@ -8,6 +8,7 @@ configuration:
   display: API Base URL
   name: api_base_url
   type: 0
+  required: false
 - additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence
   display: API Key
   name: api_key
@@ -22,6 +23,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
@@ -31,6 +33,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -54,6 +57,7 @@ configuration:
   - WHITE
   type: 15
   defaultvalue: AMBER
+  required: false
 - name: feedExpirationPolicy
   display: ''
   options:
@@ -62,13 +66,16 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - name: feedMinimumConfidence
   type: 0
   display: Feed Minimum Confidence Score
@@ -80,6 +87,7 @@ configuration:
   type: 8
   defaultvalue: 'true'
   additionalinfo: 'Whether to exclude Open Source Intelligence as part of the feed'
+  required: false
 - additionalinfo: 'The type of indicators to fetch. Indicator type might include the following: Domains, IPs, Files and URLs.'
   defaultvalue: Malware,Actors,Indicators
   display: Mandiant indicator type
@@ -89,45 +97,55 @@ configuration:
   - Actors
   - Indicators
   type: 16
+  required: false
 - additionalinfo: The maximum value allowed is 90 days.
   defaultvalue: 30 days
   display: First fetch time
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Maximum number of indicators per fetch
   name: max_fetch
   type: 0
   additionalinfo: Maximum value of 1000.  Any values higher will be capped to 1000
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: API calls timeout.
   defaultvalue: '60'
   display: Timeout
   name: timeout
   type: 0
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - additionalinfo: Retrieve additional information for each indicator. Note that this requires additional API calls.
   defaultvalue: 'false'
   display: Retrieve indicator metadata
   name: indicatorMetadata
   type: 8
+  required: false
 - additionalinfo: Note that this requires additional API calls.
   defaultvalue: 'false'
   display: Create relationships
   name: indicatorRelationships
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
 display: Mandiant Advantage Threat Intelligence
 name: Mandiant Advantage Threat Intelligence
@@ -467,7 +485,7 @@ script:
       - Actors
       required: true
     description: Get Mandiant Indicators.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   feed: true
   runonce: false
   script: '-'

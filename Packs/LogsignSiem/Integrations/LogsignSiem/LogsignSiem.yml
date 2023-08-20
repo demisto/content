@@ -16,30 +16,37 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: First Fetch Time (e.g 1 hour)
   defaultvalue: 1 hour
   display: First Fetch Time (default 1 hour)
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Maximum number of incidents per fetch (Recommended less than 200)
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: 'Note: When a space character is used, it must be enclosed in single quotes. Query example: Alert.Info:''Registry Object Changed'''
   defaultvalue: Alert.Category:*
   display: Query
   name: query
   type: 0
+  required: false
 description: Logsign SIEM provides to collect and store unlimited data, investigate and detect threats, and respond automatically.
 display: LogsignSiem
 name: LogsignSiem
@@ -91,7 +98,7 @@ script:
     - contextPath: LogsignSiem.Count
       description: Count number returned as the result of the query
       type: Number
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'

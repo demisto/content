@@ -18,23 +18,28 @@ configuration:
 - display: Fetch Events
   name: isFetchEvents
   type: 8
+  required: false
 - defaultvalue: 7 days
   display: |-
     First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
   type: 0
+  required: false
 - display: |
     The maximum amount of events to fetch for each page. 
     If you're encountering timeouts, consider decrease this value. range 500.
   name: page_size
   type: 0
   defaultvalue: 500
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector
@@ -52,7 +57,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.62282
+  dockerimage: demisto/pydantic-jwt3:1.0.0.64406
   runonce: false
   script: '-'
   subtype: python3

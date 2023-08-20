@@ -7,30 +7,36 @@ configuration:
   name: roleArn
   section: Connect
   type: 0
+  required: false
 - display: Role Session Name
   name: roleSessionName
   section: Connect
   type: 0
+  required: false
 - advanced: true
   display: Role Session Duration
   name: sessionDuration
   section: Connect
   type: 0
+  required: false
 - display: Access Key
   displaypassword: Secret Key
   name: credentials
   section: Connect
   type: 9
+  required: false
 - display: Access Key
   hidden: true
   name: access_key
   section: Connect
   type: 0
+  required: false
 - display: Secret Key
   hidden: true
   name: secret_key
   section: Connect
   type: 4
+  required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   advanced: true
   defaultvalue: 60,10
@@ -38,6 +44,7 @@ configuration:
   name: timeout
   section: Connect
   type: 0
+  required: false
 - additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   advanced: true
   defaultvalue: 5
@@ -45,16 +52,19 @@ configuration:
   name: retries
   section: Connect
   type: 0
+  required: false
 - advanced: true
   display: Trust any certificate (not secure)
   name: insecure
   section: Connect
   type: 8
+  required: false
 - advanced: true
   display: Use system proxy settings
   name: proxy
   section: Connect
   type: 8
+  required: false
 description: Amazon Web Services Managed Cloud DNS Service.
 detaileddescription: Amazon Web Services Managed Cloud DNS Service.
 display: AWS - Route53
@@ -437,7 +447,7 @@ script:
           description: A complex type that describes change information about changes
             made to your hosted zone.
           type: string
-  dockerimage: demisto/boto3py3:1.0.0.64385
+  dockerimage: demisto/boto3py3:1.0.0.67319
   runonce: false
   script: ''
   subtype: python3

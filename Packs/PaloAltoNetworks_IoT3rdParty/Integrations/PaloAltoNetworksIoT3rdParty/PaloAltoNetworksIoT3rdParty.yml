@@ -10,18 +10,22 @@ configuration:
 - display: Customer ID
   name: Customer ID
   type: 0
+  required: false
 - display: Access Key
   name: Access Key
   type: 4
   hidden: true
+  required: false
 - display: Key ID
   hidden: true
   name: Key ID
   type: 4
+  required: false
 - display: Key ID
   displaypassword: Access Key
   name: credentials
   type: 9
+  required: false
 description: Base Integration for Palo Alto IoT third party integrations. This integration communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
 display: Palo Alto Networks IoT 3rd Party
 name: Palo Alto Networks IoT 3rd Party
@@ -143,7 +147,7 @@ script:
       description: Single SN formatted vulnerability string.
     - contextPath: PanwIot3rdParty.DeviceServiceNow
       description: List of upsert ready formatted devices for SN.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   script: ''
   subtype: python3
   type: python

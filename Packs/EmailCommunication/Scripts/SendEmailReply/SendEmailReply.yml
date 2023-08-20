@@ -24,6 +24,13 @@ args:
 - name: subject_include_incident_id
   description: Include the Incident ID within the email subject.
   defaultValue: 'false'
+- name: reputation_calc_async
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Specify whether to calculate the reputation in an asynchronous way.
+  defaultValue: 'false'
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
@@ -39,7 +46,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.12.68300
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

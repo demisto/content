@@ -1,0 +1,3018 @@
+id: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
+version: -1
+name: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
+description: "On July 2nd, Kaseya company has experienced an attack against the VSA\
+  \ (Virtual System/Server Administrator) product. Kaseya customers pointed out a\
+  \ ransomware outbreak in their environments.\nFurther investigation revealed that\
+  \ REvil group exploited VSA zero-day vulnerabilities for authentication bypass and\
+  \ arbitrary command execution. This allowed the attacker to deploy ransomware on\
+  \ Kaseya customers' endpoints.\n\nThis playbook should be trigger manually and includes\
+  \ the following tasks: \n\n* Collect related known indicators from several sources.\n\
+  * Indicators, PS commands, Registry changes and known HTTP requests hunting using\
+  \ PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified\
+  \ through the playbook inputs.\n    * QRadar query is done using Reference Set and\
+  \ \"QRadar Indicator Hunting V2\" playbook\n* Search for internet facing Kaseya\
+  \ VSA servers using Xpanse.\n* Block indicators automatically or manually.\n* Provide\
+  \ advanced hunting and detection capabilities.\n* Mitigation using Kaseya On-Premises\
+  \ and SaaS patch.\n\nMore information:\n[Kaseya Incident Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
+  \nNote: This is a beta playbook, which lets you implement and test pre-release software.\
+  \ Since the playbook is beta, it might contain bugs. Updates to the pack during\
+  \ the beta phase might include non-backward compatible features. We appreciate your\
+  \ feedback on the quality and usability of the pack to help us identify issues,\
+  \ fix them, and continually improve."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1456b56-c87f-4e3f-8b46-faef70124644
+    type: start
+    task:
+      id: b1456b56-c87f-4e3f-8b46-faef70124644
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 61125b81-8b5e-41fd-8e4b-ec95218b7e63
+    type: title
+    task:
+      id: 61125b81-8b5e-41fd-8e4b-ec95218b7e63
+      version: -1
+      name: Collect Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "6"
+      - "39"
+      - "60"
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1a6037b1-bf8a-495f-81e5-24b0f5f39edd
+    type: regular
+    task:
+      id: 1a6037b1-bf8a-495f-81e5-24b0f5f39edd
+      version: -1
+      name: Collect Hash indicators from cado-security
+      description: This script will extract indicators from HTML and will handle bad TLD to avoid file extensions false positives.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      exclude_indicators:
+        simple: https://twitter.com/cyb3rops/status/1411091044100448258,  https://community.sophos.com/b/security-blog/posts/active-ransomware-attack-on-kaseya-customers,https://blog.truesec.com/2021/07/04/kaseya-supply-chain-attack-targeting-msps-to-deliver-revil-ransomware/
+      unescape_domain:
+        simple: "False"
+      url:
+        simple: https://github.com/cado-security/DFIR_Resources_REvil_Kaseya/blob/main/IOCs/Hashes.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8e48e9c6-9926-403a-8648-2246c62de21d
+    type: regular
+    task:
+      id: 8e48e9c6-9926-403a-8648-2246c62de21d
+      version: -1
+      name: Collect Domain indicators from cado-security
+      description: This script will extract indicators from HTML and will handle bad TLD to avoid file extensions false positives.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      exclude_indicators:
+        simple: github.com,twitter.com
+      unescape_domain:
+        simple: "True"
+      url:
+        simple: https://github.com/cado-security/DFIR_Resources_REvil_Kaseya/blob/main/IOCs/Domains.txt
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f8f70408-7f0d-4e37-86ae-4426c353bb12
+    type: title
+    task:
+      id: f8f70408-7f0d-4e37-86ae-4426c353bb12
+      version: -1
+      name: Extract Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fa871faa-ccc3-4fcb-8f76-af4565ec4f9a
+    type: regular
+    task:
+      id: fa871faa-ccc3-4fcb-8f76-af4565ec4f9a
+      version: -1
+      name: Extract Indicators From Data Collected
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      text:
+        simple: ${http.parsedBlog.indicators}
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 50c0c1a7-3eb2-4942-89a1-3f236b29dcb5
+    type: regular
+    task:
+      id: 50c0c1a7-3eb2-4942-89a1-3f236b29dcb5
+      version: -1
+      name: Download Yara Rules
+      description: Download Yara Rules
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filename:
+        simple: YaraRules.yar
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        complex:
+          root: inputs.YaraRulesSource
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 919c345d-323b-4adf-8270-b0d6cfdbb3af
+    type: title
+    task:
+      id: 919c345d-323b-4adf-8270-b0d6cfdbb3af
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+      - "8"
+      - "26"
+      - "45"
+      - "66"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b823846f-ea23-4564-8910-b2e5e31818fb
+    type: title
+    task:
+      id: b823846f-ea23-4564-8910-b2e5e31818fb
+      version: -1
+      name: SIEM Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "85"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1820,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4bb5fade-9dff-48d8-828e-991a5f04eecf
+    type: title
+    task:
+      id: 4bb5fade-9dff-48d8-828e-991a5f04eecf
+      version: -1
+      name: Palo Alto Networks Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c88e00ee-31b0-4cff-83a0-690daa2dcaf3
+    type: playbook
+    task:
+      id: c88e00ee-31b0-4cff-83a0-690daa2dcaf3
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users."
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+      MD5:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        MD5:
+          complex:
+            root: File
+            accessor: MD5
+        SHA1:
+          complex:
+            root: File
+            accessor: SHA1
+        SHA256:
+          complex:
+            root: File
+            accessor: SHA256
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 6291ed6c-545c-416e-82f9-3c84f4619d81
+    type: playbook
+    task:
+      id: 6291ed6c-545c-416e-82f9-3c84f4619d81
+      version: -1
+      name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or URLs. It outputs detected users, IP addresses, and hostnames related to the indicators.
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      IndexName:
+        simple: index=*
+      MD5:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          accessor: File
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          accessor: File
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          accessor: File
+          transformers:
+          - operator: uniq
+      SelectFields:
+        simple: source,timestamp
+      URLDomain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      event_limit:
+        simple: "100"
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        IndexName:
+          simple: '*'
+        MD5:
+          complex:
+            root: File
+            accessor: MD5
+        SHA1:
+          complex:
+            root: File
+            accessor: SHA1
+        SHA256:
+          complex:
+            root: File
+            accessor: SHA256
+        SelectFields:
+          simple: source,timestamp
+        earliest_time:
+          complex:
+            root: inputs.SplunkEarliestTime
+        event_limit:
+          simple: "100"
+        latest_time:
+          complex:
+            root: inputs.SplunkLatestTime
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: fb8a996e-fe66-4dbd-81af-d30eb823c13c
+    type: playbook
+    task:
+      id: fb8a996e-fe66-4dbd-81af-d30eb823c13c
+      version: -1
+      name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+        IP addresses, domains, or urls. '
+      playbookName: QRadar Indicator Hunting V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      InvestigationIPFields:
+        simple: sourceip,destinationip
+      InvestigationUserFields:
+        simple: username
+      MD5:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          accessor: File
+          transformers:
+          - operator: uniq
+      QradarIPfield:
+        simple: sourceip,destinationip
+      SHA1:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          accessor: File
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          accessor: File
+          transformers:
+          - operator: uniq
+      TimeFrame:
+        complex:
+          root: inputs.QRadarSearchTimeRange
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1940,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 73c70889-e300-4363-8fb7-21d5ce04cfc7
+    type: playbook
+    task:
+      id: 73c70889-e300-4363-8fb7-21d5ce04cfc7
+      version: -1
+      name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools
+      playbookName: Search Endpoints By Hash - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: hasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    loop:
+      iscommand: false
+      scriptArguments:
+        MD5Hash:
+          complex:
+            root: File
+            accessor: MD5
+            transformers:
+            - operator: uniq
+        SHA1Hash:
+          complex:
+            root: File
+            accessor: SHA1
+            transformers:
+            - operator: uniq
+        SHA256Hash:
+          complex:
+            root: File
+            accessor: SHA256
+            transformers:
+            - operator: uniq
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f1cff7ba-fe5a-4bf1-861f-d1a4278ad692
+    type: title
+    task:
+      id: f1cff7ba-fe5a-4bf1-861f-d1a4278ad692
+      version: -1
+      name: Hunting REvil Known Samples on Endpoints
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 59418814-acc1-4153-81d1-f8c6eecd7278
+    type: regular
+    task:
+      id: 59418814-acc1-4153-81d1-f8c6eecd7278
+      version: -1
+      name: 'Search XDR incidents for suspicious network behavior '
+      description: Search XDR incidents for REvil in the network.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+      - "86"
+    scriptarguments:
+      extend-context:
+        simple: REvilXDRincidents=
+      query:
+        simple: 'xdralerts.name:"network_ransom1" OR xdralerts.description: *malicious_dll_dropped_mpsvc.dll.1* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.2* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.3* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.4* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.5* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.1* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.2* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.3* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.4* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.5* OR xdralerts.description: *msmpeng_hijack* OR xdralerts.name: *msmpeng_hijack*'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a290aeb4-21ad-41a8-8bef-a4777ef45d73
+    type: condition
+    task:
+      id: a290aeb4-21ad-41a8-8bef-a4777ef45d73
+      version: -1
+      name: 'Is Cortex XDR enabled? '
+      description: Checks if the Cortex XDR instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: d181aa5d-1a23-4161-8201-85963b94379e
+    type: playbook
+    task:
+      id: d181aa5d-1a23-4161-8201-85963b94379e
+      version: -1
+      name: Panorama Query Logs for Kaseya breach Threat IDs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      log_type:
+        simple: threat
+      query:
+        simple: (threatid eq 2034491) or (threatid eq 2744436) or (threatid eq 2552057)
+          or (threatid eq 2034498) or (threatid eq 2557145) or (threatid eq 2744446)
+          or (threatid eq 2649949)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: aa41e117-b09e-469b-8f42-f21135ab8bc2
+    type: playbook
+    task:
+      id: aa41e117-b09e-469b-8f42-f21135ab8bc2
+      version: -1
+      name: Post Intrusion Ransomware Investigation
+      description: |+
+        Provides the first step in the investigation of ransomware attacks.
+         The playbook requires the ransom note and an example of an encrypted file (<1MB) to try to identify the ransomware and find a recovery tool via the online database.
+         You will be guided with further investigation steps throughout the playbook, some of the key features are:
+
+        - Encrypted file owner investigation
+         - Endpoint forensic investigation
+         - Active Directory investigation
+         - Timeline of the breach investigation
+         - Indicator and account enrichment
+
+        Playbook settings and mapping:
+         For the full operation of the playbook, the following data should be mapped to the relevant incident fields.
+         Username - Usernames (common incident field)
+         Hostname - Hostnames (common incident field)
+
+
+
+      playbookName: Post Intrusion Ransomware Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      AutoRemediation:
+        simple: "False"
+      EmailBody:
+        simple: During the Kaseya breach investigation in XSOAR, infected endpoints
+          were found and requires your attention.
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 1d99ab7e-0944-4599-8a9a-4e4ecd365546
+    type: title
+    task:
+      id: 1d99ab7e-0944-4599-8a9a-4e4ecd365546
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 33746266-07f6-4d65-80c2-806a53c0c151
+    type: regular
+    task:
+      id: 33746266-07f6-4d65-80c2-806a53c0c151
+      version: -1
+      name: Deploy YARA rules
+      description: Yara rules file has been downloaded as YaraRules.yar and is available
+        for download directly from XSOAR.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: b38bd13d-29cc-471e-8343-7c432d70ba44
+    type: regular
+    task:
+      id: b38bd13d-29cc-471e-8343-7c432d70ba44
+      version: -1
+      name: Deploy Sigma rules
+      description: Sigma rules file has been downloaded as SigmaRules.yml and is available for download directly from Cortex XSOAR.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 9460aea4-8a44-4514-8b84-ef691ef7e785
+    type: regular
+    task:
+      id: 9460aea4-8a44-4514-8b84-ef691ef7e785
+      version: -1
+      name: Download Sigma Rules
+      description: Download Sigma Rules
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filename:
+        simple: SigmaRules.yml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        complex:
+          root: inputs.SigmaRulesSource
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: e3279015-09f7-43d2-8d1f-f4b6024afaa3
+    type: title
+    task:
+      id: e3279015-09f7-43d2-8d1f-f4b6024afaa3
+      version: -1
+      name: Advanced Hunting and Detection Procedures
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+      - "73"
+      - "72"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: fd34b606-d8dc-4518-8479-3ce2894c48e3
+    type: condition
+    task:
+      id: fd34b606-d8dc-4518-8479-3ce2894c48e3
+      version: -1
+      name: Block indicators automatically?
+      description: Checks whether IOCs associated with the incident can be blocked automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicatorsAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: da4c90ee-d423-453e-8800-4c264632363e
+    type: regular
+    task:
+      id: da4c90ee-d423-453e-8800-4c264632363e
+      version: -1
+      name: Block indicators manually
+      description: Manually block the IOCs in the relevant systems.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 935ff8ec-2911-4332-8c2d-b4013a8330c3
+    type: regular
+    task:
+      id: 935ff8ec-2911-4332-8c2d-b4013a8330c3
+      version: -1
+      name: Splunk Search Related Activity Based on Files and Registry
+      description: Searches Splunk for events related to REvil Kaseya breach file
+        names and registry hives.
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        complex:
+          root: inputs.SplunkAdvancedSearch4FilesandReg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 1dcae98f-0c09-4b14-864e-fb8e315c6c9d
+    type: title
+    task:
+      id: 1dcae98f-0c09-4b14-864e-fb8e315c6c9d
+      version: -1
+      name: Splunk Advanced Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 2e596d4a-b8d3-41fb-8788-ce68718a070a
+    type: regular
+    task:
+      id: 2e596d4a-b8d3-41fb-8788-ce68718a070a
+      version: -1
+      name: Splunk Search Related Activity Based on Powershell Command Lines
+      description: Searches Splunk for events related to REvil Kaseya breach Powershell
+        command lines.
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        complex:
+          root: inputs.SplunkAdvancedSearch4PSCMD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: e595f557-b29a-499a-86bc-5c9fc4128e94
+    type: condition
+    task:
+      id: e595f557-b29a-499a-86bc-5c9fc4128e94
+      version: -1
+      name: Should Initiate Ransomware Investigation playbook?
+      description: Ask the analyst if a Ransomware Investigation playbook should be
+        initiate according to the hunting results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "57"
+      "Yes":
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Based on the results returned by the Hunting phase, would you like to run the Ransomware Investigation playbook?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 1f206f64-6fea-46d5-846f-846441904959
+    type: condition
+    task:
+      id: 1f206f64-6fea-46d5-846f-846441904959
+      version: -1
+      name: Is Splunk Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "Yes":
+      - "46"
+      - "44"
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 380e2011-412e-46af-844a-759bc78d5179
+    type: regular
+    task:
+      id: 380e2011-412e-46af-844a-759bc78d5179
+      version: -1
+      name: Run Kaseya Patch Release Preparation for VSA On-Premises
+      description: |
+        For Kaseya VSA On-Premises customers, Kaseya has published a runbook of the changes to make to your on-premises environment in order to be prepared for the patch release.
+
+        [Kaseya VSA On-Premises Runbook](https://helpdesk.kaseya.com/hc/en-gb/articles/4403709150993)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 3f999433-2c45-4484-8323-f477c6cb2296
+    type: title
+    task:
+      id: 3f999433-2c45-4484-8323-f477c6cb2296
+      version: -1
+      name: Tag Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+      - "54"
+      - "55"
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: d53694df-e157-4ee0-8203-2bea3b034b32
+    type: regular
+    task:
+      id: d53694df-e157-4ee0-8203-2bea3b034b32
+      version: -1
+      name: Tag File indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: REvil, Kaseya, Sodinokibi, Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 643163ae-df9f-44f6-8ad7-f41f3efabc8c
+    type: regular
+    task:
+      id: 643163ae-df9f-44f6-8ad7-f41f3efabc8c
+      version: -1
+      name: Tag IP indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: REvil, Kaseya, Sodinokibi, Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 82022a62-3af8-445e-83d2-d6ecfeb76585
+    type: regular
+    task:
+      id: 82022a62-3af8-445e-83d2-d6ecfeb76585
+      version: -1
+      name: Tag Domain indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: REvil, Kaseya, Sodinokibi, Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: f1329125-2d16-470d-8c0b-b0beb68de53f
+    type: regular
+    task:
+      id: f1329125-2d16-470d-8c0b-b0beb68de53f
+      version: -1
+      name: Tag URL indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: REvil, Kaseya, Sodinokibi, Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 77ada63b-2d2a-44d7-8434-c54fe08d105c
+    type: title
+    task:
+      id: 77ada63b-2d2a-44d7-8434-c54fe08d105c
+      version: -1
+      name: Resolution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 14d490de-7d8f-4e31-8a94-1949f50ef561
+    type: condition
+    task:
+      id: 14d490de-7d8f-4e31-8a94-1949f50ef561
+      version: -1
+      name: Analysis resolution - Should continue with the investigation?
+      description: Check with the analyst whether to continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "63"
+      "Yes":
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you need to continue with the investigation?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: a6d91ed9-25a4-48e2-8a0c-f7e67b82bd6b
+    type: title
+    task:
+      id: a6d91ed9-25a4-48e2-8a0c-f7e67b82bd6b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: dbb015b0-7999-4e96-8692-722e2aec2fcd
+    type: regular
+    task:
+      id: dbb015b0-7999-4e96-8692-722e2aec2fcd
+      version: -1
+      name: Collect indicators from HUNTRESS
+      description: This script will extract indicators from HTML and will handle bad
+        TLD to avoid file extensions false positives.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      exclude_indicators:
+        simple: www.huntress.com, 119acead668bad57a48b4f42f294f8f0, https://sectigo.com/,
+          127.0.0.1, truesec.com, blog.truesec.com
+      url:
+        simple: https://www.huntress.com/blog/rapid-response-kaseya-vsa-mass-msp-ransomware-incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: d491a1e5-06e6-49ea-8980-2a47bc41fdfe
+    type: regular
+    task:
+      id: d491a1e5-06e6-49ea-8980-2a47bc41fdfe
+      version: -1
+      name: Investigate Further
+      description: Manual step for further incident investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: c7cd2f06-8310-44d3-8e04-e743d87eea37
+    type: regular
+    task:
+      id: c7cd2f06-8310-44d3-8e04-e743d87eea37
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      closeReason:
+        simple: No further actions are required.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 59d45916-7373-47a4-8b63-fe33e49adc1b
+    type: regular
+    task:
+      id: 59d45916-7373-47a4-8b63-fe33e49adc1b
+      version: -1
+      name: Collect indicators from Kaseya advisory
+      description: This script will extract indicators from HTML and will handle bad
+        TLD to avoid file extensions false positives.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      url:
+        simple: https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: a8d19bc2-2f1c-43cb-8329-31bf3554051e
+    type: regular
+    task:
+      id: a8d19bc2-2f1c-43cb-8329-31bf3554051e
+      version: -1
+      name: Splunk Search Related Activity Based on web logs
+      description: Searches Splunk for events related to REvil Kaseya breach Powershell
+        command lines.
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        complex:
+          root: inputs.SplunkAdvancedSearch4WebLog
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 99153956-e33f-4e94-8499-091476683f55
+    type: title
+    task:
+      id: 99153956-e33f-4e94-8499-091476683f55
+      version: -1
+      name: Xpanse Issues Hunt
+      description: Retrieve issues
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2710,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 9c2bac4d-e0b3-4623-871b-3bf348210f90
+    type: regular
+    task:
+      id: 9c2bac4d-e0b3-4623-871b-3bf348210f90
+      version: -1
+      name: Search for internet facing Kaseya VSA servers using Xpanse
+      description: Retrieve issues related to Kaseya VSA servers from Xpanse
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      issue_type:
+        simple: Kaseya VSA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3020,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: b34ada55-674f-4e93-80f8-463720781315
+    type: condition
+    task:
+      id: b34ada55-674f-4e93-80f8-463720781315
+      version: -1
+      name: Is Xpanse Enabled?
+      description: Check if Xpanse instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "67"
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExpanseV2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2710,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
+    type: regular
+    task:
+      id: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
+      version: -1
+      name: Search for related Xpanse incident
+      description: Searches for Xpanse related incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      query:
+        simple: type:"Expanse Issue" and name:Kaseya VSA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: ee274e2c-2f91-46fe-89e6-d07ff902d839
+    type: regular
+    task:
+      id: ee274e2c-2f91-46fe-89e6-d07ff902d839
+      version: -1
+      name: Link related incidents
+      description: Link related Xpanse and Cortex XDR incident to Kaseya VSA incident,
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      linkedIncidentIDs:
+        complex:
+          root: foundIncidents
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 2385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 619a0c19-86ce-44e2-8533-4cb8d065daba
+    type: title
+    task:
+      id: 619a0c19-86ce-44e2-8533-4cb8d065daba
+      version: -1
+      name: Kaseya Detection and Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "74"
+      - "75"
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 9c1bf13a-6e3f-4be8-8e82-0fde0686d462
+    type: title
+    task:
+      id: 9c1bf13a-6e3f-4be8-8e82-0fde0686d462
+      version: -1
+      name: Deploy Detection Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 8b1edaab-7b54-42f9-827d-a83b099caebf
+    type: title
+    task:
+      id: 8b1edaab-7b54-42f9-827d-a83b099caebf
+      version: -1
+      name: Ransomware Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: f9e958ca-c533-41d4-8ed3-994c31464349
+    type: regular
+    task:
+      id: f9e958ca-c533-41d4-8ed3-994c31464349
+      version: -1
+      name: Run Kaseya Patch Release Preparation for VSA SaaS
+      description: |
+        For Kaseya VSA SaaS customers, Kaseya has published a runbook of the changes to make to your on-premises environment in order to be prepared for the patch release.
+
+        [Kaseya VSA SaaS Runbook](https://helpdesk.kaseya.com/hc/en-gb/articles/4403709476369)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: aa9500a4-01b3-4005-8b5b-8a93f66827e8
+    type: regular
+    task:
+      id: aa9500a4-01b3-4005-8b5b-8a93f66827e8
+      version: -1
+      name: Download Kaseya Compromise Detection Tools
+      description: |
+        This tool analyzes a system (either VSA server or managed endpoint) and determines whether any indicators of compromise (IoC) are present.
+
+        [Kaseya VSA Detection Tool](https://kaseya.app.box.com/s/0ysvgss7w48nxh8k1xt7fqhbcjxhas40)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: efded7c4-24e0-4d07-8312-3fd524085523
+    type: regular
+    task:
+      id: efded7c4-24e0-4d07-8312-3fd524085523
+      version: -1
+      name: Install Kaseya Patch for VSA Servers
+      description: |
+        The VSA 9.5.7a (9.5.7.2994) release includes enhancements and fixes described in the topics below:
+
+        [9.5.7a (9.5.7.2994) Feature Release – 11 July 2021
+        ](https://helpdesk.kaseya.com/hc/en-gb/articles/4403785889041)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: a6b2a04e-45c0-413a-8d4a-00370f2a2ad7
+    type: regular
+    task:
+      id: a6b2a04e-45c0-413a-8d4a-00370f2a2ad7
+      version: -1
+      name: Create Reference List of Domain Indicators
+      description: Creates a new reference set. If the provided name is already in
+        use, this command will fail.
+      script: '|||qradar-create-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      element_type:
+        simple: ALNIC
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      time_to_live:
+        simple: 2 minutes
+      timeout_type:
+        simple: FIRST_SEEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: c8607345-0274-4836-8650-84acff91d15f
+    type: regular
+    task:
+      id: c8607345-0274-4836-8650-84acff91d15f
+      version: -1
+      name: Add Domain Indicators to the Reference List
+      description: Add or update a value in a reference set.
+      script: '|||qradar-create-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+      value:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: b4c43bd8-500a-4764-8900-ce1483a4ab34
+    type: playbook
+    task:
+      id: b4c43bd8-500a-4764-8900-ce1483a4ab34
+      version: -1
+      name: QRadar Domain Indicators Hunting
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT * FROM events where REFERENCESETCONTAINS ('${inputs.ReferenceListName}',
+          ${inputs.QRadarDomainFieldName}) LAST 14 DAYS
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1940,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 55c78162-2e7c-4fd5-8848-e29728e1f315
+    type: condition
+    task:
+      id: 55c78162-2e7c-4fd5-8848-e29728e1f315
+      version: -1
+      name: Is QRadar Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "Yes":
+      - "24"
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2140,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 410988d4-c9a1-4766-883d-5d9c9f6bb27e
+    type: condition
+    task:
+      id: 410988d4-c9a1-4766-883d-5d9c9f6bb27e
+      version: -1
+      name: Found Related Incidents?
+      description: Check if Xpanse or XDR incidents were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 57aee824-a7c6-4a5b-8584-571372235430
+    type: regular
+    task:
+      id: 57aee824-a7c6-4a5b-8584-571372235430
+      version: -1
+      name: Check if DomainIndicators Reference List Exists
+      description: Information about the reference set that had data added or updated.
+        This returns the information set, but not the contained data. This feature
+        is supported from version 8.1 and upward.
+      script: '|||qradar-get-reference-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: a0b1d530-5625-4f69-8bb8-55cd28bcaa12
+    type: condition
+    task:
+      id: a0b1d530-5625-4f69-8bb8-55cd28bcaa12
+      version: -1
+      name: Is KaseyaDomainIndicators Reference list exists?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      "yes":
+      - "82"
+    scriptarguments:
+      entryId:
+        complex:
+          root: QRadar
+          accessor: Reference
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 05c67d3d-1246-434f-843b-d018f6b2c2de
+    type: regular
+    task:
+      id: 05c67d3d-1246-434f-843b-d018f6b2c2de
+      version: -1
+      name: Delete DomainIndicators Reference List
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: f4fd2d3b-e19a-4395-81d9-cf5b413abb92
+    type: playbook
+    task:
+      id: f4fd2d3b-e19a-4395-81d9-cf5b413abb92
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.BlockIndicatorsAutomatically
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "31_27_yes": 0.47,
+      "31_34_#default#": 0.17,
+      "47_33_Yes": 0.57,
+      "47_57_No": 0.12,
+      "49_34_#default#": 0.2,
+      "58_63_No": 0.71,
+      "68_34_#default#": 0.49,
+      "68_67_yes": 0.55,
+      "68_69_yes": 0.47,
+      "85_34_#default#": 0.19,
+      "86_34_#default#": 0.21,
+      "86_70_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5165,
+        "width": 5740,
+        "x": -2340,
+        "y": -510
+      }
+    }
+  }
+inputs:
+- key: BlockIndicatorsAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically block the indicators involved.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -14d
+  required: false
+  description: The earliest time for the Splunk search query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: YaraRulesSource
+  value:
+    simple: https://raw.githubusercontent.com/cado-security/DFIR_Resources_REvil_Kaseya/main/IOCs/Yara.rules
+  required: false
+  description: The source of the Yara rules
+  playbookInputQuery:
+- key: SigmaRulesSource
+  value:
+    simple: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/win_apt_revil_kaseya.yml
+  required: false
+  description: The source of the Sigma rules
+  playbookInputQuery:
+- key: QRadarSearchTimeRange
+  value:
+    simple: LAST 14 DAYS
+  required: false
+  description: The time range for the QRadar search query.
+  playbookInputQuery:
+- key: SplunkAdvancedSearch4FilesandReg
+  value:
+    simple: index=* "c:\\kworking\\agent.exe" OR "c:\\windows\\mpsvc.dll" OR "c:\\windows\\system32\\sfc.dll"
+      OR "c:\\kworking\\binco-readme.txt" OR "c:\\kworking\\agent.crt" OR "c:\\windows\\cert.exe"
+      OR "SOFTWARE\\BlackLivesMatter"
+  required: false
+  description: Search splunk for related REvil - Kaseya breach file names.
+  playbookInputQuery:
+- key: SplunkAdvancedSearch4PSCMD
+  value:
+    simple: index=* "*C:\\Windows\\cert.exe & echo %RANDOM%*" OR "*C:\\Windows\\cert.exe
+      -decode c:\\kworking\\agent.crt*" OR "*del /q /f c:\\kworking\\agent.crt*"
+  required: false
+  description: Search Splunk for related REvil - Kaseya breach Powershell behaviours.
+  playbookInputQuery:
+- key: SplunkAdvancedSearch4WebLog
+  value:
+    simple: 'index=* ("POST" AND "/dl.asp") OR ("GET" AND "/done.asp") OR ("POST"
+      AND "/cgi-bin/KUpload.dll") OR ("POST" AND "/userFilterTableRpt.asp") '
+  required: false
+  description: Search Splunk for related REvil - Kaseya breach web access logs activity.
+  playbookInputQuery:
+- key: EDLDomainBlocklist
+  value:
+    simple: Demisto Remediation - Domain EDL
+  required: false
+  description: The name of the EDL Domain Block List.
+  playbookInputQuery:
+- key: QRadarDomainFieldName
+  value:
+    simple: domain
+  required: false
+  description: The QRadar domain field name to check against the Reference Set of
+    Kaseya domains.
+  playbookInputQuery:
+- key: ReferenceListName
+  value:
+    simple: KaseyaDomainIndicators
+  required: false
+  description: The reference list name to create in QRadar for the Domain Indicators
+    Hunting.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -7,6 +7,7 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Server URL
   name: url
   required: true
@@ -18,17 +19,21 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled. If false, all issues will be pulled.
   defaultvalue: 'true'
   display: Only Pull Palo Alto Networks Vulnerability Issues
   name: onlyPullPanCveIssues
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: INFO
   display: Lowest Issue Severity To Pull
   name: issueSeverity
@@ -38,10 +43,12 @@ configuration:
   - WARN
   - INFO
   type: 15
+  required: false
 - defaultvalue: '20'
   display: Number of issues to pull per fetch
   name: maxPullSize
   type: 0
+  required: false
 description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
 display: Indeni
 name: Indeni

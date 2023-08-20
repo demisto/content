@@ -25,9 +25,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: "Mailbox Location"
   name: mailbox_location
   defaultvalue: Processed_Reports
@@ -40,30 +42,37 @@ configuration:
   name: date_range
   defaultvalue: 3 days
   type: 0
+  required: false
 - display: Category ID to fetch
   name: category_id
   additionalinfo: Corresponds to category IDs defined in Triage. Eg, "1".
   defaultvalue: ""
   type: 0
+  required: false
 - display: Match Priority - the highest match priority based on rule hits for the report
   name: match_priority
   defaultvalue: ""
   type: 0
+  required: false
 - display: 'Tags - CSV list of tags of processed reports by which to filter '
   name: tags
   defaultvalue: ""
   type: 0
+  required: false
 - display: Maximum number of incidents to fetch each time
   name: max_fetch
   defaultvalue: "30"
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: '-'
   type: python

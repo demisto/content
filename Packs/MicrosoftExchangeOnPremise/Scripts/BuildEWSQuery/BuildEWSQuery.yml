@@ -48,4 +48,4 @@ scripttarget: 0
 tests:
 - buildewsquery_test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.12.63474

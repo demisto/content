@@ -1,0 +1,14 @@
+{
+    "CONTRIBUTION_REVIEWERS": [
+        "MichaelYochpaz",
+        "RosenbergYehuda",
+        "ostolero"
+    ],
+    "CONTRIBUTION_TL": "RotemAmit",
+    "CONTRIBUTION_SECURITY_REVIEWER": "melamedbn",
+    "ON_CALL_DEVS": [
+        "epintzov",
+        "mlainer"
+    ],
+    "DOC_REVIEWER": "ShirleyDenkberg"
+}

@@ -1,0 +1,93 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TrendMicroVisionOneEventCollector
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- additionalinfo: 'The API endpoint to the Trend Micro Vision One instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
+  defaultvalue: https://api.xdr.trendmicro.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+  additionalinfo: The API key of Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.
+  hiddenusername: true
+  section: Connect
+- display: The maximum number of events per fetch.
+  additionalinfo: The maximum number of events to fetch every time fetch is executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Audit logs).
+  defaultvalue: 1000
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+- display: Fetch events
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
+display: 'Trend Micro Vision One Event Collector'
+name: TrendMicroVisionOneEventCollector
+script:
+  commands:
+  - description: Returns a list of logs.
+    name: trend-micro-vision-one-get-events
+    arguments:
+    - description: The maximum number of logs to retrieve.
+      defaultValue: '50'
+      name: limit
+    - description: From which time to retrieve the log(s) in ISO8601 format.
+      name: from_time
+      required: true
+    - description: To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.
+      name: to_time
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to push the fetched events to Cortex XSIAM or not.
+      name: should_push_events
+      predefined:
+      - 'false'
+      - 'true'
+    - name: log_type
+      defaultValue: 'audit,observed_attack_techniques,search_detections,workbench'
+      description: Comma-separated list of log-types to retrieve, options are audit, observed_attack_techniques, search_detections and workbench.
+      isArray: true
+    outputs:
+    - contextPath: TrendMicroVisionOne.Events
+      description: Trend Micro Vision One events.
+      type: Unknown
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.66339
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)

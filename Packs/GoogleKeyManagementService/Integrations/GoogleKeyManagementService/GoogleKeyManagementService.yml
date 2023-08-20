@@ -7,10 +7,12 @@ configuration:
   name: service_account
   type: 4
   hidden: true
+  required: false
 - displaypassword: User's Service Account JSON
   name: credentials_service_account
   hiddenusername: true
   type: 9
+  required: false
 - display: Project in Google Cloud KMS
   name: project
   required: true
@@ -50,9 +52,11 @@ configuration:
 - display: Default Key Ring
   name: key_ring
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.
 display: Google Key Management Service
 name: Google Key Management Service
