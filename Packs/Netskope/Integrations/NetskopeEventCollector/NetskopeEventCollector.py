@@ -81,6 +81,14 @@ def honor_rate_limiting(headers, endpoint):
 
 
 def populate_parsing_rule_fields(event: dict, event_type: str):
+    """
+    Handles the source_log_event and _time fields.
+    Sets the source_log_event to the given event type and _time to the time taken from the timestamp field
+
+    Args:
+        event (dict): the event to edit
+        event_type (str): the event type tp set in the source_log_event field
+    """
     event['source_log_event'] = event_type
     try:
         event['_time'] = timestamp_to_datestring(event['timestamp'] * 1000, is_utc=True)
@@ -90,6 +98,16 @@ def populate_parsing_rule_fields(event: dict, event_type: str):
 
 
 def prepare_events(events: list, event_type: str) -> list:
+    """
+    Iterates over a list of given events and add/modify special fields like event_id, _time and source_log_event.
+
+    Args:
+        events (list): list of events to modify.
+        event_type (str): the type of events given in the list.
+
+    Returns:
+        list: the list of modified events
+    """
     for event in events:
         populate_parsing_rule_fields(event, event_type)
         event_id = event.get('_id')
@@ -99,7 +117,15 @@ def prepare_events(events: list, event_type: str) -> list:
 
 
 def print_event_statistics_logs(events: list, event_type: str):
-    # This is for debugging purposes
+    """
+    Helper function for debugging purposes.
+    This function is responsible to print statistics about pulled events, like the amount of pulled events and the first event and
+    last event times.
+
+    Args:
+        events (list): list of events.
+        event_type (str): the type of events given in the list.
+    """
     demisto.debug(f'__[{event_type}]__ - Total events fetched this round: {len(events)}')
     if events:
         event_times = f'__[{event_type}]__ - First event: {events[0].get("timestamp")} __[{event_type}]__ - Last event: ' \
@@ -108,6 +134,15 @@ def print_event_statistics_logs(events: list, event_type: str):
 
 
 def is_execution_time_exceeded(start_time: datetime) -> bool:
+    """
+    Checks if the execution time so far exceeded the timeout limit.
+
+    Args:
+        start_time (datetime): the time when the execution started.
+
+    Returns:
+        bool: true, if execution passed timeout settings, false otherwise.
+    """
     end_time = datetime.utcnow()
     secs_from_beginning = (end_time - start_time).seconds
     demisto.debug(f'Execution length so far is {secs_from_beginning} secs')
@@ -115,11 +150,52 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
+def setup_last_run(last_run_dict: dict) -> dict:
+    """
+    Setting the last_tun object with the right operation to be used throughout the integration run.
+
+    Args:
+        last_run_dict (dict): The dictionary of the last run to be configured
+
+    Returns:
+        dict: the modified last run dictionary with the needed operation
+    """
+    first_fetch = int(arg_to_datetime('now').timestamp())  # type: ignore[union-attr]
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        if not last_run_dict.get(event_type, {}).get('operation'):
+            last_run_dict[event_type] = {'operation': first_fetch}
+
+    demisto.debug(f'Initialize last run to - {last_run_dict}')
+
+    return last_run_dict
+
+
 def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int,
-                                         execution_start_time: datetime):
-    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+                                         execution_start_time: datetime) -> (list, bool):
+    """
+    Pulls events per each given event type. Each event type receives a dedicated index name that is constructed using the event
+    type and the integration instance name. The function keeps pulling events as long as the limit was not exceeded.
+    - First thing it validates is that execution time of the entire run was not exceeded.
+    - Then it checks if we need to wait some time before making another call to the same endpoint by checking the wait_time value
+        received in the previous response.
+    - The operation variable marks the next operation to perform on this endpoint (besides the first fetch it is always 'next')
+    - After it is done pulling, it marks this event type as successfully done in the 'fetch_status' dictionary.
+
+    Args:
+        client (Client): The Netskope client.
+        event_type (str): The type of event to pull.
+        operation (str): The operation to perform. Can be 'next' or a timestamp string.
+        limit (int): The limit which after we stop pulling.
+        execution_start_time (datetime): The time when we started running the fetch mechanism.
+
+    Return:
+        list: The list of events pulled for the given event type.
+        bool: Was execution timeout reached.
+    """
     wait_time: int = 0
     events: list[dict] = []
+    # We use the instance name to allow multiple instances in parallel without causing a collision in index names
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     index_name = f'xsoar_collector_{instance_name}_{event_type}'
 
     while len(events) < limit:
@@ -158,20 +234,20 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
     return events, False
 
 
-def setup_last_run(last_run_dict: dict, first_fetch: str) -> dict:
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        if not last_run_dict.get(event_type, {}).get('operation'):
-            last_run_dict[event_type] = {'operation': first_fetch}
+def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> Tuple[list, dict]:
+    """
+    Iterates over all supported event types and call the handle data export logic. Once each event type is done the operation for
+    next run is set to 'next'.
 
-    demisto.debug(f'Initialize last run to - {last_run_dict}')
+    Args:
+        client (Client): The Netskope client.
+        last_run (dict): The execution last run dict where the relevant operations are stored.
+        limit (int): The limit which after we stop pulling.
 
-    return last_run_dict
-
-
-def get_all_events(client: Client, last_run: dict, limit: int) -> Tuple[list, dict]:
-    # We add the instance name to the index so several instances could run in parallel without effecting each other
-    if limit is None:
-        limit = MAX_EVENTS_PAGE_SIZE
+    Returns:
+        list: The accumulated list of all events.
+        dict: The updated last_run object.
+    """
 
     all_types_events_result = []
     execution_start_time = datetime.utcnow()
@@ -195,13 +271,13 @@ def get_all_events(client: Client, last_run: dict, limit: int) -> Tuple[list, di
 
 
 def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
-    fetch_events_command(client, last_run, max_fetch=max_fetch)
+    get_all_events(client, last_run, limit=max_fetch)
     return 'ok'
 
 
 def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
-    limit = arg_to_number(args.get('limit')) or 50
-    events, _ = fetch_events_command(client=client, last_run=last_run, max_fetch=limit)
+    limit = arg_to_number(args.get('limit')) or MAX_EVENTS_PAGE_SIZE
+    events, _ = get_all_events(client=client, last_run=last_run, limit=limit)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -220,11 +296,6 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> 
     return results, events
 
 
-def fetch_events_command(client, last_run, max_fetch):  # pragma: no cover
-    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch)
-    return events, new_last_run
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -237,15 +308,13 @@ def main() -> None:  # pragma: no cover
         base_url = urljoin(url, '/api/v2/')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        first_fetch = params.get('first_fetch')
-        max_fetch = arg_to_number(params.get('max_fetch', 1000))
+        max_fetch = arg_to_number(params.get('max_fetch', 10000))
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
 
         client = Client(base_url, token, verify_certificate, proxy)
-        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
-        last_run = setup_last_run(demisto.getLastRun(), first_fetch)
+        last_run = setup_last_run(demisto.getLastRun())
         demisto.debug(f'Running with the following last_run - {last_run}')
 
         events: list[dict] = []
@@ -266,7 +335,7 @@ def main() -> None:  # pragma: no cover
             start = datetime.utcnow()
             try:
                 demisto.debug(f'Sending request with last run {last_run}')
-                events, new_last_run = fetch_events_command(client, last_run, max_fetch)
+                events, new_last_run = get_all_events(client, last_run, max_fetch)
             finally:
                 demisto.debug(f'sending {len(events)} to xsiam')
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
