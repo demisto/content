@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
@@ -32,8 +32,8 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
-    def fetch_by_aql_query(self, aql_query: str, max_fetch: int, time_frame: None | int = None):
-        """ Fetches alerts or threats by passed AQL query.
+    def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None):
+        """ Fetches alerts or threats using AQL query.
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
@@ -44,8 +44,8 @@ class Client(BaseClient):
             list[dict]: List of alerts/threats objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        if time_frame:  # if there is a time frame thats relative to last run
-            params['aql'] += f' timeFrame:"{time_frame} seconds"'
+        if after:  # if there is a time frame thats relative to last run
+            params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'
 
         # make first request to get first page of threat activity
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
@@ -102,6 +102,9 @@ class Client(BaseClient):
             raise DemistoException('Could not generate access token.')
 
 
+''' TEST MODULE '''
+
+
 def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication.
@@ -127,7 +130,7 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
+def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) -> datetime:
     """ Calculates the fetch start time.
 
     Args:
@@ -174,21 +177,19 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
     events = []
-    now = datetime.now()
     next_run = {}
 
     if 'Alerts' in log_types_to_fetch:
         demisto.debug('debug-log: handling log-type: alerts')
         if last_run:
-            alerts_first_fetch_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
-            alerts_fetch_start_time_in_seconds = int((now - alerts_first_fetch_time).total_seconds() + 1)
+            alerts_fetch_start_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
         else:
-            alerts_fetch_start_time_in_seconds = None
+            alerts_fetch_start_time = None
 
         alerts_response = client.fetch_by_aql_query(
             aql_query='in:alerts',
             max_fetch=max_fetch,
-            time_frame=alerts_fetch_start_time_in_seconds
+            after=alerts_fetch_start_time
         )
 
         if alerts_response:
@@ -202,15 +203,14 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
     if 'Threats' in log_types_to_fetch:
         demisto.debug('debug-log: handling log-type: threats')
         if last_run:
-            threats_first_fetch_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
-            threats_fetch_start_time_in_seconds = int((now - threats_first_fetch_time).total_seconds() + 1)
+            threats_fetch_start_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
         else:
-            threats_fetch_start_time_in_seconds = None
+            threats_fetch_start_time = None
 
         threats_response = client.fetch_by_aql_query(
             aql_query='in:activity type:"Threat Detected"',
             max_fetch=max_fetch,
-            time_frame=threats_fetch_start_time_in_seconds
+            after=threats_fetch_start_time
         )
 
         if threats_response:
@@ -234,8 +234,8 @@ def add_time_to_events(events):
 
     Args:
         events: list[dict] - list of events to add the _time key to.
-    Returns:
 
+    Returns:
         list: The events with the _time key.
     """
     if events:
@@ -270,7 +270,7 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
     """
     if events:
         add_time_to_events(events)
-        demisto.debug(f'debug-log: {len(events)} events are about to be sent to xsiam')
+        demisto.debug(f'debug-log: {len(events)} events are about to be sent to XSIAM.')
         send_events_to_xsiam(
             events,
             vendor=VENDOR,
@@ -280,11 +280,11 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
         demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
         demisto.debug(f'debug-log: {next_run=}')
     else:
-        demisto.info('debug-log: No new events fetched, Last run was not updated.')
+        demisto.debug('debug-log: No new events fetched, Last run was not updated.')
 
 
 def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
-    """Returns a CommandResults object with a table of fetched events.
+    """Return a CommandResults object with a table of fetched events.
 
     Args:
         events (list[dict[str, Any]]): list of fetched events.
