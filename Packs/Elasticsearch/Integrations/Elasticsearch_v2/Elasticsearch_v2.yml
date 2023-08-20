@@ -67,7 +67,7 @@ configuration:
   advanced: true
   required: false
 - display: Time field type
-  defaultvalue: 'Simple-Date'
+  defaultvalue: 'Timestamp-Milliseconds'
   name: time_method
   type: 15
   options:
@@ -355,7 +355,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.68557
+  dockerimage: demisto/py3-tools:1.0.0.71964
   isfetch: true
   runonce: false
   script: '-'
