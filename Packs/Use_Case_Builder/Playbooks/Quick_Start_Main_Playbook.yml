@@ -1316,4 +1316,4 @@ outputs: []
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'
+description: 'The main playbook for the quick start incident'
