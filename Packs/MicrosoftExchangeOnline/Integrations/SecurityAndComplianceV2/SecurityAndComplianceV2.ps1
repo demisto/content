@@ -621,24 +621,16 @@ class SecurityAndComplianceClient {
             "ConnectionUri" = $this.connection_uri
             "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
         }
-        $global:Demisto.Debug("This is the CreateDelegatedSession params")
-        foreach ($key in $cmd_params.Keys) {
-            $value = $cmd_params[$key]
-            $global:Demisto.Debug("$key - $value")
-        }
         Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
-        $global:Demisto.Debug("Session created succesfully!")
     }
 
     DisconnectSession(){
-        $global:Demisto.Debug("DisconnectSession started....")
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
-        $global:Demisto.Debug("DisconnectSession done")
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
                         [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-        $global:Demisto.Debug("NewSearch started....")
+
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -653,11 +645,6 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
-        }
-        $global:Demisto.Debug("This is the NewSearch params")
-        foreach ($key in $cmd_params.Keys) {
-            $value = $cmd_params[$key]
-            $global:Demisto.Debug("$key - $value")
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -1479,7 +1466,6 @@ function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplian
 }
 
 function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    $global:Demisto.Debug("NewSearchCommand started....")
     # Command arguemnts parsing
     $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
     $exchange_location = ArgToList $kwargs.exchange_location
@@ -1500,11 +1486,7 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
     }
-    $global:Demisto.Debug("The entry context")
-    foreach ($key in $entry_context.Keys) {
-        $value = $entry_context[$key]
-        $global:Demisto.Debug("$key - $value")
-    }
+
     return $human_readable, $entry_context, $raw_response
 }
 
@@ -1806,7 +1788,6 @@ function CaseHoldRuleDeleteCommand([SecurityAndComplianceClient]$client, [hashta
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
-    $global:Demisto = $Demisto
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
@@ -1816,7 +1797,6 @@ function Main {
 
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
-        $Demisto.Debug("oauth2_client set successfully")
 
         # Executing oauth2 commands
         switch ($command) {
@@ -1833,7 +1813,6 @@ function Main {
         {
             $oauth2_client.RefreshTokenIfExpired()
         }
-        $Demisto.Debug("refreshed token successfully")
 
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
