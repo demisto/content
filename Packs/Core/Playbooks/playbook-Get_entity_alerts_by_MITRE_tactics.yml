@@ -1,0 +1,1791 @@
+id: Get entity alerts by MITRE tactics
+version: -1
+name: Get entity alerts by MITRE tactics
+description: |-
+  This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+  Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 302a9eb3-8c68-4d64-8f6b-131e948ecaf7
+    type: start
+    task:
+      id: 302a9eb3-8c68-4d64-8f6b-131e948ecaf7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ebc87177-bc3c-424b-8942-163568ba814d
+    type: condition
+    task:
+      id: ebc87177-bc3c-424b-8942-163568ba814d
+      version: -1
+      name: Should hunt for Discovery techniques?
+      description: Whether to hunt for Discovery techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntDiscoveryTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0491050a-7fb5-408d-8b73-37a5546c6309
+    type: condition
+    task:
+      id: 0491050a-7fb5-408d-8b73-37a5546c6309
+      version: -1
+      name: Should hunt for Persistence techniques?
+      description: Whether to hunt for Persistence techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntPersistenceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1540edab-f2f8-4399-80bc-e2164b0c79a8
+    type: condition
+    task:
+      id: 1540edab-f2f8-4399-80bc-e2164b0c79a8
+      version: -1
+      name: Should hunt for Initial Access techniques?
+      description: Whether to hunt for Initial Access techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntInitialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: cf7a29b6-b093-485e-892c-5c370f8048a9
+    type: condition
+    task:
+      id: cf7a29b6-b093-485e-892c-5c370f8048a9
+      version: -1
+      name: Should hunt for Privilege Escalation techniques?
+      description: Whether to hunt for Privilege Escalation techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntPrivilegeEscalationTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 39fb11d9-9044-40d2-8bbb-55178f37c5fe
+    type: condition
+    task:
+      id: 39fb11d9-9044-40d2-8bbb-55178f37c5fe
+      version: -1
+      name: Should hunt for Defense Evasion techniques?
+      description: Whether to hunt for Defense Evasion techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntDefenseEvasionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 25eb8782-ff8f-45ad-8f90-d557162d5f34
+    type: condition
+    task:
+      id: 25eb8782-ff8f-45ad-8f90-d557162d5f34
+      version: -1
+      name: Should hunt for Execution techniques?
+      description: Whether to hunt for Execution techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntExecutionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1c88b8c3-7f85-4d8c-8976-5de72385b945
+    type: condition
+    task:
+      id: 1c88b8c3-7f85-4d8c-8976-5de72385b945
+      version: -1
+      name: Should hunt for Lateral Movement techniques?
+      description: Whether to hunt for Lateral Movement techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntLateralMovementTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ce7bb2c0-c938-431e-8f1f-ee6cd472f222
+    type: condition
+    task:
+      id: ce7bb2c0-c938-431e-8f1f-ee6cd472f222
+      version: -1
+      name: Should hunt for Collection techniques?
+      description: Whether to hunt for Collection techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCollectionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c8c20feb-fb05-4f05-8806-1ea67f2e338d
+    type: title
+    task:
+      id: c8c20feb-fb05-4f05-8806-1ea67f2e338d
+      version: -1
+      name: Persistence
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 02c6c340-5d90-482a-89be-7192d814909e
+    type: regular
+    task:
+      id: 02c6c340-5d90-482a-89be-7192d814909e
+      version: -1
+      name: Hunt Persistence techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: Persistence
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Persistence" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1100
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Persistence techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Persistence
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b5db8bc1-ab7b-49bb-8ee4-d51097c07ad8
+    type: title
+    task:
+      id: b5db8bc1-ab7b-49bb-8ee4-d51097c07ad8
+      version: -1
+      name: Initial Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 64425da4-ed52-4365-8ed0-811facc2d0b8
+    type: title
+    task:
+      id: 64425da4-ed52-4365-8ed0-811facc2d0b8
+      version: -1
+      name: Execution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: dd957617-a76a-44a8-8be1-8b40a19d2693
+    type: title
+    task:
+      id: dd957617-a76a-44a8-8be1-8b40a19d2693
+      version: -1
+      name: Privilege Escalation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 07d0a259-29d9-451a-89c1-4e1c50604a38
+    type: title
+    task:
+      id: 07d0a259-29d9-451a-89c1-4e1c50604a38
+      version: -1
+      name: Defense Evasion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4f83c90e-d82c-4e5e-8288-6b0710004378
+    type: title
+    task:
+      id: 4f83c90e-d82c-4e5e-8288-6b0710004378
+      version: -1
+      name: Discovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 779b9772-b687-4545-81e1-71e23a9e3f66
+    type: title
+    task:
+      id: 779b9772-b687-4545-81e1-71e23a9e3f66
+      version: -1
+      name: Lateral Movement
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e26ce4db-90b6-41a4-883d-b6c0ce8615b6
+    type: title
+    task:
+      id: e26ce4db-90b6-41a4-883d-b6c0ce8615b6
+      version: -1
+      name: Collection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c65d46cf-f3e3-4415-8093-35626ae2f468
+    type: condition
+    task:
+      id: c65d46cf-f3e3-4415-8093-35626ae2f468
+      version: -1
+      name: Should hunt for CnC techniques?
+      description: Whether to hunt for Command and Control techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCnCTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d1170ab7-81f3-4bfe-833d-deb0b094c3c4
+    type: condition
+    task:
+      id: d1170ab7-81f3-4bfe-833d-deb0b094c3c4
+      version: -1
+      name: Should hunt for Impact techniques?
+      description: Whether to hunt for Impact techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntImpactTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6df09e1a-b245-4011-8cbf-0e18d4bf6646
+    type: title
+    task:
+      id: 6df09e1a-b245-4011-8cbf-0e18d4bf6646
+      version: -1
+      name: Command and Control
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 938f0be4-11c5-4f55-83ce-2b18b446248b
+    type: title
+    task:
+      id: 938f0be4-11c5-4f55-83ce-2b18b446248b
+      version: -1
+      name: Impact
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c50771b5-4f51-47f5-82ce-e052c01f3ce3
+    type: condition
+    task:
+      id: c50771b5-4f51-47f5-82ce-e052c01f3ce3
+      version: -1
+      name: Should hunt for suspicious Reconnaissance techniques?
+      description: Whether to hunt for Reconnaissance techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntReconnaissanceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e623f95c-3938-4004-89ea-17c4e5168435
+    type: title
+    task:
+      id: e623f95c-3938-4004-89ea-17c4e5168435
+      version: -1
+      name: Reconnaissance
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 43dd8587-3505-41fd-8984-9e4fc3e186d4
+    type: regular
+    task:
+      id: 43dd8587-3505-41fd-8984-9e4fc3e186d4
+      version: -1
+      name: Hunt Reconnaissance techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: Reconnaissance
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Reconnaissance" ${EntityType}:"${EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e323ce49-5189-4cc7-8b93-fe56d9b240a4
+    type: regular
+    task:
+      id: e323ce49-5189-4cc7-8b93-fe56d9b240a4
+      version: -1
+      name: Hunt Initial Access techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: Initial_Access
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Initial Access" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 160
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Initial Access
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: aed98789-43ff-4262-8377-198ed7c88bad
+    type: regular
+    task:
+      id: aed98789-43ff-4262-8377-198ed7c88bad
+      version: -1
+      name: Hunt Execution techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: Execution
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Execution" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 630
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Execution
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 75040cb1-ce79-49b6-8299-e81e4363d666
+    type: regular
+    task:
+      id: 75040cb1-ce79-49b6-8299-e81e4363d666
+      version: -1
+      name: Hunt Privilege Escalation techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: Privilege_Escalation
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Privilege Escalation" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1570
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Privilege Escalation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cfb0daf3-7164-4b7f-8a74-d85a3ec04f1a
+    type: regular
+    task:
+      id: cfb0daf3-7164-4b7f-8a74-d85a3ec04f1a
+      version: -1
+      name: Hunt Defense Evasion techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      extend-context:
+        simple: Defense_Evasion
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Defense Evasion" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2050
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Defense_Evasion
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 18b0a0d3-479c-43cf-8944-6e7a00053e5e
+    type: regular
+    task:
+      id: 18b0a0d3-479c-43cf-8944-6e7a00053e5e
+      version: -1
+      name: Hunt Discovery techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: Discovery
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Discovery" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3020
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Discovery techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Discovery
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8c3c6fea-a0e3-4f56-891d-7b6dd2f1361b
+    type: regular
+    task:
+      id: 8c3c6fea-a0e3-4f56-891d-7b6dd2f1361b
+      version: -1
+      name: Hunt Lateral Movement techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: Lateral_Movement
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Lateral Movement" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3510
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Lateral_Movement
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 702c83ab-d33a-4174-808a-f40e1cf5da4e
+    type: regular
+    task:
+      id: 702c83ab-d33a-4174-808a-f40e1cf5da4e
+      version: -1
+      name: Hunt Collection techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: Collection
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: alert_category:"Collection" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 53d66b30-860d-4300-8566-ac53bd6a4b1c
+    type: regular
+    task:
+      id: 53d66b30-860d-4300-8566-ac53bd6a4b1c
+      version: -1
+      name: Hunt Command and Control techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      extend-context:
+        simple: Command_And_Control
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Command and Control" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4460
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Command and Control techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Command and Control
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 4c59295d-f79b-46be-823a-e7474b74fbba
+    type: regular
+    task:
+      id: 4c59295d-f79b-46be-823a-e7474b74fbba
+      version: -1
+      name: Hunt Impact techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      extend-context:
+        simple: Impact_techniques
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Impact" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4940
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Impact techniques - Cortex XDR - Endpoint Investigation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b0dae12e-e1bc-42f1-8468-b21672f49b3d
+    type: title
+    task:
+      id: b0dae12e-e1bc-42f1-8468-b21672f49b3d
+      version: -1
+      name: Hunt by MITRE Tactics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 2bde920f-39fe-4e09-8f38-74cbb7b716f8
+    type: title
+    task:
+      id: 2bde920f-39fe-4e09-8f38-74cbb7b716f8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 9e0a3f64-3ce5-4293-87b7-1d0d9e3f8248
+    type: condition
+    task:
+      id: 9e0a3f64-3ce5-4293-87b7-1d0d9e3f8248
+      version: -1
+      name: Run all Hunting Queries on Mitre Tactics?
+      description: Run all hunting queries on Mitre tactics?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "28"
+      - "16"
+      - "14"
+      - "18"
+      - "19"
+      - "20"
+      - "21"
+      - "22"
+      - "25"
+      - "26"
+      - "17"
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.RunAll
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 65b4ff8b-26a9-41c9-8594-4c54eb40f73b
+    type: condition
+    task:
+      id: 65b4ff8b-26a9-41c9-8594-4c54eb40f73b
+      version: -1
+      name: Should hunt for Credential Access techniques?
+      description: Whether to hunt for Credential Access techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCredentialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f20c8f0b-ad48-4694-87b0-d45df078237d
+    type: title
+    task:
+      id: f20c8f0b-ad48-4694-87b0-d45df078237d
+      version: -1
+      name: Credential Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 3ea75390-1640-4f1b-8199-0f27af643584
+    type: regular
+    task:
+      id: 3ea75390-1640-4f1b-8199-0f27af643584
+      version: -1
+      name: Hunt Credential Access techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      extend-context:
+        simple: Defense_Evasion
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        simple: categoryname:"Credential Access" ${inputs.EntityType}:"${inputs.EntityID}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2520
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Defense_Evasion
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "58_26_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6245,
+        "width": 1020,
+        "x": -190,
+        "y": -1070
+      }
+    }
+  }
+inputs:
+- key: HuntReconnaissanceTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  playbookInputQuery:
+- key: HuntInitialAccessTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
+  playbookInputQuery:
+- key: HuntExecutionTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Execution techniques.
+  playbookInputQuery:
+- key: HuntPersistenceTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
+  playbookInputQuery:
+- key: HuntPrivilegeEscalationTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  playbookInputQuery:
+- key: HuntDefenseEvasionTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  playbookInputQuery:
+- key: HuntDiscoveryTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
+  playbookInputQuery:
+- key: HuntLateralMovementTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  playbookInputQuery:
+- key: HuntCollectionTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
+  playbookInputQuery:
+- key: HuntCnCTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  playbookInputQuery:
+- key: HuntImpactTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Impact techniques.
+  playbookInputQuery:
+- key: HuntCredentialAccessTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  playbookInputQuery:
+- key: timeRange
+  value:
+    simple: 20 days
+  required: true
+  description: |-
+    A time range to execute the hunting in.
+    The input should be in the following format:
+    * 1 day
+    * 2 minutes
+    * 4 hours
+    * 8 days
+  playbookInputQuery:
+- key: RunAll
+  value:
+    simple: "true"
+  required: false
+  description: Whether to run all the sub-tasks for Mitre Tactics.
+  playbookInputQuery:
+- key: EntityType
+  value:
+    simple: hostname
+  required: true
+  description: Entity type to search. Entity type can be username, hostname, or any other element that exists in the alert.
+  playbookInputQuery:
+- key: EntityID
+  value:
+    simple:
+  required: true
+  description: Entity value.
+  playbookInputQuery:
+outputs:
+- contextPath: foundIncidents
+  description: Alerts found
+  type: unknown
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.8.0
