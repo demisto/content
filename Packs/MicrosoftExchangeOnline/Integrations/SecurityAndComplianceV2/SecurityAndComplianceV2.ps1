@@ -1926,7 +1926,9 @@ function Main {
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($command -ne "test-module") {
+        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+           Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
+        } elseif ($command -ne "test-module") {
             ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command
