@@ -3,7 +3,6 @@ import json
 import pytest
 import FireEyeETPEventCollector
 from freezegun import freeze_time
-from CommonServerPython import *
 
 
 def util_load_json(path):
