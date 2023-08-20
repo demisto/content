@@ -1394,6 +1394,13 @@ and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
     def is_auth_code_reconfigured(self, auth_code) -> bool:
+        """
+        Checks if the auth_code is reconfigured by comparing to the self.auth_code from the instance params.
+        Args:
+            auth_code: The auth_code form the integration context.
+        Returns:
+            bool: True if the auth_code is reconfigured, otherwise False.
+        """
         # Case of oproxy
         if self.auth_type == OPROXY_AUTH_TYPE:
             return False
