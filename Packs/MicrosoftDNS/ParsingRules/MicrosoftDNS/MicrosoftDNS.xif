@@ -15,6 +15,6 @@ filter _raw_log ~= "\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}"
 | fields - tmp_time_String1, tmp_event_time1,tmp_time_String2, tmp_event_time2;
 
 
-filter _raw_log = null AND channel = "Microsoft-Windows-DNSServer/Audit" AND to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*"
+filter _raw_log = null AND to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND (provider_name = "Microsoft-Windows-DNSServer" OR provider_name = "Microsoft-Windows-DNS-Server-Service")
 | alter
     _time = time_created   
