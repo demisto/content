@@ -547,6 +547,7 @@ xsiam_server_ga:
     JIRA_PROJECT_ID: "CIAC"
     JIRA_SERVER_URL: "https://jira-hq.paloaltonetworks.local"
     JIRA_VERIFY_SSL: "False"
+    JIRA_ADDITIONAL_FIELDS: '{"customfield_17166":{"value": "IN"},"customfield_17167":{"value": "FALSE"},"customfield_17168":{"value": "Single"}}'
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true

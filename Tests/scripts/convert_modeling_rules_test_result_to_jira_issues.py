@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import sys
 import traceback
@@ -24,12 +25,7 @@ JIRA_ISSUE_TYPE = os.environ["JIRA_ISSUE_TYPE"]
 JIRA_COMPONENT = os.environ["JIRA_COMPONENT"]
 JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME = os.environ["JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME"]
 JIRA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
-# Mandatory fields for creating a Jira issue
-JIRA_DEFAULTS_FIELDS = {
-    "customfield_17166": {"value": "IN"},  # CIAC Priority - Is Customer facing?
-    "customfield_17167": {"value": "FALSE"},  # CIAC Priority - Is deployment blocker?
-    "customfield_17168": {"value": "Single"},  # CIAC Priority - Has wide impact?
-}
+JIRA_ADDITIONAL_FIELDS = json.loads(os.environ.get("JIRA_ADDITIONAL_FIELDS", "{}"))
 
 
 def options_handler() -> argparse.Namespace:
@@ -37,7 +33,8 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument("-jp", "--junit-path", help='JUnit report file path', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
-    parser.add_argument('-d', '--max_days_to_reopen', help='The max days to reopen a closed issue', default=30)
+    parser.add_argument('-d', '--max_days_to_reopen', default=30, type=int,
+                        help='The max days to reopen a closed issue')
     options = parser.parse_args()
 
     return options
@@ -51,7 +48,8 @@ def create_jira_issue(jira_server: JIRA,
     properties = {prop.name: prop.value for prop in test_suite.properties()}
     build_id = properties.get("ci_pipeline_id", "")
     build_url = f"{GITLAB_SERVER_URL}/{GITLAB_PROJECT_ID}/-/pipelines/{build_id}" if build_id else ""
-    build_markdown_link = f"[Nightly #{build_id}|{build_url}]" if build_id else f"Nightly #{build_id}"
+    build_id_hash = f" #{build_id}" if build_id else ""
+    build_markdown_link = f"[Nightly{build_id_hash}|{build_url}]" if build_id else f"Nightly{build_id_hash}"
     description = f"""
         *{properties['pack_id']}* - *{properties['modeling_rule_file_name']}* failed in {build_markdown_link}
         
@@ -65,10 +63,9 @@ def create_jira_issue(jira_server: JIRA,
         """
     summary = f"{properties['pack_id']} - {properties['modeling_rule_file_name']} failed nightly"
     jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
-                 f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\"")
+                 f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
     link_to_issue = None
-    searched_issue = None
     jira_issue = None
     if use_existing_issue := (len(search_issues) == 1):
         searched_issue = search_issues[0]
@@ -89,17 +86,20 @@ def create_jira_issue(jira_server: JIRA,
                         break
                 if unresolved_transition:
                     jira_server.transition_issue(searched_issue, unresolved_transition['id'])
+                    jira_issue = searched_issue
                 else:
                     logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
                                   f"transition for issue {searched_issue.key}")
                     jira_issue = None
                     use_existing_issue = False
+                    link_to_issue = searched_issue
 
             else:
                 link_to_issue = searched_issue
+        else:
+            jira_issue = searched_issue
 
     if jira_issue is not None:
-        jira_issue = searched_issue
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
@@ -108,7 +108,7 @@ def create_jira_issue(jira_server: JIRA,
                                               issuetype={'name': JIRA_ISSUE_TYPE},
                                               components=[{'name': JIRA_COMPONENT}],
                                               labels=['nightly'],
-                                              **JIRA_DEFAULTS_FIELDS
+                                              **JIRA_ADDITIONAL_FIELDS
                                               )
         # Create a back link to the previous issue, which is resolved.
         if link_to_issue:
@@ -124,7 +124,8 @@ def create_jira_issue(jira_server: JIRA,
                            f"{properties['modeling_rule_file_name']}.xml")
         jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name, filename=junit_file_name)
 
-    logging.info(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} "
+    back_link_to = f" with back link to {link_to_issue.key}" if link_to_issue else ""
+    logging.info(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} {back_link_to}"
                  f"for {test_suite.name} with {test_suite.failures} failures and {test_suite.errors} errors")
 
     return jira_issue
