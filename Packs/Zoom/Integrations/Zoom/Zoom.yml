@@ -61,6 +61,12 @@ configuration:
   name: bot_credentials
   type: 9
   displaypassword: Bot Client Secret (OAuth)
+- display: Secret Token
+  name: secret_token
+  type: 9
+  required: false
+  hiddenpassword: true
+  additionalinfo: you must provide this token for mirror investigation
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

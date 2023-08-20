@@ -5,12 +5,15 @@ from ZoomApiModule import *
 from traceback import format_exc
 from datetime import datetime
 from fastapi import FastAPI, Request, Response, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi_utils.tasks import repeat_every
 import uvicorn
 from uvicorn.logging import AccessFormatter
 from tempfile import NamedTemporaryFile
 from copy import copy
+import hashlib
+import hmac
 
 app = FastAPI()
 SYNC_CONTEXT = True
@@ -102,6 +105,7 @@ TOO_MANY_JID = """Too many argument you must provide either a user JID  or a cha
 BOT_PARAM_CHECK = """if you are using zoom chatbot you must provide all the 3 params botJID, bot_client_id and bot_client_secret
 you can find this values in the Zoom Chatbot app configuration"""
 CLIENT: Zoom_Client
+SECRET_TOKEN = None
 
 '''CLIENT CLASS'''
 
@@ -604,6 +608,22 @@ async def handle_listen_error(error: str):
     demisto.updateModuleHealth(error)
 
 
+async def handle_mirroring(payload):
+    channel_id = payload["object"].get("channel_id")
+    if not channel_id:
+        return 
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if not integration_context or 'mirrors' not in integration_context:
+        return
+    mirrors = json.loads(integration_context['mirrors'])
+    mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
+    if not mirror_filter:
+        return
+    for mirror in mirror_filter:
+        if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
+            return
+
+
 @app.get('/')
 async def handle_authorization():
     demisto.debug("auto:")
@@ -620,6 +640,17 @@ async def handle_zoom_button_click(request: Request):
     event_type = request['event']
     payload = request['payload']
     try:
+        if event_type == 'endpoint.url_validation' and SECRET_TOKEN:
+            demisto.debug(f"token={payload}")
+            plaintoken = payload.get('plainToken')
+            hash_object = hmac.new(SECRET_TOKEN.encode('utf-8'), msg=plaintoken.encode('utf-8'), digestmod=hashlib.sha256)
+            demisto.debug(f"hash_object: {hash_object.hexdigest()}")
+            expected_signature = hash_object.hexdigest()
+            res = {
+                "plainToken": plaintoken,
+                "encryptedToken": expected_signature
+            }
+            return JSONResponse(content=res)
         if event_type == 'interactive_message_actions':
             if payload.get('actionItem', False):
                 action = payload['actionItem']['value']
@@ -639,8 +670,10 @@ async def handle_zoom_button_click(request: Request):
                 demisto.updateModuleHealth("")
             demisto.debug(f"button was clicked {action} on message {message_id}")
             return Response(status_code=status.HTTP_200_OK)
+        if event_type == "chat_message.sent":
+            await handle_mirroring(payload)
         else:
-            return Response(status_code=status.HTTP_400_BAD_REQUEST)
+            return Response(status_code=status.HTTP_200_OK)
     except Exception as e:
         await handle_listen_error(f'Error occurred while handel response from Zoom: {e}')
 
@@ -2043,6 +2076,8 @@ def main():  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     botJID = params.get('botJID', None)
+    global SECRET_TOKEN
+    SECRET_TOKEN = params.get('secret_token')
     # long_running_pram = params.get('longRunning', False)
     command = demisto.command()
     port = int(demisto.params().get('longRunningPort', 0))
