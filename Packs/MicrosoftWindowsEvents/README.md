@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 Notes: 
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
- - The pack currently supports the following data source: **Security**, **System**, and **Application**.
+ - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **System**, and **Application**.
 
 To view logs only from the Windows Event log, apply the following filter to the datamodel query: *| filter xdm.observer.type="Microsoft-Windows-Security-\*" or xdm.event.type="System" or xdm.event.type="Application"*
 
@@ -38,11 +38,14 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
    - Add description here — (Optional) Provide additional context for the purpose or business reason that explains why you are creating the profile.
 
 4. You can use one of the following options to collect event logs using the XDR Collectors:
-#### Option A
-If you wish to collect only **Security** logs please select the "Windows Security" template located in the **Select Template** drop-down. After selecting the template press **Add**.
+### Option A
+1. If you wish to collect only **Security** logs please select the "Windows Security" template located in the **Select Template** drop-down. 
+2. After selecting the template press **Add**.
 
-#### Option B
-In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
+### Option B
+#### Creating a customized YAML template
+Tailor the XDR collector to your specific needs by creating a custom template that includes all the event types you want to collect.
+As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
  ```bash
 winlogbeat.event_logs:
 - name: Security
@@ -56,6 +59,6 @@ winlogbeat.event_logs:
     id: application-logs
 ```
 
-**Note:** You can customize what will be collected by removing the "name", "ignore_older", and "id" lines of the specific event type.
+**Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.
 
 5. Press **Create** to save the new template.
