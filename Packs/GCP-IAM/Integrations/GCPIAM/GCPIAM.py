@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # pylint: disable=no-member
 import copy
-from typing import Callable
+from collections.abc import Callable
 from googleapiclient import discovery
 from oauth2client import service_account
 import httplib2
@@ -2586,7 +2586,7 @@ def get_pagination_request_result(limit: int, page: int, max_page_size: int, cli
 
     steps = max_page_size if offset > max_page_size else offset
 
-    for i in range(0, offset, steps):
+    for _i in range(0, offset, steps):
         response = client_request(limit=steps, page_token=page_token, **kwargs)
 
         page_token = response.get('nextPageToken')
@@ -3196,10 +3196,10 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
     readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)
 
     if resource_identifier_key:
-        command_arguments = dict(parent=resource_identifier, include_permissions=include_permissions,
-                                 show_deleted=show_deleted)
+        command_arguments = {'parent': resource_identifier, 'include_permissions': include_permissions,
+                             'show_deleted': show_deleted}
     else:
-        command_arguments = dict(include_permissions=include_permissions, show_deleted=show_deleted)
+        command_arguments = {'include_permissions': include_permissions, 'show_deleted': show_deleted}
 
     if title_filter or permission_filter:
         response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,
@@ -3660,7 +3660,7 @@ def gcp_iam_project_iam_policy_remove_command(client: Client, args: Dict[str, An
 
     iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
     command_results = CommandResults(
@@ -3685,7 +3685,7 @@ def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[st
 
     iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
     command_results = CommandResults(
@@ -3710,7 +3710,7 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
 
     iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
     command_results = CommandResults(
@@ -3775,6 +3775,7 @@ def test_module(service_account_key: str) -> None:
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
+    return None
 
 
 def main() -> None:

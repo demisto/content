@@ -3,7 +3,7 @@ from CommonServerPython import *
 import json
 import requests
 import socket
-from typing import Dict, Any, List
+from typing import Any
 from netaddr import IPNetwork, IPAddress
 
 
@@ -84,8 +84,10 @@ def tos_request(tos_app, req_type, path, params=None, headers=None, data=None):
         else:
             if res.status_code == 401:
                 return_error('TOS Reached, Auth Failed. Please check your credentials')
+                return None
             else:
-                return_error('Error {} Reaching {} to TOS: {}'.format(res.status_code, res.url, res.reason))
+                return_error(f'Error {res.status_code} Reaching {res.url} to TOS: {res.reason}')
+                return None
     elif req_type.upper() == 'POST':
         try:
             res = requests.post(url, data=data, params=params, headers=headers, auth=(tos_user, tos_pass), verify=verify_ssl)
@@ -101,8 +103,11 @@ def tos_request(tos_app, req_type, path, params=None, headers=None, data=None):
         else:
             if res.status_code == 401:
                 return_error('TOS Reached, Auth Failed. Please check your credentials')
+                return None
             else:
-                return_error('Error {} Reaching {} to TOS: {}'.format(res.status_code, res.url, res.reason))
+                return_error(f'Error {res.status_code} Reaching {res.url} to TOS: {res.reason}')
+                return None
+    return None
 
 
 def valid_ip(ipa):
@@ -110,13 +115,13 @@ def valid_ip(ipa):
     try:
         socket.inet_aton(ipa)
         return True
-    except socket.error:
+    except OSError:
         return False
 
 
 def path_finder(querystring):
     # Define the basic output for the function, augmenting later with TOS data
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -187,7 +192,7 @@ def path_finder_image(querystring):
             # Send back to Demisto inside function
             return entry
     except Exception as e:
-        return_error('Error Running Query: {}'.format(e))
+        return_error(f'Error Running Query: {e}')
 
 
 def path_finder_image_command():
@@ -209,7 +214,7 @@ def device_name(devices, device_id):
 
 
 def object_lookup(querystring):
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -218,7 +223,7 @@ def object_lookup(querystring):
         'EntryContext': {}
     }
 
-    return_json: Dict[str, List] = {'objects': []}
+    return_json: dict[str, list] = {'objects': []}
 
     o = tos_request('st', 'GET', '/securetrack/api/network_objects/search', querystring)
 
@@ -264,12 +269,13 @@ def object_lookup_command():
 
     e = object_lookup(querystring)
     demisto.results(e)
+    return None
 
 
 def policy_search(querystring, max_rules_per_device=100):
     """ Search policy across all devices.  See docs for syntax """
     u = '/securetrack/api/rule_search'
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -293,7 +299,7 @@ def policy_search(querystring, max_rules_per_device=100):
         rule_return = []
         device_json = tos_request('st', 'GET', '/securetrack/api/devices')['devices']['device']
         for d in search_devices:
-            rules = tos_request('st', 'GET', u + '/{}'.format(d), querystring)
+            rules = tos_request('st', 'GET', u + f'/{d}', querystring)
             # If no matches(there should be) just break the iteration
             if rules['rules']['count'] == 0:
                 break
@@ -329,7 +335,7 @@ def policy_search_command():
 
 def zone_match(ipaddr):
     """ Find the zone for the given IP address """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -343,14 +349,14 @@ def zone_match(ipaddr):
             zone_subnets = tos_request('st', 'GET', '/securetrack/api/zones/%s/entries' % zone['id'])
             zone.update(zone_subnets)
             for subnet in zone_subnets['zone_entries']['zone_entry']:
-                ipnet = '%s/%s' % (subnet['ip'], subnet['prefix'])
+                ipnet = '{}/{}'.format(subnet['ip'], subnet['prefix'])
                 if IPAddress(ipaddr) in IPNetwork(ipnet):
                     z = {}
                     z['Name'] = zone['name']
                     z['ID'] = int(zone['id'])
                     entry['EntryContext']['Tufin.Zone'] = [z]
                     entry['Contents'] = zone
-                    entry['HumanReadable'] = tableToMarkdown('Tufin Zone Search for {}'.format(ipaddr),
+                    entry['HumanReadable'] = tableToMarkdown(f'Tufin Zone Search for {ipaddr}',
                                                              {'Name': zone['name'], 'ID': zone['id']},
                                                              ['Name', 'ID'], removeNull=True)
                     return entry
@@ -358,7 +364,7 @@ def zone_match(ipaddr):
         return_error(f'Error retrieving zone: {str(e)}')
     entry['EntryContext']['Tufin.Zones'] = [{'Name': 'None', 'ID': 'None'}]
     entry['Contents'] = 'Not Found'
-    entry['HumanReadable'] = tableToMarkdown('Tufin Zone Search for {}'.format(ipaddr),
+    entry['HumanReadable'] = tableToMarkdown(f'Tufin Zone Search for {ipaddr}',
                                              {'Name': 'Not Found', 'ID': '0'}, ['Name', 'ID'], removeNull=True)
     return entry
 
@@ -372,7 +378,7 @@ def zone_match_command():
 
 def change_req(req_type, subj, priority, src, dst='', proto='', port='', action='', comment=''):
     """ Submit a change request to SecureChange """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -387,11 +393,11 @@ def change_req(req_type, subj, priority, src, dst='', proto='', port='', action=
                     or dst is None or proto is None or port is None or action is None):
                 return_error('''Request Type, Subject, Priority, Source, Destination, Protocol,
                              Port and Action parameters are mandatory for this request type''')
-            if not priority.capitalize() in ['Critical', 'High', 'Normal', 'Low']:
+            if priority.capitalize() not in ['Critical', 'High', 'Normal', 'Low']:
                 return_error('Priority must be Critical, High, Normal or Low')
-            if not proto.upper() in ['TCP', 'UDP']:
+            if proto.upper() not in ['TCP', 'UDP']:
                 return_error('Protocol must be TCP or UDP')
-            if not action.capitalize() in ['Accept', 'Drop', 'Remove']:
+            if action.capitalize() not in ['Accept', 'Drop', 'Remove']:
                 return_error('Action must be Accept, Drop or Remove')
             if not port.isdigit():
                 return_error('Port must be an integer')
@@ -412,13 +418,13 @@ def change_req(req_type, subj, priority, src, dst='', proto='', port='', action=
             req['ticket']['comment'] = comment
             tos_request('sc', 'POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
             entry['Contents'] = {'status': 'Ticket Created'}
-            entry['HumanReadable'] = tableToMarkdown('{} ticket request'.format(req_type),
+            entry['HumanReadable'] = tableToMarkdown(f'{req_type} ticket request',
                                                      {'status': 'Success'}, ['status'], removeNull=True)
             entry['EntryContext']['Tufin.Request.Status'] = 'Success'
             return entry
         elif req_type.lower() == 'server decommission request':
             # Check for valid input
-            if not priority.capitalize() in ['Critical', 'High', 'Normal', 'Low']:
+            if priority.capitalize() not in ['Critical', 'High', 'Normal', 'Low']:
                 return_error('Priority must be Critical, High, Normal or Low')
             # Build change request JSON
             req = SERVER_DECOM_REQ
@@ -429,7 +435,7 @@ def change_req(req_type, subj, priority, src, dst='', proto='', port='', action=
             req['ticket']['comment'] = comment
             tos_request('st', 'POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
             entry['Contents'] = {'status': 'Ticket Created'}
-            entry['HumanReadable'] = tableToMarkdown('{} ticket request'.format(req_type),
+            entry['HumanReadable'] = tableToMarkdown(f'{req_type} ticket request',
                                                      {'status': 'Success'}, ['status'], removeNull=True)
             entry['EntryContext']['Tufin.Request.Status'] = 'Success'
             return entry
@@ -454,7 +460,7 @@ def change_req_command():
 
 def dev_search(name='', ip='', vendor='', model=''):
     """ Search SecureTrack Devices """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -465,19 +471,19 @@ def dev_search(name='', ip='', vendor='', model=''):
     dev_list = []
     try:
         qstr = '?show_os_version=true'
-        if not name == '' and name is not None:
-            qstr = '{}&name={}'.format(qstr, name)
-        if not ip == '' and ip is not None:
-            qstr = '{}&ip={}'.format(qstr, ip)
-        if not vendor == '' and vendor is not None:
-            qstr = '{}&vendor={}'.format(qstr, vendor)
-        if not model == '' and model is not None:
-            qstr = '{}&model={}'.format(qstr, model)
-        url = '/securetrack/api/devices{}'.format(qstr)
+        if name != '' and name is not None:
+            qstr = f'{qstr}&name={name}'
+        if ip != '' and ip is not None:
+            qstr = f'{qstr}&ip={ip}'
+        if vendor != '' and vendor is not None:
+            qstr = f'{qstr}&vendor={vendor}'
+        if model != '' and model is not None:
+            qstr = f'{qstr}&model={model}'
+        url = f'/securetrack/api/devices{qstr}'
         devices = tos_request('st', 'GET', url)
         if devices['devices']['count'] > 0:
             for device in devices['devices']['device']:
-                if 'ip' in device.keys():
+                if 'ip' in device:
                     dev_list.append({'ID': int(device['id']), 'Name': device['name'], 'IP': device['ip'],
                                      'Vendor': device['vendor'], 'Model': device['model']})
                 else:
@@ -503,7 +509,7 @@ def dev_search_command():
 
 def change_info(ticket_id):
     """ Get the information from a change request """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -512,7 +518,7 @@ def change_info(ticket_id):
         'EntryContext': {}
     }
     try:
-        url = '/securechangeworkflow/api/securechange/tickets/{}'.format(ticket_id)
+        url = f'/securechangeworkflow/api/securechange/tickets/{ticket_id}'
         ticket = tos_request('sc', 'GET', url)
         cur_step = ''
         if type(ticket['ticket']['current_step']) != str:
@@ -536,7 +542,7 @@ def change_info(ticket_id):
         chg['WorkflowID'] = ticket['ticket']['workflow']['id']
         chg['WorkflowName'] = ticket['ticket']['workflow']['name']
         entry['EntryContext']['Tufin.Ticket'] = [chg]
-        entry['HumanReadable'] = tableToMarkdown('Ticket ID {}'.format(ticket_id), {'ID': ticket['ticket']['id'],
+        entry['HumanReadable'] = tableToMarkdown(f'Ticket ID {ticket_id}', {'ID': ticket['ticket']['id'],
                                                  'Subject': ticket['ticket']['subject'],
                                                  'Priority': ticket['ticket']['priority'], 'Status': ticket['ticket']['status'],
                                                  'CurrentStep': cur_step, 'Requester': ticket['ticket']['requester'],
@@ -555,7 +561,7 @@ def change_info_command():
 
 def app_search(name=''):
     """ Search for applications in SecureApp """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -566,7 +572,7 @@ def app_search(name=''):
     try:
         url = '/securechangeworkflow/api/secureapp/repository/applications'
         if name is not None and name != '':
-            url = '{}?name={}'.format(url, name)
+            url = f'{url}?name={name}'
         apps = tos_request('sa', 'GET', url)
         app_list = []
         for app in apps['applications']['application']:
@@ -590,7 +596,7 @@ def app_search_command():
 
 def app_conns(app_id):
     """ Get application connections from SecureApp """
-    entry: Dict[str, Any] = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -599,10 +605,10 @@ def app_conns(app_id):
         'EntryContext': {}
     }
     try:
-        url = '/securechangeworkflow/api/secureapp/repository/applications/{}/connections'.format(app_id)
+        url = f'/securechangeworkflow/api/secureapp/repository/applications/{app_id}/connections'
         conns = tos_request('sa', 'GET', url)
         conn_list = []
-        conn_md = '### Connections for application ID: {}'.format(app_id)
+        conn_md = f'### Connections for application ID: {app_id}'
         for conn in conns['connections']['connection']:
             conn_md = '{}\n#### Connection: {} ({})\nStatus: **{}**\nExternal: **{}**\nComment: **{}**'.format(conn_md,
                                                                                                                conn['name'],
@@ -612,19 +618,19 @@ def app_conns(app_id):
                                                                                                                conn['comment'])
             # Get sources
             source_list = []
-            conn_md = '{}\n\n**Source:**\nid|type|name\n---|---|---'.format(conn_md)
+            conn_md = f'{conn_md}\n\n**Source:**\nid|type|name\n---|---|---'
             for source in conn['sources']['source']:
                 source_list.append(source['name'])
                 conn_md = '{}\n{} | {} | {}'.format(conn_md, source['id'], source['type'], source['name'])
             # Get destinations
             dest_list = []
-            conn_md = '{}\n\n**Destination:**\nid|type|name\n---|---|---'.format(conn_md)
+            conn_md = f'{conn_md}\n\n**Destination:**\nid|type|name\n---|---|---'
             for dest in conn['destinations']['destination']:
                 dest_list.append(dest['name'])
                 conn_md = '{}\n{} | {} | {}'.format(conn_md, dest['id'], dest['type'], dest['name'])
             # Get services
             service_list = []
-            conn_md = '{}\n\n**Service:**\nid|name\n---|---'.format(conn_md)
+            conn_md = f'{conn_md}\n\n**Service:**\nid|name\n---|---'
             for service in conn['services']['service']:
                 service_list.append(service['name'])
                 conn_md = '{}\n{} | {}'.format(conn_md, service['id'], service['name'])

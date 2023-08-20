@@ -8,7 +8,6 @@ import csv
 import io
 import json
 
-from typing import List
 from enum import Enum
 
 
@@ -40,7 +39,7 @@ class Client(BaseClient):
         self.session.headers = headers
         self.client_id = client_id
         self.tgt = tgt
-        self.access_token = str()
+        self.access_token = ''
         self.expiry = 0
         self.load_session_parameters()
 
@@ -241,7 +240,7 @@ def pentera_get_task_run_full_action_report_command(client: Client, args):
             data.append(row_copy)
         return data
 
-    def _convert_full_action_report_time(full_action_report_list: List[dict]):
+    def _convert_full_action_report_time(full_action_report_list: list[dict]):
         def _parse_date(full_date, separator):
             if isinstance(full_date, str) and isinstance(separator, str):
                 date = full_date.split(separator)
@@ -250,8 +249,10 @@ def pentera_get_task_run_full_action_report_command(client: Client, args):
                     second_arg = date[1]
                     third_arg = date[2]
                     return first_arg, second_arg, third_arg
+                return None
+            return None
 
-        res_list: List[dict] = []
+        res_list: list[dict] = []
         for ordered_dict in full_action_report_list:
             full_date_to_convert = ordered_dict['Time']
             full_date_list = full_date_to_convert.split(' ')
@@ -317,6 +318,7 @@ def parse_task_run_status(json_response):
             'Status': json_response.get('status'),
         }
         return parsed_json_response
+    return None
 
 
 def pentera_authentication(client: Client):

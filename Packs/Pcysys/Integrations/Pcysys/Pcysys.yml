@@ -121,7 +121,7 @@ script:
     - contextPath: Pentera.TaskRun.FullActionReport.Status
       description: 'The status of the action. Can be: success, failed, canceled, no_results'
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.23674
+  dockerimage: demisto/pyjwt3:1.0.0.69027
   runonce: false
   script: '-'
   subtype: python3
