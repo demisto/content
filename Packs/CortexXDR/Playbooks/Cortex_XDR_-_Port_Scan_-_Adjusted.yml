@@ -649,10 +649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: dddac1a4-f12c-4a40-85d3-961b5813258f
+    taskid: 676497a0-9c1e-4fea-8a6b-f60219387e9e
     type: playbook
     task:
-      id: dddac1a4-f12c-4a40-85d3-961b5813258f
+      id: 676497a0-9c1e-4fea-8a6b-f60219387e9e
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -676,7 +676,7 @@ tasks:
           accessor: Indicator
       LimitResults:
         simple: "200"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -918,6 +918,47 @@ tasks:
       InternalRange:
         complex:
           root: inputs.InternalIPRanges
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+              ignorecase: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA256:
@@ -1015,6 +1056,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "152"
       "yes":
       - "144"
     separatecontext: false
@@ -1920,6 +1963,53 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "True"
+      MD5:
+        complex:
+          root: DBotScore.Indicator
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          - - operator: notIn
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: IndicatorsToBlock
+                iscontext: true
+          transformers:
+          - operator: uniq
       RuleDirection:
         simple: inbound
       RuleName:
@@ -2498,6 +2588,7 @@ view: |-
     "linkLabelsPosition": {
       "103_109_#default#": 0.11,
       "128_112_#default#": 0.14,
+      "143_144_yes": 0.66,
       "149_109_#default#": 0.1,
       "162_163_Internal": 0.48,
       "162_164_External": 0.51,
