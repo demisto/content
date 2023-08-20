@@ -93,9 +93,7 @@ else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
   REMOVE_PBS=true
   GCS_PRIVATE_BUCKET="marketplace-dist-private"
-  if [ -n "${PACKS_TO_UPLOAD}" ]; then
-    PACK_UPLOAD_FLAG=true
-  elif [ -n "${FORCE_BUCKET_UPLOAD}" ]; then
+  if [ -n "${FORCE_BUCKET_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
     # In case the workflow is force upload, we override the forced packs
     echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
     OVERRIDE_ALL_PACKS=true
@@ -103,6 +101,9 @@ else
     IS_FORCE_UPLOAD=true
     BUCKET_UPLOAD_FLOW=false
   else
+    if [ -n "${PACKS_TO_UPLOAD}" ]; then
+      PACK_UPLOAD_FLAG=true
+    fi
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
     echo "Updating the following content packs to production: $CONTENT_PACKS_TO_UPLOAD ..."
