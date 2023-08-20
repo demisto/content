@@ -18,7 +18,7 @@ install_logging("create_artifacts.log", logger=logger)
 
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool, packs_to_dump: list):
     logger.debug(f"Creating artifacts for packs: {packs_to_dump}")
-    content_dto.dump(output, marketplace, zip, packs_to_dump)
+    content_dto.dump(dir=output, marketplace=marketplace, zip=zip, packs_to_dump=packs_to_dump)
 
 
 def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output: Path, packs_to_create_zips: set) -> set:
