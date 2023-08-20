@@ -51,8 +51,10 @@ class Client(BaseClient):
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
-        # perform pagination if needed,  cycle through all pages and add results to results list
-        while (next := raw_response.get('data', '').get('next')):
+        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list
+        while (next := raw_response.get('data', '').get('next')) and (len(results) < max_fetch):
+            if next < max_fetch:
+                params['length'] = max_fetch - next
             params['from'] = next
             raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
             results.extend(raw_response.get('data', {}).get('results', []))
@@ -122,30 +124,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client, alert_status):
-    # FIX needs to be implemented
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
-
-
 ''' HELPER FUNCTIONS '''
-
-
-def min_datetime(last_fetch_time, fetch_start_time_param):
-    # TODO remove if not used
-    if not isinstance(last_fetch_time, datetime) or not isinstance(fetch_start_time_param, datetime):
-        raise DemistoException(f'last_fetch_time or fetch_start_time_param is not a valid date: {last_fetch_time}')
-    comparable_datetime = datetime(year=last_fetch_time.year, month=last_fetch_time.month,
-                                   day=last_fetch_time.day,
-                                   hour=last_fetch_time.hour,
-                                   minute=last_fetch_time.minute,
-                                   second=last_fetch_time.second,
-                                   microsecond=last_fetch_time.microsecond)
-    return min(comparable_datetime, fetch_start_time_param)
 
 
 def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param):
@@ -214,11 +193,11 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
 
         if alerts_response:
             alerts = dedup_alerts(alerts_response, last_run.get('alerts_last_fetch_ids', []))
+            next_run['alerts_last_fetch_time'] = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
             next_run['alerts_last_fetch_ids'] = [alert.get('alertId') for alert in alerts]
-            next_run['alerts_last_fetch_time'] = alerts[-1].get(
-                'time') if alerts else last_run.get('alerts_last_fetch_time')
             events.extend(alerts)
             demisto.debug(f'debug-log: fetched {len(alerts)} alerts')
+            demisto.debug(f'debug-log: last alert in list: {alerts[-1] if alerts else {}}')
 
     if 'Threats' in log_types_to_fetch:
         demisto.debug('debug-log: handling log-type: threats')
@@ -236,11 +215,11 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
 
         if threats_response:
             threats = dedup_threats(threats_response, last_run.get('threats_last_fetch_ids', []))
+            next_run['threats_last_fetch_time'] = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
             next_run['threats_last_fetch_ids'] = [threat.get('activityUUID') for threat in threats]
-            next_run['threats_last_fetch_time'] = threats[-1].get(
-                'time') if threats else last_run.get('threats_last_fetch_time')
             events.extend(threats)
             demisto.debug(f'debug-log: fetched {len(threats)} threats')
+            demisto.debug(f'debug-log: last threat in list: {threats[-1] if threats else {}}')
 
     next_run['access_token'] = client._access_token
 
@@ -272,20 +251,58 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
 
     Args:
         from_date: The from_date argument.
-    Returns:
 
+    Returns:
         datetime: The from_date argument as a datetime object or None if the argument is invalid.
     """
-    if from_date:
-        from_date_datetime = arg_to_datetime(from_date)
-        return from_date_datetime if isinstance(from_date_datetime, datetime) else None
-    return None
+    from_date_datetime = arg_to_datetime(from_date)
+    return from_date_datetime if isinstance(from_date_datetime, datetime) else None
+
+
+def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str | list]):
+    """Handle fetched events.
+    - Send the events to XSIAM.
+    - Set last run values for next fetch cycle.
+
+    Args:
+        events (list[dict[str, Any]]): Fetched events.
+        next_run (dict[str, str | list]): Next run dictionary.
+    """
+    if events:
+        add_time_to_events(events)
+        demisto.debug(f'debug-log: {len(events)} events are about to be sent to xsiam')
+        send_events_to_xsiam(
+            events,
+            vendor=VENDOR,
+            product=PRODUCT
+        )
+        demisto.setLastRun(next_run)
+        demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
+        demisto.debug(f'debug-log: {next_run=}')
+    else:
+        demisto.info('debug-log: No new events fetched, Last run was not updated.')
+
+
+def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
+    """Returns a CommandResults object with a table of fetched events.
+
+    Args:
+        events (list[dict[str, Any]]): list of fetched events.
+
+    Returns:
+        CommandResults: CommandResults object with a table of fetched events.
+    """
+    return CommandResults(
+        raw_response=events,
+        readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT} events',
+                                        t=events,
+                                        removeNull=True))
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -297,7 +314,10 @@ def main() -> None:
     max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
     log_types_to_fetch = argToList(params.get('log_types_to_fetch', []))
+    should_push_events = argToBoolean(args.get('should_push_events', False))
     from_date_datetime = None
+    if from_date := args.get('from_date'):
+        from_date_datetime = handle_from_date_argument(from_date)
 
     demisto.debug(f'Command being called is {command}')
 
@@ -313,8 +333,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif command in ('fetch-events', 'armis-get-events'):
-            if from_date := args.get('from_date'):  # this argument is used only in the armis-get-events command
-                from_date_datetime = handle_from_date_argument(from_date)
+            push_events = (command == 'fetch-events' or should_push_events)
 
             events, next_run = fetch_events(
                 client=client,
@@ -324,31 +343,14 @@ def main() -> None:
                 log_types_to_fetch=log_types_to_fetch,
             )
 
-            demisto.debug(f'debug-log: {len(events)} events fetched from armis')
+            demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
+
+            if push_events:
+                handle_fetched_events(events, next_run)
 
             if command == 'armis-get-events':
-                should_push_events = True
+                return_results(events_to_command_results(events))
 
-            else:  # armis-get-events command
-                should_push_events = argToBoolean(args.get('should_push_events', False))
-                return_results(CommandResults(
-                    readable_output=tableToMarkdown(t=events,
-                                                    name=f'{VENDOR} events ({log_types_to_fetch})',
-                                                    removeNull=True),
-                    raw_response=events
-                ))
-
-            if should_push_events:
-                add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-                demisto.debug(f'debug-log: {len(events)} events sent to xsiam')
-                demisto.debug(f'debug-log: last event in events list: {events[-1] if events else {}}')
-                demisto.debug(f'debug-log: {next_run=}')
-                demisto.setLastRun(next_run)
         else:
             return_error(f'Command {command} does not exist for this integration.')
     except Exception as e:
