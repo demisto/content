@@ -5,6 +5,7 @@ import os
 from typing import Tuple, Optional
 import gitlab
 from slack_sdk import WebClient
+from junitparser import TestCase, TestSuite, JUnitXml, Skipped, Error
 
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
@@ -69,6 +70,26 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
     except Exception:
         logging.exception(f'Error getting {artifact_relative_path} file')
     return artifact_data
+
+
+def test_modeling_rules_results(artifact_folder, title):
+    failed_test_modeling_rules = get_artifact_data(artifact_folder, 'modeling_rules_results.xml')
+    if not failed_test_modeling_rules:
+        return []
+    xml = JUnitXml.fromstring(failed_test_modeling_rules)
+    content_team_fields = []
+
+    for test_suite in xml.iterchildren(TestSuite):
+        if test_suite.failures or test_suite.errors:
+            content_team_fields.append({
+                "title": f"{title} - Failed Tests - ({len(test_suite)}",
+                "value": '',
+                "short": False
+            })
+            create_jira_issue(jira_server, test_suite, options, now)
+        else:
+            logging.info(f"Skipped creating Jira issue for {test_suite.name}")
+
 
 
 def test_playbooks_results(artifact_folder, title):
