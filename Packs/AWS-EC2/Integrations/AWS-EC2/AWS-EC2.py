@@ -165,6 +165,50 @@ def describe_instances_command(args, aws_client):
     return_outputs(human_readable, ec)
 
 
+def describe_iam_instance_profile_associations_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
+    )
+    data = []
+    kwargs = {}
+    output = []
+    if (filters := args.get('filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (association_ids := args.get('associationIds')) is not None:
+        kwargs.update({'AssociationIds': parse_resource_ids(association_ids)})
+    if (max_results := args.get('maxResults')) is not None:
+        kwargs.update({'MaxResults': max_results})
+    if (next_token := args.get('nextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+
+    response = client.describe_iam_instance_profile_associations(**kwargs)
+
+    if len(response['IamInstanceProfileAssociations']) == 0:
+        demisto.results('No instance profile associations were found.')
+        return
+
+    for i, association in enumerate(response['IamInstanceProfileAssociations']):
+        data.append({
+            'InstanceId': association['InstanceId'],
+            'State': association['State'],
+            'AssociationId': association['AssociationId'],
+            'IamInstanceProfile': association['IamInstanceProfile'],
+        })
+        output.append(association)
+
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except ValueError as e:
+        return_error(f'Could not decode/encode the raw response - {e}')
+    ec = {'AWS.EC2.IamInstanceProfileAssociations(val.AssociationId === obj.AssociationId)': raw}
+    human_readable = tableToMarkdown('AWS IAM Instance Profile Associations', data)
+    return_outputs(human_readable, ec)
+
+
 def describe_images_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
@@ -2976,6 +3020,9 @@ def main():
 
         elif command == 'aws-ec2-describe-instances':
             describe_instances_command(args, aws_client)
+
+        elif command == 'aws-ec2-describe-iam-instance-profile-associations':
+            describe_iam_instance_profile_associations_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-images':
             describe_images_command(args, aws_client)
