@@ -666,6 +666,37 @@ def test_fetch_incidents_with_pagination(post_mock):
     ('key', (None, None)),
 ])
 def test_format_nested_incident_attribute(nested_attr, expected_result):
+    """
+    Formatting incident attributes.
+    Given:
+        - Some incident attributes.
+    When:
+        - format_nested_incident_attribute is running.
+    Then:
+        - Check that the formatted incident attribute is as expected.
+    """
     from FortiSIEMV2 import format_nested_incident_attribute
 
     assert format_nested_incident_attribute(nested_attr) == expected_result
+
+
+@pytest.mark.parametrize('events_mock_response, expected_result', [
+    ({'result': {'description': 'The incident detail was not found for incident 123465'}}, 0),
+    (load_json_mock_response("triggered_events.json"), 5),
+    (load_json_mock_response("triggered_events_dict.json"), 5),
+])
+def test_get_related_events_for_fetch_command(events_mock_response, expected_result, requests_mock):
+    """
+    Fetching events per incident.
+    Given:
+        - Incident ID with/without events.
+    When:
+        - get_related_events_for_fetch_command is running.
+    Then:
+        - Check that the sum of the events is as expected.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, get_related_events_for_fetch_command
+    client: FortiSIEMClient = mock_client()
+    requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
+
+    assert len(get_related_events_for_fetch_command('123456', 20, client)) == expected_result
