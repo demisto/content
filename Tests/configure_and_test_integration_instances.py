@@ -31,7 +31,6 @@ from ruamel import yaml
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.Marketplace.marketplace_constants import Metadata
-from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -867,6 +866,7 @@ class CloudBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
                             artifacts_folder=ARTIFACTS_FOLDER_MPV2,
                             marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
+        from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
         logging.info('Copying custom build bucket to cloud_instance_bucket.')
         marketplace_name = marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
