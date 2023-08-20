@@ -1,6 +1,5 @@
 fromversion: 6.10.0
-id: security_armis_ParsingRule
+id: armis_security_ParsingRule
 name: Security Armis Parsing Rule
 rules: ''
-schema: ''
 tags: [Armis]

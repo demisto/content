@@ -1,8 +1,7 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,7 +10,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'armis'
-PRODUCT = 'armis'
+PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 

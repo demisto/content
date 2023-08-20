@@ -1,5 +1,5 @@
-[MODEL: dataset=armis_armis_raw]
-// alerts mapping 
+[MODEL: dataset=armis_security_raw]
+// alerts mapping
 filter alertId != null
 | alter
 	xdm.event.type = type,
@@ -13,7 +13,7 @@ filter alertId != null
 	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
 
 // activities mapping
-filter activityUUID != null   
+filter activityUUID != null
 | alter
 	xdm.network.ip_protocol = protocol,
 	xdm.alert.original_threat_name = content,
