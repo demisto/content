@@ -359,6 +359,7 @@ def sync_marketplace(client: demisto_client,
 
     """
     try:
+        logging.info("Attempting to sync marketplace.")
         for attempt in range(attempts_count - 1, -1, -1):
             try:
                 sync_marketplace_url = (
