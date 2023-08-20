@@ -282,7 +282,7 @@ KV Store stores your data as key-value pairs in collections.  It provides a way 
 
 To add data to the fields in the KV Store, run the following command:
 
-**!splunk-kv-store-collection-add-entries kv_store_data="{\"\<field-name-or-index\>\": |"\<value\>\", \"\<field-name-or-index\>\": |"\<value\>\", \"\<field-name-or-index\>\": |"\<value>\"...}"**
+**!splunk-kv-store-collection-add-entries kv_store_data="{\"\<field-name-or-index\>\": \"\<value\>\", \"\<field-name-or-index\>\": \"\<value\>\", \"\<field-name-or-index\>\": \"\<value\>\"...}"**
 
 For example:
 
