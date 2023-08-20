@@ -87,22 +87,34 @@ def test_aggregate_summaries(mocker) -> None:
     }
 
 
-@pytest.mark.parametrize('summaries, expected_str', [
+@pytest.mark.parametrize('summaries, mandatory_only, expected_str', [
     pytest.param(
         {mp: "data" for mp in (script_module.MarketplaceVersions)},
+        False,
         f"{script_module.CHANGES_MSG_TITLE}### XSOAR\ndata\n### XSIAM\ndata\n### XPANSE\ndata\n",
         id="Summaries exist for all marketplaces",
     ),
     pytest.param(
         {},
+        False,
         script_module.NO_CHANGES_MSG,
         id="No diff",
     ),
+    pytest.param(
+        {},
+        True,
+        script_module.NO_MANDATORY_CHANGES_MSG,
+        id="No diff - mandatory only",
+    ),
 ])
-def test_format_summaries_to_single_comment(summaries, expected_str) -> None:
+def test_format_summaries_to_single_comment(
+    summaries: dict,
+    mandatory_only: bool,
+    expected_str: str,
+) -> None:
     """
     Given: Different cases of summaries dict.
     When: Running format_summaries_to_single_comment().
     Then: Ensure the returned comment string is as expected.
     """
-    assert script_module.format_summaries_to_single_comment(summaries) == expected_str
+    assert script_module.format_summaries_to_single_comment(summaries, mandatory_only) == expected_str

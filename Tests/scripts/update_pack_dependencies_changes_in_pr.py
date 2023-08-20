@@ -1,4 +1,3 @@
-from collections import defaultdict
 import json
 import logging as logger
 from argparse import ArgumentParser, Namespace
@@ -28,6 +27,7 @@ MP_VERSION_TO_DISPLAY: dict = {
     MarketplaceVersions.XPANSE: "XPANSE",
 }
 NO_CHANGES_MSG = "**No changes in packs dependencies were made on this pull request.**"
+NO_MANDATORY_CHANGES_MSG = "**No mandatory dependencies were added on this pull request.**"
 CHANGES_MSG_TITLE = "## This pull request introduces changes in packs dependencies\n"
 
 
@@ -145,9 +145,9 @@ def aggregate_summaries(artifacts_folder: str, mandatory_only: bool = False) -> 
     return summaries
 
 
-def format_summaries_to_single_comment(summaries: dict) -> str:
+def format_summaries_to_single_comment(summaries: dict, mandatory_only: bool) -> str:
     if not any(bool(s) for s in summaries.values()):
-        return NO_CHANGES_MSG
+        return NO_MANDATORY_CHANGES_MSG if mandatory_only else NO_CHANGES_MSG
     s = CHANGES_MSG_TITLE
     for marketplace, summary in summaries.items():
         if summary:
@@ -166,7 +166,7 @@ def main():  # pragma: no cover
     )
 
     pull_request.edit_comment(
-        format_summaries_to_single_comment(summaries),
+        format_summaries_to_single_comment(summaries, args.mandatory_only),
         section_name="Packs dependencies diff",
     )
 
