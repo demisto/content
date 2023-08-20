@@ -1238,7 +1238,7 @@ def main():
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     modified_packs_to_upload = option.pack_names or ""
-    packs_flag = option.packs_names_flag
+    packs_flag = option.pack_names_flag
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
