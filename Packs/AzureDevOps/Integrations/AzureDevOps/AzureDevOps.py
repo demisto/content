@@ -584,7 +584,7 @@ class Client:
 
         params = {"path": args["file_name"], "api-version": 7.0, "$format": args["format"],
                   "includeContent": args["include_content"], "versionDescriptor.versionType": "branch",
-                  "versionDescriptor.version": args["branch_name"]}
+                  "versionDescriptor.version": args["branch_name"].split("/")[-1]}
 
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
                    f'_apis/git/repositories/{project_args.repository}/items'
