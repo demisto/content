@@ -27,7 +27,7 @@ Context values are retrieved from the value entered in the ***value (Get)*** of 
 
 **Regular expressions** are implemented with the "regex_match" function, in the format: `regex_match('pattern', 'string')`. The behavior of the function is controlled with the ***flags*** argument.
 
-**Literal strings** should preferably be surrounded by single quotes.
+**Literal strings** should preferably be surrounded by single quotes. Please do _not_ use `#{...}` in a string, instead, use the `+` operator. For example: `'first ' + #{second.string} + ' third'` will be equal to the common `"first ${second.string} third"`.
 
 ### Example:
 ---
@@ -40,8 +40,12 @@ ${.}
 ```json
 [
   {
+    "condition": "'www.' + #{domain.name} + '.com' not in #{approved.sites}",
+    "return": #{domain.name}
+  },
+  {
     "condition": "#{number} >= 5 and #{path.to.string} == 'Yes'",
-    "return": "1"
+    "return": "valid"
   },
   {
     "condition": "regex_match('\d+', #{some.value})",

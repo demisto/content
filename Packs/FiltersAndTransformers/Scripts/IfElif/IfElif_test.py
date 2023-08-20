@@ -1,11 +1,12 @@
 import pytest
 from IfElif import IfElif
 import ast
+import json
 
 
 class MockIfElif(IfElif):
     def __init__(self, *args, **kwargs) -> None:
-        pass
+        self.functions = {}
 
 
 def test_handle_flags():
@@ -47,6 +48,7 @@ def test_handle_flags():
         ('not false', True),
         ('1 not in [1,2,3,4,5]', False),
         ('1 in [1,2,3,4,5]', True),
+        ('"a" + "b" == "ab"', True),
         ('(true and not false and (0 or 2) in {2:3})'
          ' and (1 not in [[[1]]] or false)'
          ' and (1 < 2 < 3 > 2 > 1) in [true, null]', True),
@@ -66,7 +68,7 @@ def test_parse_conditions(expression, expected_result):
 
     if_elif = IfElif(
         value=None,
-        conditions=str([
+        conditions=json.dumps([
             {
                 'condition': expression,
                 'return': True

@@ -159,7 +159,7 @@ tasks:
                           "return": "error"
                         },
                        {
-                          "condition": "regex_match('\\w{5}', #{IfElif.embedded_str.key1.key2} '1')",
+                          "condition": "regex_match('\\w{4}', #{IfElif.embedded_str.key1.key2})",
                           "return":"error"
                         },
                         {
