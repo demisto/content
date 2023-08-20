@@ -1,7 +1,8 @@
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
@@ -103,9 +104,8 @@ class FireEyeClient(BaseClient):
         now_timestamp = datetime.timestamp(now)
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
-        if token and valid_until:
-            if now_timestamp < valid_until:
-                return token
+        if token and valid_until and now_timestamp < valid_until:
+            return token
 
         # else generate a token and update the integration context accordingly
         token = self._generate_token()
