@@ -1449,7 +1449,7 @@ tasks:
       version: -1
       name: Save account usernames
       description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+        Saves the usernames without domain prefixes under a new context key.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
