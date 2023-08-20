@@ -10,7 +10,8 @@ from AWSSystemManager import (
     convert_datetime_to_iso,
     next_token_command_result,
     validate_args,
-    get_association_command
+    get_association_command,
+    list_versions_association_command
 )
 from CommonServerPython import CommandResults, DemistoException
 
@@ -32,6 +33,9 @@ class MockClient:
         pass
 
     def describe_association(self, **kwargs):
+        pass
+
+    def list_association_versions(self, **kwargs):
         pass
 
 
@@ -347,4 +351,21 @@ def test_get_association_command(mocker: MockerFixture) -> None:
         '|---|---|---|---|---|---|---|---|---|---|\n'
         '| association_id | Moishy | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT '
         '| 2023-07-25T18:51:28.607000+03:00 |  | rate(30 minutes) | Pending |\n'
+    )
+
+
+def test_list_versions_association_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/list_association_versions_response.json")
+    mocker.patch.object(MockClient, "list_association_versions", return_value=mock_response)
+    response = list_versions_association_command(MockClient, {"association_id": "12345678-0000-0000-0000-000000000000"})
+    mock_response.pop("ResponseMetadata")
+    assert response[0].outputs == mock_response
+    assert response[0].readable_output == (
+        "### Association Versions\n"
+        "|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule "
+        "expression|Targets|Version|\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|\n"
+        "| association_id | 2023-02-14T13:48:24.511000+02:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br>\t"
+        "***values***: arn<br>**IsPolicyAttachAllowed**:<br>\t***values***: false | rate(30 days) | **-**\t"
+        "***Key***: ParameterValues<br>\t**Values**:<br>\t\t***values***: instance_id | 1 |\n"
     )

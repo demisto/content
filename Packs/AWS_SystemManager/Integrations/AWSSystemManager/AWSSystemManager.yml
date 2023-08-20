@@ -411,6 +411,108 @@ script:
     - contextPath: AWS.SSM.Association.AssociationDescription.TriggeredAlarms.State
       description: The state of the CloudWatch alarm.
       type: String
+  - arguments:
+    - description: The association ID for which want to view all versions.
+      name: association_id
+      required: True
+    - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
+      name: limit
+      defaultvalue: 50
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
+      name: next_token
+    description: Retrieves all versions of an association for a specific association ID.
+    name: aws-ssm-association-version-list
+    outputs:
+    - contextPath: AWS.SSM.AssociationVersionNextToken
+      description: The token for the next set of items to return. Use this token to get the next set of results.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.AssociationId
+      description: The ID created by the system when the association was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.AssociationVersion
+      description: The association version.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.CreatedDate
+      description: The date the association version was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.Name
+      description: The name specified when the association was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.DocumentVersion
+      description: The version of an Amazon Web Services Systems Manager document (SSM document) used when the association version was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.Parameters
+      description: Parameters specified when the association version was created.
+      type: Dictionary
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.Targets.Values
+      description: User-defined criteria that maps to Key, Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.ScheduleExpression
+      description: The cron or rate schedule specified for the association when the association version was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location
+      description: An S3 bucket where to store the output details of the request.
+      type: Dictionary
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3Region
+      description: The Amazon Web Services Region of the S3 bucket.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3BucketName
+      description: The name of the S3 bucket.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3KeyPrefix
+      description: The S3 bucket subfolder.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.AssociationName
+      description: The name specified for the association version when the association version was created.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.MaxErrors
+      description: The number of errors that are allowed before the system stops sending requests to run the association on additional targets. Executions that are already running an association when MaxErrors is reached are allowed to complete, but some of these executions may fail as well.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.MaxConcurrency
+      description: The maximum number of targets allowed to run the association at the same time. If a new managed node starts and attempts to run an association while Systems Manager is running MaxConcurrency associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for MaxConcurrency.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.ComplianceSeverity
+      description: The severity level that is assigned to the association.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance
+      description: The mode for generating association compliance. can specify AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by your direct call to the PutComplianceItems API operation.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.ApplyOnlyAtCronInterval
+      description: By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions.
+      type: Boolean
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames
+      description: 'The names or Amazon Resource Names (ARNs) of the Change Calendar type documents your associations are gated under. The associations for this version only run when that Change Calendar is open. '
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts
+      description: The Amazon Web Services accounts targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Regions
+      description: The Amazon Web Services Regions targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxConcurrency
+      description: The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxErrors
+      description: The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.ExecutionRoleName
+      description: The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.ScheduleOffset
+      description: Number of days to wait after the scheduled day to run an association.
+      type: Number
+    - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetMaps
+      description: A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together.
+      type: Dictionary
   isfetch: false
   runonce: false
   script: '-'

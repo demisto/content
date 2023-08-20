@@ -21,6 +21,29 @@ REGEX_PATTERNS = {
 
 
 def validate_args(args: dict[str, Any]) -> None:
+    """
+    Validates the arguments in the provided dictionary using regular expressions,
+    from the constants REGEX_PATTERNS.
+
+    Args:
+        args (dict[str, Any]): A dictionary containing the arguments to be validated.
+
+    Raises:
+        DemistoException: If any of the arguments fail to match their respective regex patterns.
+
+    Example:
+        The following example demonstrates the usage of the function:
+        ```
+        args = {
+            'instance_id': 'i-0a00aaa000000000a', # valid instance id
+            'association_id': '0000' # invalid association id
+        }
+        try:
+            validate_args(args)
+        except DemistoException as e:  # e equals to "Invalid association id: 0000"
+            print(f"Validation error: {e}")
+        ```
+    """
     for arg_name, (regex_pattern, error_message) in REGEX_PATTERNS.items():
         if (arg_value := args.get(arg_name)) and not re.search(regex_pattern, arg_value):
             raise DemistoException(error_message.format(**{arg_name: arg_value}))
@@ -61,14 +84,31 @@ def convert_datetime_to_iso(response: dict[str, Any]) -> dict[str, Any]:
 
     Returns:
         dict: The response dictionary with datetime objects converted to ISO formatted strings.
+
+    Example:
+        The following example demonstrates how to use the function to convert datetime objects:
+        ```
+        response = {
+            'timestamp': datetime(2023, 8, 20, 12, 30, 0),
+            'data': {
+                'created_at': datetime(2023, 8, 19, 15, 45, 0)
+            }
+        }
+        iso_response = convert_datetime_to_iso(response)
+        print(iso_response)
+        #   {
+        #   'timestamp': '2023-08-20T12:30:00',
+        #   'data': {
+        #        'created_at': '2023-08-19T15:45:00'
+        #      }
+        #   }
+        ```
     """
-    def datetime_to_string(obj):
+    def _datetime_to_string(obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
         return obj
-    response_str = json.dumps(response, default=datetime_to_string)
-    response = json.loads(response_str)
-    return response
+    return json.loads(json.dumps(response, default=_datetime_to_string))
 
 
 def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandResults:
@@ -162,8 +202,7 @@ def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResul
     kwargs = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response = ssm_client.get_inventory(**kwargs)
     command_results = []
@@ -238,8 +277,7 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
         "TypeName": args["type_name"],
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response: dict = ssm_client.list_inventory_entries(**kwargs)
     response.pop("ResponseMetadata")
@@ -292,11 +330,9 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
             for association in associations
         ]
 
-    kwargs = {
-        "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
-    }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
+    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
+
     response: dict[str, list] = ssm_client.list_associations(**kwargs)
     response.pop("ResponseMetadata")
     response = convert_datetime_to_iso(response)
@@ -342,7 +378,7 @@ def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
     instance_id = args.get("instance_id")
     document_name = args.get("document_name")
 
-    validate_args(args)
+    validate_args(args)  # raises DemistoException if invalid args
 
     if not bool(association_id or (instance_id and document_name)):
         raise DemistoException("This command  must provide either association id or instance_id and document_name.")
@@ -368,6 +404,71 @@ def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
             t=_parse_association(response.get("AssociationDescription", {}))
         ),
     )
+
+
+def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Lists the versions of an SSM association based on provided parameters.
+
+    Args:
+        ssm_client: The AWS SSM client used to interact with the service.
+            - association_id (required): The ID of the association.
+            - limit (optional): The maximum number of versions to return. Defaults to 50.
+            - next_token (optional): The token for the next set of results.
+
+    Returns:
+        list[CommandResults]: A list of CommandResults objects, containing information about the association versions.
+            if next_token provide in the response, the first CommandResults in the list will contain the next token.
+    """
+    def _parse_association_versions(association_versions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {
+                "Version": association_version.get("AssociationVersion"),
+                "Name": association_version.get("Name"),
+                "Create date": association_version.get("CreatedDate"),
+                "Association id": association_version.get("AssociationId"),
+                "Document version": association_version.get("DocumentVersion"),
+                "Targets": association_version.get("Targets"),
+                "Parameters": association_version.get("Parameters"),
+                "Schedule expression": association_version.get("ScheduleExpression"),
+                "Output location": association_version.get("OutputLocation"),
+                "MaxConcurrency": association_version.get("MaxConcurrency"),
+                "MaxErrors": association_version.get("MaxErrors"),
+            }
+            for association_version in association_versions
+        ]
+    validate_args(args)
+    kwargs = {'AssociationId': args["association_id"], 'MaxResults': arg_to_number(args.get("limit", 50)) or 50}
+    kwargs.update({'NextToken': next_token}) if (next_token := args.get("next_token")) else None
+
+    response = ssm_client.list_association_versions(**kwargs)
+    response = convert_datetime_to_iso(response)
+    response.pop("ResponseMetadata")
+    command_results: list[CommandResults] = []
+    if response_next_token := response.get("NextToken"):
+        command_results.append(
+            next_token_command_result(response_next_token, "AssociationVersionNextToken")
+        )
+    command_results.append(
+        CommandResults(
+            outputs=response,
+            outputs_key_field="AssociationId",
+            outputs_prefix="AWS.SSM.AssociationVersion",
+            readable_output=tableToMarkdown(
+                t=_parse_association_versions(response.get("AssociationVersions", [])),
+                name="Association Versions",
+                json_transform_mapping={
+                    "Parameters": JsonTransformer(
+                        is_nested=True,
+                    ),
+                    "Targets": JsonTransformer(
+                        is_nested=True,
+                    ),
+                },
+            )
+        )
+    )
+    return command_results
 
 
 def test_module(ssm_client) -> str:
@@ -429,6 +530,8 @@ def main():
                 return_results(list_associations_command(ssm_client, args))
             case "aws-ssm-association-get":
                 return_results(get_association_command(ssm_client, args))
+            case "aws-ssm-association-version-list":
+                return_results(list_versions_association_command(ssm_client, args))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 

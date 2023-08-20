@@ -3,3 +3,4 @@
 !aws-ssm-inventory-entry-list instance_id=test type_name=AWS:InstanceInformation
 !aws-ssm-association-list
 !aws-ssm-association-get association_id=association_id
+!aws-ssm-association-version-list association_id=association_id

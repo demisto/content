@@ -1,5 +1,5 @@
 AWS Systems Manager is the operations hub for your AWS applications and resources and a secure end-to-end management solution for hybrid cloud environments that enables safe and secure operations at scale.
-This integration was integrated and tested with version xx of AWS - System Manager
+This integration was integrated and tested with version Boto3 1.28.30 of AWS-SDK.
 
 ## Configure AWS - System Manager on Cortex XSOAR
 
@@ -471,4 +471,105 @@ Describes the association for the specified target or managed node. if the assoc
 >|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|Resource status count|Schedule expression|Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >| association_id | AWS-QuickSetup | 1 | 2023-02-14T11:48:24.511000+00:00 | AWSQuickSetup | $DEFAULT | 2023-08-13T11:49:38+00:00 | Failed: 1 | rate(30 days) | Failed |
+
+### aws-ssm-association-version-list
+
+***
+Retrieves all versions of an association for a specific association ID.
+
+#### Base Command
+
+`aws-ssm-association-version-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| association_id | The association ID for which want to view all versions. | Required | 
+| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AssociationVersionNextToken | String | The token for the next set of items to return. Use this token to get the next set of results. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.AssociationId | String | The ID created by the system when the association was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.AssociationVersion | String | The association version. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.CreatedDate | String | The date the association version was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.Name | String | The name specified when the association was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.DocumentVersion | String | The version of an Amazon Web Services Systems Manager document \(SSM document\) used when the association version was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.Parameters | Dictionary | Parameters specified when the association version was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.Targets.Values | String | User-defined criteria that maps to Key, Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.ScheduleExpression | String | The cron or rate schedule specified for the association when the association version was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location | Dictionary | An S3 bucket where to store the output details of the request. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.AssociationName | String | The name specified for the association version when the association version was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. Executions that are already running an association when MaxErrors is reached are allowed to complete, but some of these executions may fail as well. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. If a new managed node starts and attempts to run an association while Systems Manager is running MaxConcurrency associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for MaxConcurrency. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.ComplianceSeverity | String | The severity level that is assigned to the association. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance | String | The mode for generating association compliance. can specify AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by your direct call to the PutComplianceItems API operation. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents your associations are gated under. The associations for this version only run when that Change Calendar is open.  | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
+
+#### Command example
+```!aws-ssm-association-version-list association_id=association_id```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "AssociationVersion": {
+                "AssociationVersions": [
+                    {
+                        "ApplyOnlyAtCronInterval": false,
+                        "AssociationId": "association_id",
+                        "AssociationName": "AWS-QuickSetup",
+                        "AssociationVersion": "1",
+                        "CalendarNames": [],
+                        "CreatedDate": "2023-02-14T11:48:24.511000+00:00",
+                        "Name": "AWSQuickSetup",
+                        "Parameters": {
+                            "AutomationAssumeRole": [
+                                "arn/AWS-QuickSetup"
+                            ],
+                            "IsPolicyAttachAllowed": [
+                                "false"
+                            ]
+                        },
+                        "ScheduleExpression": "rate(30 days)",
+                        "Targets": [
+                            {
+                                "Key": "ParameterValues",
+                                "Values": [
+                                    "instance_id"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Association Versions
+>|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule expression|Targets|Version|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| association_id | 2023-02-14T11:48:24.511000+00:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br/>	***values***: arn/AWS-QuickSetup<br/>**IsPolicyAttachAllowed**:<br/>	***values***: false | rate(30 days) | **-**	***Key***: ParameterValues<br/>	**Values**:<br/>		***values***: instance_id | 1 |
 

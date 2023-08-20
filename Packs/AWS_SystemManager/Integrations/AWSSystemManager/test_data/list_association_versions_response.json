@@ -1,0 +1,42 @@
+{
+    "AssociationVersions": [
+        {
+            "AssociationId": "association_id",
+            "AssociationVersion": "1",
+            "CreatedDate": "2023-02-14T13:48:24.511000+02:00",
+            "Name": "AWSQuickSetup",
+            "Parameters": {
+                "AutomationAssumeRole": [
+                    "arn"
+                ],
+                "IsPolicyAttachAllowed": [
+                    "false"
+                ]
+            },
+            "Targets": [
+                {
+                    "Key": "ParameterValues",
+                    "Values": [
+                        "instance_id"
+                    ]
+                }
+            ],
+            "ScheduleExpression": "rate(30 days)",
+            "AssociationName": "AWS-QuickSetup",
+            "CalendarNames": []
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Sun, 20 Aug 2023 09:46:42 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "582",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}
