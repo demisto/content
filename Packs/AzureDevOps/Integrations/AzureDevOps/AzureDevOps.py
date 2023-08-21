@@ -613,7 +613,7 @@ class Client:
     def create_branch(self, project_args: Project, args: Dict[str, Any]):
 
         # initialize new branch - this is the syntax if no reference was given
-        args["branch_id"] = args["branch_id"] if args.get("branch_id") else "0000000000000000000000000000000000000000"
+        args["branch_id"] = args.get("branch_id") or "0000000000000000000000000000000000000000"
 
         data = file_pre_process_body_request("add", args)
         params = {"api-version": 7.0}
