@@ -1,0 +1,16 @@
+{
+    "uuid": "",
+    "status": 1,
+    "changes": [
+        {
+            "alert": 1,
+            "added": [
+                "tag1",
+                "tag2"
+            ],
+            "removed": [
+                "tag3"
+            ]
+        }
+    ]
+}
