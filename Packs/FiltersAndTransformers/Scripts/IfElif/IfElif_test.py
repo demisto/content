@@ -67,7 +67,7 @@ def test_parse_conditions(expression, expected_result):
     """
 
     if_elif = ConditionParser(
-        value=None,
+        context=None,
         conditions=json.dumps([
             {
                 'condition': expression,

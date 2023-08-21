@@ -26,10 +26,10 @@ class ConditionParser:
         ast.Add: lambda x, y: x + y,
     }
 
-    def __init__(self, value, conditions, flags=None):
+    def __init__(self, context, conditions, flags=None):
         self.conditions: list
         self.functions: dict[str, Callable] = {
-            'from_value': lambda x: demisto.dt(value, x)
+            'from_context': lambda x: demisto.dt(context, x)
         }
         self.modify_functions_with_flags(argToList(flags))
         self.load_conditions(conditions)
@@ -55,7 +55,7 @@ class ConditionParser:
     def load_conditions(self, conditions):
         conditions = re.sub(
             '#{([\s\S]+?)}',
-            r" from_value('\1')",
+            r" from_context('\1')",
             conditions
         )
         self.conditions = self.evaluate(conditions)
@@ -127,7 +127,8 @@ class ConditionParser:
 
 def main():
     try:
-        if_elif = ConditionParser(**demisto.args())
+        args: dict = demisto.args()
+        if_elif = ConditionParser(args.pop('value'), **args)
         return_results(if_elif.parse_conditions())
     except Exception as e:
         return_error(f'Error in If-Elif Transformer: {e}')
