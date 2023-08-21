@@ -99,22 +99,6 @@ configuration:
   - TOR Exit Node
   - BOT
   - Unknown
-- display: "IP Address Type"
-  defaultvalue: External
-  name: ipAddressType
-  required: false
-  type: 16
-  options:
-  - Internal
-  - External
-- display: "API Type"
-  name: apiType
-  required: false
-  defaultvalue: External
-  type: 16
-  options:
-  - Internal
-  - External
 - display: Traceable Platform Endpoint URL
   name: app_url
   defaultvalue: https://app.traceable.ai
