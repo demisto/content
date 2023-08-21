@@ -20,7 +20,7 @@ alter
         xdm.alert.name = json_extract_scalar(arrayindex(incident_field_values, 1), "$.value"),
         xdm.alert.description = json_extract_scalar(event, "$.description"),
         xdm.email.attachment.path = json_extract_scalar(event, "$.fileName"),
-        xdm.alert.original_alert_id = json_extract_scalar(event, "$.id"),
+        xdm.alert.original_alert_id = to_string(json_extract_scalar(event, "$.id")),
         xdm.source.ipv4 =
             to_string(
                 if(arrayindex(src_ipv4, 0) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 0),

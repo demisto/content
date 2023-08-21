@@ -1,10 +1,10 @@
 {
   "proofpoint_threat_response_raw": {
     "id": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
-    "events": {
+    "event": {
       "type": "string",
       "is_array": false
     },
@@ -15,10 +15,6 @@
     "incident_field_values": {
       "type": "string",
       "is_array": false
-    },
-    "emails": {
-      "type": "string",
-      "is_array": false
-    }            
+    }
   }
 }
