@@ -1,7 +1,6 @@
 id: If-Elif Test
 version: -1
 name: If-Elif Test
-description: If Elif test playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -23,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -84,7 +83,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -112,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -125,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b5128de0-58bf-4a39-89a6-d48930721b4c
+    taskid: 8d6500bd-dbf8-4ed6-8783-28f6f2b2fbef
     type: regular
     task:
-      id: b5128de0-58bf-4a39-89a6-d48930721b4c
+      id: 8d6500bd-dbf8-4ed6-8783-28f6f2b2fbef
       version: -1
       name: With regex_full_match
       description: Set a value in context under the key you entered.
@@ -178,7 +177,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -240,7 +239,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
@@ -300,7 +299,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
@@ -349,7 +348,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -381,6 +380,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -389,8 +389,102 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b9ebb507-6e6e-4784-8648-84b7aa719bbd
+    type: regular
+    task:
+      id: b9ebb507-6e6e-4784-8648-84b7aa719bbd
+      version: -1
+      name: Add injection to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: malicious
+      value:
+        simple: ''''' or true  '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3f2e983f-489b-49fc-8d62-a641d8f1714b
+    type: regular
+    task:
+      id: 3f2e983f-489b-49fc-8d62-a641d8f1714b
+      version: -1
+      name: Use malicious value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: ${
+          accessor: '}'
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "'admin' == #{malicious}",
+                        "return": "injected!"
+                      },
+                      {
+                        "else": "success"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -406,7 +500,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -415,3 +509,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.9.0
+description: Test playbook for If-Elif Transformer
