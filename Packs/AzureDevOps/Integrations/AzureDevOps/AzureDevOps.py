@@ -2685,6 +2685,7 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         if isinstance(e, NotFoundError):
             return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
+            return
         return_error(str(e))
 
 
