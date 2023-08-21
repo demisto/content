@@ -32,7 +32,7 @@
 		{
             "playbookID": "Containment Plan - Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_80k"
         },
 		{
             "playbookID": "Enrichment for Verdict - Test",
@@ -41,7 +41,7 @@
 				"VirusTotal (API v3)"
 			],
 			"instance_names": [
-				"active_directory_ninja",
+				"active_directory_80k",
 				"virus_total_v3"
 			]
         },
