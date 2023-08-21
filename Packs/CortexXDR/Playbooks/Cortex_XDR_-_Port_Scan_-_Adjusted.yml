@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "102":
     id: "102"
-    taskid: a5865da2-af3c-48c0-8889-f2cc69573db6
+    taskid: 6756bd3a-2ff7-4140-8816-badf1aa7b1f9
     type: playbook
     task:
-      id: a5865da2-af3c-48c0-8889-f2cc69573db6
+      id: 6756bd3a-2ff7-4140-8816-badf1aa7b1f9
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -84,6 +84,7 @@ tasks:
         - PingOne
         - Okta
         - AWS IAM
+        - Cortex XDR (account enrichment and reputation)
 
         Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
@@ -96,8 +97,7 @@ tasks:
     scriptarguments:
       Username:
         complex:
-          root: Account
-          accessor: Username
+          root: inputs.Username
           transformers:
           - operator: uniq
     separatecontext: true
@@ -699,10 +699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: 36b832bf-ebad-4e98-8735-b40759a6b3b6
+    taskid: 2b4b78da-dfae-4cb4-8a6e-1858b2068389
     type: playbook
     task:
-      id: 36b832bf-ebad-4e98-8735-b40759a6b3b6
+      id: 2b4b78da-dfae-4cb4-8a6e-1858b2068389
       version: -1
       name: User Investigation - Generic
       description: |-
@@ -808,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: 3468f80b-08b5-45b9-8c94-6d231ef70d20
+    taskid: 86934895-4874-4a7a-8935-d60faec11b25
     type: condition
     task:
-      id: 3468f80b-08b5-45b9-8c94-6d231ef70d20
+      id: 86934895-4874-4a7a-8935-d60faec11b25
       version: -1
       name: Has related Indicators to hunt?
       description: Checks whether there are any indicators to hunt for.
@@ -870,10 +870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: e9df1373-3891-4b0a-86b5-29a9471bdf6e
+    taskid: f6b64a54-4e85-4350-8a5c-375d7090a5b5
     type: playbook
     task:
-      id: e9df1373-3891-4b0a-86b5-29a9471bdf6e
+      id: f6b64a54-4e85-4350-8a5c-375d7090a5b5
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -961,6 +961,47 @@ tasks:
           - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
+      SHA1:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+              ignorecase: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: DBotScore
@@ -1144,10 +1185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 8705ae15-603c-47ec-8f42-11f378c04583
+    taskid: 1f1f6c4f-2c50-4d41-8668-5dc0e95b2e21
     type: playbook
     task:
-      id: 8705ae15-603c-47ec-8f42-11f378c04583
+      id: 1f1f6c4f-2c50-4d41-8668-5dc0e95b2e21
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1197,6 +1238,11 @@ tasks:
       agentID:
         complex:
           root: inputs.EndpointID
+      attackerExternalHost:
+        complex:
+          root: inputs.SrcHostname
+          transformers:
+          - operator: uniq
       attackerRemoteIP:
         complex:
           root: inputs.SrcIPAddress
@@ -1866,10 +1912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "177":
     id: "177"
-    taskid: a4cc57dc-ce8f-4130-847b-895e26ee90ed
+    taskid: 1d4bd3f6-ed02-4d93-8f90-bb994c05adf2
     type: playbook
     task:
-      id: a4cc57dc-ce8f-4130-847b-895e26ee90ed
+      id: 1d4bd3f6-ed02-4d93-8f90-bb994c05adf2
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1898,6 +1944,52 @@ tasks:
         simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       FilesToBlock:
         complex:
           root: DBotScore.Indicator
@@ -1999,15 +2091,6 @@ tasks:
               right:
                 value:
                   simple: hash
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-                iscontext: true
           transformers:
           - operator: uniq
       RuleDirection:
@@ -2059,6 +2142,30 @@ tasks:
                 value:
                   simple: IndicatorsToBlock
                 iscontext: true
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
           transformers:
           - operator: uniq
       UserVerification:
@@ -2275,10 +2382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "185":
     id: "185"
-    taskid: a038f1f6-1280-4846-824e-b33513b4d99a
+    taskid: 6e00ff29-32c1-4941-8225-6268ad258119
     type: regular
     task:
-      id: a038f1f6-1280-4846-824e-b33513b4d99a
+      id: 6e00ff29-32c1-4941-8225-6268ad258119
       version: -1
       name: Has investigation results?
       description: 'Checks whether any results have been obtained from the investigation stage. When results have been obtained for the investigation stage, the task will set the results under a new context key. '
@@ -2763,6 +2870,7 @@ outputs:
   type: unknown
 tests:
 - Test XDR Playbook general commands
+- Test Playbook - Cortex XDR - Endpoint Investigation
 - Test XDR Playbook
 fromversion: 5.0.0
 contentitemexportablefields:

@@ -21,17 +21,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Account Enrichment - Generic v2.1
+* IP Enrichment - Internal - Generic v2
+* Threat Hunting - Generic
 * Cortex XDR - Endpoint Investigation
-* IP Enrichment - Generic v2
+* Command-Line Analysis
 * User Investigation - Generic
 * Block Indicators - Generic v3
-* TIM - Indicator Relationships Analysis
 * File Enrichment - Generic v2
-* Threat Hunting - Generic
-* Account Enrichment - Generic v2.1
-* Command-Line Analysis
-* IP Enrichment - Internal - Generic v2
 * Cortex XDR - Isolate Endpoint
+* TIM - Indicator Relationships Analysis
+* IP Enrichment - Generic v2
 
 ### Integrations
 
@@ -39,9 +39,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* GetTime
 * SetAndHandleEmpty
 * IsIPInRanges
-* GetTime
 * Set
 
 ### Commands
