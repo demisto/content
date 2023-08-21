@@ -1376,3 +1376,15 @@ def test_fetch_incidents_no_api_attributes_selection(mocker):
     assert "apiIsAuthenticated" not in rawJSON
     assert "apiRiskScore" not in rawJSON
     assert "apiRiskScoreCategory" not in rawJSON
+
+
+def test_fixing_timestamp():
+    from datetime import datetime
+    from Traceable import Helper
+    now_time = datetime.now()
+    now_time_str1 = Helper.datetime_to_string(now_time)
+    now_time_str2 = Helper.start_datetime_to_string(now_time)
+    assert now_time_str2 == (now_time_str1[:-1] + ".000Z")
+
+    now_time_str3 = Helper.end_datetime_to_string(now_time)
+    assert now_time_str3 == (now_time_str1[:-1] + ".999Z")
