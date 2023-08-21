@@ -23,15 +23,16 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Adds domains to Umbrella block list
-display: Cisco Umbrella Cloud Security
+description: Deprecated. Use Cisco Umbrella Cloud Security v2 instead.
+display: Cisco Umbrella Cloud Security (Deprecated)
 name: Cisco Umbrella Cloud Security
+deprecated: true
 script:
   commands:
   - arguments:
     - description: Organization ID
       name: orgId
-    description: Gets all destination lists in organization
+    description: Deprecated. Use the `umbrella-destination-lists-list` instead.
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
@@ -50,7 +51,7 @@ script:
     - defaultValue: Added from XSOAR
       description: Note on what the domain is or why it is being added
       name: comment
-    description: Adds domains to given destination list
+    description: Deprecated. Use the `umbrella-destination-add` instead.
     name: umbrella-add-domain
   - arguments:
     - description: Optional orgId, by default uses the one set in the instance configuration
@@ -58,7 +59,7 @@ script:
     - description: Destination list ID to get domains from. Use umbrella-get-destination-lists to get the list ID
       name: destId
       required: true
-    description: Gets the domains listed in a destination list
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
     name: umbrella-get-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id
@@ -81,7 +82,7 @@ script:
       isArray: true
       name: domainIds
       required: true
-    description: Removes domains from given destination list
+    description: Deprecated. Use the `umbrella-destination-delete` instead.
     name: umbrella-remove-domain
   - arguments:
     - description: Optional orgId, by default uses the one set in the instance configuration
@@ -92,7 +93,7 @@ script:
     - description: Domain to get from a destination list
       name: domain
       required: true
-    description: Gets the domain from a destination list
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
     name: umbrella-get-destination-domain
     outputs:
     - contextPath: Umbrella.Destinations.id
@@ -115,7 +116,7 @@ script:
       isArray: true
       name: domains
       required: true
-    description: Search for multiple domains in a destination list
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
     name: umbrella-search-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id

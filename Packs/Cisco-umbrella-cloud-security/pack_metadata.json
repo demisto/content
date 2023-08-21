@@ -1,10 +1,10 @@
 {
     "name": "Cisco Umbrella cloud security",
     "description": "Basic integration with Cisco Umbrella that allows you to add domains to destination lists (e.g. global block / allow)",
-    "support": "community",
-    "currentVersion": "1.1.5",
-    "author": "Matt Houston",
-    "url": "",
+    "support": "xsoar",
+    "currentVersion": "2.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-10-13T17:34:01Z",
     "categories": [
@@ -16,5 +16,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "certification": "certified"
 }
