@@ -33,7 +33,7 @@ echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS
 
 demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" \
   --xsiam-token="$XSIAM_TOKEN" --non-interactive --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}" \
-  "${MODELING_RULES_TO_TEST}"
+  ${MODELING_RULES_TO_TEST}
 exit_code=$?
 
 if [[ $exit_code -ne 0 ]]; then
