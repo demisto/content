@@ -1001,7 +1001,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.19.0"
+version = "1.19.1"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1097,7 +1097,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "enhance-dump-pack-metadata"
-resolved_reference = "0f6772d2976ad188bcfebe90153e4b390849d57f"
+resolved_reference = "e73f02aa6560205c680c4bb16103dcf8b2f4310b"
 
 [[package]]
 name = "deprecated"
@@ -6216,14 +6216,14 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "vulture"
-version = "2.8"
+version = "2.9"
 description = "Find dead code"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "vulture-2.8-py2.py3-none-any.whl", hash = "sha256:78bd44972b71d914ac382e64cacd4f56682017dcfa5929d3110ad09453796133"},
-    {file = "vulture-2.8.tar.gz", hash = "sha256:393293f183508064294b0feb4c8579e7f1f27e5bf74c9def6a3d52f38b29b599"},
+    {file = "vulture-2.9-py2.py3-none-any.whl", hash = "sha256:08247d2fc3fe75e710ccd9bd244942e6fab34e77beb564486dad80d58a2aac58"},
+    {file = "vulture-2.9.tar.gz", hash = "sha256:0f4d86ba515e67db2860539894edb4e387b25696f831234826dd72c636f0331f"},
 ]
 
 [package.dependencies]
