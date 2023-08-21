@@ -2543,22 +2543,26 @@
             "playbookID": "Active Directory Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "playbookID": "Active Directory - manual pagination check",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "memory_threshold": 100
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "memory_threshold": 100,
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -2566,6 +2570,7 @@
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja_with_ntlm",
+            "memory_threshold": 100,
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -2578,23 +2583,27 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "active directory search user with parentheses test",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_ninja",
             "has_api": false
         },
@@ -2666,6 +2675,7 @@
         {
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_80k",
             "fromversion": "5.0.0",
             "has_api": false
@@ -2819,6 +2829,7 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_80k",
             "has_api": false
         },
@@ -2859,6 +2870,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)",
             "has_api": false
