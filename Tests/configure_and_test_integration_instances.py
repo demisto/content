@@ -287,7 +287,7 @@ class Build(ABC):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
-                            marketplace_buckets=None):
+                            marketplace_buckets=None) -> bool:
         raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
@@ -551,9 +551,10 @@ class Build(ABC):
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
-                                 self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs(production_bucket=False)
+        installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
+                                                                        self.marketplace_tag_name, self.artifacts_folder,
+                                                                        self.marketplace_buckets)
+        installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -728,6 +729,7 @@ class XSOARBuild(Build):
         logging.success('Updated marketplace url and restarted servers')
         logging.info('sleeping for 120 seconds')
         sleep(120)
+        return True
 
     @staticmethod
     def get_servers(ami_env):
@@ -864,27 +866,33 @@ class CloudBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
                             artifacts_folder=ARTIFACTS_FOLDER_MPV2,
                             marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
+        from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
         logging.info('Copying custom build bucket to cloud_instance_bucket.')
         marketplace_name = marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
         output_file = f'{artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
+        success = True
         for server in servers:
             to_bucket = f'{marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
-                subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
-            try:
-                # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # were added, they will not appear on the cloud marketplace without sync.
-                _ = demisto_client.generic_request_func(
-                    self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync?hard=true')
-            except Exception as e:
-                logging.error(f'Failed to sync marketplace. Error: {e}')
-        logging.info('Finished copying successfully.')
+                try:
+                    subprocess.run(cmd.split(), stdout=outfile, stderr=outfile, check=True)
+                    logging.info('Finished copying successfully.')
+                except subprocess.CalledProcessError as exc:
+                    logging.exception(f'Failed to copy custom build bucket to cloud_instance_bucket. {exc}')
+                    success = False
+
+            success &= sync_marketplace(server.client)
+
+        if success:
+            logging.info('Finished copying successfully.')
+        else:
+            logging.error('Failed to copy or sync marketplace bucket.')
         sleep_time = 120
         logging.info(f'sleeping for {sleep_time} seconds')
         sleep(sleep_time)
+        return success
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this concurrently since we have only one server
@@ -1902,7 +1910,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=packs_to_install_in_pre_update)
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)  # type: ignore[arg-type]
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
