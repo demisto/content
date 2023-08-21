@@ -130,6 +130,41 @@ configuration:
   defaultvalue: 400-499
   type: 0
   required: false
+- display: Incident pull optional field list
+  name: optionalDomainEventFieldList
+  defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type
+  options:
+  - actorDevice
+  - actorEntityId
+  - actorId
+  - actorScoreCategory
+  - actorSession
+  - anomalousAttribute
+  - apiName
+  - apiUri
+  - category
+  - ipAbuseVelocity
+  - ipReputationLevel
+  - securityEventType
+  - securityScore
+  - serviceId
+  - serviceName
+  - actorScore
+  - threatCategory
+  - type
+  type: 16
+  required: false
+- display: Pull Additional API Attributes
+  name: optionalAPIAttributes
+  defaultvalue: isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt
+  options:
+  - isExternal
+  - isAuthenticated
+  - riskScore
+  - riskScoreCategory
+  - isLearnt
+  type: 16
+  required: false
 description: "Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action."
 display: "Traceable"
 name: Traceable
