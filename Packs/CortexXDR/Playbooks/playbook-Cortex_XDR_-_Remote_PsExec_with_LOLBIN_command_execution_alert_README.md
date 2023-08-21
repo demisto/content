@@ -60,4 +60,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Remote PsExec with LOLBIN command execution alert](../doc_files/Remote_PsExec_with_LOLBIN_command_execution_alert.png)
+![Remote PsExec with LOLBIN command execution alert](../doc_files/Cortext_XDR_-_Remote_PsExec_with_LOLBIN_command_execution_alert.png)
