@@ -130,6 +130,14 @@ class Helper:
         return "filterBy: [" + ",".join(non_null_list) + "]"
 
     @staticmethod
+    def fix_start_timestamp(string_timestamp):
+        return f"{string_timestamp[:-1]}.000Z"
+
+    @staticmethod
+    def fix_end_timestamp(string_timestamp):
+        return f"{string_timestamp[:-1]}.999Z"
+
+    @staticmethod
     def construct_field_selection_expression(field_list):
         non_null_field_list = [i for i in field_list if i is not None and i != ""]
         expression_list = ""
@@ -150,6 +158,14 @@ class Helper:
     @staticmethod
     def datetime_to_string(d):
         return d.strftime(DATE_FORMAT)
+
+    @staticmethod
+    def start_datetime_to_string(d):
+        return Helper.fix_start_timestamp(Helper.datetime_to_string(d))
+
+    @staticmethod
+    def end_datetime_to_string(d):
+        return Helper.fix_end_timestamp(Helper.datetime_to_string(d))
 
     @staticmethod
     def string_to_datetime(s):
@@ -452,8 +468,8 @@ class Client(BaseClient):
             trace_id_clause, span_id_clause
         )
         query = Template(get_spans_for_trace_id).substitute(
-            starttime=Helper.datetime_to_string(starttime),
-            endtime=Helper.datetime_to_string(endtime),
+            starttime=Helper.start_datetime_to_string(starttime),
+            endtime=Helper.end_datetime_to_string(endtime),
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
@@ -520,8 +536,8 @@ class Client(BaseClient):
         demisto.info("Limit set to: " + str(self.limit))
         query = Template(get_threat_events_query).substitute(
             limit=self.limit,
-            starttime=Helper.datetime_to_string(starttime),
-            endtime=Helper.datetime_to_string(endtime),
+            starttime=Helper.start_datetime_to_string(starttime),
+            endtime=Helper.end_datetime_to_string(endtime),
             filter_by_clause=filter_by_clause,
             field_list=self.get_domain_event_query_fields()
         )
@@ -536,8 +552,8 @@ class Client(BaseClient):
             filter_by_clause=filter_by_clause,
             fields_list=fields_list,
             limit=self.limit,
-            starttime=Helper.datetime_to_string(starttime),
-            endtime=Helper.datetime_to_string(endtime),
+            starttime=Helper.start_datetime_to_string(starttime),
+            endtime=Helper.end_datetime_to_string(endtime),
         )
 
     def get_api_endpoint_details(self, api_id_list, starttime, endtime):
@@ -806,13 +822,14 @@ class Client(BaseClient):
             else:
                 demisto.info(f"Found Span with id: {span_id}. Adding to Event.")
                 domain_event["spans"] = trace_results["data"]["spans"]["results"]
-                events.append(domain_event)
-                if first:
-                    first = False
-                    demisto.info(f"Domain Event: {json.dumps(domain_event, indent=3)}")
-                demisto.debug(
-                    f"Complete Domain Event is: {json.dumps(domain_event, indent=2)}"
-                )
+
+            events.append(domain_event)
+            if first:
+                first = False
+                demisto.info(f"Domain Event: {json.dumps(domain_event, indent=3)}")
+            demisto.debug(
+                f"Complete Domain Event is: {json.dumps(domain_event, indent=2)}"
+            )
 
         return events
 
