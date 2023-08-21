@@ -1665,6 +1665,6 @@ inputs:
   description: Attack Surface Management Rule ID.
   playbookInputQuery:
 outputs: []
-fromversion: 6.9.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
