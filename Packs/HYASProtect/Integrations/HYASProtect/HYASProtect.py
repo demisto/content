@@ -49,6 +49,7 @@ class Client(BaseClient):
             headers={
                 'Content-type': 'application/json',
                 'X-API-Key': apikey,
+                'User-Agent': 'Cortex XSOAR'
             },
             proxy=proxy,
             ok_codes=(200,),
