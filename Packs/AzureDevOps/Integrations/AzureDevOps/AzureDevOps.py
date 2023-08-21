@@ -1980,7 +1980,7 @@ def commit_list_command(client: Client, args: Dict[str, Any], organization: Opti
 
     response = client.list_commits(project_args, limit, offset)
 
-    readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
+    readable_output = tableToMarkdown('Commits', response.get('value'), headers=['comment', 'commitId', 'committer'],
                                       headerTransform=lambda header: COMMIT_HEADERS_MAPPING.get(header, header))
 
     return CommandResults(
