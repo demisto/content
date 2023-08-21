@@ -698,7 +698,7 @@ def publish_message_command(
     project_id: str,
     data: str = None,
     attributes: str = None,
-    delim_char_attributes: str = None,
+    delim_char_attributes: str = ",",
 ) -> Tuple[str, dict, dict]:
     """
     Publishes message in the topic
