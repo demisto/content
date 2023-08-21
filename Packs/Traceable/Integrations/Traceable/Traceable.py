@@ -271,7 +271,8 @@ class Client(BaseClient):
         self.securityScoreCategoryList = securityScoreCategoryList
 
     def set_app_url(self, app_url):
-        self.app_url = app_url
+        if app_url is not None and app_url != "":
+            self.app_url = app_url
 
     def set_threat_category_list(self, threatCategoryList):
         self.threatCategoryList = threatCategoryList
@@ -915,7 +916,7 @@ def main() -> None:
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
         limit = int(demisto.params().get("max_fetch", 100))
         span_fetch_threadpool = int(demisto.params().get("span_fetch_threadpool", 10))
-        app_url = demisto.params().get("app_url", "https://app.traceable.ai")
+        app_url = demisto.params().get("app_url")
         ipCategoriesList = demisto.params().get("ipCategories")
         ignoreStatusCodes = demisto.params().get("ignoreStatusCodes", "")
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
