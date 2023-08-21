@@ -3016,7 +3016,7 @@ class TestBaseClient:
 
     @pytest.mark.parametrize('quote_params, expected_result', [
         (None, 'key=value+with+space'),
-        (urllib.parse.quote, 'key=value%20with%20space'),
+        (urllib.pathname2url, 'key=value%20with%20space'),
     ])
     def test_http_request_quote_params_via(self, quote_params, expected_result, requests_mock):
         mock_request = requests_mock.get('http://example.com/api/v2/', json={})
