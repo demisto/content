@@ -1,4 +1,4 @@
-
+Basic Playbook for Login/Logout User ID on pan-os
 
 ## Dependencies
 
@@ -14,12 +14,13 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * Print
 
 ### Commands
 
-* closeInvestigation
 * pan-os
+* closeInvestigation
 
 ## Playbook Inputs
 
