@@ -11,7 +11,8 @@ from AWSSystemManager import (
     next_token_command_result,
     validate_args,
     get_association_command,
-    list_versions_association_command
+    list_versions_association_command,
+    list_documents_command
 )
 from CommonServerPython import CommandResults, DemistoException
 
@@ -36,6 +37,9 @@ class MockClient:
         pass
 
     def list_association_versions(self, **kwargs):
+        pass
+
+    def list_documents(self, **kwargs):
         pass
 
 
@@ -172,10 +176,7 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
 
 def test_get_inventory_command(mocker: MockerFixture) -> None:
     """
-    Note: this test checking when the response is not return a Next Token value.
-    the test_get_inventory_command_with_next_token_response function test checking the Next Token value.
-
-    Args:
+    Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
@@ -188,12 +189,17 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
           value from the mock response.
         - The 'readable_output' attribute is expected to have a formatted
           table representation of the mock response's 'Entities'.
+
+    Note:
+        - The response is a list of CommandResults, where the first one is the get_inventory response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     res = get_inventory_command(MockClient, {})
 
-    assert res[0].outputs == mock_response.pop("Entities")
+    assert res[0].outputs == mock_response["Entities"]
     assert res[0].readable_output == (
         "### AWS SSM Inventory\n"
         "|Agent version|Computer Name|IP address|Id|Instance Id|Platform Name|Platform Type|Resource Type|\n"
@@ -208,9 +214,6 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
 
 def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -> None:
     """
-    Note: the test_get_inventory_command function test checking when the response is not return a Next Token value.
-    the res[1] contains the inventory response.
-
     Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
@@ -226,15 +229,19 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
           from the mock response.
         - The 'readable_output' attribute is expected to contain a message
           indicating how to retrieve more results using the provided next_token.
+
+    Note: the test_get_inventory_command function test checking when the response is not return a Next Token value.
+            the res[1] contains the inventory response.
     """
     mock_response: dict = util_load_json('test_data/get_inventory_response.json')
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, 'get_inventory', return_value=mock_response)
-    res: list[CommandResults] = get_inventory_command(MockClient, {})
-    assert res[0].outputs == "test_token"
+    response: list[CommandResults] = get_inventory_command(MockClient, {})
+
+    assert response[0].outputs == "test_token"
     assert (
-        res[0].readable_output
-        == f"For more results rerun the command with next_token='{mock_response.pop('NextToken')}'."
+        response[0].readable_output
+        == f"For more results rerun the command with next_token='{response[0].outputs}'."
     )
 
 
@@ -252,12 +259,15 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
     Then:
         - assert the list_inventory_entry_request call with the provided arguments,
             (MaxResults provide as a default value in the yml).
-        - The 'list_inventory_entries' method of 'MockClient' is patched to return a mock inventory
-          entry response.
         - The 'outputs' attribute is expected to match the mock
           inventory entry response.
         - The 'readable_output' attribute is expected to have a formatted
           table representation of the mock inventory entry response.
+
+    Note:
+        - The response is a list of CommandResults, where the first one is the list inventory entry response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
     mock_response: dict = util_load_json("test_data/get_inventory_entry_command.json")
     mock_list_inventory_entry_request = mocker.patch.object(MockClient, "list_inventory_entries", return_value=mock_response)
@@ -273,7 +283,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
         TypeName=args["type_name"],
         MaxResults=50,
     )
-    assert response[0].outputs == mock_response
+    assert response[0].outputs == mock_response['Entries']
     assert response[0].readable_output == (
         "### AWS SSM Inventory\n"
         "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
@@ -309,7 +319,7 @@ def test_list_inventory_entry_command_raise_error() -> None:
 
 def test_list_associations_command(mocker: MockerFixture) -> None:
     """
-    Args:
+    Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
@@ -322,11 +332,15 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
           association response.
         - The 'readable_output' attribute is expected to have a formatted
           table representation of the mock association response.
+     Note:
+        - The response is a list of CommandResults, where the first one is the list associations response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
     mock_response: dict = util_load_json("test_data/list_associations.json")
     mocker.patch.object(MockClient, "list_associations", return_value=mock_response)
     response = list_associations_command(MockClient, {})
-    assert response[0].outputs == mock_response
+    assert response[0].outputs == mock_response["Associations"]
     assert response[0].readable_output == (
         '### AWS SSM Association\n'
         '|Association id|Association version|Document name|Last execution date|Resource status count|Status|\n'
@@ -339,11 +353,32 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
 
 
 def test_get_association_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+
+    When:
+        - The get_association_command function is called with the provided MockClient
+          and arguments:
+          - 'instance_id': "i-0a00aaa000000000a"
+          - 'document_name': "test_name"
+
+    Then:
+        - The 'describe_association' method of 'MockClient' is patched to return a mock association description response.
+        - The 'outputs' attribute of the response is expected to match the mock association description response.
+        - The 'readable_output' attribute of the response is expected to have a formatted table representation
+          of the mock association description response.
+
+    Note:
+        - The response is a list of CommandResults, where the first one is the association description response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
+    """
     mock_response: dict = util_load_json("test_data/association_description.json")
     mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
     response = get_association_command(MockClient, {"instance_id": "i-0a00aaa000000000a", 'document_name': 'test_name'})
-    mock_response.pop("ResponseMetadata")
-    assert response.outputs == mock_response
+
+    assert response.outputs == mock_response['AssociationDescription']
     assert response.readable_output == (
         '### Association\n'
         '|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|'
@@ -355,11 +390,31 @@ def test_get_association_command(mocker: MockerFixture) -> None:
 
 
 def test_list_versions_association_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+
+    When:
+        - The list_versions_association_command function is called with the provided MockClient
+          and arguments:
+          - 'association_id': "12345678-0000-0000-0000-000000000000"
+
+    Then:
+        - The 'list_association_versions' method of 'MockClient' is patched to return a mock association versions response.
+        - The 'outputs' attribute of the response is expected to match the mock association versions response.
+        - The 'readable_output' attribute of the response is expected to have a formatted table representation
+          of the mock association versions response.
+
+    Note:
+        - The response is a list of CommandResults, where the first one is the list versions association response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
+    """
     mock_response: dict = util_load_json("test_data/list_association_versions_response.json")
     mocker.patch.object(MockClient, "list_association_versions", return_value=mock_response)
     response = list_versions_association_command(MockClient, {"association_id": "12345678-0000-0000-0000-000000000000"})
-    mock_response.pop("ResponseMetadata")
-    assert response[0].outputs == mock_response
+
+    assert response[0].outputs == mock_response['AssociationVersions']
     assert response[0].readable_output == (
         "### Association Versions\n"
         "|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule "
@@ -368,4 +423,39 @@ def test_list_versions_association_command(mocker: MockerFixture) -> None:
         "| association_id | 2023-02-14T13:48:24.511000+02:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br>\t"
         "***values***: arn<br>**IsPolicyAttachAllowed**:<br>\t***values***: false | rate(30 days) | **-**\t"
         "***Key***: ParameterValues<br>\t**Values**:<br>\t\t***values***: instance_id | 1 |\n"
+    )
+
+
+def test_list_documents_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+
+    When:
+        - The list_documents_command function is called with the provided MockClient and empty arguments.
+
+    Then:
+        - The 'list_documents' method of 'MockClient' is patched to return a mock list documents response.
+        - The 'outputs' attribute of the response is expected to match the mock list documents response.
+        - The 'readable_output' attribute of the response is expected to have a formatted table representation
+          of the mock list documents response.
+
+    Note:
+        - The response is a list of CommandResults, where the first one is the list documents response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_get_inventory_command_with_next_token_response` function.
+    """
+    mock_response: dict = util_load_json("test_data/list_documents_response.json")
+    mocker.patch.object(MockClient, "list_documents", return_value=mock_response)
+    response = list_documents_command(MockClient, {})
+
+    assert response[0].outputs == mock_response["DocumentIdentifiers"]
+    assert response[0].readable_output == (
+        "### AWS SSM Document\n"
+        "|Created date|Display Name|Document type|Document version|Name|Owner|Platform types|Tags|\n"
+        "|---|---|---|---|---|---|---|---|\n"
+        "| 2018-02-15T05:03:20.597000+02:00 |  | Automation | 1 | AWS-AS | Amazon | Windows,<br>Linux,<br>MacOS | ***values***:  "
+        "|\n"
+        "| 2018-02-15T05:03:23.277000+02:00 |  | Automation | 1 | AWS-A | Amazon | Windows,<br>Linux,<br>MacOS | ***values***:  "
+        "|\n"
     )

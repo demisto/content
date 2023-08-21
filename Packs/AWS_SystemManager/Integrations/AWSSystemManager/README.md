@@ -595,3 +595,105 @@ Retrieves all versions of an association for a specific association ID.
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| association_id | 2023-02-14T11:48:24.511000+00:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br/>	***values***: arn/AWS-QuickSetup<br/>**IsPolicyAttachAllowed**:<br/>	***values***: false | rate(30 days) | **-**	***Key***: ParameterValues<br/>	**Values**:<br/>		***values***: instance_id | 1 |
 
+### aws-ssm-document-list
+
+***
+Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
+
+#### Base Command
+
+`aws-ssm-document-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.DocumentNextToken | String | The token to use when requesting the next set of items. If there are no additional items to return, the string is empty. | 
+| AWS.SSM.Document.DocumentIdentifiers.Name | String | The name of the SSM document. | 
+| AWS.SSM.Document.DocumentIdentifiers.CreatedDate | String | The date the SSM document was created. | 
+| AWS.SSM.Document.DocumentIdentifiers.DisplayName | String | An optional field allowing the specification of a user-defined, friendly name for the SSM document. This value can vary across different versions of the document. | 
+| AWS.SSM.Document.DocumentIdentifiers.Owner | String | The Amazon Web Services user that created the document. | 
+| AWS.SSM.Document.DocumentIdentifiers.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
+| AWS.SSM.Document.DocumentIdentifiers.PlatformTypes | String | The operating system platform. | 
+| AWS.SSM.Document.DocumentIdentifiers.DocumentVersion | String | The document version. | 
+| AWS.SSM.Document.DocumentIdentifiers.DocumentType | String | The document type. | 
+| AWS.SSM.Document.DocumentIdentifiers.SchemaVersion | String | The schema version. | 
+| AWS.SSM.Document.DocumentIdentifiers.DocumentFormat | String | The document format, either JSON or YAML. | 
+| AWS.SSM.Document.DocumentIdentifiers.TargetType | String | The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the \[CloudFormation User Guide\]\(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html\). | 
+| AWS.SSM.Document.DocumentIdentifiers.Tags.Key | String | The name of the tag. | 
+| AWS.SSM.Document.DocumentIdentifiers.Tags.Value | String | The value of the tag. | 
+| AWS.SSM.Document.DocumentIdentifiers.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
+| AWS.SSM.Document.DocumentIdentifiers.Requires.Version | String | The document version required by the current document. | 
+| AWS.SSM.Document.DocumentIdentifiers.Requires.RequireType | String | The document type of the required SSM document. | 
+| AWS.SSM.Document.DocumentIdentifiers.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
+| AWS.SSM.Document.DocumentIdentifiers.ReviewStatus | String | The current status of a document review. | 
+| AWS.SSM.Document.DocumentIdentifiers.Author | String | The user in your organization who created the document. | 
+
+#### Command example
+
+```!aws-ssm-document-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Document": {
+                "DocumentIdentifiers": [
+                    {
+                        "CreatedDate": "2018-02-15T03:03:20.597000+00:00",
+                        "DocumentFormat": "JSON",
+                        "DocumentType": "Automation",
+                        "DocumentVersion": "1",
+                        "Name": "AWS",
+                        "Owner": "Amazon",
+                        "PlatformTypes": [
+                            "Windows",
+                            "Linux",
+                            "MacOS"
+                        ],
+                        "SchemaVersion": "0.3",
+                        "Tags": [],
+                        "TargetType": "/AWS"
+                    },
+                    {
+                        "CreatedDate": "2018-02-15T03:03:23.277000+00:00",
+                        "DocumentFormat": "JSON",
+                        "DocumentType": "Automation",
+                        "DocumentVersion": "1",
+                        "Name": "AWS",
+                        "Owner": "Amazon",
+                        "PlatformTypes": [
+                            "Windows",
+                            "Linux",
+                            "MacOS"
+                        ],
+                        "SchemaVersion": "0.3",
+                        "Tags": [],
+                        "TargetType": "/AWS"
+                    }
+                ]
+            },
+            "DocumentNextToken": "AA"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS SSM Document
+
+>|Created date|Display Name|Document type|Document version|Name|Owner|Platform types|Tags|
+>|---|---|---|---|---|---|---|---|
+>| 2018-02-15T03:03:20.597000+00:00 |  | Automation | 1 | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | ***values***:  |
+>| 2018-02-15T03:03:23.277000+00:00 |  | Automation | 1 | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | ***values***:  |
+

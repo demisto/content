@@ -204,7 +204,7 @@ def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResul
     }
     kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
-    response = ssm_client.get_inventory(**kwargs)
+    response: dict = ssm_client.get_inventory(**kwargs)
     command_results = []
 
     if response_next_token := response.get("NextToken"):
@@ -280,7 +280,7 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
     kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response: dict = ssm_client.list_inventory_entries(**kwargs)
-    response.pop("ResponseMetadata")
+    entries = response.get("Entries", [])
 
     command_results = []
     if next_token := response.get("NextToken"):
@@ -291,11 +291,11 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.InventoryEntry",
-            outputs=response,
+            outputs=entries,
             outputs_key_field="InstanceId",
             readable_output=tableToMarkdown(
                 name="AWS SSM Inventory",
-                t=_parse_inventory_entries(response.get("Entries", [])),
+                t=_parse_inventory_entries(entries),
             ),
         )
     )
@@ -334,9 +334,8 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
     kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response: dict[str, list] = ssm_client.list_associations(**kwargs)
-    response.pop("ResponseMetadata")
     response = convert_datetime_to_iso(response)
-
+    associations = response.get("Associations", [])
     command_results = []
 
     if next_token := response.get("NextToken"):
@@ -347,11 +346,11 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.Association",
-            outputs=response,
+            outputs=associations,
             outputs_key_field="AssociationId",
             readable_output=tableToMarkdown(
                 name="AWS SSM Association",
-                t=_parse_associations(response.get("Associations", [])),
+                t=_parse_associations(associations),
             ),
         )
     )
@@ -360,6 +359,19 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
 
 
 def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves information about an SSM association based on provided parameters.
+
+    Args:
+        ssm_client: The AWS SSM client used to interact with the service.
+        args (dict[str, Any]): A dictionary containing the command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing information about the retrieved association.
+
+    Raises:
+        DemistoException: If the provided arguments are invalid.
+    """
     def _parse_association(association: dict[str, Any]) -> dict[str, Any]:
         return {
             "Document name": association.get("Name"),
@@ -393,15 +405,15 @@ def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
 
     response = ssm_client.describe_association(**kwargs)
     response = convert_datetime_to_iso(response)
-    response.pop("ResponseMetadata")
+    association_description = response.get("AssociationDescription", {})
 
     return CommandResults(
-        outputs=response,
+        outputs=association_description,
         outputs_key_field="AssociationId",
         outputs_prefix="AWS.SSM.Association",
         readable_output=tableToMarkdown(
             name="Association",
-            t=_parse_association(response.get("AssociationDescription", {}))
+            t=_parse_association(association_description)
         ),
     )
 
@@ -443,7 +455,8 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
 
     response = ssm_client.list_association_versions(**kwargs)
     response = convert_datetime_to_iso(response)
-    response.pop("ResponseMetadata")
+    association_versions = response.get("AssociationVersions", [])
+
     command_results: list[CommandResults] = []
     if response_next_token := response.get("NextToken"):
         command_results.append(
@@ -451,11 +464,11 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
         )
     command_results.append(
         CommandResults(
-            outputs=response,
+            outputs=association_versions,
             outputs_key_field="AssociationId",
             outputs_prefix="AWS.SSM.AssociationVersion",
             readable_output=tableToMarkdown(
-                t=_parse_association_versions(response.get("AssociationVersions", [])),
+                t=_parse_association_versions(association_versions),
                 name="Association Versions",
                 json_transform_mapping={
                     "Parameters": JsonTransformer(
@@ -465,6 +478,64 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
                         is_nested=True,
                     ),
                 },
+            )
+        )
+    )
+    return command_results
+
+
+def list_documents_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Lists the documents in AWS SSM using the provided SSM client and arguments.
+
+    Args:
+        ssm_client: AWS SSM client object for making API requests.
+        args (dict): Command arguments containing filters and parameters.
+            - limit (int, optional): Maximum number of documents to retrieve. Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next set of documents.
+
+    Returns:
+        list[CommandResults]: A list of CommandResults containing the documents information.
+        and the next token if exists in the response.
+    """
+    def _parse_documents(documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {
+                "Name": document.get("Name"),
+                "Display Name": document.get("DisplayName"),
+                "Owner": document.get("Owner"),
+                "Document version": document.get("DocumentVersion"),
+                "Document type": document.get("DocumentType"),
+                "Created date": document.get("CreatedDate"),
+                "Tags": document.get("Tags"),
+                "Platform types": document.get("PlatformTypes"),
+            } for document in documents]
+    kwargs = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
+    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
+
+    response = ssm_client.list_documents(**kwargs)
+    response = convert_datetime_to_iso(response)
+    documents = response.get("DocumentIdentifiers", [])
+
+    command_results = []
+    if next_token := response.get("NextToken"):
+        command_results.append(
+            next_token_command_result(next_token, "DocumentNextToken")
+        )
+
+    command_results.append(
+        CommandResults(
+            outputs=documents,
+            outputs_key_field="Name",
+            outputs_prefix="AWS.SSM.Document",
+            readable_output=tableToMarkdown(
+                name="AWS SSM Document",
+                t=_parse_documents(documents),
+                json_transform_mapping={
+                    "Tags": JsonTransformer(
+                        is_nested=True,
+                    )
+                }
             )
         )
     )
@@ -532,6 +603,8 @@ def main():
                 return_results(get_association_command(ssm_client, args))
             case "aws-ssm-association-version-list":
                 return_results(list_versions_association_command(ssm_client, args))
+            case "aws-ssm-document-list":
+                return_results(list_documents_command(ssm_client, args))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 

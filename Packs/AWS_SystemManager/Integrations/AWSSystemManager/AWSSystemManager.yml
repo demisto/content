@@ -513,6 +513,74 @@ script:
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetMaps
       description: A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together.
       type: Dictionary
+  - arguments:
+    - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
+      name: limit
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
+      name: next_token
+    description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
+    name: aws-ssm-document-list
+    outputs:
+    - contextPath: AWS.SSM.DocumentNextToken
+      description: The token to use when requesting the next set of items. If there are no additional items to return, the string is empty.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Name
+      description: The name of the SSM document.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.CreatedDate
+      description: The date the SSM document was created.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.DisplayName
+      description: An optional field allowing the specification of a user-defined, friendly name for the SSM document. This value can vary across different versions of the document.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Owner
+      description: The Amazon Web Services user that created the document.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.VersionName
+      description: An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.PlatformTypes
+      description: The operating system platform.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.DocumentVersion
+      description: The document version.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.DocumentType
+      description: The document type.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.SchemaVersion
+      description: The schema version.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.DocumentFormat
+      description: The document format, either JSON or YAML.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.TargetType
+      description: "The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the [CloudFormation User Guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)."
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Tags.Key
+      description: The name of the tag.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Requires.Name
+      description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Requires.Version
+      description: The document version required by the current document.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Requires.RequireType
+      description: The document type of the required SSM document.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Requires.VersionName
+      description: An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.ReviewStatus
+      description: The current status of a document review.
+      type: String
+    - contextPath: AWS.SSM.Document.DocumentIdentifiers.Author
+      description: The user in your organization who created the document.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
