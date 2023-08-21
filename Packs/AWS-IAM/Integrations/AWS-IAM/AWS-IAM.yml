@@ -1521,19 +1521,19 @@ script:
       description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
     description: List all managed policies that are attached to the specified IAM role.
     outputs:
-    - contextPath: AWS.IAM.AttachedRolePolicies.Policies.PolicyName
+    - contextPath: AWS.IAM.Roles.AttachedRolePolicies.Policies.PolicyName
       description: The Policy name.
       type: string
-    - contextPath: AWS.IAM.AttachedRolePolicies.Policies.PolicyArn
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
       description: The Policy ARN.
       type: string
-    - contextPath: AWS.IAM.AttachedRolePolicies.IsTruncated
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated
       description: Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received.
       type: boolean
-    - contextPath: AWS.IAM.AttachedRolePolicies.Marker
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.71373
+  dockerimage: demisto/boto3py3:1.0.0.71685
   runonce: false
   script: '-'
   subtype: python3
