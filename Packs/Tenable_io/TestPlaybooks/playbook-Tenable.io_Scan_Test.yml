@@ -82,24 +82,7 @@ tasks:
       brand: ""
     scriptarguments:
       scan-id:
-        complex:
-          root: TenableIO.Scan
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: TenableIO.Scan.Status
-                iscontext: true
-              right:
-                value:
-                  simple: completed
-          accessor: Id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: "55"
     separatecontext: true
     continueonerrortype: ""
     loop:
