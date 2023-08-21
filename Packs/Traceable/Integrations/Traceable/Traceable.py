@@ -99,7 +99,6 @@ get_spans_for_trace_id = """{
       spanRequestHeaders: attribute(expression: { key: "spanRequestHeaders" })
       spanRequestCookies: attribute(expression: { key: "spanRequestCookies" })
     }
-    # total
   }
 }
 """
@@ -118,13 +117,8 @@ api_entities_query = """query entities
   ) {
     results {
       id
-      isExternal: attribute(expression: { key: "isExternal" })
-      isAuthenticated: attribute(expression: { key: "isAuthenticated" })
-      riskScore: attribute(expression: { key: "riskScore" })
-      riskScoreCategory: attribute(expression: { key: "riskScoreCategory" })
-      isLearnt: attribute(expression: { key: "isLearnt" })
+      $fields_list
     }
-    total
   }
 }"""
 
@@ -265,7 +259,12 @@ class Client(BaseClient):
                                                            "category", "ipAbuseVelocity", "ipReputationLevel",
                                                            "securityEventType", "securityScore", "serviceId", "serviceName",
                                                            "actorScore", "threatCategory", "type"]
+        self.__allowed_optional_api_atrributes = [
+            "isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"
+        ]
+        self.optional_api_attributes = []
         self.domain_event_field_list = []
+        self.__query_api_attributes = False
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
 
     def set_security_score_category_list(self, securityScoreCategoryList):
@@ -367,7 +366,7 @@ class Client(BaseClient):
 
         if field_list is not None and len(field_list) > 0:
             for field in field_list:
-                if field in self.__allowed_optional_domain_event_field_list:
+                if field in self.__allowed_optional_domain_event_field_list and field not in final_list:
                     final_list.append(field)
                     demisto.log(f"Adding {field} to list of Incident fields to query.")
                 else:
@@ -384,6 +383,17 @@ class Client(BaseClient):
 
     def set_domain_event_field_list(self, field_list):
         self.domain_event_field_list = self.__process_domain_event_field_list(field_list)
+
+    def set_optional_api_attributes(self, field_list):
+        if len(field_list) == 0:
+            field_list = []
+        final_attributes_list = []
+        for attribute in field_list:
+            if attribute in self.__allowed_optional_api_atrributes and attribute not in final_attributes_list:
+                final_attributes_list.append(attribute)
+        self.optional_api_attributes = final_attributes_list
+        if len(self.optional_api_attributes) > 0:
+            self.__query_api_attributes = True
 
     def graphql_query(self, query, params={}, verify=False):
         demisto.debug("Entered from graphql_query")
@@ -520,8 +530,10 @@ class Client(BaseClient):
         filter_by_clause = Helper.construct_filterby_expression(
             Helper.construct_key_expression("id", api_id_list)
         )
+        fields_list = Helper.construct_field_attribute_expression(self.optional_api_attributes)
         return Template(api_entities_query).substitute(
             filter_by_clause=filter_by_clause,
+            fields_list=fields_list,
             limit=self.limit,
             starttime=Helper.datetime_to_string(starttime),
             endtime=Helper.datetime_to_string(endtime),
@@ -603,13 +615,17 @@ class Client(BaseClient):
                 future_list.append((domain_event, future))
                 demisto.info("Completed thread for span retrieval")
 
-        api_endpoint_details = self.get_api_endpoint_details(
-            api_id_list, starttime, endtime
-        )
-        api_endpoint_details_map = {
-            api_endpoint_detail["id"]: api_endpoint_detail
-            for api_endpoint_detail in api_endpoint_details
-        }
+        api_endpoint_details = []
+        api_endpoint_details_map = {}
+
+        if self.__query_api_attributes:
+            api_endpoint_details = self.get_api_endpoint_details(
+                api_id_list, starttime, endtime
+            )
+            api_endpoint_details_map = {
+                api_endpoint_detail["id"]: api_endpoint_detail
+                for api_endpoint_detail in api_endpoint_details
+            }
         api_endpoint_details = None
 
         for domain_event, future in future_list:
@@ -662,7 +678,9 @@ class Client(BaseClient):
                     domain_event["ipAddressType"] = "External"
 
             if (
-                "apiId" in domain_event
+                self.__query_api_attributes
+                and "isExternal" in self.optional_api_attributes
+                and "apiId" in domain_event
                 and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
@@ -683,7 +701,9 @@ class Client(BaseClient):
                 else:
                     domain_event["apiType"] = "Internal"
             if (
-                "apiId" in domain_event
+                self.__query_api_attributes
+                and "isAuthenticated" in self.optional_api_attributes
+                and "apiId" in domain_event
                 and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
@@ -700,7 +720,9 @@ class Client(BaseClient):
             ):
                 domain_event["apiIsAuthenticated"] = api_endpoint_details_map[domain_event["apiId"]["value"]]["isAuthenticated"]
             if (
-                "apiId" in domain_event
+                self.__query_api_attributes
+                and "riskScore" in self.optional_api_attributes
+                and "apiId" in domain_event
                 and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
@@ -717,7 +739,9 @@ class Client(BaseClient):
             ):
                 domain_event["apiRiskScore"] = api_endpoint_details_map[domain_event["apiId"]["value"]]["riskScore"]
             if (
-                "apiId" in domain_event
+                self.__query_api_attributes
+                and "riskScoreCategory" in self.optional_api_attributes
+                and "apiId" in domain_event
                 and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
@@ -737,7 +761,9 @@ class Client(BaseClient):
                 ]
 
             if (
-                "apiId" in domain_event
+                self.__query_api_attributes
+                and "isLearnt" in self.optional_api_attributes
+                and "apiId" in domain_event
                 and "value" in domain_event["apiId"]
                 and domain_event["apiId"]["value"] is not None
                 and domain_event["apiId"]["value"] != "null"
@@ -759,7 +785,7 @@ class Client(BaseClient):
             if "ipAddressType" not in domain_event:
                 domain_event["ipAddressType"] = "Internal"
 
-            if "apiType" not in domain_event:
+            if "apiType" not in domain_event and self.__query_api_attributes and "isExternal" in self.optional_api_attributes:
                 domain_event["apiType"] = "Unknown"
 
             if ("id" in domain_event and "value" in domain_event["id"] and self.app_url != ""
@@ -893,6 +919,7 @@ def main() -> None:
         ipCategoriesList = demisto.params().get("ipCategories")
         ignoreStatusCodes = demisto.params().get("ignoreStatusCodes", "")
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
+        optionalAPIAttributes = demisto.params().get("optionalAPIAttributes")
         demisto.params().get("optionalAPIAttributes")
 
         _env = demisto.params().get("environment")
@@ -917,7 +944,7 @@ def main() -> None:
         client.set_app_url(app_url)
         client.set_ignore_status_codes(ignoreStatusCodes)
         client.set_domain_event_field_list(optionalDomainEventFieldList)
-        # client.set_optional_api_attributes(optionalAPIAttributes)
+        client.set_optional_api_attributes(optionalAPIAttributes)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":

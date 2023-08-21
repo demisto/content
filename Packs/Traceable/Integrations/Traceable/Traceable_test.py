@@ -584,7 +584,9 @@ def test_fetch_incidents_last_fetch_none(mocker):
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
     assert incidents[0]["ipAddressType"] == "External"
-    assert incidents[0]["eventUrl"] == "https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=90d&env=Fintech_app"
+    assert incidents[0]["eventUrl"] == (
+        'https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=90d&env=Fintech_app'
+    )
 
 
 def test_fetch_incidents_no_linked_api(mocker):
@@ -601,6 +603,7 @@ def test_fetch_incidents_no_linked_api(mocker):
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_optional_api_attributes(["isExternal"])
     client.set_limit(100)
 
     mocked_post = mocker.patch("requests.post")
@@ -626,6 +629,7 @@ def test_fetch_incidents_public_api_type(mocker):
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
 
     mocked_post = mocker.patch("requests.post")
@@ -651,6 +655,7 @@ def test_fetch_incidents_private_api_type(mocker):
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
 
     mocked_post = mocker.patch("requests.post")
@@ -1093,6 +1098,7 @@ def test_get_api_endpoint_details_query():
     from Traceable import Client, Helper
 
     client = Client("https://mock.url")
+    client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
 
     query = client.get_api_endpoint_details_query(
@@ -1109,11 +1115,9 @@ def test_get_api_endpoint_details_query():
         + 'T09:07:59Z"\n      endTime: "2023-07-24T09:07:59Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {ke'
         + 'y: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f'
         + '","be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      isExtern'
-        + 'al: attribute(expression: { key: "isExternal" })\n      isAuthenticated: attribute(expression: { key: "isAut'
-        + 'henticated" })\n      riskScore: attribute(expression: { key: "riskScore" })\n      riskScoreCategory: attri'
-        + 'bute(expression: { key: "riskScoreCategory" })\n      isLearnt: attribute(expression: { key: "isLearnt" })\n'
-        + '    }\n    total\n  }\n}'
-
+        + 'al: attribute(expression: { key: "isExternal" })\nisAuthenticated: attribute(expression: { key: "isAuthentic'
+        + 'ated" })\nriskScore: attribute(expression: { key: "riskScore" })\nriskScoreCategory: attribute(expression: {'
+        + ' key: "riskScoreCategory" })\nisLearnt: attribute(expression: { key: "isLearnt" })\n\n    }\n  }\n}'
     )
 
     assert query == expected_query
@@ -1318,3 +1322,57 @@ def test_construct_field_selection_expression():
         + '{key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCategory"}) { value ' \
         + '}\ntype: selection(expression: {key: "type"}) { value }\n'
     assert expression_string == expected_output
+
+
+def test_construct_api_attribute_selection():
+    from Traceable import Client, Helper
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_optional_api_attributes(["isExternal", "isExternal", "isAuthenticated", "nonexistent"])
+    expected_output = (
+        'query entities\n{\n  entities(\n    scope: "API"\n    limit: None\n    between: {\n      startTime: "2023-07-2'
+        + '3T09:07:59Z"\n      endTime: "2023-07-24T09:07:59Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {k'
+        + 'ey: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8'
+        + 'f","be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      isExter'
+        + 'nal: attribute(expression: { key: "isExternal" })\nisAuthenticated: attribute(expression: { key: "isAuthenti'
+        + 'cated" })\n\n    }\n  }\n}'
+    )
+
+    query = client.get_api_endpoint_details_query(
+        [
+            "067bb0d7-3740-3ba6-89eb-c457491fbc53",
+            "ea0f77c0-adc2-3a69-89ea-93b1c8341d8f",
+            "be344182-c100-3287-874a-cb47eac709f2",
+        ],
+        Helper.string_to_datetime("2023-07-23T09:07:59Z"),
+        Helper.string_to_datetime("2023-07-24T09:07:59Z")
+    )
+    assert query == expected_output
+
+
+def test_fetch_incidents_no_api_attributes_selection(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = private_api_type_response_handler
+
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+    rawJSON = json.loads(incidents[0]["rawJSON"])
+    assert "apiType" not in rawJSON
+    assert "apiIsAuthenticated" not in rawJSON
+    assert "apiRiskScore" not in rawJSON
+    assert "apiRiskScoreCategory" not in rawJSON
