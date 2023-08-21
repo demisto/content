@@ -463,8 +463,7 @@ class Client:
     def list_pull_requests_reviewers(self, project_args: Project, pull_request_id: Optional[int]):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers'
+        full_url = f'{project_args.repo_url}/pullRequests/{pull_request_id}/reviewers'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -476,8 +475,7 @@ class Client:
         params = {"api-version": 7.0}
         data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
+        full_url = f'{project_args.repo_url}/pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
 
         return self.ms_client.http_request(method='PUT',
                                            full_url=full_url,
@@ -488,8 +486,7 @@ class Client:
     def list_pull_requests_commits(self, project_args: Project, pull_request_id: Optional[int], limit: int):
 
         params = {"api-version": 7.0, "$top": limit}
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/commits'
+        full_url = f'{project_args.repo_url}/pullRequests/{pull_request_id}/commits'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -499,8 +496,7 @@ class Client:
     def list_commits(self, project_args: Project, limit: int, offset: int):
 
         params = {"api-version": 7.0, "searchCriteria.$skip": offset, "searchCriteria.$top": limit}
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/commits'
+        full_url = f'{project_args.repo_url}/commits'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -510,8 +506,7 @@ class Client:
     def get_commit(self, project_args: Project, commit_id: str):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/commits/{commit_id}'
+        full_url = f'{project_args.repo_url}/commits/{commit_id}'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -521,8 +516,7 @@ class Client:
     def get_work_item(self, project_args: Project, item_id: str):
 
         params = {"api-version": 7.0}
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/wit/workitems/{item_id}'
+        full_url = f'{project_args.project_url}/_apis/wit/workitems/{item_id}'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -536,8 +530,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/wit/workitems/${args["type"]}'
+        full_url = f'{project_args.project_url}/_apis/wit/workitems/${args["type"]}'
 
         return self.ms_client.http_request(method='POST',
                                            headers={"Content-Type": "application/json-patch+json"},
@@ -553,8 +546,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/wit/workitems/{args["item_id"]}'
+        full_url = f'{project_args.project_url}/_apis/wit/workitems/{args["item_id"]}'
 
         return self.ms_client.http_request(method='PATCH',
                                            headers={"Content-Type": "application/json-patch+json"},
@@ -569,8 +561,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/git/repositories/{project_args.repository}/pushes'
+        full_url = f'{project_args.repo_url}/pushes'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -584,8 +575,7 @@ class Client:
                   "versionDescriptor.versionType": "branch", "recursionLevel": args["recursion_level"],
                   "includeContentMetadata": True}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/git/repositories/{project_args.repository}/items'
+        full_url = f'{project_args.repo_url}/items'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -598,8 +588,7 @@ class Client:
                   "includeContent": args["include_content"], "versionDescriptor.versionType": "branch",
                   "versionDescriptor.version": args["branch_name"].split("/")[-1]}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/git/repositories/{project_args.repository}/items'
+        full_url = f'{project_args.repo_url}/items'
 
         headers = {"Content-Type": "application/json" if args["format"] == 'json' else "application/zip"}
 
@@ -617,8 +606,7 @@ class Client:
         data = file_pre_process_body_request("add", args)
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/' \
-                   f'_apis/git/repositories/{project_args.repository}/pushes'
+        full_url = f'{project_args.repo_url}/pushes'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -641,8 +629,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{args["pull_request_id"]}/threads'
+        full_url = f'{project_args.repo_url}/pullRequests/{args["pull_request_id"]}/threads'
 
         return self.ms_client.http_request(method='POST',
                                            full_url=full_url,
@@ -665,9 +652,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{args["pull_request_id"]}/' \
-                   f'threads/{args["thread_id"]}'
+        full_url = f'{project_args.repo_url}/pullRequests/{args["pull_request_id"]}/threads/{args["thread_id"]}'
 
         return self.ms_client.http_request(method='PATCH',
                                            full_url=full_url,
@@ -679,8 +664,7 @@ class Client:
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/threads'
+        full_url = f'{project_args.repo_url}/pullRequests/{pull_request_id}/threads'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -715,8 +699,7 @@ class Client:
 
         params = {"api-version": 7.0, "$format": "zip"}
 
-        full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/blobs/{file_object_id}'
+        full_url = f'{project_args.repo_url}/blobs/{file_object_id}'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
