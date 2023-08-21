@@ -2787,37 +2787,37 @@ script:
       description: The content in the code review thread.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated number added.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$value
       description: Number of code reviewers updated the pull request.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated number changed.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$value
       description: Number of code reviewers changed the pull request.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated number declined.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$value
       description: Number of code reviewers declined the pull request.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated number removed.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$value
       description: Number of code reviewers are removed.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated added identity.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$value
       description: Number of code reviewers added identity.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated by identity.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$value
       description: Number of code reviewers updated by identity.
@@ -2853,13 +2853,13 @@ script:
       description: Link to the repository.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated changed to required.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$value
       description: Number of code reviewers were changed to required.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$type
-      description: A number (Int32).
+      description: The type of the code review reviewers updated changed identity.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$value
       description: Number of code reviewers changed the identity.
@@ -2874,13 +2874,13 @@ script:
       description: Set of identities related to this thread.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type
-      description: A number (Int32).
+      description: The type of the supports markdown.
     - type: Number
       contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value
       description: Supports markdown number.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type
-      description: A number (Int32).
+      description: The type of the unique ID.
     - type: String
       contextPath: AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value
       description: The unique ID of the Team Foundation.
