@@ -22,13 +22,13 @@
 
 ### Global Script Snippets ###
 
-.create-id-set: &create-id-set
+.create-id-set:
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - section_end "Create ID Set"
 
-.create-id-set-xsoar: &create-id-set-xsoar
+.create-id-set-xsoar:
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
@@ -36,7 +36,7 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
-.create-id-set-mp-v2: &create-id-set-mp-v2
+.create-id-set-mp-v2:
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
@@ -44,7 +44,7 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
-.create-id-set-xpanse: &create-id-set-xpanse
+.create-id-set-xpanse:
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
