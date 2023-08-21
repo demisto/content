@@ -294,7 +294,7 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
     elif git_integration == 'AzureDevOps':
         commit_content_item_azure_devops(branch_name, content_file, new_files, modified_files)
     else:
-        raise DemistoException("Unknown git_integration. Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps.")
+        raise DemistoException(f"Unexpected {git_integration=}. Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps.")
 
 
 ''' MAIN FUNCTION '''
