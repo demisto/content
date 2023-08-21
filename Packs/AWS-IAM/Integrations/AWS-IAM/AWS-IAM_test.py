@@ -464,10 +464,10 @@ def test_list_attached_role_policies(mocker):
     assert result[0].outputs == [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1', 'RoleName': 'test-role'},
                                  {'PolicyName': 'policy2', 'PolicyArn': 'Arn2', 'RoleName': 'test-role'}]
     assert result[0].readable_output == ('### Attached Policies for Role test-role\n|PolicyArn|PolicyName|RoleName|\n'
-                                        '|---|---|---|\n| Arn1 | policy1 | test-role |\n| Arn2 | policy2 | test-role |\n')
+                                         '|---|---|---|\n| Arn1 | policy1 | test-role |\n| Arn2 | policy2 | test-role |\n')
     assert result[0].raw_response == response
 
     assert result[1].outputs == {'IsTruncated': True, 'Marker': 'some_marker'}
     assert result[1].raw_response == response
     assert result[1].readable_output == ("### Attached Policies Query for test-role\n|IsTruncated|Marker|\n|---|---|\n| "
-                                        "true | some_marker |\n")
+                                         "true | some_marker |\n")

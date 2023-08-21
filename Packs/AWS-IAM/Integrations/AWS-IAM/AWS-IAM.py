@@ -1057,7 +1057,7 @@ def list_attached_role_policies(args: dict, client) -> list[CommandResults]:
         for policy in raw_response["AttachedPolicies"]
     ]
 
-    query_outputs = {k:v for k, v in raw_response.items() if k in ("IsTruncated", "Marker")}
+    query_outputs = {k: v for k, v in raw_response.items() if k in ("IsTruncated", "Marker")}
     return [
         CommandResults(
             # Main result - here be policies
