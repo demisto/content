@@ -6,38 +6,42 @@ display: MaxMind GeoIP2
 category: Data Enrichment & Threat Intelligence
 description: Enriches IP addresses
 configuration:
-- display: API Key
+- defaultvalue: https://geoip.maxmind.com/
+  display: Base URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Key
+  hidden: true
   name: apikey
-  defaultvalue: ""
-  type: 0
-  required: true
+  type: 4
 - display: Account ID
+  displaypassword: API Key
+  name: credentials
+  type: 9
+- defaultvalue: ''
+  display: Account ID
+  hidden: true
   name: account
-  defaultvalue: ""
   type: 0
-  required: true
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
-- display: Service Version
+  type: 8
+- defaultvalue: city
+  display: Service Version
   name: mode
-  defaultvalue: city
-  type: 15
-  required: true
   options:
   - country
   - city
   - insights
-- display: Base URL
-  name: url
-  defaultvalue: https://geoip.maxmind.com/
-  type: 0
   required: true
+  type: 15
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -50,23 +54,23 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
   required: false
+  type: 15
 - defaultvalue: indicatorType
-  name: feedExpirationPolicy
   display: ''
+  name: feedExpirationPolicy
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
   type: 17
-  required: false
 - defaultvalue: '20160'
-  name: feedExpirationInterval
   display: ''
-  type: 1
+  name: feedExpirationInterval
   required: false
+  type: 1
 script:
   script: ''
   type: python
@@ -149,7 +153,7 @@ script:
       type: String
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
   runonce: false
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.68714
 tests:
 - MaxMind Test
 fromversion: 5.0.0
