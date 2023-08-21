@@ -1,6 +1,7 @@
 import enum
 import http
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
+from collections.abc import Callable
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
