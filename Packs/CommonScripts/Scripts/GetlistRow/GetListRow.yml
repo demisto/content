@@ -18,10 +18,10 @@ args:
   name: list_separator
 comment: Parses a list by header and value.
 commonfields:
-  id: GetListRow
+  id: GetListRow_fix
   version: -1
 enabled: true
-name: GetListRow
+name: GetListRow_fix
 outputs:
 - contextPath: GetListRow.Header
   description: Header in which the search was performed.

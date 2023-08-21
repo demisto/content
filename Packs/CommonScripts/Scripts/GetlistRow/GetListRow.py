@@ -18,7 +18,7 @@ def validate_header_exists(headers, header):
 
 
 def list_to_headers_and_lines(list_data, list_separator: str):
-    lines_and_headers = [line.split(list_separator) for line in list_data.split('\n')]
+    lines_and_headers = [line.strip().split(list_separator) for line in list_data.split('\n')]
     headers = lines_and_headers[0]
     return headers, lines_and_headers[1:]
 
