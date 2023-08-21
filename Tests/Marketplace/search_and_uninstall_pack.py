@@ -63,7 +63,7 @@ def generic_request_with_retries(client: demisto_client,
                     return True, None
 
                 # should_try_handler return True, we are trying to send request.
-                logging.info(f"{prior_message}, attempts_left: {attempts_count - attempts_left}/{attempts_count}")
+                logging.info(f"{prior_message}, attempt: {attempts_count - attempts_left}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
                                                                                      method=method,
