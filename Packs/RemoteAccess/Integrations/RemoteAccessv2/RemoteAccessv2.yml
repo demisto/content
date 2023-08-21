@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: RemoteAccess v2
+  id: RemoteAccess v2 - dev
   version: -1
 configuration:
 - additionalinfo: If not provided, "host" or "system" should be provided in the command's arguments.
@@ -41,8 +41,8 @@ configuration:
   advanced: true
   required: false
 description: This integration transfers files between Cortex XSOAR and a remote machine and executes commands on the remote machine.
-display: RemoteAccess v2
-name: RemoteAccess v2
+display: RemoteAccess v2 - dev
+name: RemoteAccess v2 - dev
 script:
   commands:
   - arguments:

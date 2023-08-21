@@ -207,13 +207,13 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
         outputs: Optional[List[Dict]] = [{
             'output': stdout_str,
             'error': std_error_str,
-            'commands': commands_lst,
+            'command': commands_for_exec,
             'success': not std_error_str
         }]
-        readable_output = tableToMarkdown(f'Commands {commands_lst} Outputs', outputs, removeNull=True)
+        readable_output = tableToMarkdown(f'Commands {commands_for_exec} Outputs', outputs, removeNull=True)
     else:
         outputs = None
-        readable_output = f'### Commands {commands_lst} was executed successfully without any outputs.'
+        readable_output = f'### Commands {commands_for_exec} was executed successfully without any outputs.'
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
         outputs=outputs,
