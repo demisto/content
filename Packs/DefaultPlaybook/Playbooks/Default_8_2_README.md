@@ -59,3 +59,10 @@ There are no outputs for this playbook.
 ---
 
 ![Default](../doc_files/Default_8_2.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/master/Assets/Default/Default%20Pack%20-%20Playbook%20and%20Layout.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/GDPR/GDPR_Data_Breach_Notification.mp4
+</video>
