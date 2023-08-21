@@ -1521,7 +1521,10 @@ script:
       description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
     description: List all managed policies that are attached to the specified IAM role.
     outputs:
-    - contextPath: AWS.IAM.Roles.AttachedRolePolicies.Policies.PolicyName
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.RoleName
+      description: The Role name.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName
       description: The Policy name.
       type: string
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
