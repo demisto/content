@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 # IMPORTS
 
-from typing import Union
 import json
 import urllib3
 import requests
@@ -144,7 +143,8 @@ class AzureSentinelClient:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
-            base_url=base_url
+            base_url=base_url,
+            command_prefix="azure-sentinel",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -674,6 +674,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
+    fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
     required_fields = ('severity', 'status', 'title')
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
@@ -686,7 +687,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'status': 'Active',
         'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
-        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc')
+        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
+        'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
     }
     if close_ticket:
         properties |= {
@@ -1114,11 +1116,11 @@ def list_incident_entities_command(client, args):
     """
 
     def xsoar_transformer(entity):
-        return dict(
-            ID=entity.get('name'),
-            Kind=entity.get('kind'),
-            Properties=entity.get('properties')
-        )
+        return {
+            'ID': entity.get('name'),
+            'Kind': entity.get('kind'),
+            'Properties': entity.get('properties')
+        }
 
     return generic_list_incident_items(
         client=client, incident_id=args.get('incident_id'),
@@ -1201,7 +1203,7 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: Union[List, Dict]):
+def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
     """Fetches additional info of an incidents array or a single incident.
 
     Args:
@@ -1955,7 +1957,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
@@ -2035,6 +2037,8 @@ def main():
             return_results(list_subscriptions_command(client))
         elif command == 'azure-sentinel-resource-group-list':
             return_results(list_resource_groups_command(client, args, subscription_id))
+        elif command == 'azure-sentinel-auth-reset':
+            return_results(reset_auth())
 
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore

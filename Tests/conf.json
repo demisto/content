@@ -79,7 +79,6 @@
         {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
-
         },
         {
             "integrations": [
@@ -126,14 +125,16 @@
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 900
         },
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 500
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -200,7 +201,8 @@
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": [
@@ -676,11 +678,12 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
-            "timeout": 600,
+            "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
@@ -688,7 +691,8 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudShark",
@@ -1486,7 +1490,6 @@
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
             "timeout": 200
-
         },
         {
             "integrations": "WildFire-v2",
@@ -2086,7 +2089,7 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2149,7 +2152,8 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
@@ -2366,7 +2370,8 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0",
+            "timeout": 2000
         },
         {
             "integrations": "TeamCymru",
@@ -3073,6 +3078,9 @@
             "playbookID": "sumList - Test"
         },
         {
+            "playbookID": "AnyMatch_Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         },
@@ -3498,7 +3506,6 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
-
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -3661,12 +3668,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "BitcoinAbuse",
-            "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 200
-        },
-        {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0",
@@ -3776,7 +3777,8 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 600
+            "timeout": 600,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4967,6 +4969,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "memory_threshold": 300,
             "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
@@ -5188,7 +5191,8 @@
                 "ewso365_dev_team"
             ],
             "fromversion": "6.5.0",
-            "timeout": 600
+            "timeout": 600,
+            "memory_threshold": 300
         },
         {
             "integrations": "OpsGenieV3",
@@ -5368,6 +5372,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1"
+        },
+        {
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
@@ -5461,8 +5470,8 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-          "integrations":  "Cylance Protect v2",
-          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
             "integrations": [
@@ -5660,7 +5669,11 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "EWS_O365_test": "Issue CIAC-6753"
+        "EWS_O365_test": "Issue CIAC-6753",
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5789,7 +5802,8 @@
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "CheckPhish": "Issue CRTX-86562",
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6075,7 +6089,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests":[
+    "reputation_tests": [
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",

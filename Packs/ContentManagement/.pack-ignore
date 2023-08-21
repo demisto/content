@@ -44,14 +44,14 @@ bitbucket
 gitlab
 
 [file:ListCreator.yml]
-ignore=BA124,CJ105
+ignore=BA124
 
 [file:ConfigurationSetup.yml]
-ignore=BA124,CJ105
+ignore=BA124
 
 [file:GetPrBranches.yml]
 ignore=BA124
 
 [file:JobCreator.yml]
-ignore=BA124,CJ105
+ignore=BA124
 
