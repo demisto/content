@@ -2444,8 +2444,8 @@ class Pack:
 
         return set(input_to_list(input_data=tags))
 
-    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
-                                 statistics_handler=None, format_dependencies_only=False):
+    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
+                                 statistics_handler=None):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
@@ -2457,35 +2457,10 @@ class Pack:
             dict: parsed pack metadata.
 
         """
-        # landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
         trending_packs = None
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
-        if not format_dependencies_only:
-            # self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
-            self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path)
-            # self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES),
-            #                                 capitalize_input=True)
-            # self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
-            #                                  capitalize_input=True)
-            # self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
-        # self._parsed_dependencies = self._parse_pack_dependencies(dependencies_metadata_dict)
-
-        # ===== Pack Private Attributes =====
-        # if not format_dependencies_only:
-        #     self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
-        #     self._is_premium = self._is_private_pack
-        #     self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
-        #     self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
-            # if self._is_private_pack:
-            #     self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
-            #     self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
-            #     self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
-            #     self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
-            #     self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
-            #     # Currently all content packs are legacy.
-            #     # Since premium packs cannot be legacy, we directly set this attribute to false.
-            #     self._legacy = False
+        self._create_date = self._get_pack_creation_date(index_folder_path)
+        self._update_date = self._get_pack_update_date(index_folder_path)
 
         # ===== Pack Statistics Attributes =====
         if not self._is_private_pack and statistics_handler:  # Public Content case
@@ -2506,8 +2481,7 @@ class Pack:
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping,
-                        statistics_handler, marketplace='xsoar',
-                        format_dependencies_only=False):
+                        statistics_handler, marketplace='xsoar'):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -2536,8 +2510,8 @@ class Pack:
             dependencies_metadata_dict = self._load_pack_dependencies_metadata(
                 index_folder_path)
 
-            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
-                                          statistics_handler, format_dependencies_only)
+            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
+                                          statistics_handler)
 
             formatted_metadata = self._parse_pack_metadata()
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
@@ -2893,10 +2867,10 @@ class Pack:
                         pack_image_blob.upload_from_file(image_file)
                     self._uploaded_integration_images.append(image_name)
 
-                # if GCPConfig.USE_GCS_RELATIVE_PATH:
-                image_gcs_path = urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
-                # else:
-                #     image_gcs_path = pack_image_blob.public_url
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    image_gcs_path = urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
+                else:
+                    image_gcs_path = pack_image_blob.public_url
 
                 integration_name = image_data.get('display_name', '')
 
