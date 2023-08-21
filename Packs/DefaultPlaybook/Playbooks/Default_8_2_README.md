@@ -58,8 +58,4 @@ There are no outputs for this playbook.
 
 ---
 
-## Playbook Image
-
----
-
 ![Default](../doc_files/Default_8_2.png)
