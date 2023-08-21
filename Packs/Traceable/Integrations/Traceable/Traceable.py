@@ -130,11 +130,11 @@ class Helper:
         return "filterBy: [" + ",".join(non_null_list) + "]"
 
     @staticmethod
-    def fix_start_timestamp(string_timestamp):
+    def fix_start_timestamp(string_timestamp: str):
         return f"{string_timestamp[:-1]}.000Z"
 
     @staticmethod
-    def fix_end_timestamp(string_timestamp):
+    def fix_end_timestamp(string_timestamp: str):
         return f"{string_timestamp[:-1]}.999Z"
 
     @staticmethod
@@ -156,15 +156,15 @@ class Helper:
         return expression_list
 
     @staticmethod
-    def datetime_to_string(d):
+    def datetime_to_string(d: datetime):
         return d.strftime(DATE_FORMAT)
 
     @staticmethod
-    def start_datetime_to_string(d):
+    def start_datetime_to_string(d: datetime):
         return Helper.fix_start_timestamp(Helper.datetime_to_string(d))
 
     @staticmethod
-    def end_datetime_to_string(d):
+    def end_datetime_to_string(d: datetime):
         return Helper.fix_end_timestamp(Helper.datetime_to_string(d))
 
     @staticmethod
@@ -261,7 +261,7 @@ class Client(BaseClient):
         self.ipReputationLevelList = None
         self.ipAbuseVelocityList = None
         self.ipCategoriesList = None
-        self.limit = None
+        self.limit = 100
         self.proxy = proxy
         self.span_fetch_threadpool = 10
         self.app_url = ""
