@@ -978,13 +978,16 @@ class MicrosoftClient(BaseClient):
         """
         content = self.refresh_token or self.tenant_id
         headers = self._add_info_headers()
+        context = get_integration_context()
+        next_request_time = context.get("next_request_time",  0.0)
+        delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
 
-        should_delay_request()
+        should_delay_request(next_request_time)
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
-            next_request_time = calculate_next_request_time()
-            set_retry_mechanism_arguments(next_request_time=next_request_time)
+            next_request_time = calculate_next_request_time(delay_request_counter=delay_request_counter)
+            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter)
             self._raise_authentication_error(oproxy_response)
 
         # In case of success, reset the retry mechanism arguments.
@@ -1407,39 +1410,35 @@ class NotFoundError(Exception):
         self.message = message
 
 
-def calculate_next_request_time() -> float:
+def calculate_next_request_time(delay_request_counter: int) -> float:
     """
         Calculates the next request time based on the delay_request_counter.
         This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
     """
-    context = get_integration_context()
     # The max delay time should be limited to ~60 sec.
-    delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
     next_request_time = get_current_time() + timedelta(seconds=(2 ** delay_request_counter))
     return next_request_time.timestamp()
 
 
-def set_retry_mechanism_arguments(next_request_time: float = 0.0):
+def set_retry_mechanism_arguments(next_request_time: float = 0.0, delay_request_counter: int = 1):
     """
         Sets the next_request_time in the integration context.
         This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
     """
-    context = get_integration_context()
-    next_counter = int(context.get('delay_request_counter', 1)) + 1
-    set_integration_context({'next_request_time': next_request_time, 'delay_request_counter': next_counter})
+    next_counter = delay_request_counter + 1
+    next_integration_context = {'next_request_time': next_request_time, 'delay_request_counter': next_counter}
 
     # Should reset the context retry arguments.
     if next_request_time == 0.0:
-        set_integration_context({'delay_request_counter': 0})
+        next_integration_context['delay_request_counter'] = 1
+    set_integration_context(next_integration_context)
 
 
-def should_delay_request():
+def should_delay_request(next_request_time: float):
     """
         Checks if the request should be delayed based on context variables.
         This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
     """
-    context = get_integration_context()
-    next_request_time = float(context.get('next_request_time', 0.0))
     now = get_current_time().timestamp()
 
     # If the next_request_time is 0 or negative, it means that the request should not be delayed because no error has occurred.
