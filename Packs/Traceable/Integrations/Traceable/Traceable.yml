@@ -26,6 +26,7 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -114,7 +115,7 @@ configuration:
   defaultvalue: 400-499
   type: 0
   required: false
-- display: Incident pull optional field list
+- display: Incident optional field list
   name: optionalDomainEventFieldList
   defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type
   options:
@@ -138,7 +139,7 @@ configuration:
   - type
   type: 16
   required: false
-- display: Pull Additional API Attributes
+- display: Additional API Attributes
   name: optionalAPIAttributes
   defaultvalue: isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt
   options:

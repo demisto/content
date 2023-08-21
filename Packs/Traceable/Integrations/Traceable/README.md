@@ -8,7 +8,7 @@ With this integration, an Incident can be raised in Cortex Xsoar when an Event i
 To use the integration the following mandatory parameters need to be set:
 |Parameter Name|Default Value|Description|
 |------|------|------|
-|Traceable Platform URL|https://api.traceable.ai|URL of Traceable Platform API Endpoint.|
+|Traceable Platform API Endpoint URL|https://api.traceable.ai|Base URL of Traceable Platform API Endpoint.|
 |API Token|-|API Token. Used for Authenticating against the Traceable Platform|
 |Trust any certificate (not secure)|false|Trust any SSL certificate while connecting to Platform API Endpoint|
 |Use system proxy settings|false|Use the system proxy setup using the environment variables `http_proxy`/`https_proxy`|
@@ -29,6 +29,10 @@ The following parameters can be used to customize what Events should be exported
 |IP Reputation Level|Multi Select|No|CRITICAL, HIGH, MEDIUM|IP Reputations to query|
 |IP Abuse Velocity|Multi Select|No|CRITICAL, HIGH, MEDIUM|IP Abuse Velocity to query|
 |IP Location Type|Multi Select|No|-|IP Location Type to query|
+|Traceable Platform Endpoint URL|Long Text|No|https://app.traceable.ai|Base URL of the Traceable Platform UI Endpoint|
+|Ignore Status Codes|Long Text|No|400-499|Ignore Incidents for HTTP Requests failing with these Status Codes|
+|Incident optional field list|Multi Select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type|Optional fields to pull from Traceable Event|
+|Additional API Attributes|Multi Select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt|Additional API Attributes to query for the affected API in the Incident|
 
 ## Incident Types
 The integration generates _Exploit_ type of Inidents.
