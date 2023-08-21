@@ -1,5 +1,5 @@
 Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
-This integration was integrated and tested with version xx of Reco
+This integration was integrated and tested with 2023.34.0 version of Reco
 
 ## Configure Reco on Cortex XSOAR
 
