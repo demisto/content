@@ -247,6 +247,48 @@ The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Enrichment.
 - Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
 
+## Create KV Store
+KV Store stores your data as key-value pairs in collections.  It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
+
+1. In Cortex XSOAR, create a new KV Store.
+   
+   **!splunk-kv-store-collection-create kv_store_name="\<kv_store_name\>"**
+   
+   For example:
+   
+   **!splunk-kv-store-collection-create kv_store_name=”test_kvstore”**
+   
+3. Define the fields and their type in the KV Store.
+
+   **!splunk-kv-store-collection-config kv_store_collection_name="\<kv_store_name\>" kv_store_fields="field.\<field-name\>=\<type\>,index.\<index-name\>=\<type\>,field.\<field-name-or-index\>=\<type\>,..."**
+
+   For example:
+   
+   **!splunk-kv-store-collection-config kv_store_collection_name="test_kvstore" kv_stre_fields="field.src=cidr,field.t=number,field.description=string"**
+
+   **Note:** To see the fields in Splunk, you must install the _Splunk App for Lookup File Editing_ app in Splunk. For more information, see [Define a KV Store lookup in Splunk](https://docs.splunk.com/Documentation/Splunk/9.1.0/Knowledge/DefineaKVStorelookupinSplunkWeb#:~:text=Splunk%20Web%20currently,Editing%20on%20Splunkbase).
+
+4. Make the KV Store usable in Splunk queries.
+
+   **!splunk-kv-store-collection-create-transform kv_store_collection_name=\<kv-store-name\> supported_fields=\<field-name-or-index\>,\<field-name-or-index\>,\<field-name-or-index\>,...**
+
+   For example:
+   
+   **!splunk-kv-store-collection-create-transform kv_store_collection_name=\<test_kvstore\> supported_fields=src,t,description**
+
+   **Note:** If no value is specified, the KV Store collection configuration will be used.
+
+### Add data to the KV Store
+
+To add data to the fields in the KV Store, run the following command:
+
+**!splunk-kv-store-collection-add-entries kv_store_data="{\"\<field-name-or-index\>\": \"\<value\>\", \"\<field-name-or-index\>\": \"\<value\>\", \"\<field-name-or-index\>\": \"\<value\>\"...}"**
+
+For example:
+
+**!splunk-kv-store-collection-add-entries kv_store_data="{\"src\": \"88.88.88.88\", \"t\": 9, \"description\": This is the description\"}"**
+
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

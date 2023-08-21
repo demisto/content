@@ -1,0 +1,22 @@
+{
+    "status": {
+        "code": 200,
+        "text": "OK"
+    },
+    "data": {
+        "id": 12345,
+        "organizationId": 12345,
+        "access": "allow",
+        "isGlobal": false,
+        "name": "Lior Test",
+        "thirdpartyCategoryId": null,
+        "createdAt": 1688617913,
+        "modifiedAt": 1688618575,
+        "isMspDefault": false,
+        "markedForDeletion": false,
+        "bundleTypeId": 1,
+        "meta": {
+            "destinationCount": 4
+        }
+    }
+}

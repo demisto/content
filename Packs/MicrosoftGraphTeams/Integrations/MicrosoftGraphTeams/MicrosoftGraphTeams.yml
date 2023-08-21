@@ -297,7 +297,14 @@ script:
   - arguments: []
     description: Tests connectivity to Microsoft Graph Teams.
     name: msgraph-teams-test
-  dockerimage: demisto/crypto:1.0.0.66562
+  - description: Generate the login url used for Authorization code flow.
+    name: msgraph-teams-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-teams-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.68914
   script: ''
   subtype: python3
   type: python

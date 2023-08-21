@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -16,7 +16,7 @@ ENV_URLS = {
     "eu (echo)": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
-ALERT_STATUSES = set((
+ALERT_STATUSES = {
     "FALSE_POSITIVE",
     "NOT_ACTIONABLE",
     "OPEN",
@@ -24,7 +24,7 @@ ALERT_STATUSES = set((
     "TRUE_POSITIVE_MALICIOUS",
     "OTHER",
     "SUPPRESSED",
-))
+}
 ASSET_SEARCH_FIELDS = ((
     "endpoint_type",
     "host_id",
@@ -37,10 +37,10 @@ ASSET_SEARCH_FIELDS = ((
     "sensor_version",
     "username",
 ))
-COMMENT_TYPES = set((
+COMMENT_TYPES = {
     "investigation",
-))
-INVESTIGATION_STATUSES = set((
+}
+INVESTIGATION_STATUSES = {
     "OPEN",
     "ACTIVE",
     "AWAITING_ACTION",
@@ -52,8 +52,8 @@ INVESTIGATION_STATUSES = set((
     "CLOSED_INFORMATIONAL",
     "CLOSED_NOT_VULNERABLE",
     "CLOSED_THREAT_MITIGATED",
-))
-INVESTIGATION_TYPES = set((
+}
+INVESTIGATION_TYPES = {
     "SECURITY_INVESTIGATION",
     "INCIDENT_RESPONSE",
     "THREAT_HUNT",
@@ -61,16 +61,16 @@ INVESTIGATION_TYPES = set((
     "CTU_THREAT_HUNT",
     "MANAGED_XDR_ELITE_THREAT_HUNT",
     "SECUREWORKS_INCIDENT_RESPONSE",
-))
-INVESTIGATION_UPDATE_FIELDS = set((
+}
+INVESTIGATION_UPDATE_FIELDS = {
     "keyFindings",
     "priority",
     "status",
     "assigneeId",
     "title",
     "type",
-))
-SHARELINK_TYPES = set((
+}
+SHARELINK_TYPES = {
     "alertId",
     "connectorId",
     "connectionId",
@@ -81,7 +81,7 @@ SHARELINK_TYPES = set((
     "playbookTemplateId",
     "playbookInstanceId",
     "playbookExecutionId",
-))
+}
 
 DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
 
@@ -110,7 +110,6 @@ class Client(BaseClient):
         self._client_secret = client_secret
         self.verify = verify
         self.tenant_id = tenant_id
-        return
 
     def auth(self) -> None:
         """Authenticate to the Taegis API using client_id and client_secret
@@ -131,9 +130,7 @@ class Client(BaseClient):
             "x-tenant-context": self.tenant_id,
         }
 
-        return
-
-    def graphql_run(self, query: str, variables: Dict[str, Any] = None):
+    def graphql_run(self, query: str, variables: dict[str, Any] = None):
         """Perform a GraphQL query
 
         :type query: ``str``
@@ -142,7 +139,7 @@ class Client(BaseClient):
         :type variables: ``Dict[str, Any]``
         :param variables: The variables to utilize with the query
         """
-        json_data: Dict[str, Any] = {"query": query}
+        json_data: dict[str, Any] = {"query": query}
 
         if variables:
             json_data["variables"] = variables
@@ -155,7 +152,7 @@ class Client(BaseClient):
         )
         return response
 
-    def test(self) -> Dict[str, Any]:
+    def test(self) -> dict[str, Any]:
         """
         Get the current API/asset version for testing auth and connectivity
         """
@@ -242,7 +239,7 @@ def create_comment_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "comment": args.get("comment"),
-            "id": args.get("id"),
+            "investigationId": args.get("id"),
         }
     }
 
@@ -295,13 +292,13 @@ def create_investigation_command(client: Client, env: str, args=None):
     if variables["input"]["priority"] and not 0 < variables["input"]["priority"] < 5:
         raise ValueError("Priority must be between 1-4")
     if variables["input"]["status"] not in INVESTIGATION_STATUSES:
-        raise ValueError((
+        raise ValueError(
             f"The provided status, {variables['input']['status']}, is not valid for updating an investigation. "
-            f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+            f"Supported Status Values: {INVESTIGATION_STATUSES}")
     if variables["input"]["type"] not in INVESTIGATION_TYPES:
-        raise ValueError((
+        raise ValueError(
             f"The provided type, {variables['input']['type']}, is not valid for updating an investigation. "
-            f"Supported Type Values: {INVESTIGATION_TYPES}"))
+            f"Supported Type Values: {INVESTIGATION_TYPES}")
     if not variables["input"]["title"]:
         raise ValueError("Title must be defined")
 
@@ -339,9 +336,9 @@ def create_sharelink_command(client: Client, env: str, args=None):
     if not args.get("type"):
         raise ValueError("Cannot create ShareLink, type cannot be empty")
     if args["type"] not in SHARELINK_TYPES:
-        raise ValueError((
+        raise ValueError(
             f"The provided ShareLink type, {args['type']}, is not valid for creating a ShareLink. "
-            f"Supported Type Values: {SHARELINK_TYPES}"))
+            f"Supported Type Values: {SHARELINK_TYPES}")
 
     variables: dict = {
         "sharelink": {
@@ -562,7 +559,7 @@ def fetch_assets_command(client: Client, env: str, args=None):
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 10
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "input": {},
         "pagination_input": {
             "limit": page_size,
@@ -754,7 +751,7 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot fetch endpoint information, missing id")
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "id": args.get("id")
     }
 
@@ -1095,7 +1092,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             }
             priority
             type
-            processing_status {
+            processingStatus {
                 assets
                 events
                 alerts
@@ -1300,7 +1297,7 @@ def fetch_users_command(client: Client, env: str, args=None):
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 10
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "filters": {
             "status": args.get("status", ""),
             "perPage": page_size,
@@ -1365,7 +1362,7 @@ def isolate_asset_command(client: Client, env: str, args=None):
     if not args.get("reason"):
         raise ValueError("Cannot isolate asset, missing reason")
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "id": args.get("id"),
         "reason": args.get("reason")
     }
@@ -1409,9 +1406,9 @@ def update_alert_status_command(client: Client, env: str, args=None):
         raise ValueError("Alert status must be defined")
 
     if args.get("status").upper() not in ALERT_STATUSES:
-        raise ValueError((
+        raise ValueError(
             f"The provided status, {args['status']}, is not valid for updating an alert. "
-            f"Supported Status Values: {ALERT_STATUSES}"))
+            f"Supported Status Values: {ALERT_STATUSES}")
 
     variables = {
         "alert_ids": argToList(args.get("ids")),
@@ -1521,19 +1518,18 @@ def update_investigation_command(client: Client, env: str, args=None):
         if not args.get(field):
             continue
 
-        if field == "assigneeId":
-            if not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
-                raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
+        if field == "assigneeId" and not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
+            raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
         if field == "priority" and not 0 < int(args.get("priority", 0)) < 5:
             raise ValueError("Priority must be between 1-4")
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
-            raise ValueError((
+            raise ValueError(
                 f"The provided status, {args['status']}, is not valid for updating an investigation. "
-                f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+                f"Supported Status Values: {INVESTIGATION_STATUSES}")
         if field == "type" and args.get("type") not in INVESTIGATION_TYPES:
-            raise ValueError((
+            raise ValueError(
                 f"The provided type, {args['type']}, is not valid for updating an investigation. "
-                f"Supported Type Values: {INVESTIGATION_TYPES}"))
+                f"Supported Type Values: {INVESTIGATION_TYPES}")
 
         variables["input"][field] = args.get(field)
 
@@ -1692,7 +1688,7 @@ def main():
     command = demisto.command()
     demisto.debug(f'Running Taegis Command: {command}')
 
-    commands: Dict[str, Any] = {
+    commands: dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
         "taegis-add-evidence-to-investigation": add_evidence_to_investigation_command,
         "taegis-create-comment": create_comment_command,
