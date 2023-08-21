@@ -339,19 +339,72 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
     return True
 
 
-def sync_marketplace(client: demisto_client):
+def sync_marketplace(client: demisto_client,
+                     attempts_count: int = 5,
+                     sleep_interval: int = 60,
+                     sleep_time_after_sync: int = 120,
+                     hard: bool = True,
+                     ):
     """
-    Syncs marketplace
+    Send a request to sync marketplace.
+
     Args:
+        hard(bool): Whether to perform a hard sync or not.
+        sleep_time_after_sync(int): The sleep interval, in seconds, after sync.
         client (demisto_client): The client to connect to.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
+    Returns:
+        Boolean - If the operation succeeded.
+
     """
     try:
-        _ = demisto_client.generic_request_func(client, path='/contentpacks/marketplace/sync?hard=true', method='POST')
-        logging.info('Sent request for sync, going to sleep 120 seconds')
-        sleep(120)
-        logging.info('Synced marketplace successfully.')
+        logging.info("Attempting to sync marketplace.")
+        for attempt in range(attempts_count - 1, -1, -1):
+            try:
+                sync_marketplace_url = (
+                    f'/contentpacks/marketplace/sync?hard={str(hard).lower()}'
+                )
+                logging.info(f"Sent request for sync, Attempt: {attempts_count - attempt}/{attempts_count}")
+                response, status_code, headers = demisto_client.generic_request_func(client,
+                                                                                     path=sync_marketplace_url, method='POST')
+
+                if 200 <= status_code < 300 and status_code != 204:
+                    logging.success(f'Sent request for sync successfully, sleeping for {sleep_time_after_sync} seconds.')
+                    sleep(sleep_time_after_sync)
+                    break
+
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+
+                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
+
+            except ApiException as ex:
+
+                if ALREADY_IN_PROGRESS in ex.body:
+                    wait_succeeded = wait_until_not_updating(client)
+                    if not wait_succeeded:
+                        raise Exception(
+                            "Failed to wait for the server to exit installation/updating status"
+                        ) from ex
+
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
+                logging.debug(f"Failed to sync marketplace, got error {ex}")
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
+                logging.debug(f"Failed to sync marketplace, got error {http_ex}")
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to sync marketplace, sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+
+        return True
     except Exception as e:
-        logging.warning(f'Failed to sync marketplace. Error: {str(e)}')
+        logging.exception(f'The request to sync marketplace has failed. Additional info: {str(e)}')
+    return False
 
 
 def options_handler():
@@ -396,16 +449,16 @@ def main():
 
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
-    sync_marketplace(client=client)
+    success = sync_marketplace(client=client)
     unremovable_packs = options.unremovable_packs.split(',')
-    success = reset_core_pack_version(client, unremovable_packs)
+    success &= reset_core_pack_version(client, unremovable_packs)
     if success:
         if options.one_by_one:
             success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
         else:
             success = uninstall_all_packs(client, host, unremovable_packs) and \
                 wait_for_uninstallation_to_complete(client, unremovable_packs)
-    sync_marketplace(client=client)
+    success &= sync_marketplace(client=client)
     if not success:
         sys.exit(2)
     logging.info('Uninstalling packs done.')
