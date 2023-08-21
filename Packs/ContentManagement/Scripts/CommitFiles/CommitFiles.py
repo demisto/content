@@ -185,7 +185,6 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
     if file_exists and content_file.file_name == 'pack_metadata.json':
         return
     response = demisto.executeCommand('azure-devops-branch-list', args={})
-    branch_id = ""
     branches_list = response[0].get("Contents", {}).get("value", []) if response and isinstance(response, list) else []
     for branch in branches_list:
         if branch.get("name", "") == branch_name:
