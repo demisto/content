@@ -2982,7 +2982,7 @@ script:
     - contextPath: GoogleDrive.Labels.labels.revisionId
       description: 'The revision id of the label'
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.68850
+  dockerimage: demisto/googleapi-python3:1.0.0.71902
   isfetch: true
   runonce: false
   script: "-"
