@@ -270,7 +270,8 @@ xpanse-prepare-testing-bucket:
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep 900
+    - for ((i=0; i< 90;i++)); do echo "10";sleep 10; done | tqdm --total 900 --unit seconds --leave --update
+    - echo "Done sleeping!"
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
