@@ -17,7 +17,7 @@
     "locked": false,
     "name": "Ataya",
     "onChangeRepAlg": 0,
-    "playbookId": "Ataya_Webhook",
+    "playbookId": "Ataya - Auto Login or Logout user in PAN-OS",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

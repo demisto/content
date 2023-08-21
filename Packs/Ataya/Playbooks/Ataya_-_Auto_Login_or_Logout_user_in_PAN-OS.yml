@@ -1,6 +1,7 @@
-id: Ataya_Webhook
-version: -1
-name: Ataya_Webhook
+id: Ataya - Auto Login or Logout user in PAN-OS
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: Ataya - Auto Login or Logout user in PAN-OS
 description: Basic Playbook for Login/Logout User ID on pan-os
 starttaskid: "0"
 tasks:
@@ -14,17 +15,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 470,
+          "y": -190
         }
       }
     note: false
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9d9b798c-6d67-423a-849b-9fa04f9e1309
+    taskid: 751ff58f-95d4-4b09-882e-1a620c8c7a06
     type: regular
     task:
-      id: 9d9b798c-6d67-423a-849b-9fa04f9e1309
+      id: 751ff58f-95d4-4b09-882e-1a620c8c7a06
       version: -1
-      name: checkValue
+      name: Check 5G UE IMEI Value for clarity
       description: Check the 5G UE IMEI value.
       scriptName: Print
       type: regular
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 470,
           "y": 240
         }
       }
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6c29d700-5a56-4b1c-8950-a24b43cee181
+    taskid: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
     type: regular
     task:
-      id: 6c29d700-5a56-4b1c-8950-a24b43cee181
+      id: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -82,13 +82,19 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: User ID has been successfully updated
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 860
+          "x": 460,
+          "y": 1000
         }
       }
     note: false
@@ -116,7 +122,10 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -124,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 670
+          "x": 470,
+          "y": 720
         }
       }
     note: false
@@ -137,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9d3a5832-eb24-49b7-822b-a510c4d0bbc8
+    taskid: 6888c145-4dd2-4d2e-8b19-a0be6d612208
     type: condition
     task:
-      id: 9d3a5832-eb24-49b7-822b-a510c4d0bbc8
+      id: 6888c145-4dd2-4d2e-8b19-a0be6d612208
       version: -1
       name: Event Type Inspection
       description: Check the action of 5G UE sessions.
@@ -166,6 +175,7 @@ tasks:
           right:
             value:
               simple: create
+          ignorecase: true
     - label: delete
       condition:
       - - operator: isEqualString
@@ -176,6 +186,7 @@ tasks:
           right:
             value:
               simple: delete
+          ignorecase: true
     - label: modify
       condition:
       - - operator: isEqualString
@@ -186,6 +197,7 @@ tasks:
           right:
             value:
               simple: modify
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -219,7 +231,10 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </logout> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -228,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 0,
-          "y": 670
+          "y": 720
         }
       }
     note: false
@@ -256,7 +271,10 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -264,8 +282,75 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 670
+          "x": 970,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+    type: condition
+    task:
+      id: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+    type: title
+    task:
+      id: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1040
         }
       }
     note: false
@@ -277,18 +362,17 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "8_9_#default#": 0.22
+    },
     "paper": {
       "dimensions": {
-        "height": 905,
-        "width": 1340,
+        "height": 1295,
+        "width": 1770,
         "x": 0,
-        "y": 50
+        "y": -190
       }
     }
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.9.0
