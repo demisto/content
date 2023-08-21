@@ -2237,6 +2237,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
+    replyTo = get_none_empty_addresses(argToList(replyTo))
     render_body = argToBoolean(renderBody)
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
