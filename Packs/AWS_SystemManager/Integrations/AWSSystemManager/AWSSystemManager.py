@@ -1,9 +1,20 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from AWSApiModule import *
+import datetime
+import json
 import re
+from typing import Any, NoReturn
 
+import demistomock as demisto
+from AWSApiModule import AWSClient, validate_params
+from CommonServerPython import (
+    CommandResults,
+    DemistoException,
+    JsonTransformer,
+    arg_to_number,
+    dict_safe_get,
+    return_error,
+    return_results,
+    tableToMarkdown,
+)
 
 """ CONSTANTS """
 
@@ -14,24 +25,26 @@ REGEX_PATTERNS = {
                        "Invalid association id: {association_id}"),
     "association_version": (r"([$]LATEST)|([1-9][0-9]*)", "Invalid association version: {association_version}"),
     "instance_id": (r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)", "Invalid instance id: {instance_id}"),
-    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}")
+    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}"),
 }
 
 """ Helper functions """
 
 
-def validate_args(args: dict[str, Any]) -> None:
-    """
-    Validates the arguments in the provided dictionary using regular expressions,
+def validate_args(args: dict[str, Any]) -> NoReturn | None:
+    """Validates the arguments in the provided dictionary using regular expressions,
     from the constants REGEX_PATTERNS.
 
     Args:
-        args (dict[str, Any]): A dictionary containing the arguments to be validated.
+    ----
+        args: A dictionary containing the arguments to be validated.
 
     Raises:
+    ------
         DemistoException: If any of the arguments fail to match their respective regex patterns.
 
     Example:
+    -------
         The following example demonstrates the usage of the function:
         ```
         args = {
@@ -47,24 +60,26 @@ def validate_args(args: dict[str, Any]) -> None:
     for arg_name, (regex_pattern, error_message) in REGEX_PATTERNS.items():
         if (arg_value := args.get(arg_name)) and not re.search(regex_pattern, arg_value):
             raise DemistoException(error_message.format(**{arg_name: arg_value}))
+    return None
 
 
-def config_aws_session(args: dict[str, str], aws_client: AWSClient):
-    """
-    Configures an AWS session for the Lambda service,
+def config_aws_session(args: dict[str, str], aws_client: AWSClient):  # -> SSMClient
+    """Configures an AWS session for the Lambda service,
     Used in all the commands.
 
     Args:
-        args (dict): A dictionary containing the configuration parameters for the session.
+    ----
+        args: A dictionary containing the configuration parameters for the session.
                      - 'region' (str): The AWS region.
                      - 'roleArn' (str): The ARN of the IAM role.
                      - 'roleSessionName' (str): The name of the role session.
                      - 'roleSessionDuration' (str): The duration of the role session.
 
-        aws_client (AWSClient): The AWS client used to configure the session.
+        aws_client: The AWS client used to configure the session.
 
     Returns:
-        AWS session (boto3 client): The configured AWS session.
+    -------
+        AWS session (ssm client): The configured AWS session.
     """
     return aws_client.aws_session(
         service=SERVICE_NAME,
@@ -76,16 +91,18 @@ def config_aws_session(args: dict[str, str], aws_client: AWSClient):
 
 
 def convert_datetime_to_iso(response: dict[str, Any]) -> dict[str, Any]:
-    """
-    Converts datetime objects in a response dictionary to ISO formatted strings.
+    """Converts datetime objects in a response dictionary to ISO formatted strings.
 
     Args:
+    ----
         response (dict): The response dictionary.
 
     Returns:
+    -------
         dict: The response dictionary with datetime objects converted to ISO formatted strings.
 
     Example:
+    -------
         The following example demonstrates how to use the function to convert datetime objects:
         ```
         response = {
@@ -104,22 +121,23 @@ def convert_datetime_to_iso(response: dict[str, Any]) -> dict[str, Any]:
         #   }
         ```
     """
-    def _datetime_to_string(obj):
-        if isinstance(obj, datetime):
+    def _datetime_to_string(obj: Any) -> str:
+        if isinstance(obj, datetime.datetime):
             return obj.isoformat()
-        return obj
+        return str(obj)
     return json.loads(json.dumps(response, default=_datetime_to_string))
 
 
 def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandResults:
-    """
-    Creates a CommandResults object with the next token as the output.
+    """Creates a CommandResults object with the next token as the output.
 
     Args:
+    ----
         next_token (str): The next token.
         outputs_prefix (str): The prefix for the outputs.
 
     Returns:
+    -------
         CommandResults: A CommandResults object with the next token as the output.
     """
     return CommandResults(
@@ -133,10 +151,11 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
 
 
 def add_tags_to_resource_command(ssm_client, args: dict[str, Any]) -> CommandResults:
-    """
-    Adds tags to a specified resource.
+    """Adds tags to a specified resource.
     The response from the API call when success is empty dict.
+
     Args:
+    ----
         ssm_client (SSMClient): An instance of the SSM client.
         args (dict): A dictionary containing the command arguments.
                      - 'resource_type' (str): The type of the resource.
@@ -145,6 +164,7 @@ def add_tags_to_resource_command(ssm_client, args: dict[str, Any]) -> CommandRes
                      - 'tag_value' (str): The value of the tag to add.
 
     Returns:
+    -------
         CommandResults: readable output only,
     """
     kwargs = {
@@ -160,24 +180,26 @@ def add_tags_to_resource_command(ssm_client, args: dict[str, Any]) -> CommandRes
 
 
 def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    Fetches inventory information from AWS SSM using the provided SSM client and arguments.
+    """Fetches inventory information from AWS SSM using the provided SSM client and arguments.
 
     Args:
+    ----
         ssm_client: SSM client object for making API requests.
         args (dict): Command arguments containing filters and parameters.
 
     Returns:
+    -------
         list[CommandResults]: A list of CommandResults containing the inventory information.
     """
     def _parse_inventory_entities(entities: list[dict]) -> list[dict]:
-        """
-        Parses a list of entities and returns a list of dictionaries containing relevant information.
+        """Parses a list of entities and returns a list of dictionaries containing relevant information.
 
         Args:
+        ----
             entities: A list of entities to parse.
 
         Returns:
+        -------
             list of dict containing relevant information.
         """
         parsed_entities = []
@@ -194,7 +216,7 @@ def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResul
                         "Agent version": content.get("AgentVersion"),
                         "IP address": content.get("IpAddress"),
                         "Resource Type": content.get("ResourceType"),
-                    }
+                    },
                 )
                 parsed_entities.append(parsed_entity)
         return parsed_entities
@@ -209,7 +231,7 @@ def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResul
 
     if response_next_token := response.get("NextToken"):
         command_results.append(
-            next_token_command_result(response_next_token, "InventoryNextToken")
+            next_token_command_result(response_next_token, "InventoryNextToken"),
         )
 
     entities = response.get("Entities", [])
@@ -222,16 +244,16 @@ def get_inventory_command(ssm_client, args: dict[str, Any]) -> list[CommandResul
                 name="AWS SSM Inventory",
                 t=_parse_inventory_entities(entities),
             ),
-        )
+        ),
     )
     return command_results
 
 
 def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    Lists inventory entries for a specific instance and type name using the provided SSM client and arguments.
+    """Lists inventory entries for a specific instance and type name using the provided SSM client and arguments.
 
     Args:
+    ----
         ssm_client: AWS SSM client object for making API requests.
         args (dict): Command arguments containing filters and parameters.
             - instance_id (str): The ID of the instance.
@@ -240,23 +262,25 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
             - next_token (str, optional): Token to retrieve the next set of entries.
 
     Returns:
+    -------
         list[CommandResults]: A list of CommandResults containing the inventory entries information.
             and the next token if exists.
 
     Raises:
+    ------
         DemistoException: If an invalid instance ID is provided.
     """
     def _parse_inventory_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """
-        Parses a list of inventory entries and returns a list of dictionaries containing relevant information.
+        """Parses a list of inventory entries and returns a list of dictionaries containing relevant information.
 
         Args:
+        ----
             entries (list[dict]): A list of inventory entries to parse.
 
         Returns:
+        -------
             list[dict]: A list of dictionaries containing relevant information for each inventory entry.
         """
-
         return [
             {
                 "Instance Id": entry.get("InstanceId"),
@@ -285,7 +309,7 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
     command_results = []
     if next_token := response.get("NextToken"):
         command_results.append(
-            next_token_command_result(next_token, "InventoryEntryNextToken")
+            next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
 
     command_results.append(
@@ -297,23 +321,24 @@ def list_inventory_entry_command(ssm_client, args: dict[str, Any]) -> list[Comma
                 name="AWS SSM Inventory",
                 t=_parse_inventory_entries(entries),
             ),
-        )
+        ),
     )
 
     return command_results
 
 
 def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    Lists associations in AWS SSM using the provided SSM client and arguments.
+    """Lists associations in AWS SSM using the provided SSM client and arguments.
 
     Args:
+    ----
         ssm_client: AWS SSM client object for making API requests.
         args (dict): Command arguments containing filters and parameters.
             - limit (int, optional): Maximum number of associations to retrieve. Defaults to 50.
             - next_token (str, optional): Token to retrieve the next set of associations.
 
     Returns:
+    -------
         list[CommandResults]: A list of CommandResults containing the association information.
         and the next token if exists in the response.
     """
@@ -325,7 +350,7 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
                 "Association version": association.get("AssociationVersion"),
                 "Last execution date": association.get("LastExecutionDate"),
                 "Resource status count": dict_safe_get(association, ["Overview", "AssociationStatusAggregatedCount"]),
-                "Status": dict_safe_get(association, ["Overview", "Status"])
+                "Status": dict_safe_get(association, ["Overview", "Status"]),
             }
             for association in associations
         ]
@@ -340,7 +365,7 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
 
     if next_token := response.get("NextToken"):
         command_results.append(
-            next_token_command_result(next_token, "InventoryNextToken")
+            next_token_command_result(next_token, "InventoryNextToken"),
         )
 
     command_results.append(
@@ -352,24 +377,26 @@ def list_associations_command(ssm_client, args: dict[str, Any]) -> list[CommandR
                 name="AWS SSM Association",
                 t=_parse_associations(associations),
             ),
-        )
+        ),
     )
 
     return command_results
 
 
 def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
-    """
-    Retrieves information about an SSM association based on provided parameters.
+    """Retrieves information about an SSM association based on provided parameters.
 
     Args:
+    ----
         ssm_client: The AWS SSM client used to interact with the service.
         args (dict[str, Any]): A dictionary containing the command arguments.
 
     Returns:
+    -------
         CommandResults: A CommandResults object containing information about the retrieved association.
 
     Raises:
+    ------
         DemistoException: If the provided arguments are invalid.
     """
     def _parse_association(association: dict[str, Any]) -> dict[str, Any]:
@@ -393,7 +420,8 @@ def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
     validate_args(args)  # raises DemistoException if invalid args
 
     if not bool(association_id or (instance_id and document_name)):
-        raise DemistoException("This command  must provide either association id or instance_id and document_name.")
+        msg = "This command  must provide either association id or instance_id and document_name."
+        raise DemistoException(msg)
 
     kwargs = {
         "AssociationId": association_id,
@@ -413,22 +441,23 @@ def get_association_command(ssm_client, args: dict[str, Any]) -> CommandResults:
         outputs_prefix="AWS.SSM.Association",
         readable_output=tableToMarkdown(
             name="Association",
-            t=_parse_association(association_description)
+            t=_parse_association(association_description),
         ),
     )
 
 
 def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    Lists the versions of an SSM association based on provided parameters.
+    """Lists the versions of an SSM association based on provided parameters.
 
     Args:
+    ----
         ssm_client: The AWS SSM client used to interact with the service.
             - association_id (required): The ID of the association.
             - limit (optional): The maximum number of versions to return. Defaults to 50.
             - next_token (optional): The token for the next set of results.
 
     Returns:
+    -------
         list[CommandResults]: A list of CommandResults objects, containing information about the association versions.
             if next_token provide in the response, the first CommandResults in the list will contain the next token.
     """
@@ -450,8 +479,8 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
             for association_version in association_versions
         ]
     validate_args(args)
-    kwargs = {'AssociationId': args["association_id"], 'MaxResults': arg_to_number(args.get("limit", 50)) or 50}
-    kwargs.update({'NextToken': next_token}) if (next_token := args.get("next_token")) else None
+    kwargs = {"AssociationId": args["association_id"], "MaxResults": arg_to_number(args.get("limit", 50)) or 50}
+    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response = ssm_client.list_association_versions(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -460,7 +489,7 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
     command_results: list[CommandResults] = []
     if response_next_token := response.get("NextToken"):
         command_results.append(
-            next_token_command_result(response_next_token, "AssociationVersionNextToken")
+            next_token_command_result(response_next_token, "AssociationVersionNextToken"),
         )
     command_results.append(
         CommandResults(
@@ -478,23 +507,24 @@ def list_versions_association_command(ssm_client, args: dict[str, Any]) -> list[
                         is_nested=True,
                     ),
                 },
-            )
-        )
+            ),
+        ),
     )
     return command_results
 
 
 def list_documents_command(ssm_client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    Lists the documents in AWS SSM using the provided SSM client and arguments.
+    """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
     Args:
+    ----
         ssm_client: AWS SSM client object for making API requests.
         args (dict): Command arguments containing filters and parameters.
             - limit (int, optional): Maximum number of documents to retrieve. Defaults to 50.
             - next_token (str, optional): Token to retrieve the next set of documents.
 
     Returns:
+    -------
         list[CommandResults]: A list of CommandResults containing the documents information.
         and the next token if exists in the response.
     """
@@ -520,7 +550,7 @@ def list_documents_command(ssm_client, args: dict[str, Any]) -> list[CommandResu
     command_results = []
     if next_token := response.get("NextToken"):
         command_results.append(
-            next_token_command_result(next_token, "DocumentNextToken")
+            next_token_command_result(next_token, "DocumentNextToken"),
         )
 
     command_results.append(
@@ -534,10 +564,10 @@ def list_documents_command(ssm_client, args: dict[str, Any]) -> list[CommandResu
                 json_transform_mapping={
                     "Tags": JsonTransformer(
                         is_nested=True,
-                    )
-                }
-            )
-        )
+                    ),
+                },
+            ),
+        ),
     )
     return command_results
 
@@ -606,10 +636,11 @@ def main():
             case "aws-ssm-document-list":
                 return_results(list_documents_command(ssm_client, args))
             case _:
-                raise NotImplementedError(f"Command {command} is not implemented")
+                msg = f"Command {command} is not implemented"
+                raise NotImplementedError(msg)
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

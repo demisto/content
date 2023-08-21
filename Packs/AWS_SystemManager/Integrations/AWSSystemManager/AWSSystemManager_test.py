@@ -1,50 +1,54 @@
-import json
 import datetime
+import json
+from pathlib import Path
+from typing import NoReturn
+
 import pytest
-from pytest_mock import MockerFixture
 from AWSSystemManager import (
     add_tags_to_resource_command,
-    get_inventory_command,
-    list_inventory_entry_command,
-    list_associations_command,
     convert_datetime_to_iso,
+    get_association_command,
+    get_inventory_command,
+    list_associations_command,
+    list_documents_command,
+    list_inventory_entry_command,
+    list_versions_association_command,
     next_token_command_result,
     validate_args,
-    get_association_command,
-    list_versions_association_command,
-    list_documents_command
 )
+from pytest_mock import MockerFixture
+
 from CommonServerPython import CommandResults, DemistoException
 
 
 class MockClient:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def add_tags_to_resource(self, **kwargs):
+    def add_tags_to_resource(self, **kwargs) -> NoReturn:
         pass
 
-    def get_inventory(self, **kwargs):
+    def get_inventory(self, **kwargs) -> NoReturn:
         pass
 
-    def list_inventory_entries(self, **kwargs):
+    def list_inventory_entries(self, **kwargs) -> NoReturn:
         pass
 
-    def list_associations(self, **kwargs):
+    def list_associations(self, **kwargs) -> NoReturn:
         pass
 
-    def describe_association(self, **kwargs):
+    def describe_association(self, **kwargs) -> NoReturn:
         pass
 
-    def list_association_versions(self, **kwargs):
+    def list_association_versions(self, **kwargs) -> NoReturn:
         pass
 
-    def list_documents(self, **kwargs):
+    def list_documents(self, **kwargs) -> NoReturn:
         pass
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+def util_load_json(path: str) -> dict:
+    with Path(path).open(encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -52,13 +56,13 @@ def util_load_json(path):
 
 
 @pytest.mark.parametrize(
-    'args, expected_error_message',
+    ("args", "expected_error_message"),
     [
-        ({'instance_id': 'test_id'}, 'Invalid instance id: test_id'),
-        ({'document_name': '@_name'}, 'Invalid document name: @_name'),
-        ({'association_id': 'test_id'}, 'Invalid association id: test_id'),
-        ({'association_version': 'test_version'}, 'Invalid association version: test_version'),
-    ]
+        ({"instance_id": "test_id"}, "Invalid instance id: test_id"),
+        ({"document_name": "@_name"}, "Invalid document name: @_name"),
+        ({"association_id": "test_id"}, "Invalid association id: test_id"),
+        ({"association_version": "test_version"}, "Invalid association version: test_version"),
+    ],
 )
 def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
     with pytest.raises(DemistoException, match=expected_error_message):
@@ -66,10 +70,10 @@ def test_validate_args(args: dict[str, str], expected_error_message: str) -> Non
 
 
 @pytest.mark.parametrize(
-    'next_token, prefix',
+    ("next_token", "prefix"),
     [
-        ("test_token", "test_prefix")
-    ]
+        ("test_token", "test_prefix"),
+    ],
 )
 def test_next_token_command_result(next_token: str, prefix: str) -> None:
     """
@@ -88,13 +92,13 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
           next_token value for rerunning the command.
     """
     response = next_token_command_result(next_token, prefix)
-    assert response.outputs_prefix == f'AWS.SSM.{prefix}'
+    assert response.outputs_prefix == f"AWS.SSM.{prefix}"
     assert response.outputs == next_token
     assert response.readable_output == f"For more results rerun the command with {next_token=}."
 
 
 @pytest.mark.parametrize(
-    "data, expected_response",
+    ("data", "expected_response"),
     [
         (
             {"Associations": [{"LastExecutionDate": "test"}]},
@@ -109,16 +113,16 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
                 "AssociationDescription":
                 {
                     "LastExecutionDate": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000),
-                    'Date': datetime.datetime(2023, 7, 25, 18, 51, 28, 607000)
-                }
+                    "Date": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000),
+                },
             },
             {
                 "AssociationDescription": {
-                    "LastExecutionDate": "2023-07-25T18:51:28.607000", "Date": "2023-07-25T18:51:28.607000"
-                }
-            }
-        )
-    ]
+                    "LastExecutionDate": "2023-07-25T18:51:28.607000", "Date": "2023-07-25T18:51:28.607000",
+                },
+            },
+        ),
+    ],
 )
 def test_convert_datetime_to_iso(data: dict, expected_response: dict) -> None:
     """
@@ -191,6 +195,7 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
           table representation of the mock response's 'Entities'.
 
     Note:
+    ----
         - The response is a list of CommandResults, where the first one is the get_inventory response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
@@ -213,8 +218,7 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
 
 
 def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -> None:
-    """
-    Given:
+    """Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
@@ -233,9 +237,9 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     Note: the test_get_inventory_command function test checking when the response is not return a Next Token value.
             the res[1] contains the inventory response.
     """
-    mock_response: dict = util_load_json('test_data/get_inventory_response.json')
+    mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mock_response["NextToken"] = "test_token"
-    mocker.patch.object(MockClient, 'get_inventory', return_value=mock_response)
+    mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     response: list[CommandResults] = get_inventory_command(MockClient, {})
 
     assert response[0].outputs == "test_token"
@@ -265,6 +269,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
           table representation of the mock inventory entry response.
 
     Note:
+    ----
         - The response is a list of CommandResults, where the first one is the list inventory entry response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
@@ -283,7 +288,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
         TypeName=args["type_name"],
         MaxResults=50,
     )
-    assert response[0].outputs == mock_response['Entries']
+    assert response[0].outputs == mock_response["Entries"]
     assert response[0].readable_output == (
         "### AWS SSM Inventory\n"
         "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
@@ -299,14 +304,14 @@ def test_list_inventory_entry_command_raise_error() -> None:
         - The list_inventory_entry_command function is called with the provided arguments:
           - 'instance_id': "bla-0a00aaa000000000a"
           - 'type_name': "test_type_name"
-    the instance_id is not valid because is not match the regex of the instance id. {should begin with i-}
+    the instance_id is not valid because is not match the regex of the instance id. {should begin with i-}.
 
     Then:
         - The function call is expected to raise a DemistoException with a message that matches
           "Invalid instance id: bla-0a00aaa000000000a".
     """
     with pytest.raises(
-        DemistoException, match="Invalid instance id: bla-0a00aaa000000000a"
+        DemistoException, match="Invalid instance id: bla-0a00aaa000000000a",
     ):
         list_inventory_entry_command(
             MockClient,
@@ -332,7 +337,9 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
           association response.
         - The 'readable_output' attribute is expected to have a formatted
           table representation of the mock association response.
-     Note:
+
+    Note:
+    ----
         - The response is a list of CommandResults, where the first one is the list associations response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
@@ -342,19 +349,18 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
     response = list_associations_command(MockClient, {})
     assert response[0].outputs == mock_response["Associations"]
     assert response[0].readable_output == (
-        '### AWS SSM Association\n'
-        '|Association id|Association version|Document name|Last execution date|Resource status count|Status|\n'
-        '|---|---|---|---|---|---|\n'
-        '| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:51:28.607000+03:00 |  | Pending |\n'
-        '| AssociationId_test | 1 | AWSQuickSetup-CreateAndAttachIAMToInstance | 2023-08-13 14:49:38+03:00 | Failed: 1 | Failed |'
-        '\n'
-        '| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:54:37.936000+03:00 |  | Pending |\n'
+        "### AWS SSM Association\n"
+        "|Association id|Association version|Document name|Last execution date|Resource status count|Status|\n"
+        "|---|---|---|---|---|---|\n"
+        "| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:51:28.607000+03:00 |  | Pending |\n"
+        "| AssociationId_test | 1 | AWSQuickSetup-CreateAndAttachIAMToInstance | 2023-08-13 14:49:38+03:00 | Failed: 1 | Failed |"
+        "\n"
+        "| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:54:37.936000+03:00 |  | Pending |\n"
     )
 
 
 def test_get_association_command(mocker: MockerFixture) -> None:
-    """
-    Given:
+    """Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
@@ -370,22 +376,23 @@ def test_get_association_command(mocker: MockerFixture) -> None:
           of the mock association description response.
 
     Note:
+    ----
         - The response is a list of CommandResults, where the first one is the association description response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
     mock_response: dict = util_load_json("test_data/association_description.json")
     mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
-    response = get_association_command(MockClient, {"instance_id": "i-0a00aaa000000000a", 'document_name': 'test_name'})
+    response = get_association_command(MockClient, {"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"})
 
-    assert response.outputs == mock_response['AssociationDescription']
+    assert response.outputs == mock_response["AssociationDescription"]
     assert response.readable_output == (
-        '### Association\n'
-        '|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|'
-        'Resource status count|Schedule expression|Status|\n'
-        '|---|---|---|---|---|---|---|---|---|---|\n'
-        '| association_id | Moishy | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT '
-        '| 2023-07-25T18:51:28.607000+03:00 |  | rate(30 minutes) | Pending |\n'
+        "### Association\n"
+        "|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|"
+        "Resource status count|Schedule expression|Status|\n"
+        "|---|---|---|---|---|---|---|---|---|---|\n"
+        "| association_id | Moishy | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT "
+        "| 2023-07-25T18:51:28.607000+03:00 |  | rate(30 minutes) | Pending |\n"
     )
 
 
@@ -406,6 +413,7 @@ def test_list_versions_association_command(mocker: MockerFixture) -> None:
           of the mock association versions response.
 
     Note:
+    ----
         - The response is a list of CommandResults, where the first one is the list versions association response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
@@ -414,7 +422,7 @@ def test_list_versions_association_command(mocker: MockerFixture) -> None:
     mocker.patch.object(MockClient, "list_association_versions", return_value=mock_response)
     response = list_versions_association_command(MockClient, {"association_id": "12345678-0000-0000-0000-000000000000"})
 
-    assert response[0].outputs == mock_response['AssociationVersions']
+    assert response[0].outputs == mock_response["AssociationVersions"]
     assert response[0].readable_output == (
         "### Association Versions\n"
         "|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule "
@@ -441,6 +449,7 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
           of the mock list documents response.
 
     Note:
+    ----
         - The response is a list of CommandResults, where the first one is the list documents response.
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
