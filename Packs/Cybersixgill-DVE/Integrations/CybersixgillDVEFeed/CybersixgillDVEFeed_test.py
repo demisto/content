@@ -852,6 +852,7 @@ class MockedResponse(object):
         reason=None,
         url=None,
         method=None,
+        headers=None,
     ):
         self.status_code = status_code
         self.text = text
@@ -859,6 +860,7 @@ class MockedResponse(object):
         self.url = url
         self.request = requests.Request("GET")
         self.ok = True if self.status_code == 200 else False
+        self.headers = headers
 
     def json(self):
         return json.loads(self.text)
@@ -877,10 +879,10 @@ def mocked_request(*args, **kwargs):
     method = request.method
     response_dict = {
         "POST": {
-            "/auth/token": MockedResponse(200, mocked_get_token_response),
-            "/dvefeed/ioc/ack": MockedResponse(200, str(submitted_indicators)),
+            "/auth/token": MockedResponse(200, mocked_get_token_response, headers={'access_token': '123456'}),
+            "/dvefeed/ioc/ack": MockedResponse(200, str(submitted_indicators), headers={'Content-Type': 'json'}),
         },
-        "GET": {"/dvefeed/ioc?limit=1000": MockedResponse(200, json.dumps(iocs_bundle[bundle_index]))},
+        "GET": {"/dvefeed/ioc?limit=1000": MockedResponse(200, json.dumps(iocs_bundle[bundle_index]), headers={'Content-Type': 'json'})},
     }
 
     response_dict = response_dict.get(method)

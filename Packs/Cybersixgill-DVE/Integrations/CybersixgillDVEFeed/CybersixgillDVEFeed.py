@@ -193,7 +193,7 @@ def main():
     demisto.info(f"Command being called is {command}")
     tags = argToList(demisto.params().get("feedTags", []))
     tlp_color = demisto.params().get("tlp_color")
-    commands: dict[str, Callable] = {"test-module": module_command_test, "cybersixgill-get-indicators": get_indicators_command}  # type: ignore[misc]
+    commands: dict[str, Callable] = {"test-module": module_command_test, "cybersixgill-get-indicators": get_indicators_command}  # type: ignore[misc] # noqa: E501
     try:
         if demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
