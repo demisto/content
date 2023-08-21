@@ -1096,7 +1096,6 @@ def test_graphql_query_non_200(mocker, caplog, capfd):
 
 def test_get_api_endpoint_details_query():
     from Traceable import Client, Helper
-    from datetime import datetime
     client = Client("https://mock.url")
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
@@ -1327,7 +1326,6 @@ def test_construct_field_selection_expression():
 
 def test_construct_api_attribute_selection():
     from Traceable import Client, Helper
-    from datetime import datetime
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_optional_api_attributes(["isExternal", "isExternal", "isAuthenticated", "nonexistent"])
