@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urljoin
+from urllib.parse import urljoin  # type: ignore[misc]
 
 import urllib3
 
@@ -45,7 +45,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, token: str, use_ssl: bool, use_proxy: bool):
         super().__init__(urljoin(base_url, '/api/v1/'), verify=use_ssl, proxy=use_proxy)
-        self._session.params['token'] = token
+        self._session.params['token'] = token  # type: ignore[index]
 
     def list_events_request(self,
                             query: Optional[str] = None,
@@ -300,7 +300,7 @@ def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
     if arg is None:
         return None
 
-    return date_to_seconds_timestamp(arg_to_datetime(arg))
+    return date_to_seconds_timestamp(arg_to_datetime(arg))  # type: ignore[arg-type]
 
 
 def date_to_seconds_timestamp(date_str_or_dt: Union[str, datetime]) -> int:
@@ -397,12 +397,12 @@ def get_pagination_arguments(args: Dict[str, Any]) -> Tuple[int, int, int]:
     page = arg_to_number(args.get('page', DEFAULT_PAGE))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
-    if page < 1:
+    if page < 1:  # type: ignore[operator]
         raise DemistoException('Page argument must be greater than 1')
-    if not 1 <= limit <= MAX_LIMIT:
+    if not 1 <= limit <= MAX_LIMIT:  # type: ignore[operator]
         raise DemistoException(f'Limit argument must be between 1 to {MAX_LIMIT}')
 
-    return page, (page - 1) * limit, limit
+    return page, (page - 1) * limit, limit  # type: ignore
 
 
 def list_events_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -419,7 +419,7 @@ def list_events_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
     query = args.get('query')
     event_type = args['event_type']
-    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))
+    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))  # type: ignore[arg-type]
     start_time = arg_to_seconds_timestamp(args.get('start_time'))
     end_time = arg_to_seconds_timestamp(args.get('end_time'))
     insertion_start_time = arg_to_seconds_timestamp(args.get('insertion_start_time'))
@@ -477,7 +477,7 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
     query = args.get('query')
     alert_type = args.get('alert_type')
     acked = arg_to_boolean(args.get('acked'))
-    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))
+    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))  # type: ignore[arg-type]
     start_time = arg_to_seconds_timestamp(args.get('start_time'))
     end_time = arg_to_seconds_timestamp(args.get('end_time'))
     insertion_start_time = arg_to_seconds_timestamp(args.get('insertion_start_time'))
@@ -547,7 +547,7 @@ def list_quarantined_files_command(client: Client, args: Dict[str, str]) -> Comm
         for file_output in output['files']:
             file_output['quarantine_profile_id'] = output['quarantine_profile_id']
             file_output['quarantine_profile_name'] = output['quarantine_profile_name']
-    outputs = sum((output['files'] for output in outputs), [])
+    outputs = sum((output['files'] for output in outputs), [])  # type: ignore[var-annotated]
 
     readable_header = get_pagination_readable_message('Quarantined Files List:',
                                                       page=page,
@@ -654,7 +654,7 @@ def update_file_hash_list_command(client: Client, args: Dict[str, str]) -> Comma
     name = args.get('name')
     hashes = argToList(args.get('hash'))
 
-    client.update_file_hash_list_request(name=name, hashes=hashes)
+    client.update_file_hash_list_request(name=name, hashes=hashes)  # type: ignore[arg-type]
 
     outputs = {'name': name, 'hash': hashes}
     readable_output = f'Hash List {name}:\n{", ".join(hashes)}'
@@ -718,7 +718,7 @@ def list_host_associated_user_command(client: Client, args: Dict[str, str]) -> C
                                            limit=limit,
                                            skip=skip)
 
-    outputs = sum((client['attributes'].get('users') for client in response['data']), [])
+    outputs = sum((client['attributes'].get('users') for client in response['data']), [])  # type: ignore[var-annotated]
     for output in outputs:
         output['user_id'] = output['_id']
 
@@ -862,7 +862,7 @@ def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_even
     if fetch_events:
         events = fetch_multiple_type_events(client,
                                             max_fetch=max_events_fetch,
-                                            start_time=last_event_time,
+                                            start_time=last_event_time,  # type: ignore[arg-type]
                                             event_types=event_types,
                                             query=events_query)
     else:
@@ -929,17 +929,17 @@ def main():
         if command == 'test-module':
             return_results(
                 test_module(client,
-                            max_fetch=max_fetch,
+                            max_fetch=max_fetch,  # type: ignore[arg-type]
                             first_fetch=first_fetch,
                             fetch_events=fetch_events,
-                            max_events_fetch=max_events_fetch,
+                            max_events_fetch=max_events_fetch,  # type: ignore[arg-type]
                             event_types=event_types))
         elif command == 'fetch-incidents':
             fetch_incidents(client,
-                            max_fetch=max_fetch,
+                            max_fetch=max_fetch,  # type: ignore[arg-type]
                             first_fetch=first_fetch,
                             fetch_events=fetch_events,
-                            max_events_fetch=max_events_fetch,
+                            max_events_fetch=max_events_fetch,  # type: ignore[arg-type]
                             event_types=event_types,
                             alerts_query=demisto.params().get('alerts_query'),
                             events_query=demisto.params().get('events_query'))

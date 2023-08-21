@@ -113,8 +113,8 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
     return fields
 
 
-def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
-    indicator: dict[str, Any] = {}
+def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):  # type: ignore[misc]
+    indicator: dict[str, Any] = {}  # type: ignore[misc]
     try:
         ext_obj = stix_obj.get("external_references", [])
         ext_id = ""
@@ -142,7 +142,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
 
 
 def fetch_indicators_command(
-    client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: str | None = None
+    client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: str | None = None  # type: ignore[misc]
 ):
     indicators_list = []
     try:
@@ -193,7 +193,7 @@ def main():
     demisto.info(f"Command being called is {command}")
     tags = argToList(demisto.params().get("feedTags", []))
     tlp_color = demisto.params().get("tlp_color")
-    commands: dict[str, Callable] = {"test-module": module_command_test, "cybersixgill-get-indicators": get_indicators_command}
+    commands: dict[str, Callable] = {"test-module": module_command_test, "cybersixgill-get-indicators": get_indicators_command}  # type: ignore[misc]
     try:
         if demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)

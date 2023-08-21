@@ -1187,7 +1187,7 @@ def update_time_format(data: Union[dict, list], keys: list) -> list:
     for item in data:
         for key in keys:
             if key in item:
-                item[key] = arg_to_datetime(item[key]).isoformat()
+                item[key] = arg_to_datetime(item[key]).isoformat()  # type: ignore[union-attr]
 
     return data
 
@@ -1214,7 +1214,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     outputs['name'] = resource_name
 
     if limit:
-        start = (page - 1) * limit
+        start = (page - 1) * limit  # type: ignore[operator]
         end = start + limit
 
         bindings = outputs.get("bindings", [])
@@ -1238,7 +1238,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     return command_results
 
 
-def generate_group_membership_readable_output(outputs: list, readable_header: str) -> tableToMarkdown:
+def generate_group_membership_readable_output(outputs: list, readable_header: str) -> tableToMarkdown:  # type: ignore[valid-type]
     """
     Generate command readable output for group membership commands.
     Args:
@@ -1491,14 +1491,14 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
         page = arg_to_number(args.get('page') or '1')
         max_limit = 100
 
-        validate_pagination_arguments(limit, page)
-        if limit > max_limit:
+        validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+        if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Projects List:', limit=limit, page=page)
+        readable_message = get_pagination_readable_message(header='Projects List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-        if page > 1:
-            response = get_pagination_request_result(limit, page, max_limit,
+        if page > 1:  # type: ignore[operator]
+            response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
                                                      client.gcp_iam_project_list_request,
                                                      parent=parent,
                                                      show_deleted=show_deleted)
@@ -1528,12 +1528,12 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
     project_name = args.get('project_name')
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
-    validate_pagination_arguments(limit, page)
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
 
     readable_message = get_pagination_readable_message(header=f'Project {project_name} IAM Policy List:',
-                                                       limit=limit, page=page)
+                                                       limit=limit, page=page)  # type: ignore[arg-type]
 
-    response = client.gcp_iam_project_iam_policy_get_request(project_name)
+    response = client.gcp_iam_project_iam_policy_get_request(project_name)  # type: ignore[arg-type]
     return generate_iam_policy_command_output(response, project_name, readable_header=readable_message,
                                               limit=limit, page=page)
 
@@ -1583,7 +1583,7 @@ def gcp_iam_project_iam_test_permission_command(client: Client, args: Dict[str, 
     project_name = args.get('project_name')
     permissions = argToList(args.get('permissions'))
 
-    response = client.gcp_iam_project_iam_test_permission_request(project_name, permissions)
+    response = client.gcp_iam_project_iam_test_permission_request(project_name, permissions)  # type: ignore[arg-type]
 
     return generate_test_permission_command_output(response, readable_header=f'Project {project_name} permissions:')
 
@@ -1603,11 +1603,11 @@ def gcp_iam_project_iam_member_add_command(client: Client, args: Dict[str, Any])
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
-    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                              command_name='gcp-iam-project-iam-policy-create')
 
-    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
+    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -1630,11 +1630,11 @@ def gcp_iam_project_iam_member_remove_command(client: Client, args: Dict[str, An
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
-    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                                   command_name='gcp-iam-project-iam-policy-create')
 
-    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
+    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -1662,7 +1662,7 @@ def gcp_iam_project_iam_policy_set_command(client: Client, args: Dict[str, Any])
 
     policy = safe_load_json(policy)
 
-    response = client.gcp_iam_project_iam_policy_set_request(project_name, policy)
+    response = client.gcp_iam_project_iam_policy_set_request(project_name, policy)  # type: ignore[arg-type]
     return generate_iam_policy_command_output(response, project_name,
                                               readable_header=f'{project_name} IAM policy updated successfully.')
 
@@ -1682,7 +1682,7 @@ def gcp_iam_project_iam_policy_add_command(client: Client, args: Dict[str, Any])
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
+    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])  # type: ignore[arg-type]
     policy = {
         "role": role,
         "members": members
@@ -1690,7 +1690,7 @@ def gcp_iam_project_iam_policy_add_command(client: Client, args: Dict[str, Any])
 
     iam_policy.append(policy)
 
-    client.gcp_iam_project_iam_policy_set_request(project_name, iam_policy)
+    client.gcp_iam_project_iam_policy_set_request(project_name, iam_policy)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
     )
@@ -1782,14 +1782,14 @@ def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
         page = arg_to_number(args.get('page') or '1')
         max_limit = 100
 
-        validate_pagination_arguments(limit, page)
-        if limit > max_limit:
+        validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+        if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Folders List:', limit=limit, page=page)
+        readable_message = get_pagination_readable_message(header='Folders List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-        if page > 1:
-            response = get_pagination_request_result(limit, page, max_limit,
+        if page > 1:  # type: ignore[operator]
+            response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
                                                      client.gcp_iam_folder_list_request,
                                                      parent=parent,
                                                      show_deleted=show_deleted)
@@ -1819,12 +1819,12 @@ def gcp_iam_folder_iam_policy_get_command(client: Client, args: Dict[str, Any]) 
     folder_name = args.get('folder_name')
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
-    validate_pagination_arguments(limit, page)
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
 
     readable_message = get_pagination_readable_message(header=f'Folder {folder_name} IAM Policy List:',
-                                                       limit=limit, page=page)
+                                                       limit=limit, page=page)  # type: ignore[arg-type]
 
-    response = client.gcp_iam_folder_iam_policy_get_request(folder_name)
+    response = client.gcp_iam_folder_iam_policy_get_request(folder_name)  # type: ignore[arg-type]
     return generate_iam_policy_command_output(response, folder_name, readable_header=readable_message,
                                               limit=limit, page=page)
 
@@ -1843,7 +1843,7 @@ def gcp_iam_folder_iam_test_permission_command(client: Client, args: Dict[str, A
     folder_name = args.get('folder_name')
     permissions = argToList(args.get('permissions'))
 
-    response = client.gcp_iam_folder_iam_test_permission_request(folder_name, permissions)
+    response = client.gcp_iam_folder_iam_test_permission_request(folder_name, permissions)  # type: ignore[arg-type]
     return generate_test_permission_command_output(response, readable_header=f'Folder {folder_name} permissions:')
 
 
@@ -1862,11 +1862,11 @@ def gcp_iam_folder_iam_member_add_command(client: Client, args: Dict[str, Any]) 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
-    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                              command_name='gcp-iam-folder-iam-policy-create')
 
-    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -1889,11 +1889,11 @@ def gcp_iam_folder_iam_member_remove_command(client: Client, args: Dict[str, Any
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
-    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                                   command_name='gcp-iam-folder-iam-policy-create')
 
-    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -1921,7 +1921,7 @@ def gcp_iam_folder_iam_policy_set_command(client: Client, args: Dict[str, Any]) 
 
     policy = safe_load_json(policy)
 
-    response = client.gcp_iam_folder_iam_policy_set_request(folder_name, policy)
+    response = client.gcp_iam_folder_iam_policy_set_request(folder_name, policy)  # type: ignore[arg-type]
     return generate_iam_policy_command_output(response, folder_name,
                                               readable_header=f'{folder_name} IAM policy updated successfully.')
 
@@ -1941,7 +1941,7 @@ def gcp_iam_folder_iam_policy_add_command(client: Client, args: Dict[str, Any]) 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])  # type: ignore[arg-type]
     policy = {
         "role": role,
         "members": members
@@ -1949,7 +1949,7 @@ def gcp_iam_folder_iam_policy_add_command(client: Client, args: Dict[str, Any]) 
 
     iam_policy.append(policy)
 
-    client.gcp_iam_folder_iam_policy_set_request(folder_name, iam_policy)
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, iam_policy)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
     )
@@ -2033,14 +2033,14 @@ def gcp_iam_organizations_get_command(client: Client, args: Dict[str, Any]) -> l
         page = arg_to_number(args.get('page') or '1')
         max_limit = 50
 
-        validate_pagination_arguments(limit, page)
-        if limit > max_limit:
+        validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+        if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Organizations List:', limit=limit, page=page)
+        readable_message = get_pagination_readable_message(header='Organizations List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-        if page > 1:
-            response = get_pagination_request_result(limit, page, max_limit,
+        if page > 1:  # type: ignore[operator]
+            response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
                                                      client.gcp_iam_organization_list_request)
 
         else:
@@ -2068,12 +2068,12 @@ def gcp_iam_organization_iam_policy_get_command(client: Client, args: Dict[str, 
     organization_name = args.get('organization_name')
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
-    validate_pagination_arguments(limit, page)
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
 
     readable_message = get_pagination_readable_message(header=f'Organization {organization_name} IAM Policy List:',
-                                                       limit=limit, page=page)
+                                                       limit=limit, page=page)  # type: ignore[arg-type]
 
-    response = client.gcp_iam_organization_iam_policy_get_request(organization_name)
+    response = client.gcp_iam_organization_iam_policy_get_request(organization_name)  # type: ignore[arg-type]
 
     return generate_iam_policy_command_output(response, organization_name, readable_header=readable_message,
                                               limit=limit, page=page)
@@ -2093,7 +2093,7 @@ def gcp_iam_organization_iam_test_permission_command(client: Client, args: Dict[
     organization_name = args.get('organization_name')
     permissions = argToList(args.get('permissions'))
 
-    response = client.gcp_iam_organization_iam_test_permission_request(organization_name, permissions)
+    response = client.gcp_iam_organization_iam_test_permission_request(organization_name, permissions)  # type: ignore[arg-type]
 
     return generate_test_permission_command_output(response,
                                                    readable_header=f'Organization {organization_name} permissions:')
@@ -2114,11 +2114,11 @@ def gcp_iam_organization_iam_member_add_command(client: Client, args: Dict[str, 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
-    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                              command_name='gcp-iam-organization-iam-policy-create')
 
-    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -2141,11 +2141,11 @@ def gcp_iam_organization_iam_member_remove_command(client: Client, args: Dict[st
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
-    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
                                                   command_name='gcp-iam-organization-iam-policy-create')
 
-    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)  # type: ignore[arg-type]
 
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
@@ -2173,7 +2173,7 @@ def gcp_iam_organization_iam_policy_set_command(client: Client, args: Dict[str, 
 
     policy = safe_load_json(policy)
 
-    response = client.gcp_iam_organization_iam_policy_set_request(organization_name, policy)
+    response = client.gcp_iam_organization_iam_policy_set_request(organization_name, policy)  # type: ignore[arg-type]
     return generate_iam_policy_command_output(response, organization_name,
                                               readable_header=f'{organization_name} IAM policy updated successfully.')
 
@@ -2193,7 +2193,7 @@ def gcp_iam_organization_iam_policy_add_command(client: Client, args: Dict[str, 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
     policy = {
         "role": role,
         "members": members
@@ -2201,7 +2201,7 @@ def gcp_iam_organization_iam_policy_add_command(client: Client, args: Dict[str, 
 
     iam_policy.append(policy)
 
-    client.gcp_iam_organization_iam_policy_set_request(organization_name, iam_policy)
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, iam_policy)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Role {role} updated successfully.'
     )
@@ -2224,7 +2224,7 @@ def gcp_iam_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
     display_name = args.get('display_name')
     group_email_address = args.get('group_email_address')
 
-    response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)
+    response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)  # type: ignore[arg-type]
 
     outputs = copy.deepcopy(response.get('response'))
     created_group_name = outputs.get("name")
@@ -2264,14 +2264,14 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     page = arg_to_number(args.get('page') or '1')
 
     page_token = None
-    readable_message = get_pagination_readable_message(header='Groups List:', limit=limit, page=page)
+    readable_message = get_pagination_readable_message(header='Groups List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-    validate_pagination_arguments(limit, page)
-    if limit > 500:
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+    if limit > 500:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 500.")
 
-    if page > 1:
-        page_token = get_next_page_token(limit, page, client.gcp_iam_group_list_request, args={"parent": parent})
+    if page > 1:  # type: ignore[operator]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_group_list_request, args={"parent": parent})  # type: ignore[arg-type]
 
         if not page_token:
             return CommandResults(
@@ -2281,7 +2281,7 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
                 raw_response=[]
             )
 
-    response = client.gcp_iam_group_list_request(parent, limit, page_token)
+    response = client.gcp_iam_group_list_request(parent, limit, page_token)  # type: ignore[arg-type]
 
     readable_output = tableToMarkdown(
         readable_message,
@@ -2314,7 +2314,7 @@ def gcp_iam_group_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """
     group_name = args.get('group_name')
 
-    response = client.gcp_iam_group_get_request(group_name)
+    response = client.gcp_iam_group_get_request(group_name)  # type: ignore[arg-type]
     outputs = copy.deepcopy(response)
     outputs = update_time_format(outputs, ['createTime', 'updateTime'])
 
@@ -2349,7 +2349,7 @@ def gcp_iam_group_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     group_name = args.get('group_name')
 
-    result = client.gcp_iam_group_delete_request(group_name)
+    result = client.gcp_iam_group_delete_request(group_name)  # type: ignore[arg-type]
 
     if not result.get('done'):
         raise Exception('Operation failed.')
@@ -2380,7 +2380,7 @@ def gcp_iam_group_membership_create_command(client: Client, args: Dict[str, Any]
     command_results_list: List[CommandResults] = []
     for name in groups_name:
         try:
-            response = client.gcp_iam_group_membership_create_request(name, member_email, role)
+            response = client.gcp_iam_group_membership_create_request(name, member_email, role)  # type: ignore[arg-type]
             command_results_list.append(generate_group_membership_command_output(response, 'response'))
 
         except Exception as exception:
@@ -2407,14 +2407,14 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
     page_token = None
-    readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)
+    readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-    validate_pagination_arguments(limit, page)
-    if limit > 500:
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+    if limit > 500:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 500.")
 
-    if page > 1:
-        page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,
+    if page > 1:  # type: ignore[operator]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,  # type: ignore[arg-type]
                                          args={"group_name": group_name})
 
         if not page_token:
@@ -2425,7 +2425,7 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
                 raw_response=[]
             )
 
-    response = client.gcp_iam_group_membership_list_request(group_name, limit, page_token)
+    response = client.gcp_iam_group_membership_list_request(group_name, limit, page_token)  # type: ignore[arg-type]
 
     return generate_group_membership_command_output(response, "memberships", readable_message)
 
@@ -2443,7 +2443,7 @@ def gcp_iam_group_membership_get_command(client: Client, args: Dict[str, Any]) -
     """
     membership_name = args.get('membership_name')
 
-    response = client.gcp_iam_group_membership_get_request(membership_name)
+    response = client.gcp_iam_group_membership_get_request(membership_name)  # type: ignore[arg-type]
     return generate_group_membership_command_output(response)
 
 
@@ -2461,7 +2461,7 @@ def gcp_iam_group_membership_role_add_command(client: Client, args: Dict[str, An
     membership_name = args.get('membership_name')
     role = argToList(args.get('role'))
 
-    client.gcp_iam_group_membership_role_add_request(membership_name, role)
+    client.gcp_iam_group_membership_role_add_request(membership_name, role)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Membership {membership_name} updated successfully.'
     )
@@ -2482,7 +2482,7 @@ def gcp_iam_group_membership_role_remove_command(client: Client, args: Dict[str,
     membership_name = args.get('membership_name')
     role = argToList(args.get('role'))
 
-    client.gcp_iam_group_membership_role_remove_request(membership_name, role)
+    client.gcp_iam_group_membership_role_remove_request(membership_name, role)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Membership {membership_name} updated successfully.'
     )
@@ -2535,11 +2535,10 @@ def gcp_iam_service_account_create_command(client: Client, args: Dict[str, Any])
     display_name = args.get('display_name')
     description = args.get('description')
 
-    if not 6 <= len(service_account_id) <= 30:
+    if not 6 <= len(service_account_id) <= 30:  # type: ignore
         raise Exception('Service account ID length has to be between 6-30 characters.')
 
-    response = client.gcp_iam_service_account_create_request(
-        project_name, service_account_id, display_name, description)
+    response = client.gcp_iam_service_account_create_request(project_name, service_account_id, display_name, description)  # type: ignore[arg-type]
 
     return generate_service_account_command_output(response)
 
@@ -2560,7 +2559,7 @@ def gcp_iam_service_account_update_command(client: Client, args: Dict[str, Any])
     description = args.get('description')
     fields_to_update = args.get('fields_to_update')
 
-    client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)
+    client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Service account {service_account_name} updated successfully.'
     )
@@ -2634,14 +2633,14 @@ def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -
         page = arg_to_number(args.get('page') or '1')
         max_limit = 100
 
-        validate_pagination_arguments(limit, page)
-        if limit > max_limit:
+        validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+        if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Service Account List:', limit=limit, page=page)
+        readable_message = get_pagination_readable_message(header='Service Account List:', limit=limit, page=page)  # type: ignore[arg-type]
 
-        if page > 1:
-            response = get_pagination_request_result(limit, page, max_limit,
+        if page > 1:  # type: ignore[operator]
+            response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
                                                      client.gcp_iam_service_account_list_request,
                                                      project_name=project_name)
 
@@ -2736,7 +2735,7 @@ def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any])
             )
             command_results_list.append(error)
 
-    return command_results_list
+    return command_results_list  # type: ignore[return-value]
 
 
 def generate_service_account_key_command_output(response: dict, output_key: str = None,
@@ -2796,7 +2795,7 @@ def gcp_iam_service_account_key_create_command(client: Client, args: Dict[str, A
     service_account_name = args.get('service_account_name')
     key_algorithm = args.get('key_algorithm')
 
-    response = client.gcp_iam_service_account_key_create_request(service_account_name, key_algorithm)
+    response = client.gcp_iam_service_account_key_create_request(service_account_name, key_algorithm)  # type: ignore[arg-type]
     return generate_service_account_key_command_output(response)
 
 
@@ -2825,18 +2824,18 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
 
         limit = arg_to_number(args.get('limit') or '50')
         page = arg_to_number(args.get('page') or '1')
-        validate_pagination_arguments(limit, page)
+        validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
         response = client.gcp_iam_service_account_key_list_request(service_account_name)
 
-        readable_message = get_pagination_readable_message(header='Service Account Keys List:', limit=limit, page=page)
-        start = (page - 1) * limit
-        end = start + limit
+        readable_message = get_pagination_readable_message(header='Service Account Keys List:', limit=limit, page=page)  # type: ignore[arg-type]
+        start = (page - 1) * limit  # type: ignore[operator]
+        end = start + limit  # type: ignore[operator]
 
         outputs = []
 
-        if response.get('keys') and len(response.get('keys')) >= start:
-            min_index = min(len(response.get('keys')), end)
-            for key in response.get('keys')[start:min_index]:
+        if response.get('keys') and len(response.get('keys')) >= start:  # type: ignore[arg-type]
+            min_index = min(len(response.get('keys')), end)  # type: ignore[arg-type]
+            for key in response.get('keys')[start:min_index]:  # type: ignore[index]
                 outputs.append(dict(key))
 
         for output in outputs:
@@ -2967,7 +2966,7 @@ def generate_role_command_output(response: dict, output_key: str = None,
         if output_key:
             outputs = copy.deepcopy(response.get(output_key, []))
         else:
-            outputs = copy.deepcopy(response)
+            outputs = copy.deepcopy(response)  # type: ignore[assignment]
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -3189,11 +3188,11 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
 
     max_limit = 1000
 
-    validate_pagination_arguments(limit, page)
-    if limit > max_limit:
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+    if limit > max_limit:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
 
-    readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)
+    readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)  # type: ignore[arg-type]
 
     if resource_identifier_key:
         command_arguments = {'parent': resource_identifier, 'include_permissions': include_permissions,
@@ -3202,13 +3201,13 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
         command_arguments = {'include_permissions': include_permissions, 'show_deleted': show_deleted}
 
     if title_filter or permission_filter:
-        response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,
+        response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,  # type: ignore[arg-type]
                                                title_filter, permission_filter)
 
         return generate_role_command_output(response, readable_header=readable_message, outputs=outputs)
 
-    if page > 1:
-        response = get_pagination_request_result(limit, page, max_limit,
+    if page > 1:  # type: ignore[operator]
+        response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
                                                  client_request_method,
                                                  **command_arguments)
     else:
@@ -3549,15 +3548,15 @@ def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any
     full_resource_name = f'//cloudresourcemanager.googleapis.com/{resource_name}'
     page_token = None
     readable_message = get_pagination_readable_message(header=f'{resource_name} testable permissions list:',
-                                                       limit=limit, page=page)
+                                                       limit=limit, page=page)  # type: ignore[arg-type]
     max_limit = 1000
 
-    validate_pagination_arguments(limit, page)
-    if limit > max_limit:
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+    if limit > max_limit:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
 
-    if page > 1:
-        page_token = get_next_page_token(limit, page, client.gcp_iam_testable_permission_list_request,
+    if page > 1:  # type: ignore[operator]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_testable_permission_list_request,  # type: ignore[arg-type]
                                          args={"full_resource_name": full_resource_name})
 
         if not page_token:
@@ -3604,16 +3603,16 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
     full_resource_name = f'//cloudresourcemanager.googleapis.com/{resource_name}'
     page_token = None
     readable_message = get_pagination_readable_message(header=f'{resource_name} grantable roles list:',
-                                                       limit=limit, page=page)
+                                                       limit=limit, page=page)  # type: ignore[arg-type]
 
     max_limit = 1000
 
-    validate_pagination_arguments(limit, page)
-    if limit > max_limit:
+    validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
+    if limit > max_limit:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
 
-    if page > 1:
-        page_token = get_next_page_token(limit, page, client.gcp_iam_grantable_role_list_request,
+    if page > 1:  # type: ignore[operator]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_grantable_role_list_request,  # type: ignore[arg-type]
                                          args={"full_resource_name": full_resource_name})
 
         if not page_token:
@@ -3658,11 +3657,11 @@ def gcp_iam_project_iam_policy_remove_command(client: Client, args: Dict[str, An
     project_name = args.get('project_name')
     role = argToList(args.get('role'))
 
-    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
+    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])  # type: ignore[arg-type]
 
     updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
-    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
+    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Project {project_name} IAM policies updated successfully.'
     )
@@ -3683,11 +3682,11 @@ def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[st
     organization_name = args.get('organization_name')
     role = argToList(args.get('role'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
 
     updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
-    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Organization {organization_name} IAM policies updated successfully.'
     )
@@ -3708,11 +3707,11 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
     folder_name = args.get('folder_name')
     role = argToList(args.get('role'))
 
-    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])  # type: ignore[arg-type]
 
     updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
-    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)  # type: ignore[arg-type]
     command_results = CommandResults(
         readable_output=f'Folder {folder_name} IAM policies updated successfully.'
     )
@@ -3739,13 +3738,13 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Co
 
     res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
     if not res_binding:
-        return "No tag bindingds found"
-    if not res_binding.get('tagBindings')[0].get('tagValue'):
-        return "No tag bindingds found"
+        return "No tag bindingds found"  # type: ignore[return-value]
+    if not res_binding.get('tagBindings')[0].get('tagValue'):  # type: ignore[index]
+        return "No tag bindingds found"  # type: ignore[return-value]
     val_list = []
-    for value in res_binding.get('tagBindings'):
+    for value in res_binding.get('tagBindings'):  # type: ignore[union-attr]
         res_value = client.gcp_iam_tagvalues_get_request(name=value.get('tagValue'))
-        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))
+        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))  # type: ignore[arg-type]
         kv = {'key': res_key['shortName'], 'value': res_value['shortName']}
         val_list.append(kv)
 
