@@ -972,10 +972,10 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
     """
     Create a new pull-request.
     Args:
-        project: Azure DevOps project.
-        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
+        repository: Azure DevOps repository.
+        project: Azure DevOps project.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -1128,6 +1128,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any], repository:
 
     offset = (page - 1) * limit
 
+    # Validation in project and repository ensures the right type is passed
     response = client.pull_requests_list_request(project, repository, offset, limit)  # type: ignore[arg-type]
 
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out of ' \
@@ -1486,10 +1487,10 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
     """
     Retrieve repository branches list.
     Args:
-        project: Azure DevOps project.
-        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
+        repository: Azure DevOps repository.
+        project: Azure DevOps project.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -1563,7 +1564,7 @@ def get_update_args(delta: dict, data: dict) -> dict:
     return arguments
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> str:
     """
     Pushes local changes to the remote system
     Args:
@@ -1573,6 +1574,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                         args['entries']: the entries to send to the remote system
                         args['incident_changed']: boolean telling us if the local incident indeed changed or not
                         args['remote_incident_id']: the remote incident id
+        repository: Azure DevOps repository.
+        project: Azure DevOps project.
 
     Returns:
         str: The new ID of the updated incident.
@@ -1590,7 +1593,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.data)
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Azure DevOps\n')
-            pull_request_update_command(client, update_args, repository=None, project=None)
+            pull_request_update_command(client, update_args, repository=repository, project=project)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1889,6 +1892,7 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     if missing_arguments:
         raise DemistoException(MISSING_PARAMETERS_ERROR_MSG.format(arguments=", ".join(missing_arguments)))
 
+    # Validation in organization, project and repository ensures the right type is passed
     return Project(organization=organization, repository=repository_id, project=project)  # type:ignore[arg-type]
 
 
@@ -2616,7 +2620,7 @@ def main() -> None:
 
         elif command == 'update-remote-system':
             if is_mirroring:
-                return_results(update_remote_system_command(client, args))
+                return_results(update_remote_system_command(client, args, repository, project))
 
         elif command == 'azure-devops-pull-request-reviewer-list':
             return_results(pull_request_reviewer_list_command(client, args, organization, repository, project))

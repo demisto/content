@@ -1041,7 +1041,7 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, m
         # PR does not exist
         assert 'The requested pull request was not found.' in result.raw_response.get("message")
     else:
-        assert result.readable_output.startswith('### Commits List')
+        assert result.readable_output.startswith('### Commits')
         assert result.outputs_prefix == 'AzureDevOps.Commit'
 
 
@@ -1091,7 +1091,7 @@ def test_commit_list_command(requests_mock):
 
     result = commit_list_command(client, {'limit': '1'}, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith('### Commits List')
+    assert result.readable_output.startswith('### Commits')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
 
 
