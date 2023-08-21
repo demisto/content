@@ -130,6 +130,12 @@ configuration:
   type: 8
   section: Collect
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
