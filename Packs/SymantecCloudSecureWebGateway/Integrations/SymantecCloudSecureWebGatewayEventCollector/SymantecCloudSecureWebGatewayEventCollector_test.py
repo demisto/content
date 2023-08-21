@@ -1,11 +1,19 @@
 import pytest
 from freezegun import freeze_time
+from requests import Response
 from SymantecCloudSecureWebGatewayEventCollector import (
     Client,
     is_duplicate,
     is_first_fetch,
     get_start_and_ent_date,
+    get_status_and_token_from_res,
 )
+
+
+class mockResponse(Response):
+    def __init__(self, content, status_code) -> None:
+        self.status_code = status_code
+        self._content = content
 
 
 @pytest.mark.parametrize(
@@ -100,3 +108,38 @@ def test_get_start_and_ent_date(
     start, end = get_start_and_ent_date(args, start_date)
     assert start == expected_results["start"]
     assert end == expected_results["end"]
+
+
+@pytest.mark.parametrize(
+    "response, expected_results",
+    [
+        (
+            mockResponse(
+                content=b"X-sync-token: TESTTESTTESTTESTTESTTESTTESTTEST\r\nX-sync-status: done\r\n",
+                status_code=200,
+            ),
+            {"status": "done", "token": "TESTTESTTESTTESTTESTTESTTESTTEST"},
+        ),
+        (
+            mockResponse(
+                content=b"PX//test//test\r\nX-sync-token: TESTTESTTESTTESTTESTTESTTESTTEST\r\nX-sync-status: abort\r\n",
+                status_code=200,
+            ),
+            {"status": "abort", "token": "TESTTESTTESTTESTTESTTESTTESTTEST"},
+        )
+    ],
+)
+def test_get_status_and_token_from_res(
+    response: mockResponse, expected_results: dict[str, str]
+):
+    """
+    Given:
+        - Response
+    When:
+        - run `get_status_and_token_from_res` function
+    Then:
+        - Ensure that the `status` and `token` were successfully extracted from the response
+    """
+    status, token = get_status_and_token_from_res(response)
+    assert status == expected_results["status"]
+    assert token == expected_results["token"]
