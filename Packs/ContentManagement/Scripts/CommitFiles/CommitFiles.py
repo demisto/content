@@ -190,7 +190,7 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
         if branch.get("name", "") == branch_name:
             branch_id = branch.get("objectId", "")
             break
-    if not branch_id:
+    else:
         raise DemistoException('Failed to find a corresponding branch id to the given branch name.')
     file_args["branch_id"] = branch_id
     try:
