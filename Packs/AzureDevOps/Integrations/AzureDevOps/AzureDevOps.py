@@ -1957,7 +1957,7 @@ def pull_request_commit_list_command(client: Client, args: Dict[str, Any], organ
 
     response = client.list_pull_requests_commits(project_args, pull_request_id, limit)
 
-    readable_output = tableToMarkdown('Commits List', response.get('value'), headers=['comment', 'commitId', 'committer'],
+    readable_output = tableToMarkdown('Commits', response.get('value'), headers=['comment', 'commitId', 'committer'],
                                       headerTransform=lambda header: COMMIT_HEADERS_MAPPING.get(header, header))
 
     return CommandResults(
