@@ -38,6 +38,19 @@ class Project(NamedTuple):
     organization: str
     repository: str
     project: str
+    
+    @property
+    def repo_url(self) -> str:
+    return f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/'repositories/{self.repository}'
+
+    @property
+    def project_url(self) -> str:
+    return f'https://dev.azure.com/{project_args.organization}/{project_args.project}'
+
+    @property
+    def organization_url(self) -> str:
+    return f'https://dev.azure.com/{project_args.organization}'
+
 
 
 class Client:
