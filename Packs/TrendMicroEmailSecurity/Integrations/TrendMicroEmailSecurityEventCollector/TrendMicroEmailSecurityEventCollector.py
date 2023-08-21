@@ -196,7 +196,7 @@ class Deduplicate:
         if self.generate_id_for_event(event) not in self.last_event_ids_suspected:
             return False
 
-        demisto.debug(f"An already fetched event was detected, id={self.generate_id_for_event(event)}")
+        demisto.debug(f"Encountered an event object that was fetched before, id={self.generate_id_for_event(event)}")
         return True
 
 
