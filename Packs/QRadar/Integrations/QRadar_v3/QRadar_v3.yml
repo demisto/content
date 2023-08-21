@@ -986,6 +986,7 @@ script:
       - 'false'
   - name: qradar-reference-set-value-upsert
     description: Adds or updates an element in a reference set.
+    polling: true
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
@@ -1107,6 +1108,7 @@ script:
       isArray: true
   - name: qradar-indicators-upload
     description: Uploads indicators to QRadar.
+    polling: true
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
