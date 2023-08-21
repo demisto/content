@@ -38,19 +38,18 @@ class Project(NamedTuple):
     organization: str
     repository: str
     project: str
-    
+
     @property
     def repo_url(self) -> str:
-    return f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/'repositories/{self.repository}'
+        return f'https://dev.azure.com/{self.organization}/{self.project}/_apis/git/repositories/{self.repository}'
 
     @property
     def project_url(self) -> str:
-    return f'https://dev.azure.com/{project_args.organization}/{project_args.project}'
+        return f'https://dev.azure.com/{self.organization}/{self.project}'
 
     @property
     def organization_url(self) -> str:
-    return f'https://dev.azure.com/{project_args.organization}'
-
+        return f'https://dev.azure.com/{self.organization}'
 
 
 class Client:
@@ -465,7 +464,7 @@ class Client:
 
         params = {"api-version": 7.0}
         full_url = f'https://dev.azure.com/{project_args.organization}/{project_args.project}/_apis/git/' \
-                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers'  # type:ignore[attr-defined]
+                   f'repositories/{project_args.repository}/pullRequests/{pull_request_id}/reviewers'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,

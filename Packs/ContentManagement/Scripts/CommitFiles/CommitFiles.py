@@ -188,21 +188,24 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
     branches_list = response[0].get("Contents", {}).get("value", []) if response and isinstance(response, list) else []
     for branch in branches_list:
         if branch.get("name", "") == branch_name:
-            branch_id = branch.get("objectId", "")
+            branch_id = branch["objectId"]
             break
     else:
         raise DemistoException('Failed to find a corresponding branch id to the given branch name.')
     file_args["branch_id"] = branch_id
+
+    if file_exists:
+        # update existing file
+        file_args['commit_comment'] = f'{content_file.file_name} was updated.'
+        modified_files.append(content_file.file_name)
+        command_to_execute = 'azure-devops-file-update'
+    else:
+        # new file added
+        new_files.append(content_file.file_name)
+        command_to_execute = 'azure-devops-file-create'
+
     try:
-        if file_exists:
-            # update existing file
-            file_args['commit_comment'] = f'{content_file.file_name} was updated.'
-            modified_files.append(content_file.file_name)
-            demisto.executeCommand('azure-devops-file-update', args=file_args)
-        else:
-            # new file added
-            new_files.append(content_file.file_name)
-            demisto.executeCommand('azure-devops-file-create', args=file_args)
+        demisto.executeCommand(command_to_execute, args=file_args)
     except DemistoException as e:
         raise DemistoException(
             f'Failed to execute azure-devops-file-update or azure-devops-file-create commands. Error: {e}, '
