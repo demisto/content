@@ -473,7 +473,7 @@ class Client(BaseClient):
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
-        demisto.info("Query is: " + query)
+        demisto.debug("Query is: " + query)
         return self.graphql_query(query)
 
     def get_threat_events_query(
