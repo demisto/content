@@ -18,10 +18,10 @@ args:
   name: list_separator
 comment: Parses a list by header and value.
 commonfields:
-  id: GetListRow_fix
+  id: GetListRow
   version: -1
 enabled: true
-name: GetListRow_fix
+name: GetListRow
 outputs:
 - contextPath: GetListRow.Header
   description: Header in which the search was performed.
@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.65389
+dockerimage: demisto/python3:3.10.12.68714
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
