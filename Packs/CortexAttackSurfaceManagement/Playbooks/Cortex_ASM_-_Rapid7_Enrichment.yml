@@ -293,7 +293,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: RAPID7-OS
+        simple: RAPID7-ASSET-OS
       val2:
         complex:
           root: Nexpose.Asset
