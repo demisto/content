@@ -16,7 +16,9 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     ],
 )
 def test_is_duplicate(args: dict[str, str], expected_results: bool):
-    """ """
+    """
+    
+    """
     time_of_last_fetched_event = "2023-08-01 00:01:34"
     events_suspected_duplicates = ["123", "456"]
 
@@ -26,4 +28,23 @@ def test_is_duplicate(args: dict[str, str], expected_results: bool):
         time_of_last_fetched_event,
         events_suspected_duplicates,
     )
+    assert result == expected_results
+
+
+@pytest.mark.parametrize(
+    "last_run, args, expected_results",
+    [
+        ({}, {}, True),
+        ({"start_date": None}, {}, True),
+        ({"start_date": "test"}, {}, False),
+        ({}, {"since": "test"}, False)
+    ],
+)
+def test_is_first_fetch(
+    last_run: dict[str, str | list[str]], args: dict[str, str], expected_results: bool
+):
+    """
+    
+    """
+    result = is_first_fetch(last_run, args)
     assert result == expected_results
