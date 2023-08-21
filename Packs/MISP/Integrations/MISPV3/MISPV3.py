@@ -671,7 +671,7 @@ def reputation_value_validation(value, dbot_type):
         hash_format = get_hash_type(value)
         if hash_format == 'Unknown':
             raise DemistoException('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
-    if dbot_type == 'IP' and not is_ip_valid(value):
+    if dbot_type == 'IP' and not is_ip_valid(value, accept_v6_ips=True):
         raise DemistoException(f"Error: The given IP address: {value} is not valid")
     if dbot_type == 'DOMAIN' and not re.compile(DOMAIN_REGEX, regexFlags).match(value):
         raise DemistoException(f"Error: The given domain: {value} is not valid")
