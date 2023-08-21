@@ -986,7 +986,7 @@ class MicrosoftClient(BaseClient):
         content = self.refresh_token or self.tenant_id
         headers = self._add_info_headers()
         context = get_integration_context()
-        next_request_time = context.get("next_request_time",  0.0)
+        next_request_time = context.get("next_request_time", 0.0)
         delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
 
         should_delay_request(next_request_time)
