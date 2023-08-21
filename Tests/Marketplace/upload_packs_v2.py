@@ -1363,7 +1363,7 @@ def main():
         task_status, _ = pack.format_metadata(index_folder_path,
                                               packs_dependencies_mapping,
                                               statistics_handler,
-                                              packs_for_current_marketplace_dict, marketplace)
+                                              marketplace)
 
         # if is_missing_dependencies:
         #     # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
