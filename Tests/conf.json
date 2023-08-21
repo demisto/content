@@ -33,7 +33,8 @@
             ],
             "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
             "fromversion": "6.5.0"
-        },{
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
