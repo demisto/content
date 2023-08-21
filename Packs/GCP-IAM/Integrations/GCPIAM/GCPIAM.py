@@ -1495,7 +1495,7 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
         if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Projects List:', limit=limit, page=page)  # type: ignore[arg-type]
+        readable_message = get_pagination_readable_message(header='Projects List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
 
         if page > 1:  # type: ignore[operator]
             response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
@@ -1786,7 +1786,7 @@ def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
         if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Folders List:', limit=limit, page=page)  # type: ignore[arg-type]
+        readable_message = get_pagination_readable_message(header='Folders List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
 
         if page > 1:  # type: ignore[operator]
             response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
@@ -2037,7 +2037,7 @@ def gcp_iam_organizations_get_command(client: Client, args: Dict[str, Any]) -> l
         if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Organizations List:', limit=limit, page=page)  # type: ignore[arg-type]
+        readable_message = get_pagination_readable_message(header='Organizations List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
 
         if page > 1:  # type: ignore[operator]
             response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
@@ -2114,8 +2114,8 @@ def gcp_iam_organization_iam_member_add_command(client: Client, args: Dict[str, 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
-    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]  # noqa: E501
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]  # noqa: E501
                                              command_name='gcp-iam-organization-iam-policy-create')
 
     client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)  # type: ignore[arg-type]
@@ -2141,8 +2141,8 @@ def gcp_iam_organization_iam_member_remove_command(client: Client, args: Dict[st
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
-    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]  # noqa: E501
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,  # type: ignore[arg-type]  # noqa: E501
                                                   command_name='gcp-iam-organization-iam-policy-create')
 
     client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)  # type: ignore[arg-type]
@@ -2193,7 +2193,7 @@ def gcp_iam_organization_iam_policy_add_command(client: Client, args: Dict[str, 
     role = args.get('role')
     members = argToList(args.get('members'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]  # noqa: E501
     policy = {
         "role": role,
         "members": members
@@ -2224,7 +2224,7 @@ def gcp_iam_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
     display_name = args.get('display_name')
     group_email_address = args.get('group_email_address')
 
-    response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)  # type: ignore[arg-type]
+    response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)  # type: ignore[arg-type]  # noqa: E501
 
     outputs = copy.deepcopy(response.get('response'))
     created_group_name = outputs.get("name")
@@ -2271,7 +2271,7 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise Exception("The limit argument is out of range. It must be between 1 and 500.")
 
     if page > 1:  # type: ignore[operator]
-        page_token = get_next_page_token(limit, page, client.gcp_iam_group_list_request, args={"parent": parent})  # type: ignore[arg-type]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_group_list_request, args={"parent": parent})  # type: ignore[arg-type]  # noqa: E501
 
         if not page_token:
             return CommandResults(
@@ -2407,14 +2407,14 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
     page_token = None
-    readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)  # type: ignore[arg-type]
+    readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
 
     validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
     if limit > 500:  # type: ignore[operator]
         raise Exception("The limit argument is out of range. It must be between 1 and 500.")
 
     if page > 1:  # type: ignore[operator]
-        page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,  # type: ignore[arg-type]
+        page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,  # type: ignore[arg-type]  # noqa: E501
                                          args={"group_name": group_name})
 
         if not page_token:
@@ -2538,7 +2538,7 @@ def gcp_iam_service_account_create_command(client: Client, args: Dict[str, Any])
     if not 6 <= len(service_account_id) <= 30:  # type: ignore
         raise Exception('Service account ID length has to be between 6-30 characters.')
 
-    response = client.gcp_iam_service_account_create_request(project_name, service_account_id, display_name, description)  # type: ignore[arg-type]
+    response = client.gcp_iam_service_account_create_request(project_name, service_account_id, display_name, description)  # type: ignore[arg-type]  # noqa: E501
 
     return generate_service_account_command_output(response)
 
@@ -2559,7 +2559,7 @@ def gcp_iam_service_account_update_command(client: Client, args: Dict[str, Any])
     description = args.get('description')
     fields_to_update = args.get('fields_to_update')
 
-    client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)  # type: ignore[arg-type]
+    client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)  # type: ignore[arg-type]  # noqa: E501
     command_results = CommandResults(
         readable_output=f'Service account {service_account_name} updated successfully.'
     )
@@ -2637,7 +2637,7 @@ def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -
         if limit > max_limit:  # type: ignore[operator]
             raise Exception("The limit argument is out of range. It must be between 1 and 100.")
 
-        readable_message = get_pagination_readable_message(header='Service Account List:', limit=limit, page=page)  # type: ignore[arg-type]
+        readable_message = get_pagination_readable_message(header='Service Account List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
 
         if page > 1:  # type: ignore[operator]
             response = get_pagination_request_result(limit, page, max_limit,  # type: ignore[arg-type]
@@ -2827,7 +2827,7 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
         validate_pagination_arguments(limit, page)  # type: ignore[arg-type]
         response = client.gcp_iam_service_account_key_list_request(service_account_name)
 
-        readable_message = get_pagination_readable_message(header='Service Account Keys List:', limit=limit, page=page)  # type: ignore[arg-type]
+        readable_message = get_pagination_readable_message(header='Service Account Keys List:', limit=limit, page=page)  # type: ignore[arg-type]  # noqa: E501
         start = (page - 1) * limit  # type: ignore[operator]
         end = start + limit  # type: ignore[operator]
 
@@ -3201,7 +3201,7 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
         command_arguments = {'include_permissions': include_permissions, 'show_deleted': show_deleted}
 
     if title_filter or permission_filter:
-        response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,  # type: ignore[arg-type]
+        response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,  # type: ignore[arg-type]  # noqa: E501
                                                title_filter, permission_filter)
 
         return generate_role_command_output(response, readable_header=readable_message, outputs=outputs)
@@ -3682,7 +3682,7 @@ def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[st
     organization_name = args.get('organization_name')
     role = argToList(args.get('role'))
 
-    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])  # type: ignore[arg-type]  # noqa: E501
 
     updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 

@@ -882,7 +882,7 @@ def mocked_request(*args, **kwargs):
             "/auth/token": MockedResponse(200, mocked_get_token_response, headers={'access_token': '123456'}),
             "/dvefeed/ioc/ack": MockedResponse(200, str(submitted_indicators), headers={'Content-Type': 'json'}),
         },
-        "GET": {"/dvefeed/ioc?limit=1000": MockedResponse(200, json.dumps(iocs_bundle[bundle_index]), headers={'Content-Type': 'json'})},
+        "GET": {"/dvefeed/ioc?limit=1000": MockedResponse(200, json.dumps(iocs_bundle[bundle_index]), headers={'Content-Type': 'json'})},  # noqa: E501
     }
 
     response_dict = response_dict.get(method)
