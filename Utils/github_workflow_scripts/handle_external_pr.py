@@ -24,13 +24,16 @@ print = timestamped_print
 
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
+              'wizard @{selected_reviewer} will very shortly look over your proposed changes.\n' \
+              'For your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) to the contributions ' \
+              'SLAs document.'
 
 WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
                          'register your contribution by filling the [Contribution Registration]' \
                          '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
                          'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
-                         'reviewed.'
+                         'reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) ' \
+                         'to the contributions SLAs document.'
 
 XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
