@@ -360,8 +360,8 @@ class Client(BaseClient):
         self.ignore_status_code_tuples = self.__parse_status_code_strings(status_code_list_string)
 
     def __process_domain_event_field_list(self, field_list: list):
-        demisto.log(f"List of allowed optional fields: {self.__allowed_optional_domain_event_field_list}")
-        demisto.log(f"Processing Option Field list: {field_list}")
+        demisto.debug(f"List of allowed optional fields: {self.__allowed_optional_domain_event_field_list}")
+        demisto.debug(f"Processing Option Field list: {field_list}")
         final_list = []
         final_list.extend(self.__mandatory_domain_event_field_list)
 
@@ -369,14 +369,14 @@ class Client(BaseClient):
             for field in field_list:
                 if field in self.__allowed_optional_domain_event_field_list and field not in final_list:
                     final_list.append(field)
-                    demisto.log(f"Adding {field} to list of Incident fields to query.")
+                    demisto.debug(f"Adding {field} to list of Incident fields to query.")
                 else:
                     demisto.log(f"Ignoring {field} as it is not allowed.")
         return final_list
 
     def get_domain_event_query_fields(self):
         if len(self.domain_event_field_list) == 0:
-            demisto.log(
+            demisto.debug(
                 "Optional incident field list was not provided. Initializing with minimum required fields:"
                 + f" {self.__mandatory_domain_event_field_list}")
             self.set_domain_event_field_list(None)
