@@ -67,6 +67,7 @@ sample_api_result = """{
           "name": "POST /cart",
           "isExternal": true,
           "isAuthenticated": true,
+          "isLearnt": true,
           "riskScore": 2,
           "riskScoreCategory": "LOW"
         },
@@ -74,6 +75,7 @@ sample_api_result = """{
           "id": "067bb0d7-3740-3ba6-89eb-c457491fbc53",
           "name": "POST /get_user",
           "isExternal": true,
+          "isLearnt": true,
           "isAuthenticated": true,
           "riskScore": 3,
           "riskScoreCategory": "MEDIUM"
@@ -82,6 +84,44 @@ sample_api_result = """{
           "id": "be344182-c100-3287-874a-cb47eac709f2",
           "name": "POST /cart",
           "isExternal": false,
+          "isLearnt": true,
+          "isAuthenticated": true,
+          "riskScore": 2,
+          "riskScoreCategory": "LOW"
+        }
+      ],
+      "total": 3
+    }
+  }
+}"""
+
+sample_private_api_result = """{
+  "data": {
+    "entities": {
+      "results": [
+        {
+          "id": "ea0f77c0-adc2-3a69-89ea-93b1c8341d8f",
+          "name": "POST /cart",
+          "isExternal": false,
+          "isLearnt": true,
+          "isAuthenticated": true,
+          "riskScore": 2,
+          "riskScoreCategory": "LOW"
+        },
+        {
+          "id": "067bb0d7-3740-3ba6-89eb-c457491fbc53",
+          "name": "POST /get_user",
+          "isExternal": false,
+          "isLearnt": true,
+          "isAuthenticated": true,
+          "riskScore": 3,
+          "riskScoreCategory": "MEDIUM"
+        },
+        {
+          "id": "be344182-c100-3287-874a-cb47eac709f2",
+          "name": "POST /cart",
+          "isExternal": false,
+          "isLearnt": true,
           "isAuthenticated": true,
           "riskScore": 2,
           "riskScoreCategory": "LOW"
@@ -479,7 +519,6 @@ def response_handler_private_ip(*args, **kwargs):
 
 def empty_api_response_handler(*args, **kwargs):
     data: str = kwargs["json"]["query"]
-
     r = Response()
     if "DOMAIN_EVENT" in data:
         r.text = sample_domain_event_empty_api
@@ -489,6 +528,36 @@ def empty_api_response_handler(*args, **kwargs):
         return r
     elif "entities(" in data:
         r.text = sample_api_result
+        return r
+    return None
+
+
+def public_api_type_response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = sample_domain_event
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+    elif "entities(" in data:
+        r.text = sample_api_result
+        return r
+    return None
+
+
+def private_api_type_response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = sample_domain_event_with_private_ip
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+    elif "entities(" in data:
+        r.text = sample_private_api_result
         return r
     return None
 
@@ -530,7 +599,6 @@ def test_fetch_incidents_no_linked_api(mocker):
 
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    # client.set_threat_category_list(threatCategoryList)
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
@@ -542,6 +610,59 @@ def test_fetch_incidents_no_linked_api(mocker):
     assert len(incidents) == 1
     rawJSON = json.loads(incidents[0]["rawJSON"])
     assert rawJSON["apiType"] == "Unknown"
+
+
+def test_fetch_incidents_public_api_type(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = public_api_type_response_handler
+
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+    rawJSON = json.loads(incidents[0]["rawJSON"])
+    assert rawJSON["apiType"] == "External"
+
+
+def test_fetch_incidents_private_api_type(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = private_api_type_response_handler
+
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+    rawJSON = json.loads(incidents[0]["rawJSON"])
+    assert rawJSON["apiType"] == "Internal"
+    assert rawJSON["apiIsAuthenticated"]
+    assert rawJSON["apiRiskScore"] == 3
+    assert rawJSON["apiRiskScoreCategory"] == 'MEDIUM'
 
 
 def test_fetch_incidents_last_fetch_not_none(mocker):
@@ -798,44 +919,96 @@ def test_get_threat_events_query(capfd):
     import urllib3
 
     output_query = (
-        """{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime"""
-        + """: "2023-06-20T15:34:56Z"\n      endTime: "2023-06-26T15:34:53Z"\n    }\n    offset: 0\n    filterBy: [{k"""
-        + """eyExpression: {key: "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], t"""
-        + """ype: ATTRIBUTE},{keyExpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MED"""
-        + """IUM","LOW","UNKNOWN"], type: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP"""
-        + """_LOCATION_TYPE_UNSPECIFIED","IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOC"""
-        + """ATION_TYPE_PUBLIC_PROXY","IP_LOCATION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{key"""
-        + """Expression: {key: "ipAbuseVelocity"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_V"""
-        + """ELOCITY_UNSPECIFIED"], type: ATTRIBUTE}]\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }"""
-        + """\n    ]\n  ) {\n    results {\n      threatCategory: selection(expression: {key: "threatCategory"}) {\n """
-        + """       value\n      }\n      id: selection(expression: { key: "id" }) {\n        value\n      }\n      n"""
-        + """ame: selection(expression: { key: "name" }) {\n        value\n      }\n      type: selection(expression:"""
-        + """ { key: "type" }) {\n        value\n      }\n      environment: selection(expression: { key: "environmen"""
-        + """t" }) {\n        value\n      }\n      serviceName: selection(expression: { key: "serviceName" }) {\n   """
-        + """     value\n      }\n      apiName: selection(expression: { key: "apiName" }) {\n        value\n      }"""
-        + """\n      apiId: selection(expression: { key: "apiId"}) {\n        value\n      }\n      serviceId: select"""
-        + """ion(expression: { key: "serviceId" }) {\n        value\n      }\n      threatActorScore: selection(expre"""
-        + """ssion: { key: "actorScore" }) {\n        value\n      }\n      anomalousAttribute: selection(expression:"""
-        + """ { key: "anomalousAttribute" }) {\n        value\n      }\n      eventDescription: selection(expression:"""
-        + """ { key: "eventDescription" }) {\n        value\n      }\n      actorId: selection(expression: { key: "ac"""
-        + """torId" }) {\n        value\n      }\n      actorCountry: selection(expression: { key: "actorCountry" }) """
-        + """{\n        value\n      }\n      actorIpAddress: selection(expression: { key: "actorIpAddress" }) {\n   """
-        + """     value\n      }\n      actorDevice: selection(expression: { key: "actorDevice" }) {\n        value\n"""
-        + """      }\n      apiUri: selection(expression: { key: "apiUri" }) {\n        value\n      }\n      traceId"""
-        + """: selection(expression: { key: "traceId" }) {\n        value\n      }\n      statusCode: selection(expre"""
-        + """ssion: { key: "statusCode" }) {\n        value\n      }\n      actorEntityId: selection(expression: { ke"""
-        + """y: "actorEntityId" }) {\n        value\n      }\n      actorScoreCategory: selection(expression: { key: """
-        + """"actorScoreCategory" }) {\n        value\n      }\n      securityScoreCategory: selection(\n        expr"""
-        + """ession: { key: "securityScoreCategory" }\n      ) {\n        value\n      }\n      securityScore: select"""
-        + """ion(expression: { key: "securityScore" }) {\n        value\n      }\n      category: selection(expressio"""
-        + """n: { key: "category" }) {\n        value\n      }\n      securityEventType: selection(expression: { key:"""
-        + """ "securityEventType" }) {\n        value\n      }\n      ipCategories: selection(expression: { key: "ipC"""
-        + """ategories" }) {\n        value\n      }\n      ipReputationLevel: selection(expression: { key: "ipReputa"""
-        + """tionLevel" }) {\n        value\n      }\n      ipAbuseVelocity: selection(expression: { key: "ipAbuseVel"""
-        + """ocity" }) {\n        value\n      }\n      spanId: selection(expression: { key: "spanId" }) {\n        v"""
-        + """alue\n      }\n      actorSession: selection(expression: { key: "actorSession" }) {\n        value\n    """
-        + """  }\n      timestamp: selection(expression: { key: "timestamp" }) {\n        value\n      }\n    }\n  }"""
-        + """\n}\n"""
+        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34'
+        + ':56Z"\n      endTime: "2023-06-26T15:34:53Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {key'
+        + ': "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{'
+        + 'keyExpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKN'
+        + 'OWN"], type: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_'
+        + 'UNSPECIFIED","IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUB'
+        + 'LIC_PROXY","IP_LOCATION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {'
+        + 'key: "ipAbuseVelocity"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSP'
+        + 'ECIFIED"], type: ATTRIBUTE}]\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  )'
+        + ' {\n    results {\n        actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorI'
+        + 'pAddress: selection(expression: {key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: '
+        + '"apiId"}) { value }\nenvironment: selection(expression: {key: "environment"}) { value }\neventDescripti'
+        + 'on: selection(expression: {key: "eventDescription"}) { value }\nid: selection(expression: {key: "id"}) '
+        + '{ value }\nipCategories: selection(expression: {key: "ipCategories"}) { value }\nname: selection(expres'
+        + 'sion: {key: "name"}) { value }\nsecurityScoreCategory: selection(expression: {key: "securityScoreCatego'
+        + 'ry"}) { value }\nspanId: selection(expression: {key: "spanId"}) { value }\nstatusCode: selection(expres'
+        + 'sion: {key: "statusCode"}) { value }\ntimestamp: selection(expression: {key: "timestamp"}) { value }\nt'
+        + 'raceId: selection(expression: {key: "traceId"}) { value }\nactorDevice: selection(expression: {key: "ac'
+        + 'torDevice"}) { value }\nactorEntityId: selection(expression: {key: "actorEntityId"}) { value }\nactorId'
+        + ': selection(expression: {key: "actorId"}) { value }\nactorScoreCategory: selection(expression: {key: "a'
+        + 'ctorScoreCategory"}) { value }\nactorSession: selection(expression: {key: "actorSession"}) { value }\na'
+        + 'nomalousAttribute: selection(expression: {key: "anomalousAttribute"}) { value }\napiName: selection(exp'
+        + 'ression: {key: "apiName"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\ncategor'
+        + 'y: selection(expression: {key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ip'
+        + 'AbuseVelocity"}) { value }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { valu'
+        + 'e }\nsecurityEventType: selection(expression: {key: "securityEventType"}) { value }\nsecurityScore: sel'
+        + 'ection(expression: {key: "securityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId'
+        + '"}) { value }\nserviceName: selection(expression: {key: "serviceName"}) { value }\nactorScore: selectio'
+        + 'n(expression: {key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCatego'
+        + 'ry"}) { value }\ntype: selection(expression: {key: "type"}) { value }\n\n    }\n  }\n}\n'
+    )
+
+    starttime = datetime.strptime("2023-06-20T15:34:56Z", DATE_FORMAT)
+    endtime = datetime.strptime("2023-06-26T15:34:53Z", DATE_FORMAT)
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    # client.set_threat_category_list(threatCategoryList)
+    client.set_ip_reputation_level_list(
+        ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+    )
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"])
+    client.set_ip_categories_list(
+        [
+            "Unknown",
+            "Anonymous VPN",
+            "Hosting Provider",
+            "Public Proxy",
+            "TOR Exit Node",
+            "BOT",
+        ]
+    )
+    client.set_domain_event_field_list([
+        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
+        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
+        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    client.set_limit(100)
+
+    query = client.get_threat_events_query(starttime, endtime)
+    assert query == output_query
+    capfd.readouterr()
+
+
+def test_get_threat_events_query_no_optional_fields(capfd):
+    from Traceable import Client, DATE_FORMAT
+    from datetime import datetime
+    import urllib3
+
+    output_query = (
+        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:5'
+        + '6Z"\n      endTime: "2023-06-26T15:34:53Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {key: "secu'
+        + 'rityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{keyExpressio'
+        + 'n: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"], type: ATTR'
+        + 'IBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_UNSPECIFIED","IP_LOCAT'
+        + 'ION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUBLIC_PROXY","IP_LOCATION_TYP'
+        + 'E_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {key: "ipAbuseVelocity"}, operato'
+        + 'r: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSPECIFIED"], type: ATTRIBUTE}]\n    ord'
+        + 'erBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  ) {\n    results {\n        actorCountry: s'
+        + 'election(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expression: {key: "actorIpA'
+        + 'ddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment: selection(expressi'
+        + 'on: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "eventDescription"}) { va'
+        + 'lue }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expression: {key: "ipCatego'
+        + 'ries"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScoreCategory: selection(ex'
+        + 'pression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {key: "spanId"}) { value '
+        + '}\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: selection(expression: {key: '
+        + '"timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }\n\n    }\n  }\n}\n'
     )
 
     starttime = datetime.strptime("2023-06-20T15:34:56Z", DATE_FORMAT)
@@ -932,15 +1105,15 @@ def test_get_api_endpoint_details_query():
         Helper.string_to_datetime("2023-07-24T09:07:59Z"),
     )
     expected_query = (
-        'query entities\n{\n  entities(\n    scope: "API"\n    limit: 100\n    between: '
-        + '{\n      startTime: "2023-07-23T09:07:59Z"\n      endTime: "2023-07-24T09:07:59Z"\n    }\n    of'
-        + 'fset: 0\n    filterBy: [{keyExpression: {key: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-8'
-        + '9eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f","be344182-c100-3287-874a-cb47eac709f2"]'
-        + ', type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      name: attribute(expression: { key: "n'
-        + 'ame" })\n      isExternal: attribute(expression: { key: "isExternal" })\n      isAuthenticated: '
-        + 'attribute(expression: { key: "isAuthenticated" })\n      riskScore: attribute(expression: { key:'
-        + ' "riskScore" })\n      riskScoreCategory: attribute(expression: { key: "riskScoreCategory" })\n '
-        + "   }\n    total\n  }\n}"
+        'query entities\n{\n  entities(\n    scope: "API"\n    limit: 100\n    between: {\n      startTime: "2023-07-23'
+        + 'T09:07:59Z"\n      endTime: "2023-07-24T09:07:59Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {ke'
+        + 'y: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f'
+        + '","be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      isExtern'
+        + 'al: attribute(expression: { key: "isExternal" })\n      isAuthenticated: attribute(expression: { key: "isAut'
+        + 'henticated" })\n      riskScore: attribute(expression: { key: "riskScore" })\n      riskScoreCategory: attri'
+        + 'bute(expression: { key: "riskScoreCategory" })\n      isLearnt: attribute(expression: { key: "isLearnt" })\n'
+        + '    }\n    total\n  }\n}'
+
     )
 
     assert query == expected_query
@@ -1003,7 +1176,8 @@ def test_fetch_incident_with_private_ipaddress(mocker):
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
     assert incidents[0]["ipAddressType"] == "Internal"
-    assert incidents[0]["eventUrl"] == "https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=90d&env=Fintech_app"
+    assert incidents[0]["eventUrl"] == ('https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time='
+                                        + '90d&env=Fintech_app')
 
 
 def test_ignore_ranges_parsing():
@@ -1091,3 +1265,56 @@ def test_is_ignored_range():
     assert client.is_ignored_status_code(450)
     assert client.is_ignored_status_code(499)
     assert not client.is_ignored_status_code(500)
+
+
+def test_process_domain_field_list():
+    from Traceable import Client
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_domain_event_field_list([
+        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
+        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
+        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    assert len(client.domain_event_field_list) == 31
+    client.set_domain_event_field_list([
+        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
+        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
+        "serviceName", "actorScore", "threatCategory"])
+    assert len(client.domain_event_field_list) == 30
+    client.set_domain_event_field_list([])
+    assert len(client.domain_event_field_list) == 13
+    client.set_domain_event_field_list(None)
+    assert len(client.domain_event_field_list) == 13
+
+
+def test_construct_field_selection_expression():
+    from Traceable import Client
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_domain_event_field_list([
+        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
+        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
+        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    expression_string = client.get_domain_event_query_fields()
+    expected_output = 'actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: ' \
+        + 'selection(expression: {key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) ' \
+        + '{ value }\nenvironment: selection(expression: {key: "environment"}) { value }\neventDescription: selection' \
+        + '(expression: {key: "eventDescription"}) { value }\nid: selection(expression: {key: "id"}) { value }\n' \
+        + 'ipCategories: selection(expression: {key: "ipCategories"}) { value }\nname: selection(expression: {key: ' \
+        + '"name"}) { value }\nsecurityScoreCategory: selection(expression: {key: "securityScoreCategory"}) { value }\n' \
+        + 'spanId: selection(expression: {key: "spanId"}) { value }\nstatusCode: selection(expression: {key: ' \
+        + '"statusCode"}) { value }\ntimestamp: selection(expression: {key: "timestamp"}) { value }\ntraceId: '\
+        + 'selection(expression: {key: "traceId"}) { value }\nactorDevice: selection(expression: {key: "actorDevice'\
+        + '"}) { value }\nactorEntityId: selection(expression: {key: "actorEntityId"}) { value }\nactorId: selection(' \
+        + 'expression: {key: "actorId"}) { value }\nactorScoreCategory: selection(expression: {key: "actorScoreCategory' \
+        + '"}) { value }\nactorSession: selection(expression: {key: "actorSession"}) { value }\nanomalousAttribute: ' \
+        + 'selection(expression: {key: "anomalousAttribute"}) { value }\napiName: selection(expression: {key: "apiName' \
+        + '"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\ncategory: selection(expression: ' \
+        + '{key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ipAbuseVelocity"}) { ' \
+        + 'value }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { value }\nsecurityEventType' \
+        + ': selection(expression: {key: "securityEventType"}) { value }\nsecurityScore: selection(expression: ' \
+        + '{key: "securityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId"}) { value }\n' \
+        + 'serviceName: selection(expression: {key: "serviceName"}) { value }\nactorScore: selection(expression: ' \
+        + '{key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCategory"}) { value ' \
+        + '}\ntype: selection(expression: {key: "type"}) { value }\n'
+    assert expression_string == expected_output
