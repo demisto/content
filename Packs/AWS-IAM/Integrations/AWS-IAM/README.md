@@ -1905,4 +1905,70 @@ Retrieves information about when the specified access key was last used. The inf
 |ID|UserName|LastUsedDate|LastUsedServiceName|LastUsedRegion|
 |---|---|---|---|---|
 | access_Key_Id | user_name | 2023-06-06T14:32:00 | test | Here |
-    
+### aws-iam-list-attached-role-policies
+
+***
+List all managed policies that are attached to the specified IAM role.
+
+#### Base Command
+
+`aws-iam-list-attached-role-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name (friendly name, not ARN) of the role to list attached policies for. | Required | 
+| pathPrefix | The path prefix for filtering the results. This parameter is optional. If it is not included, it defaults to a slash (/), listing all policies. | Optional | 
+| maxItems | The total number of items to return in the command's output. | Optional | 
+| marker | Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName | string | The Policy name. | 
+| AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn | string | The Policy ARN. | 
+| AWS.IAM.Roles.AttachedPolicies.Policies.RoleName | string | The queried role name. | 
+| AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated | Boolean | Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received. | 
+| AWS.IAM.Roles.AttachedPolicies.Query.Marker | string | When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. | 
+
+#### Command example
+```!aws-iam-list-attached-role-policies roleName=myRoleName```
+#### Context Example
+```json
+{
+    "AWS": {
+        "IAM": {
+            "Roles": {
+                "AttachedPolicies": {
+                    "Policies": [
+                        {
+                            "PolicyArn": "arn:aws:iam::000000000000:policy/my-role-arn",
+                            "PolicyName": "my-policy-name",
+                            "RoleName": "myRoleName"
+                        }
+                    ],
+                    "Query": {
+                        "IsTruncated": false
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+### Attached Policies for Role myRoleName
+|PolicyArn|PolicyName|RoleName|
+|---|---|---|
+| arn:aws:iam::000000000000:policy/my-role-arn | my-policy-name | myRoleName |
+
+
+>|IsTruncated|
+>|---|
+>| false |
+
