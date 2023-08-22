@@ -144,12 +144,14 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      AutoContainment:
+        simple: "True"
       AutoRestoreEndpoint:
-        simple: "False"
+        simple: "True"
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
-        simple: "False"
+        simple: "True"
       ShouldOpenTicket:
         simple: "False"
       ZendeskSubject:
@@ -300,12 +302,14 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
+      AutoContainment:
+        simple: "True"
       AutoRestoreEndpoint:
-        simple: "False"
+        simple: "True"
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
-        simple: "False"
+        simple: "True"
       ShouldOpenTicket:
         simple: "False"
       ZendeskSubject:

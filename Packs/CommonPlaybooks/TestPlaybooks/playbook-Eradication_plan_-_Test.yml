@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -610
+          "y": -760
         }
       }
     note: false
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -465
+          "y": -615
         }
       }
     note: false
@@ -88,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 10
+          "y": -140
         }
       }
     note: false
@@ -270,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 490
+          "y": 340
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 320
+          "y": 170
         }
       }
     note: false
@@ -327,8 +327,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
-      - "7"
+      - "20"
     scriptarguments:
       left:
         complex:
@@ -343,7 +342,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 670
+          "y": 520
         }
       }
     note: false
@@ -375,7 +374,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -170
+          "y": -320
         }
       }
     note: false
@@ -393,11 +392,11 @@ tasks:
       id: 8ec5d52c-fe98-4a9c-88bf-2278d03e0e1d
       version: -1
       name: Eradication Plan
+      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -406,8 +405,8 @@ tasks:
         simple: "True"
       EndpointID:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: alert
+          accessor: agentid
       FilePath:
         complex:
           root: Path
@@ -417,6 +416,10 @@ tasks:
         simple: Name
       UserRemediation:
         simple: "True"
+      Username:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: username
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -468,7 +471,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -335
+          "y": -485
         }
       }
     note: false
@@ -508,7 +511,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 145
+          "y": -5
         }
       }
     note: false
@@ -560,6 +563,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7e91d536-1d90-463b-8807-2176d3204244
+    type: regular
+    task:
+      id: 7e91d536-1d90-463b-8807-2176d3204244
+      version: -1
+      name: Set alert agentid
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+      - "19"
+    scriptarguments:
+      agentid:
+        complex:
+          root: ListCompare
+          accessor: Both
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -567,10 +608,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2255,
+        "height": 2405,
         "width": 1080,
         "x": 40,
-        "y": -610
+        "y": -760
       }
     }
   }
