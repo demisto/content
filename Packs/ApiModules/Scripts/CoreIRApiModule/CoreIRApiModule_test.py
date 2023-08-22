@@ -6,7 +6,6 @@ import zipfile
 from typing import Any
 
 import pytest
-from pytest_mock import MockerFixture
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
@@ -3257,6 +3256,7 @@ def test_list_risky_users_hosts_command_raise_exception(
     Then:
     - make sure a message indicating that the user was not found is returned
     """
+
     client = CoreClient(
         base_url="test",
         headers={},
