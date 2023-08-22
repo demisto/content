@@ -67,7 +67,11 @@ def parse_log(log: str):
 def parse_event_to_json(fields: list[str], parse_log: list[str]) -> dict[str, str]:
     if len(fields) != len(parse_log):
         return {}
-    return {fields[i]: parse_log[i] for i in range(len(fields))}
+    event = {fields[i]: parse_log[i] for i in range(len(fields))}
+    event["_time"] = datetime.strptime(
+        f"{event['date']} {event['time']}", "%Y-%m-%d %H:%M:%S"
+    ).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return event
 
 
 def get_start_and_ent_date(
@@ -260,7 +264,7 @@ def organize_of_events(
 
 def get_events_command(
     client: Client, args: dict[str, str], last_run_model: LastRun, is_first_fetch: bool
-) -> tuple[list[str], LastRun]:
+) -> tuple[list[dict], LastRun]:
     """
     ...
     """

@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for XSIAM.
+description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for XSIAM (The events are returned as json).
 display: Symantec Cloud Secure Web Gateway Event Collector (Beta)
 name: Symantec Cloud Secure Web Gateway Event Collector (Beta)
 commonfields:
