@@ -1118,8 +1118,10 @@ class MicrosoftClient(BaseClient):
         if scope:
             data['scope'] = scope
 
-        refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-        if refresh_token and not self.auth_code_reconfigured:
+        if refresh_token_from_auth_code_param := self._get_refresh_token_from_auth_code_param(): # for testing
+            data['grant_type'], data['refresh_token'] = REFRESH_TOKEN, refresh_token_from_auth_code_param
+        elif refresh_token and not self.auth_code_reconfigured:
+            demisto.debug('Using refresh token from integration context')
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
