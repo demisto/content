@@ -129,25 +129,7 @@ def list_users(args, client):  # pragma: no cover
     ec = {'AWS.IAM.IdentityCenter.Users': data}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', data, removeNull=True)
     return_outputs(human_readable, ec)
-
-# def update_user(args, client):  # pragma: no cover
-#    kwargs = {'UserName': args.get('oldUserName')}
-#    if args.get('newUserName'):
-#        kwargs.update({'NewUserName': args.get('newUserName')})
-#    if args.get('newPath'):
-#        kwargs.update({'NewPath': args.get('newPath')})
-#
-#    response = client.update_user(**kwargs)
-#    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-#        demisto.results(
-#            "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName')))
-
-
-# def delete_user(args, client):  # pragma: no cover
-#    response = client.delete_user(UserName=args.get('userName'))
-#    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-#        demisto.results('The User {0} has been deleted'.format(args.get('userName')))
-
+    
 
 def list_groups(args, client):  # pragma: no cover
     data = []
