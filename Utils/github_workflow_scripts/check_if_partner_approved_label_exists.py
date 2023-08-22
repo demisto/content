@@ -29,7 +29,7 @@ def arguments_handler():
 
 def get_pack_support_level(file_paths: list[str]) -> str:
     """
-    :param file_paths: the paths of files that are being changed in the PR
+    :param file_paths: The paths of files modified in PR
     :return: pack support level
     """
     pack_dirs_to_check_support_levels_labels = set()
@@ -48,8 +48,8 @@ def get_pack_support_level(file_paths: list[str]) -> str:
 
 def main():
     """
-    this script is checking that "partner-approved" label exists for a PR
-    in case the label exists the workflow will pass, if the label is missing the workflow will fail
+    This script is checking that "partner-approved" label exists for a PR in case
+    the label exists the workflow will pass, if the label is missing the workflow will fail.
     """
     options = arguments_handler()
     pr_number = options.pr_number
