@@ -171,11 +171,10 @@ def test_module(client: Client):
 def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
-        last_fetch = dateparser.parse(first_fetch, date_formats=[DATE_FORMAT])
-    if last_fetch:
-        last_fetch = last_fetch.isoformat()
-    else:
-        raise Exception('Could not get last fetch')
+        if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
+            last_fetch = last_fetch.isoformat()
+        else:
+            raise Exception('Could not get last fetch')
     result = client.query_events(start_date=last_fetch)
     events = result['responseData'][:min(max_fetch, len(result['responseData']))]
 
