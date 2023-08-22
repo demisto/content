@@ -3022,6 +3022,17 @@ class TestBaseClient:
                      marks=pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')),
     ])
     def test_http_request_quote_params_via(self, quote_params, expected_result, requests_mock):
+        """
+            Given
+                - query params with spaces.
+                - with/without specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
         mock_request = requests_mock.get('http://example.com/api/v2/', json={})
         from CommonServerPython import BaseClient
         mock_client = BaseClient('http://example.com/api/v2/')
