@@ -180,13 +180,16 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
 
     incidents: list[dict[str, Any]] = []
     for event in events:
+        if (occurred := event.get('eventCreated')) == last_fetch:
+            continue
+
         event_id = event.get('eventId')
         threat_type = event.get('type')
         is_manual_report = threat_type == 'phishing' and event.get('confidenceIndicator') == 'alert'
         incidents.append({
             'name': f'Threat: {threat_type.title()}',
             'details': event.get('description'),
-            'occurred': event.get('eventCreated'),
+            'occurred': occurred,
             'rawJSON': json.dumps(event),
             'type': 'CheckPointHEC Security Event',
             'severity': int(event.get('severity')),
