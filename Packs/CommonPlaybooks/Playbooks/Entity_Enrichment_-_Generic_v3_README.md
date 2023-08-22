@@ -6,14 +6,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Domain Enrichment - Generic v2
-* Email Address Enrichment - Generic v2.1
-* File Enrichment - Generic v2
 * IP Enrichment - Generic v2
-* Account Enrichment - Generic v2.1
 * CVE Enrichment - Generic v2
 * URL Enrichment - Generic v2
+* Email Address Enrichment - Generic v2.1
+* File Enrichment - Generic v2
 * Endpoint Enrichment - Generic v2.1
+* Account Enrichment - Generic v2.1
+* Domain Enrichment - Generic v2
 
 ### Integrations
 
@@ -46,6 +46,7 @@ This playbook does not use any commands.
 | ResolveIP | Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. True - Resolves the IP addresses to hostnames. False - Does not resolve the IP addresses to hostnames. | False | Optional |
 | InternalDomains | A CSV list of internal domains. The list will be used to determine whether an email address is internal or external. |  | Optional |
 | CVE | CVE ID to enrich. | CVE.ID | Optional |
+| URLSSLVerification | Whether to verify SSL certificates for URLs.<br/>Can be True or False. | False | Optional |
 
 ## Playbook Outputs
 

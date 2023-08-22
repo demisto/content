@@ -181,17 +181,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
+    taskid: a80df9df-c0d4-4d25-88d1-39a974a9c2cb
     type: playbook
     task:
-      id: b00cb02f-d44b-4e40-8c27-281d17a94723
+      id: a80df9df-c0d4-4d25-88d1-39a974a9c2cb
       version: -1
       name: URL Enrichment - Generic v2
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Enrich URLs using one or more integrations.
+
+        URL enrichment includes:
+        * SSL verification for URLs
+        * Threat information
+        * Providing of URL screenshots
+        * URL Reputation using !url
     nexttasks:
       '#none#':
       - "15"
@@ -205,6 +212,9 @@ tasks:
           transformers:
           - operator: uniq
       VerifyURL:
+        complex:
+          root: inputs.URLSSLVerification
+      UseReputationCommand:
         simple: "False"
     separatecontext: true
     loop:
@@ -586,6 +596,14 @@ inputs:
   required: false
   description: CVE ID to enrich.
   playbookInputQuery:
+- key: URLSSLVerification
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to verify SSL certificates for URLs.
+    Can be True or False.
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP object.
@@ -753,8 +771,8 @@ fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
 contentitemexportablefields:
   contentitemfields: {}
 system: true
