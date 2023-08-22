@@ -3864,10 +3864,10 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             - limit [str]: Specifying the maximum number of risky users to return.
 
     Returns:
-        A CommandResults object
+        A CommandResults object, in case the user was not found, an appropriate message will be returend.
 
     Raises:
-        ValueError: If the API connection fails or the specified user ID is not found.
+        ValueError: If the API connection fails.
 
     """
     def _error_missing_license(e: DemistoException) -> None:
@@ -3901,8 +3901,13 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         except DemistoException as e:
             _error_missing_license(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
-                raise DemistoException(error_message) from e
-            raise
+                not_found_message = 'was not found'
+                if not_found_message in error_message:
+                    return CommandResults(readable_output=f'The user {id_} {not_found_message}')
+                else:
+                    raise DemistoException(error_message)
+            else:
+                raise
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 

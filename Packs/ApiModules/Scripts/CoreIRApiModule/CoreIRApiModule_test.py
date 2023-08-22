@@ -3251,21 +3251,13 @@ def test_list_risky_users_hosts_command_raise_exception(
 ):
     """
     Given:
-        mocker (MockerFixture): The pytest mocker fixture for creating mock objects.
-        type_ (str): The type of entity, either 'user' or 'host', for which the command is being tested.
-        args (dict): A dictionary of arguments to be passed to the command function.
-        api_function (str): The name of the API function being tested.
-        error_message (str): The error message that the mocked API function should raise.
-        expected_error_message (str): The expected error message that the test should match with the raised exception.
+    - XDR API error indicating that the user / host was not found
 
     When:
-        the 'list_risky_users_or_host_command' function is called with the provided parameters.
+    - executing the list_risky_users_or_host_command function
 
     Then:
-        For each parameter set provided in the test cases, this test ensures that calling the 'list_risky_users_or_host_command'
-        function with the given parameters results in an exception being raised, and the raised exception message matches
-        the 'expected_error_message'.
-
+    - make sure a message indicating that the user was not found is returned
     """
     client = CoreClient(
         base_url="test",
@@ -3283,11 +3275,8 @@ def test_list_risky_users_hosts_command_raise_exception(
             message=error_message, res=MockException(500)
         ),
     )
-    with pytest.raises(
-        DemistoException,
-        match=expected_error_message
-    ):
-        list_risky_users_or_host_command(client, type_, args)
+    result = list_risky_users_or_host_command(client, command, {id_: "test"})
+    assert result.readable_output == 'The user test was not found'
 
 
 def test_list_user_groups_command(mocker):
