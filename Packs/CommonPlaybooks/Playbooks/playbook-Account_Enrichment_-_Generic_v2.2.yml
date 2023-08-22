@@ -1639,7 +1639,10 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The username to enrich. This input also supports usernames with a domain prefix, in the format of "domain\username".
+  description: |-
+    The usernames to enrich. This input supports multiple usernames.
+    Usernames can be with or without a domain prefix, in the format of "username" or "domain\username".
+    Domain usernames will only be enriched in integrations that support  them.
   playbookInputQuery:
 - key: Domain
   value: {}
