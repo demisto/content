@@ -25,7 +25,7 @@ You can configure the vendor and product by replacing [vendor]\_[product]\_raw w
 When configuring the instance, you should use a yml file that configures the vendor and product, as shown in the below configuration for the Microsoft DNS product.
 
 **Pay Attention**:
-When using this pack their are two integrations available for it.
+When using this pack there are two integrations available for it.
 
 * ***As enrichment, forwarding DNS Audit logs is supported via Winlogbeat***
 
