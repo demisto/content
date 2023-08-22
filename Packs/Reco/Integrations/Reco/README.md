@@ -1,4 +1,5 @@
 Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
+This integration was integrated and tested with version 2023.34.0 of Reco.
 
 ## Configure Reco on Cortex XSOAR
 
@@ -322,7 +323,7 @@ update alert status in Reco
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | alert id to get. | Required | 
-| status | status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED"). | Required | 
+| status | status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED"). Possible values are: ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED. | Required | 
 
 #### Context Output
 
