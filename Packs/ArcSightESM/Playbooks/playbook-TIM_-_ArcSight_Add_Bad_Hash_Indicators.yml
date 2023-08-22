@@ -2,10 +2,7 @@ id: TIM - ArcSight Add Bad Hash Indicators
 version: -1
 fromversion: 5.5.0
 name: TIM - ArcSight Add Bad Hash Indicators
-description: This playbook queries indicators based on a pre-defined query or results
-  from a parent playbook, and adds the resulting indicators to an ArcSight Active
-  List. The Active List ID should be defined in the playbook inputs, as well as the
-  field name in the Active list to which to add the indicators.
+description: This playbook
 starttaskid: "0"
 tasks:
   "0":
