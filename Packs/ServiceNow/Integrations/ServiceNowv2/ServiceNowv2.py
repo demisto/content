@@ -844,7 +844,7 @@ class Client(BaseClient):
             Array of attachments entries.
         """
         entries = []
-        links = []  # type: List[Tuple[str, str]]
+        links = []  # type: list[tuple[str, str]]
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
