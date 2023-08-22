@@ -1207,7 +1207,8 @@
         },
         {
             "integrations": "Tenable.io",
-            "playbookID": "Tenable.io test"
+            "playbookID": "Tenable.io test",
+            "timeout": 3600
         },
         {
             "playbookID": "URLDecode-Test"
