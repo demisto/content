@@ -482,7 +482,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):     # prag
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
                 access_type=access_type,
             )
-            account.root.effective_rights.read  # pylint: disable=E1101
+            account.root.effective_rights.read  # pylint: disable=E1101 ruff: disable=B018
             return account
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
