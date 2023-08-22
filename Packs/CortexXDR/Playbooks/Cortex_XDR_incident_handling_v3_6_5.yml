@@ -1977,10 +1977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 6d795872-afe4-466b-857b-410a472a5c49
+    taskid: 5701719e-cdf2-41dd-841d-2a197c1ab088
     type: regular
     task:
-      id: 6d795872-afe4-466b-857b-410a472a5c49
+      id: 5701719e-cdf2-41dd-841d-2a197c1ab088
       version: -1
       name: Display risky users table
       description: Displays the risky users in a grid field in the layout.
@@ -1993,13 +1993,13 @@ tasks:
       - "23"
     scriptarguments:
       columns:
-        simple: userid,risklevel,score
+        simple: userid,risklevel,score,reasons
       context_path:
         simple: UsersWithScore
       grid_id:
         simple: xdrriskyusers
       keys:
-        simple: id,risk_level,score
+        simple: id,risk_level,score,reasons
       overwrite:
         simple: "true"
     separatecontext: false
@@ -2253,10 +2253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: edb6f04d-03b3-4045-8ecd-64fa1db82bfa
+    taskid: 1ba330d7-45cb-4c56-895d-ef41e2c76104
     type: regular
     task:
-      id: edb6f04d-03b3-4045-8ecd-64fa1db82bfa
+      id: 1ba330d7-45cb-4c56-895d-ef41e2c76104
       version: -1
       name: Display risky hosts table
       description: Displays the risky hosts in a grid field in the layout.
@@ -2269,13 +2269,13 @@ tasks:
       - "23"
     scriptarguments:
       columns:
-        simple: hostid,risklevel,score
+        simple: hostid,risklevel,score,reasons
       context_path:
         simple: HostsWithScore
       grid_id:
         simple: xdrriskyhosts
       keys:
-        simple: id,risk_level,score
+        simple: id,risk_level,score,reasons
       overwrite:
         simple: "true"
     separatecontext: false
