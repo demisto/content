@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
@@ -48,9 +47,9 @@ def jira_req(
         body: str = '',
         link: bool = False,
         resp_type: str = 'text',
-        headers: Optional[dict] = None,
-        files: Optional[dict] = None,
-        params: Optional[dict] = None
+        headers: dict | None = None,
+        files: dict | None = None,
+        params: dict | None = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
     AUTH = get_auth()
@@ -130,7 +129,7 @@ def get_auth():
     elif is_bearer:
         # Personal Access Token Authentication
         HEADERS.update({'Authorization': f'Bearer {access_token}'})
-        return
+        return None
 
     return_error(
         'Please provide the required Authorization information:'
@@ -138,6 +137,7 @@ def get_auth():
         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
         '- Personal Access Tokens requires AccessToken'
     )
+    return None
 
 
 def get_custom_field_names():
@@ -264,6 +264,8 @@ def expand_urls(data, depth=0):
             else:
                 if isinstance(value, dict):
                     return expand_urls(value, depth + 1)
+        return None
+    return None
 
 
 def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
@@ -295,7 +297,7 @@ def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False)
 def get_account_id_from_attribute(
         attribute: str,
         max_results: str = '50',
-        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
+        is_jirav2api: str = 'false') -> CommandResults | str:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
@@ -577,6 +579,7 @@ def get_project_id(project_key='', project_name=''):
                 return project.get('id')
 
     return_error('Project not found')
+    return None
 
 
 def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
@@ -891,6 +894,7 @@ def edit_status(issue_id, status, issue):
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
+    return None
 
 
 def list_transitions_data_for_issue(issue_id):
@@ -921,6 +925,7 @@ def edit_transition(issue_id, transition_name, issue):
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
+    return None
 
 
 def list_transitions_command(args):
@@ -1322,7 +1327,7 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta}
             demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 

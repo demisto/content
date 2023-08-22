@@ -18,8 +18,8 @@ def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str
     if res and isinstance(res, list):
         return res
     else:
-        raise DemistoException((f'Error occurred while running script-JiraListTransition. expected a list as response but got:'
-                               f' {type(res)}. The response is: {res}'))
+        raise DemistoException(f'Error occurred while running script-JiraListTransition. expected a list as response but got:'
+                               f' {type(res)}. The response is: {res}')
 
 
 def get_transitions_from_jirav3_brand(command_execution_response: List[Dict[str, Any]]) -> List[str]:
@@ -74,8 +74,8 @@ def main():
             output = get_transition_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
             return_results(output)
         else:
-            raise DemistoException(('Error occurred while running script-JiraListTransition because could not get "dbotMirrorId"'
-                                    ' from incident.'))
+            raise DemistoException('Error occurred while running script-JiraListTransition because could not get "dbotMirrorId"'
+                                    ' from incident.')
     except Exception as ex:
         return_error(f'Error occurred while running script-JiraListTransition. Got the error:\n{ex}')
 

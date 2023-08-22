@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, List, Dict
+from typing import Any
 from datetime import datetime
 import re
 
@@ -26,7 +26,7 @@ def validate_date_field(date_str: str):
     datetime.strptime(date_str, DATE_FORMAT)
 
 
-def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
+def parse_custom_fields(custom_fields: list[str]) -> dict[str, Any]:
     """
     Parse the custom fields into a dictionary.
     The custom fields arrive as comma-separated values:
@@ -42,7 +42,7 @@ def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
         - `Dict[str, Any]` representing the custom fields.
     """
 
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     regex = r'(customfield_\d{5,})={1}(\w+)'
 
     for custom_field in custom_fields:
@@ -60,7 +60,7 @@ def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
     return result
 
 
-def add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any]) -> Dict[str, Any]:
+def add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any]) -> dict[str, Any]:
     """
     Method to generate the payload representing the Jira issue custom fields and add it to the script arguments.
 

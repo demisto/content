@@ -1,6 +1,6 @@
 from JiraCreateIssueExample import validate_date_field, parse_custom_fields, add_custom_fields
 import pytest
-from typing import List, Any, Dict
+from typing import Any
 
 
 @pytest.mark.parametrize("due_date", [
@@ -84,7 +84,7 @@ def test_validate_date_field_time_data_doesnt_match(due_date: str):
     (["customfield_10096==test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
     ([], {}),
 ])
-def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any]):
+def test_parse_custom_fields(custom_fields: list[str], expected: dict[str, Any]):
 
     """
     Given:
@@ -128,7 +128,7 @@ def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any])
         {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
     )
 ])
-def test_add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any], expected):
+def test_add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any], expected):
     """
     Given:
         - A dictionary of arguments.
