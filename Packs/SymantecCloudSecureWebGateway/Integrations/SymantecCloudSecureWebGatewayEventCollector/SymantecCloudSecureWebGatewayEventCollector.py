@@ -43,6 +43,33 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def parse_log(log: str):
+    tmp_word = ""
+    split_log = []
+
+    for word in log.split(" "):
+        if word.startswith('"') and word.endswith('"'):
+            split_log.append(word)
+        elif word.startswith('"'):
+            tmp_word = word.strip('"')
+        elif word.endswith('"'):
+            tmp_word += " " + word
+            split_log.append(tmp_word.strip('"'))
+            tmp_word = ""
+        else:
+            if tmp_word:
+                tmp_word += " " + word
+            else:
+                split_log.append(word)
+    return split_log
+
+
+def parse_event_to_json(fields: list[str], parse_log: list[str]) -> dict[str, str]:
+    if len(fields) != len(parse_log):
+        return {}
+    return {fields[i]: parse_log[i] for i in range(len(fields))}
+
+
 def get_start_and_ent_date(
     args: dict[str, str], start_date: str | None
 ) -> tuple[int, int]:
@@ -125,9 +152,7 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
                             f"Crashed at the open the internal file {file.filename} file, Error: {e}"
                         )
                 else:  # the file is not gzip
-                    demisto.debug(
-                        f"The {file.filename} file is not of gzip type"
-                    )
+                    demisto.debug(f"The {file.filename} file is not of gzip type")
     except BadZipFile as e:
         try:
             # checks whether no events returned
@@ -189,17 +214,21 @@ def organize_of_events(
     token_expired: bool,
     time_of_last_fetched_event: str,
     events_suspected_duplicates: list[str],
-) -> tuple[list[str], str, list[str]]:
-    events: list[str] = []
+) -> tuple[list[dict], str, list[str]]:
+    events: list[dict] = []
     max_time = time_of_last_fetched_event
     max_values = events_suspected_duplicates
 
     demisto.debug(f"The len of the events before filter {len(logs)}")
+    fields: list[str] = []
     for log in logs:
         event = log.decode()
+        if event.startswith("#Fields: "):
+            fields = event.split(" ")[1:]
+            continue
         if event.startswith("#"):
             continue
-        parts = event.split(" ")
+        parts = parse_log(event)
         id_ = parts[-1]
         cur_time = f"{parts[1]} {parts[2]}"
 
@@ -217,7 +246,10 @@ def organize_of_events(
             max_values = [id_]
         elif cur_time == max_time:
             max_values.append(id_)
-        events.append(event)
+        if not (event_json := parse_event_to_json(fields, parts)):
+            demisto.debug(f"The parse of the event failed, {event=}, {fields=}")
+            continue
+        events.append(event_json)
 
     demisto.debug(f"The len of the events after filter {len(events)}")
     return events, max_time, max_values
