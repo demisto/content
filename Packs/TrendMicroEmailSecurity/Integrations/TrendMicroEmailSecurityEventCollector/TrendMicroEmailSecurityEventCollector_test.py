@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
-    set_start_time,
+    parse_start_time,
     calculate_last_run,
     fetch_by_event_type,
     fetch_events_command,
@@ -41,7 +41,7 @@ def test_set_start_time(start_time: str | None, expected_result: str):
         - Ensure the correct time is returned when given a start time
         - Ensure the start time is 1 hour back when no argument is given
     """
-    assert set_start_time(start_time) == expected_result
+    assert parse_start_time(start_time) == expected_result
 
 
 def test_handle_error_no_content(mock_client: Client):
@@ -114,10 +114,19 @@ def test_get_last_time_event(events_key: str, expected_results: str):
                 "subject": "test",
                 "attachments": [{"fileName": "test", "sha256": "test"}],
             },
-            {"subject": "hidden data", "attachments": [{"fileName": "hidden data", "sha256": "test"}]},
+            {
+                "subject": "hidden data",
+                "attachments": [{"fileName": "hidden data", "sha256": "test"}],
+            },
         ),
-        ({"subject": "test", "attachments": []}, {"subject": "hidden data", "attachments": []}),
-        ({"subject": "test", "attachments": None}, {"subject": "hidden data", "attachments": None}),
+        (
+            {"subject": "test", "attachments": []},
+            {"subject": "hidden data", "attachments": []},
+        ),
+        (
+            {"subject": "test", "attachments": None},
+            {"subject": "hidden data", "attachments": None},
+        ),
     ],
 )
 def test_remove_sensitive_from_events(event: dict, expected_results: dict):
@@ -217,7 +226,7 @@ def test_calculate_last_run_no_events(
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-15T10:00:18Z",
                 f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
                     "<33333.33333.33333.3333@mx.test.com>",
-                    "<44444.44444.44444.4444@mx.test.com>"
+                    "<44444.44444.44444.4444@mx.test.com>",
                 ],
             },
             id="fetch time advanced",
@@ -236,19 +245,19 @@ def test_calculate_last_run_no_events(
             [
                 "<22222.22222.22222.2222@mx.test.com>",
                 "<33333.33333.33333.3333@mx.test.com>",
-                "<44444.44444.44444.4444@mx.test.com>"
+                "<44444.44444.44444.4444@mx.test.com>",
             ],
             {
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T11:00:18Z",
                 f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
                     "<22222.22222.22222.2222@mx.test.com>",
                     "<33333.33333.33333.3333@mx.test.com>",
-                    "<44444.44444.44444.4444@mx.test.com>"
+                    "<44444.44444.44444.4444@mx.test.com>",
                 ],
             },
             id="fetch time is not advanced",
-        )
-    ]
+        ),
+    ],
 )
 def test_calculate_last_run(
     event_key: str,
@@ -289,7 +298,18 @@ def test_calculate_last_run(
 
 @pytest.mark.parametrize(
     "event_mock, limit",
-    [(({"nextToken": "abc%20abc", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]}, {}), 2)],
+    [
+        (
+            (
+                {
+                    "nextToken": "abc%20abc",
+                    "logs": [{"genTime": "2023-07-14T10:00:18Z"}],
+                },
+                {},
+            ),
+            2,
+        )
+    ],
 )
 def test_fetch_by_event_type_token_unquote(
     mocker, mock_client: Client, event_mock: tuple[dict], limit: int
@@ -586,13 +606,7 @@ def test_deduplicate(
 
 @pytest.mark.parametrize(
     "event, len_before_add_missing_fields",
-    [
-        ({
-            "subject": "test",
-            "timestamp": "test"
-        }, 2),
-        ({}, 0)
-    ]
+    [({"subject": "test", "timestamp": "test"}, 2), ({}, 0)],
 )
 def test_add_missing_fields_to_event(event: dict, len_before_add_missing_fields: int):
     """
