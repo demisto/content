@@ -1780,12 +1780,12 @@ def test_credentials_command(SERVER_IP):
     ):
         connection.unbind()
     else:
-        raise DemistoException(f"Credential with username {username} was not successful")
+        raise DemistoException(f"Credential test with username {username} was not successful.")
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
         outputs=username,
-        readable_output=f"Credential with username {username} is successful"
+        readable_output=f"Credential test with username {username} succeeded."
     )
 
 
