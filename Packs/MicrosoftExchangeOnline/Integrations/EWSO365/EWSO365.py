@@ -65,7 +65,7 @@ warnings.filterwarnings("ignore")
 
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
-MAX_INCIDENTS_PER_FETCH = 50
+MAX_INCIDENTS_PER_FETCH = 200
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 # move results
