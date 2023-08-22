@@ -8793,6 +8793,7 @@ if 'requests' in sys.modules:
             :type quote_params_via: ``callable``
             :param quote_params_via: How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
             see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
@@ -8806,7 +8807,7 @@ if 'requests' in sys.modules:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
-                if quote_params_via:
+                if quote_params_via and IS_PY3:
                     params = urllib.parse.urlencode(params, quote_via=quote_params_via)
 
                 # Execute
