@@ -1,0 +1,141 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: A Cond
+inputs: []
+name: A Cond
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 68428300-eaa9-4389-8d56-11bb41d05846
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 68428300-eaa9-4389-8d56-11bb41d05846
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.name
+          operator: containsString
+          right:
+            value:
+              simple: GIT-SOP-432
+      label: SOP 432/431
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      SOP 432/431:
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cfab705-ee37-4a3a-8313-f3399929a709
+      iscommand: false
+      name: Cond
+      type: condition
+      version: -1
+    taskid: 9cfab705-ee37-4a3a-8313-f3399929a709
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38b58ca5-69ae-4a17-8095-de0725bebfba
+      iscommand: false
+      name: 43 something
+      type: regular
+      version: -1
+    taskid: 38b58ca5-69ae-4a17-8095-de0725bebfba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 710
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a3ac075-d652-436e-80d0-8938c37cac07
+      iscommand: false
+      name: else
+      type: regular
+      version: -1
+    taskid: 7a3ac075-d652-436e-80d0-8938c37cac07
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 710
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 860,
+        "x": 260,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
