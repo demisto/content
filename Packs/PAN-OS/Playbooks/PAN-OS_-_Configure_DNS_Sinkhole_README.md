@@ -81,3 +81,10 @@ There are no outputs for this playbook.
 ---
 
 ![PAN-OS - Configure DNS Sinkhole](../doc_files/PAN-OS_-_Configure_DNS_Sinkhole.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/master/Assets/DNSSinkhole/DNS%20Sinkhole.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/master/Assets/DNSSinkhole/DNS%20Sinkhole.mp4
+</video>
