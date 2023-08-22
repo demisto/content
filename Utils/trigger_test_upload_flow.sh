@@ -9,6 +9,7 @@ if [ "$#" -lt "1" ]; then
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
   [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
   [-gb3, --bucket_xpanse]     The name of the bucket to upload the xpanse marketplace packs to. Default is xpanse-dist-dev.
+  [-gb4, --bucket_xsoar_saas] The name of th bucket to upload the xsoar_saas marketplace packs to. Default is marketplace-saas-dist-dev.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
@@ -23,6 +24,7 @@ _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_v2="marketplace-v2-dist-dev"
 _bucket_xpanse="xpanse-dist-dev"
+_bucket_xsoar_saas="marketplace-saas-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
@@ -63,6 +65,15 @@ while [[ "$#" -gt 0 ]]; do
     echo "Only test buckets are allowed to use. Using xpanse-dist-dev instead."
   else
     _bucket_xpanse=$2
+  fi
+    shift
+    shift;;
+
+  -gb4|--bucket_xsoar_saas)
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-saas-dist" ]; then
+    echo "Only test buckets are allowed to use. Using marketplace-saas-dist-dev instead."
+  else
+    _bucket_xsoar_saas=$2
   fi
     shift
     shift;;
@@ -147,6 +158,7 @@ curl --request POST \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
   --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
   --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
+  --form "variables[GCS_MARKET_XSOAR_SAAS_BUCKET]=${_bucket_xsoar_saas}" \
   --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
