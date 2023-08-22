@@ -150,13 +150,6 @@
                 "native:dev",
                 "native:candidate"
             ]
-        },
-        {
-            "id":"SlackV3",
-            "reason":"Issue: CIAC-7854",
-            "ignored_native_images":[
-                "native:8.3"
-            ]
         }
     ],
     "flags_versions_mapping":{
