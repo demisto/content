@@ -313,44 +313,49 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "xdrresolvecomment",
-                                "height": 24,
+                                "height": 22,
                                 "id": "5a450d90-ac8a-11e9-a30b-53d47e1ea7d7",
                                 "index": 0,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "dbotclosed",
-                                "height": 24,
+                                "height": 22,
                                 "id": "427bf020-a866-11e9-aeb8-c3448b5d692d",
                                 "index": 1,
                                 "listId": "e462ffc0-a864-11e9-aeb8-c3448b5d692d",
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closereason",
-                                "height": 24,
+                                "height": 22,
                                 "id": "f23f6e30-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 2,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closinguserid",
-                                "height": 24,
+                                "height": 22,
                                 "id": "f387a5a0-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 3,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
-                                "height": 48,
+                                "height": 44,
                                 "id": "f579ffc0-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 4,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             }
                         ],
                         "maxW": 3,
@@ -426,9 +431,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrusercount",
+                                "fieldId": "xdrriskyhostcount",
                                 "height": 22,
-                                "id": "b1232bc0-ac89-11e9-a30b-53d47e1ea7d7",
+                                "id": "8e7d8a20-40be-11ee-9b52-09ff9fac4941",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -436,33 +441,57 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "xdrnotes",
+                                "fieldId": "xdrusercount",
                                 "height": 22,
-                                "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
+                                "id": "b1232bc0-ac89-11e9-a30b-53d47e1ea7d7",
                                 "index": 7,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "xdrurl",
+                                "endCol": 2,
+                                "fieldId": "xdrriskyusercount",
                                 "height": 22,
-                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
+                                "id": "b965df60-401b-11ee-bc50-a9a9295a889b",
                                 "index": 8,
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             },
                             {
                                 "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrurl",
+                                "height": 22,
+                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
+                                "index": 9,
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrnotes",
+                                "height": 22,
+                                "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7"
+                            },
+                            {
                                 "endCol": 4,
                                 "fieldId": "xdralertcount",
                                 "height": 22,
                                 "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
                                 "index": 1,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 2,
+                                "dropEffect": "move",
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             },
                             {
                                 "endCol": 4,
@@ -683,25 +712,6 @@
                             },
                             "type": "multiSelect"
                         }
-                    ],
-                    [
-                        {
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "mitretacticname"
-                                }
-                            },
-                            "operator": "notContainsGeneral",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Credential Access"
-                                }
-                            },
-                            "type": "multiSelect"
-                        }
                     ]
                 ],
                 "hidden": false,
@@ -734,7 +744,7 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 15
                     },
                     {
                         "displayType": "ROW",
@@ -754,7 +764,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 11
+                        "y": 17
                     },
                     {
                         "displayType": "ROW",
@@ -805,7 +815,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 3
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -831,7 +841,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 6
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -856,7 +866,57 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 15
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-3596be70-3f71-11ee-9fce-b505d2ae99c5",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrriskyusers",
+                                "height": 106,
+                                "id": "3dd2bee0-3f71-11ee-9fce-b505d2ae99c5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "XDR Risky Users",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-d21fcdf0-4038-11ee-bc50-a9a9295a889b",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrriskyhosts",
+                                "height": 106,
+                                "id": "8294ae50-40be-11ee-9b52-09ff9fac4941",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "XDR Risky Hosts",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -2008,7 +2068,7 @@
     "group": "incident",
     "id": "Cortex XDR Incident",
     "name": "Cortex XDR Incident",
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
     "description": ""

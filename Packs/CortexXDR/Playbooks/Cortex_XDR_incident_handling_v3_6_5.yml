@@ -36,6 +36,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 3baa1f30-456d-4443-8736-6823f84883d6
@@ -64,6 +67,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 9874d520-0f8d-472a-808b-097b78689707
@@ -84,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2495
+          "y": 2625
         }
       }
     note: false
@@ -92,6 +98,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: f3d6a4fc-a5d4-477f-8409-94b4b9bf1aa1
@@ -130,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3610
+          "y": 3740
         }
       }
     note: false
@@ -138,6 +147,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: b425ff10-7bf0-40d0-80c6-407e5d96801a
@@ -154,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -700,
-          "y": 4510
+          "x": -1970,
+          "y": 4670
         }
       }
     note: false
@@ -163,6 +175,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: da71ad47-f1a2-4dc1-875d-a3788df06edb
@@ -171,9 +186,7 @@ tasks:
       id: da71ad47-f1a2-4dc1-875d-a3788df06edb
       version: -1
       name: Cortex XDR - close incident
-      description: Updates one or more fields of a specified incident. Missing fields
-        are ignored. To remove the assignment for an incident, pass a null value in
-        the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields are ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: Cortex XDR - IR|||xdr-update-incident
       type: regular
       iscommand: true
@@ -182,23 +195,18 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      assigned_user_mail: {}
-      assigned_user_pretty_name: {}
       incident_id:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Incident.incident_id
-      manual_severity: {}
-      resolve_comment: {}
       status:
         simple: RESOLVED_TRUE_POSITIVE
-      unassign_user: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4160
+          "y": 4290
         }
       }
     note: false
@@ -206,6 +214,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: b747c4ab-1503-455f-8dd6-33277a1c2d59
@@ -223,22 +234,14 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Closed after investigation and remediation.
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      mndadone: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4335
+          "y": 4465
         }
       }
     note: false
@@ -246,6 +249,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 0675441f-146a-4754-881e-ec0f72f281fe
@@ -274,6 +280,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 155d9739-d0ff-4227-8f17-cd1083bb5c24
@@ -335,7 +344,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 2250
         }
       }
     note: false
@@ -343,6 +352,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: cc3e0a20-beab-429c-8fb3-47fb3d7ef9d7
@@ -363,7 +375,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1375
+          "y": 1395
         }
       }
     note: false
@@ -371,6 +383,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: e02ba151-e148-4c30-8133-7e3db00b3dfc
@@ -406,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2650
+          "y": 2780
         }
       }
     note: false
@@ -414,6 +429,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 40aed7d7-2797-4c70-865d-50e9e9146fa3
@@ -434,7 +452,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 2830
+          "y": 2960
         }
       }
     note: false
@@ -442,6 +460,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: 08fd2b7a-0c45-4869-8ad8-0f4f4018173c
@@ -464,7 +485,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 3780
+          "y": 3910
         }
       }
     note: false
@@ -472,6 +493,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 458652c1-56f5-4cd2-84e1-6876778fc123
@@ -492,7 +516,7 @@ tasks:
       {
         "position": {
           "x": 700,
-          "y": 3960
+          "y": 4090
         }
       }
     note: false
@@ -500,6 +524,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 0cf00296-1466-4112-8c30-587f1edaa836
@@ -536,7 +563,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1540
+          "y": 1700
         }
       }
     note: false
@@ -544,6 +571,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
@@ -560,6 +590,7 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
+      - "86"
     scriptarguments:
       CVE:
         complex:
@@ -598,8 +629,6 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-      InternalDomains: {}
-      InternalRange: {}
       MD5:
         complex:
           root: File
@@ -651,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1210
+          "y": 1200
         }
       }
     note: false
@@ -659,6 +688,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 29397716-1271-45d5-8029-91b655d566ae
@@ -676,10 +708,8 @@ tasks:
       '#none#':
       - "56"
     scriptarguments:
-      append: {}
       key:
         simple: XDR.HandledAlerts
-      stringify: {}
       value:
         complex:
           root: incident
@@ -697,6 +727,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 12b6dc30-e5d8-4567-8853-464e03e1870d
@@ -719,7 +752,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2290
+          "y": 2420
         }
       }
     note: false
@@ -727,6 +760,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
     taskid: ba17ac69-f567-488b-843c-297ec73362cb
@@ -735,9 +771,7 @@ tasks:
       id: ba17ac69-f567-488b-843c-297ec73362cb
       version: -1
       name: Close XDR incident as false positive
-      description: Updates one or more fields of a specified incident. Missing fields
-        will be ignored. To remove the assignment for an incident, pass a null value
-        in the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -746,23 +780,18 @@ tasks:
       '#none#':
       - "49"
     scriptarguments:
-      assigned_user_mail: {}
-      assigned_user_pretty_name: {}
       incident_id:
         complex:
           root: PaloAltoNetworksXDR.Incident
           accessor: incident_id
-      manual_severity: {}
-      resolve_comment: {}
       status:
         simple: RESOLVED_FALSE_POSITIVE
-      unassign_user: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -240,
-          "y": 4160
+          "y": 4290
         }
       }
     note: false
@@ -770,6 +799,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
     taskid: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
@@ -778,8 +810,7 @@ tasks:
       id: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
       version: -1
       name: Find similar incidents
-      description: Find past similar incidents based on incident fields similarity.
-        Includes an option to also display indicators similarity.
+      description: Find past similar incidents based on incident fields similarity. Includes an option to also display indicators similarity.
       scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
@@ -788,31 +819,16 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      aggreagateIncidentsDifferentDate: {}
       fieldExactMatch:
         simple: incident.type
-      fieldsToDisplay: {}
-      fromDate: {}
-      incidentId: {}
-      includeIndicatorsSimilarity: {}
-      indicatorsTypes: {}
-      limit: {}
-      maxIncidentsInIndicatorsForWhiteList: {}
-      maxIncidentsToDisplay: {}
-      minNumberOfIndicators: {}
-      minimunIncidentSimilarity: {}
-      query: {}
       showCurrentIncident:
         simple: "True"
       showIncidentSimilarityForAllFields:
         simple: "True"
       similarCategoricalField:
         simple: incident.xdrfileartifacts.filesha256,incident.xdralerts.hostip
-      similarJsonField: {}
       similarTextField:
         simple: incident.xdralerts.osactorprocesscommandline,incident.xdralerts.actorprocesscommandline,incident.xdralerts.actionprocessimagecommandline,incident.xdralerts.causalityactorprocesscommandline,incident.xdralerts.host_name,incident.xdralerts.user_name
-      toDate: {}
-      useAllFields: {}
     separatecontext: false
     view: |-
       {
@@ -826,6 +842,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
     taskid: d0f123a6-2241-48a8-81ed-ebbb2e6e7512
@@ -870,6 +889,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
     taskid: e3873cbf-83ca-47ed-8c4d-ea6d4c32a0a2
@@ -915,6 +937,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "44":
     id: "44"
     taskid: 7b5ef23f-53ef-4b22-89e2-a21721836981
@@ -945,6 +970,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
     taskid: 439c00da-4585-47b3-8a4b-c8108a07c9ea
@@ -953,9 +981,7 @@ tasks:
       id: 439c00da-4585-47b3-8a4b-c8108a07c9ea
       version: -1
       name: Resolve XDR incident as duplicate
-      description: Updates one or more fields of a specified incident. Missing fields
-        will be ignored. To remove the assignment for an incident, pass a null value
-        in the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -964,23 +990,18 @@ tasks:
       '#none#':
       - "50"
     scriptarguments:
-      assigned_user_mail: {}
-      assigned_user_pretty_name: {}
       incident_id:
         complex:
           root: PaloAltoNetworksXDR.Incident
           accessor: incident_id
-      manual_severity: {}
-      resolve_comment: {}
       status:
         simple: RESOLVED_DUPLICATE
-      unassign_user: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1030,
-          "y": 4160
+          "y": 4290
         }
       }
     note: false
@@ -988,6 +1009,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
     taskid: 02effbbc-3655-4b6c-8201-e4ae9df592b5
@@ -1016,6 +1040,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "48":
     id: "48"
     taskid: 0851326d-ff23-4700-84b5-bed51e0b0903
@@ -1036,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 2495
+          "y": 2625
         }
       }
     note: false
@@ -1044,6 +1071,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
     taskid: 5da8fb53-bb53-4995-8487-c4eb10c47dab
@@ -1061,23 +1091,16 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Closed as false positive.
       closeReason:
         simple: False Positive
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      mndadone: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -240,
-          "y": 4335
+          "y": 4465
         }
       }
     note: false
@@ -1085,6 +1108,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
     taskid: 8d976e32-9eb8-449d-8cd2-40331ac1593c
@@ -1102,23 +1128,16 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Closed as duplicate.
       closeReason:
         simple: Duplicate
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      mndadone: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1030,
-          "y": 4335
+          "y": 4465
         }
       }
     note: false
@@ -1126,6 +1145,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
     taskid: de3bc26e-6e15-4e05-895a-d0d5579f36d7
@@ -1146,7 +1168,7 @@ tasks:
       {
         "position": {
           "x": 700,
-          "y": 3390
+          "y": 3520
         }
       }
     note: false
@@ -1154,6 +1176,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: fcbc26e0-1ef3-4cc8-8fbd-7349829031fb
@@ -1185,7 +1210,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3020
+          "y": 3150
         }
       }
     note: false
@@ -1193,6 +1218,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
     taskid: f0c1b9e3-637e-4014-84ee-6cba772837f8
@@ -1228,7 +1256,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 3200
+          "y": 3330
         }
       }
     note: false
@@ -1236,6 +1264,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "54":
     id: "54"
     taskid: 89c274fe-c102-41ea-86b9-066ae7c72f6d
@@ -1244,8 +1275,7 @@ tasks:
       id: 89c274fe-c102-41ea-86b9-066ae7c72f6d
       version: -1
       name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
       script: Cortex XDR - IR|||xdr-get-incident-extra-data
       type: regular
       iscommand: true
@@ -1254,7 +1284,6 @@ tasks:
       '#none#':
       - "40"
     scriptarguments:
-      alerts_limit: {}
       incident_id:
         complex:
           root: inputs.incident_id
@@ -1271,6 +1300,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
     taskid: 14f75080-70ea-4330-8d5f-01566f1d861b
@@ -1279,14 +1311,7 @@ tasks:
       id: 14f75080-70ea-4330-8d5f-01566f1d861b
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection.\
-        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
-        \ provided manually or from outputs by other playbooks. \nWith the received\
-        \ indicators, the playbook leverages data received by PANW products including,\
-        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
-        \ names and users related to the provided indicators.\nThe output provided\
-        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users."
+      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -1388,7 +1413,7 @@ tasks:
       {
         "position": {
           "x": 625,
-          "y": 1920
+          "y": 2050
         }
       }
     note: false
@@ -1396,6 +1421,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "56":
     id: "56"
     taskid: eae7782e-48b0-4544-8e51-25135daa9780
@@ -1404,14 +1432,7 @@ tasks:
       id: eae7782e-48b0-4544-8e51-25135daa9780
       version: -1
       name: Cortex XDR device control violations
-      description: "Queries Cortex XDR for device control violations for the specified\
-        \ hosts, IP address, or XDR endpoint ID. It then communicates via email with\
-        \ the involved users to understand the nature of the incident and if the user\
-        \ connected the device. \nAll the collected data will be displayed in the\
-        \ XDR device control incident layout.\nThis playbook can also be associated\
-        \ with Cortex XDR device control violation job to periodically query and investigate\
-        \ XDR device control violations. In this configuration, the playbook will\
-        \ only communicate with the involved users."
+      description: "Queries Cortex XDR for device control violations for the specified hosts, IP address, or XDR endpoint ID. It then communicates via email with the involved users to understand the nature of the incident and if the user connected the device. \nAll the collected data will be displayed in the XDR device control incident layout.\nThis playbook can also be associated with Cortex XDR device control violation job to periodically query and investigate XDR device control violations. In this configuration, the playbook will only communicate with the involved users."
       playbookName: Cortex XDR device control violations
       type: playbook
       iscommand: false
@@ -1426,8 +1447,6 @@ tasks:
           accessor: endpoint_id
           transformers:
           - operator: uniq
-      Hostname: {}
-      IPAddress: {}
       MessageBody:
         simple: |-
           Hello,
@@ -1455,6 +1474,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "57":
     id: "57"
     taskid: 9e5acab5-1db9-4281-8680-b0271e9a6a25
@@ -1472,7 +1494,6 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
-      action: {}
       incidentId:
         complex:
           root: incident
@@ -1494,6 +1515,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "76":
     id: "76"
     taskid: 2dd761c8-74ce-4a7a-8a0f-89b7e7039618
@@ -1515,7 +1539,7 @@ tasks:
       {
         "position": {
           "x": 625,
-          "y": 1740
+          "y": 1910
         }
       }
     note: false
@@ -1523,6 +1547,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "77":
     id: "77"
     taskid: 5a8723cb-a358-40d6-82c4-e45d5e1d749e
@@ -1541,17 +1568,13 @@ tasks:
       - "41"
     scriptarguments:
       columns:
-        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS
-          actor command line
+        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS actor command line
       context_path:
         simple: DBotFindSimilarIncidents.similarIncident(val.id='#/Details/'+val.id)
       grid_id:
         simple: xdrsimilarincidents
       keys:
         simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.osactorprocesscommandline
-      overwrite: {}
-      sort_by: {}
-      unpack_nested_elements: {}
     separatecontext: false
     view: |-
       {
@@ -1567,6 +1590,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "78":
     id: "78"
     taskid: cd52a989-d59a-4204-831c-60f8724e6a20
@@ -1630,7 +1654,7 @@ tasks:
       '#default#':
       - "20"
       "yes":
-      - "16"
+      - "87"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1808,13 +1832,503 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2830
+          "y": 2960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: a277c60d-77e5-4de2-8df9-50e79c297063
+    type: condition
+    task:
+      id: a277c60d-77e5-4de2-8df9-50e79c297063
+      version: -1
+      name: Is a risky user involved in the incident?
+      description: Checks whether any of the enriched users have a risk score associated to them in XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RiskyUser
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyUser.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 8c4a4a3c-5088-4d79-841d-dd3acdb0cc23
+    type: regular
+    task:
+      id: 8c4a4a3c-5088-4d79-841d-dd3acdb0cc23
+      version: -1
+      name: Save risky users
+      description: Saves the risky users in a new context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      key:
+        simple: UsersWithScore
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyUser
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyUser.score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 80b65fc2-855b-467a-80e5-c100aded319a
+    type: title
+    task:
+      id: 80b65fc2-855b-467a-80e5-c100aded319a
+      version: -1
+      name: Risky User Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+      - "85"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 6d795872-afe4-466b-857b-410a472a5c49
+    type: regular
+    task:
+      id: 6d795872-afe4-466b-857b-410a472a5c49
+      version: -1
+      name: Display risky users table
+      description: Displays the risky users in a grid field in the layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      columns:
+        simple: userid,risklevel,score
+      context_path:
+        simple: UsersWithScore
+      grid_id:
+        simple: xdrriskyusers
+      keys:
+        simple: id,risk_level,score
+      overwrite:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: a01c2b5b-486b-4e96-871f-c056e3cd0d17
+    type: regular
+    task:
+      id: a01c2b5b-486b-4e96-871f-c056e3cd0d17
+      version: -1
+      name: Display number of risky users
+      description: Saves the number of risky users in a field in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      xdrriskyusercount:
+        complex:
+          root: UsersWithScore
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 9e664c1c-e481-42a5-8683-08b5bccf78db
+    type: title
+    task:
+      id: 9e664c1c-e481-42a5-8683-08b5bccf78db
+      version: -1
+      name: Risky Assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: e29dc13e-8700-42c8-8c88-7043af2f4d7e
+    type: title
+    task:
+      id: e29dc13e-8700-42c8-8c88-7043af2f4d7e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1970,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 7745723f-5798-482c-8561-485c6eba1f16
+    type: condition
+    task:
+      id: 7745723f-5798-482c-8561-485c6eba1f16
+      version: -1
+      name: Is a risky host involved in the incident?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RiskyHost
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyHost.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 97fcbe17-365f-4075-880d-d6b656687c11
+    type: regular
+    task:
+      id: 97fcbe17-365f-4075-880d-d6b656687c11
+      version: -1
+      name: Save risky hosts
+      description: Saves the risky hosts in a new context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      key:
+        simple: HostsWithScore
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyHost
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyHost.score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: efd8b305-5e87-40fa-8d66-a2bd6d7f5db2
+    type: title
+    task:
+      id: efd8b305-5e87-40fa-8d66-a2bd6d7f5db2
+      version: -1
+      name: Risky Host Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: edb6f04d-03b3-4045-8ecd-64fa1db82bfa
+    type: regular
+    task:
+      id: edb6f04d-03b3-4045-8ecd-64fa1db82bfa
+      version: -1
+      name: Display risky hosts table
+      description: Displays the risky hosts in a grid field in the layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      columns:
+        simple: hostid,risklevel,score
+      context_path:
+        simple: HostsWithScore
+      grid_id:
+        simple: xdrriskyhosts
+      keys:
+        simple: id,risk_level,score
+      overwrite:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 63225dbb-fc65-42bf-8f39-a88dcb853a1b
+    type: regular
+    task:
+      id: 63225dbb-fc65-42bf-8f39-a88dcb853a1b
+      version: -1
+      name: Display number of risky hosts
+      description: Saves the number of risky hosts in a field in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      xdrriskyhostcount:
+        complex:
+          root: HostsWithScore
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1410,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1838,14 +2352,17 @@ view: |-
       "52_11_#default#": 0.43,
       "52_53_yes": 0.63,
       "53_11_#default#": 0.31,
-      "79_16_yes": 0.1,
-      "79_20_#default#": 0.35
+      "79_20_#default#": 0.35,
+      "81_33_#default#": 0.28,
+      "81_82_yes": 0.41,
+      "88_33_#default#": 0.15,
+      "88_89_yes": 0.42
     },
     "paper": {
       "dimensions": {
-        "height": 5730,
-        "width": 2110,
-        "x": -700,
+        "height": 5890,
+        "width": 3380,
+        "x": -1970,
         "y": -1155
       }
     }
@@ -1863,23 +2380,18 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: This input indicates whether the playbook will link similar incidents.
-    To link similar incidents, specify Yes/No.
+  description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
   playbookInputQuery:
 - key: Hunting
   value:
     simple: "Yes"
   required: false
-  description: This input indicates whether the playbook will hunt for related IOCs.
-    Specify Yes/No.
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: "A comma-separated list of internal IP ranges to check IP addresses\
-    \ against. The list should be provided in CIDR notation. An example of a list\
-    \ \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list\
-    \ is not provided, will use the default list provided in the IsIPInRanges."
+  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
   playbookInputQuery:
 - key: CriticalUsernames
   value:
@@ -1892,38 +2404,28 @@ inputs:
 - key: CriticalHostnames
   value: {}
   required: false
-  description: A comma-separated list of names of critical endpoints in the organization.
-    This will affect the calculated severity of the incident.
+  description: A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident.
   playbookInputQuery:
 - key: CriticalADGroups
   value: {}
   required: false
-  description: A comma-separated list of DN names of critical Active Directory groups. This will affect
-    the severity calculated for this incident.
+  description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
   playbookInputQuery:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the IsInternalHostName script that checks if the
-    detected host names are internal or external if the hosts match the organization's
-    naming convention. For example, the host testpc1 will have the following regex
-    \w{6}\d{1}.
+  description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
   playbookInputQuery:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the IsInternalHostName script
-    that checks if the detected host names are internal or external
-    if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If
-    there is more than one domain, use the | character to separate values such as
-    (paloaltonetworks.com|test.com).
+  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
   playbookInputQuery:
 - key: TimeStamp
   value:
     simple: 10 days
   required: false
-  description: Timestamp in relative date format for query device control events from
-    Cortex XDR.
+  description: Timestamp in relative date format for query device control events from Cortex XDR.
   playbookInputQuery:
 - key: AutoRemediation
   value:
@@ -1969,3 +2471,5 @@ outputs: []
 tests:
 - Test XDR Playbook
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
