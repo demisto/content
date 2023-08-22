@@ -675,11 +675,11 @@ class Client(BaseClient):
                     "value"
                 ]
             if (
-                domain_event["ipCategories"] is not None
-                and domain_event["ipCategories"]["value"] is not None
-                and len(domain_event["ipCategories"]["value"]) > 1
-                and domain_event["actorIpAddress"] is not None
-                and domain_event["actorIpAddress"]["value"] is not None
+                "ipCategories" in domain_event
+                and "value" in domain_event["ipCategories"]
+                and len(domain_event["ipCategories"]["value"]) > 0
+                and "actorIpAddress" in domain_event
+                and "value" in domain_event["actorIpAddress"]
             ):
                 is_private = False
                 for ipCategory in domain_event["ipCategories"]["value"]:
