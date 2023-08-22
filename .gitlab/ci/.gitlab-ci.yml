@@ -52,6 +52,7 @@ variables:
   DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
   OVERRIDE_SDK_REF: ""
+  CONTENT_GITLAB_CI: "true"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml

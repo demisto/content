@@ -57,9 +57,9 @@ stop-running-pipelines:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
-    - section_start "Stop running piplines on current branch"
+    - section_start "Stop running pipelines on current branch"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
-    - section_end "Stop running piplines on current branch"
+    - section_end "Stop running pipelines on current branch"
 
 
 # runs in gitlab for the on-push flow (except for contributors)
@@ -68,6 +68,8 @@ run-unittests-and-lint:
     - .run-unittests-and-lint
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
@@ -113,7 +115,7 @@ validate-content-conf:
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
-    - section_end "Validate content-tesgt-conf Branch Merged"
+    - section_end "Validate content-test-conf Branch Merged"
     - job-done
 
 .generic-prepare-testing-bucket:
@@ -179,7 +181,7 @@ validate-content-conf:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
       fi
     - section_end "Collect Tests"
 
@@ -192,8 +194,9 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
+        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
       fi
+    - section_end "Create Instances for XSOAR"
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
@@ -254,17 +257,28 @@ xpanse-prepare-testing-bucket:
         exit 0
       fi
     - !reference [.ssh-config-setup]
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - section_start "Wait Until Server Ready"
+    - |
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}"
+    - section_end "Wait Until Server Ready"
+    - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
+    - section_end "Copy env results to artifacts folder"
+    - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
+    - section_start "Wait Until Server Ready"
     - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep 900
-
+    - sleep-with-progress 900 30 "Sleeping... " 150
+    - echo "Done sleeping!"
+    - section_end "Wait Until Server Ready"
+    - section_start "Run Tests"
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
@@ -278,12 +292,14 @@ xpanse-prepare-testing-bucket:
       if [[ -f ./Tests/test_playbooks_report.json ]]; then
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
-
+    - section_end "Run Tests"
+    - section_start "Destroy Instances"
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
       fi
-      python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - section_end "Destroy Instances"
     - job-done
     - exit $EXIT_CODE
 
@@ -416,6 +432,7 @@ slack-notify-nightly-build:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    CLOUD_MACHINES_TYPE: "build"
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -435,13 +452,13 @@ slack-notify-nightly-build:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"
 
     - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
     - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
@@ -518,7 +535,6 @@ xsiam_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
@@ -544,7 +560,6 @@ xsoar_ng_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
@@ -558,7 +573,6 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
-  allow_failure: true
 
 
 test-upload-flow:
@@ -573,7 +587,6 @@ test-upload-flow:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
   script:
-    - |
     - section_start "Checks Whether to Trigger a Test Upload"
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
@@ -620,6 +633,22 @@ test-upload-flow:
   script:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
+
+merge-dev-secrets:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  stage: unittests-and-validations
+  script:
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+  allow_failure: true
 
 xsoar_server_master-test_playbooks_results:
   variables:
