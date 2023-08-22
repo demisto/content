@@ -7,7 +7,6 @@ from utils import helper
 
 @pytest.fixture()
 def playbook_tasks_data():
-    print("Playbook YAML file load")
     playbook_data = helper.load_yaml_file(
         "./Packs/CortexAttackSurfaceManagement/Playbooks/Cortex_ASM_-_AWS_Enrichment.yml"
     )
@@ -17,7 +16,6 @@ def playbook_tasks_data():
 
 @pytest.fixture()
 def full_playbook_data():
-    print("Playbook YAML file load")
     playbook_data = helper.load_yaml_file(
         "./Packs/CortexAttackSurfaceManagement/Playbooks/Cortex_ASM_-_AWS_Enrichment.yml"
     )
