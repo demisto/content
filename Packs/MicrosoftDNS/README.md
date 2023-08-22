@@ -29,8 +29,8 @@ When using this pack there are two integrations available for it.
 
 * ***As enrichment, forwarding DNS Audit logs is supported via Winlogbeat***
 
-The first, is via Filebeat for DNS Debug logs.
-The second, is via Winlogbeat for DNS Audit logs.
+- Via Filebeat for DNS Debug logs.
+- Via Winlogbeat for DNS Audit logs.
 
 Follow these steps in order to configure the XDR Collector:
 1. The implementation of the Collector for both of the methods requires to create a [Profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Add-an-XDR-Collector-Profile-for-Windows) for each integration.
