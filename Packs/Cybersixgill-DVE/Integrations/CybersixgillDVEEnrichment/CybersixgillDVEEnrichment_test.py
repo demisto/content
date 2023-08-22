@@ -397,14 +397,14 @@ args = {"cve_id": "CVE-2020-9047"}
 channel_code = "d5cd46c205c20c87006b55a18b106428"
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code, text, reason=None, url=None, method=None, headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
-        self.ok = True if self.status_code == 200 else False
+        self.ok = self.status_code == 200
         self.headers = headers
 
     def json(self):

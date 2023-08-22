@@ -55,7 +55,7 @@ def http_request(method, path, params=None, data=None):
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        return return_error('Could not connect to Symantec MC: {}'.format(str(e)))
+        return return_error(f'Could not connect to Symantec MC: {str(e)}')
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -77,18 +77,18 @@ def http_request(method, path, params=None, data=None):
     except Exception:
         if res.status_code == 204:
             return res
-        return_error('Failed parsing the response from Symantec MC API: {}'.format(res.text))
+        return_error(f'Failed parsing the response from Symantec MC API: {res.text}')
 
 
 def verify_policy_content(content_type, ips, categories, urls):
     if ((content_type == IP_LIST_TYPE and not ips)
             or (content_type == URL_LIST_TYPE and not urls)
             or (content_type == CATEGORY_LIST_TYPE and not categories)):
-        return_error('Incorrect content provided for the type {}'.format(content_type))
+        return_error(f'Incorrect content provided for the type {content_type}')
     if ((content_type == IP_LIST_TYPE and (urls or categories))
             or (content_type == URL_LIST_TYPE and (ips or categories))
             or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
-        return_error('More than one content type was provided for the type {}'.format(content_type))
+        return_error(f'More than one content type was provided for the type {content_type}')
 
 
 def get_policy_uuid(uuid, name):
@@ -986,11 +986,10 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
         if 'urls' in content['content']:
             urls_to_keep = [url for url in content['content']['urls'] if url['url'] not in urls]
             content['content']['urls'] = urls_to_keep
-    elif categories:
-        if 'categories' in content['content']:
-            categories_to_keep = [category for category in content['content']['categories']
-                                  if category['categoryName'] not in categories]
-            content['content']['categories'] = categories_to_keep
+    elif categories and 'categories' in content['content']:
+        categories_to_keep = [category for category in content['content']['categories']
+                              if category['categoryName'] not in categories]
+        content['content']['categories'] = categories_to_keep
 
     body['content'] = content['content']
     http_request('POST', path, data=body)
@@ -1097,16 +1096,15 @@ def update_policy_content_request(uuid, content_type, change_description, schema
                         ip['description'] = content_description
                     if content_enabled:
                         ip['enabled'] = bool(strtobool(content_enabled))
-    elif urls:
-        if 'urls' in content['content']:
-            for url in content['content']['urls']:
+    elif urls and 'urls' in content['content']:
+        for url in content['content']['urls']:
+            found_object_to_update = True
+            if url['url'] in urls:
                 found_object_to_update = True
-                if url['url'] in urls:
-                    found_object_to_update = True
-                    if content_description:
-                        url['description'] = content_description
-                    if content_enabled:
-                        url['enabled'] = bool(strtobool(content_enabled))
+                if content_description:
+                    url['description'] = content_description
+                if content_enabled:
+                    url['enabled'] = bool(strtobool(content_enabled))
 
     if not found_object_to_update:
         raise Exception('Update failed - Could not find object to update.')
