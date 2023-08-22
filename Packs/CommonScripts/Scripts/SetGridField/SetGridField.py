@@ -92,11 +92,14 @@ def dict_entry_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
             value = filter_dict(value, keys_to_choose)
             new_dict[key] = "\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in value.items())
         elif isinstance(value, list):
-            dict_array = []
+            array_to_join = []
             for list_value in value:
-                list_value = filter_dict(list_value, keys_to_choose)
-                dict_array.append("\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in list_value.items()))
-            final_value = "\n\n".join(dict_array)
+                if isinstance(list_value, dict):
+                    list_value = filter_dict(list_value, keys_to_choose)
+                    array_to_join.append("\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in list_value.items()))
+                else:
+                    array_to_join.append(f"\n{list_value}")
+            final_value = "\n\n".join(array_to_join)
             new_dict[key] = final_value
         else:
             new_dict[key] = value
@@ -171,7 +174,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
 def validate_entry_context(context_path: str, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
-            1. List[Dict[str, str/bool/int/float]]
+            1. List[Dict[str, str/bool/int/float,list,dict]]
             2. List[str/bool/int/float]
             3. Dict[str, str/bool/int/float] - for developer it will be in first index of a list.
         - For unpack_nested_elements==True:
@@ -216,16 +219,6 @@ def validate_entry_context(context_path: str, entry_context: Any, keys: List[str
                 break
 
         has_seen_dict = True
-        for key, value in item.items():
-            if key not in keys:
-                continue
-            if value is not None and not isinstance(value, (str, int, float, bool)):
-                demisto.error(f'expected list of dictionaries with simple values, found a complex item with '
-                              f'key {type(key)} type:\t {key}\nproblematic item: {item}')
-                raise ValueError(
-                    f'The context path {context_path} in index {index} - key {key} contains a dict item with a '
-                    f'complex value.\n'
-                    f'The value must be of type: string, number, boolean.')
 
     if not has_seen_dict:
         data_type = 'list'
