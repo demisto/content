@@ -3014,11 +3014,12 @@ class TestBaseClient:
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
 
-    @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     @pytest.mark.parametrize('quote_params, expected_result', [
         (None, 'key=value+with+spaces'),
-        (urllib.parse.quote_plus, 'key=value+with+spaces'),
-        (urllib.parse.quote, 'key=value%20with%20spaces'),
+        pytest.param(urllib.parse.quote_plus, 'key=value+with+spaces',
+                     marks=pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')),
+        pytest.param(urllib.parse.quote, 'key=value%20with%20spaces',
+                     marks=pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')),
     ])
     def test_http_request_quote_params_via(self, quote_params, expected_result, requests_mock):
         mock_request = requests_mock.get('http://example.com/api/v2/', json={})
@@ -9095,4 +9096,3 @@ class TestIsIntegrationCommandExecution:
     def test_problematic_cases(self, mocker, calling_context_mock):
         mocker.patch.object(demisto, 'callingContext', calling_context_mock)
         assert is_integration_command_execution() == True
-        
