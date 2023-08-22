@@ -243,115 +243,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: b641faad-0649-4ebd-8100-aacdbf7088bc
-    type: regular
-    task:
-      id: b641faad-0649-4ebd-8100-aacdbf7088bc
-      version: -1
-      name: Set Endpoint ID
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      key:
-        simple: Endpoints
-      value:
-        simple: '["0cc51a9cd88147e4b70cd83e93ab5814","47bdca96e01b45b38bd9d3a80f2b9dbe","e02ad5e911094a358a271be1c9833284","6aec3d18d2404b3e84da227948583c4e","8b4aecf600f14313b23f7f31ed64b58c","561e3c2320884d979353513cf2fd14f2","98210476acd34d8b877e55b83196da29","ac848acbd7504115b6624c9b1d755000"]'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: ccbfc672-f455-4b1f-84a9-ef435f996473
-    type: regular
-    task:
-      id: ccbfc672-f455-4b1f-84a9-ef435f996473
-      version: -1
-      name: Get Endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-      script: '|||core-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: e2cced3e-9e9a-4a00-82c5-65836495af67
-    type: regular
-    task:
-      id: e2cced3e-9e9a-4a00-82c5-65836495af67
-      version: -1
-      name: Compare Endpoints ID
-      description: Compare  two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      left:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-      right:
-        complex:
-          root: Endpoints
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 93c4740c-74b3-42e2-8e37-3d8630728eeb
@@ -501,7 +392,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -542,8 +433,8 @@ tasks:
         simple: notepad.exe
       endpoint_ids:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
       timeout:
         simple: "500"
     separatecontext: false
@@ -583,8 +474,8 @@ tasks:
     scriptarguments:
       agentid:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -592,6 +483,131 @@ tasks:
         "position": {
           "x": 450,
           "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9f1a846a-1e81-4d52-8481-22e63157545b
+    type: regular
+    task:
+      id: 9f1a846a-1e81-4d52-8481-22e63157545b
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
+    type: condition
+    task:
+      id: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bfb38afa-bea0-45d1-82b3-c01f728ec342
+    type: regular
+    task:
+      id: bfb38afa-bea0-45d1-82b3-c01f728ec342
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 510
         }
       }
     note: false

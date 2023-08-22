@@ -42,115 +42,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: ceefb00d-2c88-422e-8112-aec3886e2a24
-    type: regular
-    task:
-      id: ceefb00d-2c88-422e-8112-aec3886e2a24
-      version: -1
-      name: Set Endpoint ID
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      key:
-        simple: Endpoints
-      value:
-        simple: '["0cc51a9cd88147e4b70cd83e93ab5814","47bdca96e01b45b38bd9d3a80f2b9dbe","e02ad5e911094a358a271be1c9833284","6aec3d18d2404b3e84da227948583c4e","8b4aecf600f14313b23f7f31ed64b58c","561e3c2320884d979353513cf2fd14f2","98210476acd34d8b877e55b83196da29","ac848acbd7504115b6624c9b1d755000"]'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b691b21d-e199-4b0d-813e-d947ea8306f9
-    type: regular
-    task:
-      id: b691b21d-e199-4b0d-813e-d947ea8306f9
-      version: -1
-      name: Get Endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-      script: '|||core-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 3a22a7d4-5a8d-4a24-88bf-a886c9e1e167
-    type: regular
-    task:
-      id: 3a22a7d4-5a8d-4a24-88bf-a886c9e1e167
-      version: -1
-      name: Compare Endpoints ID
-      description: Compare  two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      left:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-      right:
-        complex:
-          root: Endpoints
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: b2edc4a5-9adc-465b-8fda-85f054ce148e
@@ -285,8 +176,8 @@ tasks:
     scriptarguments:
       agentid:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -393,7 +284,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "30"
     scriptarguments:
       all:
         simple: "yes"
@@ -413,470 +304,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: dfbcb172-0004-4920-834b-cc677555849a
-    type: regular
-    task:
-      id: dfbcb172-0004-4920-834b-cc677555849a
-      version: -1
-      name: Remove file from block list
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      hash_list:
-        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: f7344c3e-664f-4823-8760-e8b234902e72
-    type: condition
-    task:
-      id: f7344c3e-664f-4823-8760-e8b234902e72
-      version: -1
-      name: Verify containment action succeed
-      description: Verification of the success of the containment actions.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.blocklist
-                accessor: added_hashes
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentFields
-                accessor: severity
-            iscontext: true
-          right:
-            value:
-              simple: high
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: BlockedFilesHash
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: IsolatedEndpointsID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: ab6a8276-7b28-48d9-8408-52e2185521e8
-    type: regular
-    task:
-      id: ab6a8276-7b28-48d9-8408-52e2185521e8
-      version: -1
-      name: Make test fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: The test playbook has failed. Please check the reason why the file hash is not being added to the block list.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 5400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 3eda8324-7eda-409f-8aac-1bb0bbe3e58a
-    type: regular
-    task:
-      id: 3eda8324-7eda-409f-8aac-1bb0bbe3e58a
-      version: -1
-      name: Remove file from block list
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      hash_list:
-        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 49ac1d43-1eae-444c-8210-83d78380dc40
-    type: condition
-    task:
-      id: 49ac1d43-1eae-444c-8210-83d78380dc40
-      version: -1
-      name: Verify containment action succeed
-      description: Verification of the success of the containment actions.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.blocklist
-                accessor: added_hashes
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentFields
-                accessor: severity
-            iscontext: true
-          right:
-            value:
-              simple: high
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: BlockedFilesHash
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: IsolatedEndpointsID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 7cd33346-18d0-403b-84ce-92b7e0b0a311
-    type: regular
-    task:
-      id: 7cd33346-18d0-403b-84ce-92b7e0b0a311
-      version: -1
-      name: Make test fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: The test playbook has failed. Please check the reason why the file hash is not being added to the block list.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 5400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 4ad740f5-84b8-473b-8131-5fb8077caa75
-    type: regular
-    task:
-      id: 4ad740f5-84b8-473b-8131-5fb8077caa75
-      version: -1
-      name: Remove file from block list
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      hash_list:
-        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: b6bbc3c8-e247-4cb0-89db-b8531500cdbe
-    type: condition
-    task:
-      id: b6bbc3c8-e247-4cb0-89db-b8531500cdbe
-      version: -1
-      name: Verify containment action succeed
-      description: Verification of the success of the containment actions.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.blocklist
-                accessor: added_hashes
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentFields
-                accessor: severity
-            iscontext: true
-          right:
-            value:
-              simple: high
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: BlockedFilesHash
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: parentIncidentContext
-                accessor: IsolatedEndpointsID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: ListCompare
-                accessor: Both
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: b862efb9-6dc7-4737-88a5-977a53ca5c71
-    type: regular
-    task:
-      id: b862efb9-6dc7-4737-88a5-977a53ca5c71
-      version: -1
-      name: Make test fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: The test playbook has failed. Please check the reason why the file hash is not being added to the block list.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 5400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 0ad0f0b6-2017-405c-8c4a-04256d7cc88d
-    type: regular
-    task:
-      id: 0ad0f0b6-2017-405c-8c4a-04256d7cc88d
-      version: -1
-      name: Remove file from block list
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      hash_list:
-        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 5040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ab8a44c3-3e51-46e9-82ef-4b9dc61efe03
+    taskid: 7e061a4d-2f90-4324-86c1-45c53795ada0
     type: condition
     task:
-      id: ab8a44c3-3e51-46e9-82ef-4b9dc61efe03
+      id: 7e061a4d-2f90-4324-86c1-45c53795ada0
       version: -1
       name: Verify containment action succeed
       description: Verification of the success of the containment actions.
@@ -928,8 +361,8 @@ tasks:
           right:
             value:
               complex:
-                root: ListCompare
-                accessor: Both
+                root: Core.Endpoint
+                accessor: endpoint_id
             iscontext: true
           ignorecase: true
     continueonerrortype: ""
@@ -949,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: a6ecf5ee-83c7-447e-82de-c7ced7fe6d56
+    taskid: 64943186-96ad-4343-88df-33d5e17302a9
     type: title
     task:
-      id: a6ecf5ee-83c7-447e-82de-c7ced7fe6d56
+      id: 64943186-96ad-4343-88df-33d5e17302a9
       version: -1
       name: Done
       type: title
@@ -977,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 96d3311e-dd27-403d-85f6-a129923df14c
+    taskid: 225ac8e8-d2e5-49b4-852c-ab20eab9bd84
     type: regular
     task:
-      id: 96d3311e-dd27-403d-85f6-a129923df14c
+      id: 225ac8e8-d2e5-49b4-852c-ab20eab9bd84
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -1001,6 +434,131 @@ tasks:
         "position": {
           "x": 760,
           "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6f49b1e8-7311-47e2-8fb0-26d54450e7f2
+    type: regular
+    task:
+      id: 6f49b1e8-7311-47e2-8fb0-26d54450e7f2
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ca8f5ab3-0131-4082-8850-2b5271d9917a
+    type: condition
+    task:
+      id: ca8f5ab3-0131-4082-8850-2b5271d9917a
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 476e828c-6813-4e9e-8853-d0124a71aff3
+    type: regular
+    task:
+      id: 476e828c-6813-4e9e-8853-d0124a71aff3
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 730
         }
       }
     note: false

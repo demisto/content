@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -3120
+          "y": -2960
         }
       }
     note: false
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 560
+          "y": 390
         }
       }
     note: false
@@ -169,44 +169,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "152":
-    id: "152"
-    taskid: 7857b22f-7484-45fc-898b-71900a506143
-    type: regular
-    task:
-      id: 7857b22f-7484-45fc-898b-71900a506143
-      version: -1
-      name: Set Ip
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "151"
-    scriptarguments:
-      key:
-        simple: IpAddress
-      value:
-        simple: 1.1.1.1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -1520
+          "y": -1370
         }
       }
     note: false
@@ -231,12 +194,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "156"
+      - "155"
     scriptarguments:
       endpoint_id:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -309,8 +272,8 @@ tasks:
     scriptarguments:
       endpoint_id:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
       file_hash:
         simple: 724e1e4079191f086c3a2bcc15133b4309ce5125dbb31c5443262599ca992601
     separatecontext: false
@@ -319,42 +282,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 25
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "156":
-    id: "156"
-    taskid: bff88392-c8fa-4ecc-89cb-2aa996fe1fae
-    type: regular
-    task:
-      id: bff88392-c8fa-4ecc-89cb-2aa996fe1fae
-      version: -1
-      name: Remove file from block list
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "155"
-    scriptarguments:
-      hash_list:
-        simple: 724e1e4079191f086c3a2bcc15133b4309ce5125dbb31c5443262599ca992601
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -155
+          "y": -145
         }
       }
     note: false
@@ -419,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 210
+          "y": 40
         }
       }
     note: false
@@ -454,7 +382,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 390
+          "y": 220
         }
       }
     note: false
@@ -479,21 +407,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "152"
+      - "151"
     scriptarguments:
       commands:
         simple: echo Hello >> "C:\Users\administrator\Downloads\fortestplaybook.txt"
       endpoint_ids:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 60,
-          "y": -1700
+          "y": -1540
         }
       }
     note: false
@@ -524,7 +452,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2980
+          "y": -2820
         }
       }
     note: false
@@ -555,7 +483,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2530
+          "y": -2370
         }
       }
     note: false
@@ -596,8 +524,6 @@ tasks:
         simple: Quarantine
       HostContainment:
         simple: "True"
-      IAMUserDomain:
-        simple: '@demisto.com'
       UserContainment:
         simple: "True"
       UserVerification:
@@ -613,7 +539,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2690
+          "y": -2530
         }
       }
     note: false
@@ -653,8 +579,8 @@ tasks:
           root: Domain
       EndpointID:
         complex:
-          root: ListCompare
-          accessor: Both
+          root: Core.Endpoint
+          accessor: endpoint_id
       FileContainment:
         simple: "True"
       FileHash:
@@ -667,16 +593,12 @@ tasks:
         simple: Quarantine
       HostContainment:
         simple: "True"
-      IAMUserDomain:
-        simple: '@demisto.com'
       IP:
         complex:
           root: IpAddress
       UserContainment:
         simple: "True"
       UserVerification:
-        simple: "False"
-      UserVerificationDisableUser:
         simple: "False"
       Username:
         complex:
@@ -739,27 +661,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "170":
-    id: "170"
-    taskid: b4d84cbf-1ea2-441d-856c-9c9361d7cdca
+  "171":
+    id: "171"
+    taskid: b299c08e-7f07-4684-860f-507bc407b48d
     type: regular
     task:
-      id: b4d84cbf-1ea2-441d-856c-9c9361d7cdca
+      id: b299c08e-7f07-4684-860f-507bc407b48d
       version: -1
-      name: Set Endpoint ID
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "172"
+      - "175"
     scriptarguments:
-      key:
-        simple: Endpoints
-      value:
-        simple: '["0cc51a9cd88147e4b70cd83e93ab5814","47bdca96e01b45b38bd9d3a80f2b9dbe","e02ad5e911094a358a271be1c9833284","6aec3d18d2404b3e84da227948583c4e","8b4aecf600f14313b23f7f31ed64b58c","561e3c2320884d979353513cf2fd14f2","98210476acd34d8b877e55b83196da29","ac848acbd7504115b6624c9b1d755000"]'
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -776,84 +698,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "171":
-    id: "171"
-    taskid: e2262909-c27d-4f11-8961-7969c46744eb
-    type: regular
-    task:
-      id: e2262909-c27d-4f11-8961-7969c46744eb
-      version: -1
-      name: Get Endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-      script: '|||core-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "170"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -2230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "172":
-    id: "172"
-    taskid: f2511f63-68dc-43dc-85f9-c5050e042267
-    type: regular
-    task:
-      id: f2511f63-68dc-43dc-85f9-c5050e042267
-      version: -1
-      name: Compare Endpoints ID
-      description: Compare  two lists and put the differences in context.
-      scriptName: CompareLists
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "162"
-    scriptarguments:
-      left:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-      right:
-        complex:
-          root: Endpoints
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -1880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "173":
     id: "173"
-    taskid: bca7cac2-b385-471d-8c03-945157c37a80
+    taskid: c3f84939-f2b7-4280-86d7-219a0ff3559e
     type: regular
     task:
-      id: bca7cac2-b385-471d-8c03-945157c37a80
+      id: c3f84939-f2b7-4280-86d7-219a0ff3559e
       version: -1
       name: Delete all context
       description: |-
@@ -878,7 +728,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2850
+          "y": -2690
         }
       }
     note: false
@@ -890,10 +740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "174":
     id: "174"
-    taskid: ed70316b-8f85-4a55-88a5-e432434281fc
+    taskid: 49e45f3e-a16f-46ba-8b24-fbb633eb3dcb
     type: regular
     task:
-      id: ed70316b-8f85-4a55-88a5-e432434281fc
+      id: 49e45f3e-a16f-46ba-8b24-fbb633eb3dcb
       version: -1
       name: Delete all context
       description: |-
@@ -918,7 +768,95 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2400
+          "y": -2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 9a81232f-f038-4c09-8e7f-60db32302720
+    type: condition
+    task:
+      id: 9a81232f-f038-4c09-8e7f-60db32302720
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "176"
+      "yes":
+      - "162"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: b10d731b-589c-45eb-8007-65b52776b9ef
+    type: regular
+    task:
+      id: b10d731b-589c-45eb-8007-65b52776b9ef
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": -1710
         }
       }
     note: false
@@ -931,14 +869,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "157_54_yes": 0.47
+      "157_54_yes": 0.47,
+      "175_162_yes": 0.43
     },
     "paper": {
       "dimensions": {
-        "height": 3745,
-        "width": 630,
+        "height": 3415,
+        "width": 640,
         "x": 60,
-        "y": -3120
+        "y": -2960
       }
     }
   }
