@@ -38,6 +38,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -161,6 +164,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -336,6 +346,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -399,6 +418,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -522,6 +544,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -697,6 +726,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -760,6 +798,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -883,6 +924,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -1058,6 +1106,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -1121,6 +1178,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1244,6 +1304,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -1419,6 +1486,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -1482,6 +1558,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1605,6 +1684,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -1780,6 +1866,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -1838,6 +1933,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1964,6 +2062,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -2137,6 +2242,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -2193,6 +2307,9 @@
 							}
 						]
 					}
+				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
 				},
 				"Last Modified By": {
 					"complex": {
@@ -2309,6 +2426,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -2481,6 +2605,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
