@@ -1,0 +1,29 @@
+{
+    "app": {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+    },
+    "submitter": {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      "type": "USER"
+    },
+    "completion_time": "2021-08-03T14:07:37",
+    "scan_config": {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+    },
+    "submit_time": "2021-08-03T14:07:37",
+    "scan_type": "VALIDATION",
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ],
+    "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    "failure_reason": "CANCELED",
+    "validation": {
+      "parent_scan_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    },
+    "status": "PENDING"
+  }

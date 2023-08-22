@@ -1,0 +1,805 @@
+category: Utilities
+commonfields:
+  id: rapid7appsec
+  version: -1
+configuration:
+- defaultvalue: https://xxx.api.insight.rapid7.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: API Key
+  name: api_key
+  required: true
+  type: 9
+description: Rapid7 AppSec integration allows the management of applications vulnerabilities
+  and scans.
+display: Rapid7AppSec
+name: rapid7appsec
+script:
+  commands:
+  - arguments:
+    - description: The ID of the Vulnerability (dependencies - use app-sec-vulnerability-list
+        to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    - auto: PREDEFINED
+      description: The severity of the Vulnerability.
+      isArray: false
+      name: severity
+      predefined:
+      - Safe
+      - Informational
+      - Low
+      - Medium
+      - High
+      required: false
+    - auto: PREDEFINED
+      description: The status of the Vulnerability.
+      isArray: false
+      name: status
+      predefined:
+      - Unreviewed
+      - False Positive
+      - Verified
+      - Ignored
+      - Remediated
+      - Duplicate
+      required: false
+    description: Update the severity or the status of the vulnerability.
+    execution: false
+    name: app-sec-vulnerability-update
+  - arguments:
+    - description: The vulnerability ID to get. In case of using this argument, the
+        pagination arguments not relevant.
+      isArray: false
+      name: vulnerability_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List vulnerabilities. Vulnerabilities are aspects of your app that
+      can make it susceptible to attackers.
+    execution: false
+    name: app-sec-vulnerability-list
+    outputs:
+    - contextPath: Rapid7AppSec.Vulnerability.id
+      description: The ID of the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.app_id
+      description: The ID of the app of the vulnerability (dependencies - use app-sec-app-list
+        to get more information about the app).
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.root_cause_url
+      description: 'The vulnerability root cause URL. For example: http://test.test..com/test'
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.root_cause_method
+      description: 'The vulnerability root cause method. For example: GET.'
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.root_cause_parameter
+      description: 'The vulnerability root cause parameter. For example: password.'
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.severity
+      description: The severity of the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.status
+      description: The status of the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.first_discovered
+      description: First discover time.
+      type: Date
+    - contextPath: Rapid7AppSec.Vulnerability.last_discovered
+      description: Last discover time.
+      type: Date
+    - contextPath: Rapid7AppSec.Vulnerability.newly_discovered
+      description: Whether the vulnerability is newly discovered.
+      type: Boolean
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.id
+      description: The ID of the vulnerability variance.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.original_exchange.id
+      description: The ID of the original exchange. Original exchange contains the
+        request and the response of the variance.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.original_exchange.request
+      description: The request details.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.original_exchange.response
+      description: The response details.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.module_id
+      description: The module ID. Module ID is a reference to the Model Type that
+        related to the vulnerability (dependencies - use app-sec-module-list to get
+        more information about the module).
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.attack_id
+      description: The attack ID. The attack ID is a reference to the attack that
+        related to the Model Type (dependencies - use app-sec-attack-get or app-sec-attack-documentation-get
+        to get more information about the attack).
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.message
+      description: The attack variance message.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.proof
+      description: The attack variance proof.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.Variances.proof_description
+      description: The attack variance proof description.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.vector_string
+      description: A compressed textual representation of the values used to derive
+        the CVSS score.
+      type: String
+    - contextPath: Rapid7AppSec.Vulnerability.vulnerability_score
+      description: The vulnerability CVSS Score.
+      type: Number
+  - arguments:
+    - description: The ID of the Vulnerability to show history (dependencies - use
+        app-sec-vulnerability-list to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    description: List the history of changes for a vulnerability.
+    execution: false
+    name: app-sec-vulnerability-history-list
+    outputs:
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.vulnerability_id
+      description: The ID of the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.id
+      description: The ID of the Vulnerability History.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.create_time
+      description: The vulnerability created time.
+      type: Date
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.source_type
+      description: The vulnerability source type.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.source_id
+      description: The ID of the vulnerability source.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.Changes.field
+      description: The vulnerability change's field.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.Changes.previous_value
+      description: The vulnerability previous value.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityHistory.Changes.new_value
+      description: The vulnerability new value.
+      type: String
+  - arguments:
+    - description: The ID of the Vulnerability to create a comment (dependencies -
+        use app-sec-vulnerability-list to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    - description: The content of the Vulnerability Comment.
+      isArray: false
+      name: comment_content
+      required: true
+    description: Create a new Vulnerability Comment. A vulnerability comment is a
+      resource that allows users to add context to the vulnerability.
+    execution: false
+    name: app-sec-vulnerability-comment-create
+  - arguments:
+    - description: The ID of the Vulnerability to update a comment (dependencies -
+        use app-sec-vulnerability-list to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    - description: The ID of the Comment to update (dependencies - use app-sec-vulnerability-comment-list
+        to get all comment IDs).
+      isArray: false
+      name: comment_id
+      required: true
+    - description: The content of the Vulnerability Comment.
+      isArray: false
+      name: comment_content
+      required: true
+    description: Update an existing vulnerability comment.
+    execution: false
+    name: app-sec-vulnerability-comment-update
+  - arguments:
+    - description: The ID of the Vulnerability to delete a comment (dependencies -
+        use app-sec-vulnerability-list to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    - description: The ID of the Comment to delete (dependencies - use app-sec-vulnerability-comment-list
+        to get all comment IDs).
+      isArray: false
+      name: comment_id
+      required: true
+    description: Delete an existing vulnerability comment.
+    execution: false
+    name: app-sec-vulnerability-comment-delete
+  - arguments:
+    - description: The ID of the Vulnerability to get it comments (dependencies -
+        use app-sec-vulnerability-list to get all vulnerability IDs).
+      isArray: false
+      name: vulnerability_id
+      required: true
+    - description: The ID of the Comment to get (dependencies - use app-sec-vulnerability-comment-list
+        to get all vulnerability comment IDs).
+      isArray: false
+      name: comment_id
+      required: false
+    description: List vulnerabilities comments.
+    execution: false
+    name: app-sec-vulnerability-comment-list
+    outputs:
+    - contextPath: Rapid7AppSec.VulnerabilityComment.vulnerability_id
+      description: The ID of the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityComment.id
+      description: The ID of the comment.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityComment.author_id
+      description: 'The ID of the author that created the comment. '
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityComment.last_update_author_id
+      description: 'The ID of the last updated author of the comment. '
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityComment.content
+      description: The comment content attached to the vulnerability.
+      type: String
+    - contextPath: Rapid7AppSec.VulnerabilityComment.create_time
+      description: Comment created time.
+      type: Date
+    - contextPath: Rapid7AppSec.VulnerabilityComment.update_time
+      description: Comment updated time.
+      type: Date
+  - arguments:
+    - description: The ID of the module of the attack (dependencies - use app-sec-vulnerability-list
+        in order to get the module ID of vulnerability).
+      isArray: false
+      name: module_id
+      required: true
+    - description: The ID of the attack (dependencies - use app-sec-vulnerability-list
+        in order to get the attack ID of vulnerability).
+      isArray: false
+      name: attack_id
+      required: true
+    description: 'Get the metadata of an attack. AppSec can attempt multiple variations
+      of the same attack on a URL to ensure the security of your applications against
+      a variety of attacks. '
+    execution: false
+    name: app-sec-attack-get
+    outputs:
+    - contextPath: Rapid7AppSec.Attack.id
+      description: The ID of the attack.
+      type: String
+    - contextPath: Rapid7AppSec.Attack.module_id
+      description: The ID of the attack module.
+      type: String
+    - contextPath: Rapid7AppSec.Attack.type
+      description: The type of the attack.
+      type: String
+    - contextPath: Rapid7AppSec.Attack.class
+      description: The class of the attack.
+      type: String
+    - contextPath: Rapid7AppSec.Attack.description
+      description: Description about the attack.
+      type: String
+  - arguments:
+    - description: The ID of the module of the attack (dependencies - use app-sec-vulnerability-list
+        in order to get the module ID of vulnerability).
+      isArray: false
+      name: module_id
+      required: true
+    - description: The ID of the attack (dependencies - use app-sec-vulnerability-list
+        in order to get the attack ID of vulnerability).
+      isArray: false
+      name: attack_id
+      required: true
+    description: Get the documentation of an attack. The documentation contains the
+      references of the attack, description about the attack and recommendations for
+      handling it.
+    execution: false
+    name: app-sec-attack-documentation-get
+    outputs:
+    - contextPath: Rapid7AppSec.AttackDocumentation.id
+      description: The ID of the attack.
+      type: String
+    - contextPath: Rapid7AppSec.Attack.module_id
+      description: The ID of the attack module.
+      type: String
+    - contextPath: Rapid7AppSec.AttackDocumentation.references
+      description: The attack reference type and link.
+      type: String
+    - contextPath: Rapid7AppSec.AttackDocumentation.description
+      description: The attack documentation description.
+      type: String
+    - contextPath: Rapid7AppSec.AttackDocumentation.recommendation
+      description: The attack documentation recommendation.
+      type: String
+  - arguments:
+    - description: The ID of the scan configuration (dependencies - use app-sec-scan-config-list
+        to get all scan config IDs).
+      isArray: false
+      name: scan_config_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Regular
+      description: The type of the scan. Incremental scans reference the crawl map
+        of the previous scan to identify and attack only new and updated code. Validation/
+        Verification scans automatically change the vulnerability status depending
+        on whether the vulnerability was found, not found, or unknown when run against
+        the parent_scan_id. Regular scans are designed to crawl all URLs listed in
+        the scan config and provide in-depth results that are relevant to your needs.
+      isArray: false
+      name: scan_type
+      predefined:
+      - Regular
+      - Verification
+      - Incremental
+      - Validation
+      required: false
+    - description: The ID of the parent scan. Relevant when scant_type=Validation/
+        Verification. The parent scan ID is the scan that will be updated (In case
+        vulnerability statuses has changed) after submitting the scan. (dependencies
+        - use app-sec-scan-list to get all scan IDs).
+      isArray: false
+      name: parent_scan_id
+      required: false
+    description: Submit a new Scan. A scan encapsulates all the information for a
+      single execution of the criteria defined in the provided Scan Config.
+    execution: false
+    name: app-sec-scan-submit
+  - arguments:
+    - description: The scan ID to get the action (dependencies - use app-sec-scan-list
+        to get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    description: 'Get any current scan action. Scan actions values are: "PAUSE", "RESUME",
+      "STOP", "AUTHENTICATE", and "CANCEL". Relevant when Scan is RUNNING and when scan is on action (Scan is on action
+      when moving between statuses. For example: after submitting new action,
+      the scan has an action before the new status is updated).'
+    execution: false
+    name: app-sec-scan-action-get
+    outputs:
+    - contextPath: Rapid7AppSec.Scan.id
+      description: The ID of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.Scan.action
+      description: 'The scan action. Scan actions values are: "PAUSE", "RESUME", "STOP",
+        "AUTHENTICATE", and "CANCEL"'
+      type: String
+  - arguments:
+    - description: The scan ID to submit the action (dependencies - use app-sec-scan-list
+        to get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    - auto: PREDEFINED
+      description: The action to submit.
+      isArray: false
+      name: action
+      predefined:
+      - Pause
+      - Resume
+      - Stop
+      - Authenticate
+      - Cancel
+      required: true
+    description: "Submit a new scan action. \u201CScan actions values are: \"PAUSE\"\
+      , \"RESUME\", \"STOP\", \"AUTHENTICATE\", and \"CANCEL\". Relevant when Scan\
+      \ status is RUNNING."
+    execution: false
+    name: app-sec-scan-action-submit
+  - arguments:
+    - description: The scan ID to delete (dependencies - use app-sec-scan-list to
+        get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    description: Delete a scan. The scan must be FAILED or marked as FutureObsolete
+      to be deleted.
+    execution: false
+    name: app-sec-scan-delete
+  - arguments:
+    - description: The scan ID to get. In case of using this argument, the pagination
+        arguments not relevant.
+      isArray: false
+      name: scan_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List scans. Scans attack the URLs in your app to identify behaviors
+      that could be exploited by attackers. The specific attack types, URLs, and many
+      other options are set in the scan configs.
+    execution: false
+    name: app-sec-scan-list
+    outputs:
+    - contextPath: Rapid7AppSec.Scan.id
+      description: The ID of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.Scan.app_id
+      description: The ID of the app that related to the scan.
+      type: String
+    - contextPath: Rapid7AppSec.Scan.scan_config_id
+      description: The ID of the scan configuration.
+      type: String
+    - contextPath: Rapid7AppSec.Scan.submitter_type
+      description: 'The type of the submitter of the scan. The values are: USER or
+        ORGANIZATION.'
+      type: String
+    - contextPath: Rapid7AppSec.Scan.submitter_id
+      description: The ID of the submitter of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.Scan.submit_time
+      description: The submit time.
+      type: Date
+    - contextPath: Rapid7AppSec.Scan.completion_time
+      description: The completion time.
+      type: Date
+    - contextPath: Rapid7AppSec.Scan.status
+      description: 'The scan status. For example: COMPLETE or FAILED.'
+      type: String
+    - contextPath: Rapid7AppSec.Scan.failure_reason
+      description: The failure reason (In case the scan was failed).
+      type: String
+    - contextPath: Rapid7AppSec.Scan.scan_type
+      description: 'The scan type. The values are: REGULAR, VERIFICATION, INCREMENTAL,
+        VALIDATION.'
+      type: String
+  - arguments:
+    - description: The scan ID to get the engine events (dependencies - use app-sec-scan-list
+        to get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    description: List the engine events from a Scan. These logs typically capture
+      specific events that occur during the scanning process.
+    execution: false
+    name: app-sec-scan-engine-event-list
+    outputs:
+    - contextPath: Rapid7AppSec.EngineEvent.scan_id
+      description: The ID of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.EngineEvent.Event.time
+      description: The time of the event.
+      type: Date
+    - contextPath: Rapid7AppSec.EngineEvent.Event.event
+      description: Description about the event.
+      type: String
+  - arguments:
+    - description: The scan ID to get the platform events (dependencies - use app-sec-scan-list
+        to get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    description: List the platform events from a Scan. Platform logs are broader in
+      scope and usually cover various activities and events related to the platform
+      hosting the security scanning tool.
+    execution: false
+    name: app-sec-scan-platform-event-list
+    outputs:
+    - contextPath: Rapid7AppSec.PlatformEvent.scan_id
+      description: The ID of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.PlatformEvent.Event.time
+      description: The time of the event.
+      type: Date
+    - contextPath: Rapid7AppSec.PlatformEvent.Event.event
+      description: Description about the event.
+      type: String
+  - arguments:
+    - description: The scan ID to get the platform events (dependencies - use app-sec-scan-list
+        to get all scan IDs).
+      isArray: false
+      name: scan_id
+      required: true
+    description: 'Get real-time details of the execution of a Scan (for example: Coverage,
+      Attack, and Network details).'
+    execution: false
+    name: app-sec-scan-execution-details-get
+    outputs:
+    - contextPath: Rapid7AppSec.ExecutionDetail.id
+      description: The ID of the scan.
+      type: String
+    - contextPath: Rapid7AppSec.ExecutionDetail.logged_in
+      description: Whether the scan succeeded to log in to the app (in case the scan
+        should log in).
+      type: Boolean
+    - contextPath: Rapid7AppSec.ExecutionDetail.links_in_queue
+      description: The number of links in queue.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.links_crawled
+      description: The number of links crawled.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.attacks_in_queue
+      description: The number of attacks in queue.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.attacked
+      description: The number of attacks attempted.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.vulnerable
+      description: The number of vulnerabilities.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.requests
+      description: The number of network requests.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.failed_requests
+      description: The number of failed network requests.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.network_speed
+      description: The network speed.
+      type: Number
+    - contextPath: Rapid7AppSec.ExecutionDetail.drip_delay
+      description: The the delay enforced (in milliseconds) between requests to not
+        overload a target web server.
+      type: Number
+  - arguments:
+    - description: The scan config ID to get. In case of using this argument, the
+        pagination arguments not relevant.
+      isArray: false
+      name: scan_config_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List scan configs. A Scan Config defines all the necessary information
+      required to perform a scan of an app.  Mainly used to submit scans.
+    execution: false
+    name: app-sec-scan-config-list
+    outputs:
+    - contextPath: Rapid7AppSec.ScanConfig.id
+      description: The ID of the scan config.
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.name
+      description: The name of the scan config.
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.app_id
+      description: The ID of the app that related to the scan config (dependencies
+        - use app-sec-app-list to get all app IDs).
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.attack_template_id
+      description: 'The ID of the attack template that related to the scan config
+        (dependencies - use app-sec-attack-template-list to get more information about
+        the attack template). '
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.incremental
+      description: Whether incremental scanning is enabled.
+      type: Boolean
+    - contextPath: Rapid7AppSec.ScanConfig.assignment_type
+      description: 'The type of the assignment. For example: ENGINE_GROUP.'
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.assignment_id
+      description: 'The ID of the assignment (Supported for On-Premise engines) (dependencies
+        - use app-sec-engine-group-list to get more information about the assignment
+        ID). '
+      type: String
+    - contextPath: Rapid7AppSec.ScanConfig.assignment_environment
+      description: The environment of the assignment. Values can be CLOUD and ON_PREMISE.
+      type: String
+  - arguments:
+    - description: The app ID to get. In case of using this argument, the pagination
+        arguments not relevant.
+      isArray: false
+      name: app_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List apps. An App owns Scan Configs, Schedules, Scans, and Vulnerabilities.  Mainly
+      used to understand vulnerabilities and scan config outputs.
+    execution: false
+    name: app-sec-app-list
+    outputs:
+    - contextPath: Rapid7AppSec.App.id
+      description: The ID of the app.
+      type: String
+    - contextPath: Rapid7AppSec.App.name
+      description: The name of the app.
+      type: String
+  - arguments:
+    - description: The module ID to get.
+      isArray: false
+      name: module_id
+      required: false
+    description: List modules. Mainly used to understand vulnerabilities outputs.
+    execution: false
+    name: app-sec-module-list
+    outputs:
+    - contextPath: Rapid7AppSec.Module.id
+      description: The ID of the module.
+      type: String
+    - contextPath: Rapid7AppSec.Module.name
+      description: The name of the module.
+      type: String
+    - contextPath: Rapid7AppSec.Module.description
+      description: Description about the module.
+      type: String
+  - arguments:
+    - description: The attack template ID to get. In case of using this argument,
+        the pagination arguments not relevant.
+      isArray: false
+      name: attack_template_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List attack templates. An Attack Template describes if and how Attacks
+      should be executed during the execution of a Scan. Mainly used to understand
+      the scan config outputs.
+    execution: false
+    name: app-sec-attack-template-list
+    outputs:
+    - contextPath: Rapid7AppSec.AttackTemplate.id
+      description: The ID of the module.
+      type: String
+    - contextPath: Rapid7AppSec.AttackTemplate.name
+      description: The name of the module.
+      type: String
+    - contextPath: Rapid7AppSec.AttackTemplate.system_defined
+      description: Whether the attack templated defined by system.
+      type: String
+    - contextPath: Rapid7AppSec.AttackTemplate.browser_encoding_enabled
+      description: A flag that is used to enforce browser encoding on all attacks.
+      type: String
+    - contextPath: Rapid7AppSec.AttackTemplate.attack_prioritization
+      description: 'The Attack Prioritization type. The values are: SEQUENTIAL, SMART,
+        and RANDOMIZED"'
+      type: String
+    - contextPath: Rapid7AppSec.AttackTemplate.advanced_attacks_enabled
+      description: A flag to enable advanced Attacks.
+      type: String
+  - arguments:
+    - description: The engine ID to get. In case of using this argument, the pagination
+        arguments not relevant.
+      isArray: false
+      name: engine_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List engines. An Engine encapsulates the state and high-level attributes
+      of the components which may be installed and running on a specific On-Premise
+      host.
+    execution: false
+    name: app-sec-engine-list
+    outputs:
+    - contextPath: Rapid7AppSec.Engine.id
+      description: The ID of the engine.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.name
+      description: The name of the engine.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.engine_group_id
+      description: The ID of the engine group.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.failure_reason
+      description: Failure reason (In case it failed).
+      type: String
+    - contextPath: Rapid7AppSec.Engine.status
+      description: The engine status.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.auto_upgrade
+      description: Whether the engine is auto upgraded.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.latest_version
+      description: Whether the engine has the latest version.
+      type: String
+    - contextPath: Rapid7AppSec.Engine.upgradeable
+      description: Whether the engine is upgradeable.
+      type: String
+  - arguments:
+    - description: The engine group ID to get. In case of using this argument, the
+        pagination arguments not relevant.
+      isArray: false
+      name: engine_group_id
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: List engine groups. An Engine Group is a resource which defines a
+      container for a logical grouping of Engines and therefore the purpose of assigning
+      Scans to one of those Engines. Mainly used to understand the scan config outputs.
+    execution: false
+    name: app-sec-engine-group-list
+    outputs:
+    - contextPath: Rapid7AppSec.EngineGroup.id
+      description: The ID of the engine group.
+      type: String
+    - contextPath: Rapid7AppSec.EngineGroup.name
+      description: The name of the engine group.
+      type: String
+    - contextPath: Rapid7AppSec.EngineGroup.description
+      description: Description about the engine group.
+      type: String
+  dockerimage: demisto/python3:3.10.12.68714
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests

@@ -1,0 +1,13 @@
+{
+    "name": "string",
+    "description": "string",
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ],
+    "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+  }
