@@ -3873,12 +3873,12 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     def _error_missing_license(e: DemistoException) -> None:
         if (
                 e is not None
-                and e.res
+                and e.res is not None
                 and e.res.status_code == 500
                 and 'No identity threat' in str(e)
                 and "An error occurred while processing XDR public API" in e.message
         ):
-            return_warning(f'Please confirm the Identity Threat Module is enabled. Full error message: {e}')
+            return_warning(f'Please confirm the Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
         case "user":

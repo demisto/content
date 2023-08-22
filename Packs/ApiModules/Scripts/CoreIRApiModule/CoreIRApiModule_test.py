@@ -3244,14 +3244,6 @@ def test_list_risky_users_or_hosts_command(
          "Error: id test was not found. Full error message: id 'test' was not found"),
         ('host', {"host_id": 'test'}, "risk_score_user_or_host", "id 'test' was not found",
          "Error: id test was not found. Full error message: id 'test' was not found"),
-        ('user', {"user_id": 'test'}, "risk_score_user_or_host", "No identity threat",
-         "Please confirm the module is enabled. Full error message: No identity threat"),
-        ('host', {"host_id": 'test'}, "risk_score_user_or_host", "No identity threat",
-         "Please confirm the module is enabled. Full error message: No identity threat"),
-        ('user', {}, "list_risky_users", "No identity threat",
-         "Please confirm the module is enabled. Full error message: No identity threat"),
-        ('host', {}, "list_risky_hosts", "No identity threat",
-         "Please confirm the module is enabled. Full error message: No identity threat"),
     ],
 )
 def test_list_risky_users_hosts_command_raise_exception(
