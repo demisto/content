@@ -37,6 +37,12 @@ ignore=IF100
 [file:incidentfield-XDR_Alert_Name.json]
 ignore=IF100
 
+[file:incidentfield-XDR_Risky_Host_Count.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_User_Count.json]
+ignore=IF115
+
 [file:incidentfield-XDR_Similar_Incidents.json]
 ignore=IF100
 
