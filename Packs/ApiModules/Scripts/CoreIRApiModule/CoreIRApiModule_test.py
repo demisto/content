@@ -3238,16 +3238,14 @@ def test_list_risky_users_or_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "type_, args, api_function,error_message, expected_error_message",
+    "command ,id_",
     [
-        ('user', {"user_id": 'test'}, "risk_score_user_or_host", "id 'test' was not found",
-         "Error: id test was not found. Full error message: id 'test' was not found"),
-        ('host', {"host_id": 'test'}, "risk_score_user_or_host", "id 'test' was not found",
-         "Error: id test was not found. Full error message: id 'test' was not found"),
+        ('user', "user_id"),
+        ('host', "host_id"),
     ],
 )
 def test_list_risky_users_hosts_command_raise_exception(
-    mocker: MockerFixture, type_: str, args: dict, api_function: str, error_message: str, expected_error_message: str
+    mocker, command: str, id_: str
 ):
     """
     Given:
@@ -3270,11 +3268,12 @@ def test_list_risky_users_hosts_command_raise_exception(
 
     mocker.patch.object(
         client,
-        api_function,
+        "risk_score_user_or_host",
         side_effect=DemistoException(
-            message=error_message, res=MockException(500)
+            message="id 'test' was not found", res=MockException(500)
         ),
     )
+
     result = list_risky_users_or_host_command(client, command, {id_: "test"})
     assert result.readable_output == 'The user test was not found'
 
