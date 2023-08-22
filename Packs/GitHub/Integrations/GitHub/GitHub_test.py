@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import requests_mock
 
 import demistomock as demisto
 from CommonServerPython import CommandResults
@@ -19,7 +20,7 @@ MOCK_PARAMS = {
 
 
 def load_test_data(json_path):
-    with open(json_path, mode='r') as f:
+    with open(json_path) as f:
         return json.load(f)
 
 
@@ -61,6 +62,7 @@ def mock_http_request(method, url_suffix, params=None, data=None, headers=None, 
         return [{"login": 'test1', 'id': '12345'}]
     elif url_suffix == "/orgs/demisto/teams/content/members" and params.get('page') == 2:
         return []
+    return None
 
 
 SEARCH_CASES = [
@@ -302,7 +304,7 @@ def test_releases_list_command(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'repository': 'demisto-sdk', 'organization': 'demisto',
                                                        'limit': 2})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
-    GitHub.HEADERS = dict()
+    GitHub.HEADERS = {}
     GitHub.BASE_URL = 'https://api.github.com/'
     test_releases_list_command_data = load_test_data(
         './test_data/releases_get_response.json')
@@ -328,7 +330,7 @@ def test_get_branch(requests_mock, mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'branch_name': 'my-branch'})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
-    GitHub.HEADERS = dict()
+    GitHub.HEADERS = {}
     GitHub.BASE_URL = 'https://api.github.com/'
     GitHub.USER_SUFFIX = '/repos/user/repo'
     raw_response = load_test_data('./test_data/get_branch_response.json')
@@ -358,7 +360,7 @@ def test_url_parameter_value(mocker, mock_params, expected_url):
 
     main()
 
-    assert GitHub.BASE_URL == expected_url
+    assert expected_url == GitHub.BASE_URL
 
 
 def test_list_issue_comments_no_since(mocker):
@@ -427,3 +429,54 @@ def test_assignee(mocker, args, response_content, expected_result):
     GitHub.github_add_assignee_command()
     mocker_results.assert_called_once()
     assert mocker_results.call_args_list[0].args[0].readable_output == expected_result
+
+
+def test_github_trigger_workflow(mocker):
+    """
+    Given:
+      - A workflow name.
+    When:
+      - Calling the 'github_trigger_workflow_command' function
+    Then:
+      - Ensure workflow triggerd successfully.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    mock_args = {'owner': 'demisto', 'repository': 'test', 'workflow': 'nightly.yml',
+                 'inputs': '{\"release_changes\": \"* Fixed an issue.\n* Added a feature.\"}'}
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker_results = mocker.patch('GitHub.return_results')
+
+    with requests_mock.Mocker() as m:
+        m.post('https://github.com/repos/demisto/test/actions/workflows/nightly.yml/dispatches', status_code=204)
+        GitHub.github_trigger_workflow_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].readable_output == 'Workflow triggered successfully.'
+
+
+def test_github_list_workflow(mocker):
+    """
+    Given:
+      - A workflow name.
+    When:
+      - Calling the 'github_list_workflows_command' function
+    Then:
+      - Ensure the correctness of the response.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    GitHub.USER = 'demisto'
+    GitHub.REPOSITORY = 'master'
+    mocker.patch.object(demisto, 'args', return_value={'workflow': 'nightly.yml', 'limit': 1})
+    mocker_results = mocker.patch('GitHub.return_results')
+    json_response = load_test_data('test_data/list_workflow.json')
+
+    with requests_mock.Mocker() as m:
+        m.get('/repos/demisto/master/actions/workflows/nightly.yml/runs?per_page=1', json=json_response)
+        GitHub.github_list_workflows_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].outputs[0]['head_branch'] == 'master'

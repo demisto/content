@@ -765,7 +765,7 @@ Searches for Gmail records for a specific Google user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved, separated by commas. For more information, see <https://developers.google.com/gdata/docs/2.0/basics#PartialResponse>. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Include messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
@@ -1351,7 +1351,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | --- | --- | --- |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved in a comma-separated list. For more information, see <https://developers.google.com/gdata/docs/2.0/basics#PartialResponse>. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Includes messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
@@ -4742,6 +4742,7 @@ Sends mail using Gmail.
 | cc | The additional recipient email address (CC). | Optional | 
 | bcc | The additional recipient email address (BCC). | Optional | 
 | htmlBody | The content (body) of the email to be sent in HTML format. | Optional | 
+| force_handle_htmlBody | Choose true if you wish to handle html body as MimeMultipart. Possible values are: False, True. Default is False. | Optional |
 | replyTo | The address that needs to be used to reply to the message. | Optional | 
 | attachNames | A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5. | Optional | 
 | attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 

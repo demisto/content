@@ -20,7 +20,13 @@ configuration:
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -273,7 +279,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

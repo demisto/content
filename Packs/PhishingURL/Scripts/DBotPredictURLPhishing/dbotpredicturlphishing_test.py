@@ -204,7 +204,7 @@ def test_no_html_data(mocker):
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     general_summary, _, _ = main()
-    assert MSG_SOMETHING_WRONG_IN_RASTERIZE in general_summary[0]['Final Verdict']
+    assert MSG_MISSING_INFORMATION_RASTERIZE in general_summary[0]['Final Verdict']
 
 
 def test_white_list_not_force(mocker):
@@ -272,7 +272,7 @@ def test_new_major_version(mocker):
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch('DBotPredictURLPhishing.oob_model_exists_and_updated', return_value=(True, 0, 0, 'ModelData'),
                  create=True)
-    mocker.patch('DBotPredictURLPhishing.load_oob', return_value='test'.encode('utf-8'), create=True)
+    mocker.patch('DBotPredictURLPhishing.load_oob', return_value=b'test', create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
@@ -327,3 +327,13 @@ def test_get_score():
         MODEL_KEY_URL_SCORE: 0.6
     }
     assert round(get_score(pred_json_2), 2) == 0.55
+
+
+def test_extract_created_date_with_empty_entry():
+    """
+    Given: entry that does not contain anything
+    When: running extract_created_date function
+    Then: Make sure None is returned
+    """
+    from DBotPredictURLPhishing import extract_created_date
+    assert not extract_created_date(entry_list=[{"EntryContext": None, "Type": 1}])

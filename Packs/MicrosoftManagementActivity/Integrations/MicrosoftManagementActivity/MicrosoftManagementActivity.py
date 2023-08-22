@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from MicrosoftApiModule import *   # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -71,14 +72,14 @@ class Client(BaseClient):
                  proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
                  enc_key: Optional[str], auth_code: str, tenant_id: str, redirect_uri: str, timeout: int,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None, refresh_token_param: Optional[str] = ''):
+                 managed_identities_client_id: Optional[str] = None,
+                 ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
         self.access_token = None
         self.self_deployed = self_deployed
         self.refresh_token = refresh_token
-        self.refresh_token_param = refresh_token_param
         self.auth_and_token_url = auth_and_token_url
         self.enc_key = enc_key
         self.timeout = timeout
@@ -92,7 +93,6 @@ class Client(BaseClient):
                                          verify=verify,
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
-                                         refresh_token_param=self.refresh_token_param,
                                          ok_codes=(200, 201, 202, 204),
                                          timeout=self.timeout,
                                          scope=Scopes.management_azure,
@@ -103,7 +103,8 @@ class Client(BaseClient):
                                          certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.manage_office
+                                         managed_identities_resource_uri=Resources.manage_office,
+                                         command_prefix="ms-management-activity"
                                          )
 
     def http_request(self, method, url_suffix='', full_url=None, headers=None, params=None, timeout=None, ok_codes=None,
@@ -222,10 +223,9 @@ def test_module(client: Client):
         client.get_access_token_data()
         return 'ok'
 
-    if params.get('self_deployed'):
-        if not params.get('auth_code') or not params.get('redirect_uri'):
-            raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
-                                   'redirect uri cannot be empty.')
+    if params.get('self_deployed') and (not params.get('auth_code') or not params.get('redirect_uri')):
+        raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
+                               'redirect uri cannot be empty.')
     raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
                            'Please run ms-management-activity-list-subscriptions to test your credentials.')
 
@@ -239,7 +239,7 @@ def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
 
 
 def get_start_or_stop_subscription_context(content_type, start_or_stop):
-    is_subscription_enabled = True if start_or_stop == 'start' else False
+    is_subscription_enabled = start_or_stop == 'start'
     subscription_context = {
         'ContentType': content_type,
         'Enabled': is_subscription_enabled
@@ -457,16 +457,20 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
         last_fetch = last_run.get('last_fetch')
         fetch_start_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
 
+    # the start time must be no more than 7 days in the past
+    demisto.debug(f"For start time takes the bigger between: last_fetch={fetch_start_datetime.strftime(DATE_FORMAT)}, 7 days ago")
+    fetch_start_datetime = max(fetch_start_datetime, dateparser.parse("7 days ago"))
     fetch_end_datetime = get_fetch_end_time_based_on_start_time(fetch_start_datetime)
 
     # The API expects strings of format YYYY:DD:MMTHH:MM:SS
     fetch_start_time_str = fetch_start_datetime.strftime(DATE_FORMAT)
     fetch_end_time_str = fetch_end_datetime.strftime(DATE_FORMAT)
+    demisto.debug(f"get_fetch_start_and_end_time: {fetch_start_time_str=}, {fetch_end_time_str=}")
     return fetch_start_time_str, fetch_end_time_str
 
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
-    all_content_records: List = list()
+    all_content_records = []
     content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
         else content_types_to_fetch
     for content_type in content_types_to_fetch:
@@ -514,12 +518,14 @@ def content_records_to_incidents(content_records, start_time, end_time):
 
 
 def fetch_incidents(client, last_run, first_fetch_datetime):
+    demisto.debug(f"fetch_incidents: {last_run=}, {first_fetch_datetime=}")
     start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
     incidents, last_fetch = content_records_to_incidents(filtered_content_records, start_time, end_time)
     next_run = {'last_fetch': last_fetch}
+    demisto.debug(f"fetch_incidents: {next_run=}")
     return next_run, incidents
 
 
@@ -544,14 +550,16 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
-        refresh_token = params.get('refresh_token', '')
+        refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token', '')
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
         redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''
-        auth_id = params.get('auth_id')
-        enc_key = params.get('enc_key')
-        certificate_thumbprint = params.get('certificate_thumbprint')
+        auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
+        enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
+        auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code', '')
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
 
         if not managed_identities_client_id:
@@ -561,11 +569,7 @@ def main():
             elif not enc_key and not (certificate_thumbprint and private_key):
                 raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-        # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the
-        # integration context (if exists) so It will be possible to manually update the refresh token param for an
-        # existing integration instance.
-        refresh_token_param = refresh_token
-        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
         client = Client(
             base_url=base_url,
@@ -574,11 +578,10 @@ def main():
             proxy=proxy,
             self_deployed=self_deployed,
             refresh_token=refresh_token,
-            refresh_token_param=refresh_token_param,
             auth_and_token_url=auth_id,
             timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
-            auth_code=params.get('auth_code', ''),
+            auth_code=auth_code,
             redirect_uri=redirect_uri,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
@@ -618,12 +621,13 @@ def main():
         elif command == 'ms-management-activity-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
+        elif command == 'ms-management-activity-auth-reset':
+            return_results(reset_auth())
+
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
-
-from MicrosoftApiModule import *   # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

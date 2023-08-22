@@ -107,7 +107,8 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
             return [Message(), Message(), Message(), Message(), Message()]
 
     client = TestNormalCommands.MockClient()
-    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293))
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
+                                                                            datetime.timezone.utc))
     mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
 
     mocker.patch.object(MockObject, 'filter')
@@ -206,33 +207,33 @@ MESSAGES = [
             message_id='message1',
             text_body='Hello World',
             body='message1',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message2',
             message_id='message2',
             text_body='Hello World',
             body='message2',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message3',
             message_id='message3',
             text_body='Hello World',
             body='message3',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC'))
             ),
     Message(subject='message4',
             message_id='message4',
             text_body='Hello World',
             body='message4',
-            datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-            datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC'))
             ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = (
@@ -453,11 +454,83 @@ def test_categories_parse_item_as_dict():
                       message_id='message4',
                       text_body='Hello World',
                       body='message4',
-                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
-                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
                       categories=['Purple category', 'Orange category']
                       )
 
     return_value = parse_item_as_dict(message, False)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+def test_list_parse_item_as_dict():
+    """
+    Given -
+        a Message where effective rights is a list.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the object is parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+    from exchangelib.properties import EffectiveRights
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=[EffectiveRights(), EffectiveRights()]
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    effetive_right_res = return_value.get("effective_rights")
+    assert type(effetive_right_res) is list
+    assert len(effetive_right_res) == 2
+
+
+def test_parse_item_as_dict_with_empty_field():
+    """
+    Given -
+        a Message where effective rights is None and other fields are false\empty strings.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        effective rights field was removed from response other empty\negative fields aren't.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=None,
+                      is_read=False
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert 'effective_rights' not in return_value
+    assert return_value['body'] == ''
+    assert return_value['is_read'] is False
+
+
+def test_get_entry_for_object_empty():
+    from EWSv2 import get_entry_for_object
+    obj = {}
+    assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
+
+
+def test_get_entry_for_object():
+    from EWSv2 import get_entry_for_object
+    obj = {"a": 1, "b": 2}
+    assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'

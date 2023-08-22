@@ -2,8 +2,7 @@ id: CrowdStrike Falcon - Search Endpoints By Hash
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Search Endpoints By Hash
-description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
+description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
 starttaskid: "0"
 tasks:
   "0":
@@ -19,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 170,
+          "y": -90
         }
       }
     note: false
@@ -35,6 +34,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 9ce410b8-ddde-4690-8625-2cfab080cd83
@@ -71,6 +71,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 04610f87-fee9-4de1-8980-1649f61b38d0
@@ -107,6 +108,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 0204bfc2-fc2d-483c-869b-8f85d0580b31
@@ -123,7 +125,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 170,
           "y": 930
         }
       }
@@ -134,6 +136,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 9b555544-59aa-45db-81b2-a12eb98fc56e
@@ -145,7 +148,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Was the hash detected on additional hosts?'
     nexttasks:
       '#default#':
       - "3"
@@ -177,6 +180,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: f7a79437-c0fa-4613-84fa-22581196d8ef
@@ -224,15 +228,55 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: 13169d17-92b3-4cbf-8930-86e9b5d6f265
+    type: condition
+    task:
+      id: 13169d17-92b3-4cbf-8930-86e9b5d6f265
+      version: -1
+      name: Is Crowdstrike Falcon  enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: CrowdstrikeFalcon
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 945,
-        "width": 610,
-        "x": 450,
-        "y": 50
+        "height": 1085,
+        "width": 890,
+        "x": 170,
+        "y": -90
       }
     }
   }
@@ -255,4 +299,7 @@ outputs:
   description: The number of devices the IOC ran on.
   type: number
 tests:
- -  No tests
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

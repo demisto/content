@@ -20,205 +20,147 @@ configuration:
   type: 0
 - display: Port
   name: port
-  required: false
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
   type: 9
 - display: Fetch by
   name: fetch_parameters
-  required: false
   type: 15
   defaultvalue: ID and timestamp
   options:
   - Unique timestamp
   - Unique ascending ID
   - ID and timestamp
+  required: false
 - display: Fetch events query
   name: query
-  required: false
   type: 0
   additionalinfo: The Generic SQL query/procedure.
+  required: false
 - display: Fetch Column
   name: column_name
-  required: false
   type: 0
   additionalinfo: Enter the exact column's name to fetch (ID column or timestamp column).
+  required: false
 - display: ID Column name - in case of fetching by 'ID and timestamp'
   name: id_column
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident Name
   additionalinfo: Enter the exact column's incident name (if empty - it's the Fetch Column).
   name: incident_name
-  required: false
   type: 0
+  required: false
 - display: Database Name
   name: dbname
-  required: false
   type: 0
+  required: false
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   name: connect_parameters
-  required: false
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Default / Max - 50, Recommended less than 50)
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: First fetch timestamp or First fetch ID
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Use an SSL connection
   name: ssl_connect
-  required: false
   type: 8
+  required: false
 - display: Use Connection Pooling
   name: use_pool
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Connection Pool Time to Live (seconds)
   additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600
   name: pool_ttl
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
 display: Generic SQL
 name: Generic SQL
 script:
   commands:
   - arguments:
-    - default: false
-      description: The SQL query to run.
-      isArray: false
+    - description: The SQL query to run.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset at which to start the results. The default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+    - description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
       isArray: true
       name: bind_variables_names
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+    - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-      required: false
-      secret: false
     deprecated: true
     description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
-    execution: false
     name: pgsql-query
   - arguments:
-    - default: false
-      description: The SQL query to run.
-      isArray: false
+    - description: The SQL query to run.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return. The default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset at which to start the results. The default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+    - description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
       isArray: true
       name: bind_variables_names
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+    - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-      required: false
-      secret: false
     deprecated: true
     description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
-    execution: false
     name: query
   - arguments:
-    - default: false
-      description: The SQL query to run.
-      isArray: false
+    - description: The SQL query to run.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset at which to start the results. The default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+    - description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
       isArray: true
       name: bind_variables_names
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+    - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-      required: false
-      secret: false
-    deprecated: false
     description: Running a sql query
-    execution: false
     name: sql-command
   dockerimage: demisto/genericsql:1.1.0.62758
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

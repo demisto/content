@@ -232,3 +232,52 @@ def test_add_reply_fail(mocker):
     mocked_demisto_results = mocker.patch('RTIR.return_error')
     add_reply()
     mocked_demisto_results.assert_called_with('Failed to reply')
+
+
+def test_add_comment(mocker):
+    """
+    Test adding a comment to an existing ticket to the user.
+
+    Given:
+    - Valid ticket id and text
+    - Valid response
+
+    When:
+    - Adding a comment
+
+    Then:
+    - Ensure the comment is added sent successfully
+    """
+    from RTIR import add_comment
+    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+    mocked_response = requests.Response()
+    mocked_response._content = b'200'
+    mocked_response.status_code = 200
+    mocker.patch('RTIR.add_comment_request', return_value=mocked_response)
+    mocked_demisto_results = mocker.patch.object(demisto, 'results')
+    add_comment()
+    mocked_demisto_results.assert_called_with('Added comment to ticket 1234 successfully.')
+
+
+def test_add_comment_fail(mocker):
+    """
+    Test failure in adding a comment to an existing ticket.
+
+    Given:
+    - Args for a comment
+
+    When:
+    - Getting a failed response
+
+    Then:
+    - Ensure the command fails with an error message.
+    """
+    from RTIR import add_comment
+    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+    mocked_response = requests.Response()
+    mocked_response._content = b'400'
+    mocked_response.status_code = 400
+    mocker.patch('RTIR.add_comment_request', return_value=mocked_response)
+    mocked_demisto_results = mocker.patch('RTIR.return_error')
+    add_comment()
+    mocked_demisto_results.assert_called_with('Failed to add comment')

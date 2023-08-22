@@ -1,4 +1,4 @@
-var apiKey = params.apiKey;
+var apiKey = params.apikey_creds ? params.apikey_creds.password : params.apiKey;
 var insecure = params.insecure;
 var proxy = params.proxy;
 var server = params.server;

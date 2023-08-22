@@ -1,6 +1,3 @@
-[file:Twilio.yml]
-ignore=IN145,IN140
-
 [file:Twilio_image.png]
 ignore=IM111
 

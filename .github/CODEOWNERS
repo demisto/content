@@ -42,23 +42,38 @@
 # Important Integrations
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
 /Packs/QRadar/Integrations/QRadar_v3/* @ilaner
-/Packs/Slack/Integrations/* @amshamah419 @rshunim 
+/Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
-/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419 
+/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
 /Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
 /Packs/ContentManagement/* @adi88d
+/Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
+/Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 /Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
+/Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
 # Common Packs
 /Packs/CommonTypes/ @michalgold @idovandijk
 /Packs/CommonPlaybooks/ @michalgold @idovandijk
 /Packs/CommonDashboards/ @michalgold @idovandijk
 /Packs/ContentManagement/ @mmhw
+/Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
+/Packs/CommonTypes/Layouts/* @Ni-Knight
+
+# Indicators Formatters
+/Packs/CommonScripts/Scripts/ExtractDomainAndFQDNFromUrlAndEmail/* @Ni-Knight
+/Packs/CommonScripts/Scripts/FormatURL/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractAttackPattern/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyCIDR/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyIPv6Indicator/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
+/Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 
 # Build related
@@ -66,9 +81,9 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-.gitlab/ci/on-push.yml @daryakoval
+.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
-.gitlab/ci/staging.yml @ilaner
+.gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
 /Tests/Marketplace/search_and_uninstall_pack.py @daryakoval
 /Tests/scripts/install_content_and_test_integrations.sh @daryakoval
@@ -80,8 +95,9 @@ Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
 
 # SDK Related
-.gitlab/ci/sdk-nightly.yml @dorschw
+.gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
 Utils/trigger_nightly_sdk_build.sh @dorschw
+.pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @dansterenson

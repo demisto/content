@@ -19,152 +19,99 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Rules IDs of elements versions to fetch, comma seperated.
   display: Rule ids
   name: rule_oids
-  required: false
   type: 12
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
   display: Node ids
   name: node_oids
-  required: false
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Tripwire is a file integrity management (FIM), FIM monitors files and folders on systems and is triggered when they have changed.
 display: Tripwire
 name: Tripwire
 script:
   commands:
   - arguments:
-    - default: false
-      description: Versions IDs given comma seperated.
+    - description: Versions IDs given comma seperated.
       isArray: true
       name: version_oids
-      required: false
-      secret: false
-    - default: false
-      description: Elements IDs of elements versions to fetch, comma seperated.
+    - description: Elements IDs of elements versions to fetch, comma seperated.
       isArray: true
       name: element_oids
-      required: false
-      secret: false
-    - default: false
-      description: Element names of elements versions to fetch. (case insensitive) .comma seperated
+    - description: Element names of elements versions to fetch. (case insensitive) .comma seperated
       isArray: true
       name: element_names
-      required: false
-      secret: false
-    - default: false
-      description: Nodes IDs of elements versions to fetch. comma seperated.
+    - description: Nodes IDs of elements versions to fetch. comma seperated.
       isArray: true
       name: node_oids
-      required: false
-      secret: false
-    - default: false
-      description: Nodes names of elements versions to fetch. comma seperated.
+    - description: Nodes names of elements versions to fetch. comma seperated.
       isArray: true
       name: node_names
-      required: false
-      secret: false
-    - default: false
-      description: Rules IDs of elements versions to fetch. comma seperated.
+    - description: Rules IDs of elements versions to fetch. comma seperated.
       isArray: true
       name: rule_oids
-      required: false
-      secret: false
-    - default: false
-      description: Rules names of elements versions to fetch. comma seperated.
+    - description: Rules names of elements versions to fetch. comma seperated.
       isArray: true
       name: rule_names
-      required: false
-      secret: false
-    - default: false
-      description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions to fetch. comma seperated.
+    - description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions to fetch. comma seperated.
       isArray: true
       name: version_hashes
-      required: false
-      secret: false
-    - default: false
-      description: Last baseline versions of elements versions to fetch. comma seperated.
+    - description: Last baseline versions of elements versions to fetch. comma seperated.
       isArray: true
       name: baseline_version_ids
-      required: false
-      secret: false
-    - default: false
-      description: "Start detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
-      isArray: false
+    - description: "Start detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
       name: start_detected_time
-      required: false
-      secret: false
-    - default: false
-      description: "Start received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
-      isArray: false
+    - description: "Start received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
       name: start_received_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit for the number of returned results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: start index from which the results are returned.
-      isArray: false
+    - description: start index from which the results are returned.
       name: start
-      required: false
-      secret: false
-    - default: false
-      description: "End detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
-      isArray: false
+    - description: "End detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       name: end_detected_time
-      required: false
-      secret: false
-    - default: false
-      description: "End received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
-      isArray: false
+    - description: "End received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       name: end_received_time
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all Element Versions that meet the search critiera.
-    execution: false
     name: tripwire-versions-list
     outputs:
     - contextPath: Tripwire.Versions.approvalId
@@ -234,40 +181,21 @@ script:
       description: Times received of elements versions.
       type: Date
   - arguments:
-    - default: false
-      description: IDs of rules to fetch. comma seperated.
+    - description: IDs of rules to fetch. comma seperated.
       isArray: true
       name: rule_oids
-      required: false
-      secret: false
-    - default: false
-      description: Names of rules to fetch. comma seperated.
+    - description: Names of rules to fetch. comma seperated.
       isArray: true
       name: rule_names
-      required: false
-      secret: false
-    - default: false
-      description: Types of rules to fetch. comma seperated.
+    - description: Types of rules to fetch. comma seperated.
       isArray: true
       name: rule_types
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page limit for paging support.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: start index from which the results are returned.
-      isArray: false
+    - description: start index from which the results are returned.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all rules or those that match the provided filter criteria.
-    execution: false
     name: tripwire-rules-list
     outputs:
     - contextPath: Tripwire.Rules.command
@@ -301,58 +229,30 @@ script:
       description: Types of rules.
       type: String
   - arguments:
-    - default: false
-      description: Id of the element. comma seperated.
+    - description: Id of the element. comma seperated.
       isArray: true
       name: element_oids
-      required: false
-      secret: false
-    - default: false
-      description: Name of the element (case insensitive). comma seperated.
+    - description: Name of the element (case insensitive). comma seperated.
       isArray: true
       name: element_names
-      required: false
-      secret: false
-    - default: false
-      description: Id of the node for this element. comma seperated.
+    - description: Id of the node for this element. comma seperated.
       isArray: true
       name: node_oids
-      required: false
-      secret: false
-    - default: false
-      description: Id of the rule for this element. comma seperated.
+    - description: Id of the rule for this element. comma seperated.
       isArray: true
       name: rule_oids
-      required: false
-      secret: false
-    - default: false
-      description: Latest baseline version Id for this element. comma seperated.
+    - description: Latest baseline version Id for this element. comma seperated.
       isArray: true
       name: baseline_version_ids
-      required: false
-      secret: false
-    - default: false
-      description: Id for the latest version of this element. comma seperated.
+    - description: Id for the latest version of this element. comma seperated.
       isArray: true
       name: last_version_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit for the number of returned results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: start index from which the results are returned.
-      isArray: false
+    - description: start index from which the results are returned.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all elements or those that match the provided criteria.
-    execution: false
     name: tripwire-elements-list
     outputs:
     - contextPath: Tripwire.Elements.baselineVersionId
@@ -395,58 +295,30 @@ script:
       description: Id of the rule for this element.
       type: String
   - arguments:
-    - default: false
-      description: IDs of nodes to fetch. comma seperated.
+    - description: IDs of nodes to fetch. comma seperated.
       isArray: true
       name: node_oids
-      required: false
-      secret: false
-    - default: false
-      description: IP addresses of nodes to fetch (only finds agent nodes). comma seperated.
+    - description: IP addresses of nodes to fetch (only finds agent nodes). comma seperated.
       isArray: true
       name: node_ips
-      required: false
-      secret: false
-    - default: false
-      description: MAC addresses of nodes to fetch. comma seperat
+    - description: MAC addresses of nodes to fetch. comma seperat
       isArray: true
       name: node_mac_adresses
-      required: false
-      secret: false
-    - default: false
-      description: Support for case insensitive search for name parameter. comma seperat
+    - description: Support for case insensitive search for name parameter. comma seperat
       isArray: true
       name: node_names
-      required: false
-      secret: false
-    - default: false
-      description: Os names of nodes to fetch. comma seperated.
+    - description: Os names of nodes to fetch. comma seperated.
       isArray: true
       name: node_os_names
-      required: false
-      secret: false
-    - default: false
-      description: Tags of nodes to fetch. comma seperated.
+    - description: Tags of nodes to fetch. comma seperated.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit for the number of returned results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: start index from which the results are returned.
-      isArray: false
+    - description: start index from which the results are returned.
       name: start
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all nodes or those that match the provided filter criteria.
-    execution: false
     name: tripwire-nodes-list
     outputs:
     - contextPath: Tripwire.Nodes.agentType
@@ -539,11 +411,8 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

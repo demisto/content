@@ -25,16 +25,14 @@ args:
   required: true
   description: DT filter for polling IDs
 - name: playbookId
-  description: The ID of the playbook that contains the manual task which will be
-    completed once the polling is done.
+  description: The ID of the playbook that contains the manual task which will be completed once the polling is done.
 - name: interval
   required: true
   description: Polling frequency - how often the polling command should run (minutes)
   defaultValue: "1"
 - name: timeout
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook
-    (minutes)
+  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
   defaultValue: "60"
 - name: tag
   required: true
@@ -47,7 +45,6 @@ args:
   description: Values of the additional arguments for the polling command (e.g. value1,value2,...)
   isArray: true
 scripttarget: 0
-runonce: false
 tests:
 - Generic Polling Test
-dockerimage: demisto/python3:3.10.11.57890
+dockerimage: demisto/python3:3.10.12.63474

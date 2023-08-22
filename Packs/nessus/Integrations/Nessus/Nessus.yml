@@ -4,8 +4,7 @@ commonfields:
 name: Nessus
 display: Nessus
 category: Vulnerability Management
-description: Vulnerability scanner for auditors and security analysts by Tenable Network
-  Security
+description: Vulnerability scanner for auditors and security analysts by Tenable Network Security
 configuration:
 - display: 'Server Url (format : https://127.0.0.1:8834)'
   name: url
@@ -16,12 +15,20 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
-  required: true
+  hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- display: Username
+  name: credentials
+  type: 9
+  displaypassword: Password
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -118,8 +125,7 @@ script:
       default: true
       description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: targets
-      description: If specified, these targets will be scanned instead of the default.
-        Value can be single host or of comma separated targets.
+      description: If specified, these targets will be scanned instead of the default. Value can be single host or of comma separated targets.
     outputs:
     - contextPath: ScanUUID
       description: The uuid of the launched scan.
@@ -132,8 +138,7 @@ script:
       default: true
       description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: targets
-      description: If specified, these targets will be scanned instead of the default.
-        Value can be single host or of comma separated targets.
+      description: If specified, these targets will be scanned instead of the default. Value can be single host or of comma separated targets.
     outputs:
     - contextPath: ScanUUID
       description: The uuid of the launched scan.
@@ -462,12 +467,9 @@ script:
       required: true
       description: scan report file format (nessus, csv, html, db, pdf)
     - name: password
-      description: The password used to encrypt database exports (*Required when exporting
-        as DB).
+      description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon
-        delimited string comprised of some combination of the following options: vuln_hosts_summary,
-        vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
@@ -485,12 +487,9 @@ script:
       required: true
       description: scan report file format (nessus, csv, html, db, pdf)
     - name: password
-      description: The password used to encrypt database exports (*Required when exporting
-        as DB).
+      description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon
-        delimited string comprised of some combination of the following options: vuln_hosts_summary,
-        vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
@@ -538,25 +537,18 @@ script:
       required: true
       description: If true, the schedule for the scan is enabled(true/false)
     - name: launch
-      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY,
-        YEARLY)
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
     - name: startTime
       description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
     - name: rules
-      description: Expects a semi-colon delimited string comprised of three values.
-        The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval
-        (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA).
-        To create a scan that runs every three weeks on Monday Wednesday and Friday
-        the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
     - name: timeZone
       description: The timezone for the scan schedule
     - name: targets
       required: true
-      description: The list of targets to scan, Value can be single host or of comma
-        separated targets.
+      description: The list of targets to scan, Value can be single host or of comma separated targets.
     - name: emails
-      description: A comma separated list of accounts who will recieve the email summary
-        report
+      description: A comma separated list of accounts who will recieve the email summary report
     - name: acls
       description: An array containing permissions to apply to the scan
     - name: fileTargets
@@ -604,25 +596,18 @@ script:
       required: true
       description: If true, the schedule for the scan is enabled(true/false)
     - name: launch
-      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY,
-        YEARLY)
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
     - name: startTime
       description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
     - name: rules
-      description: Expects a semi-colon delimited string comprised of three values.
-        The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval
-        (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA).
-        To create a scan that runs every three weeks on Monday Wednesday and Friday
-        the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
     - name: timeZone
       description: The timezone for the scan schedule
     - name: targets
       required: true
-      description: The list of targets to scan, Value can be single host or of comma
-        separated targets.
+      description: The list of targets to scan, Value can be single host or of comma separated targets.
     - name: emails
-      description: A comma separated list of accounts who will recieve the email summary
-        report
+      description: A comma separated list of accounts who will recieve the email summary report
     - name: acls
       description: An array containing permissions to apply to the scan
     - name: fileTargets

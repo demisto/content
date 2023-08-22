@@ -37,30 +37,30 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Has impersonation rights
   name: impersonation
   defaultvalue: "false"
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Sender Mailbox
   name: mailbox
   defaultvalue: ""
   type: 0
-  required: false
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -95,13 +95,8 @@ script:
       isArray: true
     - name: raw_message
       description: Raw email message from MimeContent type.
-      required: false
-    - default: false
-      description: The email address from which to reply.
-      isArray: false
+    - description: The email address from which to reply.
       name: from
-      required: false
-      secret: false
     description: Sends an email using EWS.
   - name: reply-mail
     arguments:

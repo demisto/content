@@ -15,41 +15,56 @@ configuration:
 - display: Organization Name
   name: organization
   additionalinfo: Used by any command that requires an organization argument. Should be passed as a parameter in the configuration or as a command argument.
-  required: false
   type: 0
+  required: false
 - display: Username
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Use Basic Authentication
   additionalinfo: Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, enter values for the Username and Password parameters.
   name: use_basic_auth
-  required: false
   type: 8
+  required: false
 - display: Client ID
   additionalinfo: The Client ID parameter is used for Auth authentication. Used together with the Client Secret parameter.
   name: client_id
-  required: false
   type: 0
+  hidden: true
+  required: false
 - display: Client Secret
   additionalinfo: The Client Secret parameter is used for Auth authentication. Used together with the Client ID parameter.
   name: client_secret
-  required: false
   type: 4
+  hidden: true
+  required: false
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - display: Auth Token
   additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
   name: access_token
-  required: false
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Auth Token
+  additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
+  name:  credentials_access_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 
+  required: false
 script:
   script: ''
   commands:
@@ -58,8 +73,6 @@ script:
     arguments:
     - name: family
       description: Group type of the application.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - business-system
@@ -69,24 +82,15 @@ script:
       - networking
     - name: risks
       description: Risks threshold. This value must be equal to or higher than the input.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page. Default is 0.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.PredefinedApplication.name
       description: Predefined application's name.
@@ -114,24 +118,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceUserModifiedApplication.app-specific-option-list.app-name
       description: Appliance user modified application name.
@@ -153,24 +148,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateUserModifiedApplication.app-specific-option-list.app-name
       description: Template user modified application name.
@@ -192,24 +178,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceUserDefinedApplication.user-defined-application.app-name
       description: Appliance user defined application name.
@@ -234,24 +211,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateUserDefinedApplication.user-defined-application.app-name
       description: Template user defined application name.
@@ -276,43 +244,31 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
   - name: vd-appliance-address-object-edit
     description: Edit an address object associated with a specific organization and appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
     - name: description
       description: Address object description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: address_object_type
       description: Address object type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - ipv4-prefix
@@ -324,7 +280,6 @@ script:
     - name: object_value
       description: Object value.
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAddressObject.name
       description: Template address object name.
@@ -358,28 +313,21 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
     - name: description
       description: Address object description.
       required: true
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: address_object_type
       description: Address object type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - ipv4-prefix
@@ -391,7 +339,6 @@ script:
     - name: object_value
       description: Object value.
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAddressObject.name
       description: Template address object name.
@@ -425,24 +372,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceAddressObject.name
       description: Appliance address object name.
@@ -464,43 +402,30 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
   - name: vd-template-address-object-edit
     description: Create an address object associated with a specific organization and template.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
     - name: description
       description: Address object description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
-      isArray: false
     - name: address_object_type
       description: Address object type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - ipv4-prefix
@@ -512,19 +437,12 @@ script:
     - name: object_value
       description: Object value.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAddressObject.name
       description: Template address object name.
@@ -558,28 +476,19 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: object_name
       description: Address object name.
       required: true
-      isArray: false
     - name: description
       description: Address object description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
-      isArray: false
     - name: address_object_type
       description: Address object type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - ipv4-prefix
@@ -591,7 +500,6 @@ script:
     - name: object_value
       description: Object value.
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAddressObject.name
       description: Template address object name.
@@ -625,24 +533,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAddressObject.name
       description: Template address object name.
@@ -664,197 +563,134 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
   - name: vd-appliance-sdwan-policy-rule-edit
     description: Edit an SDWAN policy rule associated with a specific appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: URL reputation.
-      required: false
-      isArray: false
     - name: custom_url_categories
       description: A comma-separated list of custom URL categories.
-      required: false
       isArray: true
     - name: forwarding_action
       description: Forwarding action.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: nexthop_ip
       description: Nexthop IP.
-      required: false
-      isArray: false
     - name: routing_instance
       description: Routing instance.
-      required: false
-      isArray: false
     - name: forwarding_profile
       description: Forwarding profile.
-      required: false
-      isArray: false
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-appliance-sdwan-policy-rule-create
     description: Create an SDWAN policy rule associated with a specific appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: URL reputation.
-      required: false
-      isArray: false
     - name: custom_url_categories
       description: A comma-separated list of custom URL categories.
-      required: false
       isArray: true
     - name: forwarding_action
       description: Forwarding action.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: nexthop_ip
       description: Nexthop IP.
-      required: false
-      isArray: false
     - name: routing_instance
       description: Routing instance.
-      required: false
-      isArray: false
     - name: forwarding_profile
       description: Forwarding profile.
-      required: false
-      isArray: false
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-appliance-sdwan-policy-rule-list
     description: List all SDWAN policy rules associated with a specific appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of objects to return.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceSdwanPolicyRule.name
       description: Policy rule name.
@@ -873,24 +709,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceSdwanPolicy.address
       description: Appliance SDWAN policy address.
@@ -909,197 +736,136 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
   - name: vd-template-sdwan-policy-rule-edit
     description: Edit an SDWAN policy rule associated with a specific appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: custom_url_categories
       description: A comma-separated list of custom URL categories.
-      required: false
       isArray: true
     - name: forwarding_action
       description: Forwarding action.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: nexthop_ip
       description: Nexthop IP.
-      required: false
-      isArray: false
     - name: routing_instance
       description: Routing instance.
-      required: false
-      isArray: false
     - name: forwarding_profile
       description: Forwarding profile.
-      required: false
-      isArray: false
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-template-sdwan-policy-rule-create
     description: Create an SDWAN policy rule associated with a specific template.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: custom_url_categories
       description: A comma-separated list of custom URL categories.
-      required: false
       isArray: true
     - name: forwarding_action
       description: Forwarding action.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: nexthop_ip
       description: Nexthop IP.
-      required: false
-      isArray: false
     - name: routing_instance
       description: Routing instance.
-      required: false
-      isArray: false
     - name: forwarding_profile
       description: Forwarding profile.
-      required: false
-      isArray: false
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-template-sdwan-policy-rule-list
     description: List all SDWAN policy rules associated with a specific template.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: sdwan_policy_name
       description: Name of the SDWAN policy.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateSdwanPolicy.sdwan-policy-group.name
       description: Template SDWAN policy group name.
@@ -1112,24 +878,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateSdwanPolicy.sdwan-policy-group.name
       description: Template SDWAN policy group name.
@@ -1142,101 +899,72 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
   - name: vd-appliance-access-policy-rule-edit
     description: Edit an access policy configuration (NGFW) rule associated with a specific appliance (device). Important note - the data provided in the request overwrites the existing rule settings.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-appliance-access-policy-rule-create
     description: Create an access policy configuration (NGFW) rule associated with a specific appliance (device).
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
       required: true
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
@@ -1248,43 +976,30 @@ script:
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-appliance-access-policy-rule-list
     description: List all access policy configuration (NGFW) rules associated with a specific appliance.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceAccessPolicyRule.name
       description: Appliance access policy rule name.
@@ -1303,24 +1018,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceAccessPolicy.name
       description: Access policy name.
@@ -1333,149 +1039,104 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
   - name: vd-template-access-policy-rule-edit
     description: Edit an access policy configuration (NGFW) rule associated with a specific template. Important note - the data provided in the request overwrites the existing rule settings.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: SDWAN policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-template-access-policy-rule-create
     description: Create an access policy configuration (NGFW) rule associated with a specific template.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: custom_rule_json
       description: Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation.
-      required: false
-      isArray: false
     - name: rule_name
       description: Name of the rule.
       required: true
-      isArray: false
     - name: description
       description: Access policy description.
-      required: false
-      isArray: false
     - name: tags
       description: A comma-separated list of tags.
-      required: false
       isArray: true
     - name: source_address_objects
       description: A comma-separated list of source address objects.
-      required: false
       isArray: true
     - name: destination_address_objects
       description: A comma-separated list of destination address objects.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: predefined_application
       description: A comma-separated list of predefined applications.
-      required: false
       isArray: true
     - name: user_defined_application
       description: A comma-separated list of user defined applications.
-      required: false
       isArray: true
   - name: vd-template-access-policy-rule-list
     description: List all access policy configuration (NGFW) rules associated with a specific template.
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: access_policy_name
       description: Access policy name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAccessPolicy.name
       description: Template access policy name.
@@ -1494,24 +1155,15 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateAccessPolicy.name
       description: Template access policy name.
@@ -1524,16 +1176,12 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceCustomUrlCategory.category-name
       description: Appliance custom URL category category name.
@@ -1552,39 +1200,29 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     - name: description
       description: Custom URL category description.
       required: true
-      isArray: false
     - name: confidence
       description: Confidence threshold.
       required: true
-      isArray: false
     - name: urls
       description: A comma-separated list of URLs.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: patterns
       description: A comma-separated list of patterns.
-      required: false
       isArray: true
     - name: pattern_reputation
       description: A comma-separated list of pattern reputations.
-      required: false
       isArray: true
     outputs:
     - contextPath: VersaDirector.ApplianceCustomUrlCategory.category-name
@@ -1604,39 +1242,29 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     - name: description
       description: Custom URL category description.
       required: true
-      isArray: false
     - name: confidence
       description: Confidence threshold.
       required: true
-      isArray: false
     - name: urls
       description: A comma-separated list of URLs.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: patterns
       description: A comma-separated list of patterns.
-      required: false
       isArray: true
     - name: pattern_reputation
       description: A comma-separated list of pattern reputations.
-      required: false
       isArray: true
     outputs:
     - contextPath: VersaDirector.ApplianceCustomUrlCategory.content.category-name
@@ -1656,28 +1284,17 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: appliance_name
       description: Appliance name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplianceCustomUrlCategory.category-name
       description: Appliance custom URL category name.
@@ -1696,16 +1313,12 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
       description: Template custom URL category name.
@@ -1724,39 +1337,29 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     - name: description
       description: Custom URL category description.
       required: true
-      isArray: false
     - name: confidence
       description: Confidence threshold.
       required: true
-      isArray: false
     - name: urls
       description: A comma-separated list of URLs.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: patterns
       description: A comma-separated list of patterns.
-      required: false
       isArray: true
     - name: pattern_reputation
       description: A comma-separated list of pattern reputations.
-      required: false
       isArray: true
     outputs:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
@@ -1776,39 +1379,29 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
       required: true
-      isArray: false
     - name: description
       description: Custom URL category description.
       required: true
-      isArray: false
     - name: confidence
       description: Confidence threshold.
       required: true
-      isArray: false
     - name: urls
       description: A comma-separated list of URLs.
-      required: false
       isArray: true
     - name: url_reputation
       description: A comma-separated list of URL reputations.
-      required: false
       isArray: true
     - name: patterns
       description: A comma-separated list of patterns.
-      required: false
       isArray: true
     - name: pattern_reputation
       description: A comma-separated list of pattern reputations.
-      required: false
       isArray: true
     outputs:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
@@ -1828,28 +1421,17 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: url_category_name
       description: URL category name.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
       description: Template custom URL category name.
@@ -1871,7 +1453,6 @@ script:
     - name: template_name
       description: New template name for the device.
       required: true
-      isArray: false
     - name: appliances
       description: A comma-separated list of devices the change will be committed to.
       required: true
@@ -1880,7 +1461,6 @@ script:
       description: Commit mode to specified devices.
       auto: PREDEFINED
       required: true
-      isArray: false
       predefined:
       - overwrite
       - merge
@@ -1894,7 +1474,6 @@ script:
     - name: reboot
       description: Reboot devices after change is committed (true/false).
       required: true
-      isArray: false
     outputs:
     - contextPath: VersaDirector.Commit.versa-tasks.id
       description: Task ID.
@@ -1916,24 +1495,14 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: keyword
       description: Keyword by which to search.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.ApplicationServiceTemplate.createDate
       description: Date the application service template was created.
@@ -1958,20 +1527,12 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.DataStoreTemplate.name
       description: Template name.
@@ -1993,28 +1554,18 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: type
       auto: PREDEFINED
       description: Type of template. If not specified in the request, all types will be fetched.
-      required: false
-      isArray: false
       predefined:
       - SERVICE
       - MAIN
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.Template
       description: Template name.
@@ -2025,23 +1576,15 @@ script:
     - name: device_group
       description: Device group name.
       required: true
-      isArray: false
     - name: template_name
       description: Template name.
       required: true
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.DeviceGroup.createDate
       description: Date the device group was created.
@@ -2075,20 +1618,12 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.DeviceGroup.createDate
       description: Date the device group was created.
@@ -2128,20 +1663,12 @@ script:
     arguments:
     - name: organization
       description: Name of the associated organization.
-      required: false
-      isArray: false
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page. Default is 0.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve. Default is 50.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.Appliance.name
       description: Appliance name.
@@ -2157,16 +1684,10 @@ script:
     arguments:
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.Organization.name
       description: Organization name.
@@ -2212,16 +1733,10 @@ script:
     arguments:
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
     - name: page_size
       description: The maximum number of objects to retrieve per page.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of results.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VersaDirector.Appliance.name
       description: Appliance name.
@@ -2243,20 +1758,12 @@ script:
     arguments:
     - name: auth_client_name
       description: Name of the Auth Client. If an excised Auth Client name will be given as an argument, an error might occur.
-      required: false
-      isArray: false
     - name: description
       description: Description of the access token.
-      required: false
-      isArray: false
     - name: client_id
       description: Client ID for Token Authentication. If already passed as a parameter it will be prioritized by default.
-      required: false
-      isArray: false
     - name: client_secret
       description: Client Secret for Token Authentication. If already passed as a parameter it will be prioritized by default.
-      required: false
-      isArray: false
       secret: true
     outputs:
     - contextPath: VersaDirector.AuthClient
@@ -2266,11 +1773,10 @@ script:
     description: Run a connectivity test to verify that the OAuth process worked.
 
 
-  isfetch: false
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.67728
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

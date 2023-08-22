@@ -1,4 +1,4 @@
-[MODEL: dataset = macos_ventura_raw]
+[MODEL: dataset = apple_macos_raw]
 alter
     get_hostname = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s([^\s]+)"), ""),
     get_process =  arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s([^\[]+)"), ""),

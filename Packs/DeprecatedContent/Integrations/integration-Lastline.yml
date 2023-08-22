@@ -1030,7 +1030,6 @@ script:
       description: The status of the submission.
       type: string
     description: Checks the status of a submission.
-  runonce: false
 tests:
 - No tests - deprecated
 fromversion: 5.0.0

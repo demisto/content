@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "message": "Search completed!",
+  "result": {
+    "more": true,
+    "page": 0,
+    "page_size": 1,
+    "total_pages": 3945,
+    "hits": [
+      {
+        "id": "2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120",
+        "alias_group": "86373",
+        "dynamic_id": 21852016,
+        "name": "inferred_cve_2019_10081",
+        "first_seen": "2022-10-07T17:36:37.000Z",
+        "last_seen": "2022-10-07T17:36:37.000Z",
+        "collection": "collectionname_a6mz56o",
+        "collection_type": "user_collection",
+        "collection_uuid": "f12c71db-bbbb-aaaa-a19e-b8742ed7eb70",
+        "organization_uuid": "075892c8-aaaa-454e-bbbb-34a7342c16a3",
+        "entity_type": "Intrigue::Entity::Uri",
+        "entity_name": "https://www.some-website.eu:443",
+        "entity_uid": "2a7cdfb23b2253a9ea4cc88962e0b7cd9b1622f7d44e56f675a8700b934d1f51",
+        "upstream": "intrigue",
+        "summary": {
+          "pretty_name": "Inferred CVE Pretty Name",
+          "severity": 2,
+          "scoped": true,
+          "confidence": "potential",
+          "status": "open_new",
+          "category": "unknown",
+          "identifiers": [
+            {
+              "name": "CVE-2019-10081",
+              "type": "CVE"
+            }
+          ],
+          "status_new": "open",
+          "status_new_detailed": "new",
+          "ticket_list": []
+        },
+        "tags": []
+      }
+    ]
+  }
+}

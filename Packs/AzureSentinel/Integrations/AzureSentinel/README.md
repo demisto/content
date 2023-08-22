@@ -19,6 +19,7 @@ Follow these steps for a self-deployed configuration.
 7. Copy your tenant ID for the integration configuration usage.
 
 ## Configure the server URL
+
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 
 
 ## Get the additional instance parameters
@@ -31,40 +32,57 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | False |
-    | Tenant ID | False |
-    | Client ID | False |
-    | Azure Managed Identities Client ID | False |
-    | Subscription ID | True |
-    | Resource Group Name | True |
-    | Workspace Name | True |
-    | Fetch incidents | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | The minimum severity of incidents to fetch | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Additional info to fetch | False |
-    | Mirroring Direction | False |
-    | Close Mirrored XSOAR Incident | False |
-    | Close Mirrored Microsoft Sentinel Ticket | False |
+    | **Parameter**                                                                    | **Required** |
+    |----------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                                                                      | False        |
+    | Tenant ID                                                                        | False        |
+    | Client ID                                                                        | False        |
+    | Azure Managed Identities Client ID                                               | False        |
+    | Subscription ID                                                                  | True         |
+    | Resource Group Name                                                              | True         |
+    | Workspace Name                                                                   | True         |
+    | Fetch incidents                                                                  | False        |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False        |
+    | The minimum severity of incidents to fetch                                       | False        |
+    | Incident type                                                                    | False        |
+    | Trust any certificate (not secure)                                               | False        |
+    | Use system proxy settings                                                        | False        |
+    | Additional info to fetch                                                         | False        |
+    | Mirroring Direction                                                              | False        |
+    | Close Mirrored XSOAR Incident                                                    | False        |
+    | Close Mirrored Microsoft Sentinel Ticket                                         | False        |
+    | Server URL, see note below regarding Azure cloud options.                        | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Azure cloud options
+
+    | Azure Cloud | Description                                                              |
+    |-------------|--------------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                      |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
+    | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
+
+   - Note: In most cases setting Azure cloud is preferred to setting Server URL. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Incident Mirroring
+
 You can enable incident mirroring between Cortex XSOAR incidents and Microsoft Sentinel incidents (available from Cortex XSOAR version 6.0.0).
 
 To setup the mirroring follow these instructions:
+
 1. Navigate to **Settings > Integrations > Servers & Services**.
 2. Search for **Microsoft Sentinel** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. In the **Mirroring Direction** integration parameter, select in which direction the incidents should be mirrored:
-   * Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in Cortex XSOAR incidents.
-   * Outgoing - Any changes in Cortex XSOAR incidents will be reflected in *Microsoft Sentinel*.
-   * Incoming And Outgoing - Changes in Cortex XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
-   * None - Turns off incident mirroring.
+   - Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in Cortex XSOAR incidents.
+   - Outgoing - Any changes in Cortex XSOAR incidents will be reflected in *Microsoft Sentinel*.
+   - Incoming And Outgoing - Changes in Cortex XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
+   - None - Turns off incident mirroring.
 5. Optional: Check the **Close Mirrored XSOAR Incident** integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in *Microsoft Sentinel*.
 6. Optional: Check the **Close Mirrored Microsoft Sentinel Ticket** integration parameter to close the *Microsoft Sentinel* incident when the corresponding Cortex XSOAR incident is closed.
 
@@ -73,9 +91,12 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-sentinel-get-incident-by-id
+
 ***
 Gets a single incident from Azure Sentinel.
 
@@ -83,6 +104,7 @@ Gets a single incident from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-get-incident-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,9 +144,11 @@ Gets a single incident from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-get-incident-by-id incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -170,12 +194,14 @@ Gets a single incident from Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details
+>
 >|ID|Incident Number|Title|Description|Severity|Status|Assignee Email|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|Etag|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | test@test.com | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} | 2021-08-23T13:28:51Z | 2020-01-15T09:29:14Z | 1 | 0 | 3 | Azure Sentinel | "2700a244-0000-0100-0000-6123a2930000" |
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | <test@test.com> | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} | 2021-08-23T13:28:51Z | 2020-01-15T09:29:14Z | 1 | 0 | 3 | Azure Sentinel | "2700a244-0000-0100-0000-6123a2930000" |
 
 
 ### azure-sentinel-list-incidents
+
 ***
 Gets a list of incidents from Azure Sentinel.
 
@@ -183,12 +209,13 @@ Gets a list of incidents from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of incidents to return. The maximum value is 200. Default is 50. | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
 | subscription_id | The subscription ID. | Optional |
 | resource_group_name | The resource group name. | Optional |
@@ -225,9 +252,11 @@ Gets a list of incidents from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-incidents limit=5```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -400,16 +429,18 @@ Gets a list of incidents from Azure Sentinel.
 #### Human Readable Output
 
 >### Incidents List (5 results)
+>
 >|ID|Incident Number|Title|Description|Severity|Status|Assignee Email|Label|First Activity Time UTC|Last Activity Time UTC|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|Etag|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | test@test.com | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} |  |  | 2021-08-23T13:28:51Z | 2020-01-15T09:29:14Z | 1 | 0 | 3 | Azure Sentinel | "2700a244-0000-0100-0000-6123a2930000" |
->| e0b06d71-b5a3-43a9-997f-f25b45085cb7 | 4 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Low | New | test@test.com | {'Name': 'f', 'Type': 'User'},<br/>{'Name': 'o', 'Type': 'User'},<br/>{'Name': 'o', 'Type': 'User'},<br/>{'Name': '1', 'Type': 'User'} |  |  | 2021-05-10T12:49:54Z | 2020-01-15T09:34:12Z | 1 | 0 | 0 | Azure Sentinel | "dc00cb1c-0000-0100-0000-60992bf20000" |
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | <test@test.com> | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} |  |  | 2021-08-23T13:28:51Z | 2020-01-15T09:29:14Z | 1 | 0 | 3 | Azure Sentinel | "2700a244-0000-0100-0000-6123a2930000" |
+>| e0b06d71-b5a3-43a9-997f-f25b45085cb7 | 4 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Low | New | <test@test.com> | {'Name': 'f', 'Type': 'User'},<br/>{'Name': 'o', 'Type': 'User'},<br/>{'Name': 'o', 'Type': 'User'},<br/>{'Name': '1', 'Type': 'User'} |  |  | 2021-05-10T12:49:54Z | 2020-01-15T09:34:12Z | 1 | 0 | 0 | Azure Sentinel | "dc00cb1c-0000-0100-0000-60992bf20000" |
 >| a7977be7-1008-419b-877b-6793b7402a80 | 6 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Medium | New |  |  | 2020-01-15T08:04:05Z | 2020-01-15T09:04:05Z | 2020-01-15T09:40:09Z | 2020-01-15T09:40:09Z | 1 | 0 | 0 | Azure Sentinel | "0100c30e-0000-0100-0000-5fb883be0000" |
 >| 6440c129-c313-418c-a262-5df608aa9cd2 | 7 | test_title | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Medium | Active |  |  |  |  | 2020-12-17T12:26:49Z | 2020-01-15T09:44:12Z | 1 | 0 | 1 | Azure Sentinel | "0600a81f-0000-0100-0000-5fdb4e890000" |
 >| 413e9d64-c7b4-4e33-ae26-bb39710d2187 | 9 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Medium | New |  |  | 2020-01-15T08:44:06Z | 2020-01-15T09:44:06Z | 2020-01-15T09:49:12Z | 2020-01-15T09:49:12Z | 1 | 0 | 0 | Azure Sentinel | "0100b70e-0000-0100-0000-5fb883bd0000" |
 
 
 ### azure-sentinel-list-watchlists
+
 ***
 Gets a list of watchlists from Azure Sentinel.
 
@@ -417,6 +448,7 @@ Gets a list of watchlists from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-watchlists`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -447,9 +479,11 @@ Gets a list of watchlists from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-watchlists```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -520,6 +554,7 @@ Gets a list of watchlists from Azure Sentinel.
 #### Human Readable Output
 
 >### Watchlists results
+>
 >|Name|ID|Description|
 >|---|---|---|
 >| booboo | 35bffe30-19f2-40a6-8855-4a858e161fad | just for fun |
@@ -529,6 +564,7 @@ Gets a list of watchlists from Azure Sentinel.
 
 
 ### azure-sentinel-delete-watchlist
+
 ***
 Delete a watchlists from Azure Sentinel.
 
@@ -536,6 +572,7 @@ Delete a watchlists from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-delete-watchlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -550,6 +587,7 @@ Delete a watchlists from Azure Sentinel.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sentinel-delete-watchlist watchlist_alias=test_4```
 
 #### Human Readable Output
@@ -557,6 +595,7 @@ There is no context output for this command.
 >Watchlist test_4 was deleted successfully.
 
 ### azure-sentinel-watchlist-create-update
+
 ***
 Create or update a watchlist in Azure Sentinel.
 
@@ -564,6 +603,7 @@ Create or update a watchlist in Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-watchlist-create-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -601,9 +641,11 @@ Create or update a watchlist in Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-watchlist-create-update items_search_key=IP raw_content=1711@3c9bd2a0-9eac-465b-8799-459df4997b2d source="Local file" watchlist_alias=test_4 watchlist_display_name=test_4 description="test watchlist"```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -628,12 +670,14 @@ Create or update a watchlist in Azure Sentinel.
 #### Human Readable Output
 
 >### Create watchlist results
+>
 >|Name|ID|Description|
 >|---|---|---|
 >| test_4 | 84d1fedd-5945-4670-ae34-5e8c94af2660 | test watchlist |
 
 
 ### azure-sentinel-update-incident
+
 ***
 Updates a single incident in Azure Sentinel.
 
@@ -641,6 +685,7 @@ Updates a single incident in Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-update-incident`
+
 #### Input
 
 | **Argument Name**      | **Description**                                                                                                                                                                                                                                | **Required** |
@@ -689,9 +734,11 @@ Updates a single incident in Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-update-incident incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 labels=label_a,label_b```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -737,12 +784,14 @@ Updates a single incident in Azure Sentinel.
 #### Human Readable Output
 
 >### Updated incidents 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details
+>
 >|ID|Incident Number|Title|Description|Severity|Status|Assignee Email|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|Etag|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | test@test.com | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2020-01-15T09:29:14Z | 1 | 0 | 4 | Azure Sentinel | "27002845-0000-0100-0000-6123a3090000" |
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | <test@test.com> | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2020-01-15T09:29:14Z | 1 | 0 | 4 | Azure Sentinel | "27002845-0000-0100-0000-6123a3090000" |
 
 
 ### azure-sentinel-delete-incident
+
 ***
 Deletes a single incident in Azure Sentinel.
 
@@ -750,6 +799,7 @@ Deletes a single incident in Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-delete-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -764,9 +814,11 @@ Deletes a single incident in Azure Sentinel.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sentinel-delete-incident incident_id=c90cc84d-a95e-47a0-9478-89ebc9ee22fd```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -783,6 +835,7 @@ There is no context output for this command.
 >Incident c90cc84d-a95e-47a0-9478-89ebc9ee22fd was deleted successfully.
 
 ### azure-sentinel-list-incident-comments
+
 ***
 Gets the comments of an incident from Azure Sentinel.
 
@@ -790,6 +843,7 @@ Gets the comments of an incident from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-incident-comments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -816,9 +870,11 @@ Gets the comments of an incident from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-incident-comments incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -863,15 +919,17 @@ Gets the comments of an incident from Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 Comments (4 results)
+>
 >|ID|Incident ID|Message|Author Email|Created Time UTC|
 >|---|---|---|---|---|
 >| 231020399272240422047777436922721687523 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages |  | 2021-08-23T13:30:42Z |
 >| 251456744761940512356246980948458722890 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages |  | 2021-08-23T13:26:26Z |
 >| 152909182848719872520422267385960967748 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages |  | 2021-08-12T10:57:44Z |
->| 307866023137611282164566423986768628663 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | hello world | test@test.com | 2020-04-05T12:14:13Z |
+>| 307866023137611282164566423986768628663 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | hello world | <test@test.com> | 2020-04-05T12:14:13Z |
 
 
 ### azure-sentinel-incident-add-comment
+
 ***
 Adds a comment to an incident in Azure Sentinel.
 
@@ -879,6 +937,7 @@ Adds a comment to an incident in Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-incident-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -902,9 +961,11 @@ Adds a comment to an incident in Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-incident-add-comment incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 message="test messages"```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -923,12 +984,14 @@ Adds a comment to an incident in Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 new comment details
+>
 >|ID|Incident ID|Message|Created Time UTC|
 >|---|---|---|---|
 >| 231020399272240422047777436922721687523 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages | 2021-08-23T13:30:42Z |
 
 
 ### azure-sentinel-incident-delete-comment
+
 ***
 Deletes a comment from incident in Azure Sentinel.
 
@@ -936,6 +999,7 @@ Deletes a comment from incident in Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-incident-delete-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -951,6 +1015,7 @@ Deletes a comment from incident in Azure Sentinel.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sentinel-incident-delete-comment incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 comment_id="296745069631925005023508651351426"```
 
 #### Human Readable Output
@@ -959,6 +1024,7 @@ There is no context output for this command.
 
 
 ### azure-sentinel-list-incident-relations
+
 ***
 Gets a list of an incident's related entities from Azure Sentinel.
 
@@ -966,6 +1032,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-incident-relations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -974,7 +1041,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | limit | The maximum number of related entities to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional | 
 | subscription_id | The subscription ID. | Optional |
 | resource_group_name | The resource group name. | Optional |
 
@@ -991,9 +1058,11 @@ Gets a list of an incident's related entities from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-incident-relations incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1009,12 +1078,14 @@ Gets a list of an incident's related entities from Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 Relations (1 results)
+>
 >|ID|Incident ID|Kind|
 >|---|---|---|
 >| bfb02efc-12b7-4147-a8e8-961338b1b834 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | SecurityAlert |
 
 
 ### azure-sentinel-list-incident-entities
+
 ***
 Gets a list of an incident's entities from Azure Sentinel.
 
@@ -1022,6 +1093,7 @@ Gets a list of an incident's entities from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-incident-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1042,9 +1114,11 @@ Gets a list of an incident's entities from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-incident-entities incident_id=65d8cbc0-4e4d-4acb-ab7e-8aa19936002c```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1089,12 +1163,14 @@ Gets a list of an incident's entities from Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 65d8cbc0-4e4d-4acb-ab7e-8aa19936002c Entities (1 results)
+>
 >|ID|Kind|Incident Id|
 >|---|---|---|
 >| 176567ab-1ccc-8a53-53bf-97958a78d3b5 | Account | 65d8cbc0-4e4d-4acb-ab7e-8aa19936002c |
 
 
 ### azure-sentinel-list-incident-alerts
+
 ***
 Gets a list of an incident's alerts from Azure Sentinel.
 
@@ -1102,6 +1178,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 #### Base Command
 
 `azure-sentinel-list-incident-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1129,9 +1206,11 @@ Gets a list of an incident's alerts from Azure Sentinel.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-incident-alerts incident_id=25c9ddf4-d951-4b67-9381-172f953feb57```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1168,12 +1247,14 @@ Gets a list of an incident's alerts from Azure Sentinel.
 #### Human Readable Output
 
 >### Incident 25c9ddf4-d951-4b67-9381-172f953feb57 Alerts (1 results)
+>
 >|ID|Kind|Incident Id|
 >|---|---|---|
 >| f3319e38-3f5b-a1eb-9970-69679dcdf916 | SecurityAlert | 25c9ddf4-d951-4b67-9381-172f953feb57 |
 
 
 ### azure-sentinel-list-watchlist-items
+
 ***
 Get a single watchlist item or list of watchlist items.
 
@@ -1181,6 +1262,7 @@ Get a single watchlist item or list of watchlist items.
 #### Base Command
 
 `azure-sentinel-list-watchlist-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1205,9 +1287,11 @@ Get a single watchlist item or list of watchlist items.
 
 
 #### Command Example
+
 ```!azure-sentinel-list-watchlist-items watchlist_alias=test_4```
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1246,6 +1330,7 @@ Get a single watchlist item or list of watchlist items.
 #### Human Readable Output
 
 >### Watchlist items results
+>
 >|ID|Items Key Value|
 >|---|---|
 >| 28bd8f55-131b-42e6-bd5d-33d30f2d1291 | name: test1<br/>IP: 1.2.3.4 |
@@ -1253,6 +1338,7 @@ Get a single watchlist item or list of watchlist items.
 
 
 ### azure-sentinel-delete-watchlist-item
+
 ***
 Delete a watchlist item.
 
@@ -1260,6 +1346,7 @@ Delete a watchlist item.
 #### Base Command
 
 `azure-sentinel-delete-watchlist-item`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1275,6 +1362,7 @@ Delete a watchlist item.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sentinel-delete-watchlist-item watchlist_alias=test_2 watchlist_item_id=96c326c6-2dea-403c-94bd-6a005921c3c1```
 
 #### Human Readable Output
@@ -1282,6 +1370,7 @@ There is no context output for this command.
 >Watchlist item 96c326c6-2dea-403c-94bd-6a005921c3c1 was deleted successfully.
 
 ### azure-sentinel-create-update-watchlist-item
+
 ***
 Create or update a watchlist item.
 
@@ -1289,6 +1378,7 @@ Create or update a watchlist item.
 #### Base Command
 
 `azure-sentinel-create-update-watchlist-item`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1314,9 +1404,11 @@ Create or update a watchlist item.
 
 
 #### Command Example
+
 ```!azure-sentinel-create-update-watchlist-item watchlist_alias=test_4 item_key_value=`{"name": "test_4_item", "IP": "4.4.4.4"}````
 
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1340,12 +1432,14 @@ Create or update a watchlist item.
 #### Human Readable Output
 
 >### Create watchlist item results
+>
 >|ID|Items Key Value|
 >|---|---|
 >| 6b21d1ef-18fa-420f-ae4a-a6f94588ebe8 | name: test_4_item<br/>IP: 4.4.4.4 |
 
 
 ### azure-sentinel-threat-indicator-list
+
 ***
 Returns a list of threat indicators.
 
@@ -1353,6 +1447,7 @@ Returns a list of threat indicators.
 #### Base Command
 
 `azure-sentinel-threat-indicator-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1398,17 +1493,20 @@ Returns a list of threat indicators.
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-list limit=2```
 
 #### Human Readable Output
 
 ### Threat Indicators (2 results)
+
 |Name|Display Name|Values|Types|Source|Tags|
 |---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | Name | test.value | malicious-activity | Azure Sentinel | Tag |
 | 1286115b-3b65-5537-e831-969045792910 | DisplayName | domain.dot | benign | Azure Sentinel | No Tags |
 
 ### azure-sentinel-threat-indicator-query
+
 ***
 Returns a list of threat indicators with specific entities.
 
@@ -1416,6 +1514,7 @@ Returns a list of threat indicators with specific entities.
 #### Base Command
 
 `azure-sentinel-threat-indicator-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1469,17 +1568,20 @@ Returns a list of threat indicators with specific entities.
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-query max_confidence=70 ```
 
 #### Human Readable Output
 
 ### Threat Indicators (2 results)
+
 |Name|Display Name|Values|Types|Source|Confidence|Tags|
 |---|---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | DisplayName | domain.dot | compromised | Azure Sentinel | 50 | newTag |
 | 1286115b-3b65-5537-e831-969045792910 | Name | test.dot | compromised | Azure Sentinel | 68 | No Tags |
 
 ### azure-sentinel-threat-indicator-create
+
 ***
 Creates a new threat indicator.
 
@@ -1487,6 +1589,7 @@ Creates a new threat indicator.
 #### Base Command
 
 `azure-sentinel-threat-indicator-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1542,16 +1645,19 @@ Creates a new threat indicator.
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-create display_name=name indicator_type=domain threat_types=benign value=good.test confidence=77```
 
 #### Human Readable Output
 
 ### New threat Indicator was created
+
 |Name|Display Name|Values|Types|Source|Confidence|Tags|
 |---|---|---|---|---|---|---|
 |a31f2257-1af5-5eb9-bc82-acb8cc10becd| name | good.test | benign | Azure Sentinel | 77 | No Tags |
 
 ### azure-sentinel-threat-indicator-update
+
 ***
 Updates an existing threat indicator.
 
@@ -1559,6 +1665,7 @@ Updates an existing threat indicator.
 #### Base Command
 
 `azure-sentinel-threat-indicator-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1615,17 +1722,20 @@ Updates an existing threat indicator.
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-update indicator_name=a31f2257-1af5-5eb9-bc82-acb8cc10becd display_name=WeChangedTheDisplayName indicator_type="domain-name" value=verynew.value```
 
 #### Human Readable Output
 
 ### Threat Indicator a31f2257-1af5-5eb9-bc82-acb8cc10becd was updated
+
 |Name|Display Name|Values|Types|Source|Tags|
 |---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | WeChangedTheDisplayName | verynew.value | malicious-activity | Azure Sentinel | ReplaceTheTag |
 
 
 ### azure-sentinel-threat-indicator-delete
+
 ***
 Deletes an existing threat indicator.
 
@@ -1633,6 +1743,7 @@ Deletes an existing threat indicator.
 #### Base Command
 
 `azure-sentinel-threat-indicator-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1647,6 +1758,7 @@ Deletes an existing threat indicator.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-delete indicator_names=1286115b-3b65-5537-e831-969045792910```
 
 #### Human Readable Output
@@ -1655,6 +1767,7 @@ Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted
 
 
 ### azure-sentinel-threat-indicator-tags-append
+
 ***
 Appends new tags to an existing indicator.
 
@@ -1662,6 +1775,7 @@ Appends new tags to an existing indicator.
 #### Base Command
 
 `azure-sentinel-threat-indicator-tags-append`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1674,38 +1788,39 @@ Appends new tags to an existing indicator.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.ThreatIndicator.ID | String | The ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Name | String | The name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
-| AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
-| AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. THis is a number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
-| AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
-| AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
-| AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
-| AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
-| AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
-| AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
-| AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
-| AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
-| AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
+| **Path** | **Type** | **Description**                                                         |
+| --- | --- |-------------------------------------------------------------------------|
+| AzureSentinel.ThreatIndicator.ID | String | The ID of the indicator.                                                | 
+| AzureSentinel.ThreatIndicator.Name | String | The name of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Type | String | The type of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator.                                              | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created.                                  | 
+| AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator.                                           | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator.                                       | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not.                                | 
+| AzureSentinel.ThreatIndicator.Source | String | The source of the indicator.                                            | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator.                                             | 
+| AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.Description | String | The description of the indicator.                                       | 
+| AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator.                                 | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator.                                  | 
+| AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator.                                           | 
+| AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid.                             | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid.                            | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator.                                        | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator.                                             | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator.                                        | 
+| AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator.                                 | 
+| AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator.                                      | 
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-tags-append indicator_name=1286115b-3b65-5537-e831-969045792910 tags=newtag```
 
 #### Human Readable Output
@@ -1713,6 +1828,7 @@ Appends new tags to an existing indicator.
 Tags were appended to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
 ### azure-sentinel-threat-indicator-tags-replace
+
 ***
 Replaces the tags of a given indicator.
 
@@ -1720,6 +1836,7 @@ Replaces the tags of a given indicator.
 #### Base Command
 
 `azure-sentinel-threat-indicator-tags-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1764,6 +1881,7 @@ Replaces the tags of a given indicator.
 
 
 #### Command Example
+
 ```!azure-sentinel-threat-indicator-tags-replace name=1286115b-3b65-5537-e831-969045792910 tags=newtag```
 
 #### Human Readable Output
@@ -1771,6 +1889,7 @@ Replaces the tags of a given indicator.
 Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
 ### azure-sentinel-list-alert-rule
+
 ***
 Gets a list of all alert rules.
 
@@ -1778,6 +1897,7 @@ Gets a list of all alert rules.
 #### Base Command
 
 `azure-sentinel-list-alert-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1832,8 +1952,11 @@ Gets a list of all alert rules.
 | AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated | 
 
 #### Command example
+
 ```!azure-sentinel-list-alert-rule limit=1```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -1907,11 +2030,13 @@ Gets a list of all alert rules.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rules
+>
 >|ID|Kind|Severity|Display Name|Description|Enabled|
 >|---|---|---|---|---|---|
 >| test-rule-id | Scheduled | Low | testing displayname |  | true |
 
 ### azure-sentinel-list-alert-rule-template
+
 ***
 Gets a list of all alert rule templates.
 
@@ -1919,6 +2044,7 @@ Gets a list of all alert rule templates.
 #### Base Command
 
 `azure-sentinel-list-alert-rule-template`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1956,8 +2082,11 @@ Gets a list of all alert rule templates.
 | AzureSentinel.AlertRuleTemplate.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
 
 #### Command example
+
 ```!azure-sentinel-list-alert-rule-template limit=1```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2001,9 +2130,10 @@ Gets a list of all alert rule templates.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule Template
+>
 >|ID|Kind|Severity|Display Name|Description|Status|Created Date UTC|Last Updated Date UTC|Alert Rules Created By Template Count|
 >|---|---|---|---|---|---|---|---|---|
->| test-rule-template-id | Scheduled | Low | Changes to Amazon VPC settings | This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.<br/>More information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 <br/>and https://aws.amazon.com/vpc/ | Available | 2019-02-27T00:00:00Z | 2021-02-27T10:00:00Z | 0 |
+>| test-rule-template-id | Scheduled | Low | Changes to Amazon VPC settings | This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.<br/>More information: <https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255> <br/>and <https://aws.amazon.com/vpc/> | Available | 2019-02-27T00:00:00Z | 2021-02-27T10:00:00Z | 0 |
 
 ### azure-sentinel-delete-alert-rule
 
@@ -2030,8 +2160,11 @@ Deletes the specified alert rule.
 | AzureSentinel.AlertRule.Deleted | Boolean | Whether the alert rule was deleted. | 
 
 #### Command example
+
 ```!azure-sentinel-delete-alert-rule rule_id=1234-abcd-5678-efgh```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2046,6 +2179,7 @@ Deletes the specified alert rule.
 #### Human Readable Output
 
 >Alert rule 1234-abcd-5678-efgh was deleted successfully.
+>
 ### azure-sentinel-create-alert-rule
 
 ***
@@ -2086,39 +2220,42 @@ Creates a new alert rule.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.AlertRule.name | String | The name of the resource. | 
-| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
-| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
-| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule. | 
-| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
-| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert was modified. | 
-| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
-| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
-| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
-| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule. | 
-| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule. | 
+| **Path** | **Type** | **Description**                                                                                            |
+| --- | --- |------------------------------------------------------------------------------------------------------------|
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                              | 
+| AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                  | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                | 
+| AzureSentinel.AlertRule.type | String | The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                       | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                    | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                         | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule.                                              | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule.                                                                             | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule.                                                        | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled.                                                 | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert was modified.                                                                | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated.                                              | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated.                                               | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated.                                             | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule.                                                               | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run.                                  | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at.                                  | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule.                                          | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule.                                                               | 
 | AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule was triggered. | 
-| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
-| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert. | 
-| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
-| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled.                             | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings.                                                                               | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert.                               | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule.                                                            | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings.                                                                       | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule.                   | 
 
 #### Command example
+
 ```!azure-sentinel-create-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing Display Name" product_filter=microsoft_cloud_app_security```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2147,6 +2284,7 @@ Creates a new alert rule.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule successfully created/updated
+>
 >|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
 >| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing Display Name | true | "09009060-0000-5e60000" |
@@ -2191,39 +2329,42 @@ Updates an alert rule.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.AlertRule.name | String | The name of the resource. | 
-| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
-| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
-| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to update this rule. | 
-| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
-| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert was modified. | 
-| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
-| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
-| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
-| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
-| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule. | 
+| **Path** | **Type** | **Description**                                                                                             |
+| --- | --- |-------------------------------------------------------------------------------------------------------------|
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                               | 
+| AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                   | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                 | 
+| AzureSentinel.AlertRule.type | String | The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"  | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                        | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                     | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                          | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to update this rule.                                               | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule.                                                                              | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule.                                                         | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled.                                                  | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert was modified.                                                                      | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated.                                               | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated.                                                | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated.                                              | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule.                                                                | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run.                                   | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at.                                   | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule.                                               | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule.                                                                     | 
 | AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule been triggered. | 
-| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
-| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert | 
-| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
-| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled.                              | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings.                                                                                | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert                                 | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule.                                                             | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings.                                                                        | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule.                    | 
 
 #### Command example
+
 ```!azure-sentinel-update-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing updating Display Name" product_filter=microsoft_cloud_app_security```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2252,6 +2393,159 @@ Updates an alert rule.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule successfully created/updated
+>
 >|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
 >| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing updating Display Name | true | "097809060-0000-6hd400" |
+
+### azure-sentinel-subscriptions-list
+
+***
+Lists all subscriptions.
+
+#### Base Command
+
+`azure-sentinel-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.SubscriptionId | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.Subscription.displayName | String | The name of the resource. | 
+| AzureSentinel.Subscription.authorizationSource | String | The authorization source of the resource. | 
+| AzureSentinel.Subscription.managedByTenants | String | The subscriptions that are managed by tenants of the resource. | 
+| AzureSentinel.Subscription.tenetId | String | The tenet ID of the resource. | 
+| AzureSentinel.Subscription.state | String | The state of the resource. | 
+| AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
+
+#### Command example
+```!azure-sentinel-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "Subscription": {
+            "authorizationSource": "RoleBased",
+            "displayName": "Pay-As-You-Go",
+            "id": "/subscriptions/0000000000000",
+            "managedByTenants": [],
+            "state": "Enabled",
+            "subscriptionId": "0000000000000",
+            "subscriptionPolicies": {
+                "locationPlacementId": "Public_2014-09-01",
+                "quotaId": "PayAsYouGo_2014-09-01",
+                "spendingLimit": "Off"
+            },
+            "tenantId": "000000000000000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Subscriptions
+>|Subscriptionid|Tenantid|Displayname|State|
+>|---|---|---|---|
+>| 0000000000000 | 000000000000000 | Pay-As-You-Go | Enabled |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+### azure-sentinel-resource-group-list
+
+***
+Lists all resource groups.
+
+#### Base Command
+
+`azure-sentinel-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
+| tag | The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”. | Optional | 
+| limit | The maximum number of items to return. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
+#### Command example
+```!azure-sentinel-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-/resourceGroups/cloud-shell",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+    ]}
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Resource Groups
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell | eastus |  |
+>| demi | centralus | Owner: Demi |
+
+
+### azure-sentinel-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-sentinel-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

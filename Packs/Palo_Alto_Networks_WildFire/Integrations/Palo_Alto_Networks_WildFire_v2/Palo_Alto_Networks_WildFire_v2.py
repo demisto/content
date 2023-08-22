@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import shutil
 from typing import Callable, Tuple, Optional, List
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 import tarfile
 import io
@@ -1299,16 +1299,15 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 resp_type='json'
             )
 
-            report = res_maec.get('result')
-            report_str = json.dumps(report)
+            report_json = res_maec.get('result')
 
             file_name = 'wildfire_report_maec_' + file_hash + '.json'
             file_type = entryTypes['entryInfoFile']
 
-            result = fileResult(file_name, report_str, file_type)  # will be saved under 'InfoFile' in the context.
+            result = fileResult(file_name, report_json, file_type)  # will be saved under 'InfoFile' in the context.
             demisto.results(result)
             human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
-            outputs['maec_report'] = report
+            outputs['maec_report'] = json.loads(report_json)
 
         except Exception as exc:
             demisto.error(f'Report MAEC Exception. Error: {exc}')
@@ -1413,7 +1412,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             params=PARAMS_DICT
         )
         # we get the report and file info from the XML object
-        reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
+        reports = ((json_res.get('wildfire') or {}).get('task_info') or {}).get('report')
         file_info = json_res.get('wildfire', {}).get('file_info')
 
         # extra options to provide in the query
@@ -1500,7 +1499,7 @@ def wildfire_file_command(args: dict):
         else:
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
-            return command_results
+    return command_results_list
 
 
 def wildfire_get_sample(file_hash):

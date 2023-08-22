@@ -1,20 +1,12 @@
 args:
 - default: true
   description: War Room entryID of the file to read.
-  isArray: false
   name: entryID
   required: true
-  secret: false
-- default: false
-  description: Maximal file size to load, in bytes. Default is 1MB.
-  isArray: false
+- description: Maximal file size to load, in bytes. Default is 1MB.
   name: maxFileSize
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: The character encoding of the file.
-  isArray: false
   name: input_encoding
   predefined:
   - binary
@@ -22,27 +14,21 @@ args:
   - utf-16
   - ascii
   - gbk
-  required: false
-  secret: false
 - name: output_data_type
   auto: PREDEFINED
   predefined:
   - raw
   - base64
   - json
-  isArray: false
   description: The data type to which the output data is converted.
   defaultValue: raw
-  secret: false
 - name: output_metadata
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  isArray: false
   description: Set true in order to output additional metadata on the file, to context.
   defaultValue: "false"
-  secret: false
 comment: Load the contents of a file into context.
 commonfields:
   id: ReadFile
@@ -66,7 +52,6 @@ outputs:
   description: Whether the file has reached end-of-file.
   type: boolean
 script: ''
-system: false
 tags:
 - Utility
 - ingestion
@@ -74,8 +59,7 @@ timeout: '0'
 type: python
 subtype: python3
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)

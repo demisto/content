@@ -4,7 +4,7 @@ import dateparser
 import pytest
 import requests
 import demistomock as demisto
-from CommonServerPython import IncidentStatus
+from CommonServerPython import IncidentStatus, tableToMarkdown, pascalToSpace, CommandResults
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
@@ -14,12 +14,13 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
+    list_threat_indicator_command, NEXT_LINK_DESCRIPTION, process_incidents, fetch_incidents, \
+    fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
     list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
-    create_data_for_alert_rule, create_and_update_alert_rule_command
+    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -49,12 +50,11 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     mocker.patch.object(client._client._session, 'request', return_value=api_response)
 
     with pytest.raises(ValueError, match='[Forbidden 403]'):
-        test_module(client)
+        test_module(client, {})
 
 
 def mock_client():
     client = AzureSentinelClient(
-        server_url='http://server_url',
         tenant_id='tenant_id',
         client_id='client_id',
         client_secret='client_secret',
@@ -706,7 +706,8 @@ class TestHappyPath:
 
         # prepare
         client = mock_client()
-        args = {'labels': ['label_after_1', 'label_after_2'], 'assignee_email': 'bob@example.com'}
+        args = {'labels': ['label_after_1', 'label_after_2'], 'assignee_email': 'bob@example.com',
+                'user_principal_name': 'booUserPrincipalName'}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_UPDATE_INCIDENT)
 
         # run
@@ -717,6 +718,7 @@ class TestHappyPath:
         assert properties['labels'] == [{'labelName': 'label_after_1', 'labelType': 'User'},
                                         {'labelName': 'label_after_2', 'labelType': 'User'}]
         assert properties['owner']['email'] == 'bob@example.com'
+        assert properties['owner']['userPrincipalName'] == 'booUserPrincipalName'
 
     def test_list_incident_entities(self, mocker):
         """
@@ -1029,7 +1031,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.get(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/indicators', json=mocked_indicators)
         else:
@@ -1049,7 +1051,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
@@ -1072,7 +1074,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.post(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/queryIndicators', json=mocked_indicators)
         else:
@@ -1091,7 +1093,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
@@ -1223,11 +1225,11 @@ class TestHappyPath:
         mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
 
         requests_mock.get(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_indicators)
         requests_mock.put(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_updated_indicators)
 
@@ -1393,7 +1395,8 @@ class TestHappyPath:
             'use_managed_identities': 'True',
             'subscriptionID': 'test_subscription_id',
             'resourceGroupName': 'test_resource_group',
-            'tenant_id': 'test_tenant_id'
+            'tenant_id': 'test_tenant_id',
+            'azure_cloud': 'Worldwide',
         }
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -1591,8 +1594,8 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[0].type_name == 'Microsoft Sentinel Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
                                                              'classificationReason', 'tags', 'classificationComment',
-                                                             'severity', 'firstActivityTimeUtc', 'classification', 'title',
-                                                             'etag'}
+                                                             'severity', 'firstActivityTimeUtc', 'classification',
+                                                             'title', 'etag'}
 
 
 def test_update_remote_system_command(mocker):
@@ -1905,3 +1908,105 @@ def test_create_and_update_alert_rule_command(mocker):
     assert command_results.outputs_prefix == 'AzureSentinel.AlertRule'
     assert command_results.outputs_key_field == 'name'
     assert '|ID|Name|Kind|Severity|Display Name|Description|Enabled|Etag|' in command_results.readable_output
+
+
+def test_list_incident_comments_command_happy_path(mocker):
+    """
+    Given:
+    - Valid incident ID, limit, and next link.
+
+    When:
+    - Calling the list_incident_comments_command function.
+
+    Then:
+    - Ensure the function successfully retrieves comments for the given incident ID with and without
+    a specified limit and next link.
+    - Ensure the function returns the expected CommandResults object.
+    """
+
+    client = mocker.Mock()
+    args = {
+        'incident_id': '123',
+        'limit': '50',
+        'next_link': ''
+    }
+    result = {
+        'value': [
+            {
+                'name': 'comment1',
+                'properties': {
+                    'message': 'test comment 1',
+                    'author': {
+                        'assignedTo': 'test user',
+                        'email': 'test@test.com'
+                    },
+                    'createdTimeUtc': '2022-01-01T00:00:00Z'
+                }
+            },
+            {
+                'name': 'comment2',
+                'properties': {
+                    'message': 'test comment 2',
+                    'author': {
+                        'assignedTo': 'test user 2',
+                        'email': 'test2@test.com'
+                    },
+                    'createdTimeUtc': '2022-01-02T00:00:00Z'
+                }
+            }
+        ],
+        'nextLink': ''
+    }
+    client.http_request.return_value = result
+
+    expected_comments = [
+        {
+            'ID': 'comment1',
+            'IncidentID': '123',
+            'Message': 'test comment 1',
+            'AuthorName': 'test user',
+            'AuthorEmail': 'test@test.com',
+            'CreatedTimeUTC': '2022-01-01T00:00:00Z'
+        },
+        {
+            'ID': 'comment2',
+            'IncidentID': '123',
+            'Message': 'test comment 2',
+            'AuthorName': 'test user 2',
+            'AuthorEmail': 'test2@test.com',
+            'CreatedTimeUTC': '2022-01-02T00:00:00Z'
+        }
+    ]
+
+    expected_outputs = {
+        'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === 123)': expected_comments
+    }
+
+    expected_readable_output = tableToMarkdown('Incident 123 Comments (2 results)', expected_comments,
+                                               headers=COMMENT_HEADERS, headerTransform=pascalToSpace, removeNull=True)
+
+    # Execute the test
+    assert list_incident_comments_command(client, args).readable_output == CommandResults(
+        readable_output=expected_readable_output,
+        outputs=expected_outputs,
+        raw_response=result
+    ).readable_output
+
+
+def test_update_incident_command_table_to_markdown(mocker):
+    """
+    Given:
+    - A valid incident_id and incident data.
+
+    When:
+    - Calling update_incident_command function.
+
+    Then:
+    - Ensure that the function formats the output table correctly.
+    """
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value={'id': '123', 'title': 'test', 'severity': 'High'})
+    args = {'incident_id': '123', 'title': 'new title', 'description': 'new description', 'severity': 'High'}
+    result = update_incident_command(client, args)
+    expected_output = '### Updated incidents 123 details\n**No entries.**'
+    assert result.readable_output.strip() == expected_output

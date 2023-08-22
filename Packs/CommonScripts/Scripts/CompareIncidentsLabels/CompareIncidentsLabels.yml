@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: Incident ID of the first incident.
-  isArray: false
+- description: Incident ID of the first incident.
   name: incident_id_1
   required: true
-  secret: false
-- default: false
-  description: Incident ID of the second incident.
-  isArray: false
+- description: Incident ID of the second incident.
   name: incident_id_2
   required: true
-  secret: false
 comment: |-
   Compares the labels of two incidents. Returns the labels that are unique to each incident.
 
@@ -23,14 +17,12 @@ commonfields:
 enabled: true
 name: CompareIncidentsLabels
 script: '-'
-system: false
 tags:
 - incidents
 timeout: '0'
 type: python
 subtype: python3
-runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - CompareIncidentsLabels-test-playbook

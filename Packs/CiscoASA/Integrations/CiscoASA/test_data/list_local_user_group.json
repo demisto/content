@@ -1,0 +1,29 @@
+{
+    "kind": "collection#LocalUserObjGroup",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 1,
+        "total": 1
+    },
+    "items": [
+        {
+            "kind": "object#LocalUserObjGroup",
+            "selfLink": "items[0]_selfLink",
+            "name": "TEST_GROUP",
+            "members": [
+                {
+                    "kind": "objectRef#UserObj",
+                    "refLink": "items[0]_members[0]_refLink",
+                    "objectId": "Pikachu_I_Choose_You!"
+                },
+                {
+                    "kind": "objectRef#UserObj",
+                    "refLink": "items[0]_members[1]_refLink",
+                    "objectId": "Use_thunderbolt!"
+                }
+            ],
+            "objectId": "TEST_GROUP"
+        }
+    ]
+}

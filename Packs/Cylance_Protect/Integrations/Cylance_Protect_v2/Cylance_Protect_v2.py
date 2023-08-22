@@ -1063,8 +1063,9 @@ def download_threat_request(hash):  # pragma: no cover
 
     uri = '{}/{}/{}'.format(URI_THREATS, "download", hash)
     res = api_call(uri=uri, method='get', access_token=access_token)
-    if not res['url']:
-        return_error('No url was found')
+    if not isinstance(res, dict) or not res.get('url'):
+        error_msg = f'No url was found - {res}' if isinstance(res, str) else 'No url was found'
+        return_error(error_msg)
     return res['url']
 
 
@@ -1513,19 +1514,24 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 
 # EXECUTION
 def main():    # pragma: no cover
+    params = demisto.params()
+
     global APP_ID
-    APP_ID = demisto.params()['app_id']
+    APP_ID = params.get('app_creds', {}).get('identifier') or params.get('app_id')
     global APP_SECRET
-    APP_SECRET = demisto.params()['app_secret']
+    APP_SECRET = params.get('app_creds', {}).get('password') or params.get('app_secret')
     global TID
-    TID = demisto.params()['tid']
+    TID = params.get('api_key', {}).get('password') or params.get('tid')
     global SERVER_URL
     SERVER_URL = load_server_url()
     global FILE_THRESHOLD
-    FILE_THRESHOLD = demisto.params()['file_threshold']
+    FILE_THRESHOLD = params['file_threshold']
     global USE_SSL
-    USE_SSL = not demisto.params().get('unsecure', False)
+    USE_SSL = not params.get('unsecure', False)
     command = demisto.command()
+
+    if not all((APP_ID, APP_SECRET, TID)):
+        raise DemistoException('Please fill out the Application ID, Application Secret and Tenant API Key')
 
     LOG(f'Command being called is {command}')
     try:

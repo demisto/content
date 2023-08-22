@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 from datetime import datetime
 from itertools import takewhile
@@ -5,9 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import json
 from dateutil.parser import parse
 
-import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
 from zipfile import ZipFile
 import dateparser
 

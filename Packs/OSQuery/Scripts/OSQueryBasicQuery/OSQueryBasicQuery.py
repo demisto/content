@@ -1,7 +1,7 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
+
 
 # ssh command to run, json format, param = query to execute
 COMMAND = 'osqueryi --json "{0}"'

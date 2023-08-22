@@ -194,13 +194,15 @@ def resolve_default_project_id(project: str, credentials_json: dict):
 
 
 def main():
-    credentials_json = json.loads(demisto.params().get('credentials_json', {}))
-    project = demisto.params().get('project_id')
+    params = demisto.params()
+    credentials_json = json.loads(
+        params.get('project_id_creds', {}).get('password') or params.get('credentials_json', {}))
+    project = params.get('project_id_creds', {}).get('identifier') or params.get('project_id')
     project = resolve_default_project_id(project, credentials_json)
-    region = demisto.params().get('region')
+    region = params.get('region')
     region = resolve_default_region(region)
-    proxy = demisto.params().get('proxy', False)
-    insecure = demisto.params().get('insecure', False)
+    proxy = params.get('proxy', False)
+    insecure = params.get('insecure', False)
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
     client = GoogleClient('cloudfunctions', 'v1', credentials_json, scopes, proxy, insecure, project=project,
                           region=region)

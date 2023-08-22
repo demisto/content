@@ -9,7 +9,6 @@ tags:
 comment: Deprecated. No available replacement.
 enabled: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 dependson:
   must:

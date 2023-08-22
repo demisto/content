@@ -9,18 +9,16 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
   type: 9
+  required: false
 - additionalinfo: Cluster Authentication Token
   display: Username
   displaypassword: API Token
   name: api_token
-  required: false
   type: 9
   hiddenusername: true
-- defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
-    cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
-    malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
+  required: false
+- defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials, cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage, malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
   display: Exabeam Incident Type
   name: incident_type
   options:
@@ -48,8 +46,8 @@ configuration:
   - privilegedActivity
   - ransomware
   - workforceProtection
-  required: false
   type: 16
+  required: false
 - defaultvalue: low,medium,high,critical
   display: Priority
   name: priority
@@ -58,8 +56,8 @@ configuration:
   - medium
   - high
   - critical
-  required: false
   type: 16
+  required: false
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
   display: Status
   name: status
@@ -70,56 +68,50 @@ configuration:
   - new
   - pending
   - resolved
-  required: false
   type: 16
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam
 name: Exabeam
 script:
   commands:
   - arguments:
-    - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+    - description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of returned results.
-      isArray: false
       name: limit
       required: true
-      secret: false
     deprecated: true
     description: Returns notable users in a period of time.
-    execution: false
     name: get-notable-users
     outputs:
     - contextPath: Exabeam.User.RiskScore
@@ -159,22 +151,15 @@ script:
       description: Whether the user is a notable user.
       type: Boolean
   - arguments:
-    - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+    - description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of returned results.
-      isArray: false
       name: limit
       required: true
-      secret: false
-    deprecated: false
     description: Returns notable users in a period of time.
-    execution: false
     name: exabeam-get-notable-users
     outputs:
     - contextPath: Exabeam.User.RiskScore
@@ -215,7 +200,6 @@ script:
       type: Boolean
   - deprecated: true
     description: Returns all watchlist IDs and titles.
-    execution: false
     name: get-watchlists
     outputs:
     - contextPath: Exabeam.Watchlist.Category
@@ -227,9 +211,7 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-  - deprecated: false
-    description: Returns all watchlist IDs and titles.
-    execution: false
+  - description: Returns all watchlist IDs and titles.
     name: exabeam-get-watchlists
     outputs:
     - contextPath: Exabeam.Watchlist.Category
@@ -243,30 +225,23 @@ script:
       type: String
   - deprecated: true
     description: Returns all peer groups.
-    execution: false
     name: get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-  - deprecated: false
-    description: Returns all peer groups.
-    execution: false
+  - description: Returns all peer groups.
     name: exabeam-get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to fetch.
-      isArray: false
+    - description: The username of the user to fetch.
       name: username
       required: true
-      secret: false
     deprecated: true
     description: Returns user information data for the username.
-    execution: false
     name: get-user-info
     outputs:
     - contextPath: Exabeam.User.RiskScore
@@ -309,15 +284,10 @@ script:
       description: The account name of the user.
       type: String
   - arguments:
-    - default: false
-      description: The username of the user to fetch.
-      isArray: false
+    - description: The username of the user to fetch.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Returns user information data for the username.
-    execution: false
     name: exabeam-get-user-info
     outputs:
     - contextPath: Exabeam.User.RiskScore
@@ -361,42 +331,27 @@ script:
       type: String
   - deprecated: true
     description: Returns all labels of the user.
-    execution: false
     name: get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
-  - deprecated: false
-    description: Returns all labels of the user.
-    execution: false
+  - description: Returns all labels of the user.
     name: exabeam-get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
   - arguments:
-    - default: false
-      description: The username for which to fetch data.
-      isArray: false
+    - description: The username for which to fetch data.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
-      isArray: false
+    - description: The Start time of the time range. For example, 2018-08-01T11:50:16).
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16.
-      isArray: false
+    - description: The end time of the time range. For example, 2018-08-01T11:50:16.
       name: end_time
-      required: false
-      secret: false
     deprecated: true
     description: Returns sessions for the given username and time range.
-    execution: false
     name: get-user-sessions
     outputs:
     - contextPath: Exabeam.User.Session.EndTime
@@ -424,27 +379,14 @@ script:
       description: The username of the session.
       type: String
   - arguments:
-    - default: false
-      description: The username for which to fetch data.
-      isArray: false
+    - description: The username for which to fetch data.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
-      isArray: false
+    - description: The start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
-      isArray: false
+    - description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Returns sessions for the given username and time range.
-    execution: false
     name: exabeam-get-user-sessions
     outputs:
     - contextPath: Exabeam.User.Session.EndTime
@@ -472,26 +414,16 @@ script:
       description: The username of the session.
       type: String
   - arguments:
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a watchlist.
-    execution: false
     name: exabeam-delete-watchlist
   - arguments:
-    - default: false
-      description: The name of the asset.
-      isArray: false
+    - description: The name of the asset.
       name: asset_name
       required: true
-      secret: false
-    deprecated: false
     description: Returns asset data.
-    execution: false
     name: exabeam-get-asset-data
     outputs:
     - contextPath: Exabeam.Asset.HostName
@@ -510,15 +442,10 @@ script:
       description: The date the asset was last seen.
       type: String
   - arguments:
-    - default: false
-      description: ID of the session to fetch data for.
-      isArray: false
+    - description: ID of the session to fetch data for.
       name: session_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns session info data for the given ID.
-    execution: false
     name: exabeam-get-session-info-by-id
     outputs:
     - contextPath: Exabeam.SessionInfo.sessionId
@@ -570,21 +497,13 @@ script:
       description: Zones information of the session.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of the sequence.
-      isArray: false
+    - description: ID of the sequence.
       name: sequence_id
       required: true
-      secret: false
-    - default: false
-      description: Type of the sequence.
-      isArray: false
+    - description: Type of the sequence.
       name: sequence_type
       required: true
-      secret: false
-    deprecated: false
     description: List top domains of a sequence.
-    execution: false
     name: exabeam-list-top-domains
     outputs:
     - contextPath: Exabeam.DataFeed.topDomains
@@ -597,21 +516,13 @@ script:
       description: Type of the sequence.
       type: String
   - arguments:
-    - default: false
-      description: ID of the sequence to fetch data for.
-      isArray: false
+    - description: ID of the sequence to fetch data for.
       name: sequence_id
       required: true
-      secret: false
-    - default: false
-      description: Type of the sequence to fetch data for.
-      isArray: false
+    - description: Type of the sequence to fetch data for.
       name: sequence_type
       required: true
-      secret: false
-    deprecated: false
     description: Gets all the triggered rules of a sequence.
-    execution: false
     name: exabeam-list-triggered-rules
     outputs:
     - contextPath: Exabeam.TriggeredRule._Id
@@ -666,22 +577,13 @@ script:
       description: Multi-peer group data of the triggered rule.
       type: Unknown
   - arguments:
-    - default: false
-      description: ID of the asset to fetch info for.
-      isArray: false
+    - description: ID of the asset to fetch info for.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximal number of users.
-      isArray: false
       name: max_users_number
-      required: false
-      secret: false
-    deprecated: false
     description: Returns asset information for given asset ID (hostname or IP address).
-    execution: false
     name: exabeam-get-asset-info
     outputs:
     - contextPath: Exabeam.AssetInfo.assetId
@@ -718,68 +620,37 @@ script:
       description: ID of the latest seqence of the asset.
       type: String
   - arguments:
-    - default: false
-      description: ID of the asset.
-      isArray: false
+    - description: ID of the asset.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: The event time, e.g. "2 years ago" or "2019-02-27".
-      isArray: false
+    - description: The event time, e.g. "2 years ago" or "2019-02-27".
       name: event_time
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Preffered number of events.
-      isArray: false
       name: number_of_events
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to return only anomaly events.
-      isArray: false
       name: anomaly_only
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of event types.
-      isArray: false
+    - description: A comma-separated list of event types.
       name: event_types
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: exclude
       description: Whether or not to include the specified event types.
-      isArray: false
       name: event_types_operator
       predefined:
       - include
       - exclude
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sequence types.
-      isArray: false
+    - description: A comma-separated list of sequence types.
       name: sequence_types
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of event categories.
-      isArray: false
+    - description: A comma-separated list of event categories.
       name: event_categories
-      required: false
-      secret: false
-    deprecated: false
     description: Gets next events for a given asset.
-    execution: false
     name: exabeam-list-asset-timeline-next-events
     outputs:
     - contextPath: Exabeam.AssetEvent.event_id
@@ -843,44 +714,27 @@ script:
       description: Source of the event.
       type: String
   - arguments:
-    - default: false
-      description: ID of the asset to fetch info for
-      isArray: false
+    - description: ID of the asset to fetch info for
       name: asset_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: date
       description: The key to sort results by.
-      isArray: false
       name: sort_by
       predefined:
       - date
       - riskScore
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: desc
       description: The results order (ascending or descending).
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximal number of results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets security alerts for a given asset.
-    execution: false
     name: exabeam-list-security-alerts-by-asset
     outputs:
     - contextPath: Exabeam.AssetSecurityAlert.process
@@ -974,35 +828,18 @@ script:
       description: Additional information about the security alert.
       type: String
   - arguments:
-    - default: false
-      description: The search keyword.
-      isArray: false
+    - description: The search keyword.
       name: keyword
       required: true
-      secret: false
-    - default: false
-      description: The search filter.
-      isArray: false
+    - description: The search filter.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximal number of rules to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Results page number.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for rules by a keyword.
-    execution: false
     name: exabeam-search-rules
     outputs:
     - contextPath: Exabeam.Rule.categoryId
@@ -1075,15 +912,10 @@ script:
       description: Whether or not it is possible to use the simple editor on this rule.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the rule.
-      isArray: false
+    - description: The ID of the rule.
       name: rule_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a rule's information as a string.
-    execution: false
     name: exabeam-get-rule-string
     outputs:
     - contextPath: Exabeam.Rule.ruleId
@@ -1094,34 +926,20 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The type of the rules to retrieve.
-      isArray: false
       name: filter_by
       predefined:
       - all
       - custom
       - default
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Which page of results to return.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximal number of results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all rules.
-    execution: false
     name: exabeam-fetch-rules
     outputs:
     - contextPath: Exabeam.Rule.categoryId
@@ -1194,15 +1012,10 @@ script:
       description: Whether or not it is possible to use the simple editor on this rule.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the model.
-      isArray: false
+    - description: The name of the model.
       name: model_name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a rule model definition by name.
-    execution: false
     name: exabeam-get-rules-model-definition
     outputs:
     - contextPath: Exabeam.Model.alpha
@@ -1266,35 +1079,18 @@ script:
       description: The scope value of the model.
       type: String
   - arguments:
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the items to add.
-      isArray: false
+    - description: A comma-separated list of the items to add.
       name: items
-      required: false
-      secret: false
-    - default: false
-      description: The entry ID of the CSV file.
-      isArray: false
+    - description: The entry ID of the CSV file.
       name: csv_entry_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Number of days until asset is automatically removed from the watchlist.
-      isArray: false
       name: watch_until_days
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The item category.
-      isArray: false
       name: category
       predefined:
       - Anomalies
@@ -1303,56 +1099,33 @@ script:
       - Sessions
       - Users
       required: true
-      secret: false
-    deprecated: false
     description: Add watchlist items by their names or from a CSV file.
-    execution: false
     name: exabeam-watchlist-add-items
   - arguments:
-    - default: false
-      description: A keyword to search.
-      isArray: false
+    - description: A keyword to search.
       name: keyword
       required: true
-      secret: false
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: Maximum nmber of results to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether or not the item is exclusive on watchlist.
-      isArray: false
       name: is_exclusive
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether or not to search the item by its IP.
-      isArray: false
       name: search_by_ip
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the assets of a specified watchlist according to a keyword.
-    execution: false
     name: exabeam-watchlist-asset-search
     outputs:
     - contextPath: Exabeam.AssetInfo.hostName
@@ -1380,22 +1153,15 @@ script:
       description: Zone of the asset.
       type: String
   - arguments:
-    - default: false
-      description: The watchlist ID.
-      isArray: false
+    - description: The watchlist ID.
       name: watchlist_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the items to remove.
+    - description: A comma-separated list of the items to remove.
       isArray: true
       name: items
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The category of the items to remove.
-      isArray: false
       name: category
       predefined:
       - Anomalies
@@ -1404,35 +1170,19 @@ script:
       - Sessions
       - Users
       required: true
-      secret: false
-    deprecated: false
     description: Removes items from a watchlist.
-    execution: false
     name: exabeam-watchlist-remove-items
   - arguments:
-    - default: false
-      description: The name of the context table
-      isArray: false
+    - description: The name of the context table
       name: context_table_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The offset number to begin (starts from 1).
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of a context table records.
-    execution: false
     name: exabeam-list-context-table-records
     outputs:
     - contextPath: Exabeam.ContextTable.Name
@@ -1454,37 +1204,22 @@ script:
       description: Value of the record.
       type: String
   - arguments:
-    - default: false
-      description: The name of the context table.
-      isArray: false
+    - description: The name of the context table.
       name: context_table_name
       required: true
-      secret: false
-    - default: false
-      description: 'A comma-separated list of records to add, for example: k1,k2. If context_table_type argument is set to key_value, every record should be in "key:values" format, where "values" is a semi-colon separated list of values. For example: k1:v1;v2,k2:v3,k3:,k4:v4.'
-      isArray: false
+    - description: 'A comma-separated list of records to add, for example: k1,k2. If context_table_type argument is set to key_value, every record should be in "key:values" format, where "values" is a semi-colon separated list of values. For example: k1:v1;v2,k2:v3,k3:,k4:v4.'
       name: records
       required: true
-      secret: false
-    - default: false
-      description: The ID of update session. If not specified, a new session is created.
-      isArray: false
+    - description: The ID of update session. If not specified, a new session is created.
       name: session_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The context table type.
-      isArray: false
       name: context_table_type
       predefined:
       - key_only
       - key_value
       required: true
-      secret: false
-    deprecated: false
     description: Add records to the context table.
-    execution: false
     name: exabeam-add-context-table-records
     outputs:
     - contextPath: Exabeam.ContextTableUpdate.contextTableName
@@ -1506,37 +1241,22 @@ script:
       description: The raw data of the context table update.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the context table.
-      isArray: false
+    - description: The name of the context table.
       name: context_table_name
       required: true
-      secret: false
-    - default: false
-      description: The ID of update session. If not specified, a new session is created.
-      isArray: false
+    - description: The ID of update session. If not specified, a new session is created.
       name: session_id
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of records to update. If context_table_type argument is set to key_only, each record should be in the following format: id:key. Otherwise it''s a key_value type and then the format of a record is id:key:values, where the values are separated by semi-colons.'
-      isArray: false
+    - description: 'A comma-separated list of records to update. If context_table_type argument is set to key_only, each record should be in the following format: id:key. Otherwise it''s a key_value type and then the format of a record is id:key:values, where the values are separated by semi-colons.'
       name: records
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of the context table.
-      isArray: false
       name: context_table_type
       predefined:
       - key_only
       - key_value
       required: true
-      secret: false
-    deprecated: false
     description: Updates records of a context table.
-    execution: false
     name: exabeam-update-context-table-records
     outputs:
     - contextPath: Exabeam.ContextTableUpdate.contextTableName
@@ -1558,82 +1278,46 @@ script:
       description: The raw data of the context table update.
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of the context table.
-      isArray: false
+    - description: Name of the context table.
       name: context_table_name
       required: true
-      secret: false
-    deprecated: false
     description: Export a context table to CSV.
-    execution: false
     name: exabeam-get-context-table-in-csv
   - arguments:
-    - default: false
-      description: Name of the context table.
-      isArray: false
+    - description: Name of the context table.
       name: context_table_name
       required: true
-      secret: false
-    - default: false
-      description: The ID of the context table session. If not specified, a new session is created.
-      isArray: false
+    - description: The ID of the context table session. If not specified, a new session is created.
       name: session_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates whether the file has a header.
-      isArray: false
       name: has_header
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: The entry ID of the CSV file from which records will be added.
-      isArray: false
+    - description: The entry ID of the CSV file from which records will be added.
       name: file_entry_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: append
       description: Whether to replace or append the records from the CSV file.
-      isArray: false
       name: append_or_replace
       predefined:
       - append
       - replace
-      required: false
-      secret: false
-    deprecated: false
     description: Add context table records from CSV file in a specific modification session.
-    execution: false
     name: exabeam-add-context-table-records-from-csv
   - arguments:
-    - default: false
-      description: Name of the context table.
-      isArray: false
+    - description: Name of the context table.
       name: context_table_name
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of the records' keys to delete.
-      isArray: false
+    - description: A comma-separated list of the records' keys to delete.
       name: records
       required: true
-      secret: false
-    - default: false
-      description: The ID of update session. If not specified, a new session is created.
-      isArray: false
+    - description: The ID of update session. If not specified, a new session is created.
       name: session_id
-      required: false
-      secret: false
-    deprecated: false
     description: Delete records from a context table.
-    execution: false
     name: exabeam-delete-context-table-records
     outputs:
     - contextPath: Exabeam.ContextTableUpdate.contextTableName
@@ -1655,21 +1339,14 @@ script:
       description: The raw data of the context table update.
       type: Unknown
   - arguments:
-    - default: false
-      description: The maximum number of returned results.
-      isArray: false
+    - description: The maximum number of returned results.
       name: limit
       required: true
-      secret: false
-    - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+    - description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
-      secret: false
-    deprecated: false
     description: Returns notable assets.
-    execution: false
     name: exabeam-get-notable-assets
     outputs:
     - contextPath: Exabeam.NotableAsset.HostName
@@ -1742,44 +1419,27 @@ script:
       description: The number that asset triggered rule count opt.
       type: String
   - arguments:
-    - default: false
-      description: ID of the asset to fetch info for.
-      isArray: false
+    - description: ID of the asset to fetch info for.
       name: asset_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: date
       description: The key to sort results by.
-      isArray: false
       name: sort_by
       predefined:
       - date
       - riskScore
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: desc
       description: The order of the results (ascending or descending).
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of results.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns notable session details.
-    execution: false
     name: exabeam-get-notable-session-details
     outputs:
     - contextPath: Exabeam.NotableSession.users.UserName
@@ -1837,41 +1497,20 @@ script:
       description: Whether the user is a executive user.
       type: Unknown
   - arguments:
-    - default: false
-      description: The asset ID for which to fetch data.
-      isArray: false
+    - description: The asset ID for which to fetch data.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16.
-      isArray: false
+    - description: The Start time of the time range. For example, 2018-08-01T11:50:16.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16.
-      isArray: false
+    - description: The end time of the time range. For example, 2018-08-01T11:50:16.
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of rules to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Results page number.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Returns sequence details for the given asset ID and time range.
-    execution: false
     name: exabeam-get-notable-sequence-details
     outputs:
     - contextPath: Exabeam.Sequence.sequenceId
@@ -1917,35 +1556,18 @@ script:
       description: The asset ID of the sequence.
       type: String
   - arguments:
-    - default: false
-      description: The asset sequence ID
-      isArray: false
+    - description: The asset sequence ID
       name: asset_sequence_id
       required: true
-      secret: false
-    - default: false
-      description: String to search for inside display name.
-      isArray: false
+    - description: String to search for inside display name.
       name: search_str
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of rules to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Results page number.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Returns sequence event types for the given asset sequence ID and time range.
-    execution: false
     name: exabeam-get-sequence-eventtypes
     outputs:
     - contextPath: Exabeam.SequenceEventTypes.eventType
@@ -1961,108 +1583,71 @@ script:
       description: The sequence ID.
       type: String
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: True
+    - description: The incident ID.
+      isArray: true
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         The query string that will be used to filter incidents in Exabeam
         For example:
         - simple query: incidentType:generic,
         - OR query: "status:new OR status:closedFalsePositive",
         - AND query:  "status:new AND priority:high".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: Incident type to filter in Exabeam.
-      isArray: false
       predefined:
-        - "generic"
-        - "abnormalAuth"
-        - "accountManipulation"
-        - "accountTampering"
-        - "ueba"
-        - "bruteForce"
-        - "compromisedCredentials"
-        - "cryptomining"
-        - "dataAccessAbuse"
-        - "dataExfiltration"
-        - "dlp"
-        - "departedEmployee"
-        - "dataDestruction"
-        - "evasion"
-        - "lateralMovement"
-        - "alertTriage"
-        - "malware"
-        - "phishing"
-        - "privilegeAbuse"
-        - "physicalSecurity"
-        - "privilegeEscalation"
-        - "privilegedActivity"
-        - "ransomware"
-        - "workforceProtection"
+      - "generic"
+      - "abnormalAuth"
+      - "accountManipulation"
+      - "accountTampering"
+      - "ueba"
+      - "bruteForce"
+      - "compromisedCredentials"
+      - "cryptomining"
+      - "dataAccessAbuse"
+      - "dataExfiltration"
+      - "dlp"
+      - "departedEmployee"
+      - "dataDestruction"
+      - "evasion"
+      - "lateralMovement"
+      - "alertTriage"
+      - "malware"
+      - "phishing"
+      - "privilegeAbuse"
+      - "physicalSecurity"
+      - "privilegeEscalation"
+      - "privilegedActivity"
+      - "ransomware"
+      - "workforceProtection"
       name: incident_type
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: Incident priority to filter in Exabeam.
-      isArray: false
       predefined:
-        - "low"
-        - "medium"
-        - "high"
-        - "critical"
+      - "low"
+      - "medium"
+      - "high"
+      - "critical"
       name: priority
-      required: false
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: Incident status to filter in Exabeam.
-      isArray: false
       predefined:
-        - "closed"
-        - "closedFalsePositive"
-        - "inprogress"
-        - "new"
-        - "pending"
-        - "resolved"
+      - "closed"
+      - "closedFalsePositive"
+      - "inprogress"
+      - "new"
+      - "pending"
+      - "resolved"
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: Number of total results to query. Default is 50.
-      isArray: false
+    - description: Number of total results to query. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Specific page to query.
-      isArray: false
+    - description: Specific page to query.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: Number of total results in each page. Default is 25.
-      isArray: false
+    - description: Number of total results in each page. Default is 25.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: When the instance is configure by an API key, it must be used with the username argument.
-      isArray: false
+    - description: When the instance is configure by an API key, it must be used with the username argument.
       name: username
-      required: false
-      secret: false
-    deprecated: false
     description: Returns incidents from Exabeam.
-    execution: false
     name: exabeam-list-incident
     outputs:
     - contextPath: Exabeam.incidents.incidentId
@@ -2101,10 +1686,8 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

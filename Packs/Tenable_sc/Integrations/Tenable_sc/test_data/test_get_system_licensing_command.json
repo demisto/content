@@ -1,0 +1,18 @@
+{
+    "test_case_1":{
+        "mock_response": {"error_code":0,"error_msg":"","response":{"LCEPluginSubscriptionStatus":"Unconfigured",
+        "PassivePluginSubscriptionStatus":null,"PluginSubscriptionStatus":"Unconfigured","activeIPs":158,
+        "feedUpdates":{"stale":"true","updateTime":"1663268340"},"jobd":"Running","lastDbBackupStatus":"0","licenseStatus":"Valid",
+        "licensedIPs":"512","migrationStatus":null,"pluginUpdates":{"active":{"pluginCurrentSet":"202209152154","stale":"true",
+        "updateTime":"1663288539"},"lce":{"stale":"true","updateTime":"1663288518"},"passive":{"stale":"true","updateTime":"1663288486"}},
+        "zones":[{"description":"","id":"1","name":"Default Scan Zone","status":"Working","uuid":"uuid"},
+        {"description":"","id":"3","name":"Windows","status":"Working","uuid":"uuid"}]},
+        "timestamp":1687098297,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Licensing information\n|License|LicensedIPS|ActiveIPS|\n|---|---|---|\n| Valid | 512 | 158 |\n",
+        "expected_ec": {
+            "ActiveIPS": 158,
+            "License": "Valid",
+            "LicensedIPS": "512"
+          }        
+    }
+}

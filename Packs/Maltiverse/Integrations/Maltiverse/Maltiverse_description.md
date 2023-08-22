@@ -9,3 +9,8 @@ Then, follow the steps below:
 4. Copy your API key and enter it inside the API key field.
 
 **Note** For more details about API call limits and plans please visit: https://maltiverse.com/plans
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***domain***
+See the vendor’s documentation for more details.
