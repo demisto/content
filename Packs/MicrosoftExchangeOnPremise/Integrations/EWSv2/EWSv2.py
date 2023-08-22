@@ -38,9 +38,9 @@ from exchangelib.version import VERSIONS as EXC_VERSIONS
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
 def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
-        if self.build:
-            if self.build.major_version != build.major_version:  # removed 'or self.build.minor_version != build.minor_version'
-                continue
+        # removed 'or self.build.minor_version != build.minor_version'
+        if self.build and self.build.major_version != build.major_version:
+            continue
         if self.api_version == api_version:
             return full_name
     return None
