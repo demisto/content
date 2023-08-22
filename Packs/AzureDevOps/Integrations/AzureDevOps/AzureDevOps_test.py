@@ -828,7 +828,7 @@ def test_generate_login_url(mocker):
 
 
 @pytest.mark.parametrize('pull_request_id, mock_response_path', [('40', 'list_reviewers_pull_request.json')])
-def test_1_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
+def test_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
      - pull_request_id
@@ -863,10 +863,12 @@ def test_1_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_r
 
     assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
     assert result.readable_output.startswith("### Reviewers List")
+    assert result.outputs == mock_response["value"]
 
 
 @pytest.mark.parametrize('pull_request_id, mock_response_path', [('42', 'pull_request_not_found.json')])
-def test_2_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
+def test_azure_devops_pull_request_reviewer_list_command_pr_does_not_exist(requests_mock, pull_request_id: str,
+                                                                           mock_response_path: str):
     """
     Given:
      - pull_request_id (pr does not exist)
@@ -901,13 +903,14 @@ def test_2_azure_devops_pull_request_reviewer_list_command(requests_mock, pull_r
     result = pull_request_reviewer_list_command(client, {'pull_request_id': pull_request_id}, ORGANIZATION, repository, project)
 
     assert 'The requested pull request was not found.' in result.raw_response.get("message")
+    assert result.outputs == ""
 
 
 @pytest.mark.parametrize('args, organization, expected_result',
                          [({'organization_name': 'OVERRIDE'}, 'TEST', 'OVERRIDE'),
                           ({}, 'TEST', 'TEST'),
                           ({'organization_name': 'OVERRIDE'}, '', 'OVERRIDE')])
-def test_1_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
+def test_organization_repository_project_preprocess(args: dict, organization: str, expected_result: str):
     """
     Given:
      - organization as configuration parameter and as argument
@@ -933,7 +936,7 @@ def test_1_organization_repository_project_preprocess_function(args: dict, organ
 
 @pytest.mark.parametrize('args, organization, expected_result',
                          [({}, '', 'ERROR')])
-def test_2_organization_repository_project_preprocess_function(args: dict, organization: str, expected_result: str):
+def test_organization_repository_project_preprocess_when_no_organization(args: dict, organization: str, expected_result: str):
     """
     Given:
      - organization as configuration parameter and as argument
@@ -955,8 +958,7 @@ def test_2_organization_repository_project_preprocess_function(args: dict, organ
 
 
 @pytest.mark.parametrize('pull_request_id, mock_response_path',
-                         [('40', 'pull_request_reviewer_create.json'),
-                          ('42', 'pull_request_not_found.json')])
+                         [('40', 'pull_request_reviewer_create.json')])
 def test_azure_devops_pull_request_reviewer_add_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
@@ -965,6 +967,47 @@ def test_azure_devops_pull_request_reviewer_add_command(requests_mock, pull_requ
      - executing azure-devops-pull-request-reviewer-create command
     Then:
      - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, pull_request_reviewer_add_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+    reviewer_user_id = 'testestest6565'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/' \
+          f'pullRequests/{pull_request_id}/reviewers/{reviewer_user_id}'
+
+    mock_response = json.loads(load_mock_response(mock_response_path))
+    requests_mock.put(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = pull_request_reviewer_add_command(client, {'pull_request_id': pull_request_id, 'reviewer_user_id': reviewer_user_id},
+                                               ORGANIZATION, repository, project)
+
+    assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
+    assert result.readable_output == 'TEST (TEST) was created successfully as a reviewer for Pull Request ID 40.'
+    assert result.outputs == mock_response
+
+
+@pytest.mark.parametrize('pull_request_id, mock_response_path', [('42', 'pull_request_not_found.json')])
+def test_azure_devops_pull_request_reviewer_add_command_pr_does_not_exist(requests_mock, pull_request_id: str,
+                                                                          mock_response_path: str):
+    """
+    Given:
+     - all arguments
+    When:
+     - executing azure-devops-pull-request-reviewer-create command
+    Then:
      - Ensure informative message when pull_request_id does not exist
     """
     from AzureDevOps import Client, pull_request_reviewer_add_command
@@ -992,17 +1035,16 @@ def test_azure_devops_pull_request_reviewer_add_command(requests_mock, pull_requ
 
     result = pull_request_reviewer_add_command(client, {'pull_request_id': pull_request_id, 'reviewer_user_id': reviewer_user_id},
                                                ORGANIZATION, repository, project)
-    if pull_request_id == '42':
-        # PR does not exist
-        assert 'The requested pull request was not found.' in result.outputs.get("message")
-    else:
-        assert result.outputs_prefix == 'AzureDevOps.PullRequestReviewer'
-        assert result.readable_output == 'TEST (TEST) was created successfully as a reviewer for Pull Request ID 40.'
+
+    # PR does not exist
+    assert 'The requested pull request was not found.' in result.outputs.get("message")
+    assert result.outputs == {'$id': '1', 'innerException': '', 'message': 'TF401180: The requested pull request was not found.',
+                              'typeName': 'Microsoft.TeamFoundation.Git.Server.GitPullRequestNotFoundException,'
+                                          ' Microsoft.TeamFoundation.Git.Server', 'typeKey': 'GitPullRequestNotFoundException',
+                              'errorCode': 0, 'eventId': 3000, 'value': ''}
 
 
-@pytest.mark.parametrize('pull_request_id, mock_response_path',
-                         [('40', 'pull_request_commit_list.json'),
-                          ('42', 'pull_request_not_found.json')])
+@pytest.mark.parametrize('pull_request_id, mock_response_path', [('40', 'pull_request_commit_list.json')])
 def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, mock_response_path: str):
     """
     Given:
@@ -1011,6 +1053,45 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, m
      - executing azure-devops-pull-request-commit-list command
     Then:
      - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, pull_request_commit_list_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/' \
+          f'pullRequests/{pull_request_id}/commits'
+
+    mock_response = json.loads(load_mock_response(mock_response_path))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = pull_request_commit_list_command(client, {'pull_request_id': pull_request_id, 'limit': '1'},
+                                              ORGANIZATION, repository, project)
+
+    assert result.readable_output.startswith('### Commits')
+    assert result.outputs_prefix == 'AzureDevOps.Commit'
+    assert result.outputs == mock_response["value"]
+
+
+@pytest.mark.parametrize('pull_request_id, mock_response_path', [('42', 'pull_request_not_found.json')])
+def test_pull_request_commit_list_command_pr_does_not_exist(requests_mock, pull_request_id: str, mock_response_path: str):
+    """
+    Given:
+     - all arguments
+    When:
+     - executing azure-devops-pull-request-commit-list command
+    Then:
      - Ensure informative message when pull_request_id does not exist
     """
     from AzureDevOps import Client, pull_request_commit_list_command
@@ -1037,12 +1118,9 @@ def test_pull_request_commit_list_command(requests_mock, pull_request_id: str, m
 
     result = pull_request_commit_list_command(client, {'pull_request_id': pull_request_id, 'limit': '1'},
                                               ORGANIZATION, repository, project)
-    if pull_request_id == '42':
-        # PR does not exist
-        assert 'The requested pull request was not found.' in result.raw_response.get("message")
-    else:
-        assert result.readable_output.startswith('### Commits')
-        assert result.outputs_prefix == 'AzureDevOps.Commit'
+    # PR does not exist
+    assert 'The requested pull request was not found.' in result.raw_response.get("message")
+    assert result.outputs == ""
 
 
 @pytest.mark.parametrize('args, expected_limit, expected_offset',
@@ -1093,6 +1171,7 @@ def test_commit_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Commits')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
+    assert result.outputs == mock_response["value"]
 
 
 def test_commit_get_command(requests_mock):
@@ -1130,6 +1209,7 @@ def test_commit_get_command(requests_mock):
 
     assert result.readable_output.startswith('### Commit Details')
     assert result.outputs_prefix == 'AzureDevOps.Commit'
+    assert result.outputs == mock_response
 
 
 def test_work_item_get_command(requests_mock):
@@ -1167,6 +1247,7 @@ def test_work_item_get_command(requests_mock):
 
     assert result.readable_output.startswith('### Work Item Details\n|Activity Date|Area Path|Assigned To|ID|State|Tags|Title|\n')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+    assert result.outputs == mock_response
 
 
 def test_work_item_create_command(requests_mock):
@@ -1204,6 +1285,7 @@ def test_work_item_create_command(requests_mock):
 
     assert result.readable_output.startswith(f'Work Item {result.outputs.get("id")} was created successfully.')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+    assert result.outputs == mock_response
 
 
 def test_work_item_update_command(requests_mock):
@@ -1241,6 +1323,7 @@ def test_work_item_update_command(requests_mock):
 
     assert result.readable_output.startswith('Work Item 21 was updated successfully.')
     assert result.outputs_prefix == 'AzureDevOps.WorkItem'
+    assert result.outputs == mock_response
 
 
 EXPECTED_RESULT = [{'op': 'add', 'path': '/fields/System.Title', 'from': None, 'value': 'zzz'},
@@ -1309,6 +1392,7 @@ def test_file_create_command(requests_mock):
     assert result.readable_output.startswith(
         'Commit "Test 5." was created and pushed successfully by "" to branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
+    assert result.outputs == mock_response_1
 
 
 CREATE_FILE_CHANGE_TYPE = "add"
@@ -1422,6 +1506,7 @@ def test_file_update_command(requests_mock):
 
     assert result.readable_output.startswith('Commit "Test 5." was updated successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
+    assert result.outputs == mock_response_1
 
 
 def test_file_delete_command(requests_mock):
@@ -1468,6 +1553,7 @@ def test_file_delete_command(requests_mock):
 
     assert result.readable_output.startswith('Commit "Test 5." was deleted successfully by "" in branch "refs/heads/main".')
     assert result.outputs_prefix == 'AzureDevOps.File'
+    assert result.outputs == mock_response_1
 
 
 def test_file_list_command(requests_mock):
@@ -1512,6 +1598,7 @@ def test_file_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|Commit ID|Object Type|Is Folder|\n')
     assert result.outputs_prefix == 'AzureDevOps.File'
+    assert result.outputs == mock_response_1["value"]
 
 
 ZIP = ("zip", {"Content-Type": "application/zip"}, "response")
@@ -1599,6 +1686,7 @@ def test_branch_create_command(requests_mock):
 
     assert result.readable_output.startswith('Branch refs/heads/main was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.Branch'
+    assert result.outputs == mock_response_1
 
 
 def test_pull_request_thread_create_command(requests_mock):
@@ -1638,6 +1726,7 @@ def test_pull_request_thread_create_command(requests_mock):
 
     assert result.readable_output.startswith('Thread 65 was created successfully by XXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+    assert result.outputs == mock_response
 
 
 def test_pull_request_thread_update_command(requests_mock):
@@ -1678,6 +1767,7 @@ def test_pull_request_thread_update_command(requests_mock):
 
     assert result.readable_output.startswith('Thread 66 was updated successfully by XXXXXXX.')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+    assert result.outputs == mock_response
 
 
 def test_pull_request_thread_list_command(requests_mock):
@@ -1719,6 +1809,7 @@ def test_pull_request_thread_list_command(requests_mock):
     assert result.readable_output.startswith('### Threads\n|Thread ID|Content|Name|Date|\n|---|---|---|---|\n| 66 | 123 | XXX |'
                                              ' 2023-07-23T20:08:57.74Z |\n| 66 | 111 | XXX | 2023-07-23T20:11:30.633Z |')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+    assert result.outputs == mock_response["value"]
 
 
 def test_project_team_list_command(requests_mock):
@@ -1754,6 +1845,7 @@ def test_project_team_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Teams\n|Name|\n|---|\n| DevOpsDemo Team |\n')
     assert result.outputs_prefix == 'AzureDevOps.Team'
+    assert result.outputs == mock_response["value"]
 
 
 def test_team_member_list_command(requests_mock):
@@ -1791,6 +1883,7 @@ def test_team_member_list_command(requests_mock):
     assert result.readable_output.startswith(
         '### Team Members\n|Name|Unique Name|User ID|\n|---|---|---|\n| XXX |  |  |\n| YYY |  |  |')
     assert result.outputs_prefix == 'AzureDevOps.TeamMember'
+    assert result.outputs == mock_response["value"]
 
 
 def test_blob_zip_get_command(mocker, requests_mock):

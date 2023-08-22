@@ -27,7 +27,8 @@ def test_does_file_exist(mocker):
     assert not flag
 
 
-def test_does_file_exist_azure_devops(mocker):
+@pytest.mark.parametrize('does_exist', [True, False])
+def test_does_file_exist_azure_devops(mocker, does_exist):
     """
     Given:
         - A branch name and a content file.
@@ -36,13 +37,15 @@ def test_does_file_exist_azure_devops(mocker):
     Then:
         - Returns True if the file exists and false if it doesn't
     """
+    if does_exist:
+        mocker.patch("CommitFiles.files_path", [str(Path(content_file.path_to_file, content_file.file_name))])
     from CommitFiles import searched_file_path
     mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents": {}}])
     flag = searched_file_path('demisto', content_file)
-    assert not flag
+    assert does_exist == flag
 
 
-def test_1_commit_content_item_azure_devops(mocker):
+def test_commit_content_item_azure_devops_cant_find_branch(mocker):
     """
     Given:
         - A branch name and a content file.
@@ -59,7 +62,7 @@ def test_1_commit_content_item_azure_devops(mocker):
     assert e.value.message == "Failed to find a corresponding branch id to the given branch name."
 
 
-def test_2_commit_content_item_azure_devops_creating_file(mocker):
+def test_commit_content_item_azure_devops_creating_file(mocker):
     """
     Given:
         - A branch name and a content file
@@ -79,7 +82,7 @@ def test_2_commit_content_item_azure_devops_creating_file(mocker):
                                                                  'branch_id': 'XXXX'})
 
 
-def test_3_commit_content_item_azure_devops_updating_file(mocker):
+def test_commit_content_item_azure_devops_updating_file(mocker):
     """
     Given:
         - A branch name and a content file
