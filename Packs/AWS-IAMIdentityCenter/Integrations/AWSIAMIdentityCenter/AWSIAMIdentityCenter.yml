@@ -103,15 +103,19 @@ name: AWS - IAM Identity Center
 script:
   commands:
   - arguments:
-    - description: The name of the user to create.
+    - description: The username of the user to create.
       name: userName
       required: true
-    - name: familyName
-    - name: givenName
+    - description: The family name of the user to create.
+      name: familyName
+    - description: The First name of the user to create.
+      name: givenName
       required: true
-    - name: userEmailAddress
+    - description: The email address of the user to create.
+      name: userEmailAddress
       required: true
-    - name: displayName
+    - description: The display name of the user to create.
+      name: displayName
       required: true
     description: Creates a new IAM Identity Center user for your AWS account.
     name: aws-iam-identitycenter-create-user
@@ -180,9 +184,10 @@ script:
     description: Adds the specified user to the specified group.
     name: aws-iam-identitycenter-add-user-to-group
   - arguments:
-    - name: groupName
+    - description: The name of the group to search.
+      name: groupName
       required: true
-    description: The name of the group to search.
+    description: Get AWS IAM Identity Center group Information.
     name: aws-iam-identitycenter-get-group
   - arguments:
     - description: Username that will be removed from all groups.
@@ -191,7 +196,8 @@ script:
     description: This will remove the entered user from all groups/memberships.
     name: aws-iam-identitycenter-remove-user-from-all-groups
   - arguments:
-    - name: emailAddress
+    - description: The email of the user to be removed.
+      name: emailAddress
     outputs:
     - contextPath: AWS.IAM.IdentityCenter.Users.UserName
       type: string
