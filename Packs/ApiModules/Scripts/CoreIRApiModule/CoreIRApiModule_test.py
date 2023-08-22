@@ -3278,6 +3278,52 @@ def test_list_risky_users_hosts_command_raise_exception(
     assert result.readable_output == 'The user test was not found'
 
 
+@pytest.mark.parametrize(
+    "command ,args, client_func, error_message, expected_error",
+    [
+        ('user', {"user_id": "test"}, "risk_score_user_or_host", "An error occurred while processing XDR public API, No identity threat", 'Please confirm the Identity Threat Module is enabled.\nFull error message:'),
+        ('host', {"host_id": "test"}, "risk_score_user_or_host", "An error occurred while processing XDR public API, No identity threat", 'Please confirm the Identity Threat Module is enabled.\nFull error message:'),
+        ('user', {}, "list_risky_users", "An error occurred while processing XDR public API, No identity threat", 'Please confirm the Identity Threat Module is enabled.\nFull error message:'),
+        ('host', {}, "list_risky_hosts", "An error occurred while processing XDR public API, No identity threat", 'Please confirm the Identity Threat Module is enabled.\nFull error message:'),
+    ],
+    ids=['user_id', 'host_id', 'list_users', 'list_hosts']
+)
+def test_list_risky_users_hosts_command_no_license_warning(
+    mocker, command: str, args: dict, client_func: str, error_message: str, expected_error: str
+):
+    """
+    Given:
+    - XDR API error indicating that the user / host was not found
+
+    When:
+    - executing the list_risky_users_or_host_command function
+
+    Then:
+    - make sure a message indicating that the user was not found is returned
+    """
+
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        client_func,
+        side_effect=DemistoException(
+            message=error_message, res=MockException(500)
+        ),
+    )
+    from CommonServerPython import sys
+    mocker.patch.object(sys, "exit")
+    with pytest.raises(DemistoException):
+        list_risky_users_or_host_command(client, command, args)
+
+
 def test_list_user_groups_command(mocker):
     """
     Test function to validate the behavior of the `list_user_groups_command` function.
