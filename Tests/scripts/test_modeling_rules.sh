@@ -40,7 +40,7 @@ if [[ $exit_code -ne 0 ]]; then
   echo "Failed to test modeling rules"
   if [ -z "${NIGHTLY}" ]; then
     echo "This is not a nightly build, converting the results to Jira issues and exiting with 0"
-    python3 "${CURRENT_DIR}/Tests/scripts/convert_modeling_rules_test_results_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
+    python3 "${CURRENT_DIR}/Tests/scripts/convert_test_result_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
     exit $? # exit with the exit code of the python script
   else
     exit 1

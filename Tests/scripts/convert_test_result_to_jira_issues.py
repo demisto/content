@@ -26,6 +26,7 @@ JIRA_COMPONENT = os.environ["JIRA_COMPONENT"]
 JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME = os.environ["JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME"]
 JIRA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 JIRA_ADDITIONAL_FIELDS = json.loads(os.environ.get("JIRA_ADDITIONAL_FIELDS", "{}"))
+JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 
 def options_handler() -> argparse.Namespace:
@@ -51,7 +52,7 @@ def create_jira_issue(jira_server: JIRA,
     build_id_hash = f" #{build_id}" if build_id else ""
     build_markdown_link = f"[Nightly{build_id_hash}|{build_url}]" if build_id else f"Nightly{build_id_hash}"
     description = f"""
-        *{properties['pack_id']}* - *{properties['modeling_rule_file_name']}* failed in {build_markdown_link}
+        *{properties['pack_id']}* - *{properties['file_name']}* failed in {build_markdown_link}
 
         ||Tests||Result||
         |Total|{test_suite.tests}|
@@ -61,7 +62,7 @@ def create_jira_issue(jira_server: JIRA,
         |Successful|{test_suite.tests - test_suite.failures - test_suite.errors - test_suite.skipped}|
         |Duration|{test_suite.time}s|
         """
-    summary = f"{properties['pack_id']} - {properties['modeling_rule_file_name']} failed nightly"
+    summary = f"{properties['pack_id']} - {properties['file_name']} failed nightly"
     jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
                  f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
@@ -107,7 +108,7 @@ def create_jira_issue(jira_server: JIRA,
                                               description=description,
                                               issuetype={'name': JIRA_ISSUE_TYPE},
                                               components=[{'name': JIRA_COMPONENT}],
-                                              labels=['nightly'],
+                                              labels=['nightly'] + JIRA_LABELS,
                                               **JIRA_ADDITIONAL_FIELDS
                                               )
         # Create a back link to the previous issue, which is resolved.
@@ -121,7 +122,7 @@ def create_jira_issue(jira_server: JIRA,
         xml.write(attachment_file_name.name, pretty=True)
         build_id_dash = f"-{build_id}" if build_id else ""
         junit_file_name = (f"unit-test{build_id_dash}-{properties['start_time']}-{properties['pack_id']}-"
-                           f"{properties['modeling_rule_file_name']}.xml")
+                           f"{properties['file_name']}.xml")
         jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name, filename=junit_file_name)
 
     back_link_to = f" with back link to {link_to_issue.key}" if link_to_issue else ""
@@ -133,7 +134,7 @@ def create_jira_issue(jira_server: JIRA,
 
 def main():
     try:
-        install_logging('create_jira_issues_from_modeling_rules.log', logger=logging)
+        install_logging('convert_test_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
         logging.info(f'JUnit path: {options.junit_path}')
@@ -144,6 +145,7 @@ def main():
         logging.info(f'Jira project id: {JIRA_PROJECT_ID}')
         logging.info(f'Jira issue type: {JIRA_ISSUE_TYPE}')
         logging.info(f'Jira component: {JIRA_COMPONENT}')
+        logging.info(f'Jira labels: {JIRA_LABELS}')
         logging.info(f'Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}')
         logging.info(f'Max days to reopen: {options.max_days_to_reopen}')
 
@@ -167,9 +169,10 @@ def create_test_data(out_file: str):
     xml = JUnitXml()
 
     # Create suite and add cases
-    suite = TestSuite('Modeling rule tests')
-    suite.add_property("modeling_rule_file_name", "modeling-rule-file-name")
+    suite = TestSuite('Tests results')
+    suite.add_property("file_name", "modeling-rule-file-name")
     suite.add_property("pack_id", "Forcepoint")
+    suite.add_property("modeling_rule_file_name", "modeling-rule-file-name")
     suite.add_property("start_time", "2021-08-04T14:00:00.000Z")
     suite.add_property("ci_pipeline_id", "6092497")
 
