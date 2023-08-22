@@ -30,6 +30,10 @@ args:
   predefined:
   - 'false'
   - 'true'
+- defaultValue: '*'
+  description: 'Keys to retrieve from nested dictionaries. Keys will not be columns correlated. Default is all keys. **Note**: when the number of values exceeds the number of columns, it truncates the last values that are outside the range for table.'
+  isArray: true
+  name: keys_from_nested
 comment: Creates a Grid table from items or key-value pairs.
 commonfields:
   id: SetGridField

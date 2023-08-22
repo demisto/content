@@ -62,7 +62,9 @@ def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_ex
                              (["firstname", "lastname", "email"], ["Fname", "Lname", "Email"],
                               "context_single_dict_with_keys.json", "expected_single_dict_with_keys_grid.json", False),
                              (["firstname", "lastname", "email"], ["Fname", "Lname", "Email"],
-                              "context_entry_list_of_dicts.json", "expected_list_of_dicts_grid.json", False)
+                              "context_entry_list_of_dicts.json", "expected_list_of_dicts_grid.json", False),
+                             (["firstname", "lastname", "email", "phones"], ["Fname", "Lname", "Email", "Phones"],
+                              "context_entry_list_of_dicts_complex.json", "expected_list_of_dicts_complex.json", False)
                          ])
 def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):
