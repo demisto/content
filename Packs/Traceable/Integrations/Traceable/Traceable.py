@@ -820,8 +820,8 @@ class Client(BaseClient):
                 msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
                 demisto.info(msg)
             else:
-                demisto.info(f"Found Span with id: {span_id}. Adding to Event.")
-                domain_event["spans"] = trace_results["data"]["spans"]["results"]
+                demisto.debug(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
+                domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
 
             events.append(domain_event)
             if first:
