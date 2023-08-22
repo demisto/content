@@ -681,6 +681,7 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
+
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
@@ -2132,6 +2133,11 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test dev",
             "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "MSG-ediscovery-tpb",
+            "instance_names": "ms_graph_security_ediscovery"
         },
         {
             "integrations": "Microsoft Graph",
@@ -5499,6 +5505,7 @@
         }
     ],
     "skipped_tests": {
+        "MSG-ediscovery-tpb" : "CIAC-8021",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
