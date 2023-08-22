@@ -57,9 +57,9 @@ stop-running-pipelines:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
-    - section_start "Stop running piplines on current branch"
+    - section_start "Stop running pipelines on current branch"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
-    - section_end "Stop running piplines on current branch"
+    - section_end "Stop running pipelines on current branch"
 
 
 # runs in gitlab for the on-push flow (except for contributors)
@@ -115,7 +115,7 @@ validate-content-conf:
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
-    - section_end "Validate content-tesgt-conf Branch Merged"
+    - section_end "Validate content-test-conf Branch Merged"
     - job-done
 
 .generic-prepare-testing-bucket:
@@ -194,7 +194,7 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
+        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
       fi
     - section_end "Create Instances for XSOAR"
     - section_start "Upload Artifacts to GCP" --collapsed
@@ -577,7 +577,6 @@ test-upload-flow:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
   script:
-    - |
     - section_start "Checks Whether to Trigger a Test Upload"
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
@@ -637,7 +636,6 @@ merge-dev-secrets:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
-    - |
     - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
   allow_failure: true
