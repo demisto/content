@@ -832,4 +832,4 @@ def test_test_credentials_command(mocker):
     with patch("Active_Directory_Query.create_connection", side_effect=mock_create_connection), \
             patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
         command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'])
-        assert command_results.readable_output == 'Credential with username username_test_credentials is successful'
+        assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'
