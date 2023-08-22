@@ -40,7 +40,7 @@ def test_dict_to_md():
     lines = [
         '|field|value|',
         '|-|-|',
-        '|fromEmail|fernandom@checkpoint.com|',
+        '|fromEmail|example@checkpoint.com|',
         '|to|unicode@avanandevus1.onmicrosoft.com, user1@avanandevus1.onmicrosoft.com|',
         '|recipients|user1@avanandevus1.onmicrosoft.com, unicode@avanandevus1.onmicrosoft.com|',
         '|subject|Fw: dnp-split-quarantine-2|',

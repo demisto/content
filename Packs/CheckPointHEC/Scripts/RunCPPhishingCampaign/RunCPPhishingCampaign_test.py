@@ -1,5 +1,5 @@
 import demistomock as demisto
-from RunPhishingCampaign import search_and_quarantine
+from RunCPPhishingCampaign import search_and_quarantine
 
 FARM = 'mt-rnd-ng-6'
 CUSTOMER = 'avananlab'

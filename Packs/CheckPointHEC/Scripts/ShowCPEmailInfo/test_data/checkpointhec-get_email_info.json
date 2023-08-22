@@ -20,7 +20,7 @@
         "entityActionState": null
       },
       "entityPayload": {
-        "fromEmail": "fernandom@checkpoint.com",
+        "fromEmail": "example@checkpoint.com",
         "to": [
           "unicode@avanandevus1.onmicrosoft.com",
           "user1@avanandevus1.onmicrosoft.com"
@@ -94,7 +94,7 @@
             "payload": {
               "domain": "",
               "subject": "Fw: dnp-split-quarantine-2",
-              "from": "fernandom@checkpoint.com"
+              "from": "example@checkpoint.com"
             },
             "score": "0",
             "securityResultEntityId": "637d86da7bcf42375cb8431d266e3dc3",

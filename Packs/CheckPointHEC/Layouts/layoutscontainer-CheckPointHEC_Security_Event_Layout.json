@@ -112,7 +112,7 @@
 										"simple": "${incident.checkpointhecentity}"
 									},
 									"farm": {
-										"simple": "${incident.checkpointheccustomer}"
+										"simple": "${incident.checkpointhecfarm}"
 									}
 								},
 								"buttonClass": "warning",
@@ -175,7 +175,7 @@
 										"simple": "${incident.checkpointhecentity}"
 									},
 									"farm": {
-										"simple": "${incident.checkpointheccustomer}"
+										"simple": "${incident.checkpointhecfarm}"
 									}
 								},
 								"buttonClass": "success",
@@ -232,7 +232,7 @@
 										"simple": "${incident.checkpointheccustomer}"
 									},
 									"farm": {
-										"simple": "${incident.checkpointheccustomer}"
+										"simple": "${incident.checkpointhecfarm}"
 									},
 									"task": {
 										"simple": "${incident.checkpointhectask}"
@@ -289,7 +289,7 @@
 								"id": "c412e950-3245-11ee-a6a3-6fc59c892e47",
 								"index": 3,
 								"name": "Run Phishing Campaign",
-								"scriptId": "RunPhishingCampaign",
+								"scriptId": "RunCPPhishingCampaign",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
