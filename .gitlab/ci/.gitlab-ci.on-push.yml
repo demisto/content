@@ -662,4 +662,3 @@ xsiam_server_ga-test_playbooks_results:
   extends: .server_test_playbooks_report
   needs: ["xsiam_server_ga"]
 
-
