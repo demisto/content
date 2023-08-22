@@ -500,6 +500,7 @@ script:
       required: true
       description: "The Distinguished Name of the Group's Active Directory."
     - name: member-type
+      required: true
       auto: PREDEFINED
       predefined:
       - person
