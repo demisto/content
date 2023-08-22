@@ -362,7 +362,7 @@ def test_send_mail(mocker):
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
     results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
