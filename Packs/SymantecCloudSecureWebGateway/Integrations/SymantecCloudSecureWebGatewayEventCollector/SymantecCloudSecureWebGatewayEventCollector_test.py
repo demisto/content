@@ -1,12 +1,14 @@
 import pytest
 from freezegun import freeze_time
 from requests import Response
+import demistomock as demisto
 from SymantecCloudSecureWebGatewayEventCollector import (
     Client,
     is_duplicate,
     is_first_fetch,
     get_start_and_ent_date,
     get_status_and_token_from_res,
+    extract_logs_from_response
 )
 
 
@@ -143,3 +145,20 @@ def test_get_status_and_token_from_res(
     status, token = get_status_and_token_from_res(response)
     assert status == expected_results["status"]
     assert token == expected_results["token"]
+
+
+def test_extract_logs_from_response_no_events_returned(mocker):
+    """
+    Given:
+        - mock response that is no include zip file
+    When:
+        - run `extract_logs_from_response` function
+    Then:
+        - Ensure the function doesn't crash and it prints
+          a log with the info that no events were returned
+    """
+    mock_debug = mocker.patch.object(demisto, "debug")
+    content_ = b"X-sync-token: TESTTESTTESTTESTTESTTESTTESTTEST\r\nX-sync-status: done\r\n"
+    response = mockResponse(content_, 200)
+    extract_logs_from_response(response)
+    assert mock_debug.call_args[0][0] == "No events returned from the api"

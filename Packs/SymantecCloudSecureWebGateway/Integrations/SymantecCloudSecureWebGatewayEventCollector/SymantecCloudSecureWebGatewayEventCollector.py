@@ -126,7 +126,7 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
                         )
                 else:  # the file is not gzip
                     demisto.debug(
-                        f"One of the internal files is not of gzip type, file name is {file.filename}"
+                        f"The {file.filename} file is not of gzip type"
                     )
     except BadZipFile as e:
         try:
