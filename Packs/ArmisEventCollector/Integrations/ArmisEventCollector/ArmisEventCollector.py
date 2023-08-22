@@ -13,6 +13,14 @@ VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
+EVENT_TYPES = {
+    'Alert': {'unique_id_key': 'alertId',
+              'aql_query': 'in:alerts',
+              'type': 'alerts'},
+    'Threat': {
+        'unique_id_key': 'activityUUID',
+        'aql_query': 'in:activity type:"Threat Detected"',
+        'type': 'threats'}}
 
 ''' CLIENT CLASS '''
 
@@ -135,7 +143,7 @@ def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) -> datet
 
     Args:
         last_fetch_time (str): Last fetch time (from last run).
-        fetch_start_time_param (datetime): Fetch start time parameter.
+        fetch_start_time_param (datetime): Fetch start time (usually current time).
 
     Raises:
         DemistoException: If the transformation of last_fetch_time to datetime object failed.
@@ -156,7 +164,7 @@ def are_two_event_time_equal(x: datetime, y: datetime):
     return (x.year == y.year) and (x.month == y.month) and (x.day == y.day) and (x.hour == y.hour) and (x.second == y.second)
 
 
-def dedup_events(events: list[dict], events_last_fetch_ids: list[str], event_unique_id_key: str):
+def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str):
     """Dedup events response.
     Armis API V.1.0 supports time filtering in requests only up to level of seconds (and not milliseconds).
     Therefore, if there are more events with the same timestamp than in the current fetch cycle,
@@ -179,15 +187,15 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], event_uni
     Args:
         events (list[dict]): List of events from the current fetch response.
         events_last_fetch_ids (list[str]): List of IDs of events from last fetch cycle.
-        event_unique_id_key (str): Unique event ID key of specific event type (Alert, Threat Activity etc.)
+        unique_id_key (str): Unique event ID key of specific event type (Alert, Threat Activity etc.)
 
     Returns:
         tuple[list[dict], list[str]: The list of dedup events and ID list of events of current fetch.
     """
     # remove events that already appeared in last fetch
-    dedup_events: list[dict] = [event for event in events if event.get(event_unique_id_key) not in events_last_fetch_ids]
+    dedup_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
     # get ids of dedup events
-    new_ids: list[str] = [event.get(event_unique_id_key, '') for event in dedup_events]
+    new_ids: list[str] = [event.get(unique_id_key, '') for event in dedup_events]
 
     latest_event_from_response = arg_to_datetime(events[-1].get('time'))
     earliest_event_from_response = arg_to_datetime(events[0].get('time'))
@@ -202,6 +210,45 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], event_uni
         return dedup_events, events_last_fetch_ids
 
 
+def fetch_by_event_type(event_type: dict, events: list, next_run: dict, client: Client,
+                        max_fetch: int, last_run: dict, fetch_start_time_param: datetime):
+    """ Fetch events by specific event type.
+
+    Args:
+        event_type (dict): Dictionary containing event type unique ID key, AQL query and type name.
+        events (list): List of fetched events.
+        next_run (dict): Last run dictionary for next fetch cycle.
+        client (Client): Armis client to use for API calls.
+        max_fetch (int): Max number of events to fetch.
+        last_run (dict): Last run dictionary.
+        fetch_start_time_param (datetime): Fetch start time (usually current time).
+    """
+    unique_id_key, aql_query, type = event_type['unique_id_key'], event_type['aql_query'], event_type['type']
+    last_fetch_ids = f'{type}_last_fetch_ids'
+    last_fetch_time = f'{type}_last_fetch_time'
+
+    demisto.debug(f'debug-log: handling event-type: {type}')
+    if last_run:
+        event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time_param)
+    else:
+        event_type_fetch_start_time = None
+
+    response = client.fetch_by_aql_query(
+        aql_query=aql_query,
+        max_fetch=max_fetch,
+        after=event_type_fetch_start_time
+    )
+    demisto.debug(f'debug-log: fetched {len(response)} {type} from API')
+    if response:
+        new_events, next_run[last_fetch_ids] = dedup_events(
+            response, last_run.get(last_fetch_ids, []), unique_id_key)
+        next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
+
+        events.extend(new_events)
+        demisto.debug(f'debug-log: overall {len(new_events)} alerts (after dedup)')
+        demisto.debug(f'debug-log: last {type} in list: {new_events[-1] if new_events else {}}')
+
+
 def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time_param: datetime,
                  log_types_to_fetch: list[str]):
     """ Fetch events from Armis API.
@@ -210,58 +257,20 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
         client (Client): Armis client to use for API calls.
         max_fetch (int): Max number of alerts/threats to fetch.
         last_run (dict): Last run dictionary.
-        fetch_start_time_param (datetime): Fetch start time parameter.
+        fetch_start_time_param (datetime): Fetch start time (usually current time).
         log_types_to_fetch (list[str]): List of log types to fetch.
 
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
-    events = []
-    next_run = {}
+    events: list[dict] = []
+    next_run: dict[str, list | str] = {}
 
     if 'Alerts' in log_types_to_fetch:
-        demisto.debug('debug-log: handling event-type: alerts')
-        if last_run:
-            alerts_fetch_start_time = calculate_fetch_start_time(last_run.get('alerts_last_fetch_time'), fetch_start_time_param)
-        else:
-            alerts_fetch_start_time = None
-
-        alerts_response = client.fetch_by_aql_query(
-            aql_query='in:alerts',
-            max_fetch=max_fetch,
-            after=alerts_fetch_start_time
-        )
-        demisto.debug(f'debug-log: fetched {len(alerts_response)} alerts from API')
-        if alerts_response:
-            alerts, next_run['alerts_last_fetch_ids'] = dedup_events(
-                alerts_response, last_run.get('alerts_last_fetch_ids', []), 'alertId')
-            next_run['alerts_last_fetch_time'] = alerts[-1].get('time') if alerts else last_run.get('alerts_last_fetch_time')
-
-            events.extend(alerts)
-            demisto.debug(f'debug-log: overall {len(alerts)} alerts (after dedup)')
-            demisto.debug(f'debug-log: last alert in list: {alerts[-1] if alerts else {}}')
+        fetch_by_event_type(EVENT_TYPES['Alert'], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
 
     if 'Threats' in log_types_to_fetch:
-        demisto.debug('debug-log: handling event-type: threats')
-        if last_run:
-            threats_fetch_start_time = calculate_fetch_start_time(last_run.get('threats_last_fetch_time'), fetch_start_time_param)
-        else:
-            threats_fetch_start_time = None
-
-        threats_response = client.fetch_by_aql_query(
-            aql_query='in:activity type:"Threat Detected"',
-            max_fetch=max_fetch,
-            after=threats_fetch_start_time
-        )
-        demisto.debug(f'debug-log: fetched {len(threats_response)} threats from API')
-        if threats_response:
-            threats, next_run['threats_last_fetch_ids'] = dedup_events(
-                threats_response, last_run.get('threats_last_fetch_ids', []), 'activityUUID')
-            next_run['threats_last_fetch_time'] = threats[-1].get('time') if threats else last_run.get('threats_last_fetch_time')
-
-            events.extend(threats)
-            demisto.debug(f'debug-log: overall {len(threats)} threats (after dedup)')
-            demisto.debug(f'debug-log: last threat in list: {threats[-1] if threats else {}}')
+        fetch_by_event_type(EVENT_TYPES['Threat'], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
 
     next_run['access_token'] = client._access_token
 
