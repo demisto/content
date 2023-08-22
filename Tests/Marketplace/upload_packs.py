@@ -26,7 +26,6 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.markdown_images_handler import download_markdown_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -1281,6 +1280,9 @@ def main():
         else:
             packs_for_current_marketplace_dict[pack.name] = pack
 
+    # Init the markdown images dict
+    markdown_images_dict: dict = {}
+
     # iterating over packs that are for this current marketplace
     # we iterate over all packs (and not just for modified packs) for several reasons -
     # 1. we might need the info about this pack if a modified pack is dependent on it.
@@ -1365,6 +1367,13 @@ def main():
         task_status = pack.upload_preview_images(storage_bucket, storage_base_path)
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
+            pack.cleanup()
+            continue
+
+        task_status = pack.upload_markdown_images(markdown_images_data, storage_bucket=storage_bucket,
+                                                  storge_base_path=storage_base_path, markdown_images_dict=markdown_images_dict)
+        if not task_status:
+            pack._status = PackStatus.FAILED_MARKDOWN_IMAGES_DOWNLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
@@ -1462,8 +1471,8 @@ def main():
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
 
-    markdown_images_dict = download_markdown_images_from_artifacts(
-        markdown_images_data, storage_bucket=storage_bucket, storge_base_path=storage_base_path)
+    # markdown_images_dict = download_markdown_images_from_artifacts(
+    #     markdown_images_data, storage_bucket=storage_bucket, storge_base_path=storage_base_path)
 
     logging.info(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
