@@ -1351,27 +1351,6 @@ outputs:
 - contextPath: ActiveDirectory.ComputersPageCookie
   description: An opaque string received in a paged search, used for requesting subsequent entries.
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
 - Endpoint Enrichment - Generic v2.1 - Test
-- Isolate and unisolate endpoint - test
-- Block IP - Generic V3_Test
 fromversion: 5.0.0
 toversion: 6.7.9
