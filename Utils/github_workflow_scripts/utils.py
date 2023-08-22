@@ -242,4 +242,3 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
         raise ValueError("Cannot get doc reviewer")
     return reviewer
-
