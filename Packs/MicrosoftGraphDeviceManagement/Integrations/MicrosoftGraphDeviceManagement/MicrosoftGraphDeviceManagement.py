@@ -44,6 +44,7 @@ class MsGraphClient:
                                          managed_identities_client_id=managed_identities_client_id,
                                          managed_identities_resource_uri=Resources.graph,
                                          command_prefix="msgraph-device",
+                                         azure_cloud=self.azure_cloud
                                          )
 
     def list_managed_devices(self, limit: int) -> tuple[list, Any]:
