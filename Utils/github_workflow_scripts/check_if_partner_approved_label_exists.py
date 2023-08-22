@@ -6,7 +6,7 @@ import argparse
 import urllib3
 from github.Repository import Repository
 from github.PullRequest import PullRequest
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+from demisto_sdk.commands.common.tools import get_pack_name
 from Utils.github_workflow_scripts.utils import timestamped_print, get_support_level
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

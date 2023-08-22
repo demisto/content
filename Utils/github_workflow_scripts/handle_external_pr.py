@@ -18,7 +18,7 @@ from utils import (
     CONTENT_ROLES_PATH,
     get_support_level
 )
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+from demisto_sdk.commands.common.tools import get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
