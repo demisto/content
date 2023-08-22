@@ -14,10 +14,10 @@ PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 EVENT_TYPES = {
-    'Alert': {'unique_id_key': 'alertId',
-              'aql_query': 'in:alerts',
-              'type': 'alerts'},
-    'Threat': {
+    'Alerts': {'unique_id_key': 'alertId',
+               'aql_query': 'in:alerts',
+               'type': 'alerts'},
+    'Threats': {
         'unique_id_key': 'activityUUID',
         'aql_query': 'in:activity type:"Threat Detected"',
         'type': 'threats'}}
@@ -32,6 +32,11 @@ class Client(BaseClient):
         self._api_key = api_key
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         if not access_token or not self.is_valid_access_token(access_token):
+            access_token = self.get_access_token()
+        self.update_access_token(access_token)
+
+    def update_access_token(self, access_token=None):
+        if not access_token:
             access_token = self.get_access_token()
         headers = {
             'Authorization': f'{access_token}',
@@ -114,8 +119,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """
-    Tests API connectivity and authentication.
+    """ Tests API connectivity and authentication.
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
@@ -165,7 +169,7 @@ def are_two_event_time_equal(x: datetime, y: datetime):
 
 
 def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str):
-    """Dedup events response.
+    """ Dedup events response.
     Armis API V.1.0 supports time filtering in requests only up to level of seconds (and not milliseconds).
     Therefore, if there are more events with the same timestamp than in the current fetch cycle,
     additional handling is necessary.
@@ -266,11 +270,14 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
     events: list[dict] = []
     next_run: dict[str, list | str] = {}
 
-    if 'Alerts' in log_types_to_fetch:
-        fetch_by_event_type(EVENT_TYPES['Alert'], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
-
-    if 'Threats' in log_types_to_fetch:
-        fetch_by_event_type(EVENT_TYPES['Threat'], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
+    for event_type in log_types_to_fetch:
+        try:
+            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
+        except Exception as e:
+            if "Invalid access token" in str(e):
+                client.update_access_token()
+                fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
+                                    max_fetch, last_run, fetch_start_time_param)
 
     next_run['access_token'] = client._access_token
 
@@ -279,8 +286,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
 
 
 def add_time_to_events(events):
-    """
-    Adds the _time key to the events.
+    """ Adds the _time key to the events.
 
     Args:
         events: list[dict] - list of events to add the _time key to.
@@ -295,9 +301,8 @@ def add_time_to_events(events):
 
 
 def handle_from_date_argument(from_date: str) -> datetime | None:
-    """
-    Converts the from_date argument to a datetime object.
-    This argument is used only in the armis-get-events command.
+    """ Converts the from_date argument to a datetime object.
+        This argument is used only in the armis-get-events command.
 
     Args:
         from_date: The from_date argument.
@@ -310,7 +315,7 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
 
 
 def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str | list]):
-    """Handle fetched events.
+    """ Handle fetched events.
     - Send the events to XSIAM.
     - Set last run values for next fetch cycle.
 
@@ -334,7 +339,7 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
 
 
 def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
-    """Return a CommandResults object with a table of fetched events.
+    """ Return a CommandResults object with a table of fetched events.
 
     Args:
         events (list[dict[str, Any]]): list of fetched events.
