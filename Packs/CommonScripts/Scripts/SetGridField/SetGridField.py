@@ -76,6 +76,7 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
 
     return new_dict
 
+
 def dict_entry_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
     """
 
@@ -105,6 +106,8 @@ def dict_entry_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
             new_dict[key] = value
 
     return new_dict
+
+
 def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], columns: List[str]):
     """ Unpacks lists and dicts to flatten the object for the grid.
 

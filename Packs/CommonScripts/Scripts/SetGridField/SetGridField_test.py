@@ -87,7 +87,7 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     with open(datadir[expected_json]) as json_file:
         expected_grid = json.load(json_file)
     assert pd.DataFrame(expected_grid).to_dict() == SetGridField.build_grid(
-        context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested
+        context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested, keys_from_nested=["*"]
     ).to_dict()
 
 
@@ -119,7 +119,7 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
         SetGridField.demisto.dt.return_value = json.load(json_file)
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=None,
-                                              unpack_nested_elements=unpack_nested_elements)
+                                              unpack_nested_elements=unpack_nested_elements, keys_from_nested=["*"])
     with open(datadir[expected_results_path]) as json_file:
         expected_results = json.load(json_file)
     assert json.dumps(results) == json.dumps(expected_results)
@@ -150,7 +150,7 @@ def test_build_grid_command_with_sort_by(datadir, mocker, keys: List[str], colum
         SetGridField.demisto.dt.return_value = json.load(json_file)
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=['fname'],
-                                              unpack_nested_elements=unpack_nested_elements)
+                                              unpack_nested_elements=unpack_nested_elements, keys_from_nested=["*"])
     with open(datadir[expected_results_path]) as json_file:
         expected_results = json.load(json_file)
     assert json.dumps(results) == json.dumps(expected_results)
@@ -182,7 +182,7 @@ def test_build_grid_command_with_multi_sort_by(datadir, mocker, keys: List[str],
         SetGridField.demisto.dt.return_value = json.load(json_file)
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=['col1', 'col2'],
-                                              unpack_nested_elements=unpack_nested_elements)
+                                              unpack_nested_elements=unpack_nested_elements, keys_from_nested=["*"])
     with open(datadir[expected_results_path]) as json_file:
         expected_results = json.load(json_file)
     assert json.dumps(results) == json.dumps(expected_results)
