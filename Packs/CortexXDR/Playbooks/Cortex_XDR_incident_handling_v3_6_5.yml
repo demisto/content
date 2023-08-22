@@ -1850,7 +1850,7 @@ tasks:
       id: a277c60d-77e5-4de2-8df9-50e79c297063
       version: -1
       name: Is a risky user involved in the incident?
-      description: Checks whether any of the enriched users have a risk score associated to them in XDR.
+      description: Checks whether any of the enriched users has a risk score associated to it in XDR.
       type: condition
       iscommand: false
       brand: ""
@@ -2127,6 +2127,7 @@ tasks:
       id: 7745723f-5798-482c-8561-485c6eba1f16
       version: -1
       name: Is a risky host involved in the incident?
+      description: Checks whether any of the enriched hosts has a risk score associated to it in XDR.
       type: condition
       iscommand: false
       brand: ""
