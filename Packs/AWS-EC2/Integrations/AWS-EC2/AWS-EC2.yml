@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AWS - EC2 - new command
+  id: AWS - EC2
   version: -1
 configuration:
 - display: AWS Default Region
@@ -105,8 +105,8 @@ configuration:
   advanced: true
   required: false
 description: Amazon Web Services Elastic Compute Cloud (EC2)
-display: AWS - EC2 - new command
-name: AWS - EC2 - new command
+display: AWS - EC2
+name: AWS - EC2
 script:
   commands:
   - arguments:
