@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 175
+          "y": 195
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 650
+          "y": 720
         }
       }
     note: false
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e5015b9f-912e-40e5-8e25-03f450040f46
+    taskid: 5d13467d-5039-4ceb-8d80-a11777c6c54f
     type: playbook
     task:
-      id: e5015b9f-912e-40e5-8e25-03f450040f46
+      id: 5d13467d-5039-4ceb-8d80-a11777c6c54f
       version: -1
       name: GenericPolling
       description: |-
@@ -132,17 +132,7 @@ tasks:
       - "3"
     scriptarguments:
       Ids:
-        complex:
-          root: TenableIO.Scan.Id
-          filters:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: TenableIO.Scan.Id
-                iscontext: true
-              right:
-                value:
-                  simple: "55"
+        simple: "55"
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -152,7 +142,7 @@ tasks:
       Timeout:
         simple: "30"
       dt:
-        simple: TenableIO.Scan(val.Status != 'pending' && val.Status != 'running' && val.Status != 'publishing').Id
+        simple: TenableIO.Scan(val.Status != 'completed').Id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -164,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 490
+          "y": 545
         }
       }
     note: false
@@ -176,14 +166,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9db82c06-1ac7-4528-8a52-b3f745346688
+    taskid: e1f6435c-3757-40d3-83c4-35ae1463ceea
     type: regular
     task:
-      id: 9db82c06-1ac7-4528-8a52-b3f745346688
+      id: e1f6435c-3757-40d3-83c4-35ae1463ceea
       version: -1
-      name: 'tenable.io list scans '
-      description: Retrieves scans from the Tenable platform.
-      script: '|||tenable-io-list-scans'
+      name: 'Get scan status'
+      description: 'Checks the status of a specific scan using the scan ID. Possible values: "Running", "Completed", and "Empty" (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
@@ -196,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 370
         }
       }
     note: false
@@ -206,12 +196,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      scanId:
+        simple: "55"
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 695,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50

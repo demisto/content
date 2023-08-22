@@ -13,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -52,7 +53,6 @@ tasks:
       retry-count:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,6 +65,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -75,8 +76,7 @@ tasks:
       id: 15756edb-296a-4c16-8459-6b8947f49f5a
       version: -1
       name: tenable-io-get-scan-status
-      description: 'Check the status of a specific scan using its ID. The status can
-        hold following possible values : Running, Completed and Empty (Ready to run).'
+      description: 'Check the status of a specific scan using its ID. The status can hold following possible values : Running, Completed and Empty (Ready to run).'
       script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
@@ -90,7 +90,6 @@ tasks:
       scanId:
         simple: "16"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -103,6 +102,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -122,16 +122,15 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      retry-count:
+        simple: "2"
       detailed:
         simple: "yes"
       info:
         simple: "yes"
-      retry-count:
-        simple: "2"
       scanId:
         simple: "16"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -144,6 +143,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -166,7 +166,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -179,6 +178,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -194,9 +194,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -205,7 +202,6 @@ tasks:
           root: TenableIO
           accessor: Vulnerabilities.[0].Id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -218,6 +214,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "7"
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -228,8 +228,7 @@ tasks:
       id: c3ea6b10-1adb-4539-85e1-f897d2a1ccfe
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
-      description: Get a list of up to 5000 of the vulnerabilities recorded for a
-        given asset. By default, this list is sorted by vulnerability count, descending.
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset. By default, this list is sorted by vulnerability count, descending.
       script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
@@ -238,12 +237,11 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      hostname:
-        simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
       retry-count:
         simple: "2"
+      hostname:
+        simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -256,14 +254,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 09a70694-12f6-44e1-86b3-76371d172e36
+    taskid: 8668f8d2-3007-4ee9-81fd-c1e8752d2c3e
     type: regular
     task:
-      id: 09a70694-12f6-44e1-86b3-76371d172e36
+      id: 8668f8d2-3007-4ee9-81fd-c1e8752d2c3e
       version: -1
       name: Tenable-io-export-assets
       description: Retrieves details for the specified asset to include custom attributes.
@@ -276,9 +275,11 @@ tasks:
       - "10"
     scriptarguments:
       chunkSize:
-        simple: "500"
+        simple: "100"
       serviceNowSysId:
         simple: "false"
+      retry-count:
+        simple: "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -313,9 +314,7 @@ tasks:
       - "9"
     scriptarguments:
       numAssets:
-        simple: "50"
-      timeOut:
-        simple: "120"
+        simple: "500"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -419,6 +418,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -503,8 +503,7 @@ tasks:
       id: 4d2d7fbd-eb29-42b7-84e6-b692d3e3ba4e
       version: -1
       name: Run list-scan-filters Command
-      description: Lists the filtering, sorting, and pagination capabilities available
-        for scan records on endpoints/commands that support them.
+      description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
       script: Tenable.io|||tenable-io-list-scan-filters
       type: regular
       iscommand: true
