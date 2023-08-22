@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
+import requests  # type: ignore[no-redef]
 from distutils.util import strtobool
 import urllib3
 

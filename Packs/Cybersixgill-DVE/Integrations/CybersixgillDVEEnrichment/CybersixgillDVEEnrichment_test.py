@@ -398,13 +398,14 @@ channel_code = "d5cd46c205c20c87006b55a18b106428"
 
 
 class MockedResponse(object):
-    def __init__(self, status_code, text, reason=None, url=None, method=None):
+    def __init__(self, status_code, text, reason=None, url=None, method=None, headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
         self.ok = True if self.status_code == 200 else False
+        self.headers = headers
 
     def json(self):
         return json.loads(self.text)
@@ -421,8 +422,8 @@ def mocked_request(*args, **kwargs):
     method = request.method
     mock_response = json.dumps(cve_enrich)
     response_dict = {
-        "POST": {"/auth/token": MockedResponse(200, mocked_get_token_response)},
-        "GET": {"/dve_enrich/CVE-2020-9047": MockedResponse(200, mock_response)},
+        "POST": {"/auth/token": MockedResponse(200, mocked_get_token_response, headers={'access_token': '123456'})},  # noqa: E501
+        "GET": {"/dve_enrich/CVE-2020-9047": MockedResponse(200, mock_response, headers={'Content-Type': 'json'})},  # noqa: E501
     }
     response_dict = response_dict.get(method)
     response = response_dict.get(end_point)
