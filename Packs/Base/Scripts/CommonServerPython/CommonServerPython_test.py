@@ -3017,9 +3017,9 @@ class TestBaseClient:
     @pytest.mark.parametrize('quote_params, expected_result', [
         (None, 'key=value+with+spaces'),
         pytest.param(urllib.parse.quote_plus, 'key=value+with+spaces',
-                     marks=pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')),
+                     marks=pytest.mark.skipif(sys.version_info < (3, 0), reason='test not supported in py2')),
         pytest.param(urllib.parse.quote, 'key=value%20with%20spaces',
-                     marks=pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')),
+                     marks=pytest.mark.skipif(sys.version_info < (3, 0), reason='test not supported in py2')),
     ])
     def test_http_request_quote_params_via(self, quote_params, expected_result, requests_mock):
         """
