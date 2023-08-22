@@ -30,6 +30,7 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+from Tests.Marketplace.markdown_images_handler import download_markdown_image_from_url_and_upload_to_gcs
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -3596,6 +3597,46 @@ class Pack:
             self._uploaded_preview_images.append(preview_image_relative_path)
 
         return True
+
+    def upload_markdown_images(self, markdown_urls_data_dict_path: Path, storage_bucket, storge_base_path: str,
+                               markdown_images_dict: dict) -> bool:
+        if not self._is_modified:
+            return True
+
+        with open(markdown_urls_data_dict_path) as f:
+            # reading the file generated in the sdk of all the packs readme images data.
+            readme_urls_data_dict = json.load(f)
+
+        pack_name = self.name
+        if pack_name not in readme_urls_data_dict:
+            # no images were found for this pack.
+            return True
+
+        readme_description_images_data: dict = readme_urls_data_dict[pack_name]
+
+        markdown_images_dict[pack_name] = {}
+        for readme_desc_data, images_data in readme_description_images_data.items():
+            for markdown_url_data in images_data:
+                original_markdown_url = markdown_url_data.get("original_markdown_url")
+                final_dst_image_path = str(markdown_url_data.get("final_dst_image_path"))
+                image_name = str(markdown_url_data.get("image_name"))
+                relative_image_path = str(markdown_url_data.get("relative_image_path"))
+
+                logging.info(f"image_final_storage_des ={final_dst_image_path}")
+
+                status = download_markdown_image_from_url_and_upload_to_gcs(
+                    original_markdown_url,
+                    relative_image_path,
+                    image_name,
+                    storge_base_path,
+                    storage_bucket,
+                )
+
+            markdown_images_dict[pack_name][readme_desc_data] = [
+                image_name.get("image_name") for image_name in images_data
+            ]
+
+        return status
 
     def upload_dynamic_dashboard_images(self, storage_bucket, storage_base_path):
         """ Uploads pack dynamic dashboard images to gcs.
