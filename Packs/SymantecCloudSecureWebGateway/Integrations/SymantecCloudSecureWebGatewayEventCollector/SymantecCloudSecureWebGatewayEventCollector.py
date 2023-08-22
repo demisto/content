@@ -12,7 +12,7 @@ import pytz
 disable_warnings()
 
 VENDOR = "symantec"
-PRODUCT = "swg"
+PRODUCT = "swg_beta"
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 
