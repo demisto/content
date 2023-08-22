@@ -134,7 +134,7 @@ def does_file_exist(branch_name: str, content_file: ContentFile) -> bool:
     return False
 
 
-def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) -> bool:
+def searched_file_path(branch_name: str, content_file: ContentFile) -> bool:
     full_path = Path(content_file.path_to_file, content_file.file_name)
 
     if str(full_path) in files_path:  # the files list, check if the file already exists in the list
@@ -142,7 +142,7 @@ def does_file_exist_azure_devops(branch_name: str, content_file: ContentFile) ->
     # try to get the file from branch
     response = execute_command('azure-devops-file-list',
                                args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
-    files_set = {file.get("path", "") for file in response.get("value", [])}
+    files_set = {file["path"] for file in response.get("value", [])}
     for file in files_set:
         if str(full_path) in file:
             files_path.append(str(full_path))
@@ -179,7 +179,7 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
                  "branch_name": f"{branch_name}",
                  "file_content": f"{content_file.file_text}"}
 
-    file_exists = does_file_exist_azure_devops(branch_name, content_file)
+    file_exists = searched_file_path(branch_name, content_file)
 
     # don't commit pack_metadata.json if already exists in the branch
     if file_exists and content_file.file_name == 'pack_metadata.json':
@@ -187,7 +187,7 @@ def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile
     response = demisto.executeCommand('azure-devops-branch-list', args={})
     branches_list = response[0].get("Contents", {}).get("value", []) if response and isinstance(response, list) else []
     for branch in branches_list:
-        if branch.get("name", "") == branch_name:
+        if branch["name"] == branch_name:
             branch_id = branch["objectId"]
             break
     else:

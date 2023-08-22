@@ -36,9 +36,9 @@ def test_does_file_exist_azure_devops(mocker):
     Then:
         - Returns True if the file exists and false if it doesn't
     """
-    from CommitFiles import does_file_exist_azure_devops
+    from CommitFiles import searched_file_path
     mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": 1, "Contents": {}}])
-    flag = does_file_exist_azure_devops('demisto', content_file)
+    flag = searched_file_path('demisto', content_file)
     assert not flag
 
 

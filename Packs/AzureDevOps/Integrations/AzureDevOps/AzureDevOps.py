@@ -1574,8 +1574,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], repositor
                         args['entries']: the entries to send to the remote system
                         args['incident_changed']: boolean telling us if the local incident indeed changed or not
                         args['remote_incident_id']: the remote incident id
-        repository: Azure DevOps repository.
-        project: Azure DevOps project.
+        repository: The Azure DevOps repository name.
+        project: The Azure DevOps project name.
 
     Returns:
         str: The new ID of the updated incident.
