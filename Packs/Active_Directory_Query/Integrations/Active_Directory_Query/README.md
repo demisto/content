@@ -964,7 +964,7 @@ Test given credentials.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to test. By itself or formatted like SERVER_IP\\USERNAME | Required | 
+| username | Username to test. By itself or formatted as SERVER_IP\\USERNAME | Required | 
 | password | Password to test. | Required | 
 
 
