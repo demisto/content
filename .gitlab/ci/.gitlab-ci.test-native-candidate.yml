@@ -2,7 +2,7 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
 
-# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. Slack notification
 .test-native-candidate-rule-always:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
