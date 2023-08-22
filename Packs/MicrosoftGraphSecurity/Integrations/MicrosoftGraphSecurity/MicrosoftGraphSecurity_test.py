@@ -1,13 +1,19 @@
+import itertools
+from types import SimpleNamespace
+
 from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
-    Resources, create_data_to_update, create_alert_comment_command, create_filter_query
+    Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
+    list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
+    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
+    list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
+    release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command
 from CommonServerPython import DemistoException
 import pytest
 import json
-import io
 import demistomock as demisto
 import re
-
 
 API_V2 = "Alerts v2"
 API_V1 = "Legacy Alerts"
@@ -16,8 +22,31 @@ client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key=
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
+
+
+@pytest.mark.parametrize(
+    'api_response, keys_to_replace, expected_output', [
+        ({'keyOne': {'keyTwo': {'keyThree': 'a'}, 'keyFour': {'keyFive': 'b'}}},
+         {},
+         {'KeyOne': {'KeyFour': {'KeyFive': 'b'}, 'KeyTwo': {'KeyThree': 'a'}}}),
+
+        ({'keyOne': {'keyTwo': 'a'}, 'customOverride': 'a'},
+         {'customOverride': 'SOMETHING'},
+         {'KeyOne': {'KeyTwo': 'a'}, 'SOMETHING': 'a'})
+    ])
+def test_capitalize_dict_keys_first_letter(api_response, keys_to_replace, expected_output):
+    """
+    Given
+        a response from the api
+    When
+        calling capitalize_dict_keys_first_letter with optional keys_to_replace
+    Then
+        Results are recursively formatted, manual keys are replaces
+
+    """
+    assert capitalize_dict_keys_first_letter(api_response, keys_to_replace) == expected_output
 
 
 def test_get_users_command(mocker):
@@ -121,16 +150,19 @@ def test_fetch_incidents_command(mocker, test_case):
     mocker.patch('MicrosoftGraphSecurity.parse_date_range', return_value=("2020-04-19 08:14:21", 'never mind'))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, 'search_alerts', return_value=test_data.get('mock_response'))
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 3
     assert incidents[0].get('severity') == 2
     assert incidents[2].get('occurred') == '2020-04-20T16:54:50.2722072Z'
 
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=1, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=1, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'test alert - da637218501473413212_-1554891308'
 
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 0
 
 
@@ -173,7 +205,8 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({"page_size": "1001"}, "Please note that the page size limit for Legacy Alerts is 1000", API_V1),
-    ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500',
+    ({"page_size": "1000", "page": "3"},
+     'Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500',
      API_V1),
     ({"page_size": "2001"}, "Please note that the page size limit for Alerts v2 is 2000", API_V2)
 ])
@@ -234,12 +267,17 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
 
 @pytest.mark.parametrize('args, expected_results, api_version', [
-    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'assigned_to': 'someone'},
-     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'assignedTo': 'someone'},
+    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information',
+      'assigned_to': 'someone'},
+     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'},
+      'assignedTo': 'someone'},
      API_V1),
-    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'comments': 'comment'},
-     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'comments': ['comment']},
-     API_V1),
+    (
+        {'vendor_information': 'vendor_information', 'provider_information': 'provider_information',
+         'comments': 'comment'},
+        {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'},
+         'comments': ['comment']},
+        API_V1),
     ({'comments': 'comment', 'status': 'new'}, {'status': 'new'}, API_V2)
 ])
 def test_create_data_to_update(mocker, args, expected_results, api_version):
@@ -270,9 +308,11 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'assigned_to': 'someone'}, 'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
+    ({'assigned_to': 'someone'},
+     'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
      API_V1),
-    ({'closed_date_time': 'now'}, "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
+    ({'closed_date_time': 'now'},
+     "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
      "following: assigned_to, determination, classification, status.", API_V2)
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
@@ -297,8 +337,10 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for Alerts v2."
-     " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.", API_V1)
+    ({'alert_id': 'alert_id', "comment": "comment"},
+     "This command is available only for Alerts v2."
+     " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.",
+     API_V1)
 ])
 def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
     """
@@ -376,3 +418,211 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     filter_query = create_filter_query(param, providers_param, service_sources_param)
     assert filter_query == expected_results
+
+
+def test_to_msg_command_results():
+    """
+    Given: An example msg edsicvoery response
+    When: calling to_msg_command_results
+    Then:
+        1. Outputs are replaced properly
+        2. data.context is stripped out
+        3. none is removed
+
+    """
+    res = load_json("./test_data/list_cases_response.json")
+
+    results = to_msg_command_results(raw_object_list=res.get('value'),
+                                     raw_res=res,
+                                     outputs_prefix='MsGraph.SomePrefix',
+                                     output_key_field='SomeId',
+                                     raw_keys_to_replace={'status': 'SomeStatus', 'id': 'SomeId'})
+
+    assert all('@odata.context' not in o for o in results.outputs)
+    assert all('SomeId' in o for o in results.outputs)
+    assert all('SomeId' in o for o in results.outputs)
+    assert all(None not in o.values() for o in results.outputs)
+
+
+def test_create_ediscovery_custodian_site_source_command(mocker):
+    """
+    Given: An example msg edsicvoery list site source response
+    When: calling list_ediscovery_custodian_site_sources_command
+    Then:
+        1. The proper URL is used in the request
+        2. @odata.id is stripped out of context
+        3. The proper ids and output prefixes are used
+
+    """
+    mock = mocker.patch.object(client_mocker.ms_client, "http_request",
+                               return_value=load_json("./test_data/list_site_source_single.json"))
+
+    results = list_ediscovery_custodian_site_sources_command(client_mocker,
+                                                             {'case_id': 'case_id', 'custodian_id': 'custodian_id'})
+    assert mock.call_args.kwargs['url_suffix'] == \
+           'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
+    assert not any('@odata.id' in o for o in results.outputs)
+    assert results.outputs_prefix == 'MsGraph.CustodianSiteSource'
+    assert results.outputs_key_field == 'SiteSourceId'
+    assert all('SiteSourceId' in o for o in results.outputs)
+    assert 'Created By Name' in results.readable_output
+
+
+@pytest.mark.parametrize('command_function, description, external_id',
+                         list(itertools.product(
+                             [update_ediscovery_case_command, update_ediscovery_search_command],
+                             ['value', '', None], ['value', '', None])))
+def test_update_ediscovery_case_command(mocker, command_function, description, external_id):
+    """
+    Given:
+        update ediscovery commands
+    When:
+        an empty value is recieved as an argument
+    Then:
+        the argument shouldnt be sent to the api (dont want to override a real value with an update)
+    """
+    mock = mocker.patch.object(client_mocker.ms_client, "http_request")
+
+    some_id = 'some_id'
+    command_function(client_mocker,
+                     {'display_name': 'name', 'description': description,
+                      'external_id': external_id, 'case_id': some_id})
+    assert not set(mock.call_args.kwargs['json_data'].values()) & {None, ''}
+
+
+def test_created_by_fields_to_hr():
+    """
+    Given
+        A context dictionary
+    When
+        Calling created_by_fields_to_hr
+    Then
+        get the created fields flattened onto main dict
+    """
+    assert created_by_fields_to_hr(
+        {'Field1': 'val1', 'CreatedBy': {'User': {'DisplayName': 'Bob', 'UserPrincipalName': 'Frank'}}}) == \
+        {'CreatedByAppName': None, 'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank', 'Field1': 'val1'}
+
+
+def test_list_ediscovery_search_command(mocker):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+    Prefixes are correct, nested value is in the readable output
+    """
+    raw_response = load_json("./test_data/list_search_single_response.json")
+    mocker.patch.object(client_mocker, "list_ediscovery_search",
+                        return_value=raw_response)
+
+    results = list_ediscovery_search_command(client_mocker, {})
+
+    assert results.raw_response == raw_response
+    assert results.outputs_key_field == 'SearchId'
+    assert results.outputs_key_field == 'SearchId'
+    assert results.outputs_prefix == 'MsGraph.eDiscoverySearch'
+    assert results.outputs[0]['CreatedBy']['User']['DisplayName'] in results.readable_output
+
+
+@pytest.mark.parametrize('command_to_check', ['all', 'ediscovery', 'alerts'])
+def test_test_auth_code_command(mocker, command_to_check):
+    """
+    Given
+        a permission set to test
+    When
+        Calling test_auth_code_command
+
+    Then
+        The proper permissions are called
+
+    """
+    from MicrosoftGraphSecurity import test_auth_code_command
+
+    mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases",
+                                          return_value=load_json("./test_data/list_cases_response.json"))
+    mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
+    test_auth_code_command(client_mocker, {'permission_type': command_to_check})
+
+    if command_to_check == 'alerts':
+        assert not mock_ediscovery.called
+        assert mock_alerts.called
+    elif command_to_check == 'any':
+        assert mock_ediscovery.called
+        assert mock_alerts.called
+    elif command_to_check == 'ediscovery':
+        assert mock_ediscovery.called
+        assert not mock_alerts.called
+
+
+def test_purge_ediscovery_data_command(mocker):
+    mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}))
+    assert 'eDiscovery purge status is success.' == purge_ediscovery_data_command(client_mocker, {}).readable_output
+
+
+def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
+    mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
+    assert '### Results:\n**No entries.**\n' == \
+           list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
+
+
+def test_list_ediscovery_case_command(mocker):
+    raw_response = load_json("./test_data/list_cases_response.json")
+    mocker.patch.object(client_mocker, 'list_ediscovery_cases',
+                        return_value=raw_response)
+    results = list_ediscovery_case_command(client_mocker, {})
+    assert len(raw_response['value']) == len(results.outputs)
+    assert all(output['CreatedDateTime'] in results.readable_output for output in results.outputs)
+
+
+def test_activate_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'activate_edsicovery_custodian', return_value=None)
+    assert activate_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
+           .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
+
+
+def test_release_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'release_edsicovery_custodian', return_value=None)
+    assert release_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
+           .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
+
+
+def test_close_ediscovery_case_command(mocker):
+    mocker.patch.object(client_mocker, 'close_edsicovery_case', return_value=None)
+    assert close_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
+           .readable_output == 'Case with id caseid was closed successfully.'
+
+
+def test_reopen_ediscovery_case_command(mocker):
+    mocker.patch.object(client_mocker, 'reopen_edsicovery_case', return_value=None)
+    assert reopen_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
+           .readable_output == 'Case with id caseid was reopened successfully.'
+
+
+@pytest.mark.parametrize('site, email, should_error', [('exists', None, False),
+                                                       ('', 'Exists', False),
+                                                       ('exists', 'also exists', True),
+                                                       (None, None, True)])
+def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker, site, email, should_error):
+    """
+    Given:
+        Arguments that arent valid for this command
+    When:
+        Calling the command
+    Then
+        An exception is raised
+
+    """
+    mocker.patch.object(client_mocker, 'create_ediscovery_non_custodial_data_source', return_value=None)
+    try:
+        create_ediscovery_non_custodial_data_source_command(client_mocker, {'site': site, 'email': email})
+        assert not should_error
+    except ValueError:
+        assert should_error
+
+
+def test_empty_list_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, 'list_ediscovery_custodians', return_value={})
+    assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == '### Results:\n**No entries.**\n'
