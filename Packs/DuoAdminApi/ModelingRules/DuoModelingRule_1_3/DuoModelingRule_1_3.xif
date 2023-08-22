@@ -7,18 +7,17 @@ filter
     browser = json_extract_scalar(access_device, "$.browser"),
     browser_version = json_extract_scalar(access_device, "$.browser_version"),
     access_device_ip = json_extract_scalar(access_device, "$.ip"),
-    source_ipv6 = arrayindex(regextract(json_extract_scalar(access_device, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
     result_enum = lowercase(result),
     establish_factor = if(factor = "phone_call", "voice", factor = "sms_refresh", "sms", factor = "sms_passcode", "sms", factor = "duo_mobile_passcode", "application", factor = "duo_push", "application", factor = "duo_mobile_passcode", "application", factor = "bypass_code", "temp_token", factor = "hardware_token", "hardware_token", factor = "yubikey_code", "hardware_token", factor = "yubikey_passcode", "hardware_token", factor = "WebAuthn Security Key ", "hardware_token", factor = "WebAuthn Credential", "hardware_token", factor = "WebAuthn Chrome Touch ID", "hardware_token", factor = "utf_token", "hardware_token", factor = "digipass_go_7_token", "hardware_token", factor = "remembered_device", "trusted_login", factor = "trusted_mobile_authenticator", "trusted_login", reason = "trusted_network", "trusted_login", reason = "allowed_by_policy", "trusted_login", reason = "authentication_trusted_by_risk_based_remembered_devices", "trusted_login", reason = "allow_unenrolled_user_on_trusted_network", "trusted_login", reason = "trusted_location", "trusted_login", reason = "bypass_user", "trusted_login", factor = "not_available", "Generic SSO", factor = "passcode", "Generic SSO", null),
     establish_reason = if(reason = "invalid_management_certificate_collection_state", "malformed_request", reason = "user_provided_invalid_certificate", "malformed_request", reason = "invalid_referring_hostname_provided", "malformed_request", reason = "no_web_referer_match", "malformed_request", reason = "no_referring_hostname_provided", "malformed_request", reason = "no_duo_certificate_present", "malformed_request", reason = "no_activated_duo_mobile_account", "user_does_not_exist", reason = "deny_unenrolled_user", "user_does_not_exist", reason = "user_disabled", "account_expired_or_disabled", reason = "locked_out", "account_locked", reason = "factor_restricted", "auth_policy_access_violation", reason = "user_not_in_permitted_group", "auth_login_restrictions", reason = "endpoint_health_data_missing", "device_security_issues", reason = "invalid_device", "device_security_issues", reason = "platform_restricted", "device_security_issues", reason = "endpoint_is_not_healthy", "device_security_issues", reason = "no_screen_lock", "device_security_issues", reason = "endpoint_is_not_in_management_system", "device_security_issues", reason = "endpoint_is_not_trusted", "device_security_issues", reason = "could_not_determine_if_endpoint_was_trusted", "device_security_issues", reason = "version_restricted", "device_security_issues", reason = "touchid_disabled", "device_security_issues", reason = "no_disk_encryption", "device_security_issues", reason = "endpoint_failed_google_verification", "device_security_issues", reason = "verification_code_missing", "mfa_failure", reason = "invalid_passcode", "mfa_failure", reason = "no_response", "mfa_expired", reason = "no_keys_pressed", "mfa_expired", reason = "call_timed_out", "mfa_expired", reason = "user_deny", "user_reject", reason = "user_cancelled", "user_cancelled", reason = "user_mistake", "user_cancelled", reason = "error", "failed_login", reason = null, null, to_string(reason)),
-    establish_os_category = if(os ~= "fedora|ubuntu|chrome|mac|windows|linux|debian", "Computer", os ~= "ios|blackberry|android|phone", "Mobile", os ~= "tizen", "IOT", os = null, null, to_string(os)),
     first_last_name = split(to_string(regextract(email, "(.*)@")), "."),
     auth_device_ip = json_extract_scalar(auth_device, "$.ip")
 | alter
     source_ipv4 = if(access_device_ip !~= ":", access_device_ip, null),
     source_ipv6 = if(access_device_ip ~= ":", access_device_ip, null), 
     intermediate_ipv4 = if(auth_device_ip !~= ":", auth_device_ip, null),
-    intermediate_ipv6 = if(auth_device_ip ~= ":", auth_device_ip, null)
+    intermediate_ipv6 = if(auth_device_ip ~= ":", auth_device_ip, null),
+    establish_os_category = if(os ~= "fedora|ubuntu|chrome|mac|windows|linux|debian", "Computer", os ~= "ios|blackberry|android|phone", "Mobile", os ~= "tizen", "IOT", os = null, null, to_string(os))
 | alter
     xdm.event.id = _id,
     xdm.source.host.device_id = json_extract_scalar(access_device, "$.epkey"),
@@ -29,11 +28,11 @@ filter
     xdm.source.host.device_category = establish_os_category,
     xdm.source.application.name = coalesce(browser, ood_software),
     xdm.source.application.version = browser_version,
-    xdm.source.user.first_name = to_string(replex(arrayindex(check, 0), "\[\"", "")),
-    xdm.source.user.last_name = to_string(replex(arrayindex(check, 1), "\"\]", "")),
+    xdm.source.user.first_name = to_string(replex(arrayindex(first_last_name, 0), "\[\"", "")),
+    xdm.source.user.last_name = to_string(replex(arrayindex(first_last_name, 1), "\"\]", "")),
     xdm.target.resource.id = json_extract_scalar(application, "$.key"),
     xdm.target.resource.name = json_extract_scalar(application, "$.name"),
-    xdm.event.tags = "authentication",
+    xdm.event.tags = arraycreate("authentication"),
     xdm.alert.risks = arraycreate(if(reason = "location_restricted", "risky_signin", reason = "anomalous_push", "risky_signin", reason = "anonymous_ip", "risky_signin", result = "fraud", "risky_signin", null)),
     xdm.session_context_id = txid,
     xdm.auth.mfa.client_details = adaptive_trust_assessments,
@@ -55,7 +54,6 @@ filter
     xdm.source.user.username = json_extract_scalar(user, "$.name"),
     xdm.source.user.upn = email,
     xdm.event.outcome = if(result_enum contains "failure", XDM_CONST.OUTCOME_FAILED, result_enum contains "success", XDM_CONST.OUTCOME_SUCCESS, result_enum = null, null, to_string(result)),
-    xdm.source.application.name = json_extract_scalar(application, "$.name"),
     xdm.network.http.browser = concat(browser, " ", browser_version),
     xdm.intermediate.host.hostname = json_extract_scalar(auth_device, "$.name"),
     xdm.intermediate.location.country = json_extract_scalar(auth_device, "$.location.country"),
