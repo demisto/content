@@ -66,4 +66,4 @@ winlogbeat.event_logs:
     id: dns-audit-logs
 ```
 
-For **XSIAM version 1.3** and above, please use the built-in YAML template provided within the XDR collector configuration.
+For **XSIAM version 1.3** and above, use the built-in YAML template provided within the XDR collector configuration.
