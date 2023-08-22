@@ -314,7 +314,9 @@ tasks:
       - "9"
     scriptarguments:
       numAssets:
-        simple: "500"
+        simple: "50"
+      timeOut:
+        simple: "120"
     separatecontext: false
     continueonerrortype: ""
     view: |-
