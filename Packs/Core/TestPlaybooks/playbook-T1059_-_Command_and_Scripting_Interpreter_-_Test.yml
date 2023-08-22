@@ -300,7 +300,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       AutoContainment:
         simple: "True"
@@ -510,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1890
+          "y": 2040
         }
       }
     note: false
@@ -560,12 +560,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 588fcdfd-42af-4b28-842a-dc7e43be8a75
+    type: regular
+    task:
+      id: 588fcdfd-42af-4b28-842a-dc7e43be8a75
+      version: -1
+      name: Delete Indicator
+      scriptName: DeleteIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: Loltool.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2285,
+        "height": 2435,
         "width": 690,
         "x": 450,
         "y": -330
