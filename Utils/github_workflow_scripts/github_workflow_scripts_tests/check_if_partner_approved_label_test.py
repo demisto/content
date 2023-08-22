@@ -24,5 +24,5 @@ def test_get_support_level(support_levels, expected_support_level):
         Then:
             - make sure the highest support level is always returned
     """
-    from Utils.github_workflow_scripts.check_if_partner_approved_label import get_support_level
+    from Utils.github_workflow_scripts.check_if_partner_approved_label_exists import get_support_level
     assert get_support_level(support_levels) == expected_support_level
