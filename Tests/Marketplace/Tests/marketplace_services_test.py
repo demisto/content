@@ -1833,7 +1833,7 @@ class TestImagesUpload:
     """
 
     @pytest.fixture(scope="class")
-    def dummy_pack(self):
+    def dummy_pack(self) -> Pack:
         """ dummy pack fixture
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
@@ -2033,6 +2033,115 @@ class TestImagesUpload:
                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
+    def test_upload_markdown_images_pack_not_modified(self, mocker, dummy_pack: Pack):
+        """
+           Given:
+               - The artifact path to the markdown images data.
+           When:
+               - Downloading the images from the url and uploading to GCS but the pack was not changed.
+           Then:
+               - Validate that the nothing happens and True is returned .
+       """
+        dummy_storage_bucket = mocker.MagicMock()
+        markdown_images_dict: dict = {}
+        dummy_pack._is_modified = False
+        assert dummy_pack.upload_markdown_images('fake_path', dummy_storage_bucket,
+                                                 GCPConfig.BUILD_BASE_PATH, markdown_images_dict)
+
+    def test_upload_markdown_images_no_images_found(self, mocker, dummy_pack: Pack):
+        """
+           Given:
+               - The artifact path to the markdown images data.
+           When:
+               - Downloading the images from the url and uploading to GCS pack was changed but does not have markdown images
+           Then:
+               - Validate that the nothing happens and True is returned .
+       """
+        dummy_storage_bucket = mocker.MagicMock()
+        markdown_images_dict: dict = {}
+        dummy_pack._is_modified = True
+        mock_data = '{}'
+        mocker.patch('builtins.open', mocker.mock_open(read_data=mock_data))
+        assert dummy_pack.upload_markdown_images('fake_path', dummy_storage_bucket,
+                                                 GCPConfig.BUILD_BASE_PATH, markdown_images_dict)
+
+    def test_upload_markdown_images_found(self, mocker):
+        """
+           Given:
+               - The artifact path to the markdown images data.
+           When:
+               - Downloading the images from the url and uploading to GCS pack was changed but does not have markdown images
+           Then:
+               - Validate that the nothing happens and True is returned .
+       """
+        dummy_storage_bucket = mocker.MagicMock()
+        markdown_images_dict: dict = {}
+        dummy_pack = Pack(pack_name="ShiftManagement", pack_path="dummy_path")
+        dummy_pack._is_modified = True
+        images_data = {"ShiftManagement": {
+            "readme_images": [
+                {
+                    "original_markdown_url": "https://raw.githubusercontent.com/demisto/content/a80017bdd6a2c5aba73dd5940dfdcf42f559c655/Packs/ShiftManagement/doc_files/layout.PNG",
+                    "final_dst_image_path": "https://storage.googleapis.com/marketplace-saas-dist/content/packs/ShiftManagement/readme_images/layout.PNG",
+                    "relative_image_path": "ShiftManagement/readme_images/layout.PNG",
+                    "image_name": "layout.PNG"
+                }
+            ]
+        }}
+        mock_data = json.dumps(images_data)
+        mocker.patch('builtins.open', mocker.mock_open(read_data=mock_data))
+        mocker.patch('Tests.Marketplace.marketplace_services.download_markdown_image_from_url_and_upload_to_gcs',
+                     return_value=True)
+        assert dummy_pack.upload_markdown_images('fake_path', dummy_storage_bucket,
+                                                 GCPConfig.BUILD_BASE_PATH, markdown_images_dict)
+        assert markdown_images_dict == {'ShiftManagement': {'readme_images': ['layout.PNG']}}
+
+        dummy_pack2 = Pack(pack_name="Malwarebytes", pack_path="dummy_path")
+        images_data2 = {"Malwarebytes": {
+            "integration_description_images": [
+                {
+                    "original_markdown_url": "https://user-images.githubusercontent.com/48316606/77554197-6d9bf380-6ebe-11ea-8986-cd9aa5867375.png",
+                    "final_dst_image_path": "https://storage.googleapis.com/marketplace-saas-dist/content/packs/Malwarebytes/integration_description_images/77554197-6d9bf380-6ebe-11ea-8986-cd9aa5867375.png",
+                    "relative_image_path": "Malwarebytes/integration_description_images/77554197-6d9bf380-6ebe-11ea-8986-cd9aa5867375.png",
+                    "image_name": "77554197-6d9bf380-6ebe-11ea-8986-cd9aa5867375.png"
+                }]
+        }
+        }
+        mocked_data2 = json.dumps(images_data2)
+        mocker.patch('builtins.open', mocker.mock_open(read_data=mocked_data2))
+        dummy_pack2._is_modified = True
+        dummy_pack2.upload_markdown_images('fake_path', dummy_storage_bucket,
+                                           GCPConfig.BUILD_BASE_PATH, markdown_images_dict)
+
+        assert markdown_images_dict == {'ShiftManagement': {'readme_images': ['layout.PNG']},
+                                        'Malwarebytes': {'integration_description_images': ['77554197-6d9bf380-6ebe-11ea-8986-cd9aa5867375.png']}}
+
+    def test_upload_markdown_images_unvalid_url(self, mocker):
+        """
+            Given:
+                - The artifact path to the markdown images data.
+            When:
+                - Downloading the images from the url and uploading to GCS pack was changed but The url is invalid
+            Then:
+                - Validate that that upon failiur False is returned 
+        """
+            dummy_storage_bucket = mocker.MagicMock()
+            markdown_images_dict: dict = {}
+            dummy_pack = Pack(pack_name="ShiftManagement", pack_path="dummy_path")
+            dummy_pack._is_modified = True
+            images_data = {"ShiftManagement": {
+                "readme_images": [
+                    {
+                        "original_markdown_url": "https://bad_url.PNG",
+                        "final_dst_image_path": "https://storage.googleapis.com/marketplace-saas-dist/content/packs/ShiftManagement/readme_images/layout.PNG",
+                        "relative_image_path": "ShiftManagement/readme_images/layout.PNG",
+                        "image_name": "layout.PNG"
+                    }
+                ]
+            }}
+            mock_data = json.dumps(images_data)
+            mocker.patch('builtins.open', mocker.mock_open(read_data=mock_data))
+            assert dummy_pack.upload_markdown_images('fake_path', dummy_storage_bucket, GCPConfig.BUILD_BASE_PATH, markdown_images_dict) == False
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.

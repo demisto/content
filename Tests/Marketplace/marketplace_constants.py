@@ -360,6 +360,7 @@ class PackStatus(enum.Enum):
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
+    FAILED_MARKDOWN_IMAGES_DOWNLOAD = 'Failed downloading one of the images from the url or failed uploading it to GCS'
     FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD = "Failed to upload pack dynamic dashboard images to gcs"
     FAILED_README_IMAGE_UPLOAD = "Failed to upload readme images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
@@ -390,6 +391,7 @@ SKIPPED_STATUS_CODES = {
     PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
     PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
     PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
+    PackStatus.FAILED_MARKDOWN_IMAGES_DOWNLOAD.name,
 }
 
 
