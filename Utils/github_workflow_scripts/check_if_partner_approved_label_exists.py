@@ -27,7 +27,7 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def get_pack_support_level(file_paths: list[str]) -> str:
+def get_pack_support_level(file_paths: list[str]) -> set[str]:
     """
     :param file_paths: The paths of files modified in PR
     :return: pack support level
