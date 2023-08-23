@@ -14,9 +14,10 @@ PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 EVENT_TYPES = {
-    'Alerts': {'unique_id_key': 'alertId',
-               'aql_query': 'in:alerts',
-               'type': 'alerts'},
+    'Alerts': {
+        'unique_id_key': 'alertId',
+        'aql_query': 'in:alerts',
+        'type': 'alerts'},
     'Threats': {
         'unique_id_key': 'activityUUID',
         'aql_query': 'in:activity type:"Threat Detected"',
@@ -142,7 +143,7 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) -> datetime:
+def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time_param: datetime) -> datetime:
     """ Calculates the fetch start time.
 
     Args:
@@ -156,16 +157,17 @@ def calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) -> datet
         datetime: Fetch start time value for current fetch cycle.
     """
     if last_fetch_time:
-        last_fetch_time = arg_to_datetime(last_fetch_time)
-        if not isinstance(last_fetch_time, datetime):
+        last_fetch_datetime = arg_to_datetime(last_fetch_time)
+        if not isinstance(last_fetch_datetime, datetime):
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
-        return last_fetch_time
+        return last_fetch_datetime
     else:
         return fetch_start_time_param
 
 
 def are_two_event_time_equal(x: datetime, y: datetime):
-    return (x.year == y.year) and (x.month == y.month) and (x.day == y.day) and (x.hour == y.hour) and (x.second == y.second)
+    return (x.year == y.year) and (x.month == y.month) and (x.day == y.day)\
+        and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
 
 def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str):
@@ -184,7 +186,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         Meaning: This is the normal case where events in the response have different timestamps.
         Handle: Return list of dedup event and new list of 'new_ids' for next run.
 
-    3.  Dedup list of events is empty.
+    3.  Empty event list (no new events received from API response).
         Meaning: Usually means there are not any more events to fetch at the moment.
         Handle: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
 
@@ -201,6 +203,9 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     # get ids of dedup events
     new_ids: list[str] = [event.get(unique_id_key, '') for event in dedup_events]
 
+    if not events:
+        return dedup_events, events_last_fetch_ids
+
     latest_event_from_response = arg_to_datetime(events[-1].get('time'))
     earliest_event_from_response = arg_to_datetime(events[0].get('time'))
 
@@ -208,10 +213,8 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
             and are_two_event_time_equal(latest_event_from_response, earliest_event_from_response):
         events_last_fetch_ids.extend(new_ids)
         return dedup_events, events_last_fetch_ids
-    elif events:
-        return dedup_events, new_ids
     else:
-        return dedup_events, events_last_fetch_ids
+        return dedup_events, new_ids
 
 
 def fetch_by_event_type(event_type: dict, events: list, next_run: dict, client: Client,
@@ -316,7 +319,7 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
 
 def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str | list]):
     """ Handle fetched events.
-    - Send the events to XSIAM.
+    - Send the fetched events to XSIAM.
     - Set last run values for next fetch cycle.
 
     Args:
