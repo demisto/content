@@ -760,7 +760,7 @@ def main():
         force_model = demisto.args().get('forceModel', 'False') == 'True'
         email_body = demisto.args().get('emailBody', "")
         email_html = demisto.args().get('emailHTML', "")
-        max_urls = int(5)
+        max_urls = int(demisto.args().get('maxNumberOfURL', 5))
         urls_argument = demisto.args().get('urls', '')
         reliability = demisto.args().get("reliability", DBotScoreReliability.A_PLUS)
         rasterize_timeout = arg_to_number(demisto.args().get('rasterize_timeout', TIMEOUT_RASTERIZE))
