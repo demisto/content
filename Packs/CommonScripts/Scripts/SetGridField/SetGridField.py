@@ -276,13 +276,15 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, dict):
-        # Handle entry context key-value of primitive types option
+        # Handle entry context key-value
         # If the keys arg is * it means we don't know which keys we have in the context - Will create key-value table.
+        entry_context_data = entry_dicts_to_string(dict_obj=filter_dict(entry_context_data, keys),
+                                                   keys_to_choose=keys_from_nested)
         if keys == ['*']:
-            entry_context_data = filter_dict(entry_context_data, keys).items()
+            entry_context_data = entry_context_data.items()
             table = pd.DataFrame(entry_context_data, columns=columns[:2])
         else:
-            entry_context_data = filter_dict(entry_context_data, keys)
+            entry_context_data = entry_context_data
             table = pd.DataFrame([entry_context_data])
             table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
 
