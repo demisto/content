@@ -1674,7 +1674,9 @@ def main():
     FETCH_TIME: str = params.get(
         "fetch_time", FETCH_TIME_DEFAULT,
     ).strip()
-    FETCH_LIMIT: int = int(demisto.params().get("fetch_limit", "100"))
+    FETCH_LIMIT: int = int(params.get("fetch_limit", "100"))
+    USE_SSL: bool = not params.get("insecure", False)
+    PROXY: bool = params.get('proxy', False)
 
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
@@ -1700,15 +1702,17 @@ def main():
         "zerofox-search-exploits": search_exploits_command,
     }
     try:
+        handle_proxy()
         client = ZFClient(
             base_url=BASE_URL,
             ok_codes={200, 201},
             username=USERNAME,
             password=PASSWORD,
             fetch_limit=FETCH_LIMIT,
+            verify=USE_SSL,
+            proxy=PROXY,
         )
 
-        handle_proxy()
         command = demisto.command()
 
         if command == 'test-module':
