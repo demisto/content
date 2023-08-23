@@ -826,7 +826,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
                         'next_token': next_token})
     demisto.incidents(incidents)
 
-    if archive_findings:
+    if archive_findings and findings:
         kwargs = {
             'FindingIdentifiers': [
                 {'Id': finding['Id'], 'ProductArn': finding['ProductArn']} for finding in findings
