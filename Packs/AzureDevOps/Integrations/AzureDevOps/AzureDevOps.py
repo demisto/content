@@ -1522,6 +1522,7 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
                 raw_response=[]
             )
 
+    # Validation in project and repository ensures the right type is passed
     response = client.branch_list_request(project, repository, limit, continuation_token).json()  # type: ignore[arg-type]
     outputs = copy.deepcopy(response.get("value", []))
 
