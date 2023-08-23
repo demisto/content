@@ -14,13 +14,13 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsIntegrationAvailable
 * Print
+* IsIntegrationAvailable
 
 ### Commands
 
-* pan-os
 * closeInvestigation
+* pan-os
 
 ## Playbook Inputs
 
@@ -35,3 +35,5 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
+
+![Ataya - Auto Login or Logout user in PAN-OS](../doc_files/Ataya_-_Auto_Login_or_Logout_user_in_PAN-OS.png)
