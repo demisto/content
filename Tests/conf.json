@@ -23,11 +23,13 @@
         {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
-            "instance_names": "virus_total_v3"
+            "instance_names": "virus_total_v3",
+            "timeout": 600
         },
 	    {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
-            "integrations": "LOLBAS Feed"
+            "integrations": "LOLBAS Feed",
+            "timeout": 600
         },
 		{
             "playbookID": "Containment Plan - Test",
