@@ -681,6 +681,7 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
+
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
@@ -2135,6 +2136,11 @@
         },
         {
             "integrations": "Microsoft Graph",
+            "playbookID": "MSG-ediscovery-tpb",
+            "instance_names": "ms_graph_security_ediscovery"
+        },
+        {
+            "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
             "instance_names": "ms_graph_security_prod",
             "is_mockable": false
@@ -2829,8 +2835,10 @@
         },
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2",
-            "memory_threshold": 100,
+            "integrations": [
+            "Active Directory Query v2",
+            "Cortex XDR - IR"
+            ],
             "instance_names": "active_directory_80k",
             "has_api": false
         },
@@ -5512,6 +5520,7 @@
         }
     ],
     "skipped_tests": {
+        "MSG-ediscovery-tpb" : "CIAC-8021",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
