@@ -1037,8 +1037,8 @@ def main() -> None:  # pragma: no cover
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
-    aws_access_key_id = params.get('access_key', {}).get('password') or params.get('access_key')
-    aws_secret_access_key = params.get('secret_key', {}).get('password') or params.get('secret_key')
+    aws_access_key_id = params.get('access_key', {}).get('password')
+    aws_secret_access_key = params.get('secret_key', {}).get('password')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
