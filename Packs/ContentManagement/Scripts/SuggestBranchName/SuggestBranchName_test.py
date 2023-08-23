@@ -1,3 +1,4 @@
+
 import pytest
 import demistomock as demisto
 
@@ -32,8 +33,8 @@ def test_find_available_branch(pack_name, command_get_branch, mocker):
 RESPONSE = [{"Contents": {"value": [{"name": "Test/Test"}, {"name": "Test/Test_1"}]}}]
 
 
-@pytest.mark.parametrize('pack_name, response, expected_branch_name', [("Test", RESPONSE, "refs/heads/Test_2")])
-def test_find_available_branch_azure_devops(pack_name, response, expected_branch_name, mocker):
+@pytest.mark.parametrize('pack_name, response, expected_available_branch_name', [("Test", RESPONSE, "refs/heads/Test_2")])
+def test_find_available_branch_azure_devops(mocker, pack_name: str, response: list[dict], expected_available_branch_name: str):
     """
     Given:
         - A pack name
@@ -45,4 +46,4 @@ def test_find_available_branch_azure_devops(pack_name, response, expected_branch
     from SuggestBranchName import find_available_branch_azure_devops
     mocker.patch.object(demisto, 'executeCommand', return_value=response)
     branch_name = find_available_branch_azure_devops(pack_name)
-    assert branch_name == expected_branch_name
+    assert branch_name == expected_available_branch_name

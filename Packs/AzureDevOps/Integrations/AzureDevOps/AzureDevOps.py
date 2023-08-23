@@ -266,12 +266,13 @@ class Client:
 
         return response
 
-    def pull_requests_list_request(self, project: str, repository: str, skip: int = None, limit: int = None) -> dict:
+    def pull_requests_list_request(self, project: str | None, repository: str | None, skip: int = None,
+                                   limit: int = None) -> dict:
         """
         Retrieve pull requests in repository.
         Args:
-            project (str): The name or the ID of the project.
-            repository (str): The repository name of the pull request's target branch.
+            project (str | None): The name or the ID of the project.
+            repository (str | None): The repository name of the pull request's target branch.
             skip (int): The number of results to skip.
             limit (int): The number of results to retrieve.
 
@@ -432,13 +433,13 @@ class Client:
 
         return response
 
-    def branch_list_request(self, project: str, repository: str, limit: int = None,
+    def branch_list_request(self, project: str | None, repository: str | None, limit: int = None,
                             continuation_token: str = None) -> Response:
         """
         Retrieve repository branches list.
         Args:
-            project (str): The name of the project.
-            repository (str): The name of the project repository.
+            project (str | None): The name of the project.
+            repository (str | None): The name of the project repository.
             limit (int): The number of results to retrieve.
             continuation_token (str): A continuation token from a previous request, to retrieve the next page of results.
 
@@ -1128,8 +1129,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any], repository:
 
     offset = (page - 1) * limit
 
-    # Validation in project and repository ensures the right type is passed
-    response = client.pull_requests_list_request(project, repository, offset, limit)  # type: ignore[arg-type]
+    response = client.pull_requests_list_request(project, repository, offset, limit)
 
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out of ' \
                        f'others that may exist.'
@@ -1522,8 +1522,7 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
                 raw_response=[]
             )
 
-    # Validation in project and repository ensures the right type is passed
-    response = client.branch_list_request(project, repository, limit, continuation_token).json()  # type: ignore[arg-type]
+    response = client.branch_list_request(project, repository, limit, continuation_token).json()
     outputs = copy.deepcopy(response.get("value", []))
 
     for branch in outputs:
