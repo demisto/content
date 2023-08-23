@@ -1,0 +1,215 @@
+category: Vulnerability Management
+commonfields:
+  id: OpenCVE
+  version: -1
+configuration:
+- defaultvalue: https://www.opencve.io
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Searches for CVE information using OpenCVE.
+display: OpenCVE
+name: OpenCVE
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of CVEs to display.
+      name: limit
+    - description: Last run
+      name: lastRun
+    description: Returns the latest updated CVEs from your reports.
+    name: opencve-latest
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The CVE ID. For example: CVE-2014-1234.'
+      isArray: true
+      name: cve
+      required: true
+    description: Returns CVE information by CVE ID.
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments: []
+    description: List the vendors subscriptions of the authenticated user.
+    name: opencve-get-my-vendors
+    outputs:
+    - contextPath: OpenCVE.Vendors
+      description: Vendors
+  - arguments: []
+    description: List the products subscriptions of the authenticated user.
+    name: opencve-get-my-products
+    outputs:
+    - contextPath: OpenCVE.Products
+      description: Products
+  - arguments:
+    - description: Vendor name
+      name: vendor_name
+      required: true
+    description: Get vendor CVEs
+    name: opencve-get-vendor-cves
+    outputs:
+    - contextPath: vendor_cves
+      description: CVEs for the vendor
+  - arguments:
+    - description: Vendor name
+      name: vendor_name
+      required: true
+    - description: Product name
+      name: product_name
+      required: true
+    description: Get product CVEs
+    name: opencve-get-product-cves
+    outputs:
+    - contextPath: product_cves
+      description: Product CVEs
+  - arguments:
+    - description: Report ID
+      name: report_id
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    description: List the reports of the authenticated user or get a specific report.
+    name: opencve-get-reports
+    outputs:
+    - contextPath: reports
+      description: Reports
+  - arguments:
+    - description: The report ID
+      name: report_id
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    - description: The Alert ID
+      name: alert_id
+      required: false
+    description: List the alerts of a report or get the details of a specific alert.
+    name: opencve-get-alerts
+    outputs:
+    - contextPath: alerts
+      description: The Alerts from the provided Report ID
+  - arguments:
+    - description: Vendor name
+      name: vendor_name
+      required: true
+    - description: Product name
+      name: product_name
+      required: false
+    - description: Filter the search by a keyword
+      name: search
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    description: List the products associated to a vendor or get a specific one.
+    name: opencve-get-products
+    outputs:
+    - contextPath: products
+      description: Products
+  - arguments:
+    - description: Vendor name
+      name: vendor_name
+      required: false
+    - description: Filter the search by a keyword
+      name: search
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    - description: Filter by the first letter
+      name: letter
+      required: false
+    description: List the products associated to a vendor or get a specific product of a vendor by specifying its name.
+    name: opencve-get-vendors
+    outputs:
+    - contextPath: vendors
+      description: Vendors
+  dockerimage: demisto/python3:3.10.12.68714
+  feed: false
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

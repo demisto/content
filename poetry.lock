@@ -966,13 +966,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.18.1"
+version = "1.19.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.18.1-py3-none-any.whl", hash = "sha256:a6d5005de648c90a9802a813a507c1651783ee7a6dfc6f8917ac0685f5a9fd42"},
-    {file = "demisto_sdk-1.18.1.tar.gz", hash = "sha256:f012fa3b3343ef4b8f61e5a9fa3c04142ea51d82c9a362fa4fbb184202cea83d"},
+    {file = "demisto_sdk-1.19.1-py3-none-any.whl", hash = "sha256:ca2149ed01d084528541d3145022054033656dc59f5bee8cdc12c89e67f85671"},
+    {file = "demisto_sdk-1.19.1.tar.gz", hash = "sha256:cc128e8e5257bd229bbe7997be2da732be0290639cfade4994c79d3ff09f1bd0"},
 ]
 
 [package.dependencies]
@@ -5401,20 +5401,20 @@ files = [
 
 [[package]]
 name = "tqdm"
-version = "4.65.0"
+version = "4.66.1"
 description = "Fast, Extensible Progress Meter"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tqdm-4.65.0-py3-none-any.whl", hash = "sha256:c4f53a17fe37e132815abceec022631be8ffe1b9381c2e6e30aa70edc99e9671"},
-    {file = "tqdm-4.65.0.tar.gz", hash = "sha256:1871fb68a86b8fb3b59ca4cdd3dcccbc7e6d613eeed31f4c332531977b89beb5"},
+    {file = "tqdm-4.66.1-py3-none-any.whl", hash = "sha256:d302b3c5b53d47bce91fea46679d9c3c6508cf6332229aa1e7d8653723793386"},
+    {file = "tqdm-4.66.1.tar.gz", hash = "sha256:d88e651f9db8d8551a62556d3cff9e3034274ca5d66e93197cf2490e2dcb69c7"},
 ]
 
 [package.dependencies]
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [package.extras]
-dev = ["py-make (>=0.1.0)", "twine", "wheel"]
+dev = ["pytest (>=6)", "pytest-cov", "pytest-timeout", "pytest-xdist"]
 notebook = ["ipywidgets (>=6)"]
 slack = ["slack-sdk"]
 telegram = ["requests"]
@@ -6372,4 +6372,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "228f6e792628be2b938abb599b51d70498a7b08da37beb56be8a3bb8bc4f4ce6"
+content-hash = "d4e1fbc235ad4aebb571b7cbe0d7f584d8bea00d9245b84bdac302214bab077f"
