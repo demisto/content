@@ -1,0 +1,21 @@
+{
+    "name": "Test Rotem [Marketplace Contribution] CrowdStrike Falcon",
+    "description": "Test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "RotemAmit",
+    "url": "",
+    "email": "",
+    "created": "2023-08-23T11:42:06Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
