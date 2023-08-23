@@ -596,14 +596,15 @@ def get_document_command(ssm_client: "SSMClient", args: dict[str, Any]) -> Comma
     kwargs.update({"VersionName": version_name}) if version_name else None
     response = ssm_client.describe_document(**kwargs)
     response = convert_datetime_to_iso(response)
+    document = response["Document"]
 
     return CommandResults(
-        outputs=response.get("Document"),
+        outputs=document,
         outputs_key_field="Name",
         outputs_prefix="AWS.SSM.Document",
         readable_output=tableToMarkdown(
             name="AWS SSM Document",
-            t=_parse_document(response["Document"]),
+            t=_parse_document(document),
         )
     )
 

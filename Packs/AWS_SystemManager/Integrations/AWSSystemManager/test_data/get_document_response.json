@@ -1,0 +1,62 @@
+{
+    "Document": {
+        "Hash": "hash",
+        "HashType": "hashType",
+        "Name": "AWS",
+        "Owner": "Amazon",
+        "CreatedDate": "2022-10-11T01:06:56.878000+03:00",
+        "Status": "Active",
+        "DocumentVersion": "1",
+        "Description": "Change the test",
+        "Parameters": [
+            {
+                "Name": "test",
+                "Type": "String",
+                "Description": "(Required) ID of test"
+            },
+            {
+                "Name": "test",
+                "Type": "String",
+                "Description": "(Optional) The ARN of test.",
+                "DefaultValue": ""
+            },
+            {
+                "Name": "test",
+                "Type": "String",
+                "Description": "(Optional) The ARN of the test.",
+                "DefaultValue": ""
+            }
+        ],
+        "PlatformTypes": [
+            "Windows",
+            "Linux",
+            "MacOS"
+        ],
+        "DocumentType": "Automation",
+        "SchemaVersion": "0.3",
+        "LatestVersion": "1",
+        "DefaultVersion": "1",
+        "DocumentFormat": "JSON",
+        "TargetType": "/AWS",
+        "Tags": [],
+        "Category": [
+            "Instance management"
+        ],
+        "CategoryEnum": [
+            "InstanceManagement"
+        ]
+    },
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Wed, 23 Aug 2023 16:08:10 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "000",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

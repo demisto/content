@@ -5,3 +5,4 @@
 !aws-ssm-association-get association_id=association_id
 !aws-ssm-association-version-list association_id=association_id
 !aws-ssm-document-list limit=2
+!aws-ssm-document-get document_name=AWS

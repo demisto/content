@@ -697,3 +697,129 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 >| 2018-02-15T03:03:20.597000+00:00 |  | Automation | 1 | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | ***values***:  |
 >| 2018-02-15T03:03:23.277000+00:00 |  | Automation | 1 | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | ***values***:  |
 
+### aws-ssm-document-get
+
+***
+
+#### Base Command
+
+`aws-ssm-document-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| document_name | The name of the SSM document. | Required | 
+| document_version | The document version. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
+| version_name | Specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Document.Document.Sha1 | String | The SHA1 hash of the document, which you can use for verification. | 
+| AWS.SSM.Document.Document.Hash | String | The Sha256 or Sha1 hash created by the system when the document was created. | 
+| AWS.SSM.Document.Document.HashType | String | The hash type of the document. Valid values include Sha256 or Sha1. | 
+| AWS.SSM.Document.Document.Name | String | The name of the SSM document. | 
+| AWS.SSM.Document.Document.DisplayName | String | The friendly name of the SSM document. This value can differ for each version of the document. | 
+| AWS.SSM.Document.Document.VersionName | String | The version of the artifact associated with the document. | 
+| AWS.SSM.Document.Document.Owner | String | The Amazon Web Services user that created the document. | 
+| AWS.SSM.Document.Document.CreatedDate | String | The date when the document was created. | 
+| AWS.SSM.Document.Document.Status | String | The status of the SSM document. | 
+| AWS.SSM.Document.Document.StatusInformation | String | A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.” | 
+| AWS.SSM.Document.Document.DocumentVersion | String | The document version. | 
+| AWS.SSM.Document.Document.Description | String | A description of the document. | 
+| AWS.SSM.Document.Document.Parameters.Name | String | The name of the parameter. | 
+| AWS.SSM.Document.Document.Parameters.Type | String | The type of parameter. The type can be either String or StringList. | 
+| AWS.SSM.Document.Document.Parameters.Description | String | A description of what the parameter does, how to use it, the default value, and whether or not the parameter is optional. | 
+| AWS.SSM.Document.Document.Parameters.DefaultValue | String | If specified, the default values for the parameters. Parameters without a default value are required. Parameters with a default value are optional. | 
+| AWS.SSM.Document.Document.PlatformTypes | String | The list of operating system \(OS\) platforms compatible with this SSM document. | 
+| AWS.SSM.Document.Document.DocumentType | String | The type of document. | 
+| AWS.SSM.Document.Document.SchemaVersion | String | The schema version. | 
+| AWS.SSM.Document.Document.LatestVersion | String | The latest version of the document. | 
+| AWS.SSM.Document.Document.DefaultVersion | String | The default version. | 
+| AWS.SSM.Document.Document.DocumentFormat | String | The document format, either JSON or YAML. | 
+| AWS.SSM.Document.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. | 
+| AWS.SSM.Document.Document.Tags.Key | String | The name of the tag. | 
+| AWS.SSM.Document.Document.Tags.Value | String | The value of the tag. | 
+| AWS.SSM.Document.Document.AttachmentsInformation.Name | String | The name of the attachment. | 
+| AWS.SSM.Document.Document.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
+| AWS.SSM.Document.Document.Requires.Version | String | The document version required by the current document. | 
+| AWS.SSM.Document.Document.Requires.RequireType | String | The document type of the required SSM document. | 
+| AWS.SSM.Document.Document.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. | 
+| AWS.SSM.Document.Document.Author | String | The user in your organization who created the document. | 
+| AWS.SSM.Document.Document.ReviewInformation.ReviewedTime | String | The time that the reviewer took action on the document review request. | 
+| AWS.SSM.Document.Document.ReviewInformation.Status | String | The current status of the document review request. | 
+| AWS.SSM.Document.Document.ReviewInformation.Reviewer | String | The reviewer assigned to take action on the document review request. | 
+| AWS.SSM.Document.Document.ApprovedVersion | String | The version of the document currently approved for use in the organization. | 
+| AWS.SSM.Document.Document.PendingReviewVersion | String | The version of the document that is currently under review. | 
+| AWS.SSM.Document.Document.ReviewStatus | String | The current status of the review. | 
+| AWS.SSM.Document.Document.Category | String | The classification of a document to help you identify and categorize its use. | 
+| AWS.SSM.Document.Document.CategoryEnum | String | The value that identifies a document’s category. | 
+
+#### Command example
+```!aws-ssm-document-get document_name=AWS```
+#### Context Example
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Document": {
+                "Category": [
+                    "Instance management"
+                ],
+                "CategoryEnum": [
+                    "InstanceManagement"
+                ],
+                "CreatedDate": "2022-10-10T22:06:56.878000+00:00",
+                "DefaultVersion": "1",
+                "Description": "Change the test",
+                "DocumentFormat": "JSON",
+                "DocumentType": "Automation",
+                "DocumentVersion": "1",
+                "Hash": "",
+                "HashType": "",
+                "LatestVersion": "1",
+                "Name": "AWS",
+                "Owner": "Amazon",
+                "Parameters": [
+                    {
+                        "Description": "(Required) ID of test",
+                        "Name": "test",
+                        "Type": "String"
+                    },
+                    {
+                        "DefaultValue": "",
+                        "Description": "(Optional) The ARN of the test.",
+                        "Name": "test",
+                        "Type": "String"
+                    },
+                    {
+                        "DefaultValue": "",
+                        "Description": "(Optional) The ARN of the test.",
+                        "Name": "test",
+                        "Type": "String"
+                    }
+                ],
+                "PlatformTypes": [
+                    "Windows",
+                    "Linux",
+                    "MacOS"
+                ],
+                "SchemaVersion": "0.3",
+                "Status": "Active",
+                "Tags": [],
+                "TargetType": "/AWS"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS SSM Document
+>|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|
+>|---|---|---|---|---|---|---|---|
+>| 2022-10-10T22:06:56.878000+00:00 | Change the test |  |  | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | Active |
+

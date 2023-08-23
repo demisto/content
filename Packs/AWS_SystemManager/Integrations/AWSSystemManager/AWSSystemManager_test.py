@@ -1,3 +1,4 @@
+from __future__ import annotations
 import datetime
 import json
 from pathlib import Path
@@ -5,7 +6,6 @@ from typing import NoReturn
 
 import pytest
 from AWSSystemManager import (
-    SSMClient,
     add_tags_to_resource_command,
     convert_datetime_to_iso,
     get_association_command,
@@ -16,13 +16,13 @@ from AWSSystemManager import (
     list_versions_association_command,
     next_token_command_result,
     validate_args,
+    get_document_command
 )
 from pytest_mock import MockerFixture
-
 from CommonServerPython import CommandResults, DemistoException
 
 
-class MockClient(SSMClient):
+class MockClient:
     def __init__(self) -> None:
         pass
 
@@ -45,6 +45,9 @@ class MockClient(SSMClient):
         pass
 
     def list_documents(self, **kwargs) -> NoReturn:
+        pass
+
+    def describe_document(self, **kwargs) -> NoReturn:
         pass
 
 
@@ -468,4 +471,19 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
         "|\n"
         "| 2018-02-15T05:03:23.277000+02:00 |  | Automation | 1 | AWS-A | Amazon | Windows,<br>Linux,<br>MacOS | ***values***:  "
         "|\n"
+    )
+
+
+def test_get_documents_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/get_document_response.json")
+    mocker.patch.object(MockClient, "describe_document", return_value=mock_response)
+
+    response = get_document_command(MockClient(), {"document_name": "test_name"})
+
+    assert response.outputs == mock_response["Document"]
+    assert response.readable_output == (
+        '### AWS SSM Document\n'
+        '|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|\n'
+        '|---|---|---|---|---|---|---|---|\n'
+        '| 2022-10-11T01:06:56.878000+03:00 | Change the test |  |  | AWS | Amazon | Windows,<br>Linux,<br>MacOS | Active |\n'
     )
