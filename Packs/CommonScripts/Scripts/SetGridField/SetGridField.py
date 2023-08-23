@@ -77,7 +77,7 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     return new_dict
 
 
-def dict_entry_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
+def entry_dicts_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
     """
 
     Args:
@@ -87,7 +87,7 @@ def dict_entry_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
     Returns:
         string contains all selected values from the nested dictionary of the context entry.
     """
-    new_dict = {key: None for key in dict_obj.keys()}
+    new_dict = {key: '' for key in dict_obj.keys()}
     for (key, value) in dict_obj.items():
         if isinstance(value, dict):
             value = filter_dict(value, keys_to_choose)
@@ -174,10 +174,10 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
 
 
 @logger
-def validate_entry_context(context_path: str, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+def validate_entry_context(context_path: str, entry_context: Any, unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
-            1. List[Dict[str, str/bool/int/float,list,dict]]
+            1. List[Dict[str, Any]]
             2. List[str/bool/int/float]
             3. Dict[str, str/bool/int/float] - for developer it will be in first index of a list.
         - For unpack_nested_elements==True:
@@ -186,7 +186,6 @@ def validate_entry_context(context_path: str, entry_context: Any, keys: List[str
     Args:
         context_path: Path of entry context
         entry_context: Entry context to validate
-        keys: Keys to collect data from
         unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
     Raises:
@@ -235,7 +234,8 @@ def validate_entry_context(context_path: str, entry_context: Any, keys: List[str
     return data_type
 
 
-def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_nested_elements: bool, keys_from_nested: List[str]) -> pd.DataFrame:
+def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_nested_elements: bool,
+               keys_from_nested: List[str]) -> pd.DataFrame:
     """ Build new DateFrame from current context retrieved by DT.
         There are 3 cases:
             1. DT returns dict - In this case we will insert it in the table as key, value in each row.
@@ -255,7 +255,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    data_type = validate_entry_context(context_path, entry_context_data, keys, unpack_nested_elements)
+    data_type = validate_entry_context(context_path, entry_context_data, unpack_nested_elements)
 
     demisto.debug('context object is valid. starting to build the grid.')
     # Building new Grid
@@ -270,8 +270,8 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, list):
         # Handle entry context as list of dicts
-        entry_context_data = [dict_entry_to_string(dict_obj=filter_dict(item, keys, len(columns)),
-                                                   keys_to_choose=keys_from_nested)
+        entry_context_data = [entry_dicts_to_string(dict_obj=filter_dict(item, keys, len(columns)),
+                                                    keys_to_choose=keys_from_nested)
                               for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)

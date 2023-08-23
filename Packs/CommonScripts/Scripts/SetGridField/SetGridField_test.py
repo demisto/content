@@ -26,27 +26,25 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                                      max_keys=max_keys)
 
 
-@pytest.mark.parametrize(argnames="entry_context, keys, raise_exception, unpack_nested",
+@pytest.mark.parametrize(argnames="entry_context, raise_exception, unpack_nested",
                          argvalues=[
-                             ([{'a': 'val', 'b': 'val'}], ['a', 'b'], False, False),
-                             ([{'a': [], 'b': 'val'}], ['a', 'b'], True, False),
-                             ([{'a': [], 'b': 'val'}], ['b'], False, False),
-                             (['a', 'b', 1, False], ['b'], False, False),
-                             (['a', 'b', 1, False, []], ['*'], True, False),
+                             ([{'a': 'val', 'b': 'val'}], False, False),
+                             ([{'a': [], 'b': 'val'}], False, False),
+                             ([{'a': [], 'b': 'val'}], False, False),
+                             (['a', 'b', 1, False], False, False),
+                             (['a', 'b', 1, False, [{}, 'a']], True, False),
                          ])
-def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_exception: bool, unpack_nested: bool):
+def test_validate_entry_context(capfd, entry_context: dict, raise_exception: bool, unpack_nested: bool):
     from SetGridField import validate_entry_context
     if raise_exception:
         # disabling the stdout check cause along with the exception, we write additional data to the log.
         with pytest.raises(ValueError), capfd.disabled():
             validate_entry_context(context_path='Path',
                                    entry_context=entry_context,
-                                   keys=keys,
                                    unpack_nested_elements=unpack_nested)
     else:
         validate_entry_context(context_path='Path',
                                entry_context=entry_context,
-                               keys=keys,
                                unpack_nested_elements=unpack_nested)
 
 
