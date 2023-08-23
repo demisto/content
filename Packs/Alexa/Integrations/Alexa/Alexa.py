@@ -21,6 +21,7 @@ def alexa_fallback_command(domain, use_ssl, proxies):
                             headers=headers, verify=use_ssl, proxies=proxies)
     try:
         x = re.search(r"style=\"margin-bottom:-2px;\"\/>\s(\d{0,3},)?(\d{3},)?\d{0,3}<\/a>", resp.content)
+
         raw_result = x.group()  # type:ignore
         strip_beginning = raw_result.replace('style="margin-bottom:-2px;"/> ', '')
         strip_commas = strip_beginning.replace(',', '')
