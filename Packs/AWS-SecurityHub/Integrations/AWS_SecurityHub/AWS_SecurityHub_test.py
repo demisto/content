@@ -521,6 +521,7 @@ def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
         - Verify that the correct arguments were sent to AWS Security Hub.
     """
     from AWS_SecurityHub import update_remote_system_command
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     client = MockClient()
     batch_update_mock = mocker.patch.object(MockClient, 'batch_update_findings')
     result = update_remote_system_command(client, args, True)
