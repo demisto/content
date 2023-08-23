@@ -24,12 +24,14 @@
             "integrations": [
                 "ServiceNow v2",
                 "Cortex XDR - IR",
-                "jira-v2"
+                "jira-v2",
+                "Core REST API""
             ],
             "instance_names": [
                 "snow_basic_auth",
                 "Cortex XDR - IR",
-                "jira_v2"
+                "jira_v2",
+                "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
             "fromversion": "6.5.0"
