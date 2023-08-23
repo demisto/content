@@ -107,7 +107,7 @@ tasks:
       AutoContainment:
         simple: "True"
       AutoEradication:
-        simple: "False"
+        simple: "True"
       AutoRecovery:
         simple: "True"
       CommentToAdd:

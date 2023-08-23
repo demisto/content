@@ -147,7 +147,7 @@ tasks:
       AutoContainment:
         simple: "True"
       AutoRestoreEndpoint:
-        simple: "True"
+        simple: "False"
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
@@ -305,7 +305,7 @@ tasks:
       AutoContainment:
         simple: "True"
       AutoRestoreEndpoint:
-        simple: "True"
+        simple: "False"
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
