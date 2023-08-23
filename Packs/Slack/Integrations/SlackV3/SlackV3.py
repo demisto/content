@@ -2999,7 +2999,7 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-user-session-reset': user_session_reset
+        'slack-user-session-reset': user_session_reset,
         'slack-get-conversation-history': conversation_history,
         'slack-get-conversation-replies': conversation_replies,
     }
