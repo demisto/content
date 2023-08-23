@@ -94,6 +94,7 @@ Publish a message in a topic.
 | data | The message data field. If this field is empty, the message must contain at least one attribute. | Optional | 
 | attributes | Attributes for this message. If this field is empty, the message must contain non-empty data. Input format: &quot;key=val&quot; pairs sepearated by &quot;,&quot;. | Optional | 
 | project_id | Project ID. | Optional | 
+| delim_char_attributes | Set delimiter of attributes split. | Optional |
 
 
 ##### Context Output
@@ -107,7 +108,7 @@ Publish a message in a topic.
 
 
 ##### Command Example
-```!gcp-pubsub-topic-publish-message data="42 is the answer" project_id=dmst-integrations topic_id=dmst-topic```
+```!gcp-pubsub-topic-publish-message data="42 is the answer" project_id=dmst-integrations topic_id=dmst-topic delim_char_attributes=","```
 
 ##### Context Example
 ```
@@ -116,7 +117,8 @@ Publish a message in a topic.
         "attributes": null,
         "data": "42 is the answer",
         "messageId": "874663628353499",
-        "topic": "dmst-topic"
+        "topic": "dmst-topic",
+        "delim_char_attributes": ","
     }
 }
 ```
