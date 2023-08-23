@@ -452,6 +452,11 @@ slack-notify-nightly-build:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
+    - |
+      if [[ -n "${NIGHTLY}" ]]; then
+        echo "Setting CLOUD_MACHINES_TYPE to nightly"
+        CLOUD_MACHINES_TYPE="nightly"
+      fi
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
