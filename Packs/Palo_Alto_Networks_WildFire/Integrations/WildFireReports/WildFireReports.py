@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=tuple(), headers: dict = None,
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None,
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
