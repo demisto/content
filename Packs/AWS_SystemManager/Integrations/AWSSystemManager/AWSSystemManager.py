@@ -1,28 +1,22 @@
-import datetime
 import json
 import re
-from typing import Any, NoReturn
-
-from mypy_boto3_ssm.client import SSMClient
-from mypy_boto3_ssm.type_defs import (
-    GetInventoryRequestRequestTypeDef,
-    InventoryResultEntityTypeDef,
-    ListAssociationsRequestRequestTypeDef,
-    ListDocumentsRequestRequestTypeDef,
-)
+from typing import Any, NoReturn, TYPE_CHECKING
 
 import demistomock as demisto
-from AWSApiModule import AWSClient, validate_params
-from CommonServerPython import (
-    CommandResults,
-    DemistoException,
-    JsonTransformer,
-    arg_to_number,
-    dict_safe_get,
-    return_error,
-    return_results,
-    tableToMarkdown,
-)
+from AWSApiModule import *  # noqa: E402
+from CommonServerPython import *  # noqa: E402
+
+# The following imports are used only for type hints and autocomplete.
+# They are not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_ssm.client import SSMClient
+    from mypy_boto3_ssm.type_defs import (
+        GetInventoryRequestRequestTypeDef,
+        InventoryResultEntityTypeDef,
+        ListAssociationsRequestRequestTypeDef,
+        ListDocumentsRequestRequestTypeDef,
+        DocumentDescriptionTypeDef
+    )
 
 """ CONSTANTS """
 
@@ -71,7 +65,7 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
     return None
 
 
-def config_aws_session(args: dict[str, str], aws_client: AWSClient) -> SSMClient:
+def config_aws_session(args: dict[str, str], aws_client: AWSClient) -> "SSMClient":
     """Configures an AWS session for the Lambda service,
     Used in all the commands.
 
@@ -158,13 +152,13 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
 """ COMMAND FUNCTIONS """
 
 
-def add_tags_to_resource_command(ssm_client: SSMClient, args: dict[str, Any]) -> CommandResults:
+def add_tags_to_resource_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
     """Adds tags to a specified resource.
     The response from the API call when success is empty dict.
 
     Args:
     ----
-        ssm_client (SSMClient): An instance of the SSM client.
+        ssm_client ("SSMClient"): An instance of the SSM client.
         args (dict): A dictionary containing the command arguments.
                      - 'resource_type' (str): The type of the resource.
                      - 'resource_id' (str): The ID of the resource.
@@ -187,7 +181,7 @@ def add_tags_to_resource_command(ssm_client: SSMClient, args: dict[str, Any]) ->
     )
 
 
-def get_inventory_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[CommandResults]:
+def get_inventory_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
     """Fetches inventory information from AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -258,7 +252,7 @@ def get_inventory_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[C
     return command_results
 
 
-def list_inventory_entry_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[CommandResults]:
+def list_inventory_entry_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
     """Lists inventory entries for a specific instance and type name using the provided SSM client and arguments.
 
     Args:
@@ -336,7 +330,7 @@ def list_inventory_entry_command(ssm_client: SSMClient, args: dict[str, Any]) ->
     return command_results
 
 
-def list_associations_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[CommandResults]:
+def list_associations_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
     """Lists associations in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -392,7 +386,7 @@ def list_associations_command(ssm_client: SSMClient, args: dict[str, Any]) -> li
     return command_results
 
 
-def get_association_command(ssm_client: SSMClient, args: dict[str, Any]) -> CommandResults:
+def get_association_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
     """Retrieves information about an SSM association based on provided parameters.
 
     Args:
@@ -455,7 +449,7 @@ def get_association_command(ssm_client: SSMClient, args: dict[str, Any]) -> Comm
     )
 
 
-def list_versions_association_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[CommandResults]:
+def list_versions_association_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
     """Lists the versions of an SSM association based on provided parameters.
 
     Args:
@@ -522,7 +516,7 @@ def list_versions_association_command(ssm_client: SSMClient, args: dict[str, Any
     return command_results
 
 
-def list_documents_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[CommandResults]:
+def list_documents_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
     """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -582,7 +576,56 @@ def list_documents_command(ssm_client: SSMClient, args: dict[str, Any]) -> list[
     return command_results
 
 
-def test_module(ssm_client: SSMClient) -> str:
+# def get_document_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
+#     def _parse_document(document: DocumentDescriptionTypeDef):
+#         return {
+#             "Name": document.get("Name"),
+#             "Display Name": document.get("DisplayName"),
+#             "Document version name": document.get("VersionName"),
+#             "Owner": document.get("Owner"),
+#             "Document version": document.get("DocumentVersion"),
+#             "Document type": document.get("DocumentType"),
+#             "Created date": document.get("CreatedDate"),
+#             "Tags": document.get("Tags"),
+#             "Platform types": document.get("PlatformTypes"),
+#             "Document format": document.get("DocumentFormat"),
+#             "Requires": document.get("Requires"),
+#             "Attachments information": document.get("AttachmentsInformation"),
+#             "Parameters": document.get("Parameters"),
+#             "Platform types": document.get("PlatformTypes"),
+#             "Document version": document.get("DocumentVersion"),
+#             "Hash": document.get("Hash"),
+#             "Hash type": document.get("HashType"),
+#             "Latest version": document.get("LatestVersion"),
+#             "Default version": document.get("DefaultVersion"),
+#             "Document status": document.get("Status"),
+#             "Document status information": document.get("StatusInformation"),
+#             "Document description": document.get("Description"),
+#             "Document content": document.get("Content"),
+#         }
+#     document_version = args.get("document_version")
+#     version_name = args.get("version_name")
+
+#     kwargs = {"Name": args["document_name"]}
+#     kwargs.update({"DocumentVersion": document_version}) if document_version else None
+#     kwargs.update({"VersionName": version_name}) if version_name else None
+#     response = ssm_client.describe_document(**kwargs)
+#     response = convert_datetime_to_iso(response)
+    
+#     return CommandResults(
+#         outputs=response.get("Document"),
+#         outputs_key_field="Name",
+#         outputs_prefix="AWS.SSM.Document",
+#         readable_output=tableToMarkdown(
+#             name="AWS SSM Document",
+#             t=_parse_document(response["Document"]),
+#         )
+#     )
+
+
+
+
+def test_module(ssm_client: "SSMClient") -> str:
     ssm_client.list_associations(MaxResults=1)
     return "ok"
 
@@ -645,6 +688,8 @@ def main():
                 return_results(list_versions_association_command(ssm_client, args))
             case "aws-ssm-document-list":
                 return_results(list_documents_command(ssm_client, args))
+            # case "aws-ssm-document-get":
+            #     return_results(get_document_command(ssm_client, args))
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)
