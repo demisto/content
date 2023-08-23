@@ -349,7 +349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
+          "x": -350,
           "y": 2270
         }
       }
@@ -376,6 +376,7 @@ tasks:
       '#none#':
       - "23"
       - "70"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1091,7 +1092,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 52.5,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: bd88e2ce-12bb-4cbc-88b7-f85583b975ab
+    type: playbook
+    task:
+      id: bd88e2ce-12bb-4cbc-88b7-f85583b975ab
+      version: -1
+      name: Detonate URL - Generic
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
           "y": 2270
         }
       }
