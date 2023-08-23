@@ -1,0 +1,36 @@
+{
+    "value": [
+        {
+            "isTeamAdmin": true,
+            "identity": {
+                "displayName": "XXX",
+                "url": "",
+                "_links": {
+                    "avatar": {
+                        "href": ""
+                    }
+                },
+                "id": "",
+                "uniqueName": "",
+                "imageUrl": "",
+                "descriptor": ""
+            }
+        },
+        {
+            "identity": {
+                "displayName": "YYY",
+                "url": "",
+                "_links": {
+                    "avatar": {
+                        "href": ""
+                    }
+                },
+                "id": "",
+                "uniqueName": "",
+                "imageUrl": "",
+                "descriptor": ""
+            }
+        }
+    ],
+    "count": 2
+}
