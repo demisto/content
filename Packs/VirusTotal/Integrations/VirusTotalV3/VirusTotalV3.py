@@ -1679,7 +1679,7 @@ def ip_command(client: Client,
                score_calculator: ScoreCalculator,
                args: dict,
                relationships: str,
-               disable_rfc1918_lookup: bool
+               disable_private_ip_lookup: bool
                ) -> List[CommandResults]:
     """
     1 API Call for regular
@@ -1693,7 +1693,7 @@ def ip_command(client: Client,
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
-            if disable_rfc1918_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+            if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
                 readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
                                    f'Enrichment skipped for {ip}')
                 result = CommandResults(readable_output=readable_output)
@@ -2478,7 +2478,7 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
-    disable_rfc1918_lookup = argToBoolean(params.get("disable_rfc1918_lookup", "False"))
+    disable_private_ip_lookup = argToBoolean(params.get("disable_private_ip_lookup", "False"))
 
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
@@ -2486,7 +2486,7 @@ def main(params: dict, args: dict, command: str):
     elif command == 'file':
         results = file_command(client, score_calculator, args, file_relationships)
     elif command == 'ip':
-        results = ip_command(client, score_calculator, args, ip_relationships, disable_rfc1918_lookup)
+        results = ip_command(client, score_calculator, args, ip_relationships, disable_private_ip_lookup)
     elif command == 'url':
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':

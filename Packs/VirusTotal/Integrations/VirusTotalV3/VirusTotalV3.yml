@@ -42,11 +42,11 @@ configuration:
   type: 0
   required: false
 - display: Disable reputation lookups for private IP addresses
-  name: disable_rfc1918_lookup
+  name: disable_private_ip_lookup
   defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any private IP addresses as defined in RFC1918.
+  additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: '10'
@@ -435,7 +435,7 @@ script:
       - 'true'
       - 'false'
     - name: override_private_lookup
-      description: When set to "true", enrichment of private IP address will be conducted even if it has been disabled at the integration level.
+      description: When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level.
       defaultValue: false
       predefined:
       - 'true'

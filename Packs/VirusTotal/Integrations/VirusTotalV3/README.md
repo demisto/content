@@ -18,7 +18,7 @@ The integration was integrated and tested with version v3 API of VirusTotal.
     | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
     | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any private IP addresses as defined in RFC1918. | False |
+    | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
     | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
@@ -404,7 +404,7 @@ Checks the reputation of an IP address.
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
 | extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
-| override_private_lookup | When set to "true", enrichment of private IP address will be conducted even if it has been disabled at the integration level. Possible values are: true, false. | Optional | 
+| override_private_lookup | When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
