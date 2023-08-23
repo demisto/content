@@ -776,6 +776,7 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
     assert urllib.parse.urlencode(body) == req_body
     assert demisto.getIntegrationContext().get('auth_code') == new_auth_code
 
+
 @pytest.mark.parametrize('params, expected_resource_manager, expected_active_directory, expected_microsoft_graph_resource_id', [
     ({'azure_cloud': 'Germany'}, 'https://management.microsoftazure.de',
      'https://login.microsoftonline.de', 'https://graph.microsoft.de'),
