@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 import urllib3
 from jira.client import ResultList, Issue, JIRA
-from junitparser import TestCase, TestSuite, JUnitXml, Skipped, Error
+from junitparser import TestSuite, JUnitXml
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -162,39 +162,6 @@ def main():
         logging.exception(f'Failed to create jira issues from JUnit results: {e}')
         logging.error(traceback.format_exc())
         sys.exit(1)
-
-
-def create_test_data(out_file: str):
-    # Add suite to JunitXml
-    xml = JUnitXml()
-
-    # Create suite and add cases
-    suite = TestSuite('Tests results')
-    suite.add_property("file_name", "modeling-rule-file-name")
-    suite.add_property("pack_id", "Forcepoint")
-    suite.add_property("modeling_rule_file_name", "modeling-rule-file-name")
-    suite.add_property("start_time", "2021-08-04T14:00:00.000Z")
-    suite.add_property("ci_pipeline_id", "6092497")
-
-    # Create cases
-    case1 = TestCase('case1', 'class.name', 0.5)  # params are optional
-    case1.classname = "modified.class.name"  # specify or change case attrs
-    case1.result = [Skipped()]  # You can have a list of results
-    case2 = TestCase('case2')
-    case2.result = [Error('Example error message', 'the_error_type')]
-    suite.add_testcase(case1)
-    suite.add_testcase(case2)
-    xml.add_testsuite(suite)
-
-    # Create skipped suite
-    skipped_test_suite = TestSuite('Skipped tests')
-    case3 = TestCase('case3')
-    case3.result = [Skipped()]
-    skipped_test_suite.add_testcase(case3)
-    xml.add_testsuite(skipped_test_suite)
-
-    xml.write(out_file)
-    ############################
 
 
 if __name__ == '__main__':
