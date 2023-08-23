@@ -1,4 +1,8 @@
-var auth = 'Bearer ' + btoa(params.name + ':' + params.license);
+var auth = 'Bearer ' + btoa(
+    params.credentials 
+    ? params.credentials.identifier + ':' + params.credentials.password 
+    :  params.name + ':' + params.license
+);
 
 var sendRequest = function(method, api, body) {
     var url = params.url;
@@ -27,8 +31,8 @@ var sendRequest = function(method, api, body) {
 var isPhishing = function(url, force, smart, area, timeout) {
     var md;
     var body = {
-        name: params.name,
-        license: params.license,
+        name: params.credentials ? params.credentials.identifier : params.name,
+        license: params.credentials  ? params.credentials.password : params.license,
         version: '2',
         force: force,
         url: url,
