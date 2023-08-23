@@ -225,6 +225,7 @@ def test_sql_queries_with_empty_table(mocker):
     mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     mocker.patch.object(client.connection, 'execute', return_value=ResultMock())
+    mocker.patch.object(client.connection, 'execution_options')
     result = sql_query_execute(client, ARGS3)
     assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
 

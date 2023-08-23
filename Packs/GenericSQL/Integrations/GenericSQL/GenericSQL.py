@@ -151,7 +151,6 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
-
         with self.connection as connection:
             # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
             connection.execution_options(isolation_level="AUTOCOMMIT")
