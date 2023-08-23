@@ -3,7 +3,7 @@ import demistomock as demisto
 import datetime
 from freezegun import freeze_time
 from CommonServerPython import IncidentStatus
-from AWS_SecurityHub import AWSClient, get_findings_command, fetch_incidents, list_members_command
+from AWS_SecurityHub import AWSClient, get_findings_command, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -194,10 +194,28 @@ def test_fetch_incidents(mocker):
     Then:
         - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
     """
+    from AWS_SecurityHub import fetch_incidents
     mocker.spy(demisto, 'setLastRun')
     client = MockClient()
     fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
+
+
+@freeze_time("2022-05-03")
+def test_fetch_with_archive_findings_without_findings(mocker):
+    """
+    Given:
+        - fetch incident with archive_findings parameter set to true.
+    When:
+        - Fetching finding as incident
+    Then:
+        - Verify that the fetch function terminate without errors. 
+    """
+    from AWS_SecurityHub import fetch_incidents
+    set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
+    client = MockClient(return_findings=False)
+    fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
+    assert set_last_run_mocker.call_args[0][0]['lastRun'] == '22022-04-18T00:00:00+00:00'
 
 
 @freeze_time("2021-03-14T13:34:14.758295Z")
@@ -210,6 +228,7 @@ def test_fetch_incidents_with_filters(mocker):
     Then:
         - Check the filters to get_findings.
     """
+    from AWS_SecurityHub import fetch_incidents
     expected_filters = {
         'CreatedAt': [{
             'Start': '2018-10-24T14:13:20+00:00',
@@ -523,19 +542,3 @@ def test_last_update_to_time():
     expected_timestamp = 1675637387
     result = last_update_to_time(last_update)
     assert result == expected_timestamp
-
-
-@freeze_time("2022-03-14T13:34:14.758295Z")
-def test_fetch_with_archive_findings_without_findings(mocker):
-    """
-    Given:
-        - fetch incident with archive_findings parameter set to true.
-    When:
-        - Fetching finding as incident
-    Then:
-        - Verify that the fetch function terminate without errors. 
-    """
-    set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
-    client = MockClient(return_findings=False)
-    fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
-    assert set_last_run_mocker.call_args[0][0]['lastRun'] == '2022-02-27T13:34:14.758295+00:00'
