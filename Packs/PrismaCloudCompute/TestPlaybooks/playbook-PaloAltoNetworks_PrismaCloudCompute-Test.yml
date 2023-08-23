@@ -195,6 +195,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -290,9 +291,7 @@ tasks:
       id: 5b485b90-3a26-47ca-89f2-5bf5b2e6e555
       version: -1
       name: prisma-cloud-compute-profile-host-list
-      description: Get information about the hosts and their profile events, this
-        command supports asterisks which allows you to get host profiles that contain
-        a specific substring
+      description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles that contain a specific substring
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-host-list
       type: regular
       iscommand: true
@@ -326,9 +325,7 @@ tasks:
       id: ab2b840a-b226-4075-8a87-a9e046b43c13
       version: -1
       name: prisma-cloud-compute-profile-container-list
-      description: Get information about the containers and their profile events,
-        this command supports asterisks which allows you to get container profiles
-        that contain a specific substring
+      description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles that contain a specific substring
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-list
       type: regular
       iscommand: true
@@ -525,8 +522,7 @@ tasks:
       id: ed7e3aee-2214-448a-8317-a8f846f2e03e
       version: -1
       name: prisma-cloud-compute-profile-container-forensic-list
-      description: Get runtime forensics data for a specific container on a specific
-        host
+      description: Get runtime forensics data for a specific container on a specific host
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-forensic-list
       type: regular
       iscommand: true
@@ -1005,9 +1001,7 @@ tasks:
       id: 3d908575-bafe-4a1a-8c04-20ab8379d2ab
       version: -1
       name: cve
-      description: Get infomration about the cves in the system, will return maximum
-        of 50 records, it is possible to query for partial cve description such as
-        cve-2020 or cve-2014 or by severity/distro/package
+      description: Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
       script: PaloAltoNetworks_PrismaCloudCompute|||cve
       type: regular
       iscommand: true
@@ -1391,8 +1385,7 @@ tasks:
       id: 0f1c05d3-09f0-4e2b-816e-876653d761a2
       version: -1
       name: prisma-cloud-compute-images-scan-list
-      description: Get images scan report, the report includes vulnerabilities, compliance
-        issues, binaries, etc.
+      description: Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-images-scan-list
       type: regular
       iscommand: true
@@ -1485,8 +1478,7 @@ tasks:
       id: 35402509-da48-49b4-8b14-6f59c95c5228
       version: -1
       name: prisma-cloud-compute-hosts-scan-list
-      description: Get images scan report, the report includes vulnerabilities, compliance
-        issues, binaries, etc.
+      description: Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-hosts-scan-list
       type: regular
       iscommand: true
@@ -1823,3 +1815,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
