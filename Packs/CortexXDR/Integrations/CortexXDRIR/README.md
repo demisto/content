@@ -3012,7 +3012,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| host_id | The name of the host. | Optional | 
 | limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
