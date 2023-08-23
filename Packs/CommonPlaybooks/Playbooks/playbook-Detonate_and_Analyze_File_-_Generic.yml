@@ -78,8 +78,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 570
+          "x": 920,
+          "y": 580
         }
       }
     note: false
@@ -118,8 +118,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1850,
-          "y": 560
+          "x": 1350,
+          "y": 580
         }
       }
     note: false
@@ -185,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 380
+          "x": 920,
+          "y": 390
         }
       }
     note: false
@@ -269,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1850,
-          "y": 380
+          "x": 1350,
+          "y": 390
         }
       }
     note: false
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 750
+          "x": 920,
+          "y": 760
         }
       }
     note: false
@@ -374,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 945
+          "x": 920,
+          "y": 925
         }
       }
     note: false
@@ -402,6 +402,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
+      - "20"
       - "22"
     scriptarguments:
       brandname:
@@ -413,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1250,
-          "y": 380
+          "x": 520,
+          "y": 390
         }
       }
     note: false
@@ -426,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 46faec6e-c540-45a8-8025-a118cab9357c
+    taskid: 723d2bf6-e92a-4ac9-851c-c1227ce3b386
     type: regular
     task:
-      id: 46faec6e-c540-45a8-8025-a118cab9357c
+      id: 723d2bf6-e92a-4ac9-851c-c1227ce3b386
       version: -1
       name: Get a full report from Joe Sandbox - JSON
       description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
@@ -446,16 +447,22 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: ID
+          accessor: webid
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Joe.Analysis.ID
+                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 915
+          "x": 70,
+          "y": 925
         }
       }
     note: false
@@ -494,14 +501,18 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Joe.Analysis
+              complex:
+                root: Joe
+                accessor: Analysis
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 730
+          "x": 280,
+          "y": 750
         }
       }
     note: false
@@ -533,16 +544,22 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: ID
+          accessor: webid
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Joe.Analysis.ID
+                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 915
+          "x": 500,
+          "y": 925
         }
       }
     note: false
@@ -594,8 +611,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1440
+          "x": 500,
+          "y": 1450
         }
       }
     note: false
@@ -647,8 +664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1075
+          "x": 70,
+          "y": 1085
         }
       }
     note: false
@@ -692,8 +709,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1440
+          "x": 70,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 59b9b222-8339-41b5-88f5-410d11ad9a20
+    type: playbook
+    task:
+      id: 59b9b222-8339-41b5-88f5-410d11ad9a20
+      version: -1
+      name: Detonate and Analyze File - JoeSecurity
+      description: |-
+        Detonates one or more files using the Joe Security - Joe Sandbox integration.
+        Returns relevant reports to the War Room and file reputations to the context data.
+        All file types are supported.
+      playbookName: Detonate and Analyze File - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 580
         }
       }
     note: false
@@ -742,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1240
+          "x": 70,
+          "y": 1250
         }
       }
     note: false
@@ -774,8 +835,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 570
+          "x": -120,
+          "y": 580
         }
       }
     note: false
@@ -789,18 +850,13 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "12_3_#default#": 0.1,
-      "15_3_#default#": 0.38,
-      "21_3_#default#": 0.39,
-      "4_3_no": 0.12,
-      "5_3_#default#": 0.1,
-      "9_3_#default#": 0.25
+      "5_3_#default#": 0.51
     },
     "paper": {
       "dimensions": {
         "height": 1625,
-        "width": 2250,
-        "x": 390,
+        "width": 2090,
+        "x": -120,
         "y": 70
       }
     }
