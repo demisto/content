@@ -3,11 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic v2
-description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations:
-    * EWS
-    * Office 365
-    * Gmail
-    * Agari Phishing Defense'
+description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense'
 starttaskid: "0"
 tasks:
   "0":
@@ -144,8 +140,7 @@ tasks:
     scriptarguments:
       allow_not_found_exchange_locations:
         complex:
-          root: |
-            inputs.O365AllowNotFoundExchangeLocations
+          root: inputs.O365AllowNotFoundExchangeLocations
       delete_type:
         complex:
           root: inputs.O365DeleteType
@@ -413,22 +408,22 @@ tasks:
               complex:
                 root: modules
                 filters:
-                  - - operator: isEqualString
-                      left:
-                        value:
-                          simple: modules.brand
-                        iscontext: true
-                      right:
-                        value:
-                          simple: SecurityAndCompliance
-                  - - operator: isEqualString
-                      left:
-                        value:
-                          simple: modules.state
-                        iscontext: true
-                      right:
-                        value:
-                          simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndCompliance
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
       - - operator: isEqualString
           left:
@@ -1032,7 +1027,7 @@ inputs:
   required: false
   description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
   playbookInputQuery:
-- key:  O365AllowNotFoundExchangeLocations
+- key: O365AllowNotFoundExchangeLocations
   value:
     simple: "False"
   required: false
@@ -1059,5 +1054,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
