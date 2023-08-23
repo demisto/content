@@ -5,7 +5,7 @@ from websockets.sync.connection import Connection
 from dateutil import tz
 
 VENDOR = "proofpoint"
-PRODUCT = "on_demand_email_security"
+PRODUCT = "email_security"
 
 URL = "wss://{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
