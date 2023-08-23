@@ -913,6 +913,7 @@ class SecurityAndComplianceClient {
         }
         if ($action -eq "Preview") {
             $cmd_params.Preview = $true
+            $cmd_params.Confirm = $false
         } elseif ($action -eq "Purge") {
             $cmd_params.Purge = $true
             $cmd_params.PurgeType = $purge_type
