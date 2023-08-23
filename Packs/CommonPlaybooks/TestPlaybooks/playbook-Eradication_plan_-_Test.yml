@@ -268,8 +268,8 @@ tasks:
         simple: "True"
       EndpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: Core.Endpoint
+          accessor: endpoint_id
       FilePath:
         complex:
           root: Path
@@ -641,8 +641,8 @@ tasks:
         simple: echo Hello2 >> "C:\Users\administrator\Downloads\fortestplaybook2.txt"
       endpoint_ids:
         complex:
-          root: alert
-          accessor: agentid
+          root: Core.Endpoint
+          accessor: endpoint_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -719,8 +719,8 @@ tasks:
         simple: "True"
       EndpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: Core.Endpoint
+          accessor: endpoint_id
       FilePath:
         complex:
           root: Path2

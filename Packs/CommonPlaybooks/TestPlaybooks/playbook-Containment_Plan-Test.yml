@@ -316,22 +316,6 @@ tasks:
           left:
             value:
               complex:
-                root: QuarantinedFilesFromEndpoints
-                accessor: fileHash
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.Isolation
-                accessor: endpoint_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
                 root: Core.blocklist
                 accessor: added_hashes
             iscontext: true
@@ -573,10 +557,10 @@ tasks:
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
-        simple: "True"
+        simple: "False"
       Domain:
         complex:
-          root: Domain
+          root: DomainTest
       EndpointID:
         complex:
           root: Core.Endpoint
@@ -631,7 +615,7 @@ tasks:
     task:
       id: cdd28eb9-3fa9-4e26-8e6b-92717c100ff8
       version: -1
-      name: Set Doamin
+      name: Set Domain
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -642,9 +626,9 @@ tasks:
       - "149"
     scriptarguments:
       key:
-        simple: Doamin
+        simple: DomainTest
       value:
-        simple: demisto.local
+        simple: nonofyourbuisness.io
     separatecontext: false
     continueonerrortype: ""
     view: |-

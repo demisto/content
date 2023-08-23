@@ -151,7 +151,7 @@ tasks:
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
-        simple: "True"
+        simple: "False"
       ShouldOpenTicket:
         simple: "False"
       ZendeskSubject:
@@ -309,7 +309,7 @@ tasks:
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       ShouldCloseAutomatically:
-        simple: "True"
+        simple: "False"
       ShouldOpenTicket:
         simple: "False"
       ZendeskSubject:

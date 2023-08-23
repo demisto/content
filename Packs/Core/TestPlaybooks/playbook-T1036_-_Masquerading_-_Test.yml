@@ -103,13 +103,13 @@ tasks:
       - "24"
     scriptarguments:
       AutoCloseAlert:
-        simple: "True"
+        simple: "False"
       AutoContainment:
         simple: "True"
       AutoEradication:
         simple: "True"
       AutoRecovery:
-        simple: "True"
+        simple: "False"
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       FilePath:
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1640
+          "y": 1650
         }
       }
     note: false
@@ -398,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2000
+          "y": 2010
         }
       }
     note: false
@@ -433,7 +433,7 @@ tasks:
       {
         "position": {
           "x": 760,
-          "y": 1810
+          "y": 1820
         }
       }
     note: false
@@ -573,8 +573,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5415,
-        "width": 890,
+        "height": 1995,
+        "width": 700,
         "x": 440,
         "y": 80
       }
