@@ -770,6 +770,67 @@ class TestFilePermissionMethods:
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
 
     @patch(MOCKER_HTTP_METHOD)
+    def test_list_labels(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-list-labels command successful run.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-list-labels  command with the parameters provided.
+
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import get_labels_command
+
+        with open('test_data/list_labels_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        result = get_labels_command(gsuite_client, {})
+
+        assert 'GoogleDrive.Labels' in result.outputs
+        assert len(result.outputs['GoogleDrive.Labels']['labels']) == 2
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_modify_labels_command(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-modify-label command successful run.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-modify-label command with the parameters provided.
+
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import modify_label_command
+
+        with open('test_data/modify_label_command_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            'field_id': 'test',
+            'selection_label_id': 'test',
+            'label_id': 'test',
+            'file_id': 'test'
+        }
+        result = modify_label_command(gsuite_client, args)
+
+        assert 'modifiedLabels' in result.outputs.get('GoogleDrive.Labels')
+        assert result.outputs.get('GoogleDrive.Labels').get('modifiedLabels')[0].get('id') \
+               == 'vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb'
+
+        assert result.raw_response == mock_response
+
+        assert HR_MESSAGES['MODIFY_LABEL_SUCCESS'].format(args.get('file_id')) in result.readable_output
+
+    @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_list_command_failure(self, mocker_http_request, gsuite_client):
         """
         Scenario: For google-file-permission-list command failure.
@@ -937,8 +998,7 @@ class TestFilePermissionMethods:
         args = {
             'parent': 'test_parent',
             'entry_id': 'test_entry_id',
-            'file_name': 'test_file_name',
-            'parent': 'test_parent'
+            'file_name': 'test_file_name'
 
         }
         file_upload_command(gsuite_client, args)

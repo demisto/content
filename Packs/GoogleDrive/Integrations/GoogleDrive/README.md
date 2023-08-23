@@ -9,19 +9,19 @@ This integration was integrated and tested with version 1.31.0 of GoogleDrive
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | User's Service Account JSON |  |  |
-    | User ID | The primary email address of the user to fetch the incident\(s\). |  |
-    | User ID |  |  |
-    | User's Service Account JSON |  |  |
-    | Action Detail Case Include | Action types to include for fetching the incident. |  |
-    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". |  |
-    | Drive Item Search Value | itemName or folderName for fetching the incident. |  |
-    | Fetch incidents |  |  |
-    | Incident type |  |  |
-    | Max Incidents | The maximum number of incidents to fetch each time. |  |
-    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &amp;lt;number&amp;gt; &amp;lt;unit&amp;gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. |  |
-    | Trust any certificate (not secure) |  |  |
-    | Use system proxy settings |  |  |
+    | User's Service Account JSON |  | False |
+    | User ID | The primary email address of the user to fetch the incident\(s\). | False |
+    | User ID |  | False |
+    | User's Service Account JSON |  | False |
+    | Action Detail Case Include | Action types to include for fetching the incident. | False |
+    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | False |
+    | Drive Item Search Value | itemName or folderName for fetching the incident. | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Max Incidents | The maximum number of incidents to fetch each time. | False |
+    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &lt;number&gt; &lt;unit&gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -568,7 +568,7 @@ Lists the user's shared drives.
 | page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
 | page_token | Page token for shared drives. | Optional | 
 | query | Query string for searching shared drives. | Optional | 
-| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Possible values are: true, false. Default is false. | Optional | 
 | user_id | The user's primary email address. | Optional | 
 
 #### Context Output
@@ -616,7 +616,7 @@ Gets a user shared drives.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Possible values are: true, false. Default is false. | Optional | 
 | user_id | The user's primary email address. | Optional | 
 | drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, themeId, capabilities, createdTime, hidden, restrictions. | Optional | 
@@ -1028,7 +1028,7 @@ Lists a file's or shared drive's permissions.
 | page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
 | page_token | Page token for shared drives. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
-| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -1127,3 +1127,150 @@ Delete a permission.
 #### Context Output
 
 There is no context output for this command.
+### google-drive-file-modify-label
+
+***
+Modify labels to file.
+
+#### Base Command
+
+`google-drive-file-modify-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| label_id | The label id to set for the file. | Optional | 
+| field_id | the field id of the label to set. | Optional | 
+| selection_label_id | the label id to set for the field. | Optional | 
+| remove_label | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.Labels.kind | String | The type of resource. This is always drive\#modifyLabelsResponse | 
+| GoogleDrive.Labels.modifiedLabels.fields.id | String | The ID of the label field selected | 
+| GoogleDrive.Labels.modifiedLabels.fields.kind | String | Kind of resource this is, in this case drive\#labelField | 
+| GoogleDrive.Labels.modifiedLabels.fields.selection | String | Selected label. | 
+| GoogleDrive.Labels.modifiedLabels.fields.valueType | String | The type of data this label is representing. | 
+| GoogleDrive.Labels.modifiedLabels.id | String | The label id of the label to set | 
+| GoogleDrive.Labels.modifiedLabels.kind | String | The type of resource. This is always drive\#label | 
+| GoogleDrive.Labels.modifiedLabels.revisionId | String |  | 
+
+### google-drive-get-labels
+
+***
+Google Drive get labels.
+
+#### Base Command
+
+`google-drive-get-labels`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user's primary email address. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.Labels.labels.appliedCapabilities.canApply | Boolean | Is able to apply this label to files. | 
+| GoogleDrive.Labels.labels.appliedCapabilities.canRead | Boolean | Is able to read this label. | 
+| GoogleDrive.Labels.labels.appliedCapabilities.canRemove | Boolean | Is able to remove this label from files. | 
+| GoogleDrive.Labels.labels.appliedLabelPolicy.copyMode | String | Copy label to all descendants. | 
+| GoogleDrive.Labels.labels.createTime | Date | Time at which this label was created. | 
+| GoogleDrive.Labels.labels.creator.person | String | The creator of this label. | 
+| GoogleDrive.Labels.labels.customer | String | The customer that owns this label. | 
+| GoogleDrive.Labels.labels.displayHints.priority | String | Priority of the label. | 
+| GoogleDrive.Labels.labels.displayHints.shownInApply | Boolean | Whether this label is shown in the "Apply a label" dropdown. | 
+| GoogleDrive.Labels.labels.fields.appliedCapabilities.canRead | Boolean | Is the field readable. | 
+| GoogleDrive.Labels.labels.fields.appliedCapabilities.canSearch | Boolean | Is the field searchable. | 
+| GoogleDrive.Labels.labels.fields.appliedCapabilities.canWrite | Boolean | Is the field writable. | 
+| GoogleDrive.Labels.labels.fields.creator.person | String | The creator of this field. | 
+| GoogleDrive.Labels.labels.fields.displayHints.required | Boolean | Is this field required to be set by the user. | 
+| GoogleDrive.Labels.labels.fields.displayHints.shownInApply | Boolean | Should this field be shown when editing the label. | 
+| GoogleDrive.Labels.labels.fields.id | String | The ID of the field. | 
+| GoogleDrive.Labels.labels.fields.lifecycle.state | String | The lifecycle state of this field. | 
+| GoogleDrive.Labels.labels.fields.properties.displayName | String | The display name of the property. | 
+| GoogleDrive.Labels.labels.fields.properties.required | Boolean | Is this property required to be set by the user. | 
+| GoogleDrive.Labels.labels.fields.publisher.person | String | The user who published this field. | 
+| GoogleDrive.Labels.labels.fields.queryKey | String | The query key for this field. | 
+| GoogleDrive.Labels.labels.fields.schemaCapabilities | Unknown | Schema capabilities for this field. | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canRead | Boolean |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canSearch | Boolean |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canSelect | Boolean |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgePriority | String |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.shownInApply | Boolean |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.id | String |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.lifecycle.state | String |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.blue | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.green | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.red | Number |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.displayName | String |  | 
+| GoogleDrive.Labels.labels.fields.selectionOptions.choices.schemaCapabilities | Unknown |  | 
+| GoogleDrive.Labels.labels.fields.updater.person | String |  | 
+| GoogleDrive.Labels.labels.id | String |  | 
+| GoogleDrive.Labels.labels.labelType | String |  | 
+| GoogleDrive.Labels.labels.lifecycle.state | String |  | 
+| GoogleDrive.Labels.labels.name | String |  | 
+| GoogleDrive.Labels.labels.properties.title | String |  | 
+| GoogleDrive.Labels.labels.publishTime | Date |  | 
+| GoogleDrive.Labels.labels.publisher.person | String |  | 
+| GoogleDrive.Labels.labels.revisionCreateTime | Date |  | 
+| GoogleDrive.Labels.labels.revisionCreator.person | String |  | 
+| GoogleDrive.Labels.labels.revisionId | String |  | 
+| GoogleDrive.Labels.labels.schemaCapabilities | Unknown |  | 
+| GoogleDrive.Labels.labels.fields.userOptions | Unknown |  | 
+
+### google-drive-get-file-labels
+
+***
+Modify labels to file.
+
+#### Base Command
+
+`google-drive-get-file-labels`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.id | String | The ID of the file. | 
+| GoogleDrive.Labels.kind | String | The type of resource. This is always drive\#labelList | 
+| GoogleDrive.Labels.labels.fields.id | String | The ID of the label field selected | 
+| GoogleDrive.Labels.labels.fields.kind | String | The kind of this field. This is always drive\#labelField | 
+| GoogleDrive.Labels.labels.fields.selection | String | The label field selected. | 
+| GoogleDrive.Labels.labels.fields.valueType | String | The type of data this label is representing. | 
+| GoogleDrive.Labels.labels.id | String | The label id of the label to set | 
+| GoogleDrive.Labels.labels.kind | String | The type of resource. This is always drive\#label | 
+| GoogleDrive.Labels.labels.revisionId | String | The revision id of the label | 

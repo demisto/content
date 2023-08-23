@@ -2701,7 +2701,288 @@ script:
       predefined:
       - "true"
       - "false"
-  dockerimage: demisto/googleapi-python3:1.0.0.68850
+  - name: google-drive-file-modify-label
+    description: Modify labels to file.
+    arguments:
+    - name: file_id
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+    - name: user_id
+      description: The user's primary email address
+    - name: label_id
+      description: The label id to set for the file
+    - name: field_id
+      description: the field id of the label to set
+    - name: selection_label_id
+      description: the label id to set for the field
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      name: remove_label
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: GoogleDrive.Labels.kind
+      description: 'The type of resource. This is always drive#modifyLabelsResponse'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.id
+      description: 'The ID of the label field selected'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.kind
+      description: 'Kind of resource this is, in this case drive#labelField'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.selection
+      description: 'Selected label.'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.fields.valueType
+      description: 'The type of data this label is representing.'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.id
+      description: 'The label id of the label to set'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.kind
+      description: 'The type of resource. This is always drive#label'
+      type: String
+    - contextPath: GoogleDrive.Labels.modifiedLabels.revisionId
+      description: ''
+      type: String
+  - name: google-drive-get-labels
+    description: Google Drive get labels.
+    arguments:
+    - name: user_id
+      description: The user's primary email address
+    outputs:
+    - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canApply
+      description: 'Is able to apply this label to files.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canRead
+      description: 'Is able to read this label.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canRemove
+      description: 'Is able to remove this label from files.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.appliedLabelPolicy.copyMode
+      description: 'Copy label to all descendants.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.createTime
+      description: 'Time at which this label was created.'
+      type: Date
+    - contextPath: GoogleDrive.Labels.labels.creator.person
+      description: 'The creator of this label.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.customer
+      description: 'The customer that owns this label.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.displayHints.priority
+      description: 'Priority of the label.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.displayHints.shownInApply
+      description: 'Whether this label is shown in the "Apply a label" dropdown.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canRead
+      description: 'Is the field readable.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canSearch
+      description: 'Is the field searchable.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canWrite
+      description: 'Is the field writable.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.creator.person
+      description: 'The creator of this field.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.displayHints.required
+      description: 'Is this field required to be set by the user.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.displayHints.shownInApply
+      description: 'Should this field be shown when editing the label.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.id
+      description: 'The ID of the field.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.lifecycle.state
+      description: 'The lifecycle state of this field.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.properties.displayName
+      description: 'The display name of the property.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.properties.required
+      description: 'Is this property required to be set by the user.'
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.publisher.person
+      description: 'The user who published this field.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.queryKey
+      description: 'The query key for this field.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.schemaCapabilities
+      description: 'Schema capabilities for this field.'
+      type: Unknown
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canRead
+      description: ''
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canSearch
+      description: ''
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canSelect
+      description: ''
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.backgroundColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.foregroundColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgeColors.soloColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.badgePriority
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.backgroundColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.foregroundColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.darkBadgeColors.soloColor.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.displayHints.shownInApply
+      description: ''
+      type: Boolean
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.id
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.lifecycle.state
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.blue
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.green
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.badgeConfig.color.red
+      description: ''
+      type: Number
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.properties.displayName
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.schemaCapabilities
+      description: ''
+      type: Unknown
+    - contextPath: GoogleDrive.Labels.labels.fields.updater.person
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.id
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.labelType
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.lifecycle.state
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.name
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.properties.title
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.publishTime
+      description: ''
+      type: Date
+    - contextPath: GoogleDrive.Labels.labels.publisher.person
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.revisionCreateTime
+      description: ''
+      type: Date
+    - contextPath: GoogleDrive.Labels.labels.revisionCreator.person
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.revisionId
+      description: ''
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.schemaCapabilities
+      description: ''
+      type: Unknown
+    - contextPath: GoogleDrive.Labels.labels.fields.userOptions
+      description: ''
+      type: Unknown
+  - name: google-drive-get-file-labels
+    description: Modify labels to file.
+    arguments:
+    - name: file_id
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+    - name: user_id
+      description: The user's primary email address
+    outputs:
+    - contextPath: GoogleDrive.File.File.id
+      description: 'The ID of the file.'
+      type: String
+    - contextPath: GoogleDrive.Labels.kind
+      description: 'The type of resource. This is always drive#labelList'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.id
+      description: 'The ID of the label field selected'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.kind
+      description: 'The kind of this field. This is always drive#labelField'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.selection
+      description: 'The label field selected.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.fields.valueType
+      description: 'The type of data this label is representing.'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.id
+      description: 'The label id of the label to set'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.kind
+      description: 'The type of resource. This is always drive#label'
+      type: String
+    - contextPath: GoogleDrive.Labels.labels.revisionId
+      description: 'The revision id of the label'
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.71902
   isfetch: true
   runonce: false
   script: "-"
