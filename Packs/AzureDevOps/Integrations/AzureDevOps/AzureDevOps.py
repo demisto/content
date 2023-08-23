@@ -1862,7 +1862,7 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> tuple[int, int
     page = arg_to_number(args.get('page')) or 1
 
     if page < 1 or limit < 1:
-        raise ValueError('Page and limit arguments must be greater than 1.')
+        raise ValueError('Page and limit arguments must be at least 1.')
 
     return limit, (page - 1) * limit
 
