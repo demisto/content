@@ -1,7 +1,7 @@
 id: Cortex XDR - Port Scan - Adjusted
 version: -1
 name: Cortex XDR - Port Scan - Adjusted
-description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Allows manual blocking of successfully scanned ports.\n- Internal scanner endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan"
+description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan"
 starttaskid: "0"
 tasks:
   "0":
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1770,
           "y": -960
         }
       }
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1770,
           "y": -830
         }
       }
@@ -400,7 +400,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
+          "x": 2240,
           "y": -690
         }
       }
@@ -533,10 +533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: 9e57b28a-d1ba-4aca-8eb6-0c31b4364a88
+    taskid: 982f8452-1b8f-4781-8927-3f7f94a1319d
     type: condition
     task:
-      id: 9e57b28a-d1ba-4aca-8eb6-0c31b4364a88
+      id: 982f8452-1b8f-4781-8927-3f7f94a1319d
       version: -1
       name: Any artifacts found as malicious?
       description: Checks whether any malicious artifacts should be blocked.
@@ -668,7 +668,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "185"
+      - "194"
     scriptarguments:
       Indicator:
         complex:
@@ -721,7 +721,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "185"
+      - "194"
     scriptarguments:
       AzureSearchTime:
         simple: ago(3d)
@@ -796,7 +796,7 @@ tasks:
       {
         "position": {
           "x": 1780,
-          "y": 1995
+          "y": 2355
         }
       }
     note: false
@@ -808,12 +808,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: 86934895-4874-4a7a-8935-d60faec11b25
+    taskid: 89d1e208-6669-43af-8c41-50fb577f4c51
     type: condition
     task:
-      id: 86934895-4874-4a7a-8935-d60faec11b25
+      id: 89d1e208-6669-43af-8c41-50fb577f4c51
       version: -1
-      name: Has related Indicators to hunt?
+      name: Found related Indicators to hunt?
       description: Checks whether there are any indicators to hunt for.
       type: condition
       iscommand: false
@@ -858,7 +858,7 @@ tasks:
       {
         "position": {
           "x": 1780,
-          "y": 2130
+          "y": 2490
         }
       }
     note: false
@@ -1074,7 +1074,7 @@ tasks:
       {
         "position": {
           "x": 1540,
-          "y": 2300
+          "y": 2660
         }
       }
     note: false
@@ -1136,7 +1136,7 @@ tasks:
       {
         "position": {
           "x": 1540,
-          "y": 2460
+          "y": 2820
         }
       }
     note: false
@@ -1173,7 +1173,7 @@ tasks:
       {
         "position": {
           "x": 1540,
-          "y": 2610
+          "y": 2980
         }
       }
     note: false
@@ -1198,7 +1198,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "185"
+      - "194"
     scriptarguments:
       FileSHA256:
         complex:
@@ -1455,14 +1455,13 @@ tasks:
       '#none#':
       - "179"
       - "177"
-      - "186"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1780,
-          "y": 2785
+          "y": 3155
         }
       }
     note: false
@@ -1502,8 +1501,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": -420
+          "x": 2460,
+          "y": -260
         }
       }
     note: false
@@ -1559,13 +1558,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "157"
+      - "193"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2670,
+          "x": 2460,
           "y": -550
         }
       }
@@ -1578,10 +1577,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "162":
     id: "162"
-    taskid: 4ad363da-c8b5-489b-86bb-57995d9fae02
+    taskid: 46359a0e-6f65-43b8-8918-ebda6309a008
     type: condition
     task:
-      id: 4ad363da-c8b5-489b-86bb-57995d9fae02
+      id: 46359a0e-6f65-43b8-8918-ebda6309a008
       version: -1
       name: Attacker IP is Internal or External?
       description: Checks whether the attacker IP address is internal or external.
@@ -1589,8 +1588,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      External:
-      - "164"
+      '#default#':
+      - "109"
       Internal:
       - "163"
     separatecontext: false
@@ -1602,31 +1601,28 @@ tasks:
             value:
               complex:
                 root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.SrcIPAddress
+                      iscontext: true
                 accessor: InRange
             iscontext: true
           right:
             value:
               simple: "yes"
           ignorecase: true
-    - label: External
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: IP
-                accessor: InRange
-            iscontext: true
-          right:
-            value:
-              simple: "no"
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": -260
+          "x": 2460,
+          "y": -100
         }
       }
     note: false
@@ -1650,93 +1646,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "167"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2880,
-          "y": -90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "164":
-    id: "164"
-    taskid: f29ff3cb-5572-4c4b-8fa1-3265f780f954
-    type: title
-    task:
-      id: f29ff3cb-5572-4c4b-8fa1-3265f780f954
-      version: -1
-      name: External Source IP
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "184"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2470,
-          "y": -90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "167":
-    id: "167"
-    taskid: d1f84c37-e465-4b8d-80ac-e669d0e4d17f
-    type: playbook
-    task:
-      id: d1f84c37-e465-4b8d-80ac-e669d0e4d17f
-      version: -1
-      name: IP Enrichment - Internal - Generic v2
-      playbookName: IP Enrichment - Internal - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
       - "168"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.SrcIPAddress
-          transformers:
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalIPRanges
-      ResolveIP:
-        simple: "True"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 40
+          "x": 2670,
+          "y": 70
         }
       }
     note: false
@@ -1775,7 +1692,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
+          "x": 2670,
           "y": 205
         }
       }
@@ -1823,7 +1740,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
+          "x": 2670,
           "y": 370
         }
       }
@@ -1854,7 +1771,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
+          "x": 2670,
           "y": 550
         }
       }
@@ -1880,7 +1797,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "185"
+      - "194"
     scriptarguments:
       Commandline:
         complex:
@@ -1912,10 +1829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "177":
     id: "177"
-    taskid: 1d4bd3f6-ed02-4d93-8f90-bb994c05adf2
+    taskid: b9ead119-ed52-4d06-86ac-2b8fdc058fbb
     type: playbook
     task:
-      id: 1d4bd3f6-ed02-4d93-8f90-bb994c05adf2
+      id: b9ead119-ed52-4d06-86ac-2b8fdc058fbb
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1937,7 +1854,8 @@ tasks:
       - "180"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -2181,7 +2099,7 @@ tasks:
       {
         "position": {
           "x": 1997.5,
-          "y": 2930
+          "y": 3300
         }
       }
     note: false
@@ -2229,7 +2147,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 3100
+          "y": 3470
         }
       }
     note: false
@@ -2241,13 +2159,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "179":
     id: "179"
-    taskid: 8ee22451-bbe8-48cf-8dc3-f28f113cc093
+    taskid: 63bce0cf-ac43-421c-8961-83597c546d03
     type: condition
     task:
-      id: 8ee22451-bbe8-48cf-8dc3-f28f113cc093
+      id: 63bce0cf-ac43-421c-8961-83597c546d03
       version: -1
-      name: Should isolate endpoint?
-      description: 'Determines whether the endpoint should be isolated by examining the results of the investigation stage. '
+      name: Endpoint auto-isolation enabled?
+      description: Determine whether the endpoint should be isolated automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -2260,15 +2178,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PortScan
-                accessor: Investigation_Results
-            iscontext: true
-          right:
-            value: {}
       - - operator: isEqualString
           left:
             value:
@@ -2284,7 +2193,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 2930
+          "y": 3300
         }
       }
     note: false
@@ -2311,8 +2220,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 3560
+          "x": 2670,
+          "y": 3640
         }
       }
     note: false
@@ -2322,12 +2231,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "184":
-    id: "184"
-    taskid: 45bfd8b3-b384-4372-8555-70783a63b8a6
+  "192":
+    id: "192"
+    taskid: a601b414-67f1-4d3e-8745-6ee65383bf27
+    type: condition
+    task:
+      id: a601b414-67f1-4d3e-8745-6ee65383bf27
+      version: -1
+      name: Has user to investigate?
+      description: 'Checks whether an initiator username is available for investigation. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "194"
+      "yes":
+      - "135"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "193":
+    id: "193"
+    taskid: 721621fc-6135-4483-85e5-4657c8dfab13
     type: playbook
     task:
-      id: 45bfd8b3-b384-4372-8555-70783a63b8a6
+      id: 721621fc-6135-4483-85e5-4657c8dfab13
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
@@ -2343,7 +2296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "109"
+      - "157"
     scriptarguments:
       IP:
         complex:
@@ -2369,8 +2322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2470,
-          "y": 40
+          "x": 2460,
+          "y": -420
         }
       }
     note: false
@@ -2380,61 +2333,141 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "185":
-    id: "185"
-    taskid: 6e00ff29-32c1-4941-8225-6268ad258119
-    type: regular
+  "194":
+    id: "194"
+    taskid: fcb2421a-017b-4034-8ce4-a9ec5f97394e
+    type: condition
     task:
-      id: 6e00ff29-32c1-4941-8225-6268ad258119
+      id: fcb2421a-017b-4034-8ce4-a9ec5f97394e
       version: -1
-      name: Has investigation results?
-      description: 'Checks whether any results have been obtained from the investigation stage. When results have been obtained for the investigation stage, the task will set the results under a new context key. '
-      scriptName: SetAndHandleEmpty
-      type: regular
+      name: Found investigation results?
+      description: Checks whether any results have been obtained from the investigation stage.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "140"
-    scriptarguments:
-      key:
-        simple: PortScan.Investigation_Results
-      value:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Alert
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedAttackPatterns
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedCampaign
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Alert
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: QRadar.Search.Result
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Splunk.Result
-                iscontext: true
+      '#default#':
+      - "180"
+      "yes":
+      - "195"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Alert
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedAttackPatterns
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedCampaign
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedReport
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedFiles
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedDomains
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedURLs
+                      iscontext: true
+            iscontext: true
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NumOfSiemFailedLogon
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: NumOfThreatLogs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: ArraySize
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: NumOfOktaSuspiciousActivities
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: NumOfOktaSuspiciousUserAgent
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: NumOfOktaFailedLogon
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: AzureFailedLogonLogs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: PaloAltoNetworksXDR.Alert
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: QRadar.Search.Result
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Splunk.Result
+                      iscontext: true
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2450,237 +2483,82 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "186":
-    id: "186"
-    taskid: b22a846a-1b15-4dec-86c9-c12d160ff874
-    type: title
-    task:
-      id: b22a846a-1b15-4dec-86c9-c12d160ff874
-      version: -1
-      name: Port Blocking
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "188"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 2930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "188":
-    id: "188"
-    taskid: 62fe8dc2-18f9-4ef7-8eaa-d20a3d45dfe8
+  "195":
+    id: "195"
+    taskid: 0c4c888e-8700-4ac8-8d47-e228bcda763b
     type: condition
     task:
-      id: 62fe8dc2-18f9-4ef7-8eaa-d20a3d45dfe8
+      id: 0c4c888e-8700-4ac8-8d47-e228bcda763b
       version: -1
-      name: Were ports scanned successfully?
-      description: Checks whether the ports have been accessed.
+      name: Found XDR alerts that involve the scanned ports?
+      description: Verifies whether the scanned ports are involved in any XDR alerts obtained from the investigation stage.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "189"
+      - "140"
       "yes":
-      - "190"
+      - "196"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: notContainsGeneral
+      - - operator: in
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: action
+                root: PaloAltoNetworksXDR.Alert
+                accessor: action_local_port
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
-              simple: Detected
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 3060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "189":
-    id: "189"
-    taskid: c942fd8e-0fb7-4e23-8ad6-723e85e44c8b
-    type: title
-    task:
-      id: c942fd8e-0fb7-4e23-8ad6-723e85e44c8b
-      version: -1
-      name: Port Blocking Unneeded
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "180"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 3235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "190":
-    id: "190"
-    taskid: 271044fd-ad74-4b93-852a-33c398992855
-    type: regular
-    task:
-      id: 271044fd-ad74-4b93-852a-33c398992855
-      version: -1
-      name: Save scanned ports
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "191"
-    scriptarguments:
-      key:
-        simple: PortScan.PortsToBlock
-      value:
-        complex:
-          root: inputs.DstPort
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: inputs.DstPort
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.WhitelistedPorts
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "191":
-    id: "191"
-    taskid: 6ada0cf2-e44a-4227-8a88-67cb56efe827
-    type: regular
-    task:
-      id: 6ada0cf2-e44a-4227-8a88-67cb56efe827
-      version: -1
-      name: Block scanned ports
-      description: |+
-        Manually block the following scanned ports:
-        ${PortScan.PortsToBlock}
-
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "180"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 3385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "192":
-    id: "192"
-    taskid: 843dff09-5740-4a44-83dc-67ab61cf9376
-    type: condition
-    task:
-      id: 843dff09-5740-4a44-83dc-67ab61cf9376
-      version: -1
-      name: Has user to investigate?
-      description: 'Checks whether an initiator username is available for investigation. '
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "185"
-      "yes":
-      - "135"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
               complex:
-                root: inputs.Username
+                root: inputs.DstPort
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 1500
+          "x": 1780,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "196":
+    id: "196"
+    taskid: 9569d6ed-4218-47d0-8bb0-965981759edf
+    type: regular
+    task:
+      id: 9569d6ed-4218-47d0-8bb0-965981759edf
+      version: -1
+      name: Raise incident severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "140"
+    scriptarguments:
+      severity:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 2180
         }
       }
     note: false
@@ -2695,29 +2573,29 @@ view: |-
     "linkLabelsPosition": {
       "103_109_#default#": 0.11,
       "128_112_#default#": 0.14,
-      "143_144_yes": 0.66,
+      "141_152_#default#": 0.53,
+      "143_144_yes": 0.48,
+      "143_152_#default#": 0.52,
       "149_109_#default#": 0.1,
+      "162_109_#default#": 0.15,
       "162_163_Internal": 0.48,
-      "162_164_External": 0.51,
+      "169_109_#default#": 0.3,
       "169_170_yes": 0.57,
-      "179_180_#default#": 0.42,
-      "192_185_#default#": 0.54
+      "179_180_#default#": 0.25,
+      "194_180_#default#": 0.36,
+      "194_195_yes": 0.49,
+      "195_140_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 4585,
-        "width": 2550,
-        "x": 710,
+        "height": 4665,
+        "width": 2260,
+        "x": 790,
         "y": -960
       }
     }
   }
 inputs:
-- key: WhitelistedPorts
-  value: {}
-  required: false
-  description: A list of comma-separated ports that should not be blocked even if used in an attack.
-  playbookInputQuery:
 - key: InternalIPRanges
   value: {}
   required: true
@@ -2741,7 +2619,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'The source IP address from which the port scanning was initiated.'
+  description: The source IP address from which the port scanning was initiated.
   playbookInputQuery:
 - key: DstIPAddress
   value:
@@ -2751,7 +2629,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Scanned destination IP address.
+  description: 'Scanned destination IP address.'
   playbookInputQuery:
 - key: DstPort
   value:
@@ -2785,8 +2663,7 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: |-
-    Source host name from which port scanning was initiated.
+  description: Source host name from which port scanning was initiated.
   playbookInputQuery:
 - key: EndpointID
   value:
@@ -2806,7 +2683,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Source endpoint ID from which port scanning was initiated.
+  description: |-
+    Source endpoint ID from which port scanning was initiated.
   playbookInputQuery:
 - key: Initiator_CMD
   value:
@@ -2845,6 +2723,17 @@ inputs:
     simple: "False"
   required: true
   description: Whether to automatically isolate endpoints.
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 outputs:
 - contextPath: PortScan.BlockPorts
