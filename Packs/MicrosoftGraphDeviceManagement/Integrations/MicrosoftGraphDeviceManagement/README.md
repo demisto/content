@@ -19,10 +19,10 @@ For more details about the authentication used in this integration, see [Microso
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| azure_cloud | Azure Cloud | False |
-| auth_id | The Auth ID | False |
-| tenant_id | Token or tenant ID | False |
-| enc_key | Key or client secret | False |
+| azure_cloud | Azure Cloud. | False |
+| auth_id | The Auth ID. | False |
+| tenant_id | Token or tenant ID. | False |
+| enc_key | Key or client secret. | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
@@ -36,12 +36,12 @@ For more details about the authentication used in this integration, see [Microso
 
     | Azure Cloud | Description                                                              |
     |-------------|--------------------------------------------------------------------------|
-    | Worldwide   | The publicly accessible Azure Cloud                                      |
-    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
-    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
-    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
-    | Germany     | Azure cloud for the German Government                                    |
-    | China       | Azure cloud for the Chinese Government  
+    | Worldwide   | The publicly accessible Azure Cloud.                                      |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC).                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High).       |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD).                      |
+    | Germany     | Azure cloud for the German Government.                                    |
+    | China       | Azure cloud for the Chinese Government.  
 
 
 5. Click **Test** to validate the URLs, token, and connection.
