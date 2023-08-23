@@ -3857,7 +3857,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     """
     Retrieves a list of risky users or details about a specific user's risk score.
 
-    Args:list_risky_users_or_host_command
+    Args:
         client: A CoreClient object used to communicate with the API.
         args: A dictionary containing the following headers (optional):
             - user_id [str]: ID of the user to retrieve risk score details for.
@@ -3870,7 +3870,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         ValueError: If the API connection fails.
 
     """
-    def _error_missing_license(e: DemistoException) -> None:
+    def _return_warning_when_module_disable(e: DemistoException) -> None:
         if (
                 e is not None
                 and e.res is not None
@@ -3899,7 +3899,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
-            _error_missing_license(e)
+            _return_warning_when_module_disable(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
                 if not_found_message in error_message:
@@ -3917,7 +3917,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = get_func().get('reply', [])[:list_limit]
         except DemistoException as e:
-            _error_missing_license(e)
+            _return_warning_when_module_disable(e)
             raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
