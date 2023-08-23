@@ -108,10 +108,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Hostname
+              complex:
+                root: inputs.Hostname
             iscontext: true
     view: |-
       {
@@ -1133,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+    taskid: cc6f374f-6be2-4f2a-8d2a-dc5ccbe6e4be
     type: regular
     task:
-      id: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+      id: cc6f374f-6be2-4f2a-8d2a-dc5ccbe6e4be
       version: -1
       name: Cortex XDR get endpoint risk score
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -1150,7 +1151,7 @@ tasks:
     scriptarguments:
       host_id:
         complex:
-          root: inputs.Hostname
+          root: inputs.EndpointID
           transformers:
           - operator: uniq
     separatecontext: false
@@ -1646,4 +1647,3 @@ outputs:
 tests:
 - Endpoint Enrichment - Generic v2.1.6.8 - Test
 fromversion: 6.8.0
-system: true

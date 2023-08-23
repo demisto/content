@@ -36,9 +36,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
@@ -64,9 +61,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: afe0c443-753d-4633-89e1-0d77dc533447
@@ -123,9 +117,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 8189698a-475c-433b-8fbf-20275b3b2084
@@ -176,29 +167,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a80df9df-c0d4-4d25-88d1-39a974a9c2cb
+    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
     type: playbook
     task:
-      id: a80df9df-c0d4-4d25-88d1-39a974a9c2cb
+      id: b00cb02f-d44b-4e40-8c27-281d17a94723
       version: -1
       name: URL Enrichment - Generic v2
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: |-
-        Enrich URLs using one or more integrations.
-
-        URL enrichment includes:
-        * SSL verification for URLs
-        * Threat information
-        * Providing of URL screenshots
-        * URL Reputation using !url
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -212,9 +193,6 @@ tasks:
           transformers:
           - operator: uniq
       VerifyURL:
-        complex:
-          root: inputs.URLSSLVerification
-      UseReputationCommand:
         simple: "False"
     separatecontext: true
     loop:
@@ -234,9 +212,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 6245f7fc-b1cc-4120-81da-d3320f809b03
@@ -280,9 +255,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
@@ -334,9 +306,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 7f313517-52cb-4653-8c77-08819d4910f3
@@ -378,9 +347,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 473ab066-87e5-408d-8317-70e38ead40ca
@@ -421,9 +387,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: a9201fe9-18e4-47dc-8b45-c2c5111eea6a
@@ -466,9 +429,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -495,7 +455,11 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: MD5
   value:
@@ -581,12 +545,16 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. True - Resolves the IP addresses to hostnames. False - Does not resolve the IP addresses to hostnames.
+  description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. 
+    True - Resolves the IP addresses to hostnames.
+    False - Does not resolve the IP addresses to hostnames.
   playbookInputQuery:
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine
+    whether an email address is internal or external.
   playbookInputQuery:
 - key: CVE
   value:
@@ -595,14 +563,6 @@ inputs:
       accessor: ID
   required: false
   description: CVE ID to enrich.
-  playbookInputQuery:
-- key: URLSSLVerification
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to verify SSL certificates for URLs.
-    Can be True or False.
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -685,7 +645,8 @@ outputs:
   description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Email.Distance
-  description: 'The object that contains the distance between the email domain and the compared domain. '
+  description: 'The object that contains the distance between the email domain and
+    the compared domain. '
   type: unknown
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain.
@@ -705,74 +666,12 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
   type: unknown
-- contextPath: PaloAltoNetworksXDR.RiskyUser
-  description: The account object.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.type
-  description: Form of identification element.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.id
-  description: Identification value of the type field.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.score
-  description: The score assigned to the user.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons
-  description: The account risk objects.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
-  description: Date when the incident was created.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.description
-  description: Description of the incident.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-  description: The severity of the incident
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-  description: The incident status
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
-  description: The score.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost
-  description: The endpoint object.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.type
-  description: Form of identification element.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.id
-  description: Identification value of the type field.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.score
-  description: The score assigned to the host.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons
-  description: The endpoint risk objects.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
-  description: Date when the incident was created.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
-  description: Description of the incident.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
-  description: The severity of the incident
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
-  description: The incident status
-  type: string
-- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
-  description: The score.
-  type: string
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
+  - xsoar
+  - marketplacev2
