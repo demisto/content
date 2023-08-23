@@ -43,7 +43,7 @@
     "context": {
       "type": "string",
       "is_array": false
-    },
+    }, 
     "phone": {
       "type": "string",
       "is_array": false
@@ -79,34 +79,6 @@
     "telephony_id": {
       "type": "string",
       "is_array": false
-   },
-   "email": {
-    "type": "string",
-    "is_array": false
-   },
-   "_id": {
-    "type": "string",
-    "is_array": false
-   },
-   "event_type": {
-    "type": "string",
-    "is_array": false
-   },
-   "ood_software": {
-    "type": "string",
-    "is_array": false
-   },
-   "txid": {
-    "type": "string",
-    "is_array": false
-   },
-   "adaptive_trust_assessments": {
-    "type": "string",
-    "is_array": false
-   },
-   "alias": {
-    "type": "string",
-    "is_array": false
-   }
+    }
   }
 }
