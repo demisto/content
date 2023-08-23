@@ -986,7 +986,6 @@ script:
       - 'false'
   - name: qradar-reference-set-value-upsert
     description: Adds or updates an element in a reference set.
-    polling: true
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
@@ -1038,6 +1037,7 @@ script:
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html.'
       isArray: true
+    polling: true
   - name: qradar-reference-set-value-delete
     description: Removes a value from a reference set.
     arguments:
@@ -1108,7 +1108,6 @@ script:
       isArray: true
   - name: qradar-indicators-upload
     description: Uploads indicators to QRadar.
-    polling: true
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
@@ -1154,6 +1153,7 @@ script:
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-bulk_load-namespace-name-domain_id-POST.html.'
       isArray: true
+    polling: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind GeoIP data for the specified IP address.
     outputs:
@@ -2531,7 +2531,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68300
+  dockerimage: demisto/python3:3.10.12.68714
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true
