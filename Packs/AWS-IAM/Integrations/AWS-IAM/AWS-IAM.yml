@@ -1522,13 +1522,13 @@ script:
     description: List all managed policies that are attached to the specified IAM role.
     outputs:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.RoleName
-      description: The Role name.
+      description: The role name.
       type: string
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName
-      description: The Policy name.
+      description: The policy name.
       type: string
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
-      description: The Policy ARN.
+      description: The policy ARN.
       type: string
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated
       description: Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received.
