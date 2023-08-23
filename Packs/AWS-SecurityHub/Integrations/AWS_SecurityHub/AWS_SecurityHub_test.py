@@ -525,7 +525,7 @@ def test_last_update_to_time():
     assert result == expected_timestamp
 
 
-@freeze_time("2021-03-14T13:34:14.758295Z")
+@freeze_time("2022-03-14T13:34:14.758295Z")
 def test_fetch_with_archive_findings_without_findings(mocker):
     """
     Given:
@@ -535,7 +535,7 @@ def test_fetch_with_archive_findings_without_findings(mocker):
     Then:
         - Verify that the fetch function terminate without errors. 
     """
-    mocker.spy(demisto, 'setLastRun')
+    set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
     client = MockClient(return_findings=False)
     fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
-    assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2021-02-27T13:34:14.758295+00:00'
+    assert set_last_run_mocker.call_args[0][0]['lastRun'] == '2022-02-27T13:34:14.758295+00:00'
