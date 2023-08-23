@@ -738,7 +738,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3000,
+          "x": 3570,
           "y": 2030
         }
       }
@@ -766,6 +766,7 @@ tasks:
       - "59"
       - "98"
       - "111"
+      - "130"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -829,6 +830,7 @@ tasks:
     nexttasks:
       '#none#':
       - "129"
+      - "131"
     scriptarguments:
       key:
         simple: PaloAltoNetworksXDREndpoint
@@ -843,7 +845,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3000,
+          "x": 3570,
           "y": 2185
         }
       }
@@ -1108,6 +1110,7 @@ tasks:
     nexttasks:
       '#default#':
       - "129"
+      - "131"
       "yes":
       - "84"
     separatecontext: false
@@ -1933,6 +1936,91 @@ tasks:
       {
         "position": {
           "x": 2760,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 0fc3d2b6-8959-4759-8c88-83d39d1dbb7c
+    type: playbook
+    task:
+      id: 0fc3d2b6-8959-4759-8c88-83d39d1dbb7c
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.InvolvedFileMD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.InvolvedFileSHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.InvolvedFileSHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: a69ba452-d5fc-480e-8be7-351d21d20a3c
+    type: playbook
+    task:
+      id: a69ba452-d5fc-480e-8be7-351d21d20a3c
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "123"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3150,
           "y": 2360
         }
       }
