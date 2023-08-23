@@ -14,13 +14,15 @@ USERNAME = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD = demisto.params().get("credentials", {}).get("password")
 RELIABILITY = demisto.params().get("reliability", "C - Fairly reliable")
 
+VERIFY_CERTS = demisto.getParam("verify_certs")
+
 HTTP_PROXY = demisto.params().get("http_proxy", None)
-HTTP_PROXY_USERNAME = demisto.params().get("http_proxy_username", None)
-HTTP_PROXY_PASSWORD = demisto.params().get("http_proxy_password", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_credentials", {}).get("identifier", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_credentials", {}).get("password", None)
 
 HTTPS_PROXY = demisto.params().get("https_proxy", None)
-HTTPS_PROXY_USERNAME = demisto.params().get("https_proxy_username", None)
-HTTPS_PROXY_PASSWORD = demisto.params().get("https_proxy_password", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_credentials", {}).get("identifier", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("password", None)
 
 
 def format_proxy(addr, username=None, password=None):
@@ -89,7 +91,8 @@ def test_module_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     try:
@@ -107,7 +110,8 @@ def file_reputation_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     hash_value = demisto.getArg("hash")
@@ -194,7 +198,8 @@ def av_scanners_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -278,7 +283,8 @@ def file_analysis_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -366,7 +372,8 @@ def functional_similarity_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
     limit = demisto.getArg("result_limit")
@@ -403,7 +410,8 @@ def rha1_analytics_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -486,7 +494,8 @@ def uri_statistics_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
     uri = demisto.getArg("uri")
 
@@ -584,7 +593,8 @@ def uri_index_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     uri = demisto.getArg("uri")
@@ -622,7 +632,8 @@ def advanced_search_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     query = demisto.getArg("query")
@@ -660,7 +671,8 @@ def expression_search_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     query = demisto.getArg("query")
@@ -704,7 +716,8 @@ def file_download_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     hash_value = demisto.getArg("hash")
@@ -735,7 +748,8 @@ def file_upload_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     file_entry = demisto.getFilePath(demisto.getArg("entryId"))
@@ -757,7 +771,8 @@ def url_report_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -852,7 +867,8 @@ def analyze_url_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -890,7 +906,8 @@ def detonate_sample_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     sha1 = demisto.getArg("sha1")
@@ -929,7 +946,8 @@ def dynamic_analysis_results_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     sha1 = demisto.getArg("sha1")
@@ -981,7 +999,8 @@ def certificate_analytics_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     thumbprint = demisto.getArg("certificate_thumbprint")
@@ -1020,7 +1039,8 @@ def yara_ruleset_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     yara_action = demisto.getArg("yara_action")
@@ -1104,7 +1124,8 @@ def yara_matches_feed_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
@@ -1152,7 +1173,8 @@ def yara_retro_actions_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     retro_action = demisto.getArg("yara_retro_action")
@@ -1216,7 +1238,8 @@ def yara_retro_matches_feed_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
@@ -1264,7 +1287,8 @@ def reanalyze_sample_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     sample_hash = demisto.getArg("hash")
@@ -1297,7 +1321,8 @@ def imphash_similarity_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     imphash = demisto.getArg("imphash")
@@ -1335,7 +1360,8 @@ def url_downloaded_files_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -1388,7 +1414,8 @@ def url_latest_analyses_feed_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     results_per_page = int(demisto.getArg("results_per_page"))
@@ -1436,7 +1463,8 @@ def url_analyses_feed_from_date_command():
         username=USERNAME,
         password=PASSWORD,
         user_agent=USER_AGENT,
-        proxies=PROXIES
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
