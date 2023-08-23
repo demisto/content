@@ -57,7 +57,7 @@
         "ScheduleExpression": "rate(30 minutes)",
         "LastExecutionDate": "2023-07-25T18:51:28.607000+03:00",
         "LastSuccessfulExecutionDate": "2023-07-25T18:51:28.607000+03:00",
-        "AssociationName": "Moishy",
+        "AssociationName": "test",
         "ApplyOnlyAtCronInterval": false
     },
     "ResponseMetadata": {

@@ -392,7 +392,7 @@ def test_get_association_command(mocker: MockerFixture) -> None:
         "|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|"
         "Resource status count|Schedule expression|Status|\n"
         "|---|---|---|---|---|---|---|---|---|---|\n"
-        "| association_id | Moishy | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT "
+        "| association_id | test | 1 | 2023-07-18T13:50:27.691000+03:00 | AWS | $DEFAULT "
         "| 2023-07-25T18:51:28.607000+03:00 |  | rate(30 minutes) | Pending |\n"
     )
 

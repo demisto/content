@@ -124,7 +124,7 @@ def convert_datetime_to_iso(response) -> dict[str, Any]:
         ```
     """
     def _datetime_to_string(obj: Any) -> str:
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime):
             return obj.isoformat()
         return str(obj)
     return json.loads(json.dumps(response, default=_datetime_to_string))
@@ -193,7 +193,7 @@ def get_inventory_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list
     -------
         list[CommandResults]: A list of CommandResults containing the inventory information.
     """
-    def _parse_inventory_entities(entities: list[InventoryResultEntityTypeDef]) -> list[dict]:
+    def _parse_inventory_entities(entities: list["InventoryResultEntityTypeDef"]) -> list[dict]:
         """Parses a list of entities and returns a list of dictionaries containing relevant information.
 
         Args:
@@ -223,7 +223,7 @@ def get_inventory_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list
                 parsed_entities.append(parsed_entity)
         return parsed_entities
 
-    kwargs: GetInventoryRequestRequestTypeDef = {
+    kwargs: "GetInventoryRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     if (next_token := args.get("next_token")):
@@ -358,7 +358,7 @@ def list_associations_command(ssm_client: "SSMClient", args: dict[str, Any]) -> 
             for association in associations
         ]
 
-    kwargs: ListAssociationsRequestRequestTypeDef = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
+    kwargs: "ListAssociationsRequestRequestTypeDef" = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
     kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
 
     response = ssm_client.list_associations(**kwargs)
@@ -543,7 +543,7 @@ def list_documents_command(ssm_client: "SSMClient", args: dict[str, Any]) -> lis
                 "Tags": document.get("Tags"),
                 "Platform types": document.get("PlatformTypes"),
             } for document in documents]
-    kwargs: ListDocumentsRequestRequestTypeDef = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
+    kwargs: "ListDocumentsRequestRequestTypeDef" = {"MaxResults": arg_to_number(args.get("limit", 50)) or 50}
     if (next_token := args.get("next_token")):
         kwargs["NextToken"] = next_token
 
@@ -576,53 +576,36 @@ def list_documents_command(ssm_client: "SSMClient", args: dict[str, Any]) -> lis
     return command_results
 
 
-# def get_document_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
-#     def _parse_document(document: DocumentDescriptionTypeDef):
-#         return {
-#             "Name": document.get("Name"),
-#             "Display Name": document.get("DisplayName"),
-#             "Document version name": document.get("VersionName"),
-#             "Owner": document.get("Owner"),
-#             "Document version": document.get("DocumentVersion"),
-#             "Document type": document.get("DocumentType"),
-#             "Created date": document.get("CreatedDate"),
-#             "Tags": document.get("Tags"),
-#             "Platform types": document.get("PlatformTypes"),
-#             "Document format": document.get("DocumentFormat"),
-#             "Requires": document.get("Requires"),
-#             "Attachments information": document.get("AttachmentsInformation"),
-#             "Parameters": document.get("Parameters"),
-#             "Platform types": document.get("PlatformTypes"),
-#             "Document version": document.get("DocumentVersion"),
-#             "Hash": document.get("Hash"),
-#             "Hash type": document.get("HashType"),
-#             "Latest version": document.get("LatestVersion"),
-#             "Default version": document.get("DefaultVersion"),
-#             "Document status": document.get("Status"),
-#             "Document status information": document.get("StatusInformation"),
-#             "Document description": document.get("Description"),
-#             "Document content": document.get("Content"),
-#         }
-#     document_version = args.get("document_version")
-#     version_name = args.get("version_name")
+def get_document_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
+    def _parse_document(document: "DocumentDescriptionTypeDef"):
+        return {
+            "Name": document.get("Name"),
+            "Display Name": document.get("DisplayName"),
+            "Document version": document.get("VersionName"),
+            "Owner": document.get("Owner"),
+            "Description": document.get("Description"),
+            "Platform types": document.get("PlatformTypes"),
+            "Created date": document.get("CreatedDate"),
+            "Status": document.get("Status"),
+        }
+    document_version = args.get("document_version")
+    version_name = args.get("version_name")
 
-#     kwargs = {"Name": args["document_name"]}
-#     kwargs.update({"DocumentVersion": document_version}) if document_version else None
-#     kwargs.update({"VersionName": version_name}) if version_name else None
-#     response = ssm_client.describe_document(**kwargs)
-#     response = convert_datetime_to_iso(response)
-    
-#     return CommandResults(
-#         outputs=response.get("Document"),
-#         outputs_key_field="Name",
-#         outputs_prefix="AWS.SSM.Document",
-#         readable_output=tableToMarkdown(
-#             name="AWS SSM Document",
-#             t=_parse_document(response["Document"]),
-#         )
-#     )
+    kwargs = {"Name": args["document_name"]}
+    kwargs.update({"DocumentVersion": document_version}) if document_version else None
+    kwargs.update({"VersionName": version_name}) if version_name else None
+    response = ssm_client.describe_document(**kwargs)
+    response = convert_datetime_to_iso(response)
 
-
+    return CommandResults(
+        outputs=response.get("Document"),
+        outputs_key_field="Name",
+        outputs_prefix="AWS.SSM.Document",
+        readable_output=tableToMarkdown(
+            name="AWS SSM Document",
+            t=_parse_document(response["Document"]),
+        )
+    )
 
 
 def test_module(ssm_client: "SSMClient") -> str:
@@ -688,8 +671,8 @@ def main():
                 return_results(list_versions_association_command(ssm_client, args))
             case "aws-ssm-document-list":
                 return_results(list_documents_command(ssm_client, args))
-            # case "aws-ssm-document-get":
-            #     return_results(get_document_command(ssm_client, args))
+            case "aws-ssm-document-get":
+                return_results(get_document_command(ssm_client, args))
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)
