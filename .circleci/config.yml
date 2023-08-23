@@ -57,8 +57,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
+      # A flag for the demisto_client to not cache its last response in order to avoid memory leaks.
       DONT_CACHE_LAST_RESPONSE: "true"
+      DEMISTO_SDK_LOG_FILE_SIZE: 1073741824  # 1GB
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
