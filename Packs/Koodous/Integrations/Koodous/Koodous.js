@@ -1,7 +1,7 @@
 var request = function(method, path, parameters){
     var headers = {'Content-Type': ['application/json']};
-    if (params.APIKey){
-        headers['Authorization'] = "Token " + params.APIKey;
+    if (params.apikey_creds ? params.apikey_creds.password : params.APIKey){
+        headers['Authorization'] = "Token " + params.apikey_creds ? params.apikey_creds.password : params.APIKey;
     }
 
     var result = http(
