@@ -25,7 +25,7 @@
                 "ServiceNow v2",
                 "Cortex XDR - IR",
                 "jira-v2",
-                "Core REST API""
+                "Core REST API"
             ],
             "instance_names": [
                 "snow_basic_auth",
