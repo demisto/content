@@ -1767,7 +1767,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
         for k in contact_dict:
             v = contact_dict[k]
             if isinstance(v, EWSDateTime):
-                contact_dict[k] = v.ewsformat()
+                contact_dict[k] = v.ewsformat()   # pylint: disable=E4702
 
         contact_dict['id'] = contact.id
         if isinstance(contact, Contact) and contact.physical_addresses:
