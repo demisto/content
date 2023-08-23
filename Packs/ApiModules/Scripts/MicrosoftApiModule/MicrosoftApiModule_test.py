@@ -18,6 +18,8 @@ OK_CODES = (200, 201, 202)
 CLIENT_ID = 'dummy_client'
 CLIENT_SECRET = 'dummy_secret'
 APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
+AUTH_CODE = 'dummy_auth_code'
+REDIRECT_URI = 'https://localhost/myapp'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 RESOURCES = ['https://resource1.com', 'https://resource2.com']
@@ -62,15 +64,17 @@ def oproxy_client_refresh():
                            )
 
 
-def self_deployed_client():
+def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
     tenant_id = TENANT
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
+    auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else ''
     resource = RESOURCE
     ok_codes = OK_CODES
 
     return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           grant_type=grant_type, auth_code=auth_code,
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
@@ -179,7 +183,7 @@ def test_page_not_found_error(mocker):
 
 def test_epoch_seconds(mocker):
     mocker.patch.object(MicrosoftClient, '_get_utcnow', return_value=datetime.datetime(2019, 12, 24, 14, 12, 0, 586636))
-    mocker.patch.object(MicrosoftClient, '_get_utcfromtimestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
+    mocker.patch.object(MicrosoftClient, '_get_utc_from_timestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
     integer = MicrosoftClient.epoch_seconds()
     assert integer == 1577196720
 
@@ -522,8 +526,7 @@ def test_create_api_metrics(mocker, response, result):
     mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
-    client = retry_on_rate_limit_client(True)
-    client.create_api_metrics(response)
+    MicrosoftClient.create_api_metrics(response)
 
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get('Contents') == 'Metrics reported successfully.'
@@ -718,7 +721,7 @@ def test_generate_login_url():
     """
     from MicrosoftApiModule import generate_login_url
 
-    client = self_deployed_client()
+    client = self_deployed_client(grant_type=AUTHORIZATION_CODE)
 
     result = generate_login_url(client)
 
@@ -726,3 +729,49 @@ def test_generate_login_url():
                    f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
                    f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
     assert expected_url in result.readable_output, "Login URL is incorrect"
+
+
+def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
+    """
+    Given:
+        - The auth code was reconfigured
+    When:
+        - Calling function get_access_token
+    Then:
+        - Ensure the access token is as expected in the body of the request and in the integration context
+    """
+    context = {'auth_code': AUTH_CODE, 'access_token': TOKEN,
+               'valid_until': 3605, 'current_refresh_token': REFRESH_TOKEN}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+
+    tenant_id = TENANT
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+    base_url = BASE_URL
+    new_auth_code = 'reconfigured_auth_code'
+    resource = None
+    ok_codes = OK_CODES
+    grant_type = AUTHORIZATION_CODE
+
+    client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                             grant_type=grant_type, auth_code=new_auth_code,
+                             resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    body = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'redirect_uri': REDIRECT_URI,
+        'grant_type': AUTHORIZATION_CODE,
+        'code': new_auth_code,
+    }
+
+    assert client.get_access_token()
+    req_body = requests_mock._adapter.last_request._request.body
+    assert urllib.parse.urlencode(body) == req_body
+    assert demisto.getIntegrationContext().get('auth_code') == new_auth_code
