@@ -143,10 +143,20 @@ FINDINGS = [{
 
 class MockClient:
 
+    def __init__(self, return_findings=True):
+        self.return_findings = return_findings
+
     def get_findings(self, **kwargs):
-        return {'Findings': FINDINGS}
+        if self.return_findings:
+            return {'Findings': FINDINGS}
+        return {'Findings': []}
 
     def batch_update_findings(self, **kwargs):
+        if kwargs["FindingIdentifiers"] == []:
+            raise Exception("<class 'botocore.errorfactory.InvalidInputException'> "
+                            "An error occurred (InvalidInputException) when calling "
+                            "the BatchUpdateFindings operation: Invalid parameter 'FindingIdentifiers'."
+                            " Size '0' is less than minimum value: 1. ")
         return {
             "ResponseMetadata": {
                 "RequestId": "RequestId",
@@ -513,3 +523,19 @@ def test_last_update_to_time():
     expected_timestamp = 1675637387
     result = last_update_to_time(last_update)
     assert result == expected_timestamp
+
+
+@freeze_time("2021-03-14T13:34:14.758295Z")
+def test_fetch_with_archive_findings_without_findings(mocker):
+    """
+    Given:
+        - fetch incident with archive_findings parameter set to true.
+    When:
+        - Fetching finding as incident
+    Then:
+        - Verify that the fetch function terminate without errors. 
+    """
+    mocker.spy(demisto, 'setLastRun')
+    client = MockClient(return_findings=False)
+    fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
+    assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2021-02-27T13:34:14.758295+00:00'
