@@ -3857,7 +3857,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     """
     Retrieves a list of risky users or details about a specific user's risk score.
 
-    Args:
+    Args:list_risky_users_or_host_command
         client: A CoreClient object used to communicate with the API.
         args: A dictionary containing the following headers (optional):
             - user_id [str]: ID of the user to retrieve risk score details for.
