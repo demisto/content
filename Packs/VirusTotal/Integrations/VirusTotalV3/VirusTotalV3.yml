@@ -477,6 +477,7 @@ script:
       description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
@@ -585,6 +586,7 @@ script:
       description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
@@ -726,6 +728,7 @@ script:
       description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
