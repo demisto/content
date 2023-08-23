@@ -6,6 +6,12 @@ import ast
 
 
 class ConditionParser:
+    variables: dict[str, Any] = {
+        'true': True,
+        'false': False,
+        'null': None
+    }
+
     operator_functions: dict[type, Callable] = {
         # comparison operators:
         ast.Eq: lambda x, y: x == y,
@@ -63,7 +69,7 @@ class ConditionParser:
     def get_value(self, node):
         match type(node):
             case ast.Name:
-                return json.loads(node.id)
+                return self.variables[node.id]
             case ast.Constant:
                 return node.value
             case ast.List:
@@ -108,9 +114,11 @@ class ConditionParser:
         # sourcery skip: raise-from-previous-error
         try:
             parsed = ast.parse(expression.strip(), mode='eval')
+            return self.get_value(parsed.body)
+        except KeyError as e:
+            raise NameError(f'Unknown variable: {e.args[0]}')
         except Exception:
             raise SyntaxError(f'Cannot parse expression: {expression!r}')
-        return self.get_value(parsed.body)
 
     def parse_conditions(self):
         *conditions, default = self.conditions
