@@ -1800,6 +1800,16 @@ class TestCommandResults:
         assert command_results.tags == ['tag1', 'tag2']
         assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
 
+    @pytest.mark.parametrize('output', [True, False])
+    def test_with_boolean_output(self, output):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(
+            outputs=output,
+            outputs_prefix="BooleanOutput",
+            readable_output="Boolean Output: {}".format(output),
+        )
+        assert command_results.to_context()['Contents'] == output
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given

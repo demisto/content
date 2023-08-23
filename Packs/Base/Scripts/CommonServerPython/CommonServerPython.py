@@ -6886,7 +6886,7 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
-        raw_response = None  # type: ignore[assignment]
+        raw_response = self.raw_response  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
@@ -6903,9 +6903,6 @@ class CommandResults:
                         outputs[key] = []
 
                     outputs[key].append(value)
-
-        if self.raw_response:
-            raw_response = self.raw_response
 
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
