@@ -41,7 +41,7 @@ class Client(BaseClient):
         headers = {'Netskope-Api-Token': token}
         super().__init__(base_url, verify=validate_certificate, proxy=proxy, headers=headers)
 
-    def perform_data_export(self, endpoint, _type, index_name, operation):
+    def perform_data_export(self, endpoint: str, _type: str, index_name: str, operation: str):
         url_suffix = f'events/dataexport/{endpoint}/{_type}'
         params = {
             'index': index_name,
@@ -309,7 +309,7 @@ def main() -> None:  # pragma: no cover
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         max_fetch = arg_to_number(params.get('max_fetch', 10000))
-        vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev')
+        vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
 
