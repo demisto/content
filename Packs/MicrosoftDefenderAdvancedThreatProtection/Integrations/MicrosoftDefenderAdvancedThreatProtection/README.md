@@ -3860,7 +3860,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Indicator ID: 18 was successfully deleted
->
+
 ### microsoft-atp-sc-indicator-list
 
 ---
@@ -3869,6 +3869,9 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 ### Permissions
 
 `Ti.ReadWrite`
+
+##### Note
+To ensure that the application is accessible to all indicators, the 'Ti.ReadWrite.All' permission must be granted. Without this permission, the application will only be accessible to the indicators it has created.
 
 #### Base Command
 
