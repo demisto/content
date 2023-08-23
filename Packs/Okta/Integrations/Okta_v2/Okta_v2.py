@@ -919,7 +919,14 @@ def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
+
+    try:
+        raw_response = client.get_user(user_term)
+    except Exception as e:
+        if '404' in str(e):
+            return (f'User {args.get("username")} was not found.', {}, {})
+        raise e
+
     verbose = args.get('verbose')
 
     user_context = client.get_users_context(raw_response)
