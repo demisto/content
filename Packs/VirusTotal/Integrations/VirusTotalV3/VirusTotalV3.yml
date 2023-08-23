@@ -41,6 +41,12 @@ configuration:
   defaultvalue: '10'
   type: 0
   required: false
+- display: Disable reputation lookups for private IP addresses
+  name: disable_rfc1918_lookup
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any private IP addresses as defined in RFC1918.
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: '10'
@@ -51,7 +57,7 @@ configuration:
   defaultvalue: '10'
   type: 0
   required: false
-- display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
+- display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
   name: preferredVendors
   defaultvalue: ''
   type: 12
@@ -76,26 +82,26 @@ configuration:
   defaultvalue: '5'
   type: 0
   required: false
-- display: Domain Popularity Ranking Threshold
+- display: 'Domain Popularity Ranking Threshold'
   name: domain_popularity_ranking
   defaultvalue: '10000'
   type: 0
   required: false
 - display: 'Premium Subscription Only: Relationship Files Threshold'
   name: relationship_threshold
-  defaultvalue: '3'
   type: 0
+  defaultvalue: '3'
   required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: IP Relationships
   name: ip_relationships
   options:
-  - communicating files
+  - 'communicating files'
   - '* downloaded files'
   - referrer files
   - '* urls'
   type: 16
-  defaultvalue: communicating files,* downloaded files,referrer files,* urls
+  defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
   required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: Domain Relationships
@@ -103,14 +109,14 @@ configuration:
   options:
   - '* cname records'
   - '* caa records'
-  - communicating files
+  - 'communicating files'
   - '* downloaded files'
   - immediate parent
   - '* mx records'
   - '* ns records'
-  - parent
-  - referrer files
-  - siblings
+  - 'parent'
+  - 'referrer files'
+  - 'siblings'
   - '* soa records'
   - subdomains
   - '* urls'
@@ -121,7 +127,7 @@ configuration:
   display: URL Relationships
   name: url_relationships
   options:
-  - communicating files
+  - 'communicating files'
   - '* contacted domains'
   - '* contacted ips'
   - '* downloaded files'
@@ -132,11 +138,13 @@ configuration:
   - '* referrer files'
   - '* referrer urls'
   type: 16
-  defaultvalue: communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls
+  defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls'
   required: false
-- additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
-  display: File Relationships
+- display: File Relationships
   name: file_relationships
+  type: 16
+  required: false
+  additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   options:
   - '* carbonblack children'
   - '* carbonblack parents'
@@ -160,9 +168,7 @@ configuration:
   - pe resource children
   - pe resource parents
   - '* similar files'
-  type: 16
   defaultvalue: '* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files'
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -223,7 +229,7 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -428,6 +434,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: override_private_lookup
+      description: When set to "true", enrichment of private IP address will be conducted even if it has been disabled at the integration level.
+      defaultValue: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: IP.Address
       description: Bad IP address.
@@ -462,7 +474,7 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: DBotScore.Reliability
@@ -570,7 +582,7 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: DBotScore.Reliability
@@ -713,7 +725,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
@@ -1626,7 +1638,7 @@ script:
       description: The analysis ID.
       type: String
 
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68714
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

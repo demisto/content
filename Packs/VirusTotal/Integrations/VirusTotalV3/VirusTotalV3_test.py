@@ -313,7 +313,8 @@ def test_ip_command(mocker, requests_mock):
         client=client,
         score_calculator=mocked_score_calculator,
         args=demisto.args(),
-        relationships=ip_relationships
+        relationships=ip_relationships,
+        disable_rfc1918_lookup=False
     )
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]

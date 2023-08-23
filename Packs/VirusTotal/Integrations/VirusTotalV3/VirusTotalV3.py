@@ -9,7 +9,7 @@ from collections import defaultdict
 from typing import Callable, cast
 
 from dateparser import parse
-
+import ipaddress
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
@@ -106,6 +106,7 @@ class Client(BaseClient):
     def __init__(self, params: dict):
         self.is_premium = argToBoolean(params['is_premium_api'])
         self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
+
         super().__init__(
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
@@ -1673,7 +1674,12 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def ip_command(client: Client,
+               score_calculator: ScoreCalculator,
+               args: dict,
+               relationships: str,
+               disable_rfc1918_lookup: bool
+               ) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1681,9 +1687,18 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
     ips = argToList(args['ip'])
     results: List[CommandResults] = list()
     execution_metrics = ExecutionMetrics()
+    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
+            if disable_rfc1918_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+                readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
+                                   f'Enrichment skipped for {ip}')
+                result = CommandResults(readable_output=readable_output)
+                results.append(result)
+                execution_metrics.success += 1
+                continue
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -2462,13 +2477,15 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
+    disable_rfc1918_lookup = argToBoolean(params.get("disable_rfc1918_lookup", "False"))
+
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
     elif command == 'file':
         results = file_command(client, score_calculator, args, file_relationships)
     elif command == 'ip':
-        results = ip_command(client, score_calculator, args, ip_relationships)
+        results = ip_command(client, score_calculator, args, ip_relationships, disable_rfc1918_lookup)
     elif command == 'url':
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':

@@ -1,5 +1,5 @@
 Analyzes suspicious hashes, URLs, domains, and IP addresses.
-This integration was integrated and tested with version xx of VirusTotal (API v3)
+This integration was integrated and tested with version v3 of VirusTotal (API v3)
 
 ## Configure VirusTotal (API v3) on Cortex XSOAR
 
