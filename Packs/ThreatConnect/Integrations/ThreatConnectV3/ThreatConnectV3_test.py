@@ -74,7 +74,7 @@ def test_fetch_incidents_not_first_run(mocker, groups_fixture):
     mocker.patch.object(demisto, 'getLastRun', return_value={'last': '2021-08-04T12:35:33'})
     mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=groups_fixture)
     assert fetch_incidents(client, {}) == '2022-09-06T12:36:33'
-    
+
 
 def test_create_context():  # type: ignore # noqa
     indicators = [{
