@@ -2078,7 +2078,7 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams, inReplyTo=None, references=None):
+              templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
         if body:
@@ -2087,7 +2087,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             htmlBody = htmlBody.format(**templateParams)
 
     attach_body_to = None
-    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body, force_handle_htmlBody]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
     elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
@@ -2122,7 +2122,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         message['References'] = header(' '.join(references))
 
     # if there are any attachments to the mail or both body and htmlBody were given
-    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody) or force_handle_htmlBody:
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
@@ -2179,6 +2179,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
+    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', False))
     reply_to = args.get('replyTo')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
@@ -2193,7 +2194,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
 
     result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references)
+                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
@@ -2601,7 +2602,7 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG(f'GMAIL: possible new incidents are {result}')
+    demisto.debug(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2695,7 +2696,7 @@ def main():  # pragma: no cover
         'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command,))
+    demisto.debug(f'GMAIL: command is {command},')
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
@@ -2718,8 +2719,8 @@ def main():  # pragma: no cover
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
-            LOG(traceback.format_exc())
-            LOG.print_log()
+            demisto.error(traceback.format_exc())
+            demisto.error(f'GMAIL: {str(e)}')
             raise
 
         else:
