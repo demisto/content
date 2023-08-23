@@ -46,7 +46,7 @@ def test_dict_to_md():
         '|subject|Fw: dnp-split-quarantine-2|',
         '|received|2022-08-15T21:24:15|',
         '|isIncoming|True|',
-        '|internetMessageId|<AM7PR04MB71438400038BF6FE5BEB9429C9689@AM7PR04MB7143.eurprd04.prod.outlook.com>|',
+        '|internetMessageId|<00000000.00000000000000.00000000000000.00000000@mail.example.com>|',
         '|isUserExposed|True|'
     ]
     assert md == '\n'.join(lines)

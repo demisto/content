@@ -99,7 +99,7 @@
                                 ],
                                 "Domain Impersonation": [
                                     {
-                                        "short_text": "SPF check failed when checking sending IP: 54.240.9.35 for domain avtestqa.com",
+                                        "short_text": "SPF check failed when checking sending IP: 10.10.10.10 for domain avtestqa.com",
                                         "full_text": "The email 'from' address doesn't pass the SPF-check"
                                     }
                                 ],
