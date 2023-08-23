@@ -2937,6 +2937,68 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
+def list_roots_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='organizations',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    response = client.list_roots()
+    if len(response['Roots']) == 0:
+        return_results('No roots were found.')
+    else:
+        markdown = tableToMarkdown(
+            "AWS Roots",
+            response['Roots'],
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        )
+        command_results = CommandResults(
+            outputs_prefix="AWS.Organizations.Root",
+            outputs_key_field="Id",
+            outputs=response['Roots'],
+            raw_response=response,
+            readable_output=markdown,
+        )
+        return_results(command_results)
+
+
+def list_children_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='organizations',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('MaxResults') is not None:
+        kwargs.update({'MaxResults': int(args.get('MaxResults'))})
+    if args.get('NextToken') is not None:
+        kwargs.update({'NextToken': args.get('NextToken')})
+    kwargs.update({'ParentId': args.get('ParentId')})
+    kwargs.update({'ChildType': args.get('ChildType')})
+    response = client.list_children(**kwargs)
+    if len(response['Children']) == 0:
+        return_results('No children were found.')
+    else:
+        markdown = tableToMarkdown(
+            "AWS Children",
+            response['Children'],
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        )
+        command_results = CommandResults(
+            outputs_prefix="AWS.Organizations.Children",
+            outputs_key_field="Id",
+            outputs=response['Children'],
+            raw_response=response,
+            readable_output=markdown,
+        )
+        return_results(command_results)
+
 def main():
     try:
         params = demisto.params()
@@ -3183,6 +3245,24 @@ def main():
 
         elif command == 'aws-ec2-release-hosts':
             release_hosts_command(args, aws_client)
+
+        elif command == 'aws-organization-list-roots':
+            list_roots_command(args, aws_client)
+
+        elif command == 'aws-organization-list-children':
+            list_children_command(args, aws_client)
+
+        elif command == 'aws-organization-list-parents':
+            list_parents_command(args, aws_client)
+
+        elif command == 'aws-organization-describe-account':
+            describe_account_command(args, aws_client)
+
+        elif command == 'aws-organization-describe-ou':
+            describe_ou_command(args, aws_client)
+
+        elif command == 'aws-organization-describe-organization':
+            describe_organization_command(args, aws_client)
 
     except Exception as e:
         LOG(e)

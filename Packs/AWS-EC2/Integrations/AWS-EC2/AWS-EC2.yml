@@ -3768,7 +3768,79 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  - arguments:
+    - description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
+    description: Lists all the accounts in the organization.
+    name: aws-organization-list-roots
+    outputs:
+    - contextPath: AWS.Organization.Root
+      description: CHANGE
+      type: CHANGE
+  - arguments:
+    - description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
+    - description: The unique identifier (ID) for the parent root or OU whose children you want to list.
+      name: ParentId
+      required: true
+    - description: Filters the output to include only the specified child type.
+      name: ChildType
+      required: true
+      predefined:
+      - 'ACCOUNT'
+      - 'ORGANIZATIONAL_UNIT'
+    description: Lists all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
+    name: aws-organization-list-children
+    outputs:
+    - contextPath: AWS.Organization.Child
+      description: CHANGE
+      type: CHANGE
+  - arguments:
+    - description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
+    - description: The unique identifier (ID) of the OU or account whose parent containers you want to list. Don’t specify a root.
+      name: ChildId
+      required: true
+    description: Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child OU or account.
+    name: aws-organization-list-parents
+    outputs:
+    - contextPath: AWS.Organization.Parent
+      description: CHANGE
+      type: CHANGE
+  - arguments:
+    - description: The unique identifier (ID) of the Amazon Web Services account that you want information about. You can get the ID from the ListAccounts or ListAccountsForParent operations.
+      name: AccountId
+      required: true
+    description: Retrieves Organizations-related information about the specified account.
+    name: aws-organization-describe-account
+    outputs:
+    - contextPath: AWS.Organization.Account
+      description: CHANGE
+      type: CHANGE
+  - arguments: []
+    description: Retrieves information about the organization that the user’s account belongs to.
+    name: aws-organization-describe-organization
+    outputs:
+    - contextPath: AWS.Organization.Organization
+      description: CHANGE
+      type: CHANGE
+  - arguments:
+    - description: The unique identifier (ID) of the organizational unit that you want details about. You can get the ID from the ListOrganizationalUnitsForParent operation.
+      name: OrganizationalUnitId
+      required: true
+    description: Retrieves information about an organizational unit (OU).
+    name: aws-organization-describe-ou
+    outputs:
+    - contextPath: AWS.Organization.OU
+      description: CHANGE
+      type: CHANGE
+  dockerimage: demisto/boto3py3:1.0.0.71685
   runonce: false
   script: '-'
   subtype: python3
