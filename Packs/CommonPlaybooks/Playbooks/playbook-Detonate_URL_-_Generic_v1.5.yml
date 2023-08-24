@@ -719,7 +719,6 @@ tasks:
       upload:
         complex:
           root: inputs.URL
-          accessor: Data
       verbose:
         simple: "true"
     separatecontext: false
@@ -884,7 +883,7 @@ inputs:
 - key: URL
   value:
     complex:
-      root: URL
+      root: URL.Data
   required: false
   description: The URL object of the URL to be detonated.
   playbookInputQuery:
