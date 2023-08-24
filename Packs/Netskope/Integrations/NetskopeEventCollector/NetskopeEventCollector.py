@@ -171,7 +171,7 @@ def setup_last_run(last_run_dict: dict) -> dict:
 
 
 def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int,
-                                         execution_start_time: datetime) -> (list, bool):
+                                         execution_start_time: datetime) -> tuple[list, bool]:
     """
     Pulls events per each given event type. Each event type receives a dedicated index name that is constructed using the event
     type and the integration instance name. The function keeps pulling events as long as the limit was not exceeded.
@@ -308,7 +308,7 @@ def main() -> None:  # pragma: no cover
         base_url = urljoin(url, '/api/v2/')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        max_fetch = arg_to_number(params.get('max_fetch', 10000))
+        max_fetch: int = arg_to_number(params.get('max_fetch', 10000))
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
