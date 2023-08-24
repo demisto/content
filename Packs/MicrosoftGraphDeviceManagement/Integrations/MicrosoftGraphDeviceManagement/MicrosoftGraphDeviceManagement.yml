@@ -28,6 +28,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
+  advanced: true
 - displaypassword: ID or Client ID
   name: credentials_auth_id
   hiddenusername: true
@@ -40,6 +41,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
+  advanced: true
 - displaypassword: Token or Tenant ID
   name: credentials_tenant_id
   hiddenusername: true
@@ -52,13 +54,13 @@ configuration:
   hidden: true
   required: false
   section: Connect
+  advanced: true
 - displaypassword: Key or Client Secret
   name: credentials_enc_key
   hiddenusername: true
   type: 9
   required: false
   section: Connect
-  advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
