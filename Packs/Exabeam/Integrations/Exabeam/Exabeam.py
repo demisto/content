@@ -2097,7 +2097,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
     start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
 
-    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=}')
+    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=} in milisecound')
 
     incident_type = argToList(args.get('incident_type'))
     priority = argToList(args.get('priority'))
@@ -2119,11 +2119,16 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         "offset": 0,
         "length": last_run.get('limit') or limit
     }
+    demisto.debug(f'The query incidentType: {incident_type}')
     demisto.debug(f'The query for fetch: {q}')
 
     resp = client.get_incidents(q)
     incidents_res: List[dict] = resp.get('incidents', [])
     demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
+    
+    # Add logs
+    for counter,incident in enumerate(incidents_res):
+        demisto.debug(f'Got {counter} The incident details from the API are: {incident}')
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2134,7 +2139,8 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
     incidents: List[dict] = []
-    for incident in incidents_filtered:
+    for counter,incident in enumerate(incidents_filtered):
+        demisto.debug(f'Got {counter} The filtered incident details from the API are: {incident}')
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
