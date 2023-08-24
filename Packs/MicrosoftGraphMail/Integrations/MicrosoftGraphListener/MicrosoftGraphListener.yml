@@ -1,7 +1,4 @@
 category: Cloud Services
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -12,6 +9,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
@@ -19,12 +17,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - name: creds_enc_key
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
   type: 4
@@ -73,6 +73,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
   type: 4
@@ -101,6 +102,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -147,7 +149,6 @@ configuration:
   name: self_deployed
   type: 8
   section: Connect
-  advanced: false
   required: false
 - display: Incident type
   name: incidentType
@@ -740,8 +741,7 @@ script:
   script: ''
   type: python
   subtype: python3
+  runonce: false
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
-defaultclassifier: Microsoft Graph Mail Single User
-defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
