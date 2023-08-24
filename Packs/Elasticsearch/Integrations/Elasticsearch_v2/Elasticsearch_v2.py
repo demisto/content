@@ -27,7 +27,7 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
-DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+DEFAULT_DATETIME_FORMAT = "yyyy-MM-ddTHH:mm:ss.SSSZ"
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -89,7 +89,7 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
     mapping = es.indices.get_mapping(index=index)
-    datetime_field = mapping.get(index, {}).get('mappings', {}).get('properties', {}).get(field, {})
+    datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
 
     return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
 
