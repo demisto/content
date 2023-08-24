@@ -21,7 +21,7 @@ This playbook handles ASM alerts by enriching asset information via integrations
 
 ## Expanse - Alert Self-Enrichment
 This playbook handles ASM alerts by enriching alert information with Xpanse service and asset details.
-![Xpanse - Alert Self-Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Self-Enrichment.png)
+![Xpanse - Alert Self-Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Self-Enrichment.png)
 
 ## Expanse - NMap - Detect Service
 This playbook confirms the observability of a risk by running a quick port scan using NMap.
