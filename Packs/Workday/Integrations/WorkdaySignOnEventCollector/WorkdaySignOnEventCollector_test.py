@@ -10,7 +10,6 @@ from freezegun import freeze_time
 
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
-from Packs.Workday.Integrations.WorkdaySignOnEventCollector import WorkdaySignOnEventCollector
 from WorkdaySignOnEventCollector import Client, process_events, convert_to_json, fetch_sign_on_logs, DATE_FORMAT, main
 
 

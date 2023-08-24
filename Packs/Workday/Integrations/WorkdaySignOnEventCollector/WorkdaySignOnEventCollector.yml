@@ -68,6 +68,14 @@ script:
     description: Returns Sign On events extracted from Workday.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
     - name: limit
       description: The maximum number of events to return.
       required: false
@@ -96,7 +104,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: devdemisto/suds:1.0.0.68627
   feed: false
 fromversion: 8.2.0
 tests:
