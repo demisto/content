@@ -75,6 +75,22 @@ class Boto3Client:
     def get_access_key_last_used(self):
         pass
 
+    def get_user(self):
+        pass
+
+    @property
+    def exceptions(self):
+        raise NoSuchEntityException
+
+
+class Mock_Exceptions(BaseException):
+    def NoSuchEntityException(self, UserName):
+        raise NoSuchEntityException
+
+
+class NoSuchEntityException(BaseException):
+    pass
+
     def list_attached_role_policies(self):
         pass
 
@@ -433,6 +449,28 @@ def test_create_tag_dicts_list(tags_ls, expected_output):
        """
     tags_dicts_ls = AWS_IAM.create_tag_dicts_list(tags_ls)
     assert expected_output == tags_dicts_ls
+
+
+def test_get_user_not_found_user_exception(mocker):
+    """
+    Given:
+    - user_name - user name to retrieve policies for.
+    When:
+    - After running a get_user command
+    Then:
+    - Ensure that no exception was raised, and assert the readable output.
+    """
+    client = Boto3Client()
+    args = {'userName': 'userName'}
+    mocker.patch.object(Boto3Client, "get_user", side_effect=Exception('An error occurred (NoSuchEntity) when calling the '
+                                                                       'GetUser operation: The user with name yayyyy cannot '
+                                                                       'be found.'))
+    mocker.patch.object(demisto, 'results')
+
+    AWS_IAM.get_user(args, client)
+    contents = demisto.results.call_args[0][0]
+
+    assert 'User userName was not found.' in contents.get('HumanReadable')
 
 
 def test_list_attached_role_policies(mocker):
