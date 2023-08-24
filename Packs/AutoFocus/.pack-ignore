@@ -1,6 +1,9 @@
 [file:AutofocusV2.yml]
 ignore=IN136
 
+[file:Autofocus.yml]
+ignore=CJ105
+
 [file:README.md]
 ignore=RM102,RM106
 
