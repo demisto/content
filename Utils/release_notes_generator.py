@@ -3,7 +3,6 @@ import os
 import sys
 import json
 import glob
-import argparse
 from datetime import datetime
 from typing import Dict, Tuple, Union
 import logging
@@ -11,7 +10,6 @@ import logging
 from packaging.version import Version
 import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
-from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
@@ -478,37 +476,3 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
-
-
-def main():
-    install_logging('Build_Content_Descriptor.log')
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('version', help='Release version')
-    arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
-    arg_parser.add_argument('asset_id', help='Asset ID')
-    arg_parser.add_argument('--output', help='Output file, default is ./packs-release-notes.md',
-                            default='./packs-release-notes.md')
-    arg_parser.add_argument('--github-token', help='Github token')
-    args = arg_parser.parse_args()
-
-    new_packs = get_new_packs(args.git_sha1)
-    new_packs_release_notes = {}
-    new_packs_metadata = {}
-    for pack in new_packs:
-        pack_metadata = get_pack_metadata(pack)
-        pack_name = pack_metadata.get('name')
-        new_packs_release_notes[pack_name] = get_pack_entities(pack)
-        new_packs_metadata[pack_name] = pack_metadata
-
-    packs_metadata_dict = {}
-    modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
-    modified_release_notes_dict, modified_packs_metadata = get_release_notes_dict(modified_release_notes)
-    packs_metadata_dict.update(new_packs_metadata)
-    packs_metadata_dict.update(modified_packs_metadata)
-    release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
-                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
-    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
-
-
-if __name__ == "__main__":
-    main()

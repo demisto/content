@@ -36,14 +36,6 @@ trigger-private-build:
     - job-done
   timeout: 2 hours
 
-.create-release-notes-and-common-docs:
-  - section_start "Create Release Notes and Common Server Documentation" --collapsed
-  - echo "Creating Release Notes and Content Descriptor"
-  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-  - cp content-descriptor.json $ARTIFACTS_FOLDER
-  - ./Documentation/commonServerDocs.sh
-  - section_end "Create Release Notes and Common Server Documentation"
-
 stop-running-pipelines:
   tags:
     - gke
@@ -135,7 +127,6 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
-    - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create or update content graph" --collapsed
 
