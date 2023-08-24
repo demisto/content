@@ -14,12 +14,12 @@ WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
 NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 
 HTTP_PROXY = demisto.params().get("http_proxy", None)
-HTTP_PROXY_USERNAME = demisto.params().get("http_proxy_username", None)
-HTTP_PROXY_PASSWORD = demisto.params().get("http_proxy_password", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_credentials", {}).get("identifier", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_credentials", {}).get("password", None)
 
 HTTPS_PROXY = demisto.params().get("https_proxy", None)
-HTTPS_PROXY_USERNAME = demisto.params().get("https_proxy_username", None)
-HTTPS_PROXY_PASSWORD = demisto.params().get("https_proxy_password", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_credentials", {}).get("identifier", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("password", None)
 
 
 def format_proxy(addr, username=None, password=None):
