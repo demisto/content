@@ -14,9 +14,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "CommonScripts": {}
-    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
