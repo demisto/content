@@ -6,6 +6,7 @@ With this integration, an Incident can be raised in Cortex Xsoar when an Event i
 
 ## Setup
 To use the integration the following mandatory parameters need to be set:
+
 |Parameter Name|Default Value|Description|
 |------|------|------|
 |Traceable Platform API Endpoint URL|https://api.traceable.ai|Base URL of Traceable Platform API Endpoint.|
