@@ -4,7 +4,7 @@ import json
 import os
 import zipfile
 from typing import Any
-
+from pytest_mock import MockerFixture
 import pytest
 
 import demistomock as demisto
@@ -3276,6 +3276,56 @@ def test_list_risky_users_hosts_command_raise_exception(
 
     result = list_risky_users_or_host_command(client, command, {id_: "test"})
     assert result.readable_output == 'The user test was not found'
+
+
+@pytest.mark.parametrize(
+    "command ,args, client_func",
+    [
+        ('user', {"user_id": "test"}, "risk_score_user_or_host"),
+        ('host', {"host_id": "test"}, "risk_score_user_or_host"),
+        ('user', {}, "list_risky_users"),
+        ('host', {}, "list_risky_hosts"),
+    ],
+    ids=['user_id', 'host_id', 'list_users', 'list_hosts']
+)
+def test_list_risky_users_hosts_command_no_license_warning(mocker: MockerFixture, command: str, args: dict, client_func: str):
+    """
+    Given:
+    - XDR API error indicating that the user / host was not found
+
+    When:
+    - executing the list_risky_users_or_host_command function
+
+    Then:
+    - make sure a message indicating that the user was not found is returned
+    """
+
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        client_func,
+        side_effect=DemistoException(
+            message="An error occurred while processing XDR public API, No identity threat",
+            res=MockException(500)
+        ),
+    )
+    import CoreIRApiModule
+    warning = mocker.patch.object(CoreIRApiModule, 'return_warning')
+
+    with pytest.raises(DemistoException):
+        list_risky_users_or_host_command(client, command, args)
+    assert warning.call_args[0][0] == ('Please confirm the XDR Identity Threat Module is enabled.\n'
+                                       'Full error message: An error occurred while processing XDR public API,'
+                                       ' No identity threat')
+    assert warning.call_args[1] == {"exit": True}
 
 
 def test_list_user_groups_command(mocker):
