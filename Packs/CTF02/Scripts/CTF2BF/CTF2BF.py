@@ -77,33 +77,61 @@ answers = {
 
 }
 
+
+# Dec Functions #
+
+def good_msg():
+    return_results({
+        'ContentsFormat': EntryFormat.HTML,
+        'Type': EntryType.NOTE,
+        'Contents': HTML_MESSAGE_1,
+    })
+
+
+def error_msg():
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['html'],
+        'Contents': HTML_MESSAGE_BAD,
+    })
+
+
 # MAIN FUNCTION #
 
 
 def main():
     try:
         args = demisto.args()
-        #__Error handeling when there is an empty secret or question id__
+        # __Error handeling when there is an empty secret or question id__
+
         if (args.get("secret") == None or args.get("question_ID") == None):
             return_error(f'Please specify Secret and Question ID to proceed with the challange')
 
-        if (args.get("secret").lower() in answers[args.get("question_ID")]):
-            return_results({
-                'ContentsFormat': EntryFormat.HTML,
-                'Type': EntryType.NOTE,
-                'Contents': HTML_MESSAGE_1,
-                })
-        #General Error handeling
+        # __Validate Quesion number 03__
+        if (args.get("question_ID") == "03"):
+            total_rel = str(
+                demisto.executeCommand("searchRelationships", {"filter": {"entities": ["137.184.208.116"]}}).get('total'))
+            if (total_rel == args.get("secret").lower()):
+                good_msg()
+            else:
+                error_msg()
+        elif (args.get("question_ID") == "05"):
+            total_rel = str(demisto.executeCommand("searchRelationships",
+                                                   {"filter": {"entities": ["IcedID Infection leads to DarkVNC"]}}).get('total'))
+            if (total_rel == args.get("secret").lower()):
+                good_msg()
+            else:
+                error_msg()
+        elif (args.get("secret").lower() in answers[args.get("question_ID")]):
+            good_msg()
+        # General Error handeling
         else:
-            #if (args.get("question_ID") ==  "03"):
-            #    return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none> :). ')
-           # else:
-                #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
-                    demisto.results({
-                        'Type': entryTypes['error'],
-                        'ContentsFormat': formats['html'],
-                        'Contents': HTML_MESSAGE_BAD,
-                    })
+            error_msg()
+
+    except Exception as exc:  # pylint: disable=W0703
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute this script. Error: {str(exc)}')
+
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
