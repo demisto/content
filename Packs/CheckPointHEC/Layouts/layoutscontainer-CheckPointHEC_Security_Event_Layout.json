@@ -106,13 +106,28 @@
 										"simple": "quarantine"
 									},
 									"customer": {
-										"simple": "${incident.checkpointheccustomer}"
+										"complex": {
+											"accessor": "checkpointheccustomer",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"entity": {
-										"simple": "${incident.checkpointhecentity}"
+										"complex": {
+											"accessor": "checkpointhecentity",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"farm": {
-										"simple": "${incident.checkpointhecfarm}"
+										"complex": {
+											"accessor": "checkpointhecfarm",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									}
 								},
 								"buttonClass": "warning",
@@ -169,13 +184,28 @@
 										"simple": "restore"
 									},
 									"customer": {
-										"simple": "${incident.checkpointheccustomer}"
+										"complex": {
+											"accessor": "checkpointheccustomer",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"entity": {
-										"simple": "${incident.checkpointhecentity}"
+										"complex": {
+											"accessor": "checkpointhecentity",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"farm": {
-										"simple": "${incident.checkpointhecfarm}"
+										"complex": {
+											"accessor": "checkpointhecfarm",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									}
 								},
 								"buttonClass": "success",
@@ -229,13 +259,28 @@
 							{
 								"args": {
 									"customer": {
-										"simple": "${incident.checkpointheccustomer}"
+										"complex": {
+											"accessor": "checkpointheccustomer",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"farm": {
-										"simple": "${incident.checkpointhecfarm}"
+										"complex": {
+											"accessor": "checkpointhecfarm",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									},
 									"task": {
-										"simple": "${incident.checkpointhectask}"
+										"complex": {
+											"accessor": "checkpointhectask",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									}
 								},
 								"buttonClass": "primary",
@@ -296,7 +341,12 @@
 							{
 								"args": {
 									"entity": {
-										"simple": "${incident.checkpointhecentity}"
+										"complex": {
+											"accessor": "checkpointhecentity",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
 									}
 								},
 								"buttonClass": "error",
