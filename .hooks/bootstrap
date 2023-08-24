@@ -54,7 +54,7 @@ if ! command -v poetry >/dev/null 2>&1; then
     exit 1
 fi
 
-rm -rf .venv  # FIXME: remove this line once we have a stable release of poetry
+#rm -rf .venv  # FIXME: remove this line once we have a stable release of poetry
 
 echo "Check if poetry files are valid"
 poetry check
