@@ -1,0 +1,79 @@
+{
+    "response_json": {
+        "filters": [
+            {
+                "name": "host.id",
+                "readable_name": "Asset ID",
+                "control": {
+                    "type": "entry",
+                    "regex": "[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*",
+                    "readable_regex": "a94fd560-f8d9-4ed1-9b46-cba00c21bcdb"
+                },
+                "operators": [
+                    "eq",
+                    "neq",
+                    "match",
+                    "nmatch"
+                ],
+                "group_name": null
+            },
+            {
+                "name": "plugin.attributes.exploit_framework_canvas",
+                "readable_name": "CANVAS Exploit Framework",
+                "control": {
+                    "type": "dropdown",
+                    "list": [
+                        "true",
+                        "false"
+                    ]
+                },
+                "operators": [
+                    "eq",
+                    "neq"
+                ],
+                "group_name": null
+            }
+        ]
+    },
+    "outputs": [
+        {
+            "name": "host.id",
+            "readable_name": "Asset ID",
+            "control": {
+                "type": "entry",
+                "regex": "[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})*",
+                "readable_regex": "a94fd560-f8d9-4ed1-9b46-cba00c21bcdb"
+            },
+            "operators": [
+                "eq",
+                "neq",
+                "match",
+                "nmatch"
+            ],
+            "group_name": null
+        },
+        {
+            "name": "plugin.attributes.exploit_framework_canvas",
+            "readable_name": "CANVAS Exploit Framework",
+            "control": {
+                "type": "dropdown",
+                "list": [
+                    "true",
+                    "false"
+                ]
+            },
+            "operators": [
+                "eq",
+                "neq"
+            ],
+            "group_name": null
+        }
+    ],
+    "readable_output": "### Tenable IO Scan Filters\n|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|\n|---|---|---|---|---|---|\n| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | a94fd560-f8d9-4ed1-9b46-cba00c21bcdb | eq,<br>neq,<br>match,<br>nmatch |\n| plugin.attributes.exploit_framework_canvas | CANVAS Exploit Framework | dropdown |  |  | eq,<br>neq |\n",
+    "called_with": {
+        "args": [
+            "GET",
+            "filters/scans/reports"
+        ]
+    }
+}
