@@ -1,5 +1,5 @@
 Collects alerts & threat activities from Armis resources.
-This integration was integrated and tested with API V.1.0 of Armis.
+This integration was integrated and tested with API V.1.8 of Armis API.
 
 ## Configure Armis Event Collector on Cortex XSOAR
 
@@ -14,7 +14,7 @@ This integration was integrated and tested with API V.1.0 of Armis.
     | Number of events to fetch per type | The maximum number of events to fetch per event type. | False |
     | Trust any certificate (not secure) | When selected, certificates are not checked. | False |
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
-    | Log types to fetch | Define which log types to fetch. | True |
+    | Event types to fetch | Define which event types to fetch. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
