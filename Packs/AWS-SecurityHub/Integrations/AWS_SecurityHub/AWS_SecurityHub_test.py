@@ -209,7 +209,7 @@ def test_fetch_with_archive_findings_without_findings(mocker):
     When:
         - Fetching finding as incident
     Then:
-        - Verify that the fetch function terminate without errors. 
+        - Verify that the fetch function terminate without errors.
     """
     from AWS_SecurityHub import fetch_incidents
     mocker.patch.object(demisto, "getLastRun", return_value={})
