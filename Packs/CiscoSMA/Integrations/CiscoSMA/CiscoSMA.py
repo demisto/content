@@ -460,7 +460,7 @@ class Client(BaseClient):
             **format_custom_query_args(custom_query),
         )
 
-        return self._http_request("GET", "message-tracking/messages", params=params, quote_params_via=urllib.parse.quote)
+        return self._http_request("GET", "message-tracking/messages", params=params, params_parser=urllib.parse.quote)
 
     def message_details_get_request(
         self,
