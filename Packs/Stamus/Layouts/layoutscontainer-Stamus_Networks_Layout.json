@@ -360,7 +360,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stamusthreat",
+                                "fieldId": "threatname",
                                 "height": 22,
                                 "id": "7dffc030-bdd5-11ed-92fc-831964606e8e",
                                 "index": 3,
@@ -369,10 +369,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "threatfamilyname",
+                                "height": 22,
+                                "id": "7dffc030-bdd5-11ed-92fc-831964606e8e",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "stamusthreatlink",
                                 "height": 22,
                                 "id": "8982fc60-bdd5-11ed-92fc-831964606e8e",
-                                "index": 7,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
