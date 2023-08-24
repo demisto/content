@@ -852,7 +852,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: SecurityHubClient, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: "SecurityHubClient", args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -910,7 +910,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: SecurityHubClient, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: "SecurityHubClient", args: Dict[str, Any], resolve_findings: bool) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
