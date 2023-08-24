@@ -12,9 +12,10 @@ if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
 
-  -ct, --ci-token             The ci gitlab trigger token.
+  [-ct, --ci-token]           The ci gitlab trigger token.
   [-b, --branch]              The branch name. Default is the current branch.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-build-test.
+  [-s, --sdk-ref]             The sdk ref to use. Default is the latest nightly.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
@@ -39,6 +40,9 @@ while [[ "$#" -gt 0 ]]; do
   -ch|--slack-channel) _slack_channel="$2"
     shift
     shift;;
+  -s|--sdk-ref) DEMISTO_SDK_NIGHTLY="$2"
+    shift
+    shift;;
 
   *)    # unknown option.
     shift;;
@@ -53,4 +57,8 @@ fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
 
-curl "$BUILD_TRIGGER_URL" -F "ref=$_branch" -F "token=$_ci_token" -F "variables[NIGHTLY]=true" -F "variables[IFRA_ENV_TYPE]=Nightly" -F "variables[SLACK_CHANNEL]=$_slack_channel" | jq
+curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
+    --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
+    --form "variables[NIGHTLY]=true" \
+    --form "variables[IFRA_ENV_TYPE]=Nightly" \
+    --form "variables[SLACK_CHANNEL]=${_slack_channel}" | jq
