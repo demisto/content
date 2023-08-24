@@ -6,25 +6,21 @@ display: Farsight DNSDB
 category: Data Enrichment & Threat Intelligence
 description: Query Farsight DNSDB service
 configuration:
-- display: DNSDB Service URL
-  name: url
-  defaultvalue: "https://api.dnsdb.info/"
-  type: 0
-  required: true
 - display: API Key
   name: apiKey
-  defaultvalue: ''
-  type: 4
-  hidden: true
-- name: apikey_creds
-  type: 9
-  displaypassword: API Key
-  hiddenusername: true
-- defaultvalue: 'true'
-  display: Use system proxy settings
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: DNSDB Service URL
+  name: url
+  defaultvalue: https://api.dnsdb.info/
+  type: 0
+  required: true
+- display: Use system proxy settings
   name: useproxy
-  required: false
+  defaultvalue: "true"
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

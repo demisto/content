@@ -112,7 +112,7 @@ var sendRequest = function(requestUrl,parameters) {
             Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
             Headers: {
                 'Accept': ['application/json'],
-                'X-API-Key': [params.apikey_creds ? params.apikey_creds.password : params.apiKey]
+                'X-API-Key': [params.apiKey]
             }
         },
         false,
