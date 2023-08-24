@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 ''' IMPORTS '''
-from typing import Any, AnyStr
+from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
 import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -34,7 +34,7 @@ class Client(BaseClient):
 
         self.reliability = reliability
 
-    def test_module(self) -> dict:
+    def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -42,10 +42,10 @@ class Client(BaseClient):
         """
         return self.get_incidents(limit=2)
 
-    def get_incidents(self, status: str | None = None, created_after: str | None = None,
-                      created_before: str | None = None, closed_before: str | None = None,
-                      closed_after: str | None = None, sort: str | None = None, direction: str | None = None,
-                      limit: str | int = 25, offset: str | int = 0, period: str = None) -> dict:
+    def get_incidents(self, status: Optional[str] = None, created_after: Optional[str] = None,
+                      created_before: Optional[str] = None, closed_before: Optional[str] = None,
+                      closed_after: Optional[str] = None, sort: Optional[str] = None, direction: Optional[str] = None,
+                      limit: Union[str, int] = 25, offset: Union[str, int] = 0, period: str = None) -> Dict:
         """
         Query the specified kwargs with default parameters if not defined
         Args:
@@ -64,7 +64,7 @@ class Client(BaseClient):
             Raw response json as dictionary
         """
         suffix = "/incidents/EIR"
-        params: dict[str, Any] = {}
+        params: Dict[str, Any] = {}
         if period:
             created_after, created_before = parse_date_range(date_range=period,
                                                              date_format='%Y-%m-%dT%H:%M:%SZ')
@@ -91,7 +91,7 @@ class Client(BaseClient):
                                   url_suffix=suffix,
                                   params=assign_params(**params))
 
-    def get_incident_by_id(self, incident_id: str) -> dict:
+    def get_incident_by_id(self, incident_id: str) -> Dict:
         """Query incident by ID
 
         Args:
@@ -109,7 +109,7 @@ class Client(BaseClient):
 
 
 @logger
-def indicator_ec(indicator: dict, type_ec: AnyStr) -> dict:
+def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
     """indicator convert to ec format
     Get an indicator from raw response and concert to demisto entry context format
 
@@ -120,7 +120,7 @@ def indicator_ec(indicator: dict, type_ec: AnyStr) -> dict:
     Returns:
          indicator entry context
     """
-    ec: dict = {}
+    ec: Dict = {}
     if type_ec == 'url-phishlabs':
         ec = {
             'URL': indicator.get('url'),
@@ -146,7 +146,7 @@ def indicator_ec(indicator: dict, type_ec: AnyStr) -> dict:
 
 
 @logger
-def indicator_dbot_ec(client: Client, indicator: dict, type_ec: AnyStr) -> tuple[dict, dict]:
+def indicator_dbot_ec(client: Client, indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
     """Indicator convert to ec and dbotscore ec
     Get an indicator from raw response and concert to demisto entry context format and demisto dbotscore entry context
     format.
@@ -159,8 +159,8 @@ def indicator_dbot_ec(client: Client, indicator: dict, type_ec: AnyStr) -> tuple
     Returns:
         dbotscore entry context, indicator entry context
     """
-    dbotscore: dict = {}
-    ec: dict = {}
+    dbotscore: Dict = {}
+    ec: Dict = {}
     if type_ec == 'url-ec':
         ec = {
             'Data': indicator.get('url'),
@@ -198,7 +198,7 @@ def indicator_dbot_ec(client: Client, indicator: dict, type_ec: AnyStr) -> tuple
 
 
 @logger
-def indicators_to_list_ec(client: Client, indicators: list, type_ec: AnyStr) -> tuple[list, list] | list:
+def indicators_to_list_ec(client: Client, indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
     """Unpack list of indicators to demisto ec format
     Convert list of indicators from raw response to demisto entry context format lists
 
@@ -209,8 +209,8 @@ def indicators_to_list_ec(client: Client, indicators: list, type_ec: AnyStr) -> 
     Returns:
          List of indicators entry context and if not integration context also dbotscore
     """
-    dbots: list = []
-    ecs: list = []
+    dbots: List = []
+    ecs: List = []
     if type_ec in ['url-ec', 'file-ec']:
         for indicator in indicators:
             dbotscore, ec = indicator_dbot_ec(client, indicator, type_ec)
@@ -225,7 +225,7 @@ def indicators_to_list_ec(client: Client, indicators: list, type_ec: AnyStr) -> 
 
 
 @logger
-def raw_response_to_context(client: Client, incidents: list | Any) -> tuple[list, list, list, list, list]:
+def raw_response_to_context(client: Client, incidents: Union[List, Any]) -> Tuple[List, List, List, List, List]:
     """
     Convert incidents list from raw response to demisto entry context list format
     Args:
@@ -235,15 +235,15 @@ def raw_response_to_context(client: Client, incidents: list | Any) -> tuple[list
     Returns:
         Entry contexts of phishLabs, emails, files, urls, dbotScores
     """
-    phishlabs_ec: list = []
-    email_ec: list = []
-    file_ec: list = []
-    url_ec: list = []
-    dbots_ec: list = []
+    phishlabs_ec: List = []
+    email_ec: List = []
+    file_ec: List = []
+    url_ec: List = []
+    dbots_ec: List = []
     for incident in incidents:
-        sc_incident: dict = incident.get('details', {})
+        sc_incident: Dict = incident.get('details', {})
         # Phishlabs entry context
-        phishlabs: dict = {
+        phishlabs: Dict = {
             'CaseType': sc_incident.get('caseType'),
             'Classification': sc_incident.get('classification'),
             'SubClassification': sc_incident.get('subClassification'),
@@ -287,7 +287,7 @@ def raw_response_to_context(client: Client, incidents: list | Any) -> tuple[list
 
 
 @logger
-def test_module_command(client: Client, *_) -> tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -311,7 +311,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        last_run: dict = None) -> tuple[list[dict[str, Any]], dict]:
+        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -325,16 +325,10 @@ def fetch_incidents_command(
         incidents, new last_run
     """
     # Init
-    raws: list = []
-    incidents_raw: list = []
+    raws: List = []
+    incidents_raw: List = []
     # Set last run time
     occurred_format = '%Y-%m-%dT%H:%M:%SZ'
-
-    id_from_last_run = last_run.get('last_id') if last_run else None
-    if last_run:
-        last_run = last_run.get('lastRun')
-
-
     if not last_run:
         datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
                                                     date_format=occurred_format)
@@ -365,17 +359,12 @@ def fetch_incidents_command(
                                             sort='created_at',
                                             direction='asc')
     # Gather incidents by demisto format
-    new_last_run: str | None = None
+    new_last_run: Optional[str] = None
     incidents_report = []
-    last_id = None
     if incidents_raw:
         demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
         for incident_raw in incidents_raw:
-            if id_from_last_run and incident_raw.get('id') == id_from_last_run:
-                demisto.debug(f'Skipping incident with id {incident_raw.get("id")} because of duplication.')
-                continue
             # Creates incident entry
-            last_id = incident_raw.get('id')
             occurred = incident_raw.get('created')
             demisto.debug(f'Creating incident with id {last_id}')
             incidents_report.append({
@@ -385,13 +374,12 @@ def fetch_incidents_command(
             })
 
         new_last_run = incidents_report[-1].get('occurred')
-
     # Return results
-    return incidents_report, {'lastRun': new_last_run, 'last_id': last_id}
+    return incidents_report, {'lastRun': new_last_run}
 
 
 @logger
-def get_incidents_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
+def get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
     """Lists all incidents and return outputs in Demisto's context entry
 
     Args:
@@ -401,12 +389,12 @@ def get_incidents_command(client: Client, **kwargs: dict) -> tuple[object, dict,
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: dict = client.get_incidents(**kwargs)  # type: ignore
+    raw_response: Dict = client.get_incidents(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client,
                                                                                        raw_response.get('incidents'))
-        context_entry: dict = {
+        context_entry: Dict = {
             outputPaths.get('dbotscore'): dbots_ec,
             outputPaths.get('file'): files_ec,
             outputPaths.get('url'): urls_ec,
@@ -428,7 +416,7 @@ def get_incidents_command(client: Client, **kwargs: dict) -> tuple[object, dict,
 
 
 @logger
-def get_incident_by_id_command(client: Client, incident_id: str) -> tuple[object, dict, dict]:
+def get_incident_by_id_command(client: Client, incident_id: str) -> Tuple[object, Dict, Dict]:
     """Lists all events and return outputs in Demisto's context entry
 
     Args:
@@ -438,12 +426,12 @@ def get_incident_by_id_command(client: Client, incident_id: str) -> tuple[object
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: dict = client.get_incident_by_id(incident_id)
+    raw_response: Dict = client.get_incident_by_id(incident_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client,
                                                                                        raw_response.get('incidents'))
-        context_entry: dict = {
+        context_entry: Dict = {
             outputPaths.get('dbotscore'): dbots_ec,
             outputPaths.get('file'): files_ec,
             outputPaths.get('url'): urls_ec,
@@ -500,7 +488,7 @@ def main():
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun(),
+                                                              last_run=demisto.getLastRun().get('lastRun'),
                                                               limit=params.get('fetchLimit'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
