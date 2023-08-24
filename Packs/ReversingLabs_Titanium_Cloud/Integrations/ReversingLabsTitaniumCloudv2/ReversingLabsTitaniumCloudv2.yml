@@ -30,20 +30,22 @@ configuration:
   name: verify_certs
   type: 8
   required: false
-- display: HTTP proxy address with the protocol and port number.
+- display: HTTP proxy address with the protocol and port number
   name: http_proxy
   type: 0
   required: false
-- display: HTTP proxy credentials
+- display: HTTP proxy username
   name: http_credentials
+  displaypassword: HTTP proxy password
   required: false
   type: 9
-- display: HTTPS proxy address with the protocol and port number.
+- display: HTTPS proxy address with the protocol and port number
   name: https_proxy
   type: 0
   required: false
-- display: HTTPS proxy credentials
+- display: HTTPS proxy username
   name: https_credentials
+  displaypassword: HTTPS proxy password
   required: false
   type: 9
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
