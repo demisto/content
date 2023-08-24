@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# Final Test: 6.10
+
 # CONSTANT for task ID to add new task after since no arguments are passed
 # Would need to change if adding tasks to a playbook other than UnitTestingTopLevel
 MULTISELECT = "10"
