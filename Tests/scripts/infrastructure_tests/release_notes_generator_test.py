@@ -441,8 +441,8 @@ class TestMergeVersionBlocks:
         """
 
         release_notes_paths = [
-            os.path.join('tests_data/RN_tests_data', 'FakePack9', 'ReleaseNotes', '1_0_1.md'),
-            os.path.join('tests_data/RN_tests_data', 'FakePack9', 'ReleaseNotes', '1_0_2.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack9', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack9', 'ReleaseNotes', '1_0_2.md'),
         ]
         pack_versions_dict = {}
         for path in release_notes_paths:
