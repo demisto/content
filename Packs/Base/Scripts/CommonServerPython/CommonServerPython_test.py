@@ -3014,7 +3014,7 @@ class TestBaseClient:
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
 
-    def test_http_request_quote_params_via_none(self, requests_mock):
+    def test_http_request_params_parser_none(self, requests_mock):
         """
             Given
                 - query params with spaces without specific quote function.
@@ -3034,7 +3034,7 @@ class TestBaseClient:
         assert mock_request.last_request.query == 'key=value+with+spaces'
 
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
-    def test_http_request_quote_params_via_quote(self, requests_mock):
+    def test_http_request_params_parser_quote(self, requests_mock):
         """
             Given
                 - query params with spaces with specific quote function.
@@ -3049,7 +3049,7 @@ class TestBaseClient:
         from CommonServerPython import BaseClient
         mock_client = BaseClient('http://example.com/api/v2/')
 
-        mock_client._http_request('get', params={'key': 'value with spaces'}, quote_params_via=urllib.parse.quote)
+        mock_client._http_request('get', params={'key': 'value with spaces'}, params_parser=urllib.parse.quote)
 
         assert mock_request.last_request.query == 'key=value%20with%20spaces'
 
