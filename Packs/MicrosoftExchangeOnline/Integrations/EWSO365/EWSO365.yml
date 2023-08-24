@@ -79,7 +79,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Max incidents per fetch (up to 50). Performance might be affected by a higher number.
+- display: Max incidents per fetch (up to 200). Performance might be affected by a higher than 50.
   name: max_fetch
   type: 0
   defaultvalue: '50'
