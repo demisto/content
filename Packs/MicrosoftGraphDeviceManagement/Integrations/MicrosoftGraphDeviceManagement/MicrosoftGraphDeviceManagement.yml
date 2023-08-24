@@ -123,7 +123,6 @@ configuration:
   type: 8
   required: false
   section: Connect
-  advanced: true
 description: Microsoft Intune is a Microsoft cloud-based management solution that provides for mobile device and operating system management.
 display: Microsoft Endpoint Manager (Intune)
 name: Microsoft Graph Device Management
