@@ -27,7 +27,8 @@ REGEX_PATTERNS = {
                        "Invalid association id: {association_id}"),
     "association_version": (r"([$]LATEST)|([1-9][0-9]*)", "Invalid association version: {association_version}"),
     "instance_id": (r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)", "Invalid instance id: {instance_id}"),
-    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}"),
+    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}"),  # TODO not sure if 128 or 200, in the docs it says 128 in the res is says 200
+    "document_version": (r"([$]LATEST|[$]DEFAULT|^[1-9][0-9]*$)", "Invalid document version: {document_version}"),  # TODO same
 }
 
 """ Helper functions """
@@ -590,6 +591,11 @@ def get_document_command(ssm_client: "SSMClient", args: dict[str, Any]) -> Comma
         }
     document_version = args.get("document_version")
     version_name = args.get("version_name")
+
+    if document_version == 'default':
+        document_version = '$DEFAULT'
+    elif document_version == 'latest':
+        document_version = '$LATEST'
 
     kwargs = {"Name": args["document_name"]}
     kwargs.update({"DocumentVersion": document_version}) if document_version else None
