@@ -92,7 +92,7 @@ tasks:
         tooltip: Try to generate the report to see it's content. This is so importent to our "CISO".
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses:\n\nMake sure to allow pop-ups for downloading the report. \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif)\n___\n"
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses:\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on SOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif)\n___\n"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -163,6 +163,10 @@ tasks:
       title: Check the Playbooks
       description: |-
         Navigate to the newly installed playbook (“CTF-X”) and check the existing tasks.
+
+        **Did you know?**
+        You can easily build playbooks through a visual drag-and-drop interface that features thousands of automatable actions across security products, conditional paths, manual tasks and human approval for sensitive automations.
+
         ___
         ![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/look-nobodys-following-the-playbook-gerard-butler.gif)
         ___
@@ -230,7 +234,7 @@ tasks:
         tooltip: Try to check the integration's python, search for custom integration -> which starts with 'ohmy' . Oh and remember that the answer isn't always on the wall....
         readonly: false
       title: Integration Settings
-      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you (which was also customized). \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
+      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you (which was also customized). \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n**Did you know?**\n\nXSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go!\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
       sender: ""
       expired: false
       totalanswers: 0
@@ -298,6 +302,10 @@ tasks:
       title: Incident fields
       description: |-
         Now navigate to the Incident's fields section. This is located ON the Settings & Info. We promise the way to get to the Field settings IS there!
+
+        **Did you know?**
+        Incident Fields are used for accepting or populating incident data coming from incidents. You create fields for information you know will be coming from 3rd party integrations and in which you want to insert the information.
+
         ___
         ![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/custom-custom-game.gif)
         ___
@@ -365,7 +373,7 @@ tasks:
         tooltip: You can see that information easily from pack's overview
         readonly: false
       title: Get to know the Marketplace
-      description: "Go to the Marketplace, search, and install the content pack \"CTF 02\".\n(Since there are multiple users on the same tenant - it might be installed already. Don't forget to check the \"Show Installed\" checkbox). \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/B.gif)\n___\n"
+      description: "Go to the Marketplace, search, and install the content pack \"CTF 02\".\n(Since there are multiple users on the same tenant - it might be installed already. Don't forget to check the \"Show Installed\" checkbox). \n\n **Did you know?** There are over 900+ content packs on Marketplace. It continues to grow!\n\n \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/B.gif)\n___\n"
       sender: ""
       expired: false
       totalanswers: 0
