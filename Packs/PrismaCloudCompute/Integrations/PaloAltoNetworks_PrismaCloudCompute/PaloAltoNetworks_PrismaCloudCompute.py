@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import urllib.parse
 from collections import defaultdict
 
@@ -417,6 +419,23 @@ class PrismaCloudComputeClient(BaseClient):
 
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
+
+    def get_file_integrity_events(self, hostname):
+        """
+        Get runtime file integrity audit events
+
+        Args:
+            hostname (str): The hostname for which to get runtime file integrity events
+
+        Returns:
+            HTTP response
+        """
+        endpoint = "audits/runtime/file-integrity"
+
+        headers = self._headers
+        params = assign_params(hostname=hostname, limit=10, sort="time", reverse=True)
+
+        return self._http_request('get', endpoint, params=params, headers=headers)
 
 
 def format_context(context):
@@ -1957,6 +1976,22 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
+def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get runtime file integrity audit events for the given hostname
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-file-integrity-events command arguments
+
+    Returns:
+        HTTP Response object
+    """
+    hostname = args.get('hostname')
+    response = client.get_file_integrity_events(hostname)
+    return response
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2070,6 +2105,8 @@ def main():
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
+            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
