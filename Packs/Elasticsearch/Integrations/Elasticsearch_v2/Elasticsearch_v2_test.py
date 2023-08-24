@@ -997,18 +997,22 @@ def test_prepare_datetime_format(datetime_format, expected):
     assert not any(c.isalpha() for c in arrow.get(datetime.now()).format(formatted_datetime))
 
 
-class MockES1:
+class MockES:
     class MockIndices:
         @staticmethod
         def get_mapping(index):
             with open('test_data/mapping.json') as f:
                 data = json.load(f)
-            return data['mapping_with_date_time_format']
+            return data['mapping_without_date_time_format'] if index == 'default' else data['mapping_with_date_time_format']
 
     indices = MockIndices
 
 
-def test_get_datetime_field_format_custom_format():
+@pytest.mark.parametrize('index, expected_format', [
+    ('default', 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+    ('custom', 'yyyy-MM-dd HH:mm:ss'),
+])
+def test_get_datetime_field_format_default_format(index, expected_format):
     """
     Given
       - An ES object.
@@ -1019,38 +1023,10 @@ def test_get_datetime_field_format_custom_format():
         - Executing get_datetime_field_format function.
 
     Then
-        - Make sure that the returned field format is as expected (custom).
+        - Make sure that the returned field format is as expected.
     """
-    es = MockES1
-    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'yyyy-MM-dd HH:mm:ss'
-
-
-class MockES2:
-    class MockIndices:
-        @staticmethod
-        def get_mapping(index):
-            with open('test_data/mapping.json') as f:
-                data = json.load(f)
-            return data['mapping_without_date_time_format']
-
-    indices = MockIndices
-
-
-def test_get_datetime_field_format_default_format():
-    """
-    Given
-      - An ES object.
-      - An index name.
-      - A field name.
-
-    When
-        - Executing get_datetime_field_format function.
-
-    Then
-        - Make sure that the returned field format is as expected (default).
-    """
-    es = MockES2
-    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+    es = MockES
+    assert Elasticsearch_v2.get_datetime_field_format(es, index, 'created_at') == expected_format
 
 
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [

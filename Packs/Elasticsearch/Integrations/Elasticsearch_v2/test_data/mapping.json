@@ -14,7 +14,8 @@
             "mappings": {
                 "properties": {
                     "created_at": {
-                        "type": "date"
+                        "type": "date",
+                        "format": "yyyy-MM-dd"
                     }
                 }
             }

@@ -79,6 +79,11 @@ def prepare_datetime_format(datetime_format: str):
 
 def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
     """Returns the datetime format of a field in an index.
+    In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
+    for example {
+        'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
+        'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
+    } => 'yyyy-MM-dd HH:mm:ss'
 
     Args:
         es: An ES object.
@@ -89,13 +94,12 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
     mapping = es.indices.get_mapping(index=index)
-    list_index = list(filter(lambda key: demisto.get(mapping.get(key, {}), f'mappings.properties.{field}.format'), mapping))
 
-    if not list_index:
-        return DEFAULT_DATETIME_FORMAT
+    for key, value in mapping.items():
+        if datetime_format := demisto.get(value, f'mappings.properties.{field}.format'):
+            return datetime_format
 
-    datetime_field = demisto.get(mapping, f'{list_index[0]}.mappings.properties.{field}', {})
-    return datetime_field.get('format')
+    return DEFAULT_DATETIME_FORMAT
 
 
 def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
