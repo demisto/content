@@ -259,7 +259,6 @@ script:
       required: true
       default: true
       description: Hash of the file to query. Supports MD5, SHA1 and SHA256.
-      isArray: false
     outputs:
     - contextPath: File.MD5
       description: File MD5 hash
