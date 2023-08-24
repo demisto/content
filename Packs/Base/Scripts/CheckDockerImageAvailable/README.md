@@ -20,3 +20,4 @@ Check if a docker image is available for performing docker pull. Script simulate
 ## Outputs
 ---
 There are no outputs for this script.
+
