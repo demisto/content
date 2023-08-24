@@ -6,7 +6,9 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 ''' CONSTANTS '''
+
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 VENDOR = 'armis'
@@ -18,10 +20,11 @@ EVENT_TYPES = {
         'unique_id_key': 'alertId',
         'aql_query': 'in:alerts',
         'type': 'alerts'},
-    'Threats': {
+    'Threat activities': {
         'unique_id_key': 'activityUUID',
         'aql_query': 'in:activity type:"Threat Detected"',
-        'type': 'threats'}}
+        'type': 'threat_activities'}}
+
 
 ''' CLIENT CLASS '''
 
@@ -47,15 +50,15 @@ class Client(BaseClient):
         self._access_token = access_token
 
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None):
-        """ Fetches alerts or threats using AQL query.
+        """ Fetches events using AQL query.
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
-            max_fetch (int): Max number of alerts/threats to fetch.
-            time_frame (None | int, optional): Time frame in seconds to fetch alerts/threats from. Defaults to None.
+            max_fetch (int): Max number of events to fetch.
+            after (None | datetime): The date and time to fetch events from. Defaults to None.
 
         Returns:
-            list[dict]: List of alerts/threats objects represented as dictionaries.
+            list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
         if after:  # if there is a time frame thats relative to last run
@@ -254,18 +257,20 @@ def fetch_by_event_type(event_type: dict, events: list, next_run: dict, client: 
         events.extend(new_events)
         demisto.debug(f'debug-log: overall {len(new_events)} alerts (after dedup)')
         demisto.debug(f'debug-log: last {type} in list: {new_events[-1] if new_events else {}}')
+    else:
+        next_run.update(last_run)
 
 
 def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time_param: datetime,
-                 log_types_to_fetch: list[str]):
+                 event_types_to_fetch: list[str]):
     """ Fetch events from Armis API.
 
     Args:
         client (Client): Armis client to use for API calls.
-        max_fetch (int): Max number of alerts/threats to fetch.
+        max_fetch (int): Max number of alerts to fetch.
         last_run (dict): Last run dictionary.
         fetch_start_time_param (datetime): Fetch start time (usually current time).
-        log_types_to_fetch (list[str]): List of log types to fetch.
+        event_types_to_fetch (list[str]): List of event types to fetch.
 
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
@@ -273,7 +278,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
     events: list[dict] = []
     next_run: dict[str, list | str] = {}
 
-    for event_type in log_types_to_fetch:
+    for event_type in event_types_to_fetch:
         try:
             fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
         except Exception as e:
@@ -371,7 +376,7 @@ def main():
     verify_certificate = not params.get('insecure', True)
     max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
-    log_types_to_fetch = argToList(params.get('log_types_to_fetch', []))
+    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
     should_push_events = argToBoolean(args.get('should_push_events', False))
     from_date_datetime = None
     if from_date := args.get('from_date'):
@@ -398,7 +403,7 @@ def main():
                 max_fetch=max_fetch,
                 last_run=last_run,
                 fetch_start_time_param=from_date_datetime or datetime.now(),
-                log_types_to_fetch=log_types_to_fetch,
+                event_types_to_fetch=event_types_to_fetch,
             )
 
             demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
@@ -416,6 +421,7 @@ def main():
 
 
 ''' ENTRY POINT '''
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

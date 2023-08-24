@@ -27,14 +27,15 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-- display: Log types to fetch
-  name: log_types_to_fetch
+- display: Event types to fetch
+  name: event_types_to_fetch
   section: Collect
   required: true
   type: 16
+  defaultvalue: Alerts,Threat activities
   options:
   - Alerts
-  - Threats
+  - Threat activities
 description: 'Collects alerts & threat activities from Armis resources.'
 display: Armis Event Collector
 name: ArmisEventCollector
