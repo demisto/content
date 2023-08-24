@@ -3322,7 +3322,7 @@ def test_list_risky_users_hosts_command_no_license_warning(mocker: MockerFixture
 
     with pytest.raises(DemistoException):
         list_risky_users_or_host_command(client, command, args)
-    assert warning.call_args[0][0] == ('Please confirm the Identity Threat Module is enabled.\n'
+    assert warning.call_args[0][0] == ('Please confirm the XDR Identity Threat Module is enabled.\n'
                                        'Full error message: An error occurred while processing XDR public API,'
                                        ' No identity threat')
     assert warning.call_args[1] == {"exit": True}

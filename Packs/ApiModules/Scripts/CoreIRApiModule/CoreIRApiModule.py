@@ -3899,7 +3899,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
-            _return_warning_when_module_disable(e)
+            _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
                 if not_found_message in error_message:
@@ -3917,7 +3917,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = get_func().get('reply', [])[:list_limit]
         except DemistoException as e:
-            _return_warning_when_module_disable(e)
+            _warn_if_module_is_disabled(e)
             raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
