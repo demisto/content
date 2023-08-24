@@ -14,7 +14,8 @@
     "selectValues": [
         "Attachment",
         "GitHub",
-        "Gitlab"
+        "Gitlab",
+        "AzureDevOps"
     ],
     "useAsKpi": false,
     "locked": false,
