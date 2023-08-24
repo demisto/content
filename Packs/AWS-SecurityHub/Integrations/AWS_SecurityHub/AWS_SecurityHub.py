@@ -6,6 +6,15 @@ import urllib3.util
 from datetime import timezone
 from dateparser import parse
 
+from typing import TYPE_CHECKING
+
+
+# The following imports are used only for type hints and autocomplete.
+# They are not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_securityhub.client import SecurityHubClient
+
+    
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -843,7 +852,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: SecurityHubClient, args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -901,7 +910,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: SecurityHubClient, args: Dict[str, Any], resolve_findings: bool) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
