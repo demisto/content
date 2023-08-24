@@ -88,12 +88,8 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
     Returns:
         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
-    demisto.debug(f'This is the index: {index}')
-    demisto.debug(f'This is the field: {field}')
     mapping = es.indices.get_mapping(index=index)
-    demisto.debug(f'This is the mapping: {mapping}')
     datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
-    demisto.debug(f'This is the datetime_field: {datetime_field}')
 
     return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
 
@@ -699,11 +695,8 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
-        demisto.debug(f'This is the start_date: {start_date}')
 
         start_time = convert_date_to_timestamp(start_date, datetime_format)
-        demisto.debug(f'This is the start_time: {start_time}')
-
     else:
         start_time = last_fetch
 
@@ -712,11 +705,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        demisto.debug(f'This is the end_date: {end_date}')
-
         end_time = convert_date_to_timestamp(end_date, datetime_format)
-        demisto.debug(f'This is the end_time: {end_time}')
-
         range_dict['lt'] = end_time
 
     return {'range': {time_field: range_dict}}
