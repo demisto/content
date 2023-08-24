@@ -1,6 +1,6 @@
 Gets a value from the specified incident's context.
 
-**Note** This script won't be able to get incident fields since it is not part of the context. To get incident fields, use the ``searchIncidentsV2`` automation.
+**Note** This script can only retrieve incident fields that appear under the investigation context. To get incident basic information, use the ``searchIncidentsV2`` automation to pull the relevant incident and extract the needed fields from the automation output.
 
 ## Script Data
 
