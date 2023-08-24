@@ -1010,6 +1010,24 @@ class MockES:
                             }
                         }
                     }
+                },
+                'my_index1': {
+                    'mappings': {
+                        'properties': {
+                            'created_at': {
+                                'type': 'date',
+                            }
+                        }
+                    }
+                },
+                'my_index2': {
+                    'mappings': {
+                        'properties': {
+                            'content': {
+                                'type': 'text',
+                            }
+                        }
+                    }
                 }
             }
 
