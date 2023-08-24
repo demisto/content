@@ -206,13 +206,14 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {}
         }
 
-        assert '1.1.0' in rn_dict['FakePack1'].keys()
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '1.1.0' in rn_dict['FakePack1']
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0' in rn_summary
         assert '##### FakePack1_Integration1' in rn_summary
         assert 'This is a fake1 minor release note.' in rn_summary
@@ -251,12 +252,13 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {'support': 'xsoar'}
         }
 
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0 (Partner Supported)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Partner Supported)' not in rn_summary
@@ -291,12 +293,13 @@ class TestGenerateReleaseNotesSummary:
             'FakePack2': {'support': 'xsoar'}
         }
 
-        assert '2.0.0' in rn_dict['FakePack1'].keys()
-        assert '1.1.0' in rn_dict['FakePack2'].keys()
+        assert '2.0.0' in rn_dict['FakePack1']
+        assert '1.1.0' in rn_dict['FakePack2']
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
-        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert VERSION in rn_summary
+        assert ASSET_ID in rn_summary
         assert '### FakePack1 Pack v2.0.0 (Community Contributed)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Community Contributed)' not in rn_summary
@@ -324,12 +327,10 @@ class TestGenerateReleaseNotesSummary:
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
 
-        assert '1.0.1' in rn_dict['FakePack3'].keys()
+        assert '1.0.1' in rn_dict['FakePack3']
         assert len(rn_dict) == 1
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
-
-        print(rn_summary)
 
         match = re.search(EMPTY_LINES_REGEX, rn_summary)
         assert match is None
@@ -360,7 +361,7 @@ class TestGenerateReleaseNotesSummary:
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
 
-        assert '1.1.0' in rn_dict['FakePack4'].keys()
+        assert '1.1.0' in rn_dict['FakePack4']
         assert len(rn_dict) == 1
 
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
@@ -428,6 +429,29 @@ class TestMergeVersionBlocks:
         assert 'First' in rn_block
         assert 'Second' in rn_block
         assert latest_version == '1.0.2'
+
+    def test_one_comment_with_hyphen_and_one_not(self):
+        """
+        Given
+        - Two release notes of the same integration, one RN with one comment without hyphen and one RN with list of comments.
+        When
+        - Merging the two release notes files into one file.
+        Then
+        - Ensure that the one comment without hyphen is wrapped with hyphen.
+        """
+
+        release_notes_paths = [
+            os.path.join('tests_data/RN_tests_data', 'FakePack9', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join('tests_data/RN_tests_data', 'FakePack9', 'ReleaseNotes', '1_0_2.md'),
+        ]
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
+
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+
+        assert '- This is a fake1 comment.' in rn_block
 
     def test_sanity(self):
         """
