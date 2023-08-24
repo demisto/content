@@ -1,5 +1,7 @@
 Gets a value from the specified incident's context.
 
+**Note** This script won't be able to get incident fields since it is not part of the context. To get that please use ``searchIncidentsV2`` automation.
+
 ## Script Data
 
 ---
