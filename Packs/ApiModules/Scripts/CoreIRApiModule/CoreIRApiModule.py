@@ -3878,7 +3878,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
                 and 'No identity threat' in str(e)
                 and "An error occurred while processing XDR public API" in e.message
         ):
-            return_warning(f'Please confirm the Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
+            return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
         case "user":
