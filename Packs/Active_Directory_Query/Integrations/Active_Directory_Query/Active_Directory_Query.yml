@@ -788,7 +788,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.72003
+  dockerimage: demisto/ldap:2.9.1.71992
   ismappable: true
   isremotesyncout: true
   runonce: false

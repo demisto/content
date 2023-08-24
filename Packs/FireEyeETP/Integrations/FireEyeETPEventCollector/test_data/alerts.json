@@ -1,0 +1,474 @@
+{
+    "ok_response_single_data": {
+        "data": [
+            {
+                "attributes": {
+                    "meta": {
+                        "read": true,
+                        "last_modified_on": "2023-07-18T14:29:33.699",
+                        "legacy_id": 172905612,
+                        "acknowledged": false,
+                        "timestamps": {
+                            "db_insert_time": "2023-07-18T13:52:06.029677+00",
+                            "es_insert_time": "2023-07-18T13:52:06.085"
+                        },
+                        "last_malware": "Block-List-Match-Url",
+                        "alert_type": "block_list_match"
+                    },
+                    "ati": {},
+                    "alert": {
+                        "product": "ETP",
+                        "alert_type": [
+                            "at"
+                        ],
+                        "malware_md5": "a97bb9dc8ff6dd5e229bb9e7ee550bfe",
+                        "timestamp": "2023-07-18T13:52:06.085",
+                        "sha256": "f2b341c43006de663ebcaf50fc7bed5621ce985b2a9c59979d9dc67c2964a4de"
+                    },
+                    "email": {
+                        "status": "scanned",
+                        "source_ip": "x.x.x.x",
+                        "smtp": {
+                            "rcpt_to": "test@test.com",
+                            "mail_from": "test@test.com"
+                        },
+                        "etp_message_id": "3yPijA4-68317-08B8BD2764910996B46e8d251a0",
+                        "headers": {
+                            "cc": "",
+                            "to": "Roman <test@test.com>",
+                            "from": "Roman <test@test.com>",
+                            "subject": "rewrew"
+                        },
+                        "attachment": "hxxp://www.etptest.com",
+                        "timestamp": {
+                            "accepted": "2023-07-18T13:52:01"
+                        }
+                    }
+                },
+                "id": "3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc",
+                "links": {
+                    "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
+                }
+            }
+        ],
+        "meta": {
+            "total": 4465,
+            "size": 1,
+            "fromLastModifiedOn": {
+                "start": "2023-07-18T14:29:33.699",
+                "end": "2023-07-18T14:29:33.699"
+            },
+            "copyright": "Copyright 2022 FireEye Security Holdings US LLC"
+        },
+        "type": "alerts"
+    },
+    "paging_response": [
+        {
+            "data": [
+                {
+                    "id": "1",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:29:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test1"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                },
+                {
+                    "id": "2",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:30:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test1"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "fromLastModifiedOn": {
+                    "start": "2023-08-01T14:29:33.699",
+                    "end": "2023-08-01T14:30:33.699"
+                }
+            }
+        },
+        {
+            "data": [
+                {
+                    "id": "2",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:30:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test3"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                },
+                {
+                    "id": "3",
+                    "attributes": {
+                        "meta": {
+                            "last_modified_on": "2023-08-01T14:34:33.699"
+                        },
+                        "alert": {
+                            "timestamp": "2023-08-01T13:52:06.085"
+                        },
+                        "email": {
+                            "status": "scanned",
+                            "headers": {
+                                "subject": "test4"
+                            },
+                            "attachment": "hxxp://www.etptest.com"
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "fromLastModifiedOn": {
+                    "start": "2023-08-01T14:30:33.699",
+                    "end": "2023-08-01T14:34:33.699"
+                }
+            }
+        }
+    ],
+    "ok_response_full": {
+        "data": [
+            {
+                "attributes": {
+                    "meta": {
+                        "read": true,
+                        "last_modified_on": "2023-07-18T14:29:33.699",
+                        "legacy_id": 172905612,
+                        "acknowledged": false,
+                        "timestamps": {
+                            "db_insert_time": "2023-07-18T13:52:06.029677+00",
+                            "es_insert_time": "2023-07-18T13:52:06.085"
+                        },
+                        "last_malware": "Block-List-Match-Url",
+                        "alert_type": "block_list_match"
+                    },
+                    "ati": {},
+                    "alert": {
+                        "product": "ETP",
+                        "alert_type": [
+                            "at"
+                        ],
+                        "malware_md5": "a97bb9dc8ff6dd5e229bb9e7ee550bfe",
+                        "timestamp": "2023-07-18T13:52:06.085",
+                        "sha256": "f2b341c43006de663ebcaf50fc7bed5621ce985b2a9c59979d9dc67c2964a4de"
+                    },
+                    "email": {
+                        "status": "scanned",
+                        "source_ip": "x.x.x.x",
+                        "smtp": {
+                            "rcpt_to": "test@test.com",
+                            "mail_from": "test@test.com"
+                        },
+                        "etp_message_id": "3yPijA4-68317-08B8BD2764910996B46e8d251a0",
+                        "headers": {
+                            "cc": "",
+                            "to": "Roman <test@test.com>",
+                            "from": "User Name <test@test.com>",
+                            "subject": "rewrew"
+                        },
+                        "attachment": "hxxp://www.etptest.com",
+                        "timestamp": {
+                            "accepted": "2023-07-18T13:52:01"
+                        }
+                    }
+                },
+                "id": "3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc",
+                "links": {
+                    "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
+                }
+            },
+            {
+                "attributes": {
+                    "meta": {
+                        "read": false,
+                        "last_modified_on": "2023-07-19T10:14:42.197",
+                        "legacy_id": 172983421,
+                        "acknowledged": false,
+                        "timestamps": {
+                            "db_insert_time": "2023-07-19T10:14:42.127319+00",
+                            "es_insert_time": "2023-07-19T10:14:42.197"
+                        },
+                        "last_malware": "Block-List-Match-Url",
+                        "alert_type": "block_list_match"
+                    },
+                    "ati": {},
+                    "alert": {
+                        "product": "ETP",
+                        "alert_type": [
+                            "at"
+                        ],
+                        "malware_md5": "c178c916972668219c54f9c61b01397f",
+                        "timestamp": "2023-07-19T10:14:42.197",
+                        "sha256": "0e07576fff96d1c288441831f88c5c363b5372469a4865c9bb728f5e7a558dd8"
+                    },
+                    "email": {
+                        "status": "scanned",
+                        "source_ip": "x.x.x.x",
+                        "smtp": {
+                            "rcpt_to": "test@test.com",
+                            "mail_from": "test@test.com"
+                        },
+                        "etp_message_id": "3yPim5U-68317-0879C703336E87B7B46c6829820",
+                        "headers": {
+                            "cc": "",
+                            "to": "Roman <test@test.com>, test@test.com",
+                            "from": "User Name <test@test.com>",
+                            "subject": "Fwd: dasdas"
+                        },
+                        "attachment": "www.etptest.com",
+                        "timestamp": {
+                            "accepted": "2023-07-19T10:14:38"
+                        }
+                    }
+                },
+                "id": "3yPim5U-68317-9d01b2b5-b372-4542-b677-b0d4ebf10f03",
+                "links": {
+                    "detail": "/api/v1/alerts/3yPim5U-68317-9d01b2b5-b372-4542-b677-b0d4ebf10f03"
+                }
+            },
+            {
+                "attributes": {
+                    "meta": {
+                        "read": false,
+                        "last_modified_on": "2023-07-19T10:14:42.261",
+                        "legacy_id": 172983419,
+                        "acknowledged": false,
+                        "timestamps": {
+                            "db_insert_time": "2023-07-19T10:14:41.103476+00",
+                            "es_insert_time": "2023-07-19T10:14:41.193"
+                        },
+                        "last_malware": "Block-List-Match-Url",
+                        "alert_type": "block_list_match"
+                    },
+                    "ati": {},
+                    "alert": {
+                        "product": "ETP",
+                        "alert_type": [
+                            "at"
+                        ],
+                        "malware_md5": "c178c916972668219c54f9c61b01397f",
+                        "timestamp": "2023-07-19T10:14:41.193",
+                        "sha256": "0e07576fff96d1c288441831f88c5c363b5372469a4865c9bb728f5e7a558dd8"
+                    },
+                    "email": {
+                        "status": "scanned",
+                        "source_ip": "x.x.x.x",
+                        "smtp": {
+                            "rcpt_to": "test@test.com",
+                            "mail_from": "test@test.com"
+                        },
+                        "etp_message_id": "3yPim5U-68317-08141C03860C87B7B46a35ba660",
+                        "headers": {
+                            "cc": "",
+                            "to": "Roman <test@test.com>, test@test.com",
+                            "from": "User Name <test@test.com>",
+                            "subject": "Fwd: dasdas"
+                        },
+                        "attachment": "www.etptest.com",
+                        "timestamp": {
+                            "accepted": "2023-07-19T10:14:36"
+                        }
+                    }
+                },
+                "id": "3yPim5U-68317-d2b2c2c2-b5af-4e4b-bf45-33520b8a7d7c",
+                "links": {
+                    "detail": "/api/v1/alerts/3yPim5U-68317-d2b2c2c2-b5af-4e4b-bf45-33520b8a7d7c"
+                }
+            },
+            {
+                "attributes": {
+                    "meta": {
+                        "read": true,
+                        "last_modified_on": "2023-07-19T12:21:00.028",
+                        "legacy_id": 172990094,
+                        "acknowledged": false,
+                        "timestamps": {
+                            "db_insert_time": "2023-07-19T12:02:29.482576+00",
+                            "es_insert_time": "2023-07-19T12:02:29.535"
+                        },
+                        "last_malware": "Block-List-Match-Url",
+                        "alert_type": "block_list_match"
+                    },
+                    "ati": {},
+                    "alert": {
+                        "product": "ETP",
+                        "alert_type": [
+                            "at"
+                        ],
+                        "malware_md5": "c178c916972668219c54f9c61b01397f",
+                        "timestamp": "2023-07-19T12:02:29.534",
+                        "sha256": "0e07576fff96d1c288441831f88c5c363b5372469a4865c9bb728f5e7a558dd8"
+                    },
+                    "email": {
+                        "status": "scanned",
+                        "source_ip": "x.x.x.x",
+                        "smtp": {
+                            "rcpt_to": "test@test.com",
+                            "mail_from": "test@test.com"
+                        },
+                        "etp_message_id": "3yPim8W-68317-088B71293030D0D7B46d1aafce0",
+                        "headers": {
+                            "cc": "",
+                            "to": "Roman <test@test.com>",
+                            "from": "User Name <test@test.com>",
+                            "subject": ""
+                        },
+                        "attachment": "www.etptest.com",
+                        "timestamp": {
+                            "accepted": "2023-07-19T12:02:24"
+                        }
+                    }
+                },
+                "id": "3yPim8W-68317-ea2b8d20-e10c-4187-adae-fb24d0873384",
+                "links": {
+                    "detail": "/api/v1/alerts/3yPim8W-68317-ea2b8d20-e10c-4187-adae-fb24d0873384"
+                }
+            }
+        ],
+        "meta": {
+            "total": 4465,
+            "size": 1,
+            "fromLastModifiedOn": {
+                "start": "2022-11-22T11:33:52.037",
+                "end": "2023-07-17T11:33:52.037"
+            },
+            "copyright": "Copyright 2022 FireEye Security Holdings US LLC"
+        },
+        "type": "alerts"
+    },
+    "formatted_response_hidden_false": {
+        "_TIME": "2023-07-18T14:29:33.699000",
+        "_ENTRY_STATUS": "modified",
+        "event_type": "alert",
+        "attributes": {
+            "meta": {
+                "read": true,
+                "last_modified_on": "2023-07-18T14:29:33.699",
+                "legacy_id": 172905612,
+                "acknowledged": false,
+                "timestamps": {
+                    "db_insert_time": "2023-07-18T13:52:06.029677+00",
+                    "es_insert_time": "2023-07-18T13:52:06.085"
+                },
+                "last_malware": "Block-List-Match-Url",
+                "alert_type": "block_list_match"
+            },
+            "ati": {},
+            "alert": {
+                "product": "ETP",
+                "alert_type": [
+                    "at"
+                ],
+                "malware_md5": "a97bb9dc8ff6dd5e229bb9e7ee550bfe",
+                "timestamp": "2023-07-18T13:52:06.085",
+                "sha256": "f2b341c43006de663ebcaf50fc7bed5621ce985b2a9c59979d9dc67c2964a4de"
+            },
+            "email": {
+                "status": "scanned",
+                "source_ip": "x.x.x.x",
+                "smtp": {
+                    "rcpt_to": "test@test.com",
+                    "mail_from": "test@test.com"
+                },
+                "etp_message_id": "3yPijA4-68317-08B8BD2764910996B46e8d251a0",
+                "headers": {
+                    "cc": "",
+                    "to": "Roman <test@test.com>",
+                    "from": "Roman <test@test.com>",
+                    "subject": "rewrew"
+                },
+                "attachment": "hxxp://www.etptest.com",
+                "timestamp": {
+                    "accepted": "2023-07-18T13:52:01"
+                }
+            }
+        },
+        "id": "3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc",
+        "links": {
+            "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
+        }
+    },
+    "formatted_response_hidden_true": {
+        "_TIME": "2023-07-18T14:29:33.699000",
+        "_ENTRY_STATUS": "modified",
+        "event_type": "alert",
+        "attributes": {
+            "meta": {
+                "read": true,
+                "last_modified_on": "2023-07-18T14:29:33.699",
+                "legacy_id": 172905612,
+                "acknowledged": false,
+                "timestamps": {
+                    "db_insert_time": "2023-07-18T13:52:06.029677+00",
+                    "es_insert_time": "2023-07-18T13:52:06.085"
+                },
+                "last_malware": "Block-List-Match-Url",
+                "alert_type": "block_list_match"
+            },
+            "ati": {},
+            "alert": {
+                "product": "ETP",
+                "alert_type": [
+                    "at"
+                ],
+                "malware_md5": "a97bb9dc8ff6dd5e229bb9e7ee550bfe",
+                "timestamp": "2023-07-18T13:52:06.085",
+                "sha256": "f2b341c43006de663ebcaf50fc7bed5621ce985b2a9c59979d9dc67c2964a4de"
+            },
+            "email": {
+                "status": "scanned",
+                "source_ip": "x.x.x.x",
+                "smtp": {
+                    "rcpt_to": "test@test.com",
+                    "mail_from": "test@test.com"
+                },
+                "etp_message_id": "3yPijA4-68317-08B8BD2764910996B46e8d251a0",
+                "headers": {
+                    "cc": "",
+                    "to": "Roman <test@test.com>",
+                    "from": "Roman <test@test.com>",
+                    "subject": "hidden data"
+                },
+                "attachment": "hidden data",
+                "timestamp": {
+                    "accepted": "2023-07-18T13:52:01"
+                }
+            }
+        },
+        "id": "3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc",
+        "links": {
+            "detail": "/api/v1/alerts/3yPijA4-68317-8808db43-3320-49d6-b6a8-604edf5080bc"
+        }
+    }
+}
+
