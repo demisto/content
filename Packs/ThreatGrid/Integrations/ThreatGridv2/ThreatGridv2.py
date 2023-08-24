@@ -126,7 +126,7 @@ class Client(BaseClient):
         url_suffix = f"{url_suffix}/summary" if summary else url_suffix
 
         if artifact:
-            resp_type = "text"
+            resp_type = "content"
             url_suffix = f"{url_suffix}/{artifact}"
         else:
             resp_type = "json"
@@ -1431,7 +1431,7 @@ def validate_pagination_arguments(
         raise ValueError(
             f"page argument must be greater than {MIN_PAGE_NUM-1}.")
 
-    if limit is not None and limit <= MIN_LIMIT:
+    if limit is not None and limit < MIN_LIMIT:
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
