@@ -3870,6 +3870,15 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         ValueError: If the API connection fails.
 
     """
+    def _warn_if_module_is_disabled(e: DemistoException) -> None:
+        if (
+                e is not None
+                and e.res is not None
+                and e.res.status_code == 500
+                and 'No identity threat' in str(e)
+                and "An error occurred while processing XDR public API" in e.message
+        ):
+            return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
         case "user":
@@ -3890,6 +3899,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
+            _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
                 if not_found_message in error_message:
@@ -3903,8 +3913,12 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs = get_func().get('reply', [])[:list_limit]
 
+        try:
+            outputs = get_func().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            _warn_if_module_is_disabled(e)
+            raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
     readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)
