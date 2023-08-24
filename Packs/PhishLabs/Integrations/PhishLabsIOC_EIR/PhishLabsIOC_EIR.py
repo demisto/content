@@ -86,6 +86,7 @@ class Client(BaseClient):
             'limit': limit,
             'offset': offset
         })
+        demisto.debug(f'Params sent to API are: {str(params)}')
         return self._http_request('GET',
                                   url_suffix=suffix,
                                   params=assign_params(**params))
@@ -310,7 +311,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+        last_run: dict = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -328,6 +329,8 @@ def fetch_incidents_command(
     incidents_raw: List = []
     # Set last run time
     occurred_format = '%Y-%m-%dT%H:%M:%SZ'
+    last_run = last_run.get('lastRun')
+    id_from_last_run = last_run.get('last_id')
     if not last_run:
         datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
                                                     date_format=occurred_format)
@@ -360,10 +363,17 @@ def fetch_incidents_command(
     # Gather incidents by demisto format
     new_last_run: Optional[str] = None
     incidents_report = []
+    last_id = None
     if incidents_raw:
+        demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
         for incident_raw in incidents_raw:
+            if id_from_last_run and incident_raw.get('id') == id_from_last_run:
+                demisto.debug(f'Skipping incident with id {incident_raw.get("id")} because of duplication.')
+                continue
             # Creates incident entry
+            last_id = incident_raw.get('id')
             occurred = incident_raw.get('created')
+            demisto.debug(f'Creating incident with id {last_id}')
             incidents_report.append({
                 'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
                 'occurred': occurred,
@@ -371,8 +381,9 @@ def fetch_incidents_command(
             })
 
         new_last_run = incidents_report[-1].get('occurred')
+
     # Return results
-    return incidents_report, {'lastRun': new_last_run}
+    return incidents_report, {'lastRun': new_last_run, 'last_id': last_id}
 
 
 @logger
@@ -485,7 +496,7 @@ def main():
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun().get('lastRun'),
+                                                              last_run=demisto.getLastRun(),
                                                               limit=params.get('fetchLimit'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
