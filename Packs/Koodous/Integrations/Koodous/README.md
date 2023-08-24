@@ -32,7 +32,3 @@ Check APK sample.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hash | The hash of the sample (MD5, SHA1 or SHA256). | Required | 
-
-#### Context Output
-
-There is no context output for this command.
