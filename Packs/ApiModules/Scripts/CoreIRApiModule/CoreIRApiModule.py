@@ -3870,7 +3870,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         ValueError: If the API connection fails.
 
     """
-    def _return_warning_when_module_disable(e: DemistoException) -> None:
+    def _warn_if_module_is_disabled(e: DemistoException) -> None:
         if (
                 e is not None
                 and e.res is not None
