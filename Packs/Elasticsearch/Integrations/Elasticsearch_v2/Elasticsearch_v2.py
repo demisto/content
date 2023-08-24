@@ -27,7 +27,7 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
-DEFAULT_DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ"
+DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
