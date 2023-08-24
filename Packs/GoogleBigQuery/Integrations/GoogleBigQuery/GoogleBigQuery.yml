@@ -10,13 +10,14 @@ configuration:
   name: google_service_creds
   defaultvalue: ""
   type: 4
-  hidden: true
+  hidden: false
   required: false
 - displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: credentials_google_service
   hiddenusername: true
+  hidden: true
   type: 9
-  required: false
+  required: true
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'

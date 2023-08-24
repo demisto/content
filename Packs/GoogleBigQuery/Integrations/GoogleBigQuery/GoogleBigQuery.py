@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -142,6 +144,7 @@ def get_query_results(query_to_run=None):
     use_legacy_sql = args.get('use_legacy_sql', None)
     google_service_creds = demisto.params().get('credentials_google_service', {}).get(
         'password') or demisto.params()['google_service_creds']
+
     job_id = args.get('job_id', None)
     if not google_service_creds:
         raise DemistoException('Google service account JSON must be provided.')
@@ -212,7 +215,7 @@ def get_last_run_date():
     demisto.debug('[BigQuery Debug] last_date is: {}'.format(last_date))
 
     if last_date is None:
-        first_fetch_time = demisto.params().get('first_fetch_time', '1 days')
+        first_fetch_time = demisto.params().get('first_fetch', '1 days')
         first_fetch, _ = parse_date_range(first_fetch_time, date_format='%Y-%m-%d %H:%M:%S.%f')
         last_date = first_fetch
         demisto.debug('[BigQuery Debug] FIRST RUN - last_date is: {}'.format(last_date))
@@ -232,7 +235,7 @@ def build_fetch_query(last_date):
         fixed_query += " WHERE"
 
     fetch_time_field = demisto.params().get("fetch_time_field", "CreationTime")
-    fetch_query = "{} `{}` > \"{}\"".format(fixed_query, fetch_time_field, last_date)
+    fetch_query = "{} `{}` >= \"{}\" ORDER BY {}".format(fixed_query, fetch_time_field, last_date, fetch_time_field)
     return fetch_query
 
 
@@ -308,12 +311,26 @@ def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
 
 def verify_params():
     params = demisto.params()
-    if not params.get('first_fetch_time'):
+    if not params.get('first_fetch'):
         return_error('Error: fetch start time must be supplied.')
     if not params.get('fetch_query'):
         return_error('Error: fetch query must be supplied.')
     if not params.get('fetch_time_field'):
         return_error('Error: the time field you want us to sort incidents by must be supplied.')
+
+
+def sort_rows(bigquery_rows):
+    if bigquery_rows:
+        row = bigquery_rows[0]._xxx_field_to_index
+        additional_fields = 'additional_fields'
+        generated_time_field_name = 'generatedTime' if 'generatedTime' in row else 'generated_time' if 'generated_time' in row else 'GeneratedTime'
+        event_id_field_name = 'event_id' if 'event_id' in row else 'EventId' if 'EventId' in row else 'eventId'
+        instance_id_field_name = 'instance_id' if 'instance_id' in row else 'InstanceId' if 'InstanceId' in row else 'instanceId'
+        agent_id_field_name = 'agent_id' if 'agent_id' in row else 'AgentId' if 'AgentId' in row else 'agentId'
+        return sorted(bigquery_rows, key=lambda row: (
+            row[additional_fields], row[generated_time_field_name], row[event_id_field_name], row[instance_id_field_name],
+            row[agent_id_field_name]))
+    return []
 
 
 def fetch_incidents():
@@ -322,8 +339,9 @@ def fetch_incidents():
     fetch_query = build_fetch_query(latest_incident_time_str)
     demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
     fetch_limit = arg_to_number(demisto.params().get('max_fetch') or 50)
-
     bigquery_rows = list(get_query_results(fetch_query))
+    row_date = None
+    row_incident_id = None
 
     demisto.debug("[BigQuery Debug] number of results is: {}".format(len(bigquery_rows)))
     if len(bigquery_rows) > 0:
@@ -331,19 +349,22 @@ def fetch_incidents():
         demisto.debug("[BigQuery Debug] last row is: {}".format(bigquery_rows[-1]))
 
     new_incidents = []  # type: ignore
-    found_incidents_ids = demisto.getLastRun().get('found_ids', {})
+    last_run = demisto.getLastRun()
+    last_date = last_run.get("last_date")
+    last_incident_id = last_run.get("last_incident_id")
+    demisto.debug(f"Last date is: {last_date}, last incident id is: {last_incident_id}")
 
-    for i in range(len(bigquery_rows) - 1, - 1, -1):
+    sorted_rows = sort_rows(bigquery_rows)
+    for row in sorted_rows:
         # We iterate backwards since the incidents' time is in increasing order
         if len(new_incidents) == fetch_limit:
             break
-        row = bigquery_rows[i]
         row_incident_id = get_incident_id(row)
         row_date = get_row_date_string(row)
-        if row_incident_id in found_incidents_ids:
-            continue
 
-        found_incidents_ids[row_incident_id] = row_date
+        if last_date and last_incident_id:
+            if row_date < last_date or row_incident_id <= last_incident_id:
+                continue
         demisto.debug("[BigQuery Debug] cur row: {}".format(row))
         incident = row_to_incident(row)
         new_incidents.append(incident)
@@ -351,18 +372,13 @@ def fetch_incidents():
     demisto.debug(
         "[BigQuery Debug] new_incidents is: {}\nbigquery_rows is: {}".format(new_incidents, len(bigquery_rows)))
 
-    if 0 < len(new_incidents) < fetch_limit:  # type: ignore
-        demisto.debug("[BigQuery Debug] Less than limit")
-        latest_incident_time_str = get_max_incident_time(new_incidents)
-        found_incidents_ids = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
-
-    next_run = {
-        "last_date": latest_incident_time_str,
-        "found_ids": found_incidents_ids
-    }
-    demisto.debug("[BigQuery Debug] next run is: {}".format(next_run))
-    demisto.setLastRun(next_run)
-
+    if new_incidents and row_date and row_incident_id:
+        next_run = {
+            "last_date": row_date,
+            "last_incident_id": row_incident_id
+        }
+        demisto.debug("[BigQuery Debug] next run is: {}".format(next_run))
+        demisto.setLastRun(next_run)
     demisto.incidents(new_incidents)
 
 
