@@ -1019,7 +1019,7 @@ def test_get_datetime_field_format_custom_format():
         - Executing get_datetime_field_format function.
 
     Then
-        - Make sure that the returned field format is as expected.
+        - Make sure that the returned field format is as expected (custom).
     """
     es = MockES1
     assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'yyyy-MM-dd HH:mm:ss'
@@ -1047,7 +1047,7 @@ def test_get_datetime_field_format_default_format():
         - Executing get_datetime_field_format function.
 
     Then
-        - Make sure that the returned field format is as expected.
+        - Make sure that the returned field format is as expected (default).
     """
     es = MockES2
     assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'YYYY-MM-DDTHH:mm:ss.SSSZ'
