@@ -308,7 +308,7 @@ def main() -> None:  # pragma: no cover
         base_url = urljoin(url, '/api/v2/')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        max_fetch: int = arg_to_number(params.get('max_fetch', 10000))
+        max_fetch: int = arg_to_number(params.get('max_fetch')) or 10000
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
