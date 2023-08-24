@@ -106,6 +106,12 @@ ignore=RN114
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106,BA124
 
+[file:context_entry_list_of_dicts_complex.json]
+ignore=BA102
+
+[file:expected_list_of_dicts_complex.json]
+ignore=BA102
+
 [known_words]
 unzipfile
 zipstrings
