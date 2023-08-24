@@ -449,9 +449,9 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
-        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+        rn_block, _ = merge_version_blocks(pack_versions_dict)
 
-        assert '- This is a fake1 comment.' in rn_block
+        assert '- This is a fake1 comment without a hyphen.' in rn_block
 
     def test_sanity(self):
         """
