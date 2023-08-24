@@ -373,18 +373,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.28.31"
+version = "1.28.32"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.31-py3-none-any.whl", hash = "sha256:2761f3249fe25c3ec1a8cd6b95fca2317747503e6f1d127daf6a3d2cdeb25680"},
-    {file = "boto3-1.28.31.tar.gz", hash = "sha256:dc6d72470f6d8926b8cdc10ee7708d7ccdd36d6313c7aa298bc1cf6bedb8921e"},
+    {file = "boto3-1.28.32-py3-none-any.whl", hash = "sha256:ed787f250ce2562c7744395bdf32b5a7bc9184126ef50a75e97bcb66043dccf3"},
+    {file = "boto3-1.28.32.tar.gz", hash = "sha256:b505faa126db84e226f6f8d242a798fae30a725f0cac8a76c6aca9ace4e8eb28"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.31,<1.32.0"
+botocore = ">=1.31.32,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -393,13 +393,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.28.31"
-description = "Type annotations for boto3 1.28.31 generated with mypy-boto3-builder 7.17.3"
+version = "1.28.32"
+description = "Type annotations for boto3 1.28.32 generated with mypy-boto3-builder 7.17.3"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "boto3-stubs-1.28.31.tar.gz", hash = "sha256:a83b8f2f906582d27fd2ed5f79dd9c8f3ce32ac9b65c01c21168e92ed7b1eba2"},
-    {file = "boto3_stubs-1.28.31-py3-none-any.whl", hash = "sha256:8ee712987a5a1e186c4cd5c848fcaea6a3a2eb138f69a7ac29184f9bd1ecdefd"},
+    {file = "boto3-stubs-1.28.32.tar.gz", hash = "sha256:f985fa8115340181b33229bcb6efa27b21bcb243f6a2842c22cee8da7996d1e7"},
+    {file = "boto3_stubs-1.28.32-py3-none-any.whl", hash = "sha256:871fe959a25bdf40f28e93dcdb6208756c0d1b979e9ead309ebcc3a8e59c5695"},
 ]
 
 [package.dependencies]
@@ -463,7 +464,7 @@ backup-gateway = ["mypy-boto3-backup-gateway (>=1.28.0,<1.29.0)"]
 backupstorage = ["mypy-boto3-backupstorage (>=1.28.0,<1.29.0)"]
 batch = ["mypy-boto3-batch (>=1.28.0,<1.29.0)"]
 billingconductor = ["mypy-boto3-billingconductor (>=1.28.0,<1.29.0)"]
-boto3 = ["boto3 (==1.28.31)", "botocore (==1.31.31)"]
+boto3 = ["boto3 (==1.28.32)", "botocore (==1.31.32)"]
 braket = ["mypy-boto3-braket (>=1.28.0,<1.29.0)"]
 budgets = ["mypy-boto3-budgets (>=1.28.0,<1.29.0)"]
 ce = ["mypy-boto3-ce (>=1.28.0,<1.29.0)"]
@@ -787,14 +788,14 @@ xray = ["mypy-boto3-xray (>=1.28.0,<1.29.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.31"
+version = "1.31.32"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.31-py3-none-any.whl", hash = "sha256:1eef14ae98e8662e43f7cf6d993c732793def02644e2d489c5171d3b9269e900"},
-    {file = "botocore-1.31.31.tar.gz", hash = "sha256:950a49c5286fe1f6d72cfbe2910b9ddbdfbb907975ddc41cf38ac9709b4d1291"},
+    {file = "botocore-1.31.32-py3-none-any.whl", hash = "sha256:8992ac186988c4b4cc168e8e479e9472da1442b193c1bf7c9dcd1877ec62d23c"},
+    {file = "botocore-1.31.32.tar.gz", hash = "sha256:7a07d8dc8cc47bf23af39409ada81f388eb78233e1bb2cde0c415756da753664"},
 ]
 
 [package.dependencies]
@@ -807,13 +808,14 @@ crt = ["awscrt (==0.16.26)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.31.31"
+version = "1.31.32"
 description = "Type annotations and code completion for botocore"
+category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "botocore_stubs-1.31.31-py3-none-any.whl", hash = "sha256:9235ab9458a835e52c38ac995db8d82ab4a19c380c31a74a388dabc008233e15"},
-    {file = "botocore_stubs-1.31.31.tar.gz", hash = "sha256:11838fbf401137161f8af50c80cb6edd3876ba6d9e28ca2c37e97f293de1c34e"},
+    {file = "botocore_stubs-1.31.32-py3-none-any.whl", hash = "sha256:1388a81ac6bfb4d63ea97d3216e3e12dcd3965dce09eebc86e530b474401872c"},
+    {file = "botocore_stubs-1.31.32.tar.gz", hash = "sha256:8b2879788ea7ba6fc5a3d2d6cfb331323f111ebe24959bbefafecb6ea194541a"},
 ]
 
 [package.dependencies]
@@ -1506,7 +1508,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "sdk_new_bucket_xsoar_saas"
-resolved_reference = "1a650caf585fe2e210ba1677d6597cc2ae3f1e11"
+resolved_reference = "06d83e4914cf69a36ef02aa5b1c63b00527cba88"
 
 [[package]]
 name = "deprecated"
@@ -3270,6 +3272,7 @@ reports = ["lxml"]
 name = "mypy-boto3-accessanalyzer"
 version = "1.28.16"
 description = "Type annotations for boto3.AccessAnalyzer 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3284,6 +3287,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-acm"
 version = "1.28.16"
 description = "Type annotations for boto3.ACM 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3298,6 +3302,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-athena"
 version = "1.28.16"
 description = "Type annotations for boto3.Athena 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3312,6 +3317,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-cloudtrail"
 version = "1.28.24"
 description = "Type annotations for boto3.CloudTrail 1.28.24 service generated with mypy-boto3-builder 7.17.2"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3326,6 +3332,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-dynamodb"
 version = "1.28.27"
 description = "Type annotations for boto3.DynamoDB 1.28.27 service generated with mypy-boto3-builder 7.17.3"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3340,6 +3347,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-ec2"
 version = "1.28.31"
 description = "Type annotations for boto3.EC2 1.28.31 service generated with mypy-boto3-builder 7.17.3"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3354,6 +3362,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-guardduty"
 version = "1.28.23"
 description = "Type annotations for boto3.GuardDuty 1.28.23 service generated with mypy-boto3-builder 7.17.2"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3368,6 +3377,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-iam"
 version = "1.28.16"
 description = "Type annotations for boto3.IAM 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3382,6 +3392,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-lambda"
 version = "1.28.19"
 description = "Type annotations for boto3.Lambda 1.28.19 service generated with mypy-boto3-builder 7.17.2"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3396,6 +3407,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-logs"
 version = "1.28.16"
 description = "Type annotations for boto3.CloudWatchLogs 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3410,6 +3422,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-network-firewall"
 version = "1.28.16"
 description = "Type annotations for boto3.NetworkFirewall 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3424,6 +3437,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-route53"
 version = "1.28.16.post1"
 description = "Type annotations for boto3.Route53 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3438,6 +3452,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-s3"
 version = "1.28.27"
 description = "Type annotations for boto3.S3 1.28.27 service generated with mypy-boto3-builder 7.17.3"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3452,6 +3467,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-sagemaker-runtime"
 version = "1.28.16"
 description = "Type annotations for boto3.SageMakerRuntime 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3466,6 +3482,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-secretsmanager"
 version = "1.28.24"
 description = "Type annotations for boto3.SecretsManager 1.28.24 service generated with mypy-boto3-builder 7.17.2"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3480,6 +3497,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-securityhub"
 version = "1.28.30"
 description = "Type annotations for boto3.SecurityHub 1.28.30 service generated with mypy-boto3-builder 7.17.3"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3494,6 +3512,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-sns"
 version = "1.28.16"
 description = "Type annotations for boto3.SNS 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3508,6 +3527,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-sqs"
 version = "1.28.19"
 description = "Type annotations for boto3.SQS 1.28.19 service generated with mypy-boto3-builder 7.17.2"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3522,6 +3542,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-ssm"
 version = "1.28.16"
 description = "Type annotations for boto3.SSM 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3536,6 +3557,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.9\""}
 name = "mypy-boto3-wafv2"
 version = "1.28.16"
 description = "Type annotations for boto3.WAFV2 1.28.16 service generated with mypy-boto3-builder 7.17.1"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3564,7 +3586,6 @@ version = "0.5.1"
 description = "Provides enhanced HTTPS support for httplib and urllib2 using PyOpenSSL"
 category = "dev"
 optional = false
-python-versions = ">=2.7,<3.0.0 || >=3.4.0"
 python-versions = ">=2.7,<3.0.0 || >=3.4.0"
 files = [
     {file = "ndg_httpsclient-0.5.1-py2-none-any.whl", hash = "sha256:d2c7225f6a1c6cf698af4ebc962da70178a99bcde24ee6d1961c4f3338130d57"},
@@ -5689,7 +5710,6 @@ files = [
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:d000f258cf42fec2b1bbf2863c61d7b8918d31ffee905da62dede869254d3b8a"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
-    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win32.whl", hash = "sha256:f6d3d39611ac2e4f62c3128a9eed45f19a6608670c5a2f4f07f24e8de3441d38"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:da538167284de58a52109a9b89b8f6a53ff8437dd6dc26d33b57bf6699153122"},
@@ -6445,6 +6465,7 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 name = "types-awscrt"
 version = "0.19.0"
 description = "Type annotations and code completion for awscrt"
+category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
@@ -6690,6 +6711,7 @@ types-urllib3 = "<1.27"
 name = "types-s3transfer"
 version = "0.6.2"
 description = "Type annotations and code completion for s3transfer"
+category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
@@ -6986,18 +7008,18 @@ requests = "*"
 
 [[package]]
 name = "websocket-client"
-version = "1.6.1"
+version = "1.6.2"
 description = "WebSocket client for Python with low level API options"
 category = "dev"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "websocket-client-1.6.1.tar.gz", hash = "sha256:c951af98631d24f8df89ab1019fc365f2227c0892f12fd150e935607c79dd0dd"},
-    {file = "websocket_client-1.6.1-py3-none-any.whl", hash = "sha256:f1f9f2ad5291f0225a49efad77abf9e700b6fef553900623060dad6e26503b9d"},
+    {file = "websocket-client-1.6.2.tar.gz", hash = "sha256:53e95c826bf800c4c465f50093a8c4ff091c7327023b10bfaff40cf1ef170eaa"},
+    {file = "websocket_client-1.6.2-py3-none-any.whl", hash = "sha256:ce54f419dfae71f4bdba69ebe65bf7f0a93fe71bc009ad3a010aacc3eebad537"},
 ]
 
 [package.extras]
-docs = ["Sphinx (>=3.4)", "sphinx-rtd-theme (>=0.5)"]
+docs = ["Sphinx (>=6.0)", "sphinx-rtd-theme (>=1.1.0)"]
 optional = ["python-socks", "wsaccel"]
 test = ["websockets"]
 
@@ -7352,4 +7374,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "2c1fd4195e709a067df716c5073719f90c5ed24060ccf96cd4aa6abe89987580"
+content-hash = "1ebf5a6b222b1a635d82c7a0776c33de7eb22bbd0761f854943faf4a6239ce36"
