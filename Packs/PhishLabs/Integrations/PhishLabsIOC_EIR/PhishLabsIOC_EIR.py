@@ -366,7 +366,7 @@ def fetch_incidents_command(
         for incident_raw in incidents_raw:
             # Creates incident entry
             occurred = incident_raw.get('created')
-            demisto.debug(f'Creating incident with id {last_id}')
+            demisto.debug(f'Creating incident with id {incident_raw.get("id")} and {occurred}')
             incidents_report.append({
                 'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
                 'occurred': occurred,
