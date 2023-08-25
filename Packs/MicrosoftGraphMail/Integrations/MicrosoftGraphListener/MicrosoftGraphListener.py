@@ -64,14 +64,27 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
                                          folder_id=folder_id, overwrite_rate_limit_retry=True,
                                          mark_emails_as_read=self._mark_fetched_read)
+        
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
+            # no new emails
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
+            return [], exclude_ids
+        
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
 
-        fetched_emails = fetched_emails[:self._emails_fetch_limit]
-
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
-
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
+        else:
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
+            
+        return new_emails, excluded_ids_for_nextrun
 
     def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
         """
@@ -83,7 +96,15 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         :return: Parsed email
         :rtype: ``dict``
         """
-        parsed_email = GraphMailUtils.parse_item_as_dict(email)
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
+        def body_extractor(email, parsed_email):
+            email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
+            parsed_email['Body'] = email_content_as_html
+            parsed_email['Text'] = email_content_as_text
+            parsed_email['BodyType'] = 'html'
+
+        parsed_email = GraphMailUtils.parse_item_as_dict(email, body_extractor)
 
         # handling attachments of fetched email
         attachments = self._get_email_attachments(
@@ -95,13 +116,15 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
-        body = email.get('body', {}).get('content', '') if self._display_full_email_body else email.get('bodyPreview', '')
+        body = email.get('bodyPreview', '')
+        if not body or self._display_full_email_body:
+            _, body = self.get_email_content_as_text_and_html(email)
 
         incident = {
             'name': parsed_email['Subject'],
             'details': body,
             'labels': GraphMailUtils.parse_email_as_labels(parsed_email),
-            'occurred': parsed_email['ModifiedTime'],
+            'occurred': parsed_email['ReceivedTime'],
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email)
         }
@@ -111,13 +134,19 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False,
                    mark_emails_as_read: bool = False) -> list:
 
-        results = self.get_emails_from_api(folder_id,
-                                           last_fetch,
-                                           limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+        emails_as_html = self.get_emails_from_api(folder_id,
+                                                  last_fetch,
+                                                  body_as_text=False,
+                                                  limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+        
+        emails_as_text = self.get_emails_from_api(folder_id,
+                                                  last_fetch,
+                                                  limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
         if mark_emails_as_read:
-            for email in results:
+            for email in emails_as_html:
                 if email.get('id'):
                     self.update_email_read_status(
                         user_id=self._mailbox_to_fetch,
@@ -125,7 +154,46 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
                         read=True,
                         folder_id=folder_id)
 
-        return results
+        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
+
+    @staticmethod
+    def get_emails_as_text_and_html(emails_as_html, emails_as_text):
+
+        text_emails_ids = {email.get('id'): email for email in emails_as_text}
+        emails_as_html_and_text = []
+
+        for email_as_html in emails_as_html:
+            html_email_id = email_as_html.get('id')
+            text_email_data = text_emails_ids.get(html_email_id) or {}
+            if not text_email_data:
+                demisto.info(f'There is no matching text email to html email-ID {html_email_id}')
+
+            body_as_text = text_email_data.get('body')
+            if body_as_html := email_as_html.get('body'):
+                email_as_html['body'] = (body_as_html, body_as_text)
+
+            unique_body_as_text = text_email_data.get('uniqueBody')
+            if unique_body_as_html := email_as_html.get('uniqueBody'):
+                email_as_html['uniqueBody'] = (unique_body_as_html, unique_body_as_text)
+
+            emails_as_html_and_text.append(email_as_html)
+
+        return emails_as_html_and_text
+
+    @staticmethod
+    def get_email_content_as_text_and_html(email):
+        email_body: tuple = email.get('body') or ()  # email body including replyTo emails.
+        email_unique_body: tuple = email.get('uniqueBody') or ()  # email-body without replyTo emails.
+
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
+        try:
+            email_content_as_html, email_content_as_text = email_body or email_unique_body
+        except ValueError:
+            demisto.info(f'email body content is missing from email {email}')
+            return '', ''
+
+        return email_content_as_html.get('content'), email_content_as_text.get('content')
 
     @logger
     def fetch_incidents(self, last_run):
@@ -160,13 +228,17 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
+        fetched_emails, exclude_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
+        
         incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
+
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
+
+        
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
         }
