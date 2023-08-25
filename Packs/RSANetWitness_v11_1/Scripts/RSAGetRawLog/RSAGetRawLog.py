@@ -9,7 +9,7 @@ import traceback
 
 
 class RSAError(Exception):
-    #exception quand une élément n'est pas trouvé
+    #exception when an element is not found
     pass
 
 
