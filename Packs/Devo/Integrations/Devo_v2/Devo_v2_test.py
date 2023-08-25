@@ -205,10 +205,7 @@ MOCK_EVENTS = [
     },
 ]
 
-EXPECTED_LAST_RUN_DATA = {
-    "from_time": "1234567892.0",
-    "last_fetch_events": [{"123":1234567890.0}, {"456":1234567891.0}, {"789":1234567892.0}],
-}
+EXPECTED_LAST_RUN_DATA = {'from_time': 1234567.892, 'last_fetch_events': []}
 
 
 class MOCK_LOOKUP(object):
