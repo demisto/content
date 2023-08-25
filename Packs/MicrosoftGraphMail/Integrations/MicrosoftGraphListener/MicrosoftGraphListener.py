@@ -64,14 +64,14 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
                                          folder_id=folder_id, overwrite_rate_limit_retry=True,
                                          mark_emails_as_read=self._mark_fetched_read)
-        
+
         fetched_emails_ids = {email.get('id') for email in fetched_emails}
         exclude_ids_set = set(exclude_ids)
         if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
             demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
             return [], exclude_ids
-        
+
         new_emails = [mail for mail in fetched_emails
                       if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
 
@@ -83,7 +83,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             # next fetch will need to skip messages the same time as last_email
             excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
                                         email.get('receivedDateTime') == last_email_time]
-            
+
         return new_emails, excluded_ids_for_nextrun
 
     def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
@@ -139,7 +139,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
                                                   body_as_text=False,
                                                   limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
-        
+
         emails_as_text = self.get_emails_from_api(folder_id,
                                                   last_fetch,
                                                   limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
@@ -229,13 +229,12 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             demisto.info(f"initialize fetch and pull emails from date :{last_fetch}")
 
         fetched_emails, exclude_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
-        
+                                                              exclude_ids=exclude_ids)
+
         incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
 
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
 
-        
         next_run = {
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': exclude_ids,
