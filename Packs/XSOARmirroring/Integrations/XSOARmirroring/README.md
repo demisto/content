@@ -43,6 +43,7 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
 
 
 ## Important notes:
+
 - In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
 - In order to mirror custom fields in both directions, the custom fields in both Cortex XSOAR instances must have the same CLI name.
 - Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally. To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose ID matches the `playbookId` field in the mirrored incident.
@@ -73,9 +74,13 @@ Search remote Cortex XSOAR for incidents.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xsoar-search-incidents query="-status:closed -category:job"```
+
 #### Context Example
+
 ```json
 {
     "XSOAR": {
@@ -235,6 +240,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Search Results:
+
 >|id|name|type|status|severity|owner|occured|
 >|---|---|---|---|---|---|---|
 >| 4 | testing | Unclassified | 1 | 0 | admin |  |
@@ -262,9 +268,13 @@ Retrieve incident and entries from the remote Cortex XSOAR.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xsoar-get-incident id=4```
+
 #### Context Example
+
 ```json
 {
     "XSOAR": {
@@ -421,12 +431,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Incident testing
+
 >|CustomFields|account|activated|attachment|autime|cacheVersn|canvases|category|closeNotes|closeReason|closed|closingUserId|created|dbotCreatedBy|dbotCurrentDirtyFields|dbotDirtyFields|dbotMirrorDirection|dbotMirrorId|dbotMirrorInstance|dbotMirrorLastSync|dbotMirrorTags|details|droppedCount|dueDate|feedBased|id|investigationId|isDebug|isPlayground|labels|lastJobRunTime|lastOpen|linkedCount|linkedIncidents|modified|name|notifyTime|occurred|openDuration|owner|parent|phase|playbookId|rawCategory|rawCloseReason|rawJSON|rawName|rawPhase|rawType|reason|reminder|runStatus|severity|sla|sourceBrand|sourceInstance|status|type|version|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| containmentsla: {"accumulatedPause": 0, "breachTriggered": false, "dueDate": "0001-01-01T00:00:00Z", "endDate": "0001-01-01T00:00:00Z", "lastPauseDate": "0001-01-01T00:00:00Z", "runStatus": "idle", "sla": 30, "slaStatus": -1, "startDate": "0001-01-01T00:00:00Z", "totalDuration": 0}<br/>detectionsla: {"accumulatedPause": 0, "breachTriggered": false, "dueDate": "0001-01-01T00:00:00Z", "endDate": "0001-01-01T00:00:00Z", "lastPauseDate": "0001-01-01T00:00:00Z", "runStatus": "idle", "sla": 20, "slaStatus": -1, "startDate": "0001-01-01T00:00:00Z", "totalDuration": 0}<br/>endpoint: {}<br/>filerelationships: {},<br/>{},<br/>{}<br/>isactive: true<br/>numberofrelatedincidents: 0<br/>numberofsimilarfiles: 0<br/>remediationsla: {"accumulatedPause": 0, "breachTriggered": false, "dueDate": "0001-01-01T00:00:00Z", "endDate": "0001-01-01T00:00:00Z", "lastPauseDate": "0001-01-01T00:00:00Z", "runStatus": "idle", "sla": 7200, "slaStatus": -1, "startDate": "0001-01-01T00:00:00Z", "totalDuration": 0}<br/>similarincidentsdbot: {}<br/>timetoassignment: {"accumulatedPause": 0, "breachTriggered": false, "dueDate": "0001-01-01T00:00:00Z", "endDate": "0001-01-01T00:00:00Z", "lastPauseDate": "0001-01-01T00:00:00Z", "runStatus": "idle", "sla": 0, "slaStatus": -1, "startDate": "0001-01-01T00:00:00Z", "totalDuration": 0}<br/>triagesla: {"accumulatedPause": 0, "breachTriggered": false, "dueDate": "0001-01-01T00:00:00Z", "endDate": "0001-01-01T00:00:00Z", "lastPauseDate": "0001-01-01T00:00:00Z", "runStatus": "idle", "sla": 30, "slaStatus": -1, "startDate": "0001-01-01T00:00:00Z", "totalDuration": 0}<br/>urlsslverification:  |  | 0001-01-01T00:00:00Z |  | 1678010808446441591 | 0 |  |  |  |  | 0001-01-01T00:00:00Z |  | 2023-03-05T10:06:48.446441591Z | admin |  |  |  |  |  | 0001-01-01T00:00:00Z |  | This is the new details | 0 | 2023-03-15T10:06:48.446441591Z | false | 4 | 4 | false | false | {'value': 'admin', 'type': 'Instance'},<br/>{'value': 'Manual', 'type': 'Brand'} | 0001-01-01T00:00:00Z | 0001-01-01T00:00:00Z | 0 |  | 2023-03-05T14:43:22.319158041Z | testing | 2023-03-05T10:06:50.261155172Z | 2023-03-05T10:06:48.446441435Z | 0 | admin |  |  | playbook0 |  |  |  | testing |  | Unclassified |  | 0001-01-01T00:00:00Z | waiting | 0 | 0 | Manual | admin | 1 | Unclassified | 13 |
 >
 >
 >### Last entries since 2023-03-02T14:44:47.000Z
+
 >|brand|cacheVersn|category|contents|contentsSize|created|cronView|dbotCreatedBy|endingDate|format|id|incidentCreationTime|investigationId|isTodo|mirrored|modified|note|parentEntryTruncated|pinned|recurrent|reputationSize|retryTime|scheduled|startDate|times|timezoneOffset|type|user|version|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| none | 0 | chat | done | 4 | 2023-03-05T10:38:21.895125832Z | false | admin | 0001-01-01T00:00:00Z | text | 52@4 | 0001-01-01T00:00:00Z | 4 | false | false | 2023-03-05T10:38:21.895153311Z | false | false | false | false | 0 | 0001-01-01T00:00:00Z | false | 0001-01-01T00:00:00Z | 0 | 0 | 1 | admin | 1 |
@@ -451,6 +463,7 @@ Get remote data from a remote incident. Note that this method will not update th
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***

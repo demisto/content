@@ -1,9 +1,9 @@
 commonfields:
-  id: XSOAR Mirroring _dev
+  id: XSOAR Mirroring
   version: -1
 fromversion: 6.0.0
-name: XSOAR Mirroring _dev
-display: XSOAR Mirroring _dev
+name: XSOAR Mirroring
+display: XSOAR Mirroring
 category: Utilities
 description: Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
 configuration:
@@ -23,8 +23,8 @@ configuration:
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
   hidden: true
   required: false
-- display: API Key ID
-  name: credentials_api_key
+- name: credentials_api_key
+  display: API Key ID
   displaypassword: API Key
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting. When the target server is XSOAR 8.X, the API Key ID is required as well (not relevant for XSOAR 6.X).
   type: 9
@@ -105,8 +105,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo: >
-   Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
-   Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.
+    Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
+    Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.
   required: false
 script:
   script: ''
