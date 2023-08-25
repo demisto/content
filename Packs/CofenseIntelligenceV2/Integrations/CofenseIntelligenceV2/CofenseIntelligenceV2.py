@@ -87,7 +87,7 @@ class Client(BaseClient):
             params['watchListEmail'] = email
 
         elif file:
-            params['allMD5'] = file
+            params['allHash'] = file
 
         elif url:
             params['urlSearch'] = url
@@ -355,33 +355,36 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
-    md_data = []
+    file_data = []
     dbot_score = 0
-    indicator_found = False
 
-    file_indicator = Common.File(md5=file, dbot_score=dbot_score_obj)
+    file_indicator = Common.File(dbot_score=dbot_score_obj)
     for threat in threats:
         severity_level = 0
         indicator_found = False
         for es in threat.get('executableSet', {}):
-            if es.get('md5Hex') == file:
-                indicator_found = True
-                threat_score = severity_score.get(es.get('severityLevel'), 0)
-                adjusted_score = 3 if threshold_score <= threat_score else threat_score
-                severity_level = max(severity_level, adjusted_score)
+            for es_key, es_value in es.items():
+                if 'Hex' in es_key and isinstance(es_value, str) and es_value.lower() == file.lower():
+                    indicator_found = True
+                    threat_score = severity_score.get(es.get('severityLevel'), 0)
+                    adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                    severity_level = max(severity_level, adjusted_score)
 
-                file_indicator.sha512 = es.get('sha512Hex')
-                file_indicator.sha1 = es.get('sha1Hex')
-                file_indicator.sha256 = es.get('sha256Hex')
-                file_indicator.name = es.get('fileName')
-                file_indicator.malware_family = es.get('malwareFamily', {}).get('familyName')
-                file_indicator.extension = es.get('fileNameExtension')
+                    file_indicator.file_type = es.get('type')
+                    file_indicator.ssdeep = es.get('ssdeep')
+                    file_indicator.md5 = es.get('md5Hex')
+                    file_indicator.sha512 = es.get('sha512Hex')
+                    file_indicator.sha1 = es.get('sha1Hex')
+                    file_indicator.sha256 = es.get('sha256Hex')
+                    file_indicator.name = es.get('fileName')
+                    file_indicator.malware_family = es.get('malwareFamily', {}).get('familyName')
+                    file_indicator.extension = es.get('fileNameExtension')
         if indicator_found:
             dbot_score = max(dbot_score, severity_level)
             threat_md_row = create_threat_md_row(threat, severity_level)
-            md_data.append(threat_md_row)
+            file_data.append(threat_md_row)
 
-    return md_data, dbot_score, file_indicator
+    return file_data, dbot_score, file_indicator
 
 
 def check_indicator_type(indicator_value) -> str:
@@ -627,7 +630,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
     return results_list
 
 
-def check_md5_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_file_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given file hash.
 
@@ -857,7 +860,7 @@ def main() -> None:
             return_results(check_email_command(client, args, params))
 
         elif command == "file":
-            return_results(check_md5_command(client, args, params))
+            return_results(check_file_command(client, args, params))
 
         elif command == "ip":
             return_results(check_ip_command(client, args, params))
