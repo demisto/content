@@ -904,6 +904,7 @@ class MicrosoftClient(BaseClient):
             integration_context.update(self.resource_to_access_token)
 
         set_integration_context(integration_context)
+        demisto.debug('Set integration context successfully.')
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
