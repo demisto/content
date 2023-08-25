@@ -35,7 +35,7 @@ class ConditionParser:
     def __init__(self, context, conditions, flags=None):
         self.conditions: list
         self.functions: dict[str, Callable] = {
-            'from_context': lambda x: demisto.dt(context, x)
+            'from_context': partial(demisto.dt, context)
         }
         self.modify_functions_with_flags(argToList(flags))
         self.load_conditions(conditions)
