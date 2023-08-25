@@ -92,7 +92,6 @@ SEVERITY_LEVELS_MAP = {
 
 
 def alert_to_incident(alert, user_prefix):
-    alert['alertId'] = f"{alert['alertId']}"
     alert_severity = float(1)
     context = f"{user_prefix}context"
     alert_id = f"{user_prefix}alertId"
