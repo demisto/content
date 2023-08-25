@@ -34,7 +34,7 @@ def parse_alerts(alerts: list) -> list:
 
 def json_to_md(incident_fields: dict) -> str:
     return tableToMarkdown(
-        name="RSA Alerts",
+        name="",
         t=parse_alerts(incident_fields.get("RSA Alerts", [])),
         headers=["ID", "Title", "Type", "Risk Score", "Created", "Events", "Detail"],
         removeNull=True,

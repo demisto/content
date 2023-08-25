@@ -1,0 +1,17 @@
+commonfields:
+  id: RSA_GetRawLog
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: RSA_GetRawLog
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
