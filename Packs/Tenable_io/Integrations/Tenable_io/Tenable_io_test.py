@@ -417,3 +417,8 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
                                            ' 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z |' \
                                            ' some_description | solution. |\n'
         assert response.raw_response == export_vulnerabilities_response
+
+
+def test_get_scanner_info():
+    from Tenable_io import get_scanner_info
+    

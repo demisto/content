@@ -738,7 +738,7 @@ def get_scanner_info():
         outputs = scanner_data,
         raw_response = response_data
     )
-    return_results(results)
+    return results
 
 
 def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:
@@ -1178,7 +1178,7 @@ def main():  # pragma: no cover
     elif demisto.command() == 'tenable-io-export-vulnerabilities':
         return_results(export_vulnerabilities_command(demisto.args()))
     elif demisto.command() == 'tenable-io-list-scanners':
-        demisto.results(get_scanner_info())
+        return_results(get_scanner_info())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
