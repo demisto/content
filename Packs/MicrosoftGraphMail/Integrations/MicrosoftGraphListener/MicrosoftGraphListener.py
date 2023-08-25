@@ -145,7 +145,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
                                                   limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-        if mark_emails_as_read:
+        if mark_emails_as_read:  # pragma: no cover
             for email in emails_as_html:
                 if email.get('id'):
                     self.update_email_read_status(

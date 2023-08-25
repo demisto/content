@@ -261,7 +261,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         return next_run, incidents
 
 
-def main():
+def main():  # pragma: no cover
     try:
         """ COMMANDS MANAGER / SWITCH PANEL """
         args: dict = demisto.args()
