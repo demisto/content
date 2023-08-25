@@ -1,10 +1,10 @@
 {
-    "id": "incident_rsaalertstest",
+    "id": "incident_rsaalerts",
     "version": -1,
     "modified": "2023-07-05T13:18:01.862405314Z",
-    "name": "RSA Alerts Test",
+    "name": "RSA Alerts",
     "ownerOnly": false,
-    "cliName": "rsaalertstest",
+    "cliName": "rsaalerts",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
