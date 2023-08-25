@@ -1,6 +1,5 @@
-Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
-
-This integration was integrated and tested with version 6.0 of Cortex XSOAR.
+Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
+This integration was integrated and tested with version xx of XSOAR Mirroring
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 
@@ -12,21 +11,22 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
     | --- | --- | --- |
     | Incident type |  | False |
     | XSOAR Server URL | The URL of the Cortex XSOAR server to which you are connecting. | True |
-    | API Key | The API key to access the server. The key must be provided by the server to which you are connecting. | True |
+    | API Key | The API key to access the server. The key must be provided by the server to which you are connecting. | False |
+    | API Key ID | The API key to access the server. The key must be provided by the server to which you are connecting. When the target server is XSOAR 8.X, the API Key ID is required as well \(not relevant for XSOAR 6.X\). | False |
     | Fetch incidents |  | False |
     | Maximum number of incidents to pull per fetch |  | False |
     | Fetch only incidents that match the query | Don't add created time to the query as this field will be addressed in the "First fetch time". | False |
-    | First fetch time | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
-    | Entry Categories | Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files (attachments). | False |
+    | First fetch time | Date or relative timestamp to start fetching incidents from, in the format of &lt;number&gt; &lt;time unit&gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
+    | Entry Categories | Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments \(chats\), and files. \(attachments\). | False |
     | Incoming Entry tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | False |
-    | Outgoing Entry Tags | Choose the tags to filter the entries you wish to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent. | False |
+    | Outgoing Entry Tags | Choose the tags to filter the entries you want to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent. | False |
     | Incident Mirroring Direction |  | False |
-    | Disable fetching for incidents came from this integration | Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds \`-sourceBrand:“XSOAR Mirroring”\` to your query. | False |
+    | Disable fetching for incidents that came from this integration | Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds \`-sourceBrand:“XSOAR Mirroring”\` to your query. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Debug mode (will print debug logs to info) |  | False |
-    | Mirror Playbook ID | A parameter integration that removes the playbookId field from incoming incidents. Note: When set to true \(default\), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type \(if configured locally\). | False |
-    | Fetch incident history | Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted. Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system. | False |
+    | Mirror Playbook ID | A parameter integration that removes the playbook ID field from incoming incidents. Note: When set to true \(default\), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type \(if configured locally\). | False |
+    | Fetch incident history | Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted. Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.<br/> | False |
 
 4. To set up the mirroring, enable *Fetching incidents* in your instance configuration.
 5. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
@@ -38,6 +38,8 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in XSOAR Mirroring events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and XSOAR Mirroring events will be reflected in both directions. 
    Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+   **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and XSOAR Mirroring.
 
 6. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
@@ -249,7 +251,7 @@ There is no context output for this command.
 ### xsoar-get-incident
 
 ***
-Retrieve incident and entries from the remote Cortex XSOAR.
+Retrieve incident and entries from the remote Cortex XSOAR server.
 
 #### Base Command
 
@@ -463,7 +465,6 @@ Get remote data from a remote incident. Note that this method will not update th
 #### Context Output
 
 There is no context output for this command.
-
 ### get-mapping-fields
 
 ***
@@ -481,4 +482,20 @@ Retrieves the mapping schema from a remote incident.
 #### Context Output
 
 There is no context output for this command.
+## Incident Mirroring
 
+You can enable incident mirroring between Cortex XSOAR incidents and XSOAR Mirroring corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in XSOAR Mirroring events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in XSOAR Mirroring events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and XSOAR Mirroring events will be reflected in both directions. |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and XSOAR Mirroring.
