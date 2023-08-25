@@ -81,6 +81,15 @@ configuration:
     name: proxy
     type: 8
     required: false
+  - display: Fetch Incidents Lookback Time (in seconds). (Should be between 3600 (1 hour) to 86400 (24 hours).)
+    name: fetch_incidents_lookback_seconds
+    type: 0
+    required: false
+    defaultvalue: "3600"
+  - display: Fetch Incident Time Frame (Should be in seconds)
+    name: fetch_incidents_window
+    type: 0
+    required: false
 script:
   script: ""
   type: python
