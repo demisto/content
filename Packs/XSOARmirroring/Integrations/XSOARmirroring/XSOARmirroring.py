@@ -161,8 +161,8 @@ class Client(BaseClient):
 
 def validate_and_prepare_basic_params(params: dict):
     api_key = params.get('credentials_api_key', {}).get('password') or params.get('apikey')
-    api_key_id = demisto.params().get('credentials_api_key', {}).get('identifier')
-    base_url = demisto.params().get('url', '')
+    api_key_id = params().get('credentials_api_key', {}).get('identifier')
+    base_url = params().get('url', '')
     if not api_key:
         raise DemistoException('API Key must be provided.')
 
