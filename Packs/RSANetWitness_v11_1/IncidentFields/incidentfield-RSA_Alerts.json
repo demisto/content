@@ -1,10 +1,10 @@
 {
-    "id": "incident_rsaalerts",
+    "id": "incident_rsaalertstest",
     "version": -1,
     "modified": "2023-07-05T13:18:01.862405314Z",
-    "name": "RSA Alerts",
+    "name": "RSA Alerts Test",
     "ownerOnly": false,
-    "cliName": "rsaalerts",
+    "cliName": "rsaalertstest",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -71,6 +71,7 @@
         {},
         {}
     ],
+    "script": "RSA_GetRawLog",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.9.0"
