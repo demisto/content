@@ -1,7 +1,9 @@
-from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, XSOAR_DATE_FORMAT
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, \
+    validate_and_prepare_basic_params, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
 import dateparser
 import pytest
+from CommonServerPython import DemistoException
 
 
 def generate_dummy_client():
@@ -183,3 +185,40 @@ def test_update_remote_system(mocker):
     result = mocker.patch.object(client, 'update_incident')
     update_remote_system_command(client, args, {})
     assert result.call_args.kwargs['incident']['CustomFields']['custom_field'] == args['delta']['custom_field']
+
+
+@pytest.mark.parametrize('params, expected_url', [
+    ({'credentials_api_key': {'identifier': 'key_id', 'password': 'test_password'},
+      'url': 'https://my-example.com'}, 'https://my-example.com/xsoar'),
+    ({'credentials_api_key': {'identifier': 'key_id', 'password': 'test_password'},
+      'url': 'https://my-example.com/xsoar'}, 'https://my-example.com/xsoar'),
+    ({'credentials_api_key': {'identifier': '', 'password': 'test_password'},
+      'url': 'https://my-example.com'}, 'https://my-example.com'),
+    ({'credentials_api_key': {'identifier': ''}, 'url': 'https://my-example.com'}, 'https://my-example.com'),
+])
+def test_validate_and_prepare_basic_params(params, expected_url):
+    """
+    Given:
+        Case a: parameters with API Key ID (key_id) and a URL not containing the 'xsoar' suffix.
+        Case b: parameters with API Key ID (key_id) and a URL containing the 'xsoar' suffix.
+        Case c: parameters with no API Key ID (key_id) and a URL not containing the 'xsoar' suffix.
+        Case c: parameters with no API Key.
+
+    Whe:
+        Validating and preparing the basic params of api_key_id, api_key, base_url
+
+    Then:
+        Case a: Make sure the base url receives the 'xsoar' suffix
+        Case b: Make sure the base url keeps the 'xsoar' suffix
+        Case c: Make sure the base url does not receive the 'xsoar' suffix
+        Case d: An exception is thrown with message of: 'API Key must be provided'
+    """
+    if not params.get('credentials_api_key').get('password'):
+        with pytest.raises(DemistoException) as e:
+            validate_and_prepare_basic_params(params)
+
+            assert e.message == 'API Key must be provided.'
+    else:
+        _, _, full_base_url = validate_and_prepare_basic_params(params)
+        assert full_base_url == expected_url
+
