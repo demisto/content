@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from http import HTTPStatus
 from collections import namedtuple
 from typing import Any, Callable, Dict, Tuple, Optional, List, Union
@@ -2523,6 +2525,7 @@ def get_request_arguments_per_ticket_type(
 
     args_for_request = remove_empty_elements(
         assign_params(
+            agent_id=arg_to_number(args.get('agent_id')),
             ticket_id=entity_id_value,
             description=args.get('description'),
             priority=ticket_properties.priority,
