@@ -815,7 +815,21 @@ def write_to_table_command():
         "ReadableContentsFormat": formats["markdown"],
         "EntryContext": {"Devo.QueryLink": createContext(querylink)},
     }
-    md = tableToMarkdown("Entries to load into Devo", records)
+    headers:list = []
+    resultRecords:list = []
+    innerDict:dict = {}
+    for obj in records:
+        record = json.loads(obj)
+
+        currKey = record.keys()
+        currValue = record.values()
+
+        headers.extend(currKey)
+
+        innerDict = dict(zip(currKey, currValue))  # Create a dictionary using zip
+        resultRecords.append(innerDict)  # Append the dictionary to the list
+
+    md = tableToMarkdown("Entries to load into Devo", resultRecords, headers)
     entry["HumanReadable"] = md
 
     md_linq = tableToMarkdown(
@@ -825,6 +839,7 @@ def write_to_table_command():
     entry_linq["HumanReadable"] = md_linq
 
     return [entry, entry_linq]
+
 
 
 def write_to_lookup_table_command():
