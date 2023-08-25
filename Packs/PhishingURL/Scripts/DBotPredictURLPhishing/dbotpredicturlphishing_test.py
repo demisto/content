@@ -204,7 +204,7 @@ def test_no_html_data(mocker):
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     general_summary, _, _ = main()
-    assert MSG_SOMETHING_WRONG_IN_RASTERIZE in general_summary[0]['Final Verdict']
+    assert MSG_MISSING_INFORMATION_RASTERIZE in general_summary[0]['Final Verdict']
 
 
 def test_white_list_not_force(mocker):

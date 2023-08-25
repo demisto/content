@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasedesignbestpractice",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasedesignbestpractice",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Design Best Practice",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "template": "# Playbook And Automation Design\n## We recommend the following practices to ensure your playbooks run optimally.\n\n### Use Quiet Mode\nRun playbooks in quiet mode to reduce the incident size and execute playbooks faster. For playbooks running in jobs, indicator enrichment should be done in quiet mode.\n\n### Limit Indicator Extraction\nWhen configuring your integration, set indicator extraction to none and extract indicators only in specific tasks where required.\n\n### Break up Large Playbooks into Sub-Playbooks\nIf playbooks have more than thirty tasks, break the tasks into multiple sub playbooks. Sub playbooks can be reused, can be managed easily when upgrading, and make it easier to follow the main playbook.\n\n### Update Automations\nUpdate automations and integration commands in playbook tasks to their most current version. Automations that have updates are designated by a yellow triangle.\n\n### Remove Unused Playbook Tasks\nFor production playbooks, remove playbook tasks that are not connected to the playbook workflow.\n\n### Optimize Parallel Automation Runs\nWhen an automation runs, a worker is used. The number of configured workers determines the maximum number of automations that can run in parallel. By default, the number of workers on a Cortex XSOAR instance is 4 x the number of CPU cores. For example, for 8 CPU cores, there are 32 configured workers.\n\n### Check worker status using the /workers/status/ endpoint. For example, https://example.demisto/workers/status\n\n## Playbook and Automation Design: [Best Practice](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Best-Practices)"
+}

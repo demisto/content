@@ -15,8 +15,8 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-CLIENT_ID = demisto.params().get('client_id')
-CLIENT_SECRET = demisto.params().get('client_secret')
+CLIENT_ID = demisto.params().get('client_id_creds', {}).get('identifier') or demisto.params().get('client_id')
+CLIENT_SECRET = demisto.params().get('client_id_creds', {}).get('password') or demisto.params().get('client_secret')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params().get('url', '').strip('/')
 

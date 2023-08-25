@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderendpoint",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderendpoint",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder Endpoint",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Endpoint\n## Top Use Cases:\n\n- Fetch Incidents \u0026 Events\n- Get event details (from specified incident)\n- Quarantine File\n- Isolate and contain endpoints\n- Update Indicators (Network, hashes, etc.) by policy (can be block, monitor) – Block list\n- Add indicators to allow list\n- Search for indicators in the system (Seen indicators and related incidents/events)\n- Download file (based on hash, path)\n- Trigger scans on specified hosts\n- Update .DAT files for signatures and compare existing .DAT file to the newest one on the server\n- Get information for a specified host (OS, users, addresses, hostname)\n- Get policy information and assign policies to endpoints\n\n## Endpoint Integration Examples: [Cortex XDR](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir), [Tanium](https://xsoar.pan.dev/docs/reference/integrations/tanium-v2) and [Carbon Black Protection](https://xsoar.pan.dev/docs/reference/integrations/carbon-black-protection-v2) ",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

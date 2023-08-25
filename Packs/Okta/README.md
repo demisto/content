@@ -1,3 +1,6 @@
+# Okta
+This pack includes Cortex XSIAM content.
+
 Okta integrates with Palo Alto Network’s Cortex XSOAR to help security analysts better understand and get in front of threats as they emerge. Okta enrichment gives security teams visibility into each user’s groups and roles, what apps and data they can access, and other contextual information that can streamline the investigation process for rapid response. For example, when a suspicious log-in from a new device or location is detected, security teams can automatically restricting access to sensitive applications, prompt step-up authentication, force a password reset, or suspend a compromised account.
 
 ## **Orchestrate and automate an informed security response**
@@ -9,3 +12,5 @@ With Okta + Cortex XSOAR working together, enterprises can provide better integr
 - Prioritize alerts and orchestrate informed security responses in order of importance
 - Contain and remediate threats quickly and decisively, through a range of automated identity-centric actions
 - Enhance your visibility and response by enabling identity as a key control point
+
+* Pay attention: Timestamp parsing is supported with **T** and **Z** notation for the UTC format.

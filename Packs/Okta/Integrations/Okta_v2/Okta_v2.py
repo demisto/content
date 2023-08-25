@@ -1,6 +1,6 @@
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
@@ -298,12 +298,13 @@ class Client(BaseClient):
         response['factorResult'] = "TIMEOUT"
         return response
 
-    def search(self, term, limit):
+    def search(self, term, limit, advanced_search):
         uri = "users"
-        query_params = {
-            'q': encode_string_results(term),
-            'limit': limit
-        }
+        query_params = assign_params(
+            limit=limit,
+            q=encode_string_results(term),
+            search=encode_string_results(advanced_search)
+        )
         return self._http_request(
             method='GET',
             url_suffix=uri,
@@ -670,7 +671,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
@@ -891,7 +891,10 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
-    raw_response = client.search(term, limit)
+    advanced_search = args.get('advanced_search', '')
+    if not term and not advanced_search:
+        raise DemistoException('Please provide either the term or advanced_search argument')
+    raw_response = client.search(term, limit, advanced_search)
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
@@ -916,7 +919,14 @@ def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
+
+    try:
+        raw_response = client.get_user(user_term)
+    except Exception as e:
+        if '404' in str(e):
+            return (f'User {args.get("username")} was not found.', {}, {})
+        raise e
+
     verbose = args.get('verbose')
 
     user_context = client.get_users_context(raw_response)
@@ -1008,7 +1018,7 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
-    return(
+    return (
         readable_output,
         outputs,
         raw_response

@@ -2,11 +2,9 @@ args:
 - default: true
   defaultValue: ''
   description: Address to ping
-  isArray: false
   name: address
   predefined: []
   required: true
-  secret: false
 comment: Pings an IP or url address, to verify it's up
 commonfields: {id: Ping, version: -1}
 enabled: true
@@ -19,12 +17,10 @@ outputs:
 - {contextPath: Ping.min_rtt, description: Ping minimum round trip time, type: number}
 - {contextPath: Ping.destination_ip, description: Ping destination IP, type: string}
 script: ''
-system: false
 tags: [Utility]
 timeout: '0'
 type: python
 subtype: python3
-runonce: false
 dockerimage: demisto/iputils:1.0.0.4663
 tests: [Ping Test Playbook]
 fromversion: 5.0.0

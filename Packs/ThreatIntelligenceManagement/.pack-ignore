@@ -1,6 +1,2 @@
 [file:dashboard-Threat_Intelligence_Management.json]
 ignore=BA101
-
-[file:ThreatIntelligenceManagementGetIncidentsPerFeed.yml]
-ignore=RM109
-

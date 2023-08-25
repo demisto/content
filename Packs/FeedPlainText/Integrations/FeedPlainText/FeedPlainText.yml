@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - display: Server URL
   name: url
   required: true
@@ -15,14 +15,14 @@ configuration:
 - additionalinfo: It is possible to provide an API key header instead. See the description for more details.
   display: Username
   name: credentials
-  required: false
   type: 9
+  required: false
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
-  required: false
   type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
@@ -44,13 +44,13 @@ configuration:
   - ssdeep
   - Registry Key
   - Custom
-  required: false
   type: 15
+  required: false
 - additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the Indicator Type field.
   display: Custom Indicator Type
   name: custom_indicator_type
-  required: false
   type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -60,8 +60,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -83,8 +83,8 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -93,23 +93,23 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - additionalinfo: Time (in seconds) before HTTP requests timeout
   defaultvalue: '20'
   display: Request Timeout
@@ -119,68 +119,55 @@ configuration:
 - additionalinfo: Python regular expression for lines to ignore
   display: Ignore Regex
   name: ignore_regex
-  required: false
   type: 0
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Feed name
   name: feed_name
-  required: false
   type: 0
+  required: false
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Indicator extraction pattern
   name: indicator
-  required: false
   type: 12
+  required: false
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Fields extraction pattern
   name: fields
-  required: false
   type: 12
+  required: false
 - additionalinfo: CSV list of headers to send in the HTTP request in the format of "header_name:header_value".
   display: Headers
   name: headers
-  required: false
   type: 0
+  required: false
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return to the output. The default value is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
-      isArray: false
+    - description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
       name: indicator_type
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: plaintext-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.44868
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

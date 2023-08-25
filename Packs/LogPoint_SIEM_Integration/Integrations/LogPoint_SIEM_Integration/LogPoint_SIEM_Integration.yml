@@ -19,60 +19,46 @@ configuration:
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Whether to use XSOAR’s system proxy settings to connect to the API
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: If it is not provided, incidents from past 24 hours will be fetched by default.
   defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 6 hours, 1 day)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: If this is left blank, maximum 50 incidents will be fetched at a time.
   defaultvalue: '50'
   display: Fetch limit (Max value is 200, Recommended value is 50 or less)
   name: max_fetch
-  required: false
   type: 0
+  required: false
 description: Use this Content Pack to search logs, fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
 name: LogPoint SIEM Integration
 script:
   commands:
   - arguments:
-    - default: false
-      description: From Timestamp
-      isArray: false
+    - description: From Timestamp
       name: ts_from
-      required: false
-      secret: false
-    - default: false
-      description: To Timestamp
-      isArray: false
+    - description: To Timestamp
       name: ts_to
-      required: false
-      secret: false
-    - default: false
-      description: Number of incidents to fetch. Accepts integer value.
-      isArray: false
+    - description: Number of incidents to fetch. Accepts integer value.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Displays incidents between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 incidents of the past 24 hours but limit can be set to get desired number of incidents.
-    execution: false
     name: lp-get-incidents
     outputs:
     - contextPath: LogPoint.Incidents.name
@@ -154,27 +140,16 @@ script:
       description: LogPoint Incidents Description
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
-      isArray: false
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
       name: incident_obj_id
       required: true
-      secret: false
-    - default: false
-      description: Incident Id of a particular incident. It is the value contained in 'incident_id' key of the incidents obtained from 'lp-get-incidents' command.
-      isArray: false
+    - description: Incident Id of a particular incident. It is the value contained in 'incident_id' key of the incidents obtained from 'lp-get-incidents' command.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp' key of the incidents obtained from 'lp-get-incidents' command.
-      isArray: false
+    - description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp' key of the incidents obtained from 'lp-get-incidents' command.
       name: date
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a Particular Incident's Data
-    execution: false
     name: lp-get-incident-data
     outputs:
     - contextPath: LogPoint.Incidents.data.use
@@ -568,27 +543,13 @@ script:
       description: Zone User
       type: String
   - arguments:
-    - default: false
-      description: From Timestamp
-      isArray: false
+    - description: From Timestamp
       name: ts_from
-      required: false
-      secret: false
-    - default: false
-      description: To Timestamp
-      isArray: false
+    - description: To Timestamp
       name: ts_to
-      required: false
-      secret: false
-    - default: false
-      description: Number of incident states data to fetch. Accepts integer value.
-      isArray: false
+    - description: Number of incident states data to fetch. Accepts integer value.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Displays incident states data between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 data of the past 24 hours but limit can be set to get desired number of incident states data.
-    execution: false
     name: lp-get-incident-states
     outputs:
     - contextPath: LogPoint.Incidents.states.id
@@ -604,95 +565,66 @@ script:
       description: LogPoint Incidents States Comments
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
-      isArray: false
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
       name: incident_obj_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to be added to the incidents.
-      isArray: false
+    - description: Comment to be added to the incidents.
       name: comment
       required: true
-      secret: false
-    deprecated: false
     description: Add comments to the incidents
-    execution: false
     name: lp-add-incident-comment
     outputs:
     - contextPath: LogPoint.Incidents.comment
       description: LogPoint Incidents Comment
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
-      secret: false
-    - default: false
-      description: Id of the user whom the incidents are assigned.  It can be displayed using 'lp-get-users' command.
-      isArray: false
+    - description: Id of the user whom the incidents are assigned.  It can be displayed using 'lp-get-users' command.
       name: new_assignee
       required: true
-      secret: false
-    deprecated: false
     description: Assigning/Re-assigning Incidents
-    execution: false
     name: lp-assign-incidents
     outputs:
     - contextPath: LogPoint.Incidents.assign
       description: LogPoint Incidents Assign
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
-      secret: false
-    deprecated: false
     description: Resolves the Incidents.
-    execution: false
     name: lp-resolve-incidents
     outputs:
     - contextPath: LogPoint.Incidents.resolve
       description: LogPoint Incidents Resolve
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
-      secret: false
-    deprecated: false
     description: Closes the Incidents.
-    execution: false
     name: lp-close-incidents
     outputs:
     - contextPath: LogPoint.Incidents.close
       description: LogPoint Incidents Close
       type: String
   - arguments:
-    - default: false
-      description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
+    - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
-      secret: false
-    deprecated: false
     description: Re-opens the closed incidents
-    execution: false
     name: lp-reopen-incidents
     outputs:
     - contextPath: LogPoint.Incidents.reopen
       description: LogPoint Incidents Reopen
       type: String
-  - deprecated: false
-    description: Gets Incident users and user groups.
-    execution: false
+  - description: Gets Incident users and user groups.
     name: lp-get-users
     outputs:
     - contextPath: LogPoint.Incidents.users.id
@@ -704,9 +636,7 @@ script:
     - contextPath: LogPoint.Incidents.users.usergroups
       description: LogPoint Incidents Users Usergroups
       type: String
-  - deprecated: false
-    description: Gets LogPoint user's preference such as timezone, date format, etc.
-    execution: false
+  - description: Gets LogPoint user's preference such as timezone, date format, etc.
     name: lp-get-users-preference
     outputs:
     - contextPath: LogPoint.User.Preference.timezone
@@ -718,9 +648,7 @@ script:
     - contextPath: LogPoint.User.Preference.hour_format
       description: LogPoint user's hour format.
       type: String
-  - deprecated: false
-    description: Gets user's LogPoints.
-    execution: false
+  - description: Gets user's LogPoints.
     name: lp-get-logpoints
     outputs:
     - contextPath: LogPoint.LogPoints.name
@@ -729,9 +657,7 @@ script:
     - contextPath: LogPoint.LogPoints.ip
       description: LogPoint's IP address.
       type: String
-  - deprecated: false
-    description: Gets the list of LogPoint repos that can be accessed by the user.
-    execution: false
+  - description: Gets the list of LogPoint repos that can be accessed by the user.
     name: lp-get-repos
     outputs:
     - contextPath: LogPoint.Repos.repo
@@ -740,9 +666,7 @@ script:
     - contextPath: LogPoint.Repos.address
       description: LogPoint repo address.
       type: String
-  - deprecated: false
-    description: Gets devices associated with LogPoint.
-    execution: false
+  - description: Gets devices associated with LogPoint.
     name: lp-get-devices
     outputs:
     - contextPath: LogPoint.Devices.name
@@ -751,9 +675,7 @@ script:
     - contextPath: LogPoint.Devices.address
       description: Device IP address.
       type: String
-  - deprecated: false
-    description: Gets live search results of the alerts and dashboards.
-    execution: false
+  - description: Gets live search results of the alerts and dashboards.
     name: lp-get-livesearches
     outputs:
     - contextPath: LogPoint.LiveSearches.generated_by
@@ -769,60 +691,36 @@ script:
       description: The live search query.
       type: String
   - arguments:
-    - default: false
-      description: LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI.
-      isArray: false
+    - description: LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: Last 5 minutes
+    - defaultValue: Last 5 minutes
       description: 'Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use "Last 5 minutes" as the time range by default.'
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Number of logs to fetch. If not provided, the first 100 logs will be displayed.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos.
+    - description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos.
       isArray: true
       name: repos
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the search ID based on the provided search parameters.
-    execution: false
     name: lp-get-searchid
     outputs:
     - contextPath: LogPoint.search_id
       description: Search ID. Use this ID in the lp-search-logs command to get the search result.
       type: String
   - arguments:
-    - default: false
-      description: Search ID obtained from the lp-get-searchid command.
-      isArray: false
+    - description: Search ID obtained from the lp-get-searchid command.
       name: search_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets LogPoint search results. Uses the value of search_id as an argument.
-    execution: false
     name: lp-search-logs
     outputs:
     - contextPath: LogPoint.SearchLogs
       description: Search results.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
@@ -831,6 +729,6 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
 - LogPoint SIEM Integration - Test Playbook 3
-defaultmapperin: LogPoint-mapper
+defaultmapperin: LogPoint SIEM Integration - Incoming Mapper
 defaultclassifier:
 fromversion: 6.0.0

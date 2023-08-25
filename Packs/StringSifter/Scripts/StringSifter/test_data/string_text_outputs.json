@@ -1,0 +1,25 @@
+{
+  "FileName": "test_file",
+  "Results": [
+    {
+      "Rating": "11.38",
+      "Word": "ysmartlogon.com"
+    },
+    {
+      "Rating": "11.24",
+      "Word": "Vie.com"
+    },
+    {
+      "Rating": "10.46",
+      "Word": "README.md"
+    },
+    {
+      "Rating": "10.13",
+      "Word": "1kiwi.co"
+    },
+    {
+      "Rating": "10.12",
+      "Word": "proton.me"
+    }
+  ]
+}

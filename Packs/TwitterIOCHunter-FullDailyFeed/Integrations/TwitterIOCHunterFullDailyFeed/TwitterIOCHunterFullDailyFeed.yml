@@ -5,12 +5,12 @@ commonfields:
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -32,32 +32,29 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -65,15 +62,14 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  required: false
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -81,10 +77,9 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
-- additionalinfo: Select type of feed to get. Full for all, Username for filter by
-    username and Hashtag for filtered by the hashtag.
+  required: false
+- additionalinfo: Select type of feed to get. Full for all, Username for filter by username and Hashtag for filtered by the hashtag.
   defaultvalue: Full
   display: Type of Feed
   name: typeoffeed
@@ -92,13 +87,13 @@ configuration:
   - Full
   - Username
   - Hashtag
-  required: false
   type: 15
+  required: false
 - additionalinfo: Input the Username or Hashtag you want to use as a filter
   display: Filter to Use
   name: filtertouse
-  required: false
   type: 0
+  required: false
 description: Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
 display: TwitterIOCHunter Feed
 name: TwitterIOCHunter - Full Daily Feed
@@ -107,10 +102,9 @@ script:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isFetchSamples: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

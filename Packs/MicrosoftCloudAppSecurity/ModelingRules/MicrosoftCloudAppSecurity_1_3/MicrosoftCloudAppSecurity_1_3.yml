@@ -1,6 +1,0 @@
-fromversion: 6.10.0
-id: microsoft_defender_cloud_apps
-name: Microsoft Defender Cloud Apps
-rules: ''
-schema: ''
-tags: microsoft

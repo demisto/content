@@ -9,30 +9,30 @@ configuration:
 - name: creds_certificate
   display: Certificate
   type: 9
-  required: false
   section: Connect
   displaypassword: Private Key
+  required: false
 - display: Certificate
   additionalinfo: Required for TLS
   name: certificate
-  required: false
   type: 12
   section: Connect
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   additionalinfo: Required for TLS
   section: Connect
   hidden: true
+  required: false
 - display: Message Regex Filter For Incidents Creation.
   additionalinfo: Creates an incident in Cortex XSOAR for every received log message that matches this regex.
   name: message_regex
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: "514"
   display: Port mapping
   name: longRunningPort
@@ -43,11 +43,11 @@ configuration:
 - defaultvalue: "true"
   display: Long Running Instance
   name: longRunning
-  required: false
   type: 8
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: A Syslog server enables automatically opening incidents from Syslog clients. This integration supports filtering logs to convert to incidents, or alternatively converting all logs.
 display: Syslog v2
 name: Syslog v2
@@ -55,13 +55,11 @@ script:
   commands:
   - name: get-mapping-fields
     description: Returns the list of fields for an incident type. This command should be used for debugging.
-  isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/syslog:1.0.0.61542
-  feed: false
   longRunning: true
   longRunningPort: true
   isFetchSamples: true

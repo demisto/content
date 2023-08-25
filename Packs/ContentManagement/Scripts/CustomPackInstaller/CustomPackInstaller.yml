@@ -1,10 +1,8 @@
 args:
 - default: true
   description: The ID of the pack to install.
-  isArray: false
   name: pack_id
   required: true
-  secret: false
 - auto: PREDEFINED
   defaultValue: "true"
   description: if true will skip pack signature validation, Available from 6.5.0 server version.
@@ -30,13 +28,12 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management
 timeout: '0'
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.40869
+dockerimage: demisto/xsoar-tools:1.0.0.69232
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

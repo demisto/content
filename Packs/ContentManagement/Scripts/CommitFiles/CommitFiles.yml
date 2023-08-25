@@ -9,11 +9,11 @@ args:
 - auto: PREDEFINED
   description: Which version control integration to use.
   name: git_integration
-  required: false
   predefined:
   - Gitlab
   - GitHub
   - Bitbucket
+  - AzureDevOps
 - description: The name of the pack.
   name: pack
   required: true
@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/xsoar-tools:1.0.0.40869
+dockerimage: demisto/xsoar-tools:1.0.0.69232
 enabled: true
 name: CommitFiles
 outputs:
@@ -39,7 +39,6 @@ outputs:
   description: The pull request text.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

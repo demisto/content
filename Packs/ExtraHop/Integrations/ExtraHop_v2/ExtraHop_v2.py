@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import json
 import traceback
 from collections import defaultdict
@@ -7,7 +10,6 @@ from requests import Response
 
 import urllib3
 
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -67,6 +69,13 @@ TICKET_STATUS_MAP = {
     "1": "in_progress",  # active
     "2": "closed",  # done
     "3": "acknowledged"  # archived
+}
+
+TICKET_SEVERITY = {
+    "0-39": 1,  # low
+    "40-69": 2,  # medium
+    "70-89": 3,  # high
+    "90-100": 4  # critical
 }
 
 VALID_ALERT_RULE_REFIRE_INTERVALS = ["300", "600", "900", "1800", "3600", "7200", "14400"]
@@ -1446,6 +1455,8 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                         'name': str(detection.get("type", "")),
                         'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
                             DATE_FORMAT),
+                        'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if
+                                          detection.get("risk_score") in range(*map(int, range_str.split("-")))), None),
                         'rawJSON': json.dumps(detection)
                     }
                     incidents.append(incident)

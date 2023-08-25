@@ -94,7 +94,6 @@ args:
   default: true
   description: URL to look up
 - name: cacheExpiration
-  required: false
   description: Time in minutes that cache should be valid for
 - name: forceCalc
   auto: PREDEFINED

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 ██████  ███████ ██████  ██████  ███████  ██████  █████  ████████ ███████ ██████
 ██   ██ ██      ██   ██ ██   ██ ██      ██      ██   ██    ██    ██      ██   ██
@@ -14,8 +16,6 @@ import math
 from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple, Optional
 from http import HTTPStatus
 from collections import namedtuple
-import demistomock as demisto
-from CommonServerPython import *  # pylint: disable=redefined-builtin, wildcard-import, unused-wildcard-import
 from CommonServerUserPython import *  # pylint: disable=wildcard-import
 
 

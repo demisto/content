@@ -2,7 +2,7 @@
     "name": "Microsoft Logs Base",
     "description": "The Microsoft Logs Base pack contains content items that will be applicable to the dataset microsoft_windows_raw.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,17 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
+    "hidden": true,
     "keywords": [],
-    "dependencies": {
-        "MicrosoftADFS": {
-            "mandatory": false,
-            "display_name": "Microsoft AD FS Collection"
-        },
-        "MicrosoftWindowsEvents": {
-            "mandatory": false,
-            "display_name": "Microsoft Windows Event Logs"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]
