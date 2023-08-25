@@ -13,7 +13,6 @@ enabled: true
 comment: This is a wrapper around the setIndicators script.
 name: TagIndicatorButton
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

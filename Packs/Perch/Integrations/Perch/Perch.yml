@@ -10,33 +10,39 @@ configuration:
   type: 0
 - display: API Token
   name: api-key
-  required: true
   type: 4
+  hidden: true
+  required: false
+- name: api-key_creds
+  type: 9
+  displaypassword: API Token
+  hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- defaultvalue: '7'
-  display: Previous days to fetch
-  name: fetch_time
   required: false
+- display: Previous days to fetch
+  name: fetch_time
   type: 0
+  defaultvalue: '7'
+  required: false
 - display: Credentials
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: an incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Soc Statuses to Fetch
   name: soc_status
@@ -46,175 +52,73 @@ configuration:
   - On hold
   - False Positive
   - Escalated
-  required: false
   type: 16
+  required: false
 description: Perch is a co-managed threat detection and response platform.
 display: Perch
 name: Perch
 script:
   commands:
   - arguments:
-    - default: false
-      description: Page of results to return.
-      isArray: false
+    - description: Page of results to return.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Number of results to return per page.
-      isArray: false
+    - description: Number of results to return per page.
       name: page_size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the alert is closed.
-      isArray: false
       name: closed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Time that the alert was closed.
-      isArray: false
+    - description: Time that the alert was closed.
       name: closed_at
-      required: false
-      secret: false
-    - default: false
-      description: Community ID that generated the alert.
-      isArray: false
+    - description: Community ID that generated the alert.
       name: community_id
-      required: false
-      secret: false
-    - default: false
-      description: Time that the alert was created.
-      isArray: false
+    - description: Time that the alert was created.
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: Destination IP address.
-      isArray: false
+    - description: Destination IP address.
       name: dest_ip
-      required: false
-      secret: false
-    - default: false
-      description: Destination port.
-      isArray: false
+    - description: Destination port.
       name: dest_port
-      required: false
-      secret: false
-    - default: false
-      description: Full URL of the alert.
-      isArray: false
+    - description: Full URL of the alert.
       name: full_url
-      required: false
-      secret: false
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the indicator.
-      isArray: false
+    - description: ID of the indicator.
       name: indicator_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the indicator is loaded.
-      isArray: false
       name: indicator_loaded
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Observable ID.
-      isArray: false
+    - description: Observable ID.
       name: observable_id
-      required: false
-      secret: false
-    - default: false
-      description: Protocol effected by the alert.
-      isArray: false
+    - description: Protocol effected by the alert.
       name: protocol
-      required: false
-      secret: false
-    - default: false
-      description: ID of the sensor that generated the alert.
-      isArray: false
+    - description: ID of the sensor that generated the alert.
       name: sensor_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the sensor that generated the alert.
-      isArray: false
+    - description: Name of the sensor that generated the alert.
       name: sensor_name
-      required: false
-      secret: false
-    - default: false
-      description: Status in the SOC.
-      isArray: false
+    - description: Status in the SOC.
       name: soc_status
-      required: false
-      secret: false
-    - default: false
-      description: Source IP address.
-      isArray: false
+    - description: Source IP address.
       name: src_ip
-      required: false
-      secret: false
-    - default: false
-      description: Source port.
-      isArray: false
+    - description: Source port.
       name: src_port
-      required: false
-      secret: false
-    - default: false
-      description: Status of the alert.
-      isArray: false
+    - description: Status of the alert.
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: Time that the status was last updated.
-      isArray: false
+    - description: Time that the status was last updated.
       name: status_updated_at
-      required: false
-      secret: false
-    - default: false
-      description: ID of the team that generated the alert.
-      isArray: false
+    - description: ID of the team that generated the alert.
       name: team_id
-      required: false
-      secret: false
-    - default: false
-      description: Title of the alert.
-      isArray: false
+    - description: Title of the alert.
       name: title
-      required: false
-      secret: false
-    - default: false
-      description: Timestamp of the alert.
-      isArray: false
+    - description: Timestamp of the alert.
       name: ts
-      required: false
-      secret: false
-    - default: false
-      description: Order of the returned alerts.
-      isArray: false
+    - description: Order of the returned alerts.
       name: ordering
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for alerts in Perch.
-    execution: false
     name: perch-search-alerts
     outputs:
     - contextPath: Perch.Alert.DestPort
@@ -260,15 +164,10 @@ script:
       description: Timestamp of the alert.
       type: Date
   - arguments:
-    - default: false
-      description: ID of the community.
-      isArray: false
+    - description: ID of the community.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Gets community information by ID.
-    execution: false
     name: perch-get-community
     outputs:
     - contextPath: Perch.Community.Allsectors
@@ -292,9 +191,7 @@ script:
     - contextPath: Perch.Community.Selectablefeeds
       description: Whether the feeds are selectable.
       type: Boolean
-  - deprecated: false
-    description: Lists all communities.
-    execution: false
+  - description: Lists all communities.
     name: perch-list-communities
     outputs:
     - contextPath: Perch.Community.Allsectors
@@ -319,27 +216,19 @@ script:
       description: Whether the feeds are selectable.
       type: Boolean
   - arguments:
-    - default: false
-      description: Communities to report the indicator to.
-      isArray: false
+    - description: Communities to report the indicator to.
       name: communities
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Confidence of the findings.
-      isArray: false
       name: confidence
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of indicator.
-      isArray: false
       name: type
       predefined:
       - IP
@@ -348,52 +237,25 @@ script:
       - REGEX
       - File Hash
       required: true
-      secret: false
-    - default: false
-      description: The value of the indicator.
-      isArray: false
+    - description: The value of the indicator.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The title of the indicator.
-      isArray: false
+    - description: The title of the indicator.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: Description of the indicator.
-      isArray: false
+    - description: Description of the indicator.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: TLP of the Indicator.
-      isArray: false
+    - description: TLP of the Indicator.
       name: tlp
       required: true
-      secret: false
-    - default: false
-      description: Operator of the indicator.
-      isArray: false
+    - description: Operator of the indicator.
       name: operator
-      required: false
-      secret: false
-    - default: false
-      description: When the indicator was first sighted.
-      isArray: false
+    - description: When the indicator was first sighted.
       name: first_sighting
-      required: false
-      secret: false
-    - default: false
-      description: Sends a email with the summary of the indicator.
-      isArray: false
+    - description: Sends a email with the summary of the indicator.
       name: email_summary
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an indicator in Perch.
-    execution: false
     name: perch-create-indicator
     outputs:
     - contextPath: Perch.Indicator.Confidence
@@ -424,10 +286,7 @@ script:
       description: ID of user that created the incident.
       type: Number
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

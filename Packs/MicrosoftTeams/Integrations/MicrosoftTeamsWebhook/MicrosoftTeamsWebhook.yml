@@ -14,16 +14,16 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook

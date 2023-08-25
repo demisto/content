@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import email.utils
 from time import mktime
 
-import demistomock as demisto  # noqa: F401
 import feedparser
-from CommonServerPython import *  # noqa: F401
 from feedparser.util import FeedParserDict
 from markdownify import markdownify
 

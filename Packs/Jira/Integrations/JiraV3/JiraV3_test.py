@@ -607,9 +607,40 @@ class TestJiraGetIDOffsetCommand:
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
         assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
 
+    def test_get_id_offset_command_with_custom_query_argument(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, with the argument `query` in order to retrieve the first issue id with respect
+            to the given query.
+        Then
+            - Validate that the correct query is being sent with the API call.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
+        get_id_offset_command(client=client, args={'query': 'project = "Dummy Project"'})
+        assert run_query_mocker.call_args[1].get('query_params', {}).get(
+            'jql') == 'project = "Dummy Project" ORDER BY created ASC'
 
-class TestJiraEditCommentCommand:
-    def test_get_id_offset_command(self, mocker):
+    def test_get_id_offset_empty_results(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, and getting no issues from the API.
+        Then
+            - Validate that the correct message is returned to the user.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'run_query', return_value={})
+        command_result = get_id_offset_command(client=client, args={})
+        assert command_result.to_context().get('HumanReadable') == 'No issues found to retrieve the ID offset'
+
+    def test_edit_comment_command(self, mocker):
         """
         Given:
             - A Jira client
@@ -634,7 +665,7 @@ class TestJiraListIssueFieldsCommand:
     @ pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
-    def test_get_id_offset_command(self, mocker, pagination_args):
+    def test_list_fields_command(self, mocker, pagination_args):
         """
         Given:
             - A Jira client
@@ -2023,3 +2054,110 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         assert json.dumps(issue_incident) == incidents[0].get('rawJSON')
+
+    def test_retrieve_smallest_issue_id_when_fetching_by_id_and_offset_is_zero(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, and the ID offset is set to 0
+        Then
+            - Validate that the correct query is being called in order to retrieve the smallest issue ID
+            with respect to the fetch query
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        smallest_issue_id = '10161'
+        run_query_mocker = mocker.patch.object(client, 'run_query', side_effect=[{'issues': [{'id': smallest_issue_id}]}, {}])
+        fetch_query = 'status!=done'
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='id',
+            fetch_query=fetch_query,
+            id_offset=0,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        assert run_query_mocker.call_args_list[0][1].get('query_params', {}).get(
+            'jql', '') == f'{fetch_query} ORDER BY created ASC'
+        assert run_query_mocker.call_args_list[1][1].get('query_params', {
+        }).get('jql', '') == f'{fetch_query} AND id >= {smallest_issue_id} ORDER BY id ASC'
+
+    def test_fetch_incidents_by_id_incorrect_id_offset_error(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, and the ID offset is set to an arbitrary number, other than 0
+        Then
+            - Validate that the error is caught, that stems from configuring an incorrect (does not exist) ID offset
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        smallest_issue_id = '10161'
+        mocker.patch.object(
+            client, 'run_query',
+            side_effect=[Exception('Issue does not exist or you do not have permission to see it'),
+                         {'issues': [{'id': smallest_issue_id}]}])
+        fetch_query = 'status!=done'
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from='id',
+                fetch_query=fetch_query,
+                id_offset=1,
+                fetch_attachments=True,
+                fetch_comments=True,
+                max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+                first_fetch_interval='3 days',
+                mirror_direction='Incoming And Outgoing',
+                comment_tag_to_jira='comment_tag_to_jira',
+                comment_tag_from_jira='comment_tag_from_jira',
+                attachment_tag_to_jira='attachment_tag_to_jira',
+                attachment_tag_from_jira='attachment_tag_from_jira'
+            )
+        assert f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}' in str(e)
+
+    def test_fetch_incidents_by_id_and_offset_is_zero_error(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, the ID offset is set to 0, we try to acquire the smallest issue ID
+            with respect to the fetch query, but there are no issues returned from the fetch query
+        Then
+            - Validate that an error is returned, stating that there are no issues with respect to the configured fetch query
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        mocker.patch.object(
+            client, 'run_query',
+            return_value={'issues': []})
+        fetch_query = 'status!=done'
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from='id',
+                fetch_query=fetch_query,
+                id_offset=0,
+                fetch_attachments=True,
+                fetch_comments=True,
+                max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+                first_fetch_interval='3 days',
+                mirror_direction='Incoming And Outgoing',
+                comment_tag_to_jira='comment_tag_to_jira',
+                comment_tag_from_jira='comment_tag_from_jira',
+                attachment_tag_to_jira='attachment_tag_to_jira',
+                attachment_tag_from_jira='attachment_tag_from_jira'
+            )
+        assert 'The fetch query configured returned no Jira issues, please update it' in str(e)

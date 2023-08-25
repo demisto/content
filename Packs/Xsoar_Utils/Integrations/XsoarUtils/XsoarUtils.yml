@@ -19,8 +19,8 @@ configuration:
   defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: |-
   This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the demisto rest api integration.
 
@@ -37,11 +37,9 @@ script:
   - arguments:
     - description: Entry value to be created
       name: data
-    - description: The investigation id on which the entry is created. Defaults to
-        playbook-id
+    - description: The investigation id on which the entry is created. Defaults to playbook-id
       name: inv_id
-    description: Creates an entry into an investigation warroom or  by default on
-      the playground.
+    description: Creates an entry into an investigation warroom or  by default on the playground.
     name: xsoar-create-entry
   dockerimage: demisto/python3:3.10.12.63474
   runonce: false

@@ -1,7 +1,7 @@
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -254,10 +254,7 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
         ip_attribute: the ip attribute
     Returns: FeedIndicatorType
     """
-    if ':' in ip_attribute['value']:
-        return FeedIndicatorType.IPv6
-    else:
-        return FeedIndicatorType.IP
+    return FeedIndicatorType.ip_to_indicator_type(ip_attribute['value'])
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
@@ -465,7 +462,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     timestamp = raw_json_value.get('timestamp', None)
     category = raw_json_value.get('category', None)
     comment = raw_json_value.get('comment', None)
-    tags = raw_json_value.get('Tag', None)
+    tags = raw_json_value.get('Tag', []) or []
 
     if first_seen:
         indicator_obj['fields']['First Seen By Source'] = first_seen

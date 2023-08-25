@@ -228,9 +228,8 @@ script:
       execution: true
   dockerimage: demisto/devo:1.0.0.71890
   isfetch: true
-  runonce: false
   subtype: python3
 tests:
-  - No test - no instance
+- No test - no instance
 fromversion: 5.0.0
 description: Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.

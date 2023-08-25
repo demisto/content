@@ -478,7 +478,6 @@ script:
     - contextPath: URL.Data
       description: 'URL '
     description: Query url in AlienVault OTX
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No tests

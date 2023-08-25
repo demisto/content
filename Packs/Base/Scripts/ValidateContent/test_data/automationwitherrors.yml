@@ -75,7 +75,6 @@ enabled: true
 scripttarget: 0
 subtype: python3
 pswd: ""
-runonce: false
 runas: DBotWeakRole
 engineinfo: {}
 mainengineinfo: {}

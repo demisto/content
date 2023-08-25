@@ -17,7 +17,14 @@ def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for cve in resCmd:
         if 'Contents' in cve:
             data = cve.get('Contents', {})
-            cvss = int(data.get('cvss', -1))
+            cvss = data.get('cvss', -1)
+
+            if not cvss:
+                cvss = -1
+
+            elif isinstance(cvss, dict):
+                score = data.get('cvss').get('Score', -1)
+                cvss = float(score) if score else -1
 
             if cvss == -1:
                 res = 0

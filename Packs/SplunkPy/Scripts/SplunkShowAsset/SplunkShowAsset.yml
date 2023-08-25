@@ -8,7 +8,6 @@ dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: SplunkShowAsset
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -16,6 +15,6 @@ tags:
 - dynamic-section
 type: python
 fromversion: 6.0.0
-comment: Automation to display asset objects from Splunk. 
+comment: Automation to display asset objects from Splunk.
 tests:
 - SplunkShowEnrichment

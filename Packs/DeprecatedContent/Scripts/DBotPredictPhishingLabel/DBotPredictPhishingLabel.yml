@@ -1,33 +1,18 @@
 args:
-- default: false
-  description: Demisto list name that stores the machine learning model
-  isArray: false
+- description: Demisto list name that stores the machine learning model
   name: modelListName
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'no'
   description: Is the input text is hashed
-  isArray: false
   name: hashData
   predefined:
   - 'yes'
   - 'no'
-  required: false
-  secret: false
-- default: false
-  description: The email subject.
-  isArray: false
+- description: The email subject.
   name: emailSubject
-  required: false
-  secret: false
-- default: false
-  description: The email body. It's better to use text body if possible, HTML is also valid (HTML tags will be removed).
-  isArray: false
+- description: The email body. It's better to use text body if possible, HTML is also valid (HTML tags will be removed).
   name: emailBody
-  required: false
-  secret: false
 comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 commonfields:
   id: DBotPredictPhishingLabel
@@ -48,7 +33,6 @@ outputs:
   description: The input text
   type: String
 script: '-'
-system: false
 tags:
 - ml
 - phishing
@@ -57,7 +41,6 @@ type: python
 subtype: python3
 deprecated: true
 dockerimage: demisto/dl:1.1
-runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

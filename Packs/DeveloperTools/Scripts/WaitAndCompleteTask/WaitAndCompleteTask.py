@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from time import sleep
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any

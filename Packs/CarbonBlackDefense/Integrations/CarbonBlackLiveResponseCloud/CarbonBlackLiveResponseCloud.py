@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from cbc_sdk.errors import ObjectNotFoundError
 
-import demistomock as demisto
-from CommonServerPython import *
 from cbc_sdk import platform, CBCloudAPI, errors
 import ntpath
 import urllib3

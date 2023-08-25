@@ -10,13 +10,13 @@ configuration:
   name: google_service_creds
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
-- displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
-  name:  credentials_google_service
   required: false
+- displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+  name: credentials_google_service
   hiddenusername: true
   type: 9
+  required: false
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
@@ -24,27 +24,27 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Fetch query
   name: fetch_query
-  required: false
   type: 0
+  required: false
 - display: Fetch time field
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
-  required: false
   defaultvalue: 'CreationTime'
   type: 0
+  required: false
 script:
   script: ''
   type: python
@@ -112,5 +112,4 @@ script:
   dockerimage: demisto/bigquery:1.0.0.61798
   subtype: python3
   isfetch: true
-  runonce: false
 fromversion: 5.0.0

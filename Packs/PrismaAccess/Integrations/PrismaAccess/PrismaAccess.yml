@@ -20,13 +20,13 @@ configuration:
 - display: API Key
   name: key
   type: 4
-  required: false
   hidden: true
+  required: false
 - name: credentials_key
   type: 9
-  required: false
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -62,13 +62,11 @@ script:
       default: true
       description: Username to logout. (Without domain name - e.g. jsmith)
     - name: domain
-      required: false
       description: Domain name of the user to logout. For some users, this field is required.
     - name: computer
       required: true
       description: Computer name to logout.
     - name: tenant_name
-      required: false
       description: The tenant name.
     outputs:
     - contextPath: PrismaAccess.LogoutUser
@@ -102,7 +100,6 @@ script:
     description: Query currently active users.
     deprecated: true
   dockerimage: demisto/netmiko:1.0.0.61830
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

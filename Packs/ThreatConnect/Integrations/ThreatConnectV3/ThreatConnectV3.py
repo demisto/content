@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import hashlib
 import hmac
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from enum import Enum
 import urllib.parse
 

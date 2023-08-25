@@ -13,7 +13,6 @@ outputs:
   description: A list of possible actions for improving the system health.
   type: Unknown
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Any, Callable, Optional
 from functools import wraps
 from copy import deepcopy
@@ -6,8 +8,6 @@ from http import HTTPStatus
 import urllib3
 import traceback
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 # Disable insecure warnings

@@ -1,21 +1,12 @@
 args:
-- default: false
-  description: 'List of dictionaries of IDs to exclude in a JSON format (e.g., [{"job": ["job1", "job2"], "pack": ["pack1"]}, {"job": ["job3"]}]'
-  isArray: false
+- description: 'List of dictionaries of IDs to exclude in a JSON format (e.g., [{"job": ["job1", "job2"], "pack": ["pack1"]}, {"job": ["job3"]}]'
   name: exclude_ids_list
-  required: false
-  secret: false
-- default: false
-  description: The entry ID of the custom content tar file.
-  isArray: false
+- description: The entry ID of the custom content tar file.
   name: file_entry_id
-  required: false
-  secret: false
 comment: Extract custom content IDs from custom content bundle file and exclude IDs as specified.
 commonfields:
   id: GetIdsFromCustomContent
   version: -1
-enabled: false
 name: GetIdsFromCustomContent
 outputs:
 - contextPath: GetIdsFromCustomContent.included_ids
@@ -25,7 +16,6 @@ outputs:
   description: Dictionary of IDs of custom content excluding the ones specified.
   type: Unknown
 script: '-'
-system: false
 timeout: '0'
 type: python
 subtype: python3

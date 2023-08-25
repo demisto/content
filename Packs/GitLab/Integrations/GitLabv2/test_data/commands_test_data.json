@@ -1193,5 +1193,55 @@
     "expected_prefix": "GitLab.PipelineSchedule",
     "expected_url_mock_suffix": "projects/1/pipeline_schedules",
     "expected_key_field": "id"
+  },
+  "trigger_pipeline1": {
+    "mock_response": {
+        "id": 1,
+        "project_id": 1234,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "master",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+    },
+    "expected_outputs": {
+        "id": 1,
+        "project_id": 1234,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "master",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+    },
+    "expected_prefix": "GitLab.Pipeline",
+    "expected_url_mock_suffix": "projects/1234/pipelines",
+    "expected_key_field": "id"
+  },
+  "trigger_pipeline2": {
+    "mock_response": {
+        "id": 1,
+        "project_id": 2222,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "test",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+    },
+    "expected_outputs": {
+        "id": 1,
+        "project_id": 2222,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "test",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+    },
+    "expected_prefix": "GitLab.Pipeline",
+    "expected_url_mock_suffix": "projects/2222/pipelines",
+    "expected_key_field": "id"
   }
 }

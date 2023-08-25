@@ -9,58 +9,49 @@ configuration:
   type: 0
 - display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   name: APIKey
-  required: false
   type: 4
   hidden: true
-- name: credentials_api_key
   required: false
+- name: credentials_api_key
   type: 9
   displaypassword: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   hiddenusername: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   defaultvalue: 'false'
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 description: Protect your cloud assets and private network
 display: Cisco Secure Cloud Analytics (Stealthwatch Cloud)
 name: Stealthwatch Cloud
 script:
   commands:
   - arguments:
-    - default: false
-      description: The id of the required alert
-      isArray: false
+    - description: The id of the required alert
       name: alertID
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Add comments information, can be long
-      isArray: false
       name: addComments
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Get info about a specific alert by its ID
-    execution: false
     name: sw-show-alert
     outputs:
     - contextPath: Stealthwatch.Alert.id
@@ -85,26 +76,17 @@ script:
       description: Hostname of the alert's source
       type: string
   - arguments:
-    - default: false
-      description: The id of the alert for update
-      isArray: false
+    - description: The id of the alert for update
       name: alertID
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set the resolved field to true and set the merit field to close an alert. merit can be 8 ("helpful") or 9 ("not helpful").
-      isArray: false
       name: resolved
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set the resolved field to true and set the merit field to close an alert. merit can be 8 ("helpful") or 9 ("not helpful").
-      isArray: false
       name: merit
       predefined:
       - '0'
@@ -116,47 +98,19 @@ script:
       - '6'
       - '8'
       - '9'
-      required: false
-      secret: false
-    - default: false
-      description: Tags (string)
-      isArray: false
+    - description: Tags (string)
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Set the new_comment field to add a comment to the alert.
-      isArray: false
+    - description: Set the new_comment field to add a comment to the alert.
       name: new_comment
-      required: false
-      secret: false
-    - default: false
-      description: Publish time (string). Example, publish_time=2018-08-01T07:54:39Z
-      isArray: false
+    - description: Publish time (string). Example, publish_time=2018-08-01T07:54:39Z
       name: publish_time
-      required: false
-      secret: false
-    - default: false
-      description: Snooze settings (string)
-      isArray: false
+    - description: Snooze settings (string)
       name: snooze_settings
-      required: false
-      secret: false
-    - default: false
-      description: 'Username (string) '
-      isArray: false
+    - description: 'Username (string) '
       name: resolved_user
-      required: false
-      secret: false
-    - default: false
-      description: Assigned to (integer)
-      isArray: false
+    - description: Assigned to (integer)
       name: assigned_to
-      required: false
-      secret: false
-    deprecated: false
     description: Update an alert
-    execution: false
     name: sw-update-alert
     outputs:
     - contextPath: Stealthwatch.Alert.id
@@ -182,55 +136,29 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'status filters alerts by status: open, closed, or all. Default is open. all allows you to see an individual alert regardless of whether it''s open or closed.'
-      isArray: false
       name: status
       predefined:
       - open
       - closed
       - all
-      required: false
-      secret: false
-    - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
-      isArray: false
+    - description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: assignee filters shows only alerts assigned to a particular user.
-      isArray: false
+    - description: assignee filters shows only alerts assigned to a particular user.
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: tags shows alerts that are assigned a particular incident tag.
-      isArray: false
+    - description: tags shows alerts that are assigned a particular incident tag.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: Amount of alerts to list. Default is 5
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Add comments information, can be long
-      isArray: false
       name: addComments
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of Stealthwatch alerts
-    execution: false
     name: sw-list-alerts
     outputs:
     - contextPath: Stealthwatch.Alert.id
@@ -255,21 +183,11 @@ script:
       description: Hostname of the alert's source
       type: string
   - arguments:
-    - default: false
-      description: Domain to add to the block list
-      isArray: false
+    - description: Domain to add to the block list
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: IP to add to the block list
-      isArray: false
+    - description: IP to add to the block list
       name: ip
-      required: false
-      secret: false
-    deprecated: false
     description: Add a domain or IP to the block list
-    execution: false
     name: sw-block-domain-or-ip
     outputs:
     - contextPath: Stealthwatch.Domain.identifier
@@ -291,39 +209,20 @@ script:
       description: IP id
       type: string
   - arguments:
-    - default: false
-      description: ID of the domain to remove from the block list. You can find the id using 'sw-list-blocked-domains'
-      isArray: false
+    - description: ID of the domain to remove from the block list. You can find the id using 'sw-list-blocked-domains'
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Remove a domain from the block list
-    execution: false
     name: sw-unblock-domain
   - arguments:
-    - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
-      isArray: false
+    - description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: Search for specific domain
-      isArray: false
+    - description: Search for specific domain
       name: domain
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: Amount of domains to list. Default is 5
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns list of the blocked domains
-    execution: false
     name: sw-list-blocked-domains
     outputs:
     - contextPath: Stealthwatch.Domain.identifier
@@ -336,34 +235,16 @@ script:
       description: Domain id
       type: number
   - arguments:
-    - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
-      isArray: false
+    - description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: Use the alert query parameter with an alert id to only show observations referenced by the alert.
-      isArray: false
+    - description: Use the alert query parameter with an alert id to only show observations referenced by the alert.
       name: alert
-      required: false
-      secret: false
-    - default: false
-      description: Get a specific observation by its id
-      isArray: false
+    - description: Get a specific observation by its id
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: Amount of observations to list. Default is 5
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get observations by alert ID, observation ID, or free search
-    execution: false
     name: sw-list-observations
     outputs:
     - contextPath: Stealthwatch.Observation.id
@@ -388,58 +269,29 @@ script:
       description: Observation source
       type: unknown
   - arguments:
-    - default: false
-      description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
-      isArray: false
+    - description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
       name: startTime
       required: true
-      secret: false
-    - default: false
-      description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
-      isArray: false
+    - description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
       name: endTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '400'
+    - defaultValue: '400'
       description: Amount of observations to list. Default is 400
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Source IP address to filter by
-      isArray: false
+    - description: Source IP address to filter by
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Connected IP to filter by
-      isArray: false
+    - description: Connected IP to filter by
       name: connectedIP
-      required: false
-      secret: false
-    - default: false
-      description: Connected device ID
-      isArray: false
+    - description: Connected device ID
       name: connectedDeviceId
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Select type of session - external/internal to receive data only about this kind of session
-      isArray: false
       name: sessionType
       predefined:
       - all
       - external
       - internal
-      required: false
-      secret: false
-    deprecated: false
     description: 'Get sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
-    execution: false
     name: sw-list-sessions
     outputs:
     - contextPath: Stealthwatch.Session.id
@@ -467,7 +319,6 @@ script:
       description: Is the connected device external
       type: boolean
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
