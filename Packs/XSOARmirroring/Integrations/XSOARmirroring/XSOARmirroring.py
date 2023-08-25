@@ -160,17 +160,28 @@ class Client(BaseClient):
 
 
 def validate_and_prepare_basic_params(params: dict):
+    """
+    Validated and then prepares the API Key, API ID, and URL.
+
+    Args:
+        params (dict): The params dictionary.
+
+    Return:
+        str: the API key ID
+        str: the API key secret
+        str: the URL to the server with `xsoar` suffix if one is needed
+    """
     api_key = params.get('credentials_api_key', {}).get('password') or params.get('apikey')
-    api_key_id = params().get('credentials_api_key', {}).get('identifier')
-    base_url = params().get('url', '')
+    api_key_id = params.get('credentials_api_key', {}).get('identifier')
+    base_url = params.get('url', '')
     if not api_key:
         raise DemistoException('API Key must be provided.')
 
     # For cloud environments an 'xsoar' suffix must be added
     if api_key_id:
-        full_base_url = base_url if base_url.endswith('/xsoar') else base_url + '/xsoar'
+        base_url = base_url if base_url.endswith('/xsoar') else base_url + '/xsoar'
 
-    return api_key_id, api_key, full_base_url
+    return api_key_id, api_key, base_url
 
 
 def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
