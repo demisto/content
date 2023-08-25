@@ -383,7 +383,6 @@ def fetch_incidents():
     to_time = time.time()
     from_time = 0.0
     alert_id = f"{user_prefix}alertId"
-    last_events: list = []
     cur_events: list = []
     final_events: list = []
     new_last_run: dict = {}
@@ -460,7 +459,7 @@ def fetch_incidents():
         # Retrieve the alert Ids that is stored in the dictionary
         last_events_ids = []
         for record in last_run.get("last_fetch_events"):
-            for key in record.keys():
+            for key in record:
                 last_events_ids.append(key)
         demisto.debug(last_events_ids)
         for event in events:
