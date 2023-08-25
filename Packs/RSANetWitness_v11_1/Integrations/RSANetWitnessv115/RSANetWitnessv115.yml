@@ -2022,6 +2022,27 @@ script:
       required: true
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: "0"
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   script: '-'

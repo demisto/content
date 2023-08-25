@@ -851,9 +851,6 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
         page_number += 1
         has_next = response_body.get('hasNext', False)
 
-    # remove duplicates that might occur from paging
-    alerts = remove_duplicates_in_items(alerts, 'id')
-
     return alerts
 
 
