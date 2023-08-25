@@ -553,7 +553,21 @@ script:
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
-  - arguments: []
+  - arguments: 
+    - description: The ID of the service desk from which the organization list will be returned. This can alternatively be a project identifier.
+      name: projectKey
+      required: false
+    - description: The starting index of the returned objects. Base index 0. See the Pagination section for more details.
+      name: start
+      required: false
+      defaultValue: "0"
+    - description: The maximum number of items to return per page. Default, 50. See the Pagination section for more details.
+      name: limit
+      required: false
+      defaultValue: "50"
+    - description: The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5 
+      name: accountId
+      required: false
     description: Lists all the organizations.
     name: jira-get-organizations
   - arguments:
