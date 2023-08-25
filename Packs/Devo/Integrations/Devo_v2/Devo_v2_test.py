@@ -188,26 +188,26 @@ MOCK_EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
-        "eventdate": 1234567890.0,
+        "eventdate": "1234567890.0",
         "context": "value1",
     },
     {
         "alertId": "456",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": 1234567891.0,
+        "eventdate": "1234567891.0",
         "context": "value2",
     },
     {
         "alertId": "789",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": 1234567892.0,
+        "eventdate": "1234567892.0",
         "context": "value3",
     },
 ]
 
 EXPECTED_LAST_RUN_DATA = {
-    "from_time": 1234567.892,
-    "last_fetch_events": [],
+    "from_time": "1234567892.0",
+    "last_fetch_events": ["123", "456", "789"],
 }
 
 
