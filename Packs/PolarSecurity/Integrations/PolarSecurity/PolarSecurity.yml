@@ -1,0 +1,247 @@
+category: Network Security
+commonfields:
+  id: Polar Security
+  version: -1
+configuration:
+- defaultvalue: https://api.polar-security.com/v0
+  display: Polar Security API URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Polar Security, an innovator in technology that helps companies discover, continuously monitor and secure cloud and software-as-a-service (SaaS) application data – and addresses the growing shadow data problem.
+display: Polar Security
+name: Polar Security
+script:
+  commands:
+  - arguments: []
+    description: Get a list of all 3rd party vendors connected to your cloud workloads
+    name: polar-list-linked-vendors
+    outputs:
+    - contextPath: PolarSecurity.Vendors.vendorId
+      description: The 3rd party vendor unique ID
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendorName
+      description: The 3rd party vendor name (Company name)
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendorUrl
+      description: The 3rd party company website URL
+      type: string
+    - contextPath: PolarSecurity.Vendors.description
+      description: Short description of the 3rd party vendor
+      type: string
+    - contextPath: PolarSecurity.Vendors.accounts.vendorAccountId
+      description: The Cloud account ID
+      type: string
+    - contextPath: PolarSecurity.Vendors.accounts.vendorAccountName
+      description: The Cloud account name (as was onboarded to Polar)
+      type: string
+    - contextPath: PolarSecurity.Vendors.accounts.cloudProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+    - contextPath: PolarSecurity.Vendors.certificates.certificateName
+      description: The vendor certification ("PCI" "HIPAA" "GDPR", etc)
+      type: string
+  - arguments: []
+    description: List observed data stores
+    name: polar-list-data-stores
+    outputs:
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreId
+      description: Unique ID within PolarSecurity
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreType
+      description: Type of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreName
+      description: Name of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountId
+      description: ID of account where store is located
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountName
+      description: Name of account where store is located
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.serviceProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudRegion
+      description: Cloud provider region designation
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.country
+      description: Country location of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.classificationStatus
+      description: One of "CLASSIFIED" "UNCLASSIFIED" "IN_PROGRESS"
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.vpcId
+      description: ID of the VPC
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.isBackedUp
+      description: Backup status
+      type: boolean
+    - contextPath: PolarSecurity.DataStores.Stores.managed
+      type: boolean
+    - contextPath: PolarSecurity.DataStores.Stores.stats
+      description: Array of statistics
+  - arguments: []
+    description: Summarize your data stores by storage type, service provider, cloud location, etc.
+    name: polar-data-stores-summary
+    outputs:
+    - contextPath: PolarSecurity.DataStores.Summary.totalSensitiveStores
+      description: Count of stores with sensitivities set
+      type: number
+    - contextPath: PolarSecurity.DataStores.Summary.totalPotentialFlows
+      description: Total ways data could be accessed
+      type: number
+    - contextPath: PolarSecurity.DataStores.Summary.totalActualFlows
+      description: Total ways data has actually been accessed
+      type: number
+    - contextPath: PolarSecurity.DataStores.Summary.totalStores
+      description: Count of all stores observed
+      type: number
+    - contextPath: PolarSecurity.DataStores.Summary.totalSensitivities
+      description: Total sensitive items observed
+      type: number
+    - contextPath: PolarSecurity.DataStores.Summary.cloudLocations
+      description: Array of objects
+    - contextPath: PolarSecurity.DataStores.Summary.serviceProviders
+      description: Array of objects
+    - contextPath: PolarSecurity.DataStores.Summary.accountsIds
+      description: Array of strings
+    - contextPath: PolarSecurity.DataStores.Summary.storeTypes
+      description: Array of objects
+  - arguments:
+    - description: Specific vendor ID retrieved from polar-list-linked-vendors command
+      name: vendor_id
+      required: true
+    description: Get a list of all data stores a specific 3rd party vendor can access. See whether they have sensitivities and with what role the access is made possible.
+    name: polar-list-vendors-data-stores
+    outputs:
+    - contextPath: PolarSecurity.Vendors.vendor.vendorId
+      description: The 3rd party vendor unique ID
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.cloudProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.cloudRegion
+      description: Cloud provider region designation
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.dataStoreId
+      description: Unique ID within PolarSecurity
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.dataStoreName
+      description: Name of data store
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.dataStoreType
+      description: Type of data store
+      type: string
+    - contextPath: PolarSecurity.Vendors.vendor.dataStores.sensitivitiesSummary
+      description: Array of objects (SensitivitySummary)
+  - arguments:
+    - description: ID of data store of interest
+      name: store_id
+      required: true
+    description: Get a specific data store by its ID. Doesn't return anything above and beyond the polar-list-data-stores command, so no need to run it again if you've already run that.
+    name: polar-get-data-store
+    outputs:
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreName
+      description: Name of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudRegion
+      description: Cloud provider region designation
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.isBackedUp
+      description: Backup status
+      type: boolean
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreType
+      description: Type of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreId
+      description: Unique ID within PolarSecurity
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.country
+      description: Country location of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreUrl
+      description: Public URL to access store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.classificationStatus
+      description: One of "CLASSIFIED" "UNCLASSIFIED" "IN_PROGRESS"
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.stats
+      description: Array of statistics
+    - contextPath: PolarSecurity.DataStores.Stores.managed
+      type: boolean
+    - contextPath: PolarSecurity.DataStores.Stores.cloudTags
+      description: Array of tags assigned to store
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountId
+      description: ID of account that owns the store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountName
+      description: Name  of account that owns the store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.serviceProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+  - arguments: []
+    description: List all data stores accessible by 3rd party vendors, along with which vendors have access.
+    name: polar-list-vendor-accessible-data-stores
+    outputs:
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.accounts.cloudProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.accounts.vendorAccountId
+      description: The Cloud account ID
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.accounts.vendorAccountName
+      description: The Cloud account name (as was onboarded to Polar)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.certificates.certificateName
+      description: The vendor certification ("PCI" "HIPAA" "GDPR", etc)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.description
+      description: Short description of the 3rd party vendor
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.vendorId
+      description: The 3rd party vendor unique ID
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.vendorName
+      description: The 3rd party vendor name (Company name)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.3rdParties.vendorUrl
+      description: The 3rd party company website URL
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudProvider
+      description: Cloud service providers identifier (aws, gcp, azure)
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.cloudRegion
+      description: Cloud provider region designation
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreId
+      description: Unique ID within PolarSecurity
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreName
+      description: Name of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.dataStoreType
+      description: Type of data store
+      type: string
+    - contextPath: PolarSecurity.DataStores.Stores.sensitivitiesSummary
+      description: Array of objects (SensitivitySummary)
+  dockerimage: demisto/python3:3.10.12.68714
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
