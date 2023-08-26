@@ -8,6 +8,18 @@
         "type": "string",
         "is_array": false
       },
+      "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceProduct": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVendor": {
+        "type": "string",
+        "is_array": false
+      },
       "cefDeviceVersion": {
         "type": "string",
         "is_array": false
@@ -24,11 +36,23 @@
         "type": "string",
         "is_array": false
       },
+      "cn1Label": {
+        "type": "string",
+        "is_array": false
+      },
       "cn2": {
         "type": "string",
         "is_array": false
       },
+      "cn2Label": {
+        "type": "string",
+        "is_array": false
+      },
       "cs1": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1Label": {
         "type": "string",
         "is_array": false
       },
@@ -44,7 +68,15 @@
         "type": "string",
         "is_array": false
       },
+      "cs3Label": {
+        "type": "string",
+        "is_array": false
+      },
       "cs4": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs4Label": {
         "type": "string",
         "is_array": false
       },
@@ -52,15 +84,15 @@
         "type": "string",
         "is_array": false
       },
-      "cs6": {
+      "cs5Label": {
         "type": "string",
+        "is_array": false
+      },
+      "cs6": {
+        "type": "datetime",
         "is_array": false
       },
       "cs6Label": {
-        "type": "string",
-        "is_array": false
-      },
-      "dvc": {
         "type": "string",
         "is_array": false
       },
@@ -69,6 +101,10 @@
         "is_array": false
       },
       "duser": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvc": {
         "type": "string",
         "is_array": false
       },
