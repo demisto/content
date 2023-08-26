@@ -17,7 +17,6 @@ configuration:
   required: true
   type: 9
   section: Connect
-  hidden: true
 - additionalinfo: 'The maximum amount of events to retrieve PER EACH EVENT TYPE type. For more information about event types see the help section.'
   defaultvalue: '50000'
   display: Max events per fetch
