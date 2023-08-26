@@ -221,4 +221,3 @@ def test_validate_and_prepare_basic_params(params, expected_url):
     else:
         _, _, full_base_url = validate_and_prepare_basic_params(params)
         assert full_base_url == expected_url
-
