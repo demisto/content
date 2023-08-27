@@ -322,7 +322,8 @@ def sort_rows(bigquery_rows):
     if bigquery_rows:
         row = bigquery_rows[0]._xxx_field_to_index
         additional_fields = 'additional_fields'
-        generated_time_field_name = 'generatedTime' if 'generatedTime' in row else 'generated_time' if 'generated_time' in row else 'GeneratedTime'
+        generated_time_field_name = 'generatedTime' if 'generatedTime' in row else\
+            'generated_time' if 'generated_time' in row else 'GeneratedTime'
         event_id_field_name = 'event_id' if 'event_id' in row else 'EventId' if 'EventId' in row else 'eventId'
         instance_id_field_name = 'instance_id' if 'instance_id' in row else 'InstanceId' if 'InstanceId' in row else 'instanceId'
         agent_id_field_name = 'agent_id' if 'agent_id' in row else 'AgentId' if 'AgentId' in row else 'agentId'
@@ -361,9 +362,9 @@ def fetch_incidents():
         row_incident_id = get_incident_id(row)
         row_date = get_row_date_string(row)
 
-        if last_date and last_incident_id and ((
+        if last_date and last_incident_id and (
             datetime.strptime(row_date, DATE_FORMAT) < datetime.strptime(last_date, DATE_FORMAT) or (
-            row_date == last_date and row_incident_id <= last_incident_id))):
+                row_date == last_date and row_incident_id <= last_incident_id)):
             continue
         demisto.debug(f"[BigQuery Debug] cur row: {row}")
         incident = row_to_incident(row)
