@@ -2602,8 +2602,6 @@ def list_channels():
             if channel['name'] == name_filter:
                 channels = [channel]
                 break
-            else:
-                continue
         if channels is None:
             return_error(f"No channel found with name: {name_filter}")
     else:
