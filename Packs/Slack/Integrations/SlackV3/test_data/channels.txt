@@ -1,0 +1,40 @@
+{
+	"context_team_id": "T047KKY8H7V",
+	"created": 1666361240,
+	"creator": "U047N6DC8VA",
+	"id": "C0475674L3Z",
+	"is_archived": false,
+	"is_channel": true,
+	"is_ext_shared": false,
+	"is_general": true,
+	"is_group": false,
+	"is_im": false,
+	"is_member": true,
+	"is_mpim": false,
+	"is_org_shared": false,
+	"is_pending_ext_shared": false,
+	"is_private": false,
+	"is_shared": false,
+	"name": "general",
+	"name_normalized": "general",
+	"num_members": 3,
+	"parent_conversation": null,
+	"pending_connected_team_ids": [],
+	"pending_shared": [],
+	"previous_names": [],
+	"purpose": {
+		"creator": "U047N6DC8VA",
+		"last_set": 1666361240,
+		"value": "This is the one channel that will always include everyone. It’s a great spot for announcements and team-wide conversations."
+	},
+	"shared_team_ids": [
+		"T047KKY8H7V"
+	],
+	"topic": {
+		"creator": "",
+		"last_set": 0,
+		"value": ""
+	},
+	"unlinked": 0,
+	"updated": 1681198909631
+}
