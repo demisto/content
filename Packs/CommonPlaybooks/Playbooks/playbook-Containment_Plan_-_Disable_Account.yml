@@ -222,7 +222,8 @@ tasks:
       Tag:
         simple: XSIAM alert - ${alert.id}
       UserVerification:
-        simple: "True"
+        complex:
+          root: inputs.UserVerification
       Username:
         complex:
           root: UsersToDisable
@@ -272,7 +273,15 @@ inputs:
   value: {}
   required: false
   description: The username to disable.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values:True/False. Default:True.
+    Specify if User Verification is required to disable users.
+  playbookInputQuery: null
 outputs:
 - contextPath: Blocklist.Final
   description: Blocked accounts

@@ -295,7 +295,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 5000
+          "y": 4870
         }
       }
     note: false
@@ -987,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 4830
+          "x": 750,
+          "y": 4700
         }
       }
     note: false
@@ -1034,7 +1034,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 4145
+          "y": 4155
         }
       }
     note: false
@@ -1059,7 +1059,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "91"
+      - "41"
       "yes":
       - "88"
     separatecontext: false
@@ -1080,7 +1080,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 4490
+          "y": 4500
         }
       }
     note: false
@@ -1090,38 +1090,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "91":
-    id: "91"
-    taskid: f002c066-c418-467d-8072-dc340093ec9d
-    type: regular
-    task:
-      id: f002c066-c418-467d-8072-dc340093ec9d
-      version: -1
-      name: Continue with the incident investigation
-      description: Manual continuation of the investigation.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "88"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 4660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "92":
     id: "92"
     taskid: f3cbc913-4c83-49ac-8a03-a11e4b25c457
@@ -1166,7 +1134,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 4320
+          "y": 4330
         }
       }
     note: false
@@ -1500,12 +1468,11 @@ view: |-
       "72_7_False Positive": 0.57,
       "89_90_#default#": 0.51,
       "89_92_yes": 0.6,
-      "90_88_yes": 0.49,
-      "90_91_#default#": 0.61
+      "90_88_yes": 0.49
     },
     "paper": {
       "dimensions": {
-        "height": 3785,
+        "height": 3655,
         "width": 1850,
         "x": -330,
         "y": 1280
@@ -1679,7 +1646,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- T1036 - Masquerading - Test
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
 contentitemexportablefields:
