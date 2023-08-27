@@ -1,10 +1,19 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
+from typing import Any, NamedTuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+class EVENT_TYPE(NamedTuple):
+    """
+    This class defines a namedtuple used to dynamically store different types of events data.
+    """
+    unique_id_key: str
+    aql_query: str
+    type: str
 
 
 ''' CONSTANTS '''
@@ -16,15 +25,9 @@ PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 EVENT_TYPES = {
-    'Alerts': {
-        'unique_id_key': 'alertId',
-        'aql_query': 'in:alerts',
-        'type': 'alerts'},
-    'Threat activities': {
-        'unique_id_key': 'activityUUID',
-        'aql_query': 'in:activity type:"Threat Detected"',
-        'type': 'threat_activities'}}
-
+    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts'),
+    'Threat activities': EVENT_TYPE('activityUUID', 'in:activity type:"Threat Detected', 'threat_activities'),
+}
 
 ''' CLIENT CLASS '''
 
@@ -220,12 +223,12 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return dedup_events, new_ids
 
 
-def fetch_by_event_type(event_type: dict, events: list, next_run: dict, client: Client,
+def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, client: Client,
                         max_fetch: int, last_run: dict, fetch_start_time_param: datetime):
     """ Fetch events by specific event type.
 
     Args:
-        event_type (dict): Dictionary containing event type unique ID key, AQL query and type name.
+        event_type (EVENT_TYPE): A namedtuple object containing the event's unique ID key, AQL query and type name.
         events (list): List of fetched events.
         next_run (dict): Last run dictionary for next fetch cycle.
         client (Client): Armis client to use for API calls.
@@ -233,30 +236,29 @@ def fetch_by_event_type(event_type: dict, events: list, next_run: dict, client: 
         last_run (dict): Last run dictionary.
         fetch_start_time_param (datetime): Fetch start time (usually current time).
     """
-    unique_id_key, aql_query, type = event_type['unique_id_key'], event_type['aql_query'], event_type['type']
-    last_fetch_ids = f'{type}_last_fetch_ids'
-    last_fetch_time = f'{type}_last_fetch_time'
+    last_fetch_ids = f'{event_type.type}_last_fetch_ids'
+    last_fetch_time = f'{event_type.type}_last_fetch_time'
 
-    demisto.debug(f'debug-log: handling event-type: {type}')
+    demisto.debug(f'debug-log: handling event-type: {event_type.type}')
     if last_run:
         event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time_param)
     else:
         event_type_fetch_start_time = None
 
     response = client.fetch_by_aql_query(
-        aql_query=aql_query,
+        aql_query=event_type.aql_query,
         max_fetch=max_fetch,
         after=event_type_fetch_start_time
     )
-    demisto.debug(f'debug-log: fetched {len(response)} {type} from API')
+    demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), unique_id_key)
+            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key)
         next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
 
         events.extend(new_events)
         demisto.debug(f'debug-log: overall {len(new_events)} alerts (after dedup)')
-        demisto.debug(f'debug-log: last {type} in list: {new_events[-1] if new_events else {}}')
+        demisto.debug(f'debug-log: last {event_type.type} in list: {new_events[-1] if new_events else {}}')
     else:
         next_run.update(last_run)
 
@@ -415,7 +417,8 @@ def main():
                 return_results(events_to_command_results(events))
 
         else:
-            return_error(f'Command {command} does not exist for this integration.')
+            raise NotImplementedError(f'Command {command} is not implemented')
+
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
