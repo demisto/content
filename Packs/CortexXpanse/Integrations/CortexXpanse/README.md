@@ -1074,19 +1074,19 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
-| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| alert_id_list | Comma-separated list of integers of the alert ID.                                                                                                                                                                                                           | Optional | 
-| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).                                                                                                                                            | Optional | 
-| tags | Comma-separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                                                                                             | Optional | 
-| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
-| business_units_list | Comma-separated list of strings of the business units.                                                                                                                                                                                                      | Optional | 
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                          | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                           | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
-| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                              | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                             | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                   | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| alert_id_list | Comma-separated list of integers of the alert ID.                                                                                                                                                                                                 | Optional | 
+| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
+| tags | Comma-separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                                                                                   | Optional | 
+| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
+| business_units_list | Comma-separated list of strings of the business units.                                                                                                                                                                                            | Optional | 
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
+| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional | 
 
 #### Context Output
 
@@ -1758,15 +1758,15 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | ID of the incident to modify. | Required | 
-| alert_id | Used for scoping updates such as comments to the alert level. | Optional | 
+| **Argument Name** | **Description**                                                                                      | **Required** |
+| --- |------------------------------------------------------------------------------------------------------| --- |
+| incident_id | ID of the incident to modify.                                                                        | Required | 
+| alert_id | Used for scoping updates such as comments to the alert level.                                        | Optional | 
 | assigned_user_mail | Email address of the user to assign incident to. This user must exist within your Expander instance. | Optional | 
-| manual_severity | Administrator-defined severity for the incident. | Optional | 
-| status | Incident status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
-| resolve_comment | Optional resolution comment when resolving the incident. | Optional | 
-| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment. | Optional | 
+| manual_severity | Administrator-defined severity for the incident.                                                     | Optional | 
+| status | Incident status. Possible values are: new, under_investigation, resolved.                            | Optional | 
+| resolve_comment | Optional resolution comment when resolving the incident.                                             | Optional | 
+| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.     | Optional | 
 
 #### Context Output
 
@@ -1804,7 +1804,7 @@ Updates the state of one or more alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
-| status | Updated alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| status | Updated alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
 
 #### Context Output
