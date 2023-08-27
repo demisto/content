@@ -7,10 +7,9 @@ Agentless and passive security platform that sees, identifies, and classifies ev
 - Allocate a unique name for the instance.
 - In *Server URL*, insert the instance URL of your Armis platform (e.g. https://example-instance.armis.com).
 - In *API Key*, insert the generated API Key.
-- Select *Trust any certificate*.
+- Choose whether to *Trust any certificate*.
 ### Collect Section
 - Check *Fetches events* (for automatic ingestion of events from Armis into XSIAM).
-- In *Number of events to fetch per type* insert the maximum number of events to fetch per type (per fetch), the default is 1,000.
 - Select which event types to fetch from the *Event types to fetch* drop down menu.
 - *Events Fetch Interval* default value is 1 minute, this parameter can be found under "Advanced Settings".
 

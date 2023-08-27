@@ -53,7 +53,7 @@ script:
     - description: The date from which to fetch events. the format should be YYYY-MM-DD, if not specified, the current date will be used.
       name: from_date
       required: false
-    description: Manual command to fetch and display events.
+    description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: armis-get-events
   runonce: false
   isfetchevents: true
