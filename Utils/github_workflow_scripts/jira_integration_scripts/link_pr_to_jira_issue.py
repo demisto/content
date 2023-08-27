@@ -106,9 +106,9 @@ def trigger_generic_webhook(options):
     res = requests.post(instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
-        print(
+        print(  # noqa: T201
             f"Trigger playbook for Linking GitHub PR to Jira Issue failed. Post request to Content"
-            f" Gold has status code of {res.status_code}")  # noqa: T201
+            f" Gold has status code of {res.status_code}")
         sys.exit(1)
 
     res_json = res.json()
