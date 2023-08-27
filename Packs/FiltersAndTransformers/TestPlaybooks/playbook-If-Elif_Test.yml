@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 50
         }
       }
@@ -83,7 +83,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -111,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 910,
           "y": 1245
         }
       }
@@ -166,7 +166,7 @@ tasks:
                           "return": #{IfElif.success}
                         },
                         {
-                          "else": "error"
+                          "default": "error"
                         }
                       ]
               flags:
@@ -177,7 +177,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
@@ -228,7 +228,7 @@ tasks:
                           "return": #{IfElif.success}
                         },
                         {
-                          "else": "error2"
+                          "default": "error2"
                         }
                       ]
               flags:
@@ -239,7 +239,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
         }
       }
@@ -290,7 +290,7 @@ tasks:
                           "return": #{success}
                         },
                         {
-                          "else": "error"
+                          "default": "error"
                         }
                       ]
               flags: {}
@@ -299,7 +299,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
@@ -381,6 +381,8 @@ tasks:
       '#none#':
       - "1"
       - "8"
+      - "10"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -389,7 +391,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 195
         }
       }
@@ -426,7 +428,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
@@ -474,7 +476,7 @@ tasks:
                         "return": "injected!"
                       },
                       {
-                        "else": "success"
+                        "default": "success"
                       }
                     ]
               flags: {}
@@ -483,8 +485,272 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d86469e7-a1ad-4869-820d-ade1f2b9c22d
+    type: regular
+    task:
+      id: d86469e7-a1ad-4869-820d-ade1f2b9c22d
+      version: -1
+      name: Set list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: list
+      value:
+        simple: '[1,2,3,4,5]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1d055eb9-b80b-48aa-80ee-4c65744a15f1
+    type: regular
+    task:
+      id: 1d055eb9-b80b-48aa-80ee-4c65744a15f1
+      version: -1
+      name: Get list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: list2
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "true",
+                        "return": #{list}
+                      },
+                      {
+                        "default": "error"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ea59f95b-5401-4478-8e7f-b93d10222567
+    type: condition
+    task:
+      id: ea59f95b-5401-4478-8e7f-b93d10222567
+      version: -1
+      name: Verify list grab
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: list2
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a1de73c8-43c3-497b-80ef-e9fbc9ffd862
+    type: regular
+    task:
+      id: a1de73c8-43c3-497b-80ef-e9fbc9ffd862
+      version: -1
+      name: Set dict
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: dict
+      value:
+        simple: '{"key":"value"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 71aa0bf6-0bf5-4ebf-83ba-2acaae454315
+    type: regular
+    task:
+      id: 71aa0bf6-0bf5-4ebf-83ba-2acaae454315
+      version: -1
+      name: Get dict
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: dict2
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "true",
+                        "return": #{dict}
+                      },
+                      {
+                        "default": "error"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4ebb1288-ef17-4ac8-83b5-a73cbe4543e5
+    type: condition
+    task:
+      id: 4ebb1288-ef17-4ac8-83b5-a73cbe4543e5
+      version: -1
+      name: Verify dict grab
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: dict2.key
+            iscontext: true
+          right:
+            value:
+              simple: value
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1070
         }
       }
     note: false
@@ -500,7 +766,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 810,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

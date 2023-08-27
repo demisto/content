@@ -34,11 +34,17 @@ class ConditionParser:
 
     def __init__(self, context, conditions, flags=None):
         self.conditions: list
+        self.load_conditions(conditions)
+        self.default = (
+            self.conditions.pop()['default']
+            if 'default' in self.conditions[-1]
+            else ''
+        )
+        self.validate_conditions()
         self.functions: dict[str, Callable] = {
             'from_context': partial(demisto.dt, context)
         }
         self.modify_functions_with_flags(argToList(flags))
-        self.load_conditions(conditions)
 
     def modify_functions_with_flags(self, flags: list):
         self.regex_flags = (
@@ -67,7 +73,18 @@ class ConditionParser:
         try:
             self.conditions = self.evaluate(conditions)
         except SyntaxError as e:
-            raise SyntaxError(f'Cannot load JSON. Invalid syntax at line: {e.args[1][1]}; position: {e.args[1][2]}')
+            raise SyntaxError(
+                f'Cannot load JSON. Invalid syntax at line: {e.args[1][1]}; position: {e.args[1][2]}'
+            ) from e
+
+    def validate_conditions(self):
+        for i, d in enumerate(self.conditions, 1):
+            if 'condition' not in d:
+                raise ValueError(f'Condition {i} has no key "condition".')
+            elif 'return' not in d:
+                raise ValueError(f'Condition {i} has no key "return".')
+            elif not isinstance(d, dict):
+                raise ValueError(f'Condition {i} is not a dictionary.')
 
     def get_value(self, node):
         match type(node):
@@ -116,23 +133,21 @@ class ConditionParser:
             parsed = ast.parse(expression.strip(), mode='eval')
             return self.get_value(parsed.body)
         except KeyError as e:
-            raise NameError(f'Unknown variable/operator: {e.args[0]!r}')
+            raise NameError(f'Unknown variable/operator: {e.args[0]!r}') from e
 
     def parse_conditions(self):
+
         try:
-            result = (
-                self.conditions.pop()['default']
-                if 'default' in self.conditions[-1]
-                else ''
+            return next(
+                (
+                    condition['return']
+                    for condition in self.conditions
+                    if self.evaluate(condition['condition'])
+                ),
+                self.default
             )
-            for i, condition in enumerate(self.conditions):
-                if self.evaluate(condition['condition']):
-                    result = condition['return']
-        except KeyError as e:
-            raise DemistoException(f'Key {e.args[0]!r} missing in condition {i}')
-        except SyntaxError:
-            raise SyntaxError(f'Invalid expression: {condition["condition"]!r}')
-        return result
+        except SyntaxError as e:
+            raise SyntaxError(f'Invalid expression: {e.args[1][3]!r}') from e
 
 
 def main():

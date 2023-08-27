@@ -74,7 +74,7 @@ def test_parse_conditions(expression, expected_result):
                 'return': True
             },
             {
-                'else': False
+                'default': False
             }
         ]),
     )
