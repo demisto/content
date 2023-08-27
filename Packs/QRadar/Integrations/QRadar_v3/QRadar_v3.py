@@ -3570,7 +3570,7 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: str,
+                                 current_last_update: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3702,15 +3702,27 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
-    filter_ = f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time > {last_update}) OR (status=closed AND close_time > {last_update}))'  # noqa: E501
-    print_debug_msg(f'Filter to get modified offenses is: {filter_}')
+    assert isinstance(last_update, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update}'
+    print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
+    print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
-    offenses = client.offenses_list(range_=range_,
-                                    filter_=filter_,
-                                    sort='+last_persisted_time',
-                                    fields='id,start_time,event_count,last_persisted_time')
-    new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
-    current_last_update = last_update if not offenses else int(offenses[-1].get('last_persisted_time'))
+    offenses_modified = client.offenses_list(range_=range_,
+                                             filter_=filter_modified,
+                                             sort='+last_persisted_time',
+                                             fields='id,start_time,event_count,last_persisted_time,close_time')
+    offenses_closed = client.offenses_list(range_=range_,
+                                           filter_=filter_closed,
+                                           sort='+close_time',
+                                           fields='id,start_time,event_count,last_persisted_time,close_time')
+    last_update_modified, last_update_closed = last_update, last_update
+    if offenses_modified:
+        last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
+    if offenses_closed:
+        last_update_closed = int(offenses_closed[-1].get('close_time'))
+    new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
+    current_last_update = max(last_update_modified, last_update_closed)
     print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
