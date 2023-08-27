@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
               'WHERE state = "TX" '
               'LIMIT 10')
-
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
 ''' HELPER FUNCTIONS '''
 
@@ -361,7 +361,9 @@ def fetch_incidents():
         row_incident_id = get_incident_id(row)
         row_date = get_row_date_string(row)
 
-        if last_date and last_incident_id and (row_date < last_date or row_incident_id <= last_incident_id):
+        if last_date and last_incident_id and ((
+            datetime.strptime(row_date, DATE_FORMAT) < datetime.strptime(last_date, DATE_FORMAT) or (
+            row_date == last_date and row_incident_id <= last_incident_id))):
             continue
         demisto.debug(f"[BigQuery Debug] cur row: {row}")
         incident = row_to_incident(row)
