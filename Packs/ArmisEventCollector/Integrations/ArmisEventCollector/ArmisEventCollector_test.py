@@ -8,7 +8,7 @@ def dummy_client(mocker):
     A dummy client fixture for testing.
     """
     mocker.patch.object(Client, 'is_valid_access_token', return_value=True)
-    return Client(base_url='test_bae_url', api_key='test_api_key', access_token='test_access_token', verify=False, proxy=False)
+    return Client(base_url='test_base_url', api_key='test_api_key', access_token='test_access_token', verify=False, proxy=False)
 
 
 class TestHelperFunction:
