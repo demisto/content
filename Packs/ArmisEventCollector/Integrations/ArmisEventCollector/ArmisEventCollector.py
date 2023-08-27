@@ -178,7 +178,7 @@ def are_two_event_time_equal(x: datetime, y: datetime):
 
 def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str):
     """ Dedup events response.
-    Armis API V.1.0 supports time filtering in requests only up to level of seconds (and not milliseconds).
+    Armis API V.1.8 supports time filtering in requests only up to level of seconds (and not milliseconds).
     Therefore, if there are more events with the same timestamp than in the current fetch cycle,
     additional handling is necessary.
 
@@ -398,7 +398,13 @@ def main():
             return_results(test_module(client))
 
         elif command in ('fetch-events', 'armis-get-events'):
-            push_events = (command == 'fetch-events' or should_push_events)
+            if command == 'armis-get-events':
+                last_run = {}
+                should_return_results = True
+            else:
+                should_return_results = False
+
+            should_push_events = (command == 'fetch-events' or should_push_events)
 
             events, next_run = fetch_events(
                 client=client,
@@ -410,10 +416,10 @@ def main():
 
             demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
 
-            if push_events:
+            if should_push_events:
                 handle_fetched_events(events, next_run)
 
-            if command == 'armis-get-events':
+            if should_return_results:
                 return_results(events_to_command_results(events))
 
         else:
