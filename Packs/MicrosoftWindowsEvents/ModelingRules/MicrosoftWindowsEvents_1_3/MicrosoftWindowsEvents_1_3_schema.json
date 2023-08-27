@@ -8,10 +8,6 @@
       "type": "string",
       "is_array": false
     },
-    "log_level": {
-      "type": "string",
-      "is_array": false
-    },      
     "user_data": {
       "type": "string",
       "is_array": false
