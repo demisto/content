@@ -54,6 +54,7 @@ variables:
   OVERRIDE_SDK_REF: ""
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
+  FF_USE_FASTZIP: "true"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
