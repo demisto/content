@@ -1,14 +1,14 @@
-from http import HTTPStatus
-from enum import Enum
-from typing import Any, Callable
-from functools import partial
-from dataclasses import dataclass
-from requests import Response
-from CommonServerPython import *
-import demistomock as demisto
 import copy
 import re
+from dataclasses import dataclass
+from enum import Enum
+from functools import partial
+from http import HTTPStatus
+from typing import Any, Callable
 
+import demistomock as demisto
+from CommonServerPython import *
+from requests import Response
 
 INTEGRATION_OUTPUT_PREFIX = "Rapid7AppSec"
 INTEGRATION_COMMAND_PREFIX = "app-sec"
@@ -1038,7 +1038,7 @@ def handle_list_request(request_command: Callable,
                                   obj_id=obj_id)
     elif pagination:
         request_command = partial(request_command,
-                                  index=pagination.page,
+                                  index=pagination.page and pagination.page - 1,
                                   size=pagination.page_size or pagination.limit)
 
     return request_command()
