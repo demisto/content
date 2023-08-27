@@ -177,9 +177,9 @@ def main():
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
     demisto_params['url'] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
-    demisto_params['params'] = ReqParams.model_validate(demisto_params)
+    demisto_params['params'] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 
-    request = Request.model_validate(demisto_params)
+    request = Request.model_validate(demisto_params)  # type: ignore[attr-defined]
     client = Client(request)
     get_events = GetEvents(client)
     command = demisto.command()
