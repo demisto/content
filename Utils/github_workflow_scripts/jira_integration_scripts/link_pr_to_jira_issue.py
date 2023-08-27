@@ -9,8 +9,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_HOST_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
 JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
-JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
-JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_FIXED_ISSUE_REGEX = f"[fF]ixe[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_RELATED_ISSUE_REGEX = f"[rR]elate[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
 
 
@@ -70,13 +70,13 @@ def trigger_generic_webhook(options):
 
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
-    # Handle cases where the PR did not intend to add links:
-    if ("fixes:" not in pr_body.lower()
-            and "relates:" not in pr_body.lower()
-            and "fixed:" not in pr_body.lower()
-            and "related:" not in pr_body.lower()):
-        print("Did not detect Jira linking pattern.")
-        return
+    # # Handle cases where the PR did not intend to add links:
+    # if ("fixes:" not in pr_body.lower()
+    #         and "relates:" not in pr_body.lower()
+    #         and "fixed:" not in pr_body.lower()
+    #         and "related:" not in pr_body.lower()):
+    #     print("Did not detect Jira linking pattern.")
+    #     return
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
