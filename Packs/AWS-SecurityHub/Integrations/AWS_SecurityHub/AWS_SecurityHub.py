@@ -966,6 +966,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
+    return None
 
 
 def main():  # pragma: no cover
