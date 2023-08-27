@@ -16,7 +16,7 @@ repos:
     files: .+_test.py$
 
 - repo: https://github.com/python-poetry/poetry
-  rev: "1.5.1"
+  rev: "1.6.1"
   hooks:
   - id: poetry-check
   - id: poetry-lock
@@ -111,7 +111,7 @@ repos:
     - chardet==5.2.0 ; python_version >= "3.8" and python_version < "3.11"
     - charset-normalizer==3.2.0 ; python_version >= "3.8" and python_version < "3.11"
     - click==8.1.6 ; python_version >= "3.8" and python_version < "3.11"
-    - colorama==0.4.6 ; python_version >= "3.8" and python_version < "3.11" and (platform_system == "Windows" or sys_platform == "win32")
+    - colorama==0.4.6 ; python_version >= "3.8" and python_version < "3.11"
     - coloredlogs==15.0.1 ; python_version >= "3.8" and python_version < "3.11"
     - commonmark==0.9.1 ; python_version >= "3.8" and python_version < "3.11"
     - configargparse==1.7 ; python_version >= "3.8" and python_version < "3.11"
