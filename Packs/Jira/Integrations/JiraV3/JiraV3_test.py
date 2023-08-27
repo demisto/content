@@ -25,19 +25,19 @@ def jira_base_client_mock() -> JiraBaseClient:
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
-                          api_version='999')
+                          api_version='999', username="", api_key="")
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
     return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
                            client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
-                           server_url='dummy_server_url')
+                           server_url='dummy_server_url', username="", api_key="")
 
 
 def jira_onprem_client_mock() -> JiraOnPremClient:
     return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
                             client_secret='dummy_secret', callback_url='dummy_url',
-                            server_url='dummy_server_url')
+                            server_url='dummy_server_url', username="", api_key="")
 
 
 def test_v2_args_to_v3():

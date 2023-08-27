@@ -12,6 +12,11 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+- display: User name
+  name: basic_credentials
+  displaypassword: API key
+  required: false
+  type: 9
 - name: cloud_id
   display: Cloud ID
   type: 0
@@ -20,12 +25,12 @@ configuration:
 - name: callback_url
   display: Callback URL
   type: 0
-  required: true
+  required: false
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
-  required: true
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
   additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
