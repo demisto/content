@@ -5035,11 +5035,25 @@ def test_conversation_replies(mocker):
         Conversations has replies.
     """
     import SlackV3
-    mocker.patch.object(SlackV3, 'conversation_replies', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call')
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_id': 1, 'limit': 1})
+    slack_response_mock = {
+        'ok': True,
+        'messages': [{'subtype': '', 'error': 'example',
+                      'text': 'this is an example',
+                      'type': 'word',
+                      'userId': 'dummy ',
+                      'user': 'dummy',
+                      'name': 'dummy',
+                      'timestamp': UNEXPIRED_TIMESTAMP}]
+    }
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
     set_integration_context({
         'replies': json.loads(MESSAGES)
     })
-
-    replies_context = SlackV3.conversation_replies()
-    assert replies_context['replies'][1]['reply_count'] == 1
+    response = SlackV3.conversation_replies()
+    assert response.readable_output == '### Channel details from Channel ID - 1'\
+                                       '\n|FullName|IsParent|Name|Text|ThreadTimeStamp|TimeStamp|Type|UserId|\n' \
+                                       '|---|---|---|---|---|---|---|---|\n| N/A | No | N/A | this is an example | ' \
+                                       ' |  | word | dummy |\n'

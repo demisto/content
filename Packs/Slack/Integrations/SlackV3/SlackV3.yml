@@ -434,11 +434,14 @@ script:
   - arguments:
       - description: 'Supply this argument to only return channels with this name '
         name: name_filter
-      - description: 'Default is "public_channel". You can provide a comma separated list of other channels to include in your results. Possible options are: "public_channel", "private_channel", "mpim", and "im".  Including these options may require changes to your Bot''s OAuth scopes in order to read channels like private, group message, or personal messages.'
+      - defaultValue: public_channel
+        description: 'You can provide a comma separated list of other channels to include in your results. Possible options are: "public_channel", "private_channel", "mpim", and "im".  Including these options may require changes to your Bot''s OAuth scopes in order to read channels like private, group message, or personal messages.'
         name: channel_types
-      - description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived
+      - defaultValue: 'true'
+        description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived
         name: exclude_archived
-      - description: Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      - defaultValue: 100
+        description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
         name: limit
       - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata '
         name: cursor
@@ -464,7 +467,8 @@ script:
       - description: The channel ID associated with the Slack channel
         name: channel_id
         required: true
-      - description: Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      - defaultValue: 100
+        description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
         name: limit
       - description: Conversation id.
         name: conversation_id
