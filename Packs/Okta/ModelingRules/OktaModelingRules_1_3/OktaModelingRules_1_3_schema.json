@@ -4,6 +4,18 @@
       "type": "string",
       "is_array": false
     },
+    "actor": {
+      "type": "string",
+      "is_array": false
+    },
+    "uuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "securityContext": {
+      "type": "string",
+      "is_array": false
+    },            
     "eventType": {
       "type": "string",
       "is_array": false
