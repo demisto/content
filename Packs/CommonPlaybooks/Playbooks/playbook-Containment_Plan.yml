@@ -1350,7 +1350,7 @@ outputs:
 - contextPath: Core.Isolation.endpoint_id
   description: The isolated endpoint ID.
 tests:
-- No tests (auto formatted)
+- Containment Plan - Test
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
