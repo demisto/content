@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import boto3
+
 import urllib3.util
 from datetime import timezone
 from dateparser import parse
@@ -841,7 +843,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:  # type: ignore
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -868,7 +870,7 @@ def get_remote_data_command(client, args: Dict[str, Any]) -> GetRemoteDataRespon
             }
         ]
     }
-    response = client.get_findings(Filters=filters)
+    response = client.get_findings(Filters=filters)  # type: ignore
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     incident_last_update = finding.get('UpdatedAt', '')
@@ -899,11 +901,11 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:   # type: ignore
     """
     Mirrors out local changes to the remote system.
     Args:
-        client: SecurityHubClient - AWS client
+        client: boto3.client - AWS client
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
             incident_changed, remote_incident_id, inc_status, delta.
         resolve_findings: bool - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
@@ -953,7 +955,7 @@ def update_remote_system_command(client, args: Dict[str, Any], resolve_findings:
 
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
-        response = client.batch_update_findings(**kwargs)
+        response = client.batch_update_findings(**kwargs)    # type: ignore
         demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
