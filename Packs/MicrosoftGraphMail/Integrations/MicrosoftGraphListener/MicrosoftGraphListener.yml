@@ -735,7 +735,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.72229
   isfetch: true
   script: ''
   type: python
