@@ -911,6 +911,13 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, dict],
     assert results.raw_response == expected_command_results.raw_response
 
 
+def mock_mirroring_response(filter_, **kwargs):
+    if "status=closed" in filter_:
+        return list(filter(lambda x: x['status'] == 'CLOSED', command_test_data['get_modified_remote_data']['response']))
+    else:
+        return list(filter(lambda x: x['status'] != 'CLOSED', command_test_data['get_modified_remote_data']['response']))
+
+
 def test_get_modified_remote_data_command(mocker):
     """
     Given:
@@ -927,7 +934,7 @@ def test_get_modified_remote_data_command(mocker):
                              MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                              'last_update': 1})
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
-    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
+    mocker.patch.object(client, 'offenses_list', side_effect=mock_mirroring_response)
     result = get_modified_remote_data_command(client, {}, command_test_data['get_modified_remote_data']['args'])
     assert {int(id_) for id_ in expected.modified_incident_ids} == {int(id_) for id_ in result.modified_incident_ids}
 
@@ -1134,7 +1141,7 @@ def test_get_modified_with_events(mocker):
               '456': {'status': 'WAIT'},
               '555': {'status': 'PENDING'}}
 
-    mocker.patch.object(client, 'offenses_list', return_value=[{'id': 6, 'last_persisted_time': "3444"}])
+    mocker.patch.object(client, 'offenses_list', return_value=[{'id': 6, 'last_persisted_time': "3444", 'close_time': '3444'}])
     mocker.patch.object(QRadar_v3, 'create_events_search', return_value='555')
     mocker.patch.object(client, 'search_status_get', side_effect=lambda offense_id: status[offense_id])
     modified = get_modified_remote_data_command(client,
