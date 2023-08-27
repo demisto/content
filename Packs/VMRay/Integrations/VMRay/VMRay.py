@@ -4,7 +4,6 @@ import random
 import time
 import urllib3
 
-from typing import Optional, Union
 from zipfile import ZipFile
 
 import requests
@@ -82,7 +81,7 @@ def is_json(response):
     return True
 
 
-def check_id(id_to_check: Union[int, str]) -> bool:
+def check_id(id_to_check: int | str) -> bool:
     """Checks if parameter id_to_check is a number
 
     Args:
@@ -96,7 +95,7 @@ def check_id(id_to_check: Union[int, str]) -> bool:
     raise ValueError(f"Invalid ID `{id_to_check}` provided.")
 
 
-def get_billing_type(analysis_id: int) -> Optional[str]:
+def get_billing_type(analysis_id: int) -> str | None:
     """Try to read the billing type from the analysis."""
 
     response = http_request("GET", f"analysis/{analysis_id}")
@@ -118,7 +117,7 @@ def build_errors_string(errors):
     if isinstance(errors, str):
         return str(errors)
     elif isinstance(errors, list):
-        err_str = str()
+        err_str = ''
         for error in errors:
             err_str += error.get('error_msg') + '.\n'
     else:
@@ -247,7 +246,7 @@ def dbot_score_by_hash(data):
         list: dbot scores
     """
     hashes = ['MD5', 'SHA256', 'SHA1', 'SSDeep']
-    scores = list()
+    scores = []
     for hash_type in hashes:
         if hash_type in data:
             scores.append(
@@ -273,7 +272,7 @@ def build_job_data(data):
     """
 
     def build_entry(entry_data):
-        entry = dict()
+        entry = {}
         entry['JobID'] = entry_data.get('job_id')
         entry['SampleID'] = entry_data.get('job_sample_id')
         entry['SubmissionID'] = entry_data.get('job_submission_id')
@@ -286,7 +285,7 @@ def build_job_data(data):
         entry['Status'] = entry_data.get('job_status')
         return entry
 
-    jobs_list = list()
+    jobs_list = []
     if isinstance(data, list):
         for item in data:
             jobs_list.append(build_entry(item))
@@ -296,7 +295,7 @@ def build_job_data(data):
 
 
 def build_finished_job(job_id, sample_id):
-    entry = dict()
+    entry = {}
     entry['JobID'] = job_id
     entry['SampleID'] = sample_id
     entry['Status'] = 'Finished/NotExists'
@@ -312,7 +311,7 @@ def build_analysis_data(analyses):
     Returns:
         dict: formatted entry context
     """
-    entry_context = dict()
+    entry_context = {}
     entry_context['VMRay.Analysis(val.AnalysisID === obj.AnalysisID)'] = [
         {
             'AnalysisID': analysis.get('analysis_id'),
@@ -329,7 +328,7 @@ def build_analysis_data(analyses):
         for analysis in analyses
     ]
 
-    scores = list()  # type: list
+    scores = []  # type: list
     for analysis in entry_context:
         scores.extend(dbot_score_by_hash(analysis))
     entry_context[outputPaths['dbotscore']] = scores
@@ -351,7 +350,7 @@ def build_upload_params():
     max_jobs = demisto.args().get('max_jobs')
     tags = demisto.args().get('tags')
 
-    params = dict()
+    params = {}
     if doc_pass:
         params['document_password'] = doc_pass
     if arch_pass:
@@ -410,7 +409,7 @@ def build_submission_data(raw_response, type_):
     jobs = data.get('jobs', [])
     for job in jobs:
         if isinstance(job, dict):
-            job_entry = dict()
+            job_entry = {}
             job_entry['JobID'] = job.get('job_id')
             job_entry['Created'] = job.get('job_created')
             job_entry['SampleID'] = job.get('job_sample_id')
@@ -423,7 +422,7 @@ def build_submission_data(raw_response, type_):
     samples = data.get('samples', [])
     for sample in samples:
         if isinstance(sample, dict):
-            sample_entry = dict()
+            sample_entry = {}
             sample_entry['SampleID'] = sample.get('sample_id')
             sample_entry['SampleURL'] = sample.get('sample_webif_url')
             sample_entry['Created'] = sample.get('sample_created')
@@ -437,13 +436,13 @@ def build_submission_data(raw_response, type_):
     submissions = data.get('submissions', [])
     for submission in submissions:
         if isinstance(submission, dict):
-            submission_entry = dict()
+            submission_entry = {}
             submission_entry['SubmissionID'] = submission.get('submission_id')
             submission_entry['SubmissionURL'] = submission.get('submission_webif_url')
             submission_entry['SampleID'] = submission.get('submission_sample_id')
             submissions_list.append(submission_entry)
 
-    entry_context = dict()
+    entry_context = {}
     entry_context['VMRay.Job(val.JobID === obj.JobID)'] = jobs_list
     entry_context['VMRay.Sample(val.SampleID === obj.SampleID)'] = samples_list
     entry_context[
@@ -528,7 +527,7 @@ def get_analysis(sample, params=None):
     Returns:
         dict: response
     """
-    suffix = 'analysis/sample/{}'.format(sample)
+    suffix = f'analysis/sample/{sample}'
     response = http_request('GET', suffix, params=params)
     return response
 
@@ -543,13 +542,13 @@ def get_analysis_command():
     if data:
         entry_context = build_analysis_data(data)
         human_readable = tableToMarkdown(
-            'Analysis results from VMRay for ID {}:'.format(sample_id),
+            f'Analysis results from VMRay for ID {sample_id}:',
             entry_context.get('VMRay.Analysis(val.AnalysisID === obj.AnalysisID)'),
             headers=['AnalysisID', 'SampleID', 'Verdict', 'AnalysisURL']
         )
         return_outputs(human_readable, entry_context, raw_response=raw_response)
     else:
-        return_outputs('#### No analysis found for sample id {}'.format(sample_id), None)
+        return_outputs(f'#### No analysis found for sample id {sample_id}', None)
 
 
 def get_submission(submission_id):
@@ -561,7 +560,7 @@ def get_submission(submission_id):
     Returns:
         dict: response
     """
-    suffix = 'submission/{}'.format(submission_id)
+    suffix = f'submission/{submission_id}'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -569,7 +568,7 @@ def get_submission(submission_id):
 def get_submission_command():
     submission_id = demisto.args().get('submission_id')
     check_id(submission_id)
-    demisto.info("Getting submission for {}".format(submission_id))
+    demisto.info(f"Getting submission for {submission_id}")
 
     try:
         raw_response = get_submission(submission_id)
@@ -580,7 +579,7 @@ def get_submission_command():
     data = raw_response.get('data')
     if data:
         # Build entry
-        entry = dict()
+        entry = {}
         entry['IsFinished'] = data.get('submission_finished')
         entry['HasErrors'] = data.get('submission_has_errors')
         entry['SubmissionID'] = data.get('submission_id')
@@ -620,7 +619,7 @@ def get_submission_command():
         return_outputs(human_readable, entry_context, raw_response=raw_response)
     else:
         return_outputs(
-            'No submission found in VMRay for submission id: {}'.format(submission_id),
+            f'No submission found in VMRay for submission id: {submission_id}',
             {},
         )
 
@@ -634,7 +633,7 @@ def get_sample(sample_id):
     Returns:
         dict: data from response
     """
-    suffix = 'sample/{}'.format(sample_id)
+    suffix = f'sample/{sample_id}'
     response = http_request('GET', suffix)
     return response
 
@@ -649,7 +648,7 @@ def create_sample_entry(data):
         dict: entry
 
     """
-    entry = dict()
+    entry = {}
     entry['SampleID'] = data.get('sample_id')
     entry['SampleURL'] = data.get('sample_webif_url')
     entry['FileName'] = data.get('sample_filename')
@@ -705,7 +704,7 @@ def get_sample_by_hash(hash_type, hash):
     Returns:
         list[dict]: list of matching samples
     """
-    suffix = 'sample/{}/{}'.format(hash_type, hash)
+    suffix = f'sample/{hash_type}/{hash}'
     response = http_request('GET', suffix)
     return response
 
@@ -720,7 +719,7 @@ def get_sample_by_hash_command():
     }
     hash_type = hash_type_lookup.get(len(hash))
     if hash_type is None:
-        error_string = " or ".join("{} ({})".format(len_, type_) for len_, type_ in hash_type_lookup.items())
+        error_string = " or ".join(f"{len_} ({type_})" for len_, type_ in hash_type_lookup.items())
         raise ValueError(
             f'Invalid hash provided, must be of length {error_string}. '
             f'Provided hash had a length of {len(hash)}.'
@@ -734,15 +733,15 @@ def get_sample_by_hash_command():
 
     if samples:
         # VMRay outputs
-        entry_context = dict()
-        context_key = 'VMRay.Sample(val.{} === obj.{})'.format(hash.upper(), hash.upper())
+        entry_context = {}
+        context_key = f'VMRay.Sample(val.{hash.upper()} === obj.{hash.upper()})'
         entry_context[context_key] = [
             create_sample_entry(sample)
             for sample in samples
         ]
 
         # DBotScore output
-        scores = list()  # type: list
+        scores = []  # type: list
         for sample in entry_context[context_key]:
             scores += dbot_score_by_hash(sample)
         entry_context[outputPaths['dbotscore']] = scores
@@ -761,14 +760,14 @@ def get_sample_by_hash_command():
         entry_context.update(file.to_context())
 
         human_readable = tableToMarkdown(
-            'Results for {} hash {}:'.format(hash_type, hash),
+            f'Results for {hash_type} hash {hash}:',
             entry_context[context_key],
             headers=['SampleID', 'FileName', 'Type', 'Verdict', 'SampleURL'],
         )
         return_outputs(human_readable, entry_context, raw_response=raw_response)
     else:
         return_outputs(
-            'No samples found for {} hash {}'.format(hash_type, hash),
+            f'No samples found for {hash_type} hash {hash}',
             {},
         )
 
@@ -786,9 +785,9 @@ def get_job(job_id, sample_id):
         }
     """
     suffix = (
-        'job/{}'.format(job_id)
+        f'job/{job_id}'
         if job_id
-        else 'job/sample/{}'.format(sample_id)
+        else f'job/sample/{sample_id}'
     )
     response = http_request('GET', suffix, ignore_errors=True)
     return response
@@ -815,7 +814,7 @@ def get_job_command():
         entry = build_job_data(data)
         sample = entry[0] if isinstance(entry, list) else entry
         human_readable = tableToMarkdown(
-            'Job results for {} id: {}'.format(title, vmray_id),
+            f'Job results for {title} id: {vmray_id}',
             sample,
             headers=['JobID', 'SampleID', 'VMName', 'VMID'],
         )
@@ -835,7 +834,7 @@ def get_threat_indicators(sample_id):
     Returns:
         dict: response
     """
-    suffix = 'sample/{}/threat_indicators'.format(sample_id)
+    suffix = f'sample/{sample_id}/threat_indicators'
     response = http_request('GET', suffix).get('data')
     return response
 
@@ -848,9 +847,9 @@ def get_threat_indicators_command():
 
     # Build Entry Context
     if data and isinstance(data, list):
-        entry_context_list = list()
+        entry_context_list = []
         for indicator in data:
-            entry = dict()
+            entry = {}
             entry['AnalysisID'] = indicator.get('analysis_ids')
             entry['Category'] = indicator.get('category')
             entry['Classification'] = indicator.get('classifications')
@@ -872,7 +871,7 @@ def get_threat_indicators_command():
         )
     else:
         return_outputs(
-            'No threat indicators for sample ID: {}'.format(sample_id),
+            f'No threat indicators for sample ID: {sample_id}',
             {},
             raw_response=raw_response,
         )
@@ -888,7 +887,7 @@ def post_tags_to_analysis(analysis_id, tag):
     Returns:
         dict:
     """
-    suffix = 'analysis/{}/tag/{}'.format(analysis_id, tag)
+    suffix = f'analysis/{analysis_id}/tag/{tag}'
     response = http_request('POST', suffix)
     return response
 
@@ -904,7 +903,7 @@ def post_tags_to_submission(submission_id, tag):
         dict:
 
     """
-    suffix = 'submission/{}/tag/{}'.format(submission_id, tag)
+    suffix = f'submission/{submission_id}/tag/{tag}'
     response = http_request('POST', suffix)
     return response
 
@@ -919,7 +918,7 @@ def post_tags():
         analysis_status = post_tags_to_analysis(analysis_id, tag)
         if analysis_status.get('result') == 'ok':
             return_outputs(
-                'Tags: {} has been added to analysis: {}'.format(tag, analysis_id),
+                f'Tags: {tag} has been added to analysis: {analysis_id}',
                 {},
                 raw_response=analysis_status,
             )
@@ -927,20 +926,20 @@ def post_tags():
         submission_status = post_tags_to_submission(submission_id, tag)
         if submission_status.get('result') == 'ok':
             return_outputs(
-                'Tags: {} has been added to submission: {}'.format(tag, submission_id),
+                f'Tags: {tag} has been added to submission: {submission_id}',
                 {},
                 raw_response=submission_status,
             )
 
 
 def delete_tags_from_analysis(analysis_id, tag):
-    suffix = 'analysis/{}/tag/{}'.format(analysis_id, tag)
+    suffix = f'analysis/{analysis_id}/tag/{tag}'
     response = http_request('DELETE', suffix)
     return response
 
 
 def delete_tags_from_submission(submission_id, tag):
-    suffix = 'submission/{}/tag/{}'.format(submission_id, tag)
+    suffix = f'submission/{submission_id}/tag/{tag}'
     response = http_request('DELETE', suffix)
     return response
 
@@ -955,7 +954,7 @@ def delete_tags():
         submission_status = delete_tags_from_submission(submission_id, tag)
         if submission_status.get('result') == 'ok':
             return_outputs(
-                'Tags: {} has been removed from submission: {}'.format(tag, submission_id),
+                f'Tags: {tag} has been removed from submission: {submission_id}',
                 {},
                 raw_response=submission_status,
             )
@@ -963,7 +962,7 @@ def delete_tags():
         analysis_status = delete_tags_from_analysis(analysis_id, tag)
         if analysis_status.get('result') == 'ok':
             return_outputs(
-                'Tags: {} has been removed from analysis: {}'.format(tag, analysis_id),
+                f'Tags: {tag} has been removed from analysis: {analysis_id}',
                 {},
                 raw_response=analysis_status,
             )
@@ -978,7 +977,7 @@ def get_iocs(sample_id, all_artifacts):
     Returns:
         dict: response
     """
-    suffix = 'sample/{}/iocs'.format(sample_id)
+    suffix = f'sample/{sample_id}/iocs'
     if all_artifacts:
         suffix += '?all_artifacts=true'
     response = http_request('GET', suffix)
@@ -1321,7 +1320,7 @@ def get_summary(analysis_id):
     Returns:
         str: response
     """
-    suffix = 'analysis/{}/archive/logs/summary_v2.json'.format(analysis_id)
+    suffix = f'analysis/{analysis_id}/archive/logs/summary_v2.json'
     response = http_request('GET', suffix, get_raw=True)
     return response
 
@@ -1335,7 +1334,7 @@ def get_screenshots(analysis_id):
     Returns:
         str: response
     """
-    suffix = 'analysis/{}/archive?filenames=screenshots/*'.format(analysis_id)
+    suffix = f'analysis/{analysis_id}/archive?filenames=screenshots/*'
     response = http_request('GET', suffix, get_raw=True)
     return response
 
