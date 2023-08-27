@@ -148,6 +148,10 @@
       "type": "int",
       "is_array": false
     },
+      "cn1Label": {
+        "type": "string",
+        "is_array": false
+    },
       "cn2Label": {
         "type": "string",
         "is_array": false
