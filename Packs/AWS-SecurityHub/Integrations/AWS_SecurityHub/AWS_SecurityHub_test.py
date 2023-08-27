@@ -4,7 +4,6 @@ import datetime
 from freezegun import freeze_time
 from CommonServerPython import IncidentStatus
 from AWS_SecurityHub import AWSClient, get_findings_command, list_members_command
-from mypy_boto3_securityhub.client import SecurityHubClient
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -142,7 +141,7 @@ FINDINGS = [{
 }]
 
 
-class MockClient(SecurityHubClient):
+class MockClient:
 
     def __init__(self, return_findings=True):
         self.return_findings = return_findings
