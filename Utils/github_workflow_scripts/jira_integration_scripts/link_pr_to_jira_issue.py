@@ -9,8 +9,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_HOST_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
 JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
-JIRA_FIXED_ISSUE_REGEX = f"[fF]ixe[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
-JIRA_RELATED_ISSUE_REGEX = f"[rR]elate[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_FIXED_ISSUE_REGEX = f"fixe[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_RELATED_ISSUE_REGEX = f"relate[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
 
 
@@ -42,7 +42,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     """
     fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text, re.IGNORECASE)
     related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text, re.IGNORECASE)
-    print(f'Detected {related_jira_issue=}')
+    print(f'Detected {related_jira_issue=}, {fixed_jira_issues=}')
 
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
@@ -76,7 +76,8 @@ def trigger_generic_webhook(options):
             and "fixed:" not in pr_body.lower()
             and "related:" not in pr_body.lower()):
         print("Did not detect Jira linking pattern.")
-        return
+        # Exiting with exit code 1 will fail the workflow, blocking the PR from being merged.
+        sys.exit(1)
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
