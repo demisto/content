@@ -843,7 +843,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:  # type: ignore
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -870,7 +870,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
             }
         ]
     }
-    response = client.get_findings(Filters=filters)  # type: ignore
+    response = client.get_findings(Filters=filters)
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     incident_last_update = finding.get('UpdatedAt', '')
@@ -901,7 +901,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:   # type: ignore
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
@@ -966,6 +966,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
+    return None
 
 
 def main():  # pragma: no cover
