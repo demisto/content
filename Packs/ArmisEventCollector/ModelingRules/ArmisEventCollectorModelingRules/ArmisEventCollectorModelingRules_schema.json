@@ -43,6 +43,10 @@
         "sensor": {
             "type": "string",
             "is_array": false
+        },
+        "activityUUID": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
