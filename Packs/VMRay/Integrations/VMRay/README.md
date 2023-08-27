@@ -11,13 +11,15 @@ The Playbooks accelerate incident response and make security operations more sca
 2. Search for VMRay.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://cloud.vmray.com) | True |
-    | API Key | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Retry requests when API is rate limited | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    | Server URL (e.g., <https://cloud.vmray.com>) |  | True |
+    | API Key (Recommended) |  | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Retry requests when API is rate limited |  | False |
+    | API Key (Deprecated) | Use the "API Key \(Recommended\)" parameter instead. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -27,6 +29,7 @@ The Playbooks accelerate incident response and make security operations more sca
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -46,13 +49,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 ### vmray-upload-sample
+
 ***
 Submits a sample to VMRay for analysis.
-
 
 #### Base Command
 
 `vmray-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,7 +68,7 @@ Submits a sample to VMRay for analysis.
 | shareable | Whether the file is shareable. Possible values are: true, false. | Optional | 
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
-
+| reanalyze | Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -83,11 +87,13 @@ Submits a sample to VMRay for analysis.
 
 
 #### Command Example
+
 ```
 vmray-upload-sample entry_id=79@4 max_jobs=1
 ```
 
 #### Context Example
+
 ```json
 {
     "VMRay.Sample": [
@@ -127,25 +133,25 @@ vmray-upload-sample entry_id=79@4 max_jobs=1
 
 | **Jobs ID** | **Samples ID** | **Submissions ID** | **Sample URL** |
 | --- | --- | --- | --- |
-| 3908304 | 3902285 | 4569315 | https://cloud.vmray.com/user/sample/view?id=3902285 |
+| 3908304 | 3902285 | 4569315 | <https://cloud.vmray.com/user/sample/view?id=3902285> |
 
 ### vmray-upload-url
+
 ***
 Submits a URL for analysis.
-
 
 #### Base Command
 
 `vmray-upload-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url |  The URL to analyze. For example: https://demisto.com. . | Required | 
+| url |  The URL to analyze. For example: <https://demisto.com>. . | Required | 
 | shareable | Whether the analysis is shareable. Possible values are: true, false. | Optional | 
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
-
 
 #### Context Output
 
@@ -164,6 +170,7 @@ Submits a URL for analysis.
 
 
 #### Command Example
+
 ```json
 {
     "VMRay.Sample": [
@@ -198,6 +205,7 @@ Submits a URL for analysis.
 ```
 
 #### Human Readable Output
+
 **URL submitted to VMRay**
 
 | **Jobs ID** | **Samples ID** | **Submissions ID** |
@@ -205,20 +213,20 @@ Submits a URL for analysis.
 | 3908304 | 3902285 | 4569315 |
 
 ### vmray-get-analysis-by-sample
+
 ***
 Retrieves all analysis details for a specified sample.
-
 
 #### Base Command
 
 `vmray-get-analysis-by-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | Sample ID. | Required | 
 | limit | Maximum number of results to return (number). | Optional | 
-
 
 #### Context Output
 
@@ -236,10 +244,10 @@ Retrieves all analysis details for a specified sample.
 | VMRay.Analysis.SHA256 | String | SHA256 hash of the sample. | 
 | VMRay.Analysis.SSDeep | String | ssdeep hash of the sample. | 
 
-
 #### Command Example
+
 ```
-vmray-get-analysis-by-sample sample_id=3902238
+!vmray-get-analysis-by-sample sample_id=3902238
 ```
 
 #### Context Example
@@ -269,25 +277,22 @@ vmray-get-analysis-by-sample sample_id=3902238
 
 | **AnalysisID** | **SampleID** | **Verdict** | **AnalysisURL** |
 | --- | --- | --- | --- |
-| 2779353 | 3902238 | Suspicious | https://cloud.vmray.com/user/sample/view?id=3902238
-
-
-
+| 2779353 | 3902238 | Suspicious | <https://cloud.vmray.com/user/sample/view?id=3902238>
 
 ### vmray-get-job-by-sample
+
 ***
 Retrieves details for all jobs  for a specified sample.
-
 
 #### Base Command
 
 `vmray-get-job-by-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | Sample ID. | Required | 
-
 
 #### Context Output
 
@@ -304,8 +309,8 @@ Retrieves details for all jobs  for a specified sample.
 | VMRay.Job.VMID | Number | ID of the virtual machine. | 
 | VMRay.Job.Status | String | Status of the job.  | 
 
-
 #### Command Example
+
 ```
 !vmray-get-job-by-sample sample_id=3902238
 ```
@@ -339,22 +344,20 @@ Retrieves details for all jobs  for a specified sample.
 | --- | --- | --- | --- |
 | 29208 | 3902238 | win7_32_sp1 | 3 |
 
-
-
 ### vmray-get-submission
+
 ***
 Retrieves the results of a submission.
-
 
 #### Base Command
 
 `vmray-get-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | submission_id | ID of the submission. Can be obtained by running the 'vmray-upload-sample' or 'vmray-upload-url' command. | Required | 
-
 
 #### Context Output
 
@@ -373,8 +376,8 @@ Retrieves the results of a submission.
 | VMRay.Submission.Severity | String | Severity of the sample in the submission \(Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown\). Deprecated. | 
 | VMRay.Submission.SampleID | Number | ID of the sample in the submission. | 
 
-
 #### Command Example
+
 ```
 vmray-get-submission submission_id=4569262
 ```
@@ -439,26 +442,22 @@ vmray-get-submission submission_id=4569262
 | **SHA1** | 868a53c394f29f8d3aac7b0a20a371999045b6ed |
 | **SHA256** | b8a4b647e56cb71773d0086b51906b902a7ccafe699f4068da4cb5cd234d9d66 |
 | **SSDeep** | 1536:Hg8ktOZtz+PZvpJyrOM1GhFNkYL2BxNRjWW:H/kY0Z3yrOMGTkrNRjH |
-| **SubmissionURL** | https://cloud.vmray.com/user/sample/view?id=3902238 |
-
-
-
-
+| **SubmissionURL** | <https://cloud.vmray.com/user/sample/view?id=3902238> |
 
 ### vmray-get-sample
+
 ***
 Retrieves a sample using the sample ID.
-
 
 #### Base Command
 
 `vmray-get-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | ID of the sample. | Required | 
-
 
 #### Context Output
 
@@ -480,10 +479,10 @@ Retrieves a sample using the sample ID.
 | VMRay.Sample.ChildSampleIDs | Number | List of child sample IDs. | 
 | VMRay.Sample.ParentSampleIDs | Number | List of parent sample IDs. | 
 
-
 #### Command Example
+
 ```
-vmray-get-sample sample_id=3902238
+!vmray-get-sample sample_id=3902238
 ```
 
 #### Context Example
@@ -548,24 +547,22 @@ vmray-get-sample sample_id=3902238
 | **SHA1** | 868a53c394f29f8d3aac7b0a20a371999045b6ed |
 | **SHA256** | b8a4b647e56cb71773d0086b51906b902a7ccafe699f4068da4cb5cd234d9d66 |
 | **SSDeep** | 1536:Hg8ktOZtz+PZvpJyrOM1GhFNkYL2BxNRjWW:H/kY0Z3yrOMGTkrNRjH |
-| **SampleURL** | https://cloud.vmray.com/user/sample/view?id=3902238 |
-
-
+| **SampleURL** | <https://cloud.vmray.com/user/sample/view?id=3902238> |
 
 ### vmray-get-sample-by-hash
+
 ***
 Retrieves sample information by hash.
-
 
 #### Base Command
 
 `vmray-get-sample-by-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hash | MD5, SHA1 or SHA256 hash of the sample. | Required | 
-
 
 #### Context Output
 
@@ -597,10 +594,10 @@ Retrieves sample information by hash.
 | VMRay.Sample.ChildSampleIDs | Number | List of child sample IDs. | 
 | VMRay.Sample.ParentSampleIDs | Number | List of parent sample IDs. | 
 
-
 #### Command Example
+
 ```
-vmray-get-sample-by-hash hash=124f46228d1e220d88ae5e9a24d6e713039a64f9
+!vmray-get-sample-by-hash hash=124f46228d1e220d88ae5e9a24d6e713039a64f9
 ```
 
 #### Context Example
@@ -665,23 +662,22 @@ vmray-get-sample-by-hash hash=124f46228d1e220d88ae5e9a24d6e713039a64f9
 | **FileName** | pafish.exe |
 | **Type** | Windows Exe (x86-32) |
 | **Verdict** | Malicious |
-| **SampleURL** | https://cloud.vmray.com/user/sample/view?id=5948 |
-
+| **SampleURL** | <https://cloud.vmray.com/user/sample/view?id=5948> |
 
 ### vmray-get-threat-indicators
+
 ***
 Retrieves threat indicators (VTI).
-
 
 #### Base Command
 
 `vmray-get-threat-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | ID of the sample. Can be obtained from the 'VMRay.Sample.ID' output. | Required | 
-
 
 #### Context Output
 
@@ -693,10 +689,10 @@ Retrieves threat indicators (VTI).
 | VMRay.ThreatIndicator.ID | Number | ID of a threat indicator. | 
 | VMRay.ThreatIndicator.Operation | String | Operation the indicators caused. | 
 
-
 #### Command Example
+
 ```
-vmray-get-threat-indicators sample_id=3902238
+!vmray-get-threat-indicators sample_id=3902238
 ```
 
 #### Context Output
@@ -707,15 +703,15 @@ vmray-get-threat-indicators sample_id=3902238
 
 *Omitted for brevity.*
 
-
 ### vmray-add-tag
+
 ***
 Adds a tag to an analysis and/or a submission.
-
 
 #### Base Command
 
 `vmray-add-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -724,14 +720,14 @@ Adds a tag to an analysis and/or a submission.
 | analysis_id | ID of the analysis from which to add tags. | Optional | 
 | tag | Tag to add. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```
-vmray-add-tag submission_id=4569262 tag=faulty
+!vmray-add-tag submission_id=4569262 tag=faulty
 ```
 
 #### Human Readable Output
@@ -739,13 +735,14 @@ vmray-add-tag submission_id=4569262 tag=faulty
     Tags: faulty has been added to submission: 4569262
 
 ### vmray-delete-tag
+
 ***
 Deletes tags from an analysis and/or a submission.
-
 
 #### Base Command
 
 `vmray-delete-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,14 +751,14 @@ Deletes tags from an analysis and/or a submission.
 | submission_id | ID of the submission from which to delete a tag. | Optional | 
 | tag | Tag to delete. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```
-vmray-delete-tag submission_id=4569262 tag=faulty
+!vmray-delete-tag submission_id=4569262 tag=faulty
 ```
 
 #### Human Readable Output
@@ -769,20 +766,20 @@ vmray-delete-tag submission_id=4569262 tag=faulty
     Tags: faulty has been removed from submission: 4569262
 
 ### vmray-get-iocs
+
 ***
 Retrieves Indicators of Compromise for a specified sample.
-
 
 #### Base Command
 
 `vmray-get-iocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | ID of the sample. | Required | 
 | all_artifacts | Whether all artifacts should be returned or only Indicators of Compromise. Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -910,7 +907,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | VMRay.Sample.IOC.Mutex.Operation | String | Same as Operations, left in for backwards compatibility. | 
 | VMRay.Sample.IOC.Mutex.Operation | String | The mutex operations that were performed, e.g., access, create, read, write, and delete. | 
 | VMRay.Sample.IOC.Mutex.ParentProcesses | String | Full commandline of processes where the mutex was used. | 
-| VMRay.Sample.IOC.Mutex.ParentProcessesNames | unknown | Names of processes where the mutex was used. | 
+| VMRay.Sample.IOC.Mutex.ParentProcessesNames | Unknown | Names of processes where the mutex was used. | 
 | VMRay.Sample.IOC.Mutex.ThreatNames | String | The threat names of the mutex. | 
 | VMRay.Sample.IOC.Mutex.Type | String | Type of mutex. | 
 | VMRay.Sample.IOC.Mutex.Verdict | String | Verdict for the artifact \(Malicious, Suspicious, Clean, Not Available\). | 
@@ -964,10 +961,10 @@ Retrieves Indicators of Compromise for a specified sample.
 | VMRay.Sample.IOC.URL.Verdict | String | Verdict for the artifact \(Malicious, Suspicious, Clean, Not Available\). | 
 | VMRay.Sample.IOC.URL.VerdictReason | String | Description of the Verdict Reason. | 
 
-
 #### Command Example
+
 ```
-vmray-get-iocs sample_id=3902238
+!vmray-get-iocs sample_id=3902238
 ```
 
 #### Context Example
@@ -978,21 +975,20 @@ vmray-get-iocs sample_id=3902238
 
 *Omitted for brevity.*
 
-
 ### vmray-get-job-by-id
+
 ***
 Retrieves a job by job ID.
-
 
 #### Base Command
 
 `vmray-get-job-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | ID of a job. | Required | 
-
 
 #### Context Output
 
@@ -1009,8 +1005,8 @@ Retrieves a job by job ID.
 | VMRay.Job.VMID | Number | ID of the virtual machine. | 
 | VMRay.Job.Status | String | Status of the job. | 
 
-
 #### Command Example
+
 ```
 !vmray-get-job-by-id job_id=365547
 ```
@@ -1045,21 +1041,20 @@ Retrieves a job by job ID.
 | VMName | win7_32_sp1 |
 | VMID | 3 |
 
-
 ### vmray-get-summary
+
 ***
 Retrieves the Summary JSON v2 for a specific analysis.
-
 
 #### Base Command
 
 `vmray-get-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | analysis_id | ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample). | Required | 
-
 
 #### Context Output
 
@@ -1070,8 +1065,8 @@ Retrieves the Summary JSON v2 for a specific analysis.
 | InfoFile.Size | number | The file size of the Summary JSON v2 | 
 | InfoFile.Info | string | MIME type of the Summary JSON v2 | 
 
-
 #### Command Example
+
 ```
 !vmray-get-summary analysis_id=2779353
 ```
@@ -1095,3 +1090,55 @@ Retrieves the Summary JSON v2 for a specific analysis.
 
     Returned file: summary_v2.json Download
 
+### vmray-get-screenshots
+
+***
+Retrieves screenshots taken during a specific dynamic analysis. The screenshots are stored with file names like 'analysis\_5\_screenshot\_2.png'. In this example, '5' represents the analysis ID from which the screenshot came, and '2' indicates that it's the third screenshot taken during the analysis, in chronological order.
+
+#### Base Command
+
+`vmray-get-screenshots`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| analysis_id | ID of the analysis from which to retrieve the screenshots from (analysis ID is returned e.g. from vmray-get-analysis-by-sample). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | Filename | 
+| InfoFile.EntryID | string | The EntryID of the file | 
+| InfoFile.Size | number | The file size of the file | 
+| InfoFile.Info | string | MIME type of the file | 
+
+#### Command example
+
+```!vmray-get-screenshots analysis_id="50615"```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": [
+        {
+            "EntryID": "488@b7d0844f-d230-402a-81de-154dc1c57cc9",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "analysis_50615_screenshot_0.png",
+            "Size": 753660,
+            "Type": "PNG image data, 800 x 600, 8-bit/color RGB, non-interlaced"
+        },
+        {
+            "EntryID": "489@b7d0844f-d230-402a-81de-154dc1c57cc9",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "analysis_50615_screenshot_1.png",
+            "Size": 412598,
+            "Type": "PNG image data, 800 x 600, 8-bit/color RGB, non-interlaced"
+        }
+    ]
+}
+```
