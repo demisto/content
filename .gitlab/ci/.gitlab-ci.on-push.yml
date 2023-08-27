@@ -197,7 +197,6 @@ validate-content-conf:
         time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
       fi
     - section_end "Create Instances for XSOAR"
-    - mv create_instance.log "$ARTIFACTS_FOLDER/create_instance.log"
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
