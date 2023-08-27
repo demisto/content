@@ -121,10 +121,7 @@ class TestHelperFunction:
             - Perform fetch for the specific event type, update event list and update
               last run dictionary for next fetch cycle.
         """
-        event_type = {
-            'unique_id_key': 'unique_id',
-            'aql_query': 'example:query',
-            'type': 'events'}
+        event_type = EVENT_TYPE('unique_id', 'example:query', 'events')
         events: list[dict] = []
         next_run: dict = {}
         last_run = {'events_last_fetch_time': '2023-01-01T02:00:00', 'events_last_fetch_ids': ['2', '3']}
@@ -345,10 +342,7 @@ class TestFetchFlow:
 
         """
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
-        mocker.patch.dict(EVENT_TYPES, {'Events': {
-            'unique_id_key': 'unique_id',
-            'aql_query': 'events_query',
-            'type': 'events'}})
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
         assert fetch_events(dummy_client, max_fetch, last_run,
                             fetch_start_time, event_types_to_fetch) == (events, next_run)
 
@@ -380,10 +374,7 @@ class TestFetchFlow:
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
         mocker.patch.object(Client, 'fetch_by_aql_query', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
-        mocker.patch.dict(EVENT_TYPES, {'Events': {
-            'unique_id_key': 'unique_id',
-            'aql_query': 'events_query',
-            'type': 'events'}})
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
         mocker.patch.object(Client, 'update_access_token')
         if fetch_start_time:
             last_run = {'events_last_fetch_ids': ['1', '2', '3'],
