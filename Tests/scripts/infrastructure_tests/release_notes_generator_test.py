@@ -434,10 +434,12 @@ class TestMergeVersionBlocks:
         """
         Given
         - Two release notes of the same integration, one RN with one comment without hyphen and one RN with list of comments.
+        - One release notes of a script with one comment without hyphen.
         When
         - Merging the two release notes files into one file.
         Then
-        - Ensure that the one comment without hyphen is wrapped with hyphen.
+        - Ensure that the one comment of the integration without hyphen is wrapped with hyphen.
+        - Ensure that the one comment of the script without hyphen is still without hyphen.
         """
 
         release_notes_paths = [
@@ -451,7 +453,8 @@ class TestMergeVersionBlocks:
 
         rn_block, _ = merge_version_blocks(pack_versions_dict)
 
-        assert '- This is a fake1 comment without a hyphen.' in rn_block
+        assert '- This is a fake comment of the integration without a hyphen.' in rn_block
+        assert '\nThis is a fake comment of the script without a hyphen.' in rn_block
 
     def test_sanity(self):
         """

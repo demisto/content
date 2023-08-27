@@ -345,10 +345,11 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
                 entity_name = entity_name.replace('__', '')
                 # release notes of the entity
                 entity_comment = entity[1] or entity[3] or entity[5]
-                if entity_comment and not entity_comment.strip().startswith('- ') and entity_name != '[special_msg]':
-                    logging.info(f'Adding missing "-" to entity comment: {entity_comment}')
-                    entity_comment = f'- {entity_comment.strip()}'
                 if entity_name in entities_data[entity_type]:
+                    exists_comment = entities_data[entity_type][entity_name]
+                    if not exists_comment.startswith('- '):
+                        logging.info(f'Adding missing "-" to entity comment: {exists_comment}')
+                        entities_data[entity_type][entity_name] = f'- {exists_comment}'
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
