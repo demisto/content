@@ -12,8 +12,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Eradication Plan - Terminate Process
-* Eradication Plan - Delete File
 * Eradication Plan - Reset Password
+* Eradication Plan - Delete File
 
 ### Integrations
 
