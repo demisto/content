@@ -56,27 +56,27 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, this parameter is supported. Otherwise, this setting will be ignored.                                "
   display: Listen Port
   name: longRunningPort
   type: 0
   section: Connect
   required: false
-- additionalinfo: For use with HTTPS - the certificate that the service should use.
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported. 
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   section: Connect
   advanced: true
   required: false
-- additionalinfo: For use with HTTPS - the private key that the service should use.
+- additionalinfo: For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ 8 or Cortex XSIAM server.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced.
+- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. 
   display: Username
   name: credentials
   type: 9
