@@ -1,6 +1,6 @@
 {
     "name": "CTF 02",
-    "description": "CTF 02",
+    "description": "XSOAR's Capture the flag (CTF)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -10,7 +10,6 @@
         "Utilities"
     ],
     "videos": [
-        "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     ],
     "tags": [],
     "useCases": [],
