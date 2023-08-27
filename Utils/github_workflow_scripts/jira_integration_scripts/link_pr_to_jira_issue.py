@@ -40,8 +40,8 @@ def find_fixed_issue_in_body(body_text, is_merged):
     Getting the issues url in the PR's body as part of `fixing: <issue>` format.
     Return list of issues found: [{"link": link, "id": issue_id}]
     """
-    fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
-    related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
+    fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text, re.IGNORECASE)
+    related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text, re.IGNORECASE)
     print(f'Detected {related_jira_issue=}')
 
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
@@ -70,13 +70,13 @@ def trigger_generic_webhook(options):
 
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
-    # # Handle cases where the PR did not intend to add links:
-    # if ("fixes:" not in pr_body.lower()
-    #         and "relates:" not in pr_body.lower()
-    #         and "fixed:" not in pr_body.lower()
-    #         and "related:" not in pr_body.lower()):
-    #     print("Did not detect Jira linking pattern.")
-    #     return
+    # Handle cases where the PR did not intend to add links:
+    if ("fixes:" not in pr_body.lower()
+            and "relates:" not in pr_body.lower()
+            and "fixed:" not in pr_body.lower()
+            and "related:" not in pr_body.lower()):
+        print("Did not detect Jira linking pattern.")
+        return
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
