@@ -95,8 +95,8 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
     """
     mapping = es.indices.get_mapping(index=index)
 
-    for key, value in mapping.items():
-        if datetime_format := demisto.get(value, f'mappings.properties.{field}.format'):
+    for mapper in mapping.values():
+        if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
             return datetime_format
 
     return DEFAULT_DATETIME_FORMAT
