@@ -54,6 +54,8 @@ variables:
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
   OVERRIDE_SDK_REF: ""
   CONTENT_GITLAB_CI: "true"
+  POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
+  FF_USE_FASTZIP: "true"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
