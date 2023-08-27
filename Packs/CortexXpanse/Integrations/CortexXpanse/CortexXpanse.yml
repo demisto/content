@@ -680,7 +680,7 @@ script:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isFetchSamples: true
   isfetch: true
   script: ''
