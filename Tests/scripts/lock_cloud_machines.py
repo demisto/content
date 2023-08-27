@@ -349,7 +349,7 @@ def main():
     wait_for_build_to_be_first_in_queue(storage_client, storage_bucket, options.gcs_locks_path, options.ci_job_id,
                                         options.gitlab_status_token)
 
-    logging.info('Starting to search for available machi ne')
+    logging.info('Starting to search for available machine')
 
     list_machines = create_list_of_machines_to_run(storage_bucket, options.lock_machine_name, options.gcs_locks_path,
                                                    options.test_machines, options.number_machines_to_lock)

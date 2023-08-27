@@ -135,7 +135,7 @@ def main():
         success &= destroy_server(options.artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live)
 
     duration = humanize.naturaldelta(datetime.utcnow() - start_time, minimum_unit="milliseconds")
-    logging.info(f"finished destroying instances - success:{success} took:{duration}")
+    logging.info(f"Finished destroying instances - success:{success} took:{duration}")
     if not success:
         logging.error('Exiting with error, see reasons above.')
         sys.exit(1)
