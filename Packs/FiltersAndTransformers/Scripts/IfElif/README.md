@@ -1,8 +1,8 @@
 ### A transformer for if-elif-else logic.
 
 The **If-Elif** transformer simulates a python *"if elif else"* tree using a JSON provided in the ***conditions*** argument.
-The JSON should be a list of dictionaries where all but the last have the keys "*condition*", which hols a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. The last dictionary should have only the key "else" which holds the value to return if all "*condition*"s were false.
-Context values are retrieved from the value entered in the ***value (Get)*** of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the ***value (Get)*** argument.
+The JSON should be a list of dictionaries where all have the keys "*condition*", which holds a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. To return a default value if all "*condition*"s were false, the last dictionary should have only the key "default" holding the valid JSON value. If this is not provided an empty string will be returned as a default.
+In order to prevent injections Context values should be retrieved from the value entered in the ***value (Get)*** of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the ***value (Get)*** argument.
 
 #### Supported operators for conditions:
 

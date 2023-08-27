@@ -64,7 +64,10 @@ class ConditionParser:
             r" from_context('\1')",
             conditions
         )
-        self.conditions = self.evaluate(conditions)
+        try:
+            self.conditions = self.evaluate(conditions)
+        except SyntaxError as e:
+            raise SyntaxError(f'Cannot load JSON. Invalid syntax at line: {e.args[1][1]}; position: {e.args[1][2]}')
 
     def get_value(self, node):
         match type(node):
@@ -106,30 +109,29 @@ class ConditionParser:
                     self.get_value(node.right)
                 )
             case _:
-                raise SyntaxError(
-                    f'Unsupported expression type found: {node.__class__.__name__}'
-                )
+                raise KeyError(node.__class__.__name__)
 
     def evaluate(self, expression: str):
-        # sourcery skip: raise-from-previous-error
         try:
             parsed = ast.parse(expression.strip(), mode='eval')
             return self.get_value(parsed.body)
         except KeyError as e:
-            raise NameError(f'Unknown variable: {e.args[0]}')
-        except Exception:
-            raise SyntaxError(f'Cannot parse expression: {expression!r}')
+            raise NameError(f'Unknown variable/operator: {e.args[0]!r}')
 
     def parse_conditions(self):
-        *conditions, default = self.conditions
-        result = next(
-            (
-                condition['return']
-                for condition in conditions
-                if self.evaluate(condition['condition'])
-            ),
-            default['else']
-        )
+        try:
+            result = (
+                self.conditions.pop()['default']
+                if 'default' in self.conditions[-1]
+                else ''
+            )
+            for i, condition in enumerate(self.conditions):
+                if self.evaluate(condition['condition']):
+                    result = condition['return']
+        except KeyError as e:
+            raise DemistoException(f'Key {e.args[0]!r} missing in condition {i}')
+        except SyntaxError:
+            raise SyntaxError(f'Invalid expression: {condition["condition"]!r}')
         return result
 
 
