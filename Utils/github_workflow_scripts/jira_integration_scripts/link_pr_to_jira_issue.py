@@ -76,8 +76,11 @@ def trigger_generic_webhook(options):
             and "fixed:" not in pr_body.lower()
             and "related:" not in pr_body.lower()):
         print("Did not detect Jira linking pattern.")  # noqa: T201
-        # Exiting with exit code 1 will fail the workflow, blocking the PR from being merged.
-        sys.exit(1)
+        # This case is not an error, just a case where the PR did not intend to add links to the Jira ticket,
+        # This is useful in the following cases:
+        # It's a small fix without an associated Jira ticket.
+        # PR's for Contribution management which don't have a Jira ticket.
+        return
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
