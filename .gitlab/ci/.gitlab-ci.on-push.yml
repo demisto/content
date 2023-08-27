@@ -511,7 +511,7 @@ slack-notify-nightly-build:
     - job-done
     - exit $EXIT_CODE
 
-#xsiam_server_dev:
+#xsiam_server_dev: test
 #  extends:
 #    - .test_content_on_xsiam_server_instances_base
 #  rules:
