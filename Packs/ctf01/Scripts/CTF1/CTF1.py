@@ -31,14 +31,12 @@ import random
 '''
 
 
-
-
 good_images = [
     "https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/F2.gif",
     "https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/F.gif",
     "https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/F3.gif",
     "https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/F4.gif"
-    ]
+]
 
 bad_images = [
     "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/idola-idola-industries.gif",
@@ -46,14 +44,14 @@ bad_images = [
     "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/lion-king.gif",
     "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/robert-downey-jr-maybe.gif",
     "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/the-rock-look-the-rock-meme.gif"
-    ]
+]
 
 HTML_MESSAGE_1 = '''
 <img src="%s" alt="Robot">
 <div style='font-size:18px;'>
 Well Done!!!
 </div>
-''' %(good_images[random.randint(0,len(good_images)-1)])
+''' % (good_images[random.randint(0, len(good_images) - 1)])
 
 HTML_MESSAGE_BAD = '''
 <img src="%s" alt="Error">
@@ -62,15 +60,14 @@ Nope!!! Try again.
 Remember to overwrite the "secret" argument when you are re-running the task. 
 To re-run this task -> Click on "Complete Task" -> clear the Secret value using the trash-can icon -> fill out the Secret value -> click on the 'Run script now' :)
 </div>
-''' %(bad_images[random.randint(0,len(bad_images)-1)])
+''' % (bad_images[random.randint(0, len(bad_images) - 1)])
 
 answers = {
-    "01" : ["4","four","04"],
-    "02" : ["playbooksareawesome","playbooks are awesome"],
-    "03" : ["<none>","none","nothing"],
-    "04" : ["ctf 01","ctf01"],
-    "05" : ["reportsarecool"],
-    "06" : ["monkey","baboon","ape","gorilla","lemor","chimpanzee","orangutan"]
+    "01": ["4", "four", "04"],
+    "02": ["playbooksareawesome", "playbooks are awesome"],
+    "03": ["ctf 01", "ctf01"],
+    "04": ["reportsarecool"],
+    "05": ["monkey", "baboon", "ape", "gorilla", "lemor", "chimpanzee", "orangutan"]
 
 }
 
@@ -80,7 +77,7 @@ answers = {
 def main():
     try:
         args = demisto.args()
-        #__Error handeling when there is an empty secret or question id__
+        # __Error handeling when there is an empty secret or question id__
         if (args.get("secret") == None or args.get("question_ID") == None):
             return_error(f'Please specify Secret and Question ID to proceed with the challange')
 
@@ -89,18 +86,17 @@ def main():
                 'ContentsFormat': EntryFormat.HTML,
                 'Type': EntryType.NOTE,
                 'Contents': HTML_MESSAGE_1,
-                })
-        #General Error handeling
+            })
+        # General Error handeling
         else:
-            if (args.get("question_ID") ==  "03"):
+            if (args.get("question_ID") == "03"):
                 return_error(f'In case the playbook is in "Quiet Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none>. To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the \'Run script now\' :). ')
             else:
-                #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
-                    demisto.results({
-                        'Type': entryTypes['error'],
-                        'ContentsFormat': formats['html'],
-                        'Contents': HTML_MESSAGE_BAD,
-                    })
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['html'],
+                    'Contents': HTML_MESSAGE_BAD,
+                })
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback

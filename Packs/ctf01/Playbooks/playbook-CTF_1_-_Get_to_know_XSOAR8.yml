@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 02d8ecc8-10db-4e21-8bed-0f156aeec03c
+    taskid: f51a478c-fc25-408d-808b-c2c06b4147b3
     type: collection
     task:
-      id: 02d8ecc8-10db-4e21-8bed-0f156aeec03c
+      id: f51a478c-fc25-408d-808b-c2c06b4147b3
       version: -1
       name: Check out the Reports
       type: collection
@@ -89,10 +89,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to generate the report to see it's content. This is so importent to our "CISO".
+        tooltip: Search for the Dashboards & Reports section in the navigation panel on the left. Remember - This is highly important for our CISO.
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses:\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on SOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/H.gif)\n___\n"
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nOur CISO demanded to get a status report on our activities. There is a flag hidden in one of the reports. Generate the right report and try to find it :sunglasses:\n\nReports are located in the same section as the Dashboards.\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on SOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/H.gif)\n___\n"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -179,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1870a579-5eee-4fbc-81ed-ae0648a2d6db
+    taskid: f21cb82e-2b13-4d2b-8d2c-3238e4a07f56
     type: collection
     task:
-      id: 1870a579-5eee-4fbc-81ed-ae0648a2d6db
+      id: f21cb82e-2b13-4d2b-8d2c-3238e4a07f56
       version: -1
       name: Check Integrations Settings
       type: collection
@@ -231,10 +231,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to check the integration's python, search for custom integration -> which starts with 'ohmy' . Oh and remember that the answer isn't always on the wall....
+        tooltip: Try to check the integration's python, search for custom integration -> which starts with 'oh...' . Oh and remember that the answer isn't always on the wall....
         readonly: false
       title: Integration Settings
-      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you (which was also customized). \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n**Did you know?**\n\nXSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go!\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
+      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you. \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n**Did you know?**\n\nXSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go!\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
       sender: ""
       expired: false
       totalanswers: 0
@@ -244,10 +244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 76720e45-c3c3-43a3-8092-6abd0de344df
+    taskid: 68669bef-c69c-452b-806b-63f718239b89
     type: collection
     task:
-      id: 76720e45-c3c3-43a3-8092-6abd0de344df
+      id: 68669bef-c69c-452b-806b-63f718239b89
       version: -1
       name: Incident fields
       type: collection
@@ -288,7 +288,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the non-system incident field that exists on your tenant?
+          simple: What is the name of the incident field that is hidden in the system?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -297,7 +297,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'hint: Items that are installed by the system will be displayed with "system:true". Another "CTF" day at the fields section...'
+        tooltip: Try to use the system filters to identify the incident field.
         readonly: false
       title: Incident fields
       description: |-
@@ -530,12 +530,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 15c36edb-5aaf-454c-80fd-363d6ca4dfa5
+    taskid: 501a198e-8b93-4c93-8051-115640feca33
     type: regular
     task:
-      id: 15c36edb-5aaf-454c-80fd-363d6ca4dfa5
+      id: 501a198e-8b93-4c93-8051-115640feca33
       version: -1
-      name: 'Check your answer #Q4'
+      name: 'Check your answer #Q3'
       description: |-
         Question #4:
         What is the non-system incident field that exists on your tenant?
@@ -548,7 +548,7 @@ tasks:
       - "3"
     scriptarguments:
       question_ID:
-        simple: "04"
+        simple: "03"
       secret:
         complex:
           root: Incident fields.Answers
@@ -649,12 +649,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d7e2ada0-52b4-44eb-8e1c-a81c3f1acf5e
+    taskid: ac2340c7-9362-4dc7-8aa7-8b61cc9bfec4
     type: regular
     task:
-      id: d7e2ada0-52b4-44eb-8e1c-a81c3f1acf5e
+      id: ac2340c7-9362-4dc7-8aa7-8b61cc9bfec4
       version: -1
-      name: 'Check your answer #Q5'
+      name: 'Check your answer #Q4'
       description: |-
         Question #5:
         What is the report's flag?
@@ -667,7 +667,7 @@ tasks:
       - "7"
     scriptarguments:
       question_ID:
-        simple: "05"
+        simple: "04"
       secret:
         complex:
           root: Practicing with Reports.Answers
@@ -692,12 +692,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: f1489bd8-b7be-4592-8cbe-36fbaaf30fb2
+    taskid: f33fca77-f5e6-4df2-83bb-60e0380301be
     type: regular
     task:
-      id: f1489bd8-b7be-4592-8cbe-36fbaaf30fb2
+      id: f33fca77-f5e6-4df2-83bb-60e0380301be
       version: -1
-      name: 'Check your answer #Q6'
+      name: 'Check your answer #Q5'
       description: |-
         Question #6:
         What is the flag in the integration?
@@ -710,7 +710,7 @@ tasks:
       - "26"
     scriptarguments:
       question_ID:
-        simple: "06"
+        simple: "05"
       secret:
         complex:
           root: Integration Settings.Answers
@@ -818,5 +818,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.9.0
 description: ''

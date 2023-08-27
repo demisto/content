@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2920
+          "y": 2590
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3075
+          "y": 2745
         }
       }
     note: false
@@ -870,7 +870,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3250
+          "y": 2920
         }
       }
     note: false
@@ -972,7 +972,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "7"
     scriptarguments:
       question_ID:
         simple: "07"
@@ -1024,136 +1024,6 @@ tasks:
         "position": {
           "x": 450,
           "y": -150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 36391830-6c31-4d24-8acf-400c013c5264
-    type: collection
-    task:
-      id: 36391830-6c31-4d24-8acf-400c013c5264
-      version: -1
-      name: Using the Export Dynamic Lists function.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: |-
-            Run the following command from your endpoint and enter the received indicator from your command.
-
-            *MacOS users*:
-
-            curl  -u admin:admin https://edl-<your tenant hostname>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
-
-            *Windows users (Powershell)*:
-
-            (iwr -Uri 'https://edl-<your tenant hostname>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
-
-            Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer>)
-
-            Note: *if you are on Windows 10, and see an error, start Internet Explorer once, then re-run command*
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg:
-        - simple: True Positive
-        - simple: False Positive
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer>)'
-        readonly: false
-      title: Using EDLs to export indicators
-      description: "The Export Indicator Generic Service can be very useful but that integration needs setup and is not enabled by default. To save time, this has been done for you in advance.\nCheck the command provided to you in the question. \nRun it from your personal terminal on your machine.\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/matrix.gif)\n___\n"
-      sender: Your SOC team
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: d35dedb1-2c4e-4480-8482-e90974f8e100
-    type: regular
-    task:
-      id: d35dedb1-2c4e-4480-8482-e90974f8e100
-      version: -1
-      name: 'Check your answer #8'
-      description: |-
-        Run the following command from your endpoint and enter the received indicator from your command.
-
-        MacOS users:
-        curl  -u admin:admin https://edl-<your tenant uri>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
-
-        Windows users (Powershell):
-        (iwr -Uri 'https://edl-<your tenant uri>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
-
-        Note: *if you are on Windows 10, and see THIS error, start Internet Explorer once, then re-run command*
-      scriptName: CTF_2_BF
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      question_ID:
-        simple: "08"
-      secret:
-        complex:
-          root: Using EDLs to export indicators.Answers
-          accessor: "0"
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2760
         }
       }
     note: false
