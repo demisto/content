@@ -188,7 +188,8 @@ class Client(BaseClient):
             method='GET',
             url_suffix=self.suffix_template.format(self.tenant_id, 'list'),
             headers=headers,
-            params=params
+            params=params,
+            retries=5
         )
         return response
 
