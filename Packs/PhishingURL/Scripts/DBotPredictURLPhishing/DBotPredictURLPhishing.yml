@@ -10,7 +10,7 @@ args:
   description: Maximum number of extracted URLs on which to run the model.
   name: maxNumberOfURL
 - defaultValue: '120'
-  description: The timeout of the rasterize module in seconds. Default is 120 seconds.
+  description: The timeout of the rasterize module in seconds.
   name: rasterize_timeout
 - auto: PREDEFINED
   defaultValue: 'False'
