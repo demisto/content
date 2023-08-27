@@ -296,7 +296,7 @@ xpanse-prepare-testing-bucket:
     - section_start "Destroy Instances"
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
-        TIME_TO_LIVE=300
+        TIME_TO_LIVE=1000
       fi
       python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Destroy Instances"
