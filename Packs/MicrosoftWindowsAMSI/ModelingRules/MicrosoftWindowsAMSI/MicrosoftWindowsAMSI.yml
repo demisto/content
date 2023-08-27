@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: Microsoft_Windows_AMSI_ModelingRule
+name: Microsoft Windows AMSI Security Modeling Rule
+rules: ''
+schema: ''
+tags: ''
