@@ -19,6 +19,7 @@ stages:
 
 
 variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
