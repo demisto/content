@@ -181,7 +181,7 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
         "add_tags_to_resource",
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
-    res = add_tags_to_resource_command(MockClient(), args)
+    res = add_tags_to_resource_command(args, MockClient())
     assert res.readable_output == "Tags added to resource test_id successfully."
 
 
@@ -212,7 +212,7 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
         "remove_tags_from_resource",
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
-    res = remove_tags_from_resource_command(MockClient(), args)
+    res = remove_tags_from_resource_command(args, MockClient())
     assert res.readable_output == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
 
 
@@ -240,7 +240,7 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    res = get_inventory_command(MockClient(), {})
+    res = get_inventory_command({}, MockClient())
 
     assert res[0].outputs == mock_response["Entities"]
     assert res[0].readable_output == (
@@ -278,7 +278,7 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    response: list[CommandResults] = get_inventory_command(MockClient(), {})
+    response: list[CommandResults] = get_inventory_command({}, MockClient())
 
     assert response[0].outputs == "test_token"
     assert response[0].outputs_prefix == "AWS.SSM.InventoryNextToken"
@@ -316,7 +316,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
         "instance_id": "i-0a00aaa000000000a",
         "type_name": "test_type_name",
     }
-    response = list_inventory_entry_command(MockClient(), args)
+    response = list_inventory_entry_command(args, MockClient())
 
     mock_list_inventory_entry_request.assert_called_with(
         InstanceId=args["instance_id"],
@@ -349,11 +349,11 @@ def test_list_inventory_entry_command_raise_error() -> None:
         DemistoException, match="Invalid instance id: bla-0a00aaa000000000a",
     ):
         list_inventory_entry_command(
-            MockClient(),
             {
                 "instance_id": "bla-0a00aaa000000000a",
                 "type_name": "test_type_name",
             },
+            MockClient()
         )
 
 
@@ -381,7 +381,7 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/list_associations.json")
     mocker.patch.object(MockClient, "list_associations", return_value=mock_response)
-    response = list_associations_command(MockClient(), {})
+    response = list_associations_command({}, MockClient())
     assert response[0].outputs == mock_response["Associations"]
     assert response[0].readable_output == (
         "### AWS SSM Association\n"
@@ -418,7 +418,7 @@ def test_get_association_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/association_description.json")
     mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
-    response = get_association_command(MockClient(), {"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"})
+    response = get_association_command({"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"}, MockClient())
 
     assert response.outputs == mock_response["AssociationDescription"]
     assert response.readable_output == (
@@ -455,7 +455,7 @@ def test_list_versions_association_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/list_association_versions_response.json")
     mocker.patch.object(MockClient, "list_association_versions", return_value=mock_response)
-    response = list_versions_association_command(MockClient(), {"association_id": "12345678-0000-0000-0000-000000000000"})
+    response = list_versions_association_command({"association_id": "12345678-0000-0000-0000-000000000000"}, MockClient())
 
     assert response[0].outputs == mock_response["AssociationVersions"]
     assert response[0].readable_output == (
@@ -491,7 +491,7 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/list_documents_response.json")
     mocker.patch.object(MockClient, "list_documents", return_value=mock_response)
-    response = list_documents_command(MockClient(), {})
+    response = list_documents_command({}, MockClient())
 
     assert response[0].outputs == mock_response["DocumentIdentifiers"]
     assert response[0].readable_output == (
@@ -507,7 +507,7 @@ def test_get_documents_command(mocker: MockerFixture) -> None:
     mock_response: dict = util_load_json("test_data/get_document_response.json")
     mocker.patch.object(MockClient, "describe_document", return_value=mock_response)
 
-    response = get_document_command(MockClient(), {"document_name": "test_name"})
+    response = get_document_command({"document_name": "test_name"}, MockClient())
 
     assert response.outputs == mock_response["Document"]
     assert response.readable_output == (

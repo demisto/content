@@ -154,10 +154,15 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
     )
 
 
+def get_automation_execution_status(ssm_client: "SSMClient", execution_id: str) -> str:
+    response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
+    return response["AutomationExecution"]["AutomationExecutionStatus"]
+
+
 """ COMMAND FUNCTIONS """
 
 
-def add_tags_to_resource_command(ssm_client: "SSMClient", args: dict[str, Any]) -> CommandResults:
+def add_tags_to_resource_command(args: dict[str, Any], ssm_client: "SSMClient",) -> CommandResults:
     """Adds tags to a specified resource.
     The response from the API call when success is empty dict.
 
@@ -186,9 +191,7 @@ def add_tags_to_resource_command(ssm_client: "SSMClient", args: dict[str, Any]) 
     )
 
 
-def remove_tags_from_resource_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> CommandResults:
+def remove_tags_from_resource_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
     kwargs = {
         "ResourceType": args["resource_type"],
         "ResourceId": args["resource_id"],
@@ -200,9 +203,7 @@ def remove_tags_from_resource_command(
     )
 
 
-def get_inventory_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> list[CommandResults]:
+def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
     """Fetches inventory information from AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -283,9 +284,7 @@ def get_inventory_command(
     return command_results
 
 
-def list_inventory_entry_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> list[CommandResults]:
+def list_inventory_entry_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
     """Lists inventory entries for a specific instance and type name using the provided SSM client and arguments.
 
     Args:
@@ -366,9 +365,7 @@ def list_inventory_entry_command(
     return command_results
 
 
-def list_associations_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> list[CommandResults]:
+def list_associations_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
     """Lists associations in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -431,9 +428,7 @@ def list_associations_command(
     return command_results
 
 
-def get_association_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> CommandResults:
+def get_association_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
     """Retrieves information about an SSM association based on provided parameters.
 
     Args:
@@ -500,9 +495,7 @@ def get_association_command(
     )
 
 
-def list_versions_association_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> list[CommandResults]:
+def list_versions_association_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
     """Lists the versions of an SSM association based on provided parameters.
 
     Args:
@@ -572,7 +565,7 @@ def list_versions_association_command(
     return command_results
 
 
-def list_documents_command(ssm_client: "SSMClient", args: dict[str, Any]) -> list[CommandResults]:
+def list_documents_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
     """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -639,9 +632,7 @@ def list_documents_command(ssm_client: "SSMClient", args: dict[str, Any]) -> lis
     return command_results
 
 
-def get_document_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> CommandResults:
+def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
     def _parse_document(document: "DocumentDescriptionTypeDef"):
         return {
             "Name": document.get("Name"),
@@ -680,9 +671,23 @@ def get_document_command(
     )
 
 
-def get_automation_execution_status(ssm_client: "SSMClient", execution_id: str) -> str:
-    response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
-    return response["AutomationExecution"]["AutomationExecutionStatus"]
+def list_automation_executions_command(args: dict, ssm_client: "SSMClient") -> CommandResults:
+    if execution_id := args.get("execution_id"):
+        response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
+        response = convert_datetime_to_iso(response)
+    else:
+        kwargs = {
+            "Filters": [
+                {"Key": "ExecutionStatus", "Values": [args.get("status", "InProgress")]}
+            ]
+        }
+        response = ssm_client.describe_automation_executions(**kwargs)
+
+    return CommandResults(
+        outputs=response.get("AutomationExecution"),
+        outputs_key_field='AutomationExecutionId',
+        outputs_prefix='AWS.SSM.AutomationExecution',
+    )
 
 
 @polling_function(
@@ -690,9 +695,7 @@ def get_automation_execution_status(ssm_client: "SSMClient", execution_id: str) 
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
     requires_polling_arg=False,  # means it will always be default to poll, poll=true
 )
-def run_automation_execution_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> PollResult:
+def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     document_name = args["document_name"]
     client_token = args.get("client_token")
     document_version = args.get("document_version")
@@ -764,9 +767,7 @@ def run_automation_execution_command(
     requires_polling_arg=True,
     polling_arg_name="polling",  # if demisto.args['polling'] equals to false, polling will stop after first run
 )
-def cancel_automation_execution_command(
-    ssm_client: "SSMClient", args: dict[str, Any]
-) -> PollResult:
+def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     automation_execution_id = args["automation_execution_id"]
     type_ = args.get("type", "Cancel")
     include_polling = argToBoolean(args.get("include_polling", False))
@@ -860,27 +861,29 @@ def main():
             case "test-module":
                 return_results(test_module(ssm_client))
             case "aws-ssm-tag-add":
-                return_results(add_tags_to_resource_command(ssm_client, args))
+                return_results(add_tags_to_resource_command(args, ssm_client))
             case "aws-ssm-tag-remove":
-                return_results(remove_tags_from_resource_command(ssm_client, args))
+                return_results(remove_tags_from_resource_command(args, ssm_client))
             case "aws-ssm-inventory-get":
-                return_results(get_inventory_command(ssm_client, args))
+                return_results(get_inventory_command(args, ssm_client))
             case "aws-ssm-inventory-entry-list":
-                return_results(list_inventory_entry_command(ssm_client, args))
+                return_results(list_inventory_entry_command(args, ssm_client))
             case "aws-ssm-association-list":
-                return_results(list_associations_command(ssm_client, args))
+                return_results(list_associations_command(args, ssm_client))
             case "aws-ssm-association-get":
-                return_results(get_association_command(ssm_client, args))
+                return_results(get_association_command(args, ssm_client))
             case "aws-ssm-association-version-list":
-                return_results(list_versions_association_command(ssm_client, args))
+                return_results(list_versions_association_command(args, ssm_client))
             case "aws-ssm-document-list":
-                return_results(list_documents_command(ssm_client, args))
+                return_results(list_documents_command(args, ssm_client))
             case "aws-ssm-document-get":
-                return_results(get_document_command(ssm_client, args))
+                return_results(get_document_command(args, ssm_client))
+            case "aws-ssm-automation-execution-list":
+                return_results(list_automation_executions_command(args, ssm_client))
             case "aws-ssm-automation-execution-run":
-                return_results(run_automation_execution_command(ssm_client, args))
+                return_results(run_automation_execution_command(args, ssm_client))
             case "aws-ssm-automation-execution-cancel":
-                return_results(cancel_automation_execution_command(ssm_client, args))
+                return_results(cancel_automation_execution_command(args, ssm_client))
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)
