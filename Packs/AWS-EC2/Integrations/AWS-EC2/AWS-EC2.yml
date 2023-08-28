@@ -372,7 +372,7 @@ script:
       description: The virtualization type of the instance.
       type: string
   - arguments:
-      - description: One or more filters.See documentation for details & filter options.
+      - description: One or more filters. See documentation for details & filter options.
         name: filters
       - description: The IAM instance profile associations.
         name: associationIds

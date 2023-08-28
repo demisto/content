@@ -287,7 +287,7 @@ Describes your IAM instance profile associations.
 
 | **Argument Name**   | **Description**                                                                                                                                           | **Required** |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| filters             | One or more filters.See documentation for details &amp; filter options.                                                                                   | Optional     | 
+| filters             | One or more filters. See documentation for details `&` filter options.                                                                                    | Optional     | 
 | associationIds      | The IAM instance profile associations.                                                                                                                    | Optional     | 
 | maxResults          | The maximum number of results to return in a single call. Specify a value between 5 and 1000.                                                             | Optional     | 
 | nextToken           | The token for the next set of results.                                                                                                                    | Optional     | 
