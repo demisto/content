@@ -24,7 +24,7 @@ class ConnectionMock:
     def __exit__(self, exc, value, tb):
         pass
 
-    def execute(self,sql_query, bind_vars):
+    def execute(self, sql_query, bind_vars):
         return ResultMock()
 
     def execution_options(self, isolation_level):
