@@ -32,16 +32,19 @@ HEADERS: dict = {
 
 
 class MsGraphClient:
-    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, azure_cloud, use_ssl, proxy,
                  ok_codes, certificate_thumbprint, private_key,
                  managed_identities_client_id: Optional[str] = None):
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, '/v1.0')
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
-                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         enc_key=enc_key, app_name=app_name, base_url=self.base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
                                          managed_identities_resource_uri=Resources.graph,
                                          command_prefix="msgraph-device",
+                                         azure_cloud=self.azure_cloud
                                          )
 
     def list_managed_devices(self, limit: int) -> tuple[list, Any]:
@@ -411,7 +414,7 @@ def main():
     tenant_id: str = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id', '')
     auth_and_token_url: str = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id', '')
     enc_key: str = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key', '')
-    base_url: str = urljoin(params.get('url', ''), '/v1.0')
+    azure_cloud = get_azure_cloud(params, 'Microsoft Graph Device Management')
     app_name: str = 'ms-graph-device-management'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
@@ -429,7 +432,7 @@ def main():
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
+    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, azure_cloud,
                                           use_ssl, proxy, ok_codes, certificate_thumbprint=certificate_thumbprint,
                                           private_key=private_key,
                                           managed_identities_client_id=managed_identities_client_id)

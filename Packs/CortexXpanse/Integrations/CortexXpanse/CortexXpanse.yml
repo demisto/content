@@ -63,11 +63,11 @@ configuration:
   options:
   - new
   - under_investigation
-  - resolved_-_no_longer_observed
-  - resolved_-_no_risk
-  - resolved_-_risk_accepted
-  - resolved_-_contested_asset
-  - resolved_-_remediated_automatically
+  - resolved_no_longer_observed
+  - resolved_no_risk
+  - resolved_risk_accepted
+  - resolved_contested_asset
+  - resolved_remediated_automatically
   - resolved
   additionalinfo: 'The statuses of the alerts that will be fetched. If no status is provided then alerts of all the statuses will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
 - display: Fetch alerts with tags (comma separated string)
@@ -393,11 +393,11 @@ script:
       predefined:
       - new
       - under_investigation
-      - resolved_-_no_longer_observed
-      - resolved_-_no_risk
-      - resolved_-_risk_accepted
-      - resolved_-_contested_asset
-      - resolved_-_remediated_automatically
+      - resolved_no_longer_observed
+      - resolved_no_risk
+      - resolved_risk_accepted
+      - resolved_contested_asset
+      - resolved_remediated_automatically
       - resolved
     - description: Comma-separated list of strings of the business units
       name: business_units_list
@@ -643,11 +643,6 @@ script:
       predefined:
       - new
       - under_investigation
-      - resolved_-_no_longer_observed
-      - resolved_-_no_risk
-      - resolved_-_risk_accepted
-      - resolved_-_contested_asset
-      - resolved_-_remediated_automatically
       - resolved
       description: Incident status.
     - name: resolve_comment
@@ -685,7 +680,7 @@ script:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isFetchSamples: true
   isfetch: true
   script: ''
