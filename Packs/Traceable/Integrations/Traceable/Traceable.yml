@@ -26,9 +26,9 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: 'true'
   type: 8
   required: false
+  defaultvalue: 'true'
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 1 days
@@ -101,10 +101,10 @@ configuration:
   - BOT
   - Unknown
 - display: Traceable Platform Endpoint URL
-  name: app_url
   defaultvalue: https://app.traceable.ai
-  type: 0
+  name: app_url
   required: false
+  type: 0
 - display: Incident type
   defaultvalue: Exploit
   name: incidentType
@@ -160,7 +160,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
