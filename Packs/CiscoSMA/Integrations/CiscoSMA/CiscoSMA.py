@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 import uuid
 
@@ -614,12 +614,9 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     try:
         if custom_query:
-            return {
-                key: value
-                for key, value in (
-                    field.split("=") for field in custom_query.split(";")
-                )
-            }
+            return dict(
+                field.split("=") for field in custom_query.split(";")
+            )
         else:
             return {}
     except ValueError:
@@ -769,7 +766,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
     return args
 
 
-def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tuple:
+def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tuple:
     """
     Executing Manual Pagination (using the page and page size arguments)
     or Automatic Pagination (display a number of total results).
