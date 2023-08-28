@@ -1037,6 +1037,8 @@ script:
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html.'
       isArray: true
+    - name: task_id
+      description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
     polling: true
   - name: qradar-reference-set-value-delete
     description: Removes a value from a reference set.
@@ -1106,6 +1108,8 @@ script:
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-domain_management-domains-GET.html.'
       isArray: true
+    - name: task_id
+      description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
   - name: qradar-indicators-upload
     description: Uploads indicators to QRadar.
     outputs:
@@ -2531,7 +2535,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true
