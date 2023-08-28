@@ -735,8 +735,6 @@ class MicrosoftClient(BaseClient):
             self.resources = resources if resources else []
             self.resource_to_access_token: dict[str, str] = {}
 
-        self.auth_code_reconfigured = False
-
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
         self.managed_identities_resource_uri = managed_identities_resource_uri
@@ -869,11 +867,7 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        self.auth_code_reconfigured = self.is_auth_code_reconfigured(integration_context.get('auth_code', ''))
-        if self.auth_code_reconfigured:
-            demisto.debug("Auth code reconfigured, saving new auth code to integration context")
-            integration_context['auth_code'] = self.auth_code
-        elif access_token and valid_until and self.epoch_seconds() < valid_until:
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
@@ -1107,7 +1101,7 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope
 
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-        if refresh_token and not self.auth_code_reconfigured:
+        if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
@@ -1392,29 +1386,6 @@ class MicrosoftClient(BaseClient):
 1. To sign in, use a web browser to open the page [{url}]({url})
 and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
-
-    def is_auth_code_reconfigured(self, auth_code) -> bool:
-        """
-        Checks if the auth_code is reconfigured by comparing to the self.auth_code from the instance params.
-        Args:
-            auth_code: The auth_code form the integration context.
-        Returns:
-            bool: True if the auth_code is reconfigured, otherwise False.
-        """
-        # Case of oproxy
-        if self.auth_type == OPROXY_AUTH_TYPE:
-            return False
-        # Case of the next times or after reconfigured the auth_code
-        if auth_code and self.auth_code:
-            is_reconfigured = auth_code != self.auth_code
-            demisto.debug(f'Auth code is reconfigured: {is_reconfigured}')
-            return is_reconfigured
-        # Case of the first time or after deleting the auth_code
-        elif auth_code or self.auth_code:
-            demisto.debug('Auth code is only in ' + ('integration_context' if auth_code else 'params'))
-            return True
-        else:
-            return False
 
 
 class NotFoundError(Exception):
