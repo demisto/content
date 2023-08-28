@@ -3768,17 +3768,19 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  - arguments:
-    - description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
-      name: MaxResults
-    - description: The token for the next set of results.
-      name: NextToken
+  - arguments: []
     description: Lists all the accounts in the organization.
     name: aws-organization-list-roots
     outputs:
-    - contextPath: AWS.Organization.Root
-      description: CHANGE
-      type: CHANGE
+    - contextPath: AWS.Organization.Roots.Id
+      description: The unique identifier (ID) for the root.
+      type: String
+    - contextPath: AWS.Organization.Roots.Arn
+      description: The Amazon Resource Name (ARN) of the root.
+      type: String
+    - contextPath: AWS.Organization.Roots.Name
+      description: The Amazon Resource Name (ARN) of the root.
+      type: String
   - arguments:
     - description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
       name: MaxResults
@@ -3796,7 +3798,7 @@ script:
     description: Lists all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
     name: aws-organization-list-children
     outputs:
-    - contextPath: AWS.Organization.Child
+    - contextPath: AWS.Organization.Children
       description: CHANGE
       type: CHANGE
   - arguments:
@@ -3804,7 +3806,7 @@ script:
       name: MaxResults
     - description: The token for the next set of results.
       name: NextToken
-    - description: The unique identifier (ID) of the OU or account whose parent containers you want to list. Don’t specify a root.
+    - description: The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.
       name: ChildId
       required: true
     description: Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child OU or account.
@@ -3824,7 +3826,7 @@ script:
       description: CHANGE
       type: CHANGE
   - arguments: []
-    description: Retrieves information about the organization that the user’s account belongs to.
+    description: Retrieves information about the organization that the user's account belongs to.
     name: aws-organization-describe-organization
     outputs:
     - contextPath: AWS.Organization.Organization

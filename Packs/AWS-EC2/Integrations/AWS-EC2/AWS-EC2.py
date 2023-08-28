@@ -2956,7 +2956,7 @@ def list_roots_command(args, aws_client):
             headerTransform=string_to_table_header,
         )
         command_results = CommandResults(
-            outputs_prefix="AWS.Organizations.Root",
+            outputs_prefix="AWS.Organizations.Roots",
             outputs_key_field="Id",
             outputs=response['Roots'],
             raw_response=response,
@@ -3248,10 +3248,10 @@ def main():
 
         elif command == 'aws-organization-list-roots':
             list_roots_command(args, aws_client)
-
+       
         elif command == 'aws-organization-list-children':
             list_children_command(args, aws_client)
-
+        # TODO
         elif command == 'aws-organization-list-parents':
             list_parents_command(args, aws_client)
 
