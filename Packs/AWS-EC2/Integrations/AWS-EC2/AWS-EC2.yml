@@ -3803,7 +3803,7 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.72237
   runonce: false
   script: '-'
   subtype: python3

@@ -274,6 +274,70 @@ Describes one or more of your instances.
 >| ami-1 | i-1 | Aqua | 2020-04-26T15:49:17Z | enabled | Receiver-gs-aqua-receiver |  |  | us-west-2 | stopped | m5.4xlarge | ReceiverInstance | arn1 | name1 |
 >| ami-2 | i-2 |  | 2020-08-19T11:23:48Z | disabled | flask-env | some_server | 1.2.3.4 | us-west-2 | running | t2.micro | AWSEBAutoScalingGroup | arn2 | name2 |
 
+### aws-ec2-describe-iam-instance-profile-associations
+
+***
+Describes your IAM instance profile associations.
+
+#### Base Command
+
+`aws-ec2-describe-iam-instance-profile-associations`
+
+#### Input
+
+| **Argument Name**   | **Description**                                                                                                                                           | **Required** |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| filters             | One or more filters.See documentation for details &amp; filter options.                                                                                   | Optional     | 
+| associationIds      | The IAM instance profile associations.                                                                                                                    | Optional     | 
+| maxResults          | The maximum number of results to return in a single call. Specify a value between 5 and 1000.                                                             | Optional     | 
+| nextToken           | The token for the next set of results.                                                                                                                    | Optional     | 
+| region              | The AWS Region, if not specified the default region will be used.                                                                                         | Optional     | 
+| roleArn             | The Amazon Resource Name (ARN) of the role to assume.                                                                                                     | Optional     | 
+| roleSessionName     | An identifier for the assumed role session.                                                                                                               | Optional     | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional     | 
+
+#### Context Output
+
+| **Path**                                                      | **Type** | **Description**                                         |
+|---------------------------------------------------------------|----------|---------------------------------------------------------|
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn | string   | The Amazon Resource Name (ARN) of the instance profile. | 
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id  | string   | The ID of the instance profile.                         | 
+| AWS.EC2.IamInstanceProfileAssociations.State                  | string   | The state of the association                            | 
+| AWS.EC2.IamInstanceProfileAssociations.InstanceId             | string   | The ID of the instance.                                 | 
+| AWS.EC2.IamInstanceProfileAssociations.AssociationId          | string   | The ID of the association.                              | 
+
+#### Command Example
+```!aws-ec2-describe-iam-instance-profile-associations```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "IamInstanceProfileAssociations": [
+                {
+                    "AssociationId": "iip-assoc-00703b768cac5f379",
+                    "InstanceId": "i-0b2ac6221e4803e7d",
+                    "IamInstanceProfile": {
+                        "Arn": "arn:aws:iam::664798938958:instance-profile/eks-9cc37c80-4a5a-5fef-3819-0f97cab9a721",
+                        "Id": "AIPAZVSI2Y5HGZPSEDD3Q"
+                    },
+                    "State": "associated"
+                },
+                {
+                    "AssociationId": "iip-assoc-0fdeba1a2861d2580", 
+                    "InstanceId": "i-06bab8afb71d19fea",
+                    "IamInstanceProfile": {
+                        "Arn": "arn:aws:iam::664798938958:instance-profile/eks-acc39684-414f-e424-a929-d1732a674339",
+                        "Id": "AIPAZVSI2Y5HJ3WGJF57M"
+                    }, 
+                    "State": "associated"
+                }
+            ]
+        }
+    }
+}
+```
 
 ### aws-ec2-describe-images
 ***
