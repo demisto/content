@@ -1,7 +1,7 @@
 id: Cortex ASM - Qualys Enrichment
 version: -1
 name: Cortex ASM - Qualys Enrichment
-escription: Given the IP address this playbook enriches information from Qualys assets.
+description: Given the IP address this playbook enriches information from Qualys assets.
 starttaskid: "0"
 tasks:
   "0":
