@@ -215,8 +215,11 @@ def test_fetch_with_archive_findings_without_findings(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
     client = MockClient(return_findings=False)
-    fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
-    assert set_last_run_mocker.call_args[0][0]['lastRun'] == '2022-04-18T00:00:00+00:00'
+    try:
+        fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
+        assert set_last_run_mocker.call_args[0][0]['lastRun'] == '2022-04-18T00:00:00+00:00'
+    except Exception:
+        raise AssertionError('Fail - error message was raised')
 
 
 @freeze_time("2021-03-14T13:34:14.758295Z")
