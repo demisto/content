@@ -533,7 +533,7 @@ tasks:
     task:
       id: 78b846ef-5777-4968-86e5-63471af8eddd
       version: -1
-      name: Check if custom "OHMYVT_copy" integration Enabled
+      name: Check if custom "OHMYVT_CTF" integration Enabled
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
       scriptName: IsIntegrationAvailable
@@ -547,7 +547,7 @@ tasks:
       - "12"
     scriptarguments:
       brandname:
-        simple: OHMYVT_copy
+        simple: OHMYVT_CTF
     results:
     - brandInstances
     separatecontext: false
