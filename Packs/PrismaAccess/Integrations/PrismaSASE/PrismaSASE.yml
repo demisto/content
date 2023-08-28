@@ -15,7 +15,7 @@ configuration:
   required: true
   type: 9
   displaypassword: API Client Secret
-- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.7'
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true

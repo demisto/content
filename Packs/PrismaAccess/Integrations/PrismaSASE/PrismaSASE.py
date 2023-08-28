@@ -2139,7 +2139,7 @@ def main():  # pragma: no cover
             return_results("The item you're searching for does not exist within the Prisma SASE API.")
 
         else:
-            return_error(f'Failed to execute {command} command. Errorrr: {str(e)}')
+            return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,7 +1,7 @@
 Provides commands for interaction with Prisma SASE API.
 This integration was integrated and tested with version v1 of Palo Alto Networks - Prisma SASE
 
-## Configure Palo Alto Networks - Prisma SASE on Cortex XSOAR TEST
+## Configure Palo Alto Networks - Prisma SASE on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Palo Alto Networks - Prisma SASE.
