@@ -25,6 +25,29 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+- defaultvalue: 'false'
+  display: Verify certificates
+  name: verify_certs
+  type: 8
+  required: false
+- display: HTTP proxy address with the protocol and port number
+  name: http_proxy
+  type: 0
+  required: false
+- display: HTTP proxy username
+  name: http_credentials
+  displaypassword: HTTP proxy password
+  required: false
+  type: 9
+- display: HTTPS proxy address with the protocol and port number
+  name: https_proxy
+  type: 0
+  required: false
+- display: HTTPS proxy username
+  name: https_credentials
+  displaypassword: HTTPS proxy password
+  required: false
+  type: 9
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
@@ -502,7 +525,7 @@ script:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.68562
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.69217
   runonce: false
   script: '-'
   subtype: python3
