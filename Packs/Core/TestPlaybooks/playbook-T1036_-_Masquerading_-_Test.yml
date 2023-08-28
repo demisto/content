@@ -1,0 +1,589 @@
+id: T1036 - Masquerading - Test
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: T1036 - Masquerading - Test
+description: |-
+  This playbook tests the 'T1036 - Masquerading' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:
+  - Checks the handling of malicious verdicts.
+  - Validate the enrichment of verdicts with malicious IOCs.
+  - Validate the conditional task to determine if the command line is malicious and handle the alert as a true positive.
+  - Validate the containment actions taken in response to the identified malicious IOCs.
+  - Validate the actions that were taken exist in the incident context.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8bd038f8-98ff-49f1-8dd8-3b6d1868c638
+    type: start
+    task:
+      id: 8bd038f8-98ff-49f1-8dd8-3b6d1868c638
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b2edc4a5-9adc-465b-8fda-85f054ce148e
+    type: playbook
+    task:
+      id: b2edc4a5-9adc-465b-8fda-85f054ce148e
+      version: -1
+      name: T1036 - Masquerading
+      description: |-
+        This playbook handles masquerading alerts based on the MITRE T1036 technique.
+        An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
+
+        **Attacker's Goals:**
+
+        An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+
+        And the following eradication actions:
+
+        * Manual process termination
+        * Manual file deletion
+        * Manual reset of the user’s password
+
+        External resources:
+
+        [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
+        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+      playbookName: T1036 - Masquerading
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "False"
+      AutoContainment:
+        simple: "True"
+      AutoEradication:
+        simple: "True"
+      AutoRecovery:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      FilePath:
+        complex:
+          root: alert
+          accessor: initiatorpath
+      FileRemediation:
+        simple: Quarantine
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      ShouldOpenTicket:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "True"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d11ef204-f2fb-45df-800e-14a15ee63074
+    type: regular
+    task:
+      id: d11ef204-f2fb-45df-800e-14a15ee63074
+      version: -1
+      name: Set alert agentid
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      agentid:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bbd9ef40-861b-4b94-855f-f1956249bea1
+    type: regular
+    task:
+      id: bbd9ef40-861b-4b94-855f-f1956249bea1
+      version: -1
+      name: Set alert hostip
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      hostip:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 421e7433-db1b-4d15-84d9-f772689c8675
+    type: regular
+    task:
+      id: 421e7433-db1b-4d15-84d9-f772689c8675
+      version: -1
+      name: Set alert initiatorsha256
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      initiatorsha256:
+        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 08b37def-8739-4e42-89be-29b4ea53e4fc
+    type: regular
+    task:
+      id: 08b37def-8739-4e42-89be-29b4ea53e4fc
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 7e061a4d-2f90-4324-86c1-45c53795ada0
+    type: condition
+    task:
+      id: 7e061a4d-2f90-4324-86c1-45c53795ada0
+      version: -1
+      name: Verify containment action succeed
+      description: Verification of the success of the containment actions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.blocklist
+                accessor: added_hashes
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: parentIncidentFields
+                accessor: severity
+            iscontext: true
+          right:
+            value:
+              simple: high
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: parentIncidentContext
+                accessor: BlockedFilesHash
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: parentIncidentContext
+                accessor: IsolatedEndpointsID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_id
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 64943186-96ad-4343-88df-33d5e17302a9
+    type: title
+    task:
+      id: 64943186-96ad-4343-88df-33d5e17302a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 225ac8e8-d2e5-49b4-852c-ab20eab9bd84
+    type: regular
+    task:
+      id: 225ac8e8-d2e5-49b4-852c-ab20eab9bd84
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      message:
+        simple: The test playbook has failed. Please check the reason why the file hash is not being added to the block list.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6f49b1e8-7311-47e2-8fb0-26d54450e7f2
+    type: regular
+    task:
+      id: 6f49b1e8-7311-47e2-8fb0-26d54450e7f2
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ca8f5ab3-0131-4082-8850-2b5271d9917a
+    type: condition
+    task:
+      id: ca8f5ab3-0131-4082-8850-2b5271d9917a
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 476e828c-6813-4e9e-8853-d0124a71aff3
+    type: regular
+    task:
+      id: 476e828c-6813-4e9e-8853-d0124a71aff3
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1995,
+        "width": 700,
+        "x": 440,
+        "y": 80
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2
