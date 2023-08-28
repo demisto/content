@@ -120,7 +120,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
 
 TIMEOUT_REQUESTS = 5
 WAIT_TIME_RASTERIZE = 5
-TIMEOUT_RASTERIZE = 20
+TIMEOUT_RASTERIZE = 120
 
 DOMAIN_CHECK_RASTERIZE = 'google.com'
 
@@ -474,13 +474,13 @@ def extract_created_date(entry_list: list):
     return None
 
 
-def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
+def get_prediction_single_url(model, url, force_model, who_is_enabled, debug, rasterize_timeout):
     is_white_listed = False
     # Rasterize html and image
     res_rasterize = demisto.executeCommand('rasterize', {'type': 'json',
                                                          'url': url,
                                                          'wait_time': WAIT_TIME_RASTERIZE,
-                                                         'execution-timeout': TIMEOUT_RASTERIZE
+                                                         'execution-timeout': rasterize_timeout
                                                          })
 
     demisto.debug('Rasterize Data: ' + json.dumps(res_rasterize))
@@ -763,7 +763,7 @@ def main():
         max_urls = int(demisto.args().get('maxNumberOfURL', 5))
         urls_argument = demisto.args().get('urls', '')
         reliability = demisto.args().get("reliability", DBotScoreReliability.A_PLUS)
-
+        rasterize_timeout = arg_to_number(demisto.args().get('rasterize_timeout', TIMEOUT_RASTERIZE))
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             reliability
         )
@@ -778,7 +778,7 @@ def main():
             return None
 
         # Run the model and get predictions
-        results = [get_prediction_single_url(model, x, force_model, who_is_enabled, debug) for x in urls]
+        results = [get_prediction_single_url(model, x, force_model, who_is_enabled, debug, rasterize_timeout) for x in urls]
 
         # Return outputs
         general_summary = return_general_summary(results)
