@@ -10,10 +10,6 @@ filter
         source_ipv6 = arrayindex(regextract(json_extract_scalar(access_device, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         result_enum = lowercase(result)
 | alter
-        xdm.target.ipv4 = "",
-        xdm.target.ipv6 = "",
-        xdm.source.port = 0,
-        xdm.target.port = 0,
         xdm.source.host.hostname = json_extract_scalar(access_device, "$.hostname"),
         xdm.source.ipv4 = source_ipv4,
         xdm.source.ipv6 = if(source_ipv4 = null, source_ipv6, null),
