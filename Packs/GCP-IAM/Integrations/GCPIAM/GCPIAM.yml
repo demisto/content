@@ -8,6 +8,7 @@ configuration:
   required: true
   type: 9
   hiddenusername: true
+  display: ''
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1235,9 +1236,9 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.55175
+  dockerimage: demisto/google-api-py3:1.0.0.72453
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
