@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal, Any
+from typing import Literal
 from collections.abc import Callable
 from collections.abc import Sequence
 
@@ -516,7 +516,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     params = demisto.params()
 
-    commands: dict[str, Callable[[Client, Any], CommandResults]] = {
+    commands: dict[str, Callable] = {
         "hda-create-ticket": create_ticket_command,
         "hda-list-tickets": list_tickets_command,
         "hda-add-ticket-comment": add_ticket_comment_command,
