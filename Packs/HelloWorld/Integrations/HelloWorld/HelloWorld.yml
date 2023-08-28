@@ -126,450 +126,180 @@ script:
       description: Should be Hello **something** here.
       type: String
   - arguments:
-    - description: Filter by alert severity. Comma-separated value (Low,Medium,High,Critical)
-      name: severity
-    - auto: PREDEFINED
-      description: Filter by alert status.
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-    - description: Filter by alert type
-      name: alert_type
-    - description: Maximum results to return.
-      name: max_results
-    - description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
-      name: start_time
-    description: Search HelloWorld Alerts.
-    name: helloworld-search-alerts
+    - description: Filter by alert incident ID. If not provided, all IDs will be retrieved.
+      name: incident_id
+    - description: How many alerts to fetch per page.
+      name: limit
+    - description: Token to get next page manually.
+      name: next_token
+    description: Lists the incidents found in the api
+    name: helloworld-incident-list
     outputs:
-    - contextPath: HelloWorld.Alert.alert_id
-      description: Alert ID.
-      type: String
-    - contextPath: HelloWorld.Alert.alert_status
-      description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
-      type: String
-    - contextPath: HelloWorld.Alert.alert_type
-      description: Alert type. For example 'Bug' or 'Vulnerability'.
-      type: String
-    - contextPath: HelloWorld.Alert.created
-      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: HelloWorld.Alert.name
-      description: Alert name.
-      type: String
-    - contextPath: HelloWorld.Alert.severity
-      description: Alert severity. Can be 'Low', 'Medium', 'High' or 'Critical'.
-      type: String
-  - arguments:
-    - description: Alert ID.
-      name: alert_id
-      required: true
-    description: Retrieve alert extra data by ID.
-    name: helloworld-get-alert
-    outputs:
-    - contextPath: HelloWorld.Alert.alert_id
-      description: Alert ID.
-      type: String
-    - contextPath: HelloWorld.Alert.created
-      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: HelloWorld.Alert.description
-      description: Alert description.
-      type: String
-    - contextPath: HelloWorld.Alert.device_id
-      description: ID of the device involved in the alert.
-      type: String
-    - contextPath: HelloWorld.Alert.device_ip
-      description: IP Address of the device involved in the alert.
-      type: String
-    - contextPath: HelloWorld.Alert.location
-      description: Location of the device involved in the alert.
-      type: String
-    - contextPath: HelloWorld.Alert.user
-      description: User involved in the alert.
-      type: String
-  - arguments:
-    - description: Alert ID to update.
-      name: alert_id
-      required: true
-    - auto: PREDEFINED
-      description: New status of the alert.
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: true
-    description: Update the status for an alert.
-    name: helloworld-update-alert-status
-    outputs:
-    - contextPath: HelloWorld.Alert.alert_id
-      description: Alert ID.
-      type: String
-    - contextPath: HelloWorld.Alert.updated
-      description: Alert update time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: HelloWorld.Alert.alert_status
-      description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
-      type: String
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
-      description: List of IPs.
-      isArray: true
-    - name: threshold
-      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
-    outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
+    - contextPath: HelloWorld.Incident.assignee_id
+      description: The assignee id
       type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
+    - contextPath: HelloWorld.Incident.assignee_email
+      description: The email of the assignee
       type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: HelloWorld.IP.asn
-      description: The autonomous system name for the IP address.
-      type: String
-    - contextPath: HelloWorld.IP.asn_cidr
-      description: The ASN CIDR.
-      type: String
-    - contextPath: HelloWorld.IP.asn_country_code
-      description: The ASN country code.
-      type: String
-    - contextPath: HelloWorld.IP.asn_date
-      description: The date on which the ASN was assigned.
+    - contextPath: HelloWorld.Incident.date
+      description: The incident's date
       type: Date
-    - contextPath: HelloWorld.IP.asn_description
-      description: The ASN description.
+    - contextPath: HelloWorld.Incident.detector.name
+      description: The incident's detector name
       type: String
-    - contextPath: HelloWorld.IP.asn_registry
-      description: The registry the ASN belongs to.
+    - contextPath: HelloWorld.Incident.detector.display_name
+      description: The display name of the incident's detector
       type: String
-    - contextPath: HelloWorld.IP.entities
-      description: Entities associated to the IP.
+    - contextPath: HelloWorld.Incident.detector.nature
+      description: The nature of the incident's detector
       type: String
-    - contextPath: HelloWorld.IP.ip
-      description: The actual IP address.
+    - contextPath: HelloWorld.Incident.detector.family
+      description: The family of the incident's detector
       type: String
-    - contextPath: HelloWorld.IP.network.cidr
-      description: Network CIDR for the IP address.
+    - contextPath: HelloWorld.Incident.detector.detector_group_name
+      description: The group name of the incident's detector
       type: String
-    - contextPath: HelloWorld.IP.network.country
-      description: The country of the IP address.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.end_address
-      description: The last IP address of the CIDR.
+    - contextPath: HelloWorld.Incident.detector.detector_group_display_name
+      description: The group's display name of the incident's detector
       type: String
-    - contextPath: HelloWorld.IP.network.events.action
-      description: The action that happened on the event.
+    - contextPath: HelloWorld.Incident.gitguardian_url
+      description: The url of the incident in the api
       type: String
-    - contextPath: HelloWorld.IP.network.events.actor
-      description: The actor that performed the action on the event.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.events.timestamp
-      description: The timestamp when the event occurred.
-      type: String
-    - contextPath: HelloWorld.IP.network.handle
-      description: The handle of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.ip_version
-      description: The IP address version.
-      type: String
-    - contextPath: HelloWorld.IP.network.links
-      description: Links associated to the IP address.
-      type: String
-    - contextPath: HelloWorld.IP.network.name
-      description: The name of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.notices.description
-      description: The description of the notice.
-      type: String
-    - contextPath: HelloWorld.IP.network.notices.links
-      description: Links associated with the notice.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.notices.title
-      description: Title of the notice.
-      type: String
-    - contextPath: HelloWorld.IP.network.parent_handle
-      description: Handle of the parent network.
-      type: String
-    - contextPath: HelloWorld.IP.network.raw
-      description: Additional raw data for the network.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.remarks
-      description: Additional remarks for the network.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.start_address
-      description: The first IP address of the CIDR.
-      type: String
-    - contextPath: HelloWorld.IP.network.status
-      description: Status of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.type
-      description: The type of the network.
-      type: String
-    - contextPath: HelloWorld.IP.query
-      description: IP address that was queried.
-      type: String
-    - contextPath: HelloWorld.IP.raw
-      description: Additional raw data for the IP address.
-      type: Unknown
-    - contextPath: HelloWorld.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+    - contextPath: HelloWorld.Incident.id
+      description: The id of the incident
       type: Number
-    - contextPath: IP.Address
-      description: IP address.
+    - contextPath: HelloWorld.Incident.ignore_reason
+      description: The reason the incident has been ignored
       type: String
-    - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
-      type: String
-    - contextPath: IP.ASN
-      description: The autonomous system name for the IP address.
-      type: String
-    - contextPath: IP.Relationships.EntityA
-      description: The source of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityB
-      description: The destination of the relationship.
-      type: string
-    - contextPath: IP.Relationships.Relationship
-      description: The name of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityAType
-      description: The type of the source of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityBType
-      description: The type of the destination of the relationship.
-      type: string
-    description: Return IP information and reputation
-  - name: domain
-    arguments:
-    - name: domain
-      default: true
-      description: List of Domains.
-      isArray: true
-    - name: threshold
-      description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
-    outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
+    - contextPath: HelloWorld.Incident.ignored_at
+      description: The time the incident was ignored at
+      type: Unknown
+    - contextPath: HelloWorld.Incident.ignorer_api_token_id
+      description: ''
       type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: Domain.Name
-      description: The domain name.
-      type: String
-    - contextPath: Domain.Malicious.Vendor
-      description: The vendor reporting the domain as malicious.
-      type: String
-    - contextPath: Domain.Malicious.Description
-      description: A description explaining why the domain was reported as malicious.
-      type: String
-    - contextPath: Domain.Registrant.Name
-      description: The name of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.Country
-      description: The country of the registrant.
-      type: String
-    - contextPath: Domain.Organization
-      description: The organization of the domain.
-      type: String
-    - contextPath: Domain.CreationDate
-      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: Domain.ExpirationDate
-      description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: Domain.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: Domain.NameServers
-      description: Name servers of the domain.
-      type: String
-    - contextPath: Domain.WHOIS.NameServers
-      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
-      type: String
-    - contextPath: Domain.WHOIS.CreationDate
-      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
-      type: Date
-    - contextPath: Domain.WHOIS.ExpirationDate
-      description: The expiration date of the domain.
-      type: Date
-    - contextPath: Domain.WHOIS.Registrar.Name
-      description: The name of the registrar, for example 'GoDaddy'
-      type: String
-    - contextPath: IP.ASN
-      description: The autonomous system name for the IP address.
-      type: String
-    - contextPath: HelloWorld.Domain.address
-      description: Domain admin address.
-      type: String
-    - contextPath: HelloWorld.Domain.city
-      description: Domain admin city.
-      type: String
-    - contextPath: HelloWorld.Domain.country
-      description: Domain admin country.
-      type: String
-    - contextPath: HelloWorld.Domain.creation_date
-      description: Domain creation date. Format is ISO8601.
-      type: Date
-    - contextPath: HelloWorld.Domain.dnssec
-      description: DNSSEC status.
-      type: String
-    - contextPath: HelloWorld.Domain.domain
-      description: The domain name.
-      type: String
-    - contextPath: HelloWorld.Domain.domain_name
-      description: Domain name options.
-      type: String
-    - contextPath: HelloWorld.Domain.emails
-      description: Contact emails.
-      type: String
-    - contextPath: HelloWorld.Domain.expiration_date
-      description: Expiration date. Format is ISO8601.
-      type: Date
-    - contextPath: HelloWorld.Domain.name
-      description: Domain admin name.
-      type: String
-    - contextPath: HelloWorld.Domain.name_servers
-      description: Name server.
-      type: String
-    - contextPath: HelloWorld.Domain.org
-      description: Domain organization.
-      type: String
-    - contextPath: HelloWorld.Domain.referral_url
-      description: Referral URL.
-      type: Unknown
-    - contextPath: HelloWorld.Domain.registrar
-      description: Domain registrar.
-      type: String
-    - contextPath: HelloWorld.Domain.score
-      description: Reputation score from HelloWorld for this domain (0 to 100, where higher is worse).
+    - contextPath: HelloWorld.Incident.ignorer_id
+      description: ''
       type: Number
-    - contextPath: HelloWorld.Domain.state
-      description: Domain admin state.
+    - contextPath: HelloWorld.Incident.occurrences.author_info
+      description: The author information of the occurence of the incident
       type: String
-    - contextPath: HelloWorld.Domain.status
-      description: Domain status.
+    - contextPath: HelloWorld.Incident.occurrences.author_name
+      description: The name of the incident's occurence author
       type: String
-    - contextPath: HelloWorld.Domain.updated_date
-      description: Updated date. Format is ISO8601.
+    - contextPath: HelloWorld.Incident.occurrences.date
+      description: The date of the incident's occurence
       type: Date
-    - contextPath: HelloWorld.Domain.whois_server
-      description: WHOIS server.
+    - contextPath: HelloWorld.Incident.occurrences.filepath
+      description: The file path of the incident's occurence
       type: String
-    - contextPath: HelloWorld.Domain.zipcode
-      description: Domain admin zipcode.
-      type: Unknown
-    description: Returns Domain information and reputation.
-  - arguments:
-    - description: Asset to start the scan against.
-      name: hostname
-      required: true
-    description: Start scan on an asset.
-    name: helloworld-scan-start
-    outputs:
-    - contextPath: HelloWorld.Scan.scan_id
-      description: Unique ID of the scan.
-      type: string
-    - contextPath: HelloWorld.Scan.status
-      description: Status of the scan ('RUNNING' or 'COMPLETE').
-      type: string
-    - contextPath: HelloWorld.Scan.hostname
-      description: The hostname the scan is run against.
-      type: string
-  - arguments:
-    - description: List of Scan IDs. helloworld-scan-start returns "scan_id".
-      isArray: true
-      name: scan_id
-      required: true
-    description: Retrieve scan status for one or more scan IDs.
-    name: helloworld-scan-status
-    outputs:
-    - contextPath: HelloWorld.Scan.scan_id
-      description: Unique ID of the scan.
-      type: string
-    - contextPath: HelloWorld.Scan.status
-      description: Status of the scan ('RUNNING' or 'COMPLETE').
-      type: string
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: file
-      description: Results format (file or JSON).
-      name: format
-      predefined:
-      - json
-      - file
-      required: true
-    - description: Unique ID of the scan.
-      name: scan_id
-      required: true
-    description: Retrieve scan status in Context or as a File (default) for a Scan.
-    name: helloworld-scan-results
-    outputs:
-    - contextPath: HelloWorld.Scan.entities.entity-id
-      description: Scanned entity ID.
+    - contextPath: HelloWorld.Incident.occurrences.id
+      description: The id of the incident's occurence
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.incident_id
+      description: The id of the incident the occurence belong to
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.kind
+      description: The kind of the incident's occurencr
       type: String
-    - contextPath: HelloWorld.Scan.entities.ip_address
-      description: Scanned entity IP address.
+    - contextPath: HelloWorld.Incident.occurrences.matches.name
+      description: ''
       type: String
-    - contextPath: HelloWorld.Scan.entities.type
-      description: Scanned entity type.
+    - contextPath: HelloWorld.Incident.occurrences.matches.indice_start
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.matches.indice_end
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.matches.post_line_start
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.matches.post_line_end
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.presence
+      description: ''
       type: String
-    - contextPath: HelloWorld.Scan.entities.vulnerability_status
-      description: Scanned entity vulnerability status.
+    - contextPath: HelloWorld.Incident.occurrences.sha
+      description: The sha of the incident's occurence
       type: String
-    - contextPath: HelloWorld.Scan.entities.vulns
-      description: Scanned entity CVE.
+    - contextPath: HelloWorld.Incident.occurrences.location
+      description: ''
       type: String
-    - contextPath: HelloWorld.Scan.scan_id
-      description: Unique ID of the scan.
+    - contextPath: HelloWorld.Incident.occurrences.source.id
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.source.url
+      description: ''
       type: String
-    - contextPath: HelloWorld.Scan.status
-      description: Status of the scan ('RUNNING' or 'COMPLETE').
+    - contextPath: HelloWorld.Incident.occurrences.source.type
+      description: ''
       type: String
-    - contextPath: InfoFile.EntryID
-      description: The EntryID of the report file.
-      type: Unknown
-    - contextPath: InfoFile.Extension
-      description: The extension of the report file.
-      type: string
-    - contextPath: InfoFile.Name
-      description: The name of the report file.
-      type: string
-    - contextPath: InfoFile.Info
-      description: The info of the report file.
-      type: string
-    - contextPath: InfoFile.Size
-      description: The size of the report file.
-      type: number
-    - contextPath: InfoFile.Type
-      description: The type of the report file.
-      type: string
-    - contextPath: CVE.ID
-      description: The ID of the CVE.
-      type: string
+    - contextPath: HelloWorld.Incident.occurrences.source.full_name
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.health
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.default_branch
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.default_branch_head
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.open_incidents_count
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.source.closed_incidents_count
+      description: ''
+      type: Number
+    - contextPath: HelloWorld.Incident.occurrences.source.visibility
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.last_scan.date
+      description: ''
+      type: Date
+    - contextPath: HelloWorld.Incident.occurrences.source.last_scan.status
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.source.external_id
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.url
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences.tags
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.tags
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.occurrences_count
+      description: The number of incident's occurrences
+      type: Number
+    - contextPath: HelloWorld.Incident.regression
+      description: ''
+      type: Boolean
+    - contextPath: HelloWorld.Incident.resolver_id
+      description: The id of the incident's resolver
+      type: Number
+    - contextPath: HelloWorld.Incident.secret_hash
+      description: The secret hash of the incident
+      type: String
+    - contextPath: HelloWorld.Incident.secret_revoked
+      description: ''
+      type: Boolean
+    - contextPath: HelloWorld.Incident.status
+      description: The status of the incident
+      type: String
+    - contextPath: HelloWorld.Incident.validity
+      description: The validity of the incident
+      type: String
+    - contextPath: HelloWorld.Incident.share_url
+      description: ''
+      type: String
+    - contextPath: HelloWorld.Incident.severity
+      description: The severity of the incident
+      type: String
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false

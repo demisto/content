@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -242,12 +243,13 @@ variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
-from CommonServerUserPython import *
-
 import json
-import urllib3
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
+
 import dateparser
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+import urllib3
+
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -258,6 +260,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+LIMIT = 10
 
 ''' CLIENT CLASS '''
 
@@ -272,180 +275,76 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/ip' API endpoint
-
-        Args:
-            ip (str): IP address to get the reputation for.
-
-        Returns:
-            dict: dict containing the IP reputation as returned from the API
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/ip',
-            params={
-                'ip': ip
-            }
-        )
-
-    def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
-        """
-        Gets the Domain reputation using the '/domain' API endpoint.
-
-        Args:
-            domain (str): Domain name to get the reputation for.
-
-        Returns:
-            dict: dict containing the domain reputation as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/domain',
-            params={
-                'domain': domain
-            }
-        )
-
-    def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int],
-                      start_time: Optional[int]) -> List[Dict[str, Any]]:
-        """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
-
-        Args:
-            alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
-            severity (str): severity of the alert to search for. Comma-separated values. Options are: "Low", "Medium",
-                "High", "Critical".
-            alert_type (str): type of alerts to search for. There is no list of predefined types.
-            max_results (int): maximum number of results to return.
-            start_time (int): start timestamp (epoch in seconds) for the alert search.
-
-        Returns:
-            list: list of HelloWorld alerts as dicts.
-        """
-
-        request_params: Dict[str, Any] = {}
-
-        if alert_status:
-            request_params['alert_status'] = alert_status
-
-        if alert_type:
-            request_params['alert_type'] = alert_type
-
-        if severity:
-            request_params['severity'] = severity
-
-        if max_results:
-            request_params['max_results'] = max_results
-
-        if start_time:
-            request_params['start_time'] = start_time
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_alerts',
-            params=request_params
-        )
-
-    def get_alert(self, alert_id: str) -> Dict[str, Any]:
-        """
-        Gets a specific HelloWorld alert by id.
-
-        Args:
-            alert_id (str): ID of the alert to return.
-
-        Returns:
-            dict: dict containing the alert as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_alert_details',
-            params={
-                'alert_id': alert_id
-            }
-        )
-
-    def update_alert_status(self, alert_id: str, alert_status: str) -> Dict[str, Any]:
-        """
-        Changes the status of a specific HelloWorld alert.
-
-        Args:
-            alert_id (str): ID of the alert to return.
-            alert_status (str): new alert status. Options are: 'ACTIVE' or 'CLOSED'.
-
-        Returns:
-            dict: dict containing the scan status as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/change_alert_status',
-            params={
-                'alert_id': alert_id,
-                'alert_status': alert_status
-            }
-        )
-
-    def scan_start(self, hostname: str) -> Dict[str, Any]:
-        """
-        Starts a HelloWorld scan on a specific hostname.
-
-        Args:
-            hostname (str): hostname of the machine to scan.
-
-        Returns:
-            dict: dict containing the scan status as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/start_scan',
-            params={
-                'hostname': hostname
-            }
-        )
-
-    def scan_status(self, scan_id: str) -> Dict[str, Any]:
-        """
-        Gets the status of a HelloWorld scan.
-
-        Args:
-            scan_id (str): ID of the scan to retrieve results for.
-
-        Returns:
-            dict: dict containing the scan status as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/check_scan',
-            params={
-                'scan_id': scan_id
-            }
-        )
-
-    def scan_results(self, scan_id: str) -> Dict[str, Any]:
-        """Gets the results of a HelloWorld scan
-
-        Args:
-            scan_id (str): ID of the scan to retrieve results for.
-
-        Returns:
-            dict: dict containing the scan results as returned from the API.
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_scan_results',
-            params={
-                'scan_id': scan_id
-            }
-        )
+#     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
+#         """Gets the IP reputation using the '/ip' API endpoint
+#
+#         Args:
+#             ip (str): IP address to get the reputation for.
+#
+#         Returns:
+#             dict: dict containing the IP reputation as returned from the API
+#         """
+#         mocked_response = {}
+#         return mocked_response
+#
+#     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
+#                       alert_type: Optional[str], max_results: Optional[int],
+#                       start_time: Optional[int]) -> List[Dict[str, Any]]:
+#         """
+#         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
+#         All the parameters are passed directly to the API as HTTP POST parameters in the request
+#
+#         Args:
+#             alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
+#             severity (str): severity of the alert to search for. Comma-separated values. Options are: "Low", "Medium",
+#                 "High", "Critical".
+#             alert_type (str): type of alerts to search for. There is no list of predefined types.
+#             max_results (int): maximum number of results to return.
+#             start_time (int): start timestamp (epoch in seconds) for the alert search.
+#
+#         Returns:
+#             list: list of HelloWorld alerts as dicts.
+#         """
+#
+#         request_params: Dict[str, Any] = {}
+#
+#         if alert_status:
+#             request_params['alert_status'] = alert_status
+#
+#         if alert_type:
+#             request_params['alert_type'] = alert_type
+#
+#         if severity:
+#             request_params['severity'] = severity
+#
+#         if max_results:
+#             request_params['max_results'] = max_results
+#
+#         if start_time:
+#             request_params['start_time'] = start_time
+#
+#         return self._http_request(
+#             method='GET',
+#             url_suffix='/get_alerts',
+#             params=request_params
+#         )
+#
+#         """Gets the results of a HelloWorld scan
+#
+#         Args:
+#             scan_id (str): ID of the scan to retrieve results for.
+#
+#         Returns:
+#             dict: dict containing the scan results as returned from the API.
+#         """
+#
+#         return self._http_request(
+#             method='GET',
+#             url_suffix='/get_scan_results',
+#             params={
+#                 'scan_id': scan_id
+#             }
+#         )
 
     def say_hello(self, name: str) -> str:
         """
@@ -460,37 +359,25 @@ class Client(BaseClient):
 
         return f'Hello {name}'
 
+    def get_incident_list(self, page_size, cursor: str = None) -> dict:
+        params = {"per_page": page_size}
+        if cursor:
+            params['cursor'] = cursor
+
+        return self._http_request(
+            method='GET',
+            url_suffix='v1/incidents/secrets',
+            params=params
+        )
+
+    def get_incident(self, incident_id: int) -> dict:
+        return self._http_request(
+            method='GET',
+            url_suffix=f'v1/incidents/secrets/{incident_id}'
+        )
+
 
 ''' HELPER FUNCTIONS '''
-
-
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """
-    Converts whois date format to an ISO8601 string.
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    Args:
-        domain_date (str/list): a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-        date_format (int): The format date to which the function will convert the given date.
-
-    Returns:
-        str: Parsed time, default in ISO8601 format.
-    """
-
-    if isinstance(domain_date, str):
-        # if str parse the value
-        domain_date_dt = dateparser.parse(domain_date)
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        domain_date_dt = dateparser.parse(domain_date[0])
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    # in any other case return nothing
-    return None
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -574,7 +461,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+# def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     helloworld-say-hello command: Returns Hello {somename}
 
@@ -871,125 +758,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
-                              reliability: DBotScoreReliability) -> List[CommandResults]:
-    """
-    domain command: Returns domain reputation for a list of domains.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['domain']`` list of domains or a single domain.
-            ``args['threshold']`` threshold to determine whether a domain is malicious.
-        default_threshold (int): default threshold to determine whether a domain is malicious if threshold is not
-            specified in the XSOAR arguments.
-        reliability (DBotScoreReliability): reliability of the source providing the intelligence data.
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains Domains.
-    """
-
-    # INTEGRATION DEVELOPER TIP
-    # Reputation commands usually support multiple inputs (i.e. arrays), so
-    # they can be invoked once in XSOAR. In this case the API supports a single
-    # IP at a time, so we will cycle this for all the members of the array.
-    # We use argToList(), implemented in CommonServerPython.py to automatically
-    # return a list of a single element even if the provided input is a scalar.
-
-    domains = argToList(args.get('domain'))
-    if len(domains) == 0:
-        raise ValueError('domain(s) not specified')
-
-    threshold = int(args.get('threshold', default_threshold))
-
-    # Initialize an empty list of CommandResults to return,
-    # each CommandResult will contain context standard for Domain
-    command_results: List[CommandResults] = []
-
-    for domain in domains:
-        domain_data = client.get_domain_reputation(domain)
-        domain_data['domain'] = domain
-
-        # INTEGRATION DEVELOPER TIP
-        # We want to convert the dates to ISO8601 as
-        # Cortex XSOAR customers and integrations use this format by default
-        if 'creation_date' in domain_data:
-            domain_data['creation_date'] = parse_domain_date(domain_data['creation_date'])
-        if 'expiration_date' in domain_data:
-            domain_data['expiration_date'] = parse_domain_date(domain_data['expiration_date'])
-        if 'updated_date' in domain_data:
-            domain_data['updated_date'] = parse_domain_date(domain_data['updated_date'])
-
-        # HelloWorld score to XSOAR reputation mapping
-        # See: https://xsoar.pan.dev/docs/integrations/dbot
-        # We are using Common.DBotScore as macros to simplify
-        # the mapping.
-
-        score = 0
-        reputation = int(domain_data.get('score', 0))
-        if reputation == 0:
-            score = Common.DBotScore.NONE  # unknown
-        elif reputation >= threshold:
-            score = Common.DBotScore.BAD  # bad
-        elif reputation >= threshold / 2:
-            score = Common.DBotScore.SUSPICIOUS  # suspicious
-        else:
-            score = Common.DBotScore.GOOD  # good
-
-        # INTEGRATION DEVELOPER TIP
-        # The context is bigger here than other commands, as it consists in 3
-        # parts: the vendor-specific context (HelloWorld), the standard-context
-        # (Domain) and the DBotScore.
-        # More information:
-        # https://xsoar.pan.dev/docs/integrations/context-and-outputs
-        # https://xsoar.pan.dev/docs/integrations/context-standards
-        # https://xsoar.pan.dev/docs/integrations/dbot
-        # Also check the sample Design Document
-
-        dbot_score = Common.DBotScore(
-            indicator=domain,
-            integration_name='HelloWorld',
-            indicator_type=DBotScoreType.DOMAIN,
-            score=score,
-            malicious_description=f'Hello World returned reputation {reputation}',
-            reliability=reliability
-        )
-
-        # Create the Domain Standard Context structure using Common.Domain and
-        # add dbot_score to it.
-        domain_standard_context = Common.Domain(
-            domain=domain,
-            creation_date=domain_data.get('creation_date', None),
-            expiration_date=domain_data.get('expiration_date', None),
-            updated_date=domain_data.get('updated_date', None),
-            organization=domain_data.get('org', None),
-            name_servers=domain_data.get('name_servers', None),
-            registrant_name=domain_data.get('name', None),
-            registrant_country=domain_data.get('country', None),
-            registrar_name=domain_data.get('registrar', None),
-            dbot_score=dbot_score
-        )
-
-        # In this case we want to use an custom markdown to specify the table title,
-        # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
-        #  automatically
-        readable_output = tableToMarkdown('Domain', domain_data)
-
-        # INTEGRATION DEVELOPER TIP
-        # The output key will be ``HelloWorld.Domain``, using ``domain`` as the key
-        # field.
-        # ``indicator`` is used to provide the context standard (Domain)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='HelloWorld.Domain',
-            outputs_key_field='domain',
-            outputs=domain_data,
-            indicator=domain_standard_context
-        ))
-    return command_results
-
-
-def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+# def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     helloworld-search-alerts command: Search alerts in HelloWorld
 
@@ -1061,238 +830,25 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    helloworld-get-alert command: Returns a HelloWorld alert.
+def incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident_id = arg_to_number(args.get("incident_id"))
+    page_size = arg_to_number(args.get("limit") or LIMIT)
+    cursor = args.get("next_token")
 
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            `args['alert_id']`` alert ID to return.
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an alert.
-    """
-
-    alert_id = args.get('alert_id', None)
-    if not alert_id:
-        raise ValueError('alert_id not specified')
-
-    alert = client.get_alert(alert_id=alert_id)
-
-    # INTEGRATION DEVELOPER TIP
-    # We want to convert the "created" time from timestamp(s) to ISO8601 as
-    # Cortex XSOAR customers and integrations use this format by default
-    if 'created' in alert:
-        created_time_ms = int(alert.get('created', '0')) * 1000
-        alert['created'] = timestamp_to_datestring(created_time_ms)
-
-    # tableToMarkdown() is defined is CommonServerPython.py and is used very
-    # often to convert lists and dicts into a human readable format in markdown
-    readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='HelloWorld.Alert',
-        outputs_key_field='alert_id',
-        outputs=alert
-    )
-
-
-def update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    helloworld-update-alert-status command: Changes the status of an alert.
-    Changes the status of a HelloWorld alert and returns the updated alert info
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['alert_id']`` alert ID to update.
-            ``args['status']`` new status, either ACTIVE or CLOSED.
-
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-            alert.
-    """
-
-    alert_id = args.get('alert_id', None)
-    if not alert_id:
-        raise ValueError('alert_id not specified')
-
-    status = args.get('status', None)
-    if status not in ('ACTIVE', 'CLOSED'):
-        raise ValueError('status must be either ACTIVE or CLOSED')
-
-    alert = client.update_alert_status(alert_id, status)
-
-    # INTEGRATION DEVELOPER TIP
-    # We want to convert the "updated" time from timestamp(s) to ISO8601 as
-    # Cortex XSOAR customers and integrations use this format by default
-    if 'updated' in alert:
-        updated_time_ms = int(alert.get('updated', '0')) * 1000
-        alert['updated'] = timestamp_to_datestring(updated_time_ms)
-
-    # tableToMarkdown() is defined is CommonServerPython.py and is used very
-    # often to convert lists and dicts into a human readable format in markdown
-    readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='HelloWorld.Alert',
-        outputs_key_field='alert_id',
-        outputs=alert
-    )
-
-
-def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    helloworld-start-scan command: Starts a HelloWorld scan.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['hostname']`` hostname to run the scan on
-
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains a scan job
-        status.
-    """
-
-    hostname = args.get('hostname', None)
-    if not hostname:
-        raise ValueError('hostname not specified')
-
-    scan = client.scan_start(hostname=hostname)
-
-    # INTEGRATION DEVELOPER TIP
-    # The API doesn't return the hostname of the scan it was called against,
-    # which is the input. It could be useful to have that information in the
-    # XSOAR context, so we are adding it manually here, based on the command
-    # input argument.
-    scan['hostname'] = hostname
-
-    scan_id = scan.get('scan_id')
-
-    readable_output = f'Started scan {scan_id}'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='HelloWorld.Scan',
-        outputs_key_field='scan_id',
-        outputs=scan
-    )
-
-
-def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    helloworld-scan-status command: Returns status for HelloWorld scans.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['scan_id']`` list of scan IDs or single scan ID.
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains a scan
-        status.
-    """
-
-    scan_id_list = argToList(args.get('scan_id', []))
-    if len(scan_id_list) == 0:
-        raise ValueError('scan_id(s) not specified')
-
-    scan_list: List[Dict[str, Any]] = []
-    for scan_id in scan_id_list:
-        scan = client.scan_status(scan_id=scan_id)
-        scan_list.append(scan)
-
-    readable_output = tableToMarkdown('Scan status', scan_list)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='HelloWorld.Scan',
-        outputs_key_field='scan_id',
-        outputs=scan_list
-    )
-
-
-def scan_results_command(client: Client, args: Dict[str, Any]) ->\
-        Union[Dict[str, Any], CommandResults, List[CommandResults]]:
-    """
-    helloworld-scan-results command: Returns results for a HelloWorld scan.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['scan_id']`` scan ID to retrieve results.
-            ``args['format']`` format of the results. Options are 'file' or 'json'.
-
-    Returns:
-        CommandResults/dict: A ``CommandResults`` compatible to return ``return_results()``, that contains a scan result
-        when json format is selected, or a Dict of entries also compatible to ``return_results()`` that contains the
-        output file when file format is selected.
-    """
-
-    scan_id = args.get('scan_id', None)
-    if not scan_id:
-        raise ValueError('scan_id not specified')
-
-    scan_format = args.get('format', 'file')
-
-    # INTEGRATION DEVELOPER TIP
-    # This function supports returning data in multiple formats, either in a json
-    # format that is then mapped to a table, or as a file attachment.
-    # In this case, if the format is "file", the return value is different and
-    # uses a raw format  and ``fileResult()`` directly instead of
-    # ``CommandResults``. In either case you should return data to main and
-    # call ``return_results()`` from there.
-    # Always use ``CommandResults`` when possible but, if you need to return
-    # anything special like a file, you can use this raw format.
-
-    results = client.scan_results(scan_id=scan_id)
-    if scan_format == 'file':
-        return (
-            fileResult(
-                filename=f'{scan_id}.json',
-                data=json.dumps(results, indent=4),
-                file_type=entryTypes['entryInfoFile']
-            )
-        )
-    elif scan_format == 'json':
-        # This scan returns CVE information. CVE is also part of the XSOAR
-        # context standard, so we must extract CVE IDs and return them also.
-        # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
-        cves: List[Common.CVE] = []
-        command_results: List[CommandResults] = []
-        entities = results.get('entities', [])
-        for e in entities:
-            if 'vulns' in e.keys() and isinstance(e['vulns'], list):
-                cves.extend(
-                    [Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
-
-        # INTEGRATION DEVELOPER TIP
-        # We want to provide a unique result for every CVE indicator.
-        # Since every entity may contain several CVE indicators,
-        # we will split the entities result and CVE indicator results.
-        readable_output = tableToMarkdown(f'Scan {scan_id} results', entities)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='HelloWorld.Scan',
-            outputs_key_field='scan_id',
-            outputs=results
-        ))
-
-        cves = list(set(cves))  # make the indicator list unique
-        for cve in cves:
-            command_results.append(CommandResults(
-                readable_output=f"CVE {cve}",
-                indicator=cve
-            ))
-        return command_results
+    if incident_id:
+        res = client.get_incident(incident_id)
     else:
-        raise ValueError('Incorrect format, must be "json" or "file"')
+        res = client.get_incident_list(page_size=page_size, cursor=cursor)
+    if not isinstance(res, list):
+        res = [res]
+    readable_output = tableToMarkdown('Incident List', res)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Incident',
+        outputs_key_field='id',
+        outputs=res
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -1310,7 +866,7 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(params.get('url'), '/api/v1')
+    base_url = params.get('url')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -1344,7 +900,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
-            'Authorization': f'Bearer {api_key}'
+            'Authorization': f'Token {api_key}'
         }
         client = Client(
             base_url=base_url,
@@ -1356,6 +912,10 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client, params, first_fetch_timestamp)
             return_results(result)
+
+        elif command == 'ip':
+            default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
+            return_results(dummy_ip_reputation_command(client, args, default_threshold_ip, reliability))
 
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1388,35 +948,17 @@ def main() -> None:
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif command == 'ip':
-            default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
-            return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
+        elif command == 'helloworld-incident-list':
+            return_results(incident_list_command(client, args))
 
-        elif command == 'domain':
-            default_threshold_domain = \
-                arg_to_number(params.get('threshold_domain')) or DEFAULT_INDICATORS_THRESHOLD
-            return_results(domain_reputation_command(client, args, default_threshold_domain, reliability))
-
-        elif command == 'helloworld-say-hello':
-            return_results(say_hello_command(client, args))
-
-        elif command == 'helloworld-search-alerts':
-            return_results(search_alerts_command(client, args))
-
-        elif command == 'helloworld-get-alert':
-            return_results(get_alert_command(client, args))
-
-        elif command == 'helloworld-update-alert-status':
-            return_results(update_alert_status_command(client, args))
-
-        elif command == 'helloworld-scan-start':
-            return_results(scan_start_command(client, args))
-
-        elif command == 'helloworld-scan-status':
-            return_results(scan_status_command(client, args))
-
-        elif command == 'helloworld-scan-results':
-            return_results(scan_results_command(client, args))
+#         elif command == 'helloworld-incident-note-list':
+#             return_results(incident_note_list_command(client, args))
+#
+#         elif command == 'helloworld-incident-note-create':
+#             return_results(incident - note - create_command(client, args))
+#
+#         elif command == 'helloworld-file-scan-start':
+            return_results(file - scan - start_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
