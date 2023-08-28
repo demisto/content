@@ -584,7 +584,7 @@ def test_fetch_incidents(mocker):
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper)
+    splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
@@ -648,11 +648,12 @@ def test_fetch_notables(mocker):
     service = Service('DONE')
     mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
     assert cache_object.submitted_notables
     notable = cache_object.submitted_notables[0]
-    incident_from_cache = notable.to_incident(mapper)
+    incident_from_cache = notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 0
@@ -661,7 +662,8 @@ def test_fetch_notables(mocker):
     assert not incident_from_cache.get('owner')
 
     # now call second time to make sure that the incident fetched
-    splunk.fetch_incidents(service, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
@@ -1072,7 +1074,8 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: list[resul
     mocker.patch('SplunkPy.results.JSONResultsReader', return_value=notable_data)
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                   comment_tag_from_splunk='comment_tag_from_splunk', **func_call_kwargs)
     results = demisto.results.call_args[0][0]
 
     expected_results = [notable_data[1]]
@@ -1120,9 +1123,61 @@ def test_get_remote_data_command_with_message(mocker):
     )
     mocker.patch("SplunkPy.isinstance", return_value=True)
 
-    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    splunk.get_remote_data_command(Service(), comment_tag_from_splunk='from_splunk', **func_call_kwargs)
     (info_message,) = info_mock.call_args_list[0][0]
     assert info_message == "Splunk-SDK message: test message"
+
+
+@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
+                         [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
+                            'comment': 'new comment from splunk', 'reviewer': 'admin',
+                            'review_time': '1612881691.589575'},
+                           {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                           None,
+                           )])
+def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
+                                             func_call_kwargs: dict, expected_closure_data: dict):
+    """
+    Test case for get_remote_data_command with comment addition.
+    Given:
+        - notable data with new comment
+    When:
+        new comment added in splunk
+    Then:
+        - ensure the comment added as a new note
+        - ensure the event was updated
+
+    """
+    class Jobs:
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return notable_data
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
+    mocker.patch.object(demisto, 'results')
+    service = Service()
+
+    expected_comment_note = {'Type': 1, 'Contents': 'new comment from splunk',
+                             'ContentsFormat': 'text', 'Tags': ['from_splunk'], 'Note': True}
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                   comment_tag_from_splunk='from_splunk', **func_call_kwargs)
+    results = demisto.results.call_args[0][0][0]
+    notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk'}]})
+    note_results = demisto.results.call_args[0][0][1]
+
+    expected_results = [notable_data][0]
+
+    assert demisto.results.call_count == 1
+    assert results == expected_results
+    assert note_results == expected_comment_note
 
 
 def test_get_modified_remote_data_command(mocker):
@@ -1165,7 +1220,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         'eventIDs': 'ID100',
         'owner': 'dbot'
     }
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(splunk, 'return_error')
 
     requests_mock.post(f'{test_base_url}services/notable_update', json='ValueError: Invalid owner value.')
 
@@ -1176,19 +1231,19 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         args=test_args
     )
 
-    assert demisto.results.call_count == 1
-    error_message = demisto.results.call_args[0][0]['Contents']
-    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
+    assert splunk.return_error.call_count == 1
+    error_message = splunk.return_error.call_args[0][0]
+    assert error_message == 'Could not update notable events: ID100: ValueError: Invalid owner value.'
 
 
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 4, True),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     4, True)
+     5, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
 
@@ -1212,7 +1267,8 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
         mocker.patch.object(demisto, 'error')
     service = Service()
     mapper = splunk.UserMappingObject(service, False)
-    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper) == args['remoteId']
+    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper,
+                                               comment_tag_to_splunk='comment_tag_to_splunk') == args['remoteId']
     assert demisto.debug.call_count == call_count
     if not success:
         assert demisto.error.call_count == 1
@@ -1368,10 +1424,7 @@ IDENTITY = {
 
 def test_get_cim_mapping_field_command(mocker):
     """ Scenario: When the mapping is based on Splunk CIM. """
-    mocker.patch.object(demisto, 'results')
-    splunk.get_cim_mapping_field_command()
-    fields = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
+    fields = splunk.get_cim_mapping_field_command()
     assert fields == {
         'Notable Data': NOTABLE,
         'Drilldown Data': DRILLDOWN,
@@ -1651,7 +1704,8 @@ def test_labels_with_non_str_values(mocker):
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper)
+    splunk.fetch_incidents(service, mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
 
     # validate

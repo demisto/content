@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import botocore.exceptions
-
 from datetime import datetime, date
 import urllib3.util
 
@@ -82,7 +81,15 @@ def create_login_profile(args, client):  # pragma: no cover
 
 
 def get_user(args, client):  # pragma: no cover
-    response = client.get_user(UserName=args.get('userName'))
+    try:
+        response = client.get_user(UserName=args.get('userName'))
+    except Exception as e:
+        if 'NoSuchEntity' in str(e):
+            return_outputs(f'User {args.get("userName")} was not found.')
+            return
+        else:
+            raise e
+
     user = response['User']
     data = ({
         'UserName': user['UserName'],

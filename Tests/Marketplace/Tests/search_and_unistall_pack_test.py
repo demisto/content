@@ -1,6 +1,8 @@
 import demisto_client
 import pytest
 import Tests.Marketplace.search_and_uninstall_pack as script
+from demisto_client.demisto_api.rest import ApiException
+from urllib3.exceptions import HTTPError
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -39,6 +41,12 @@ def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
         return MOCK_PACKS_INSTALLATED_RESULT, 200, None
     elif path == '/contentpacks/installed/delete':
         return None, 200, None
+    elif path == '/contentpacks/installed/error':
+        return None, 500, None
+    elif path == '/contentpacks/api-exception':
+        raise ApiException(status=500, reason='error')
+    elif path == '/contentpacks/http-exception':
+        raise HTTPError('error')
     return None, None, None
 
 
@@ -116,3 +124,45 @@ def test_exception_reset_base_pack(def_call, return_val, mocker):
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
 
     assert ret_val_from_call == return_val
+
+
+GENERIC_RETRIES_REQUEST = [
+    ('/contentpacks/installed/error', False, 3),
+    ('/contentpacks/api-exception', False, 3),
+    ('/contentpacks/http-exception', False, 3),
+    ('/contentpacks/marketplace/Base', True, 1)
+]
+
+
+@pytest.mark.parametrize('path, ret_value, num_of_retries', GENERIC_RETRIES_REQUEST)
+def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
+    """
+
+    Given
+       - API endpoint path to send.
+   When
+       - Operating a process requires retry mechanism.
+   Then
+       - Ensure the retry mechanism work as desired.
+
+    """
+    client = MockClient()
+    request_method = mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
+
+    def success_handler(_):
+        return True, 'success'
+
+    success_handler_method = success_handler if ret_value else None
+    res, _ = script.generic_request_with_retries(client,
+                                                 retries_message='test',
+                                                 exception_message='test',
+                                                 prior_message='test',
+                                                 path=path,
+                                                 method='GET',
+                                                 request_timeout=0,
+                                                 sleep_interval=0,
+                                                 attempts_count=3,
+                                                 success_handler=success_handler_method)
+
+    assert res == ret_value
+    assert request_method.call_count == num_of_retries
