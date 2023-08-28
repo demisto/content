@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 160
         }
       }
     note: false
@@ -48,9 +48,10 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "33"
       "yes":
       - "32"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -148,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2345
+          "x": 360,
+          "y": 1955
         }
       }
     note: false
@@ -161,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc962556-2c73-4968-82a7-51a99cf8fe97
+    taskid: ae55e415-827a-4703-8ea8-524c0bc62c24
     type: condition
     task:
-      id: bc962556-2c73-4968-82a7-51a99cf8fe97
+      id: ae55e415-827a-4703-8ea8-524c0bc62c24
       version: -1
       name: Does the remediation allow rule exist?
       description: Check whether the last command returned remediation allow rule or not.
@@ -173,7 +174,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
+      - "25"
       "yes":
       - "18"
     separatecontext: false
@@ -184,8 +185,16 @@ tasks:
           left:
             value:
               complex:
-                root: GoogleCloudCompute.Firewalls
-                accessor: name
+                root: GoogleCloudCompute.Firewalls.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GoogleCloudCompute.Firewalls.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allow
             iscontext: true
           right:
             value: {}
@@ -193,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 860
+          "x": 290,
+          "y": 760
         }
       }
     note: false
@@ -239,39 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: bccd5171-294f-4ae1-89b7-199c33f30ae2
-    type: title
-    task:
-      id: bccd5171-294f-4ae1-89b7-199c33f30ae2
-      version: -1
-      name: Create allow and block rules
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "25"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 1110
+          "x": 460,
+          "y": 1330
         }
       }
     note: false
@@ -388,8 +366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1500
+          "x": 780,
+          "y": 1050
         }
       }
     note: false
@@ -414,7 +392,7 @@ tasks:
       brand: Google Cloud Compute
     nexttasks:
       '#none#':
-      - "24"
+      - "18"
     scriptarguments:
       allowed:
         complex:
@@ -505,8 +483,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1290
+          "x": 240,
+          "y": 1060
         }
       }
     note: false
@@ -576,8 +554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1980
+          "x": 460,
+          "y": 1500
         }
       }
     note: false
@@ -642,8 +620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 2170
+          "x": 660,
+          "y": 1710
         }
       }
     note: false
@@ -655,12 +633,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c83dc6bc-a51b-40b4-8a38-8dfc3372ab1f
+    taskid: 1b58f2b4-bf3c-49e8-8fb0-4767d4116045
     type: regular
     task:
-      id: c83dc6bc-a51b-40b4-8a38-8dfc3372ab1f
+      id: 1b58f2b4-bf3c-49e8-8fb0-4767d4116045
       version: -1
-      name: Lookup Firewall rule names with associated network
+      name: Lookup firewall remediation allow rule
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
       script: Google Cloud Compute|||gcp-compute-list-firewall
       type: regular
@@ -704,8 +682,154 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 605
+          "x": 290,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 8a254820-413a-4853-8b91-11ebe5c2fbdd
+    type: title
+    task:
+      id: 8a254820-413a-4853-8b91-11ebe5c2fbdd
+      version: -1
+      name: continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 8598730b-100f-498b-8492-de505ca3d98b
+    type: regular
+    task:
+      id: 8598730b-100f-498b-8492-de505ca3d98b
+      version: -1
+      name: Lookup firewall remediation block rule
+      description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: name="remediation-block-port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '"'
+          - operator: toLowerCase
+      project_id:
+        complex:
+          root: inputs.GcpProject
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 669ade1d-e05e-4532-8634-40eba22fc59e
+    type: condition
+    task:
+      id: 669ade1d-e05e-4532-8634-40eba22fc59e
+      version: -1
+      name: Does the remediation block rule exist?
+      description: Check whether the last command returned remediation block rule or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Firewalls.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GoogleCloudCompute.Firewalls.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: block
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 760
         }
       }
     note: false
@@ -717,13 +841,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "16_18_yes": 0.32,
+      "35_18_yes": 0.36
+    },
     "paper": {
       "dimensions": {
-        "height": 2360,
-        "width": 930,
-        "x": 350,
-        "y": 50
+        "height": 1860,
+        "width": 1360,
+        "x": -200,
+        "y": 160
       }
     }
   }

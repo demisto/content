@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import traceback
-# Final Test: 6.10
-from typing import Dict, TypedDict
 
 
 BLUE1 = "rgb(138, 160, 171)"
@@ -19,22 +16,14 @@ LAYOUTS = ["horizontal", "vertical"]
 STATFIELD = 'maxdur'
 
 
-class WidgetStat(TypedDict):
-    data: list
-    groups: list
-    name: str
-    label: str
-    color: str
-
-
-def NewWidgetStat(name: str, color: str, label: str, data: list) -> WidgetStat:
-    wstat: WidgetStat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
+def NewWidgetStat(name: str, color: str, label: str, data: list) -> dict:
+    wstat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
     return wstat
 
 
-def NewWidget(format: str, layout: str, wstat: list[WidgetStat]) -> Dict:
-    if format in FORMATS and layout in LAYOUTS:
-        widget = {'Type': 17, 'ContentsFormat': format, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
+def NewWidget(formatt: str, layout: str, wstat: list) -> dict:
+    if formatt in FORMATS and layout in LAYOUTS:
+        widget = {'Type': 17, 'ContentsFormat': formatt, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
     return widget
 
 
@@ -46,7 +35,7 @@ def main():
         stats = json.loads(ctx['PlaybookStatistics'])
         if len(stats) == 0:
             return
-        wstats: list[WidgetStat] = []
+        wstats: list = []
         length = len(COLORS)
         i = length
         for key, val in stats.items():

@@ -1118,6 +1118,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         raw_dict['folder_path'] = folder_path
 
     raw_dict['item_id'] = getattr(item, 'id', None)
+    raw_dict['id'] = getattr(item, 'id', None)
 
     if compact_fields:
         new_dict = {}

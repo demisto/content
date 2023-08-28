@@ -3522,7 +3522,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
-                int(num_events) > (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
+                int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
@@ -3540,7 +3540,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
             print_context_data_stats(context_data, f"Get Remote Data events End for id {offense_id}")
             if status != QueryStatus.SUCCESS.value:
                 # we raise an exception because we don't want to change the offense until all events are fetched.
-                print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
+                print_debug_msg(f'Events not mirrored yet for offense {offense_id}. Status: {status}')
                 raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
             offense['events'] = events
 
@@ -3702,9 +3702,11 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
+    filter_ = f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time > {last_update}) OR (status=closed AND close_time > {last_update}))'  # noqa: E501
+    print_debug_msg(f'Filter to get modified offenses is: {filter_}')
     # if this call fails, raise an error and stop command execution
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time >= {last_update}) OR (status=closed AND close_time > {last_update}))',  # noqa: E501
+                                    filter_=filter_,
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
