@@ -3173,3 +3173,320 @@ There is no context output for this command.
 
 #### Human Readable Output
 >The host was successfully released.
+
+
+### aws-organization-list-roots
+
+***
+Lists the roots that are defined in the current organization.
+
+#### Base Command
+
+`aws-organization-list-roots`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.Roots.Id | String | The unique identifier \(ID\) for the root. | 
+| AWS.Organization.Roots.Arn | String | The Amazon Resource Name \(ARN\) of the root. | 
+| AWS.Organization.Roots.Name | String | The Amazon Resource Name \(ARN\) of the root. | 
+
+#### Command example
+```!aws-organization-list-roots```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "Roots": {
+                "Arn": "arn:aws:organizations::111111111111:root/o-2222222222/r-3333",
+                "Id": "r-3333",
+                "Name": "Root",
+                "PolicyTypes": [
+                    {
+                        "Status": "ENABLED",
+                        "Type": "SERVICE_CONTROL_POLICY"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Roots
+>|Arn|Id|Name|Policytypes|
+>|---|---|---|---|
+>| arn:aws:organizations::111111111111:root/o-2222222222/r-3333 | r-3333 | Root | {'Type': 'SERVICE_CONTROL_POLICY', 'Status': 'ENABLED'} |
+
+
+### aws-organization-list-children
+
+***
+Lists all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
+
+#### Base Command
+
+`aws-organization-list-children`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| max_results | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
+| next_token | The token for the next set of results. | Optional | 
+| parent_id | The unique identifier (ID) for the parent root or OU whose children you want to list. | Required | 
+| child_type | Filters the output to include only the specified child type. Possible values are: ACCOUNT, ORGANIZATIONAL_UNIT. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.Children.Id | String | The unique identifier \(ID\) of this child entity. | 
+| AWS.Organization.Children.Type | String | The type of this child entity. | 
+
+#### Command example
+```!aws-organization-list-children parent_id=r-3333 child_type=ACCOUNT```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "Children": [
+                {
+                    "Id": "444444444444",
+                    "Type": "ACCOUNT"
+                },
+                {
+                    "Id": "111111111111",
+                    "Type": "ACCOUNT"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Children
+>|Id|Type|
+>|---|---|
+>| 444444444444 | ACCOUNT |
+>| 111111111111 | ACCOUNT |
+
+
+### aws-organization-list-parents
+
+***
+Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child OU or account.
+
+#### Base Command
+
+`aws-organization-list-parents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| max_results | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
+| next_token | The token for the next set of results. | Optional | 
+| child_id | The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.Parents.Id | String | The unique identifier \(ID\) of the parent entity. | 
+| AWS.Organization.Parents.Type | String | The type of the parent entity. | 
+
+#### Command example
+```!aws-organization-list-parents child_id=444444444444```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "Parents": {
+                "Id": "r-3333",
+                "Type": "ROOT"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Parents
+>|Id|Type|
+>|---|---|
+>| r-3333 | ROOT |
+
+
+### aws-organization-describe-account
+
+***
+Retrieves Organizations-related information about the specified account.
+
+#### Base Command
+
+`aws-organization-describe-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The unique identifier (ID) of the Amazon Web Services account that you want information about. You can get the ID from the ListAccounts or ListAccountsForParent operations. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.Account.Id | String | The unique identifier \(ID\) of the account. | 
+| AWS.Organization.Account.Arn | String | The Amazon Resource Name \(ARN\) of the account. | 
+| AWS.Organization.Account.Email | String | The email address associated with the Amazon Web Services account. | 
+| AWS.Organization.Account.Status | String | The status of the account in the organization. | 
+
+#### Command example
+```!aws-organization-describe-account account_id=555555555555```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "Account": {
+                "Arn": "arn:aws:organizations::111111111111:account/o-2222222222/555555555555",
+                "Email": "admin@acme.com",
+                "Id": "555555555555",
+                "JoinedMethod": "CREATED",
+                "JoinedTimestamp": "2023-08-21T23:09:55",
+                "Name": "test_account",
+                "Status": "ACTIVE"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Account
+>|Arn|Email|Id|Joinedmethod|Joinedtimestamp|Name|Status|
+>|---|---|---|---|---|---|---|
+>| arn:aws:organizations::111111111111:account/o-2222222222/555555555555 | admin@acme.com | 555555555555 | CREATED | 2023-08-21T23:09:55 | test_account | ACTIVE |
+
+
+### aws-organization-describe-organization
+
+***
+Retrieves information about the organization that the user's account belongs to.
+
+#### Base Command
+
+`aws-organization-describe-organization`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.Organization.Id | String | The unique identifier \(ID\) of an organization. | 
+| AWS.Organization.Organization.Arn | String | The Amazon Resource Name \(ARN\) of an organization. | 
+| AWS.Organization.Organization.MasterAccountArn | String | The Amazon Resource Name \(ARN\) of the account that is designated as the management account for the organization. | 
+| AWS.Organization.Organization.MasterAccountId | String | The unique identifier \(ID\) of the management account of an organization. | 
+| AWS.Organization.Organization.MasterAccountEmail | String | The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization. | 
+
+#### Command example
+```!aws-organization-describe-organization```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "Organization": {
+                "Arn": "arn:aws:organizations::111111111111:organization/o-2222222222",
+                "AvailablePolicyTypes": [
+                    {
+                        "Status": "ENABLED",
+                        "Type": "SERVICE_CONTROL_POLICY"
+                    }
+                ],
+                "FeatureSet": "ALL",
+                "Id": "o-2222222222",
+                "MasterAccountArn": "arn:aws:organizations::111111111111:account/o-2222222222/111111111111",
+                "MasterAccountEmail": "admin@acme.com",
+                "MasterAccountId": "111111111111"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Organization
+>|Arn|Availablepolicytypes|Featureset|Id|Masteraccountarn|Masteraccountemail|Masteraccountid|
+>|---|---|---|---|---|---|---|
+>| arn:aws:organizations::111111111111:organization/o-2222222222 | {'Type': 'SERVICE_CONTROL_POLICY', 'Status': 'ENABLED'} | ALL | o-2222222222 | arn:aws:organizations::111111111111:account/o-2222222222/111111111111 | admin@acme.com | 111111111111 |
+
+
+### aws-organization-describe-ou
+
+***
+Retrieves information about an organizational unit (OU).
+
+#### Base Command
+
+`aws-organization-describe-ou`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ou_id | The unique identifier (ID) of the organizational unit that you want details about. You can get the ID from the ListOrganizationalUnitsForParent operation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Organization.OU.Id | String | The unique identifier \(ID\) associated with this OU. | 
+| AWS.Organization.OU.Arn | String | The Amazon Resource Name \(ARN\) of this OU. | 
+| AWS.Organization.OU.Name | String | The friendly name of this OU. | 
+
+#### Command example
+```!aws-organization-describe-ou ou_id=ou-6666-66666666```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Organizations": {
+            "OU": {
+                "Arn": "arn:aws:organizations::111111111111:ou/o-2222222222/ou-6666-66666666",
+                "Id": "ou-6666-66666666",
+                "Name": "test"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Organization Unit
+>|Arn|Id|Name|
+>|---|---|---|
+>| arn:aws:organizations::111111111111:ou/o-2222222222/ou-6666-66666666 | ou-6666-66666666 | test |
+

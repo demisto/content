@@ -12,3 +12,9 @@
 !aws-ec2-allocate-hosts availability_zone="us-east-1b" quantity=1 instance_type="m5.large"
 !aws-ec2-release-hosts host_id="h-00548908djdsgfs"
 !aws-ec2-authorize-security-group-egress-rule groupId=sg-0566450bb5ae17c7d IpPermissionsfromPort=23 IpPermissionsToPort=23 IpPermissionsIpProtocol=TCP
+!aws-organization-list-roots
+!aws-organization-list-children parent_id=r-1111 child_type=ACCOUNT
+!aws-organization-list-parents child_id=111111111111
+!aws-organization-describe-ou ou_id=ou-11111-11111111
+!aws-organization-describe-account account_id=111111111111
+!aws-organization-describe-organization
