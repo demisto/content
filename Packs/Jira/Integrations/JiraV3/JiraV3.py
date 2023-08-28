@@ -3832,7 +3832,7 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
     return issue_id or issue_key
 
 
-def validate_params(
+def validate_auth_params(
     username: str, api_key: str, client_id: str, client_secret: str
 ) -> None:
     basic_oauth, oauth2 = username or api_key, client_id or client_secret
@@ -3868,7 +3868,7 @@ def main():  # pragma: no cover
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
 
-    validate_params(username, api_key, client_id, client_secret)
+    validate_auth_params(username, api_key, client_id, client_secret)
 
     # Cloud configuration params
     cloud_id = params.get('cloud_id', '')

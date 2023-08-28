@@ -301,11 +301,12 @@ def test_module_oauth2(mocker):
 @pytest.mark.parametrize(
     "params, expected_exception",
     [
-        (
+        pytest.param(
             {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
-            "The required parameters were not provided, see the help window"
+            "The required parameters were not provided, see the help window",
+            id="no provided any auth params"
         ),
-        (
+        pytest.param(
             {
                 "username": "dummy_username",
                 "api_key": "dummy_api_key",
@@ -313,48 +314,70 @@ def test_module_oauth2(mocker):
                 "client_secret": "dummy_client_secret"
             },
             "The `User name` or `API key` parameters cannot be provided together"
-            " with the `Client ID` or `Client Secret` parameters, see the help window"
+            " with the `Client ID` or `Client Secret` parameters, see the help window",
+            id="both types of auth params are provided"
         ),
-        (
+        pytest.param(
             {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
-            "To use basic authentication the parameters 'User name' and 'API key' are mandatory"
+            "To use basic authentication the parameters 'User name' and 'API key' are mandatory",
+            id="only `username` parameter was provided"
         ),
-        (
+        pytest.param(
             {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
-            "To use OAuth 2.0 the parameters 'Client ID' and 'Client Secret' are mandatory"
+            "To use OAuth 2.0 the parameters 'Client ID' and 'Client Secret' are mandatory",
+            id="only `client_id` parameter was provided"
         )
     ]
 )
 def test_validate_params_failure(params: dict[str, str], expected_exception: str):
-    from JiraV3 import validate_params
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that as long as no valid auth params are sent an error is raised with a special message
+    """
+    from JiraV3 import validate_auth_params
     with pytest.raises(DemistoException, match=expected_exception):
-        validate_params(**params)
+        validate_auth_params(**params)
 
 
 @pytest.mark.parametrize(
     "params",
     [
-        (
+        pytest.param(
             {
                 "username": "dummy_username",
                 "api_key": "dummy_api_key",
                 "client_id": "",
                 "client_secret": ""
-            }
+            },
+            id="Only basic auth params were provided"
         ),
-        (
+        pytest.param(
             {
                 "username": "",
                 "api_key": "",
                 "client_id": "dummy_client_id",
                 "client_secret": "dummy_client_secret"
-            }
+            },
+            id="Only oauth2 params were provided oauth2"
         )
     ]
 )
-def test_validate_params(params: dict[str, str]):
-    from JiraV3 import validate_params
-    validate_params(**params)
+def test_validate_auth_params(params: dict[str, str]):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that when provided valid auth params
+          the function does not throw an error raise
+    """
+    from JiraV3 import validate_auth_params
+    validate_auth_params(**params)
 
 
 class TestJiraGetIssueCommand:
