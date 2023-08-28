@@ -1,7 +1,17 @@
 import yaml
 
 
-def was_grid_field_value_found(playbook_tasks_data, grid_field_location: str, value: str):
+def was_grid_field_value_found(playbook_tasks_data, grid_field_location: str, value: str) -> bool:
+    """_summary_
+
+    Args:
+        playbook_tasks_data: a subset of yml playbook file that only includes the tasks data.
+        grid_field_location (str): which "val" in a grid field in a playbook yml file (i.e val1, val2...)
+        value (str): string value to be searched for
+
+    Returns:
+        bool: True or false for if value is found in any task and in the given grid_field_location.
+    """
     for task_id, task_data in playbook_tasks_data.items():
         if "scriptName" in task_data["task"]:
             if task_data["task"]["scriptName"] == "GridFieldSetup":
@@ -18,18 +28,34 @@ def was_grid_field_value_found(playbook_tasks_data, grid_field_location: str, va
     return False
 
 
-def check_multiple_grid_field_values(playbook_tasks_data, grid_field_data: dict):
+def check_multiple_grid_field_values(playbook_tasks_data, grid_field_data: dict) -> list:
+    """_summary_
+
+    Args:
+        playbook_tasks_data: a subset of yml playbook file that only includes the tasks data.
+        grid_field_data (dict): a set of values to be found in a playbook task for setting grid fields.
+
+    Returns:
+        list: a list of the dictionary key-values found
+    """
     for task_id, task_data in playbook_tasks_data.items():
         if "scriptName" in task_data["task"]:
             if task_data["task"]["scriptName"] == "GridFieldSetup":
                 results = find_dicts_by_key_values(
                     playbook_tasks_data, grid_field_data, "simple"
                 )
-                print(results)
                 return results
 
 
-def load_yaml_file(file_path):
+def load_yaml_file(file_path: str):
+    """_summary_
+
+    Args:
+        file_path (str): a file path to a yml file to be loaded.
+
+    Returns:
+        Any: returns a dictionary representation of the yaml file given.
+    """    
     with open(file_path, "r") as file:
         data = yaml.safe_load(file)
     return data
@@ -39,6 +65,15 @@ def load_yaml_file(file_path):
 
 
 def find_key(task, key):
+    """_summary_
+
+    Args:
+        task: the dictionary representation of a yaml playbook task
+        key: key to look for in the task data.
+
+    Returns:
+        Any: returns a dictionary if key is in task
+    """
     if isinstance(task, dict):
         if key in task:
             return task[key]
@@ -53,7 +88,17 @@ def find_key(task, key):
                 return result
 
 
-def find_dicts_by_key_values(data, target_key_values, accessor: str):
+def find_dicts_by_key_values(data, target_key_values: dict, accessor: str) -> list:
+    """_summary_
+
+    Args:
+        data: A dictionary or list dictionaries to search through for target_key_values.
+        target_key_values(dict): a set of values that should be inside of data.
+        accessor (str): the key under the "val" keys in a yaml grid field (i.e. "simple" or "complex")
+
+    Returns:
+        list: the list of target_key_values if they are found.
+    """
     results = []
 
     if isinstance(data, dict):

@@ -25,17 +25,30 @@ def full_playbook_data():
 """Test cases"""
 
 
-def test_playbook_name_and_id(full_playbook_data):
+def test_expected_playbook_name_and_id(full_playbook_data: dict):
+    """Test the name and ID of the playbook.
+    This tests should help with validating the correct file is being tested.
+
+    Args:
+        full_playbook_data (dict): the full yml playbook file
+    """
     assert full_playbook_data.get("name") == "Cortex ASM - Azure Enrichment"
     assert full_playbook_data.get("id") == "Cortex ASM - Azure Enrichment"
 
 
 @pytest.mark.parametrize(
-    "asm_system_id_types", ["ASSET-ID", "ASSET-NAME", "ASSET-RG", "ASSET-SG", "ASSET-NIC"]
+    "asm_system_id_type", ["ASSET-ID", "ASSET-NAME", "ASSET-RG", "ASSET-SG", "ASSET-NIC"]
 )
-def test_presence_of_asmsystemids(playbook_tasks_data, asm_system_id_types):
+def test_expected_asmsystemids_all_in_known_set(playbook_tasks_data, asm_system_id_type: str):
+    """This tests should help with testing the existence of necessary values used by downstream applications.
+
+    Args:
+        playbook_tasks_data: a subset of yml playbook file that only includes the tasks data.
+        asm_system_id_type (str): a value that should be set to the key of "Type" under
+                                  the "asmsystemids" grid field (incidentfield-ASM_-_System_IDs.json).
+    """
     key_found = helper.was_grid_field_value_found(
-        playbook_tasks_data, "val1", asm_system_id_types
+        playbook_tasks_data, "val1", asm_system_id_type
     )
     assert key_found
 
@@ -44,7 +57,15 @@ def test_presence_of_asmsystemids(playbook_tasks_data, asm_system_id_types):
     "grid_field_data",
     [({"gridfield": "asmsystemids", "val1": "ASSET-TYPE", "val2": "Azure Compute"})],
 )
-def test_asset_type_of_asmsytemid(playbook_tasks_data, grid_field_data):
+def test_each_asmsystemid_maps_to_known_asset_type(playbook_tasks_data, grid_field_data: dict):
+    """This tests should help with testing the existence of necessary values for ASSET-TYPE used by downstream applications.
+
+    Args:
+        playbook_tasks_data: a subset of yml playbook file that only includes the tasks data.
+        grid_field_data (dict): a set of values that should be set to the key of "Type" AND "ID" under
+                                  the "asmsystemids" grid field (incidentfield-ASM_-_System_IDs.json).
+                                  It includes checking that the task is also setting "asmsystemids"
+    """
     data_found = helper.check_multiple_grid_field_values(
         playbook_tasks_data, grid_field_data
     )
