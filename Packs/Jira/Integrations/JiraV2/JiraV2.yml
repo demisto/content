@@ -9,114 +9,114 @@ configuration:
   type: 0
 - display: Username (Basic Authentication)
   name: username
-  required: false
   type: 0
+  required: false
 - display: Password (Deprecated - Use API token)
   name: password
-  required: false
   type: 4
+  required: false
 - displaypassword: API token (Recommended)
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
   display: ''
+  required: false
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
-  required: false
   type: 0
+  required: false
 - display: Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
-  required: false
   type: 0
+  required: false
 - display: Private key (PKCS8 format)
   name: privateKey
-  required: false
   type: 14
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents.
   name: query
-  required: false
   type: 0
+  required: false
 - additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden:
   - marketplacev2
   name: incoming_mirror
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Use created field to fetch incidents
   name: fetchByCreated
-  required: false
   type: 8
+  required: false
 - display: Mirror outgoing incidents
   hidden:
   - marketplacev2
   name: outgoing_mirror
-  required: false
   type: 8
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
   display: File entry tag
   hidden:
   - marketplacev2
   name: file_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
   hidden:
   - marketplacev2
   name: comment_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
-  required: false
   type: 8
+  required: false
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
-  required: false
   type: 8
+  required: false
 - display: API token (Deprecated)
   name: APItoken
-  required: false
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
+  required: false
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -314,6 +314,9 @@ script:
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
+    - description: A comma-separated list of account IDs for watching the issue. Use the jira-get-id-by-attribute command to get the user's account ID.
+      isArray: true
+      name: watchers
     description: Creates a new issue in Jira.
     name: jira-create-issue
     outputs:
@@ -538,16 +541,29 @@ script:
   - description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
     name: get-modified-remote-data
     arguments: []
+  - arguments: []
+    description: Gets the information related to the role, including assigned users.
+    name: jira-get-project-role
+  - arguments:
+    - description: User's email address.
+      name: user_email
+    - description: Project key.
+      name: project_key
+    - description: Role name to assign the user.
+      name: role_name
+    description: Adds the user to a project.
+    name: jira-add-user-to-project
+  - arguments: []
+    description: Lists all the organizations.
+    name: jira-get-organizations
   - arguments:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
     - description: The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-      required: false
     - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: assignee_id
-      required: false
     description: Edit the assignee of an existing issue.
     name: jira-issue-assign
     outputs:
@@ -569,12 +585,11 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-  dockerimage: demisto/oauthlib:1.0.0.58909
+  dockerimage: demisto/oauthlib:1.0.0.63821
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

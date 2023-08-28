@@ -585,5 +585,24 @@
         "yyy": 2
       }
     ]
+  },
+
+  {
+    "args": {
+      "value": 1,
+      "array1_key": null,
+      "array2": "abc",
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": null,
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "abc"
+      }
+    ]
   }
 ]

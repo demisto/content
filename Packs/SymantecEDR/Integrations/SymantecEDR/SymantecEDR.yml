@@ -18,18 +18,18 @@ configuration:
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident.
   display: Fetch incidents alerts
   name: isIncidentsEvent
-  required: false
   type: 8
+  required: false
 - additionalinfo: Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident.
   display: Fetch incident comments
   name: isIncidentComment
-  required: false
   type: 8
+  required: false
 - additionalinfo: If not selected, will fetch Open Incidents.
   defaultvalue: Open
   display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
@@ -39,8 +39,8 @@ configuration:
   - In-Progress
   - Waiting
   - Closed
-  required: false
   type: 16
+  required: false
 - additionalinfo: If not selected, will fetch High and Medium incidents.
   defaultvalue: High,Medium
   display: Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
@@ -49,48 +49,58 @@ configuration:
   - Low
   - Medium
   - High
-  required: false
   type: 16
+  required: false
 - additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
   defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Maximum Number of Incidents fetch limit. Maximum Default limit is 50.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
 name: SymantecEDR
 script:
   commands:
   - arguments:
-    - default: false
-      description: The device ID of the target computers.
+    - description: The device ID of the target computers.
       isArray: true
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
-    execution: false
     name: symantec-edr-endpoint-isolate
     outputs:
     - contextPath: SymantecEDR.Command.isolate_endpoint.command_id
@@ -105,58 +115,32 @@ script:
         Message explaining the error code.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify a search query as a Lucene query string.
         Example: query="last_seen: 2022-10-22T11:23:26.561Z"
 
         Note: Refer to Symantec (EDR On-Premise) API document for more details https://apidocs.securitycloud.symantec.com/#
-      isArray: false
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Specify a filter option in lieu of “query”. These filters will improve the query performance.
-      isArray: false
       name: search_object
       predefined:
       - domain
       - sha256
-      required: false
-      secret: false
-    - default: false
-      description: Specify a search value. Supports a comma-separated query with multiple search values.
-      isArray: false
+    - description: Specify a search value. Supports a comma-separated query with multiple search values.
       name: search_value
-      required: false
-      secret: false
-    deprecated: false
     description: List of domain and file association.
-    execution: false
     name: symantec-edr-domain-file-association-list
     outputs:
     - contextPath: SymantecEDR.DomainFileAssociation.data_source_url
@@ -200,53 +184,27 @@ script:
         The signer company name of the downloaded file. Example: "Microsoft Windows".
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: "Specify a search query as a Lucene query string.\nExample: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#."
-      isArray: false
+    - description: "Specify a search query as a Lucene query string.\nExample: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#."
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify a filters option in lieu of “query”. These filters will improve query performance.
-      isArray: false
       name: search_object
       predefined:
       - domain
       - device_uid
-      required: false
-      secret: false
-    - default: false
-      description: Specify a search value. Supports a comma-separated query with multiple search values.
-      isArray: false
+    - description: Specify a search value. Supports a comma-separated query with multiple search values.
       name: search_value
-      required: false
-      secret: false
-    deprecated: false
     description: List of endpoint and domain association.
-    execution: false
     name: symantec-edr-endpoint-domain-association-list
     outputs:
     - contextPath: SymantecEDR.EndpointDomainAssociation.data_source_url
@@ -278,54 +236,28 @@ script:
         The timestamp (in ISO 8601 format) that specifies the last time detected of the event that resulted in the update of this association. Example: "2018-01-30T04:13:10.669Z."
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: "Specify a search query as a Lucene query string.\nExample: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#"
-      isArray: false
+    - description: "Specify a search query as a Lucene query string.\nExample: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#"
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Specify a filters option in lieu of “query”. These filters will improve query performance.
-      isArray: false
       name: search_object
       predefined:
       - device_uid
       - sha256
-      required: false
-      secret: false
-    - default: false
-      description: Specify a search value. Supports a comma-separated query with multiple search values.
-      isArray: false
+    - description: Specify a search value. Supports a comma-separated query with multiple search values.
       name: search_value
-      required: false
-      secret: false
-    deprecated: false
     description: List of domain and file association.
-    execution: false
     name: symantec-edr-endpoint-file-association-list
     outputs:
     - contextPath: SymantecEDR.EndpointFileAssociation.device_ip
@@ -353,39 +285,21 @@ script:
       description: 'The SHA256 checksum of the file (hex string). Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31.'
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify a search query as a Lucene query string.
         Example: query="external_ip: 8.8.8.8"
-      isArray: false
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get domain instances.
-    execution: false
     name: symantec-edr-domain-instance-list
     outputs:
     - contextPath: SymantecEDR.DomainInstance.data_source_url
@@ -407,38 +321,20 @@ script:
       description: 'The IP address (IPv4 or IPv6) of the device/machine that accepted the connection. Example: 127.0.0.1.'
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Specify a search query as a Lucene query string.
-      isArray: false
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get endpoint instances.
-    execution: false
     name: symantec-edr-endpoint-instance-list
     outputs:
     - contextPath: SymantecEDR.EndpointInstance.device_ip
@@ -463,41 +359,19 @@ script:
       description: 'Array of all the IP addresses (IPv4 or IPv6) associated with the endpoint. Example: ["192.168.0.250"].'
       type: Unknown
   - arguments:
-    - default: false
-      description: "The maximum number of records to return. \nDefault is 50. \nNote: If the page_size argument is set by the user then the limit argument will be ignored."
-      isArray: false
+    - description: "The maximum number of records to return. \nDefault is 50. \nNote: If the page_size argument is set by the user then the limit argument will be ignored."
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number. Default is 1.
-      isArray: false
+    - description: The page number. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
+    - description: The number of requested results per page. Default is 50.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Query unique file identifier (SHA2).
-      isArray: false
+    - description: Query unique file identifier (SHA2).
       name: file_sha2
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify a search query as a Lucene query string.
         Example: query="name: svchost.exe".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get File Instances
-    execution: false
     name: symantec-edr-file-instance-list
     outputs:
     - contextPath: SymantecEDR.FileInstance.first_seen
@@ -516,58 +390,28 @@ script:
       description: 'The SHA256 checksum of the file (hex string) Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31.'
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
-      isArray: false
+    - description: The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
-      isArray: false
+    - description: From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A search query as a Lucene query string.
         Example: query="type_id:(4096 OR 4098 OR 4123)".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: 'Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\">the following</a> to check the type_id for the event type.'
-      isArray: false
+    - description: 'Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\">the following</a> to check the type_id for the event type.'
       name: type_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity.
-      isArray: false
       name: severity
       predefined:
       - info
@@ -576,22 +420,14 @@ script:
       - major
       - critical
       - fatal
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The overall success or failure of the action reported by the event. Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2).'
-      isArray: false
       name: status
       predefined:
       - Unknown
       - Success
       - Failure
-      required: false
-      secret: false
-    deprecated: false
     description: Get system activities.
-    execution: false
     name: symantec-edr-system-activity-list
     outputs:
     - contextPath: SymantecEDR.SystemActivity.device_time
@@ -676,55 +512,25 @@ script:
       description: SEPM database name.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The beginning of the search time frame. Supports ISO (e.g., "yyyy-MM-dd’T’HH:mm:ss.SSSZ") or '10 seconds', '5 minutes', '2 days', '1 weeks').
-      isArray: false
+    - description: The beginning of the search time frame. Supports ISO (e.g., "yyyy-MM-dd’T’HH:mm:ss.SSSZ") or '10 seconds', '5 minutes', '2 days', '1 weeks').
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end of the search time frame. Supports ISO (e.g., "yyyy-MM-dd’T’HH:mm:ss.SSSZ") and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
-      isArray: false
+    - description: The end of the search time frame. Supports ISO (e.g., "yyyy-MM-dd’T’HH:mm:ss.SSSZ") and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: "A search query as a Lucene query string.\nExample: query=\"type_id:(4096 OR 4098 OR 4123)\"\n\nThe search query is broken up into terms and operators. \n\nThere are two types of terms: Single Terms and Phrases.\n      (a) A Single Term is a single word such as \"test\" or \"hello\"\n      (b) A Phrase is a group of words surrounded by double quotes such as \"hello dolly\"\n\nWhen creating a search query string, consider the following:\n\n1. You can search any field by specifying the field name followed by a colon \":\" and then the term you are looking for\n2. Escape special characters that are part of the query syntax. To escape a special character use the \\ before the character. The current list of special characters are '+, -, &&, ||, !, ( ), { }, [ ], ^, \", ~ ,*, ?, \\, :'\n3. Date value should follow ISO 8601 date stamp standard format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)\n4. Supported Boolean operators for complex query are: AND OR + - NOT Note: Boolean operators must be ALL CAPS\n5. Multiple terms can be combined together with Boolean operators to form a more complex query in the query clause\n6. Use parentheses to group clauses to form sub-queries\n7. Defaults to all events for the start_time and end_time specified in the query\n8. The maximum length of the query string is 10240 characters."
-      isArray: false
+    - description: "A search query as a Lucene query string.\nExample: query=\"type_id:(4096 OR 4098 OR 4123)\"\n\nThe search query is broken up into terms and operators. \n\nThere are two types of terms: Single Terms and Phrases.\n      (a) A Single Term is a single word such as \"test\" or \"hello\"\n      (b) A Phrase is a group of words surrounded by double quotes such as \"hello dolly\"\n\nWhen creating a search query string, consider the following:\n\n1. You can search any field by specifying the field name followed by a colon \":\" and then the term you are looking for\n2. Escape special characters that are part of the query syntax. To escape a special character use the \\ before the character. The current list of special characters are '+, -, &&, ||, !, ( ), { }, [ ], ^, \", ~ ,*, ?, \\, :'\n3. Date value should follow ISO 8601 date stamp standard format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)\n4. Supported Boolean operators for complex query are: AND OR + - NOT Note: Boolean operators must be ALL CAPS\n5. Multiple terms can be combined together with Boolean operators to form a more complex query in the query clause\n6. Use parentheses to group clauses to form sub-queries\n7. Defaults to all events for the start_time and end_time specified in the query\n8. The maximum length of the query string is 10240 characters."
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: 'The type ID. Refer to the event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
-      isArray: false
+    - description: 'The type ID. Refer to the event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
       name: type_id
-      required: false
-      secret: false
-    deprecated: false
     description: Get Audit Events
-    execution: false
     name: symantec-edr-audit-event-list
     outputs:
     - contextPath: SymantecEDR.AuditEvent.user_agent_ip
@@ -815,58 +621,28 @@ script:
       description: Unique ID of the user who originated the event or the user on whose behalf the event occurred.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
-      isArray: false
+    - description: The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
-      isArray: false
+    - description: From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A search query as a Lucene query string.
         Example: query="type_id:(4096 OR 4098 OR 4123)".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: 'The type ID. Refer to event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
-      isArray: false
+    - description: 'The type ID. Refer to event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
       name: type_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity.
-      isArray: false
       name: severity
       predefined:
       - info
@@ -875,11 +651,7 @@ script:
       - major
       - critical
       - fatal
-      required: false
-      secret: false
-    deprecated: false
     description: Get events from EDR on-premise.
-    execution: false
     name: symantec-edr-event-list
     outputs:
     - contextPath: SymantecEDR.Event.type_id
@@ -1039,65 +811,35 @@ script:
       description: 'The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events.'
       type: String
   - arguments:
-    - default: false
-      description: |
+    - description: |
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: |+
+    - description: |+
         The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
 
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A search query as a Lucene query string.
 
         Example:
         query="type_id:(4096 OR 4098 OR 4123)".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique identifier for an event. Refer to this link for Event Type IDs :
          https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html
-      isArray: false
       name: type_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "The severity. Default: All severity types"
-      isArray: false
       name: severity
       predefined:
       - info
@@ -1106,11 +848,7 @@ script:
       - major
       - critical
       - fatal
-      required: false
-      secret: false
-    deprecated: false
     description: Get events for incidents.
-    execution: false
     name: symantec-edr-incident-event-list
     outputs:
     - contextPath: SymantecEDR.IncidentEvent.type_id
@@ -1294,85 +1032,47 @@ script:
       description: 'The index of the event.  Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events.'
       type: String
   - arguments:
-    - default: false
-      description: |
+    - description: |
         The limit for the number of events listed per page.
         Default is '50'.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: |+
+    - description: |+
         The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
 
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A search query as a Lucene query string.
 
         Example:
         query="type_id:(4096 OR 4098 OR 4123)".
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: An incident ID.
-      isArray: false
+    - description: An incident ID.
       name: incident_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The incident severity/priority level.
-      isArray: false
       name: priority
       predefined:
       - High
       - Medium
       - Low
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The incident status.
-      isArray: false
       name: status
       predefined:
       - Open
       - Waiting
       - In-Progress
       - Closed
-      required: false
-      secret: false
-    deprecated: false
     description: Get incidents from Symantec EDR on-premise API.
-    execution: false
     name: symantec-edr-incident-list
     outputs:
     - contextPath: SymantecEDR.Incident.atp_incident_id
@@ -1424,45 +1124,20 @@ script:
       description: 'The resolution of the closed incident. Possible values are: 0 =INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination. 1 = SECURITY_RISK. The incident indicates a true security threat. 2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat. 3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. 4 = NOT_SET. The incident resolution was not set. 5 = BENIGN. The incident detected the activity as expected but is not a security threat. 6 = TEST. The incident was generated due to internal security testing.'
       type: Number
   - arguments:
-    - default: false
-      description: The unique incident ID.
-      isArray: false
+    - description: The unique incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The limit for the number of events listed per page. Default is 50.
-      isArray: false
+    - description: The limit for the number of events listed per page. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The page number to view. Each page contains page_size values. Must be used along with page_size. Default is 1.
-      isArray: false
+    - description: The page number to view. Each page contains page_size values. Must be used along with page_size. Default is 1.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g., YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g., 10 seconds, 5 minutes, 2 days, 1 weeks).
-      isArray: false
+    - description: The earliest time from which to get events. Supports ISO (e.g., YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g., 10 seconds, 5 minutes, 2 days, 1 weeks).
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: From current time to get events. Supports ISO (e.g., YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g., 10 seconds, 5 minutes, 2 days, 1 weeks, now).
-      isArray: false
+    - description: From current time to get events. Supports ISO (e.g., YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g., 10 seconds, 5 minutes, 2 days, 1 weeks, now).
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Get incident comments based on incident UUID.
-    execution: false
     name: symantec-edr-incident-comment-get
     outputs:
     - contextPath: SymantecEDR.IncidentComment.incident_id
@@ -1478,63 +1153,25 @@ script:
       description: 'The ID of the user who registered the comment. Example: 100000.'
       type: String
   - arguments:
-    - default: false
-      description: 'The maximum number of records to return. Default is 50. Minimum and maximum "limit" values are  >= 10 and <= 1000. Note: If the page_size argument is set by the user then the limit argument will be ignored.'
-      isArray: false
+    - description: 'The maximum number of records to return. Default is 50. Minimum and maximum "limit" values are  >= 10 and <= 1000. Note: If the page_size argument is set by the user then the limit argument will be ignored.'
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The page number to view. Each page contains page_size values. Must be used along with page_size. Default is 1.
-      isArray: false
+    - description: The page number to view. Each page contains page_size values. Must be used along with page_size. Default is 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: Returns a list of domain type deny list policies that match the specified pattern value. If no value is specified, then all domain type allow list policies will be returned.
-      isArray: false
+    - description: Returns a list of domain type deny list policies that match the specified pattern value. If no value is specified, then all domain type allow list policies will be returned.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Returns a specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned.
-      isArray: false
+    - description: Returns a specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned.
       name: denylist_id
-      required: false
-      secret: false
-    - default: false
-      description: Returns a list of IP type deny list policies that match the specified pattern value. If no value is specified, then all IP type deny list policies will be returned.
-      isArray: false
+    - description: Returns a list of IP type deny list policies that match the specified pattern value. If no value is specified, then all IP type deny list policies will be returned.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Returns a specific SHA256 type deny list policy for the specified SHA256 value. If no value is specified, then all SHA256 type deny list policies will be returned.
-      isArray: false
+    - description: Returns a specific SHA256 type deny list policy for the specified SHA256 value. If no value is specified, then all SHA256 type deny list policies will be returned.
       name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns specific md5 type deny list policy for the specified md5 value. If no value is specified then all md5 type deny list policies will be returned. Example:a457c5c52bcbe376ac0bd6a4fad6054f.'
-      isArray: false
+    - description: 'Returns specific md5 type deny list policy for the specified md5 value. If no value is specified then all md5 type deny list policies will be returned. Example:a457c5c52bcbe376ac0bd6a4fad6054f.'
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns list of URL type deny list policies that match the specified pattern value. If no value is specified, then all URL type deny list policies will be returned. \n\nNote: URL strings must be specified in encoded URL format.'
-      isArray: false
+    - description: 'Returns list of URL type deny list policies that match the specified pattern value. If no value is specified, then all URL type deny list policies will be returned. \n\nNote: URL strings must be specified in encoded URL format.'
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Get deny list policies.
-    execution: false
     name: symantec-edr-deny-list-policy-get
     outputs:
     - contextPath: SymantecEDR.DenyListPolicy.comment
@@ -1550,62 +1187,28 @@ script:
       description: 'The value of this deny list policy. Example: 1.1.1.1.'
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The maximum number of records to return. Default is 50.
         Minimum and maximum "limit" values are >= 10 and <= 1000.
         Note: If the page_size argument is set by the user then the limit argument will be ignored.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The page number to view. Each page contains page_size values. Must be used along with page_size.
         Default is '1'.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of results per page to display.
-      isArray: false
+    - description: The number of results per page to display.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns a list of domain type allow list policies that match the specified pattern value. If no value is specified, then all domain type allow list policies will be returned.'
-      isArray: false
+    - description: 'Returns a list of domain type allow list policies that match the specified pattern value. If no value is specified, then all domain type allow list policies will be returned.'
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Returns specific allow list policy for the specified identifier. If no value is specified, then all allow list policies will be returned.
-      isArray: false
+    - description: Returns specific allow list policy for the specified identifier. If no value is specified, then all allow list policies will be returned.
       name: allowlist_id
-      required: false
-      secret: false
-    - default: false
-      description: Returns a list of IP type allow list policies that match the specified pattern value. If no value is specified, then all IP type allow list policies will be returned.
-      isArray: false
+    - description: Returns a list of IP type allow list policies that match the specified pattern value. If no value is specified, then all IP type allow list policies will be returned.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: "Returns a list of URL type allow list policies that match the specified pattern value. If no value is specified, then all URL type allow list policies will be returned. \n\nNote: URL strings must be specified in encoded URL format."
-      isArray: false
+    - description: "Returns a list of URL type allow list policies that match the specified pattern value. If no value is specified, then all URL type allow list policies will be returned. \n\nNote: URL strings must be specified in encoded URL format."
       name: url
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns a specific SHA256 type allow list policy for the specified SHA256 value. If no value is specified, then all SHA256 type allow list policies will be returned.'
-      isArray: false
+    - description: 'Returns a specific SHA256 type allow list policy for the specified SHA256 value. If no value is specified, then all SHA256 type allow list policies will be returned.'
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Get allow list policies.
-    execution: false
     name: symantec-edr-allow-list-policy-get
     outputs:
     - contextPath: SymantecEDR.AllowListPolicy.comment
@@ -1622,24 +1225,17 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "The operation to take on a specified incident.\n- add_comment: Add comments to the incident.\n- close_incident: Close incident. \n- update_resolution: Update resolution of the closed incident."
-      isArray: false
       name: operation
       predefined:
       - add_comment
       - close_incident
       - update_resolution
       required: true
-      secret: false
-    - default: false
-      description: An incident ID for a specific operation.
-      isArray: false
+    - description: An incident ID for a specific operation.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: |
+    - description: |
         For add comments: The value should contain a user defined comment. The maximum length of the comment is 512 characters.
 
         For update resolution of a closed incident: Any one of supported resolution value:
@@ -1650,42 +1246,24 @@ script:
         4 = NOT_SET. The incident resolution was not set.
         5 = BENIGN. The incident detected the activity as expected but is not a security threat.
         6 = TEST. The incident was generated due to internal security testing.
-      isArray: false
       name: value
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').
 
         Note: Only can provide if incidents are older then 30 days.
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).
 
         Note: Only can provide if incidents are older then 30 days.
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Incidents patch command to close an incident, update the resolution of a closed incident, or add comments to the incident.
-    execution: false
     name: symantec-edr-incident-update
   - arguments:
-    - default: false
-      description: Command ID to query.
-      isArray: false
+    - description: Command ID to query.
       name: command_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the command status.
-    execution: false
     name: symantec-edr-endpoint-status
     outputs:
     - contextPath: SymantecEDR.CommandStatus.command_issuer_name
@@ -1707,15 +1285,10 @@ script:
       description: The SHA256 of a file.
       type: String
   - arguments:
-    - default: false
-      description: The device ID of the target computer.
-      isArray: false
+    - description: The device ID of the target computer.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs.
-    execution: false
     name: symantec-edr-endpoint-rejoin
     outputs:
     - contextPath: SymantecEDR.Command.rejoin_endpoint.command_id
@@ -1728,21 +1301,13 @@ script:
       description: 'Message explaining error code. Values: -1 = Error  0 = Command rejoin_endpoint successfully requested  1 = Command rejoin_endpoint not supported for target command type  2 = Command rejoin_endpoint failed because the target command is already in terminal state  3 = Command rejoin_endpoint is already in progress for the target command'
       type: String
   - arguments:
-    - default: false
-      description: Device ID of the target computer/endpoint,
-      isArray: false
+    - description: Device ID of the target computer/endpoint,
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: The SHA256 value of the target file,
-      isArray: false
+    - description: The SHA256 value of the target file,
       name: sha2
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a file, i.e., deletes all instances of the file, based on the file hash that you have specified from the endpoint using the device ID.
-    execution: false
     name: symantec-edr-endpoint-delete-file
     outputs:
     - contextPath: SymantecEDR.Command.delete_endpoint_file.command_id
@@ -1755,15 +1320,10 @@ script:
       description: 'Message explaining error code. Possible Values: -1 = Error  0 = Command delete_endpoint_file successfully requested  1 = Command delete_endpoint_file not supported for target command type  2 = Command delete_endpoint_file failed because the target command is already in terminal state  3 = Command delete_endpoint_file is already in progress for the target command.'
       type: String
   - arguments:
-    - default: false
-      description: 'Command ID. Example: "f283b7dc9255493daed443e13e726903-2018-05-16".'
-      isArray: false
+    - description: 'Command ID. Example: "f283b7dc9255493daed443e13e726903-2018-05-16".'
       name: command_id
       required: true
-      secret: false
-    deprecated: false
     description: Cancel a command that is already in progress. Cancel the command execution on all the endpoints where it is still in progress. \nOnly one command can be cancelled at a time.
-    execution: false
     name: symantec-edr-endpoint-cancel-command
     outputs:
     - contextPath: SymantecEDR.Command.cancel.command_id
@@ -1778,8 +1338,6 @@ script:
   - arguments:
     - name: polling
       description: Whether the command should poll until the result is ready.
-      required: false
-      isArray: false
       defaultValue: true
       auto: PREDEFINED
       predefined:
@@ -1793,46 +1351,40 @@ script:
       default: true
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      required: false
-      isArray: false
       defaultValue: ''
-    deprecated: false
     description: Issue a sandbox command of a specific SHA2.
-    execution: false
     name: file
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: File.MD5
-        description: MD5 hash of the file submitted for analysis.
-        type: String
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file submitted for analysis.
-        type: String
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file submitted for analysis.
-        type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
     polling: true
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

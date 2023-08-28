@@ -1423,151 +1423,28 @@
                 },
                 "ServiceNow State": {
                     "complex": {
-                        "accessor": "",
                         "filters": [],
                         "root": "state",
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
-                                            "complex": null,
-                                            "simple": "1 - New"
+                                            "simple": "1,2,3,6,7,8"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
-                                            "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - New,2 - In Progress,3 - On Hold,6 - Resolved,7 - Closed,8 - Canceled"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - In Progress"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - On Hold"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "6 - Resolved"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "6"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "7 - Closed"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "7"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "8 - Canceled"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "8"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
-                    },
-                    "simple": ""
+                    }
                 },
                 "ServiceNow Ticket ID": {
                     "complex": null,

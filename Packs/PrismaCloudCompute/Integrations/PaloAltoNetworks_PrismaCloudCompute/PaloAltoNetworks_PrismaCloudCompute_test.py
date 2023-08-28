@@ -1022,6 +1022,63 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         ]
     ),
     (
+        {"cve": "cve_id_value"},
+        get_cves,
+        "/cves",
+        [
+            {
+                "cve": "cve1",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "unimportant",
+                "status": "fixed in 2.22-15",
+                "cvss": 5,
+                "rules": [
+                    "<2.22-15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description1"
+            },
+            {
+                "cve": "cve2",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "severity",
+                "status": "fixed in 2.22-100.15",
+                "cvss": 7,
+                "rules": [
+                    "<2.22-100.15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description2"
+            },
+        ],
+        [
+            {
+                "ID": "cve1",
+                "Description": "description1",
+                "CVSS": 5,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            },
+            {
+                "ID": "cve2",
+                "Description": "description2",
+                "CVSS": 7,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            }
+        ]
+    ),
+    (
         {"limit": "20", "offset": "0"},
         get_defenders,
         "/defenders",

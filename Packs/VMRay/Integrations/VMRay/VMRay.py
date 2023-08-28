@@ -465,13 +465,13 @@ def build_submission_data(raw_response, type_):
 
 def encode_file_name(file_name):
     """
-    encodes the file name - i.e ignoring non ASCII chars and removing backslashes
+    encodes the file name - i.e ignoring invalid chars and removing backslashes
     Args:
         file_name (str): name of the file
     Returns: encoded file name
     """
-    file_name = file_name.replace('\\', '')
-    return file_name.encode('ascii', 'ignore')
+    file_name = file_name.translate(dict.fromkeys(map(ord, "<>:\"/\\|?*")))
+    return file_name.encode('utf-8', 'ignore')
 
 
 def upload_sample_command():

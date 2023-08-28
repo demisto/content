@@ -9,20 +9,20 @@ configuration:
 - display: AWS access key
   name: credentials
   type: 9
-  required: false
   displaypassword: AWS secret key
+  required: false
 - display: AWS access key
   name: AWSAccessKey
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
+  required: false
 - display: AWS secret key
   name: AWSSecretKey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: AWS Region code
   name: AWSRegion
   defaultvalue: "us-east-2"
@@ -55,7 +55,6 @@ script:
       type: number
     description: Classify input text (usually email content)
   dockerimage: demisto/boto3py3:1.0.0.38849
-  runonce: false
 tests:
 - Test Sagemaker
 fromversion: 5.0.0

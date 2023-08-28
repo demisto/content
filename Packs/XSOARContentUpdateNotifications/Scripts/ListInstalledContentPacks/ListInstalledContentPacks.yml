@@ -6,15 +6,14 @@ args:
   predefined:
   - "false"
   - "true"
-comment: This script will show all installed content packs and whether they have an
-  update.
+comment: This script will show all installed content packs and whether they have an update.
 commonfields:
   id: ListInstalledContentPacks
   version: -1
 dependson:
   must:
   - '|||demisto-api-get'
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: ListInstalledContentPacks
 outputs:
@@ -28,7 +27,6 @@ outputs:
   description: Is there an update available
   type: boolean
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

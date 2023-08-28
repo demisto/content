@@ -63,7 +63,7 @@ The best value to set depends on the delays that you see in your system (consult
 Use this parameter with careful consideration.
 16. Click **Test** and then **Save & exit**.
 
-**Note: If you are using a custom incident type, you also need to create custom corresponding incoming and outgoing mappers.** 
+**Note: If you are using a custom incident type, you also need to create custom corresponding incoming and outgoing mappers.**
 
 **Important: If you want to use the mirror mechanism, the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance**
 
@@ -82,7 +82,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 #### How to configure
 1. Configure the integration to fetch incidents (see the Integration documentation for details).
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
-3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.  
+3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
 
@@ -98,16 +98,16 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 #### Limitations
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
-- The drilldown search does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
+- The drilldown search does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
 
 ### Incident Mirroring
-**Important Notes** 
+**Important Notes**
  - This feature is available from Cortex XSOAR version 6.0.0.
  - This feature is supported by Splunk Enterprise Security only.
  - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
- - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk.
  - For mirroring the *owner* field, the usernames need to be transformed to the corresponding names in Cortex XSOAR and Splunk.
- 
+
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To set up mirroring:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -127,11 +127,11 @@ Newly fetched incidents will be mirrored in the chosen direction.
 **Note: This will not affect existing incidents.**
 
 ### Existing users
-**NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
+**NOTE: The enrichment and mirroring mechanisms use a new default fetch query.**
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
 Users who wish to enrich or mirror fetched notables and have already used the integration in the past:
-- Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events. 
-- Will need to change the *Fetch notable events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
+- Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events.
+- Will need to change the *Fetch notable events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro):
 
 ```
 search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
@@ -145,35 +145,36 @@ Palo Alto recommends that you configure Splunk to produce basic alerts that the 
 
 1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
-![image](./../../doc_files/build-query.png)
-3. Identify the fields list from the Splunk query and save it to a local file.
-![image](./../../doc_files/identify-fields-list.png)
-4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/build-query.png
+)
+1. Identify the fields list from the Splunk query and save it to a local file.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/identify-fields-list.png)
+1. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
 Use the following naming convention: (demisto_fields_{type}).
-![image](./../../doc_files/micro-name.png)
-![image](./../../doc_files/macro.png)
-5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
-![image](./../../doc_files/scheduled-search.png)
-6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
-![image](./../../doc_files/summary-index.png)
-7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
-![image](./../../doc_files/incident_type.png)
-8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/micro-name.png)
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/macro.png)
+1. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/scheduled-search.png)
+1. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/summary-index.png)
+1. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/incident_type.png)
+1. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
-   1. Click your classifier.
-   2. Select your instance.
-   3. Click the fetched data.
-   4. Drag the value to the appropriate incident type.
-![image](./../../doc_files/classify.png)
-9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
+   2. Click your classifier.
+   3. Select your instance.
+   4. Click the fetched data.
+   5. Drag the value to the appropriate incident type.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/classify.png)
+1. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
-   1. Click your mapper.
-   2. Select your instance.
-   3. Click the __Choose data path__ link for the field you want to map.
-   4. Click the data from the Splunk fields to map it to Cortex XSOAR.
-![image](./../../doc_files/mapping.png)
-10. (Optional) Create custom fields.
-11. Build a playbook and assign it as the default for this incident type.
+   2. Click your mapper.
+   3. Select your instance.
+   4. Click the __Choose data path__ link for the field you want to map.
+   5. Click the data from the Splunk fields to map it to Cortex XSOAR.
+![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/mapping.png)
+1.  (Optional) Create custom fields.
+2.  Build a playbook and assign it as the default for this incident type.
 
 ### Constraints
 The following features are not supported in non-ES (Enterprise Security) Splunk.

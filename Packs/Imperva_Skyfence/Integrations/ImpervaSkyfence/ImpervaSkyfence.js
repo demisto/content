@@ -42,8 +42,8 @@ var login = function(params) {
     var fullUrl = fixUrl(params.url) + '/cm/api/v1.0/oauth2/token';
     var body = {
         grant_type: 'client_credentials',
-        client_id: params.clientId,
-        client_secret: params.clientSecret
+        client_id: params.credentials ? params.credentials.identifier : params.clientId,
+        client_secret: params.credentials ? params.credentials.password : params.clientSecret
     };
     var res = httpMultipart(
         fullUrl,

@@ -1,9 +1,7 @@
 [file:README.md]
 ignore=RM104
 
-[file:CTIX.yml]
-ignore=IN145
-
 [known_words]
-Cyware
-CTIX
+cyware
+ctix
+

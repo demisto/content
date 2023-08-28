@@ -1,7 +1,7 @@
-import requests
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import requests
+
 
 """TOPdesk integration for Cortex XSOAR"""
 

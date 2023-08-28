@@ -814,13 +814,14 @@ def delete_file_command(client: MsGraphClient, args):
 def main():
     params: dict = demisto.params()
     base_url: str = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_id = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    tenant = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id')
+    auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
+    enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     ok_codes: tuple = (200, 204, 201)
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+        'password') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None

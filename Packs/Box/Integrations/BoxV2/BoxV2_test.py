@@ -1142,3 +1142,82 @@ def test_move_folder_command(requests_mock, mocker):
     assert response.outputs == mock_response
 
     assert len(response.outputs) > 0
+
+
+def test_main(mocker):
+    """
+    Given:
+    - Valid arguments for each command.
+    When:
+    - Running the main function.
+    Then:
+    - Ensure that each command runs successfully without raising any exceptions.
+    """
+    import BoxV2
+    client = ClientTestBox(mocker).client
+    demisto_args = {
+        'max_fetch': 50,
+        'fields': 'name',
+        'filter_term': 'test_user',
+        'limit': '100',
+        'offset': '0'
+    }
+    demisto_command = 'test-module'
+    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    mocker.patch.object(demisto, 'command', return_value=demisto_command)
+    client = ClientTestBox(mocker).client
+    mocker.patch.object(BoxV2, 'Client', return_value=client)
+    mock_response = util_load_json('test_data/get_folder.json')
+    mocker.patch.object(Client, 'list_users', return_value=mock_response)
+    BoxV2.main()
+
+
+def test_trashed_items_list_command(mocker):
+    """
+        Given:
+        - A client object
+        - Arguments for the trashed_items_list_command function
+
+        When:
+        - Calling the trashed_items_list_command function and the API returns entries
+
+        Then:
+        - Ensure the function returns a CommandResults object with entries
+    """
+    from BoxV2 import trashed_items_list_command
+    client = ClientTestBox(mocker).client
+    args = {'limit': '100', 'offset': '0', 'as_user': 'test_user'}
+    response = {'entries': [{'id': '123', 'name': 'test_file'}, {'id': '456', 'name': 'test_folder'}]}
+    mocker.patch.object(client, 'trashed_items_list', return_value=response)
+    results = trashed_items_list_command(client, args)
+    assert results.outputs_prefix == 'Box.Trash'
+    assert results.outputs == response.get('entries')
+    assert results.readable_output == '### Trashed items were found.\n|Id|Name|\n|---|---|\n'\
+                                      '| 123 | test_file |\n| 456 | test_folder |\n'
+
+
+def test_trashed_item_restore_command_happy_path(mocker):
+    """
+    Given:
+    - Valid item_id, type and as_user parameters.
+
+    When:
+    - Calling trashed_item_restore_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected outputs.
+    """
+    from BoxV2 import trashed_item_restore_command
+    item_id = '123'
+    file_type = 'file'
+    as_user = 'user1'
+    response = {'id': item_id, 'name': 'test_file', 'type': file_type, 'restored': True}
+    client = ClientTestBox(mocker).client
+    mocker.patch.object(client, 'trashed_item_restore', return_value=response)
+    args = {'item_id': item_id, 'type': file_type, 'as_user': as_user}
+    result = trashed_item_restore_command(client, args)
+
+    assert result.outputs_prefix == 'Box.Item'
+    assert result.outputs_key_field == 'id'
+    assert result.outputs == response
+    assert result.readable_output == f'Item with the ID {item_id} was restored.'

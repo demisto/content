@@ -2,4 +2,11 @@
 ignore=RM104,RM106
 
 [known_words]
-requestTimeout
+requesttimeout
+
+[file:ZscalerModelingRule.yml]
+ignore=MR108
+
+[file:ZscalerModelingRule_1_3.yml]
+ignore=MR108
+

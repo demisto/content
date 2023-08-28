@@ -730,10 +730,14 @@ class ExchangeOnlinePowershellV3Client
             $this.CreateSession()
             # Import and Execute command
             $cmd_params = @{
-                "SenderAddress"    = $sender_address
-                "RecipientAddress" = $recipient_address
                 "Page"             = $page
                 "PageSize"         = $page_size
+            }
+            if ($sender_address) {
+                $cmd_params.SenderAddress = $sender_address
+            }
+            if ($recipient_address) {
+                $cmd_params.RecipientAddress = $recipient_address
             }
             if ($status) {
                 $cmd_params.Status = $status

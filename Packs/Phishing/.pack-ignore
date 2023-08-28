@@ -28,6 +28,9 @@ ignore=PB106
 [file:Phishing_-_Generic_v3_6_5.yml]
 ignore=PB106
 
+[file:Phishing_-_Generic_v3_6_8.yml]
+ignore=PB106
+
 [file:Phishing_-_Generic_v3_README.md]
 ignore=RM106
 

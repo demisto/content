@@ -35,7 +35,8 @@ from CTIXv3 import (
     create_note,
     update_note,
     delete_note,
-    make_request
+    make_request,
+    cve_command,
 )
 
 """CONSTANTS"""
@@ -1146,3 +1147,38 @@ def test_make_request_delete(requests_mock):
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 1
+
+
+def test_cve_command(requests_mock):
+    mock_threat_list_response = util_load_json("test_data/get_cve_threat_data.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_threat_list_response)
+    obj_id = mock_threat_list_response["results"][0]["id"]
+    mock_product_details_response = util_load_json("test_data/get_vulnerability_product_details.json")
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/product-details/",
+                      json=mock_product_details_response)
+    source_id = mock_product_details_response["results"][0]["source"]["id"]
+    mock_cvss_score_response = util_load_json("test_data/get_cvss_score.json")
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/cvss-score/", json=mock_cvss_score_response)
+    mock_source_description_response = util_load_json("test_data/get_vulnerability_source_description.json")
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/source-description/?source_id={source_id}",
+                      json=mock_source_description_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "cve": "CVE-2023-33250",
+    }
+
+    response = cve_command(client, args)
+
+    assert response[0].outputs["uuid"] == obj_id
+    assert response[0].outputs_prefix == "CTIX.VulnerabilityLookup"
+
+    assert isinstance(response[0].outputs, dict)
+    assert len(response[0].outputs) == 10

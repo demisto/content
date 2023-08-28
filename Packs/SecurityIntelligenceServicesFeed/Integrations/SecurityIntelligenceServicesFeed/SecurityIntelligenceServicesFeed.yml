@@ -25,10 +25,9 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -37,8 +36,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -60,76 +59,64 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- name: feedExpirationInterval
   required: false
+- name: feedExpirationInterval
   type: 1
   display: ''
+  required: false
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
-- additionalinfo: The historical indicators available in the time-range provided will
-    be fetched.
+  required: false
+- additionalinfo: The historical indicators available in the time-range provided will be fetched.
   defaultvalue: 1 day
-  display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: firstFetchInterval
   required: true
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: A PassiveTotal with Security Intelligence Services Feed provides you
-  with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly ingestion available.
+  required: false
+description: A PassiveTotal with Security Intelligence Services Feed provides you with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly ingestion available.
 display: Security Intelligence Services Feed
 name: SecurityIntelligenceServicesFeed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of indicators to return from S3. Note- The maximum
-        limit supported is 1000.
-      isArray: false
+    - defaultValue: '50'
+      description: The maximum number of indicators to return from S3. Note- The maximum limit supported is 1000.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Domain
       description: Indicators will be fetched based on feed_type.
-      isArray: false
       name: feed_type
       predefined:
       - Domain
@@ -137,24 +124,12 @@ script:
       - Content
       - Scam
       - Malware
-      required: false
-      secret: false
-    - default: false
-      description: Indicators that match the given search pattern will be fetched.
-      isArray: false
+    - description: Indicators that match the given search pattern will be fetched.
       name: search
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets indicators from Security Intelligence Services feed. Note- Indicators
-      will fetch from the latest found object.
-    execution: false
+    description: Gets indicators from Security Intelligence Services feed. Note- Indicators will fetch from the latest found object.
     name: sis-get-indicators
-  dockerimage: demisto/boto3py3:1.0.0.58751
+  dockerimage: demisto/boto3py3:1.0.0.65194
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

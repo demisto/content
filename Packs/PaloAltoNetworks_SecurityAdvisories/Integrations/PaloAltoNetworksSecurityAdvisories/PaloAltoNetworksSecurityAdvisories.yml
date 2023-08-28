@@ -6,15 +6,14 @@ configuration:
 - defaultvalue: https://security.paloaltonetworks.com/api/v1
   display: Default URL for PAN-OS advisories website
   name: url
-  required: false
   type: 0
+  required: false
 - additionalinfo: The Palo Alto Networks product name to fetch indicators for, such as "PAN-OS"
   defaultvalue: PAN-OS
   display: Fetch indicator product name
-  hidden: false
   name: fetch_product_name
-  required: false
   type: 0
+  required: false
 - name: feed
   defaultvalue: 'true'
   display: Fetch indicators
@@ -23,13 +22,13 @@ configuration:
 - name: feedReputation
   display: Indicator Reputation
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -45,12 +44,12 @@ configuration:
 - name: feedExpirationPolicy
   display: ''
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
@@ -62,13 +61,13 @@ configuration:
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - name: feedTags
   display: Tags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -76,9 +75,9 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 description: Queries the public repository of PAN-OS CVEs.
 display: Palo Alto Networks Security Advisories (Beta)
 beta: true
@@ -89,21 +88,12 @@ script:
     - default: true
       defaultValue: PAN-OS
       description: Product name to search for advisories; valid values for this item can be found in the sidebar at https://security.paloaltonetworks.com/
-      isArray: false
       name: product
-      required: false
-      secret: false
-    - default: false
-      defaultValue: -date
+    - defaultValue: -date
       description: Sort returned advisories by this value, can be date, cvss, etc. Leading hyphpen (-) indicates reverse search.
-      isArray: false
       name: sort
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter advisories to this severity level only.
-      isArray: false
       name: severity
       predefined:
       - HIGH
@@ -111,17 +101,9 @@ script:
       - MEDIUM
       - LOW
       - NONE
-      required: false
-      secret: false
-    - default: false
-      description: Text search query - supports same search syntax as the GUI filter field
-      isArray: false
+    - description: Text search query - supports same search syntax as the GUI filter field
       name: q
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all the advisories for the given product.
-    execution: false
     name: pan-advisories-get-advisories
     outputs:
     - contextPath: PANSecurityAdvisory.Advisory.data_type
@@ -154,11 +136,8 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

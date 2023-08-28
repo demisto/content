@@ -1295,7 +1295,6 @@ script:
     description: Deletes a case
     execution: true
   isfetch: true
-hidden: false
 tests:
 - No test
 fromversion: 5.0.0

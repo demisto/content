@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import json
-import requests
+import urllib3
 import time
 import traceback
 
@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 import dateutil.parser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """Helper function"""
 

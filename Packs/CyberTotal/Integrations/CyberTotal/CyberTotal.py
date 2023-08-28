@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
@@ -6,8 +8,6 @@ from datetime import timezone
 import dateparser
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()

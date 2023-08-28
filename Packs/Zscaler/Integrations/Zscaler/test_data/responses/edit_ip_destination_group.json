@@ -1,0 +1,12 @@
+{
+    "id": "2000359", 
+    "name": "Test01", 
+    "type": "DSTN_IP", 
+    "addresses": [
+        "127.0.0.2"
+    ], 
+    "description": "Localhost v2",
+    "creatorContext": "ZIA", 
+    "ipCategories": [], 
+    "countries": []
+}

@@ -1352,6 +1352,37 @@ def test_get_remote_data_closing_incident(mocker, response_closing_ticket_mirror
     assert closing_response == res[2]['Contents']
 
 
+def test_get_remote_data_closing_incident_with_different_closing_state(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket in closed state
+        -  close_incident parameter is set to closed
+        -  server_close_custom_state parameter differs from the ticket's closing state
+    When
+        - running get_remote_data_command.
+    Then
+        - Validate that the incident does not get closed
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='sc_task', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {'close_incident': 'closed', 'server_close_custom_state': '6=Design'}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM)
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    res = get_remote_data_command(client, args, params)
+    assert len(res) == 2
+    # This means that the entry is of type Note, which does not indicate the closing of the incident
+    assert res[1].get('Note', False) is True
+
+
 def test_get_remote_data_no_attachment(mocker):
     """
     Given:

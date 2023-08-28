@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 from typing import Any, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import urllib3
 
 
@@ -363,22 +363,22 @@ def windows_device_defender_update_signatures_command(client: MsGraphClient, arg
 
 
 def clean_windows_device_command(client: MsGraphClient, args: dict) -> None:
-    keep_user_data: bool = bool(args.get('keep_user_data'))
+    keep_user_data: bool = argToBoolean(args.get('keep_user_data', True))
     device_id: str = str(args.get('device_id'))
     client.clean_windows_device(keep_user_data, device_id, 'cleanWindowsDevice')
     return_outputs('Clean windows device action activated successfully.', {}, {})
 
 
 def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> None:
-    quick_scan: bool = bool(args.get('quick_scan'))
+    quick_scan: bool = argToBoolean(args.get('quick_scan', True))
     device_id: str = str(args.get('device_id'))
     client.windows_device_defender_scan(quick_scan, device_id, 'windowsDefenderScan')
     return_outputs('Windows device defender scan action activated successfully.', {}, {})
 
 
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
-    keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
-    keep_user_data: bool = bool(args.get('keep_user_data'))
+    keep_enrollment_data: bool = argToBoolean(args.get('keep_enrollment_data', True))
+    keep_user_data: bool = argToBoolean(args.get('keep_user_data', True))
     mac_os_unlock_code: str = str(args.get('mac_os_unlock_code', ""))
     device_id: str = str(args.get('device_id'))
     client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
@@ -387,8 +387,8 @@ def wipe_device_command(client: MsGraphClient, args: dict) -> None:
 
 def update_windows_device_account_command(client: MsGraphClient, args: dict) -> None:
     device_account_password: str = str(args.get('device_account_password'))
-    password_rotation_enabled: bool = bool(args.get('password_rotation_enabled'))
-    calendar_sync_enabled: bool = bool(args.get('calendar_sync_enabled'))
+    password_rotation_enabled: bool = argToBoolean(args.get('password_rotation_enabled', False))
+    calendar_sync_enabled: bool = argToBoolean(args.get('calendar_sync_enabled', False))
     device_account_email: str = str(args.get('device_account_email'))
     exchange_server: str = str(args.get('exchange_server'))
     session_initiation_protocal_address: str = str(args.get('session_initiation_protocal_address'))
@@ -405,15 +405,16 @@ def update_windows_device_account_command(client: MsGraphClient, args: dict) -> 
 def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
-    tenant_id: str = params.get('tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '')
+    tenant_id: str = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id', '')
+    auth_and_token_url: str = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id', '')
+    enc_key: str = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key', '')
     base_url: str = urljoin(params.get('url', ''), '/v1.0')
     app_name: str = 'ms-graph-device-management'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
-    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    certificate_thumbprint: str = params.get('credentials_certificate_thumbprint', {}).get(
+        'password') or params.get('certificate_thumbprint', '')
     private_key: str = params.get('private_key', '')
     managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None

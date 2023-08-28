@@ -54,10 +54,6 @@
             "mandatory": false,
             "display_name": "Google Vault"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "DuoAdminApi": {
             "mandatory": false,
             "display_name": "DUO Admin"

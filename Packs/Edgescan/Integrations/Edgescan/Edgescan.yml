@@ -9,12 +9,12 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: API Key
   name: api_key
   required: true
@@ -22,65 +22,53 @@ configuration:
 - defaultvalue: '50'
   display: Max number of incidents to fetch at once
   name: max_fetch
-  required: false
   type: 0
-- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
-    decimal point number. Disabled if empty. Mutually exclusive with cvss_score
+  required: false
+- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score
   display: Fetch vulnerabilities with CVSS greater than
   name: cvss_score_greater_than
-  required: false
   type: 0
+  required: false
 - additionalinfo: Disabled if empty
   display: Fetch vulnerabilities with risk more than
   name: risk_more_than
-  required: false
   type: 0
-- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days,
-    12 months, 1 year, etc.'
+  required: false
+- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days, 12 months, 1 year, etc.'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
-    value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
-  display: Fetch vulnerabilities with CVSS with exact value
-  hidden: false
-  name: cvss_score
   required: false
+- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
+  display: Fetch vulnerabilities with CVSS with exact value
+  name: cvss_score
   type: 0
-description: Cloud-based continuous vulnerability management and penetration testing
-  solution.
+  required: false
+description: Cloud-based continuous vulnerability management and penetration testing solution.
 display: Edgescan
 name: Edgescan
 script:
   commands:
-  - deprecated: false
-    description: Get a list of all hosts
-    execution: false
+  - description: Get a list of all hosts
     name: edgescan-host-get-hosts
     outputs:
     - contextPath: Edgescan.HostGetHosts
       description: List of all hosts
       type: Unknown
   - arguments:
-    - default: false
-      description: The host id
-      isArray: false
+    - description: The host id
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Get detailed information about a host.
-    execution: false
     name: edgescan-host-get
     outputs:
     - contextPath: Edgescan.HostGet
@@ -88,693 +76,325 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: json
       description: The file format to export
-      isArray: false
       name: format
       predefined:
       - json
       - csv
       - xlsx
       required: true
-      secret: false
-    deprecated: false
     description: Get a list of hosts in export format.
-    execution: false
     name: edgescan-host-get-export
     outputs:
     - contextPath: InfoFile
       description: Export host information
       type: Unknown
   - arguments:
-    - default: false
-      description: The asset ID
-      isArray: false
+    - description: The asset ID
       name: asset_id
-      required: false
-      secret: false
-    - default: false
-      description: The Operating System name
-      isArray: false
+    - description: The Operating System name
       name: os_name
-      required: false
-      secret: false
-    - default: false
-      description: The asset label
-      isArray: false
+    - description: The asset label
       name: label
-      required: false
-      secret: false
-    - default: false
-      description: The asset status
-      isArray: false
+    - description: The asset status
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: The host id
-      isArray: false
+    - description: The host id
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of hosts by query
-    execution: false
     name: edgescan-host-get-query
     outputs:
     - contextPath: Edgescan.HostGetQuery
       description: The result of a host query
       type: Unknown
   - arguments:
-    - default: false
-      description: The host label
-      isArray: false
+    - description: The host label
       name: label
-      required: false
-      secret: false
-    - default: false
-      description: The host id to update
-      isArray: false
+    - description: The host id to update
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Update a host
-    execution: false
     name: edgescan-host-update
     outputs:
     - contextPath: Edgescan.HostUpdate
       description: Information returned after host update
       type: Unknown
   - arguments:
-    - default: false
-      description: The detail level of the metadata
-      isArray: false
+    - description: The detail level of the metadata
       name: detail_level
-      required: false
-      secret: false
-    deprecated: false
     description: Get the full list of assets
-    execution: false
     name: edgescan-asset-get-assets
     outputs:
     - contextPath: Edgescan.AssetGetAssets
       description: List of all assets
       type: Unknown
   - arguments:
-    - default: false
-      description: The asset ID
-      isArray: false
+    - description: The asset ID
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Get asset details
-    execution: false
     name: edgescan-asset-get
     outputs:
     - contextPath: Edgescan.AssetGet
       description: Detailed information about an asset
       type: Unknown
   - arguments:
-    - default: false
-      description: The asset ID
-      isArray: false
+    - description: The asset ID
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The asset name
-      isArray: false
+    - description: The asset name
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The asset hostname
-      isArray: false
+    - description: The asset hostname
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: Asset priority
-      isArray: false
+    - description: Asset priority
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Asset type
-      isArray: false
+    - description: Asset type
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Authentication status
-      isArray: false
+    - description: Authentication status
       name: authenticated
-      required: false
-      secret: false
-    - default: false
-      description: Number of hosts
-      isArray: false
+    - description: Number of hosts
       name: host_count
-      required: false
-      secret: false
-    - default: false
-      description: Creation date
-      isArray: false
+    - description: Creation date
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: Last time updated at
-      isArray: false
+    - description: Last time updated at
       name: updated_at
-      required: false
-      secret: false
-    - default: false
-      description: Asset location
-      isArray: false
+    - description: Asset location
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: Location type of an asset
-      isArray: false
+    - description: Location type of an asset
       name: location_type
-      required: false
-      secret: false
-    - default: false
-      description: PCI compliance status
-      isArray: false
+    - description: PCI compliance status
       name: pci_enabled
-      required: false
-      secret: false
-    - default: false
-      description: Last host scan date
-      isArray: false
+    - description: Last host scan date
       name: last_host_scan
-      required: false
-      secret: false
-    - default: false
-      description: Asset network access
-      isArray: false
+    - description: Asset network access
       name: network_access
-      required: false
-      secret: false
-    - default: false
-      description: Asset assesment
-      isArray: false
+    - description: Asset assesment
       name: current_assessment
-      required: false
-      secret: false
-    - default: false
-      description: Asset next assesment date
-      isArray: false
+    - description: Asset next assesment date
       name: next_assessment_date
-      required: false
-      secret: false
-    - default: false
-      description: Asset license state
-      isArray: false
+    - description: Asset license state
       name: active_licence
-      required: false
-      secret: false
-    - default: false
-      description: Asset lock status
-      isArray: false
+    - description: Asset lock status
       name: blocked_status
-      required: false
-      secret: false
-    - default: false
-      description: Date of last asset assesment
-      isArray: false
+    - description: Date of last asset assesment
       name: last_assessment_date
-      required: false
-      secret: false
-    - default: false
-      description: The asset status
-      isArray: false
+    - description: The asset status
       name: asset_status
-      required: false
-      secret: false
-    deprecated: false
     description: Query the asset database
-    execution: false
     name: edgescan-asset-get-query
     outputs:
     - contextPath: Edgescan.AssetGetQuery
       description: Output of an asset query
       type: Unknown
   - arguments:
-    - default: false
-      description: Asset ID
-      isArray: false
+    - description: Asset ID
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Asset name
-      isArray: false
+    - description: Asset name
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Asset priority
-      isArray: false
+    - description: Asset priority
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Asset type
-      isArray: false
+    - description: Asset type
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Asset authentication status
-      isArray: false
+    - description: Asset authentication status
       name: authenticatied
-      required: false
-      secret: false
-    - default: false
-      description: Asset tags
-      isArray: false
+    - description: Asset tags
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Asset location specifiers
-      isArray: false
+    - description: Asset location specifiers
       name: location_secifiers
-      required: false
-      secret: false
-    deprecated: false
     description: Create an asset
-    execution: false
     name: edgescan-asset-create
     outputs:
     - contextPath: Edgescan.AssetCreate
       description: Information about asset creation
       type: Unknown
   - arguments:
-    - default: false
-      description: Asset name
-      isArray: false
+    - description: Asset name
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Asset priority
-      isArray: false
+    - description: Asset priority
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Asset type
-      isArray: false
+    - description: Asset type
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Asset authentication status
-      isArray: false
+    - description: Asset authentication status
       name: authenticatied
-      required: false
-      secret: false
-    - default: false
-      description: Asset tags
-      isArray: false
+    - description: Asset tags
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Asset location specifiers
-      isArray: false
+    - description: Asset location specifiers
       name: location_secifiers
-      required: false
-      secret: false
-    - default: false
-      description: The asset ID to update
-      isArray: false
+    - description: The asset ID to update
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Update an asset
-    execution: false
     name: edgescan-asset-update
     outputs:
     - contextPath: Edgescan.AssetUpdate
       description: Information about asset update
       type: Unknown
   - arguments:
-    - default: false
-      description: Asset name
-      isArray: false
+    - description: Asset name
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Asset priority
-      isArray: false
+    - description: Asset priority
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Asset type
-      isArray: false
+    - description: Asset type
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Asset authentication status
-      isArray: false
+    - description: Asset authentication status
       name: authenticatied
-      required: false
-      secret: false
-    - default: false
-      description: Asset tags
-      isArray: false
+    - description: Asset tags
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Asset location specifiers
-      isArray: false
+    - description: Asset location specifiers
       name: location_secifiers
-      required: false
-      secret: false
-    - default: false
-      description: The asset id to delete
-      isArray: false
+    - description: The asset id to delete
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an asset
-    execution: false
     name: edgescan-asset-delete
     outputs:
     - contextPath: Edgescan.AssetDelete
       description: Information about asset deletion
       type: Unknown
-  - deprecated: false
-    description: Get the full user list
-    execution: false
+  - description: Get the full user list
     name: edgescan-user-get-users
     outputs:
     - contextPath: Edgescan.UserGetusers
       description: The list of all users
       type: Unknown
   - arguments:
-    - default: false
-      description: The user ID to get
-      isArray: false
+    - description: The user ID to get
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Get user details
-    execution: false
     name: edgescan-user-get
     outputs:
     - contextPath: Edgescan.UserGet
       description: Detailed user information
       type: Unknown
   - arguments:
-    - default: false
-      description: User ID
-      isArray: false
+    - description: User ID
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The username
-      isArray: false
+    - description: The username
       name: username
-      required: false
-      secret: false
-    - default: false
-      description: The user's phone number
-      isArray: false
+    - description: The user's phone number
       name: phone_number
-      required: false
-      secret: false
-    - default: false
-      description: User's phone number confirmation
-      isArray: false
+    - description: User's phone number confirmation
       name: phone_number_confirmed
-      required: false
-      secret: false
-    - default: false
-      description: User's Multi Factor Authentication Status
-      isArray: false
+    - description: User's Multi Factor Authentication Status
       name: mfa_enabled
-      required: false
-      secret: false
-    - default: false
-      description: User's Multi Factor Authentication Method
-      isArray: false
+    - description: User's Multi Factor Authentication Method
       name: mfa_method
-      required: false
-      secret: false
-    - default: false
-      description: User's E-Mail Address
-      isArray: false
+    - description: User's E-Mail Address
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: Email confirmation status
-      isArray: false
+    - description: Email confirmation status
       name: email_confirmed
-      required: false
-      secret: false
-    - default: false
-      description: User creation date
-      isArray: false
+    - description: User creation date
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: Last user update
-      isArray: false
+    - description: Last user update
       name: updated_at
-      required: false
-      secret: false
-    - default: false
-      description: Superuser status
-      isArray: false
+    - description: Superuser status
       name: is_super
-      required: false
-      secret: false
-    - default: false
-      description: User lock status
-      isArray: false
+    - description: User lock status
       name: account_locked
-      required: false
-      secret: false
-    - default: false
-      description: User lock reason
-      isArray: false
+    - description: User lock reason
       name: lock_reason
-      required: false
-      secret: false
-    - default: false
-      description: User lock time
-      isArray: false
+    - description: User lock time
       name: lock_time
-      required: false
-      secret: false
-    - default: false
-      description: User's last login time
-      isArray: false
+    - description: User's last login time
       name: last_login_time
-      required: false
-      secret: false
-    - default: false
-      description: User's last password reset time
-      isArray: false
+    - description: User's last password reset time
       name: last_password_reset_time
-      required: false
-      secret: false
-    - default: false
-      description: User's first name
-      isArray: false
+    - description: User's first name
       name: first_name
-      required: false
-      secret: false
-    - default: false
-      description: User's last name
-      isArray: false
+    - description: User's last name
       name: last_name
-      required: false
-      secret: false
-    - default: false
-      description: Result query limit
-      isArray: false
+    - description: Result query limit
       name: l
-      required: false
-      secret: false
-    deprecated: false
     description: Query for a user
-    execution: false
     name: edgescan-user-get-query
     outputs:
     - contextPath: Edgescan.UserGetQuery
       description: Result of a user query
       type: Unknown
   - arguments:
-    - default: false
-      description: The username
-      isArray: false
+    - description: The username
       name: username
-      required: false
-      secret: false
-    - default: false
-      description: User's E-Mail Address
-      isArray: false
+    - description: User's E-Mail Address
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: User's first name
-      isArray: false
+    - description: User's first name
       name: first_name
-      required: false
-      secret: false
-    - default: false
-      description: User's last name
-      isArray: false
+    - description: User's last name
       name: last_name
-      required: false
-      secret: false
-    - default: false
-      description: User's phone number
-      isArray: false
+    - description: User's phone number
       name: phone_number
-      required: false
-      secret: false
-    - default: false
-      description: User's Multi Factor Authentication Status
-      isArray: false
+    - description: User's Multi Factor Authentication Status
       name: mfa_enabled
-      required: false
-      secret: false
-    - default: false
-      description: User's Multi Factor Authentication method
-      isArray: false
+    - description: User's Multi Factor Authentication method
       name: mfa_method
-      required: false
-      secret: false
-    - default: false
-      description: Super user status
-      isArray: false
+    - description: Super user status
       name: is_super
-      required: false
-      secret: false
-    deprecated: false
     description: Create a user
-    execution: false
     name: edgescan-user-create
     outputs:
     - contextPath: Edgescan.UserCreate
       description: Information about a created user
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to delete
-      isArray: false
+    - description: The user id to delete
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a user
-    execution: false
     name: edgescan-user-delete
     outputs:
     - contextPath: Edgescan.UserDelete
       description: Information about a deleted user
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to reset the password for
-      isArray: false
+    - description: The user id to reset the password for
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Reset a user's password
-    execution: false
     name: edgescan-user-reset-password
     outputs:
     - contextPath: Edgescan.UserResetPassword
       description: Information about User password reset
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to reset the email for
-      isArray: false
+    - description: The user id to reset the email for
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Reset a users password
-    execution: false
     name: edgescan-user-reset-email
     outputs:
     - contextPath: Edgescan.UserResetEmail
       description: Information about User email reset.
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to lock
-      isArray: false
+    - description: The user id to lock
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Lock a user
-    execution: false
     name: edgescan-user-lock-account
     outputs:
     - contextPath: Edgescan.UserLockAccount
       description: Information about the User lock
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to unlock
-      isArray: false
+    - description: The user id to unlock
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Unlock a user
-    execution: false
     name: edgescan-user-unlock-account
     outputs:
     - contextPath: Edgescan.UserUnlockAccount
       description: Information about user unlock status
       type: Unknown
   - arguments:
-    - default: false
-      description: The user id to get the permissions for
-      isArray: false
+    - description: The user id to get the permissions for
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Get user's permissions
-    execution: false
     name: edgescan-user-get-permissions
     outputs:
     - contextPath: Edgescan.UserGetPermissions
       description: The user permissions
       type: Unknown
-  - deprecated: false
-    description: Get the full list of vulnerabilities
-    execution: false
+  - description: Get the full list of vulnerabilities
     name: edgescan-vulnerabilities-get
     outputs:
     - contextPath: EdgeScan.VulnerabilitiesGet
@@ -782,266 +402,124 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: json
       description: The file format to export
-      isArray: false
       name: format
       predefined:
       - json
       - csv
       - xlsx
       required: true
-      secret: false
-    deprecated: false
     description: Get the full list of vulnerabilities for export
-    execution: false
     name: edgescan-vulnerabilities-get-export
     outputs:
     - contextPath: InfoFile
       description: The vulnerabilities export list
       type: Unknown
   - arguments:
-    - default: false
-      description: The vulnerability details to get details for
-      isArray: false
+    - description: The vulnerability details to get details for
       name: id
       predefined:
       - ''
       required: true
-      secret: false
-    deprecated: false
     description: Get vulnerability details
-    execution: false
     name: edgescan-vulnerabilities-get-details
     outputs:
     - contextPath: Edgescan.VulnerabilitiesGetDetails
       description: The vulnerability details
       type: Unknown
   - arguments:
-    - default: false
-      description: Is asset tagged with any.
-      isArray: false
+    - description: Is asset tagged with any.
       name: asset_tagged_with_any
-      required: false
-      secret: false
-    - default: false
-      description: Is risk score more than provided
-      isArray: false
+    - description: Is risk score more than provided
       name: risk_more_than
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability id
-      isArray: false
+    - description: The vulnerability id
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability severity
-      isArray: false
+    - description: The vulnerability severity
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability threat level
-      isArray: false
+    - description: The vulnerability threat level
       name: threat
-      required: false
-      secret: false
-    - default: false
-      description: The asset_id associated with the vulnerability
-      isArray: false
+    - description: The asset_id associated with the vulnerability
       name: asset_id
-      required: false
-      secret: false
-    - default: false
-      description: The asset name associated with the vulnerability
-      isArray: false
+    - description: The asset name associated with the vulnerability
       name: asset_name
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability risk level
-      isArray: false
+    - description: The vulnerability risk level
       name: risk
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability CVSS score
-      isArray: false
+    - description: The vulnerability CVSS score
       name: cvss_score
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability CVSS vector
-      isArray: false
+    - description: The vulnerability CVSS vector
       name: cvss_vector
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability CVSS v2 score
-      isArray: false
+    - description: The vulnerability CVSS v2 score
       name: cvss_v2_score
-      required: false
-      secret: false
-    - default: false
-      description: The CVSS version to query for
-      isArray: false
+    - description: The CVSS version to query for
       name: cvss_version
-      required: false
-      secret: false
-    - default: false
-      description: true/false
-      isArray: false
+    - description: true/false
       name: altered_score
-      required: false
-      secret: false
-    - default: false
-      description: The date on which the vulnerability was opened
-      isArray: false
+    - description: The date on which the vulnerability was opened
       name: date_opened
-      required: false
-      secret: false
-    - default: false
-      description: The date on which the vulnerability was closed
-      isArray: false
+    - description: The date on which the vulnerability was closed
       name: date_closed
-      required: false
-      secret: false
-    - default: false
-      description: The status of the vulnerability
-      isArray: false
+    - description: The status of the vulnerability
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability pci complience status
-      isArray: false
+    - description: The vulnerability pci complience status
       name: pci_compliance_status
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability location
-      isArray: false
+    - description: The vulnerability location
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability location specifier id
-      isArray: false
+    - description: The vulnerability location specifier id
       name: location_specifier_id
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability confidence level
-      isArray: false
+    - description: The vulnerability confidence level
       name: confidence
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability label
-      isArray: false
+    - description: The vulnerability label
       name: label
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability level.
-      isArray: false
+    - description: The vulnerability level.
       name: layer
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability last PCI exception
-      isArray: false
+    - description: The vulnerability last PCI exception
       name: last_pci_exception
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability updated at time
-      isArray: false
+    - description: The vulnerability updated at time
       name: updated_at
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability created at time.
-      isArray: false
+    - description: The vulnerability created at time.
       name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability name
-      isArray: false
+    - description: The vulnerability name
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The date the vulnerability was opened after i.e. "2021-04-01T14:27:10.900Z"
-      isArray: false
+    - description: The date the vulnerability was opened after i.e. "2021-04-01T14:27:10.900Z"
       name: date_opened_after
-      required: false
-      secret: false
-    deprecated: false
     description: Run a vulnerability query
-    execution: false
     name: edgescan-vulnerabilities-get-query
     outputs:
     - contextPath: Edgescan.VulnerabilitiesGetQuery
       description: The result of a vulnerability query
       type: Unknown
   - arguments:
-    - default: false
-      description: The vulnerability id to retest
-      isArray: false
+    - description: The vulnerability id to retest
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retest a vulnerability
-    execution: false
     name: edgescan-vulnerabilities-retest
     outputs:
     - contextPath: Edgescan.VulnerabilitiesRetest
       description: The Vulnerability retest result
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: 'true'
+    - defaultValue: 'true'
       description: The risk accept value
-      isArray: false
       name: value
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability id to risk accept
-      isArray: false
+    - description: The vulnerability id to risk accept
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Rish accept a vulnerability
-    execution: false
     name: edgescan-vulnerabilities-risk-accept
     outputs:
     - contextPath: Edgescan.VulnerabilitiesRiskAccept
       description: The vulnerability retest result
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the vulnerability to add the annotation to
-      isArray: false
+    - description: The ID of the vulnerability to add the annotation to
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The text of the annotation to add
-      isArray: false
+    - description: The text of the annotation to add
       name: text
       required: true
-      secret: false
-    deprecated: false
     description: This command adds a text annotation to a vulnerability
-    execution: false
     name: edgescan-vulnerabilities-add-annotation
     outputs:
     - contextPath: Edgescan.AnnotationAdd.id
@@ -1062,11 +540,8 @@ script:
     - contextPath: Edgescan.AnnotationAdd.created_at
       description: The date when the annoation was added
       type: Date
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

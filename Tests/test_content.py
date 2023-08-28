@@ -334,7 +334,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.warning(f"assuming server version is {default_version}.")
         return default_version
 
-    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
+    instances_ami_names = {env.get('ImageName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
         logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
                         f' Assuming server version is {default_version}')
@@ -346,19 +346,21 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 
 def extract_server_numeric_version(instances_ami_name, default_version):
-    # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
-                                   instances_ami_name)
-    extracted_version = [match.replace('_', '.') for match in extracted_version]
+    try:
+        server_numeric_version = re.search(
+            r'server-image-(?:ga-)?(?P<version>[a-z0-9\-]+)-(?P<build_number>\d+)-(?P<creation_date>\d{4}-\d{2}-\d{2})',
+            instances_ami_name
+        ).group('version')
+    except (AttributeError, IndexError) as e:
+        logging.info(f'Got exception when trying to get the server version. Setting server version to {default_version=}.'
+                     f' Given {instances_ami_name=}. Exact error is {str(e)}')
+        return default_version
 
-    if extracted_version:
-        server_numeric_version = extracted_version[0]
+    if server_numeric_version == 'master':
+        logging.info('Server version: Master')
+        return default_version
     else:
-        if 'Master' in instances_ami_name:
-            logging.info('Server version: Master')
-            return default_version
-        else:
-            server_numeric_version = default_version
+        server_numeric_version = server_numeric_version.replace('-', '.')
 
     # make sure version is three-part version
     if server_numeric_version.count('.') == 1:
@@ -372,7 +374,7 @@ def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
     env_json = load_env_results_json()
-    instances_ips = [(env.get('Role'), f"localhost:{env.get('TunnelPort')}") for env in env_json]
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS', '')) for env in env_json]
     return instances_ips
 
 

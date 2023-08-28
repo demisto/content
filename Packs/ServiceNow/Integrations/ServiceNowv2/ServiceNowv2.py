@@ -1,7 +1,6 @@
-import re
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
 
@@ -231,7 +230,7 @@ def get_item_human_readable(data: dict) -> dict:
     return item
 
 
-def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
+def create_ticket_context(data: dict, additional_fields: list | None = None) -> Any:
     """Create ticket context.
 
     Args:
@@ -296,7 +295,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
+def get_ticket_context(data: Any, additional_fields: list | None = None) -> Any:
     """Manager of ticket context creation.
 
     Args:
@@ -315,7 +314,7 @@ def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
+def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list | None = None) -> list:
     """Get ticket human readable.
 
     Args:
@@ -577,7 +576,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict | None = None, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -655,8 +654,8 @@ class Client(BaseClient):
         """
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
-    def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False,
+    def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
+                     headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
                      no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
@@ -871,7 +870,7 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None,
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str | None = None,
             no_record_found_res: dict = {'result': []}) -> dict:
         """Get a ticket by sending a GET request.
 
@@ -2130,6 +2129,7 @@ def fetch_incidents(client: Client) -> list:
     incidents = []
 
     last_run = demisto.getLastRun()
+    demisto.debug("ServiceNowv2 - Start fetching")
 
     start_snow_time, end_snow_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=DATE_FORMAT
@@ -2148,10 +2148,11 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
 
-    demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
+    demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
-
     count = 0
+    skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
@@ -2171,10 +2172,15 @@ def fetch_incidents(client: Client) -> list:
 
         try:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
+                skipped_incidents += 1
+                demisto.debug(
+                    f"ServiceNowV2 - -Skipping incident with sys_id={ticket.get('sys_id')} and date="
+                    f"{ticket.get(client.timestamp_field)} because its creation time is smaller than the last fetch.")
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception as e:
-            demisto.debug(f"got the following error: {e}")
+            demisto.debug(f"Got the following error: {e}")
+
         incidents.append({
             'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
             'labels': [
@@ -2201,7 +2207,11 @@ def fetch_incidents(client: Client) -> list:
         id_field='sys_id',
         date_format=DATE_FORMAT
     )
-    demisto.debug(f'last run at the end of the incidents fetching {last_run}')
+
+    demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents before filtering: {len(tickets_response)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents skipped: {skipped_incidents}")
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
@@ -2471,9 +2481,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
     if close_incident != 'None':
-        server_close_custom_state = params.get('server_close_custom_state')
-
-        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+        server_close_custom_state = params.get('server_close_custom_state', '')
+        ticket_state = ticket.get('state', '')
+        # The first condition is for closing the incident if the ticket's state is in the
+        # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
+        # integration configuration.
+        if (ticket_state and ticket_state in server_close_custom_state) \
+            or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
             demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
             entries.append({
@@ -2481,7 +2495,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Contents': {
                     'dbotIncidentClose': True,
                     'closeNotes': ticket.get("close_notes"),
-                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
+                    'closeReason': converts_state_close_reason(ticket_state, server_close_custom_state)
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
@@ -2595,8 +2609,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
                     file_extension = ''
-                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                   ticket_type)
+                if params.get('file_tag_from_service_now') not in entry.get('tags', []):
+                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                       ticket_type)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])

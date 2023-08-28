@@ -345,9 +345,9 @@ def get_mock_assets() -> List[Dict[str, Any]]:
 
 
 def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
-    mock_response = {"listTablesResponse": {"tablesMetadata": [{"name": "table1"}]}}
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident-tables/tables", json=mock_response
+    mock_response = {"dataSources": {"tablesMetadata": [{"name": "table1"}]}}
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/data-sources", json=mock_response
     )
 
     res = reco_client.validate_api_key()

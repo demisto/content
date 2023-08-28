@@ -1,17 +1,10 @@
 args:
-- default: false
-  description: A comma-separated list of active incident IDs to assign to the next shift, for example, 1,2,3,4.
-  isArray: false
+- description: A comma-separated list of active incident IDs to assign to the next shift, for example, 1,2,3,4.
   name: incidentIds
   required: true
-  secret: false
-- default: false
-  defaultValue: OOO List
+- defaultValue: OOO List
   description: The name of the out-of-office list. Default is "OOO List".
-  isArray: false
   name: listname
-  required: false
-  secret: false
 comment: "Randomly assigns the active incidents to on call analysts (requires shift management).\nThis automation works with the other out-of-office automations to ensure only available analysts are assigned to the active incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
 commonfields:
   id: AssignToNextShiftOOO
@@ -20,14 +13,12 @@ enabled: true
 name: AssignToNextShiftOOO
 script: '-'
 subtype: python3
-system: false
 tags:
 - Shift Management
 - ooo
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392
-runonce: false
 tests:
 - test_AssignToNextShiftOOO
 fromversion: 5.0.0

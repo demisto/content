@@ -392,7 +392,7 @@ def test_fetch_incidents_first_fetch(mocker):
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
     first_fetch_time = '7 days'
     _, incidents = fetch_incidents(client, last_run={}, first_fetch_time=first_fetch_time, max_results='3')
-    assert len(incidents) == 3
+    assert len(incidents) == 4
     assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
 
 
@@ -414,9 +414,9 @@ def test_fetch_incidents(mocker):
     first_fetch_time = '7 days'
     last_fetch, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time=first_fetch_time,
                                             max_results='3')
-    assert len(incidents) == 1
-    assert incidents[0].get('name') == 'Carbon Black EDR: 2 svchost.exe'
-    assert last_fetch == {'last_fetch': 1615648046.79}
+    assert len(incidents) == 2
+    assert incidents[1].get('name') == 'Carbon Black EDR: 2 svchost.exe'
+    assert last_fetch == {'last_fetch': 1688335806.672}
 
 
 def test_quarantine_device_command_not_have_id(mocker):
@@ -507,3 +507,21 @@ def test_watchlist_update_action_command(mocker, requests_mock):
 
     result = watchlist_update_action_command(client, id=id, action_type=action_type, enabled=enabled)
     assert result.readable_output == 'success'
+
+
+@freeze_time("2023-07-04T23:02:52.107Z")
+def test_remove_PREPREPRE_POSTPOSTPOST_tags(mocker):
+    from CarbonBlackResponseV2 import fetch_incidents, Client
+    last_run = {'last_fetch': dateparser.parse('2023-07-01T23:13:20+00:00').timestamp()}
+    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_alerts', return_value=alerts)
+    first_fetch_time = '7 days'
+    last_fetch, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time=first_fetch_time,
+                                            max_results='10')
+    assert len(incidents) == 1
+    assert incidents[0].get('name') == 'Carbon Black EDR: bf1dc41a-c325-443a-a021-00204482b4e3 svchost.exe'
+    highlights = json.loads(incidents[0].get('rawJSON')).get('ioc_attr').get('highlights')
+
+    assert any("PREPREPRE" in highlight for highlight in highlights) is False
+    assert any("POSTPOSTPOST" in highlight for highlight in highlights) is False

@@ -1,58 +1,34 @@
 args:
-- default: false
-  description: The model name.
-  isArray: false
+- description: The model name.
   name: modelName
   required: true
-  secret: false
-- default: false
-  description: The input query from the dashboard.
-  isArray: false
+- description: The input query from the dashboard.
   name: searchQuery
-  required: false
-  secret: false
-- default: false
-  description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
-  isArray: false
+- description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   name: fromDate
-  required: false
-  secret: false
-- default: false
-  description: Comma-separated list of additional incident fields to display, but
-    which will not be taken into account when computing similarity.
-  isArray: false
+- description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   name: fieldsToDisplay
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: summary
-  description: Return model summary or incidents in specific group according to the
-    search query.
-  isArray: false
+  description: Return model summary or incidents in specific group according to the search query.
   name: returnType
   predefined:
-    - summary
-    - incidents
-  required: false
-  secret: false
-comment: Show clustering model information - model summary and incidents in specific
-  cluster.
+  - summary
+  - incidents
+comment: Show clustering model information - model summary and incidents in specific cluster.
 commonfields:
   id: DBotShowClusteringModelInfo
   version: -1
-enabled: false
 name: DBotShowClusteringModelInfo
 script: '-'
 subtype: python3
-system: false
 tags:
-  - widget
+- widget
 timeout: '0'
 type: python
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
+marketplaces:
+- xsoar

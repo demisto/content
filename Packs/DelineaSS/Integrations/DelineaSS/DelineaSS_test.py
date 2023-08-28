@@ -31,13 +31,13 @@ from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
     SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_RAW_RESPONSE, FOLDER_SEARCH_RAW_RESPONSE, \
     USER_SEARCH_RAW_RESPONSE
 
-GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4"}
+GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4", "autoComment": "TestGetPassword"}
 GET_USERNAME_BY_ID_ARGS = {"secret_id": "4"}
-SECRET_GET_ARGS = {"secret_id": "4"}
-SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1"}
+SECRET_GET_ARGS = {"secret_id": "4", "autoComment": "TestGetSecret"}
+SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1", "autoComment": "TestPasswordUpdate"}
 SECRET_CHECKOUT_ARGS = {"secret_id": "3"}
 SECRET_CHECKIN_ARGS = {"secret_id": "4"}
-SECRET_DELETE_ARGS = {"id": "9"}
+SECRET_DELETE_ARGS = {"id": "9", "autoComment": "TestDeleteSecret"}
 FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1",
                       "parentFolderId": "3"}
 FOLDER_DELETE_ARGS = {"folder_id": "9"}
@@ -51,7 +51,7 @@ SECRET_CREATE_ARGS = {"name": "xsoarSecret", "secrettemplateid": "6003",
                       "username_item": "my-username",
                       "password_item": "password_item"}
 USER_UPDATE_ARGS = {"id": "28", "userName": "UserOne"}
-SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword"}
+SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword", "autoComment": "TestPasswordChange"}
 SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
 SECRET_SEARCH_NAME_ARGS = {"search_name": "Sayali"}
 SEARCH_SECRET_ARGS = {"filter_folderid": "145", "filter_searchfield": "Name", "filter_searchtext": "book"}

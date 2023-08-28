@@ -6,30 +6,30 @@ from taxii2client import v20, v21
 import pytest
 import json
 
-with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
+with open('test_data/stix_envelope_no_indicators.json') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
 
-with open('test_data/stix_envelope_17-19.json', 'r') as f:
+with open('test_data/stix_envelope_17-19.json') as f:
     STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/stix_envelope_complex_20-19.json', 'r') as f:
+with open('test_data/stix_envelope_complex_20-19.json') as f:
     STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_17-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_17-19.json') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_20-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_20-19.json') as f:
     CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
-with open('test_data/id_to_object_test.json', 'r') as f:
+with open('test_data/id_to_object_test.json') as f:
     id_to_object = json.load(f)
-with open('test_data/parsed_stix_objects.json', 'r') as f:
+with open('test_data/parsed_stix_objects.json') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes_v21.json', 'r') as f:
+with open('test_data/objects_envelopes_v21.json') as f:
     envelopes_v21 = json.load(f)
-with open('test_data/objects_envelopes_v20.json', 'r') as f:
+with open('test_data/objects_envelopes_v20.json') as f:
     envelopes_v20 = json.load(f)
 
 
@@ -420,15 +420,15 @@ class TestInitRoots:
         assert mock_client.api_root.url == self.default_api_root_url
 
     has_none = "Unexpected Response."
-    has_version_error = "Unexpected Response. Got Content-Type: ‘application/taxii+json; charset=utf-8; version=2.1' " \
-                        "for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                        "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                        "Server use ‘from taxii2client.v21 import X'"
+    has_version_error = "Unexpected Response. Got Content-Type: 'application/taxii+json; charset=utf-8; version=2.1' " \
+                        "for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                        "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                        "Server use 'from taxii2client.v21 import X'"
     has_client_error = "Unexpected Response. 406 Client Error."
-    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: ‘application/taxii+json; charset=utf-8; " \
-                      "version=2.1' for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                      "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                      "Server use ‘from taxii2client.v21 import X'"
+    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: 'application/taxii+json; charset=utf-8; " \
+                      "version=2.1' for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                      "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                      "Server use 'from taxii2client.v21 import X'"
 
     @pytest.mark.parametrize('error_msg, should_raise_error',
                              [(has_none, True),
@@ -721,7 +721,8 @@ class TestParsingIndicators:
                     "type": "ipv4-addr",
                     "value": "1.1.1.1",
                     "extensions": {
-                        "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
+                        "extension-definition--1234": {"tags": ["test"],
+                                                       "description": "test"}}
                 },
                 [
                     {
@@ -1363,6 +1364,31 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
+
+
+class TestParsingObjects:
+
+    def test_parsing_report_with_relationships(self):
+        """
+        Scenario: Test parsing report envelope for v2.0
+
+        Given:
+        - Envelope with reports.
+
+        When:
+        - load_stix_objects_from_envelope is called.
+
+        Then: - validate the result contained the report with relationships as expected.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+
+        result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
+        reports = [obj for obj in result if obj.get('type') == 'Report']
+        report_with_relationship = [report for report in reports if report.get('relationships')]
+
+        assert len(report_with_relationship) == 1
+        assert len(report_with_relationship[0].get('relationships')) == 2
 
 
 @pytest.mark.parametrize('limit, element_count, return_value',

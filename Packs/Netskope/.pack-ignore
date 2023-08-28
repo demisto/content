@@ -1,0 +1,6 @@
+[file:NetskopeEventCollector.yml]
+ignore=MR108
+
+[file:NetskopeEventCollector_1_3.yml]
+ignore=MR108
+

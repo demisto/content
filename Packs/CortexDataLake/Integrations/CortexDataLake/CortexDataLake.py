@@ -1,5 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
-from CommonServerPython import *
 import os
 import re
 import json
@@ -9,7 +10,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
-import demistomock as demisto
 from datetime import timedelta
 
 # disable insecure warnings
@@ -18,12 +18,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
-REFRESH_TOKEN_CONST = 'refresh_token'  # guardrails-disable-line
 EXPIRES_IN = 'expires_in'
 INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
-REGISTRATION_ID_CONST = 'reg_id'
-ENCRYPTION_KEY_CONST = 'auth_key'
 FIRST_FAILURE_TIME_CONST = 'first_failure_time'
 LAST_FAILURE_TIME_CONST = 'last_failure_time'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
@@ -90,7 +87,7 @@ class Client(BaseClient):
             INSTANCE_ID_CONST: instance_id
         }
         if refresh_token:
-            updated_integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+            updated_integration_context.update({'refresh_token': refresh_token})
         demisto.setIntegrationContext(updated_integration_context)
         self.access_token = access_token
         self.api_url = api_url
@@ -100,7 +97,7 @@ class Client(BaseClient):
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get('url')
-        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
+        refresh_token = oproxy_response.get('refresh_token')
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -869,7 +866,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     """
     if fetch_filter and (fetch_subtype or fetch_severity):
         raise DemistoException('Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
-    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line # noqa: S608
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
@@ -910,7 +907,7 @@ def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query
         # fetch params not to be tested (won't be used)
         fetch_fields = '*'
         fetch_table = 'firewall.traffic'
-        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
+        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'  # noqa: S608
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -1016,7 +1013,7 @@ def search_by_file_hash_command(args: dict, client: Client) -> Tuple[str, Dict[s
     file_hash = args.get('SHA256')
 
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line
+    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
              f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
@@ -1106,9 +1103,9 @@ def build_query(args, table_name):
     query_start_time, query_end_time = query_timestamp(args)
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
-    limit = args.get('limit', '5')
+    limit = args.get('limit') or '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
-    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'
+    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
     return fields, query
 
 
@@ -1122,6 +1119,8 @@ def fetch_incidents(client: Client,
                     last_run: dict,
                     fetch_filter: str = '') -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
+    demisto.debug("CortexDataLake - Start fetching")
+    demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
@@ -1130,7 +1129,7 @@ def fetch_incidents(client: Client,
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
                                           fetch_subtype, fetch_fields, fetch_limit, fetch_filter)
-    demisto.debug('Query being fetched: {}'.format(query))
+    demisto.debug(f"CortexDataLake - Query sent to the server: {query}")
     records, _ = client.query_loggings(query)
     if not records:
         return {'lastRun': str(last_fetched_event_timestamp)}, []
@@ -1140,6 +1139,9 @@ def fetch_incidents(client: Client,
     max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
+    demisto.debug(f'CortexDataLake - Next run after incidents fetching: {json.dumps(next_run)}')
+    demisto.debug(f"CortexDataLake- Number of incidents before filtering: {len(records)}")
+    demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
 
@@ -1149,15 +1151,18 @@ def fetch_incidents(client: Client,
 def main():
     os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
-    registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
+    registration_id_and_url = params.get('credentials_reg_id', {}).get('password') or params.get('reg_id')
+    # If there's a stored token in integration context, it's newer than current
+    refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
+    enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
+    if not enc_key or not refresh_token or not registration_id_and_url:
+        raise DemistoException('Key, Token and ID must be provided.')
+    registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
         token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
         token_retrieval_url = registration_id_and_url[1]
     registration_id = registration_id_and_url[0]
-    # If there's a stored token in integration context, it's newer than current
-    refresh_token = demisto.getIntegrationContext().get(REFRESH_TOKEN_CONST) or params.get(REFRESH_TOKEN_CONST)
-    enc_key = params.get(ENCRYPTION_KEY_CONST)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()

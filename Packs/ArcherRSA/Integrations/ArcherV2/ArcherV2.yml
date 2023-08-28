@@ -11,8 +11,8 @@ configuration:
   defaultvalue: api
   display: 'Advanced: API Endpoint'
   name: api_endpoint
-  required: false
   type: 0
+  required: false
 - display: Instance name
   name: instanceName
   required: true
@@ -23,16 +23,16 @@ configuration:
   type: 9
 - display: User domain
   name: userDomain
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Application ID for fetch
   name: applicationId
   required: true
@@ -46,36 +46,36 @@ configuration:
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   name: fetch_limit
-  required: false
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - display: List of fields from the application to get into the incident
   name: fields_to_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Request timeout value, in seconds. Default is 400.
   defaultvalue: '400'
   display: Timeout
   name: timeout
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 description: The RSA Archer GRC platform provides a common foundation for managing policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
 name: RSA Archer v2
@@ -165,7 +165,6 @@ script:
   - arguments:
     - description: In case of nesting, to which level to go in the depth of the recursion.
       name: depth
-      required: false
       defaultValue: 3
     - description: The record ID.
       name: contentId
@@ -242,7 +241,6 @@ script:
       required: true
     - description: In case of nesting, to which level to go in the depth of the recursion.
       name: depth
-      required: false
       defaultValue: 0
     description: Returns a list of values for a specified field, for example, fieldID=16114. This command only works for value list fields (type 4).
     name: archer-get-valuelist
@@ -419,9 +417,8 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.10.11.56078
+  dockerimage: demisto/python3-deb:3.10.12.63475
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

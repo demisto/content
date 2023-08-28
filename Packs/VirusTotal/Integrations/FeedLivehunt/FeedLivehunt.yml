@@ -11,15 +11,15 @@ configuration:
   hiddenusername: true
 - name: filter
   display: Filter
-  required: false
   type: 0
   additionalinfo: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
+  required: false
 - display: Limit
   name: limit
   defaultvalue: '10'
   type: 0
-  required: false
   additionalinfo: Limit of indicators to fetch from livehunt notification. Max 40.
+  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -29,13 +29,13 @@ configuration:
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -53,12 +53,12 @@ configuration:
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -72,13 +72,13 @@ configuration:
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - name: feedTags
   display: Tags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -86,41 +86,26 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  required: false
 description: Use this feed integration to fetch VirusTotal Livehunt notifications as indicators.
 display: VirusTotal Livehunt Feed
 name: VirusTotal Livehunt Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return. The default value is 10. Max 40.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
-      isArray: false
+    - description: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
       name: filter
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the indicators from VirusTotal Livehunt.
-    execution: false
     name: vt-livehunt-get-indicators
-  - deprecated: false
-    description: 'This command will reset your fetch history.'
-    execution: false
+  - description: 'This command will reset your fetch history.'
     name: vt-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.11.59581
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

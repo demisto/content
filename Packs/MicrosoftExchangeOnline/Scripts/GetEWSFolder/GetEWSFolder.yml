@@ -1,41 +1,22 @@
 args:
-- default: false
-  defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
+- defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
   description: A comma-separated list of the EWS folders paths.
-  isArray: false
   name: foldersPaths
   required: true
-  secret: false
-- default: false
-  description: The target mailbox.
-  isArray: false
+- description: The target mailbox.
   name: targetMailbox
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Is the folder public?
-  isArray: false
   name: isPublic
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1000'
+- defaultValue: '1000'
   description: Maximum number of items per folder.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  description: Use this hash seed.
-  isArray: false
+- description: Use this hash seed.
   name: hashSeed
-  required: false
-  secret: false
 comment: Get emails from multiple folders of an account all at once.
 commonfields:
   id: GetEWSFolder
@@ -44,14 +25,12 @@ enabled: true
 name: GetEWSFolder
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: 6µs
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.10.9.46807
-runonce: false
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Get EWS Folder Test
 fromversion: 5.0.0

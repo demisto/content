@@ -175,6 +175,10 @@
         "request": {
             "type": "string",
             "is_array": false
+        },
+        "cefVersion": {
+            "type": "string",
+            "is_array": false
         }
     },
     "fireeye_hx_audit_raw": {

@@ -15,21 +15,21 @@ configuration:
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Username for server login
   name: credentials
-  required: false
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: Elasticsearch
   additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
   display: Client type
@@ -37,40 +37,38 @@ configuration:
   options:
   - Elasticsearch
   - OpenSearch
-  required: false
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Query String
   name: fetch_query
-  required: false
   type: 0
   additionalinfo: The query will be used when fetching incidents. Index time field will be used as a filter in the query.
   section: Collect
   advanced: true
+  required: false
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Raw Query
   name: raw_query
-  required: false
   type: 12
   additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
-  hidden: false
   section: Collect
   advanced: true
+  required: false
 - display: Time field type
   defaultvalue: 'Simple-Date'
   name: time_method
-  required: false
   type: 15
   options:
   - Simple-Date
@@ -78,140 +76,93 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '50'
   display: The maximum number of results to return per fetch.
   name: fetch_size
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Request timeout (in seconds).
   name: timeout
-  required: false
   type: 0
   defaultvalue: '60'
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The index in which to perform a search.
-      isArray: false
+    - description: The index in which to perform a search.
       name: index
       required: true
-      secret: false
-    - default: false
-      description: The string to query (in Lucene syntax).
-      isArray: false
+    - description: The string to query (in Lucene syntax).
       name: query
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
+    - description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
       isArray: true
       name: fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
-      isArray: false
       name: explain
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number from which to start a search.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
-      isArray: false
+    - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       name: sort-field
       predefined:
       - ''
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
-      isArray: false
       name: sort-order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Will overwrite the ‘query' arguments.
-      isArray: false
+    - description: Will overwrite the ‘query' arguments.
       name: query_dsl
-      required: false
-      secret: false
-    - default: false
-      description: The starting time of the time range.
-      isArray: false
+    - description: The starting time of the time range.
       name: timestamp_range_start
-      required: false
-      secret: false
-    - default: false
-      description: The ending time of the time range.
-      isArray: false
+    - description: The ending time of the time range.
       name: timestamp_range_end
-      required: false
-      secret: false
-    - default: false
-      description: Timestamp field name.
+    - description: Timestamp field name.
       defaultValue: "@timestamp"
-      isArray: false
       name: timestamp_field
-      required: false
-      secret: false
-    deprecated: false
     description: Queries an index.
-    execution: false
     name: es-search
     outputs:
     - contextPath: Elasticsearch.Search.Results._index
@@ -254,80 +205,44 @@ script:
       description: The maximum number of scores that a search can return.
       type: Number
   - arguments:
-    - default: false
-      description: The index in which to perform a search.
-      isArray: false
+    - description: The index in which to perform a search.
       name: index
       required: true
-      secret: false
-    - default: false
-      description: The string to query (in Lucene syntax).
-      isArray: false
+    - description: The string to query (in Lucene syntax).
       name: query
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
+    - description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
       isArray: true
       name: fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
-      isArray: false
       name: explain
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number from which to start a search.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
-      isArray: false
+    - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       name: sort-field
       predefined:
       - ''
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
-      isArray: false
       name: sort-order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: Timestamp field name.
+    - description: Timestamp field name.
       defaultValue: "@timestamp"
-      isArray: false
       name: timestamp_field
-      required: false
-      secret: false
-    deprecated: false
     description: Searches an index.
-    execution: false
     name: search
     outputs:
     - contextPath: Elasticsearch.Search.Results._index
@@ -369,78 +284,37 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  - deprecated: false
-    execution: false
-    name: get-mapping-fields
+  - name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  - deprecated: false
-    description: Search using EQL query
-    execution: false
+  - description: Search using EQL query
     name: es-eql-search
     arguments:
-    - default: false
-      description: The index in which to perform a search.
-      isArray: false
+    - description: The index in which to perform a search.
       name: index
       required: true
-      secret: false
-    - default: false
-      description: The string to query (in Lucene syntax).
-      isArray: false
+    - description: The string to query (in Lucene syntax).
       name: query
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
+    - description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: If two or more events share the same timestamp, Elasticsearch uses a tiebreaker field value to sort the events in ascending order.
-      isArray: false
+    - description: If two or more events share the same timestamp, Elasticsearch uses a tiebreaker field value to sort the events in ascending order.
       name: sort-tiebreaker
-      required: false
-      secret: false
-    - default: false
-      description: Filter using query DSL.
-      isArray: false
+    - description: Filter using query DSL.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: event.category
+    - defaultValue: event.category
       description: The event category field.
-      isArray: false
       name: event_category_field
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: The starting time of the time range.
-      isArray: false
+    - description: The starting time of the time range.
       name: timestamp_range_start
-      required: false
-      secret: false
-    - default: false
-      description: The ending time of the time range.
-      isArray: false
+    - description: The ending time of the time range.
       name: timestamp_range_end
-      required: false
-      secret: false
-    - default: false
-      description: Timestamp field name.
+    - description: Timestamp field name.
       defaultValue: "@timestamp"
-      isArray: false
       name: timestamp_field
-      required: false
-      secret: false
     outputs:
     - contextPath: Elasticsearch.Search.Results._index
       description: The index to which the document belongs.
@@ -482,10 +356,7 @@ script:
       description: The maximum number of scores that a search can return.
       type: Number
   dockerimage: demisto/py3-tools:1.0.0.44868
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

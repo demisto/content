@@ -48,7 +48,7 @@ def hash_file(filename):
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
     h = hashlib.sha1()  # nosec
-    h.update(url)
+    h.update(url.encode('utf-8'))
     return h.hexdigest()
 
 
@@ -66,6 +66,8 @@ def get_epoch_from_datetime(dt):
 
 def calculate_checksum(api_key, headers, body=''):
     ''' Generates a Checksum for the api call '''
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     temp = api_key
     if 'X-DTAS-ChecksumCalculatingOrder' in headers:
         x_dtas_checksum_calculating_order_list = headers['X-DTAS-ChecksumCalculatingOrder'].split(",")
@@ -128,7 +130,7 @@ def binary_to_boolean(binary):
 
 
 # GLOBAL VARIABLES #
-API_KEY = demisto.params()['apiKey']
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apiKey')
 PROTOCOL_VERSION = demisto.params()['protocol_version']
 SERVER_URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 USE_SSL = not demisto.params().get('insecure', True)

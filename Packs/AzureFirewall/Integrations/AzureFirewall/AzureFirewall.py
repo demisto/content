@@ -1,8 +1,10 @@
-# type: ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
+# mypy: ignore-errors
 import copy
 from requests import Response
+import urllib3
 
 
 class AzureFirewallClient:
@@ -588,10 +590,7 @@ def generate_firewall_command_output(response: dict, readable_header: str, outpu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    if output_key:
-        outputs = copy.deepcopy(response.get(output_key, []))
-    else:
-        outputs = copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -1249,10 +1248,7 @@ def generate_policy_command_output(response: dict, readable_header: str, output_
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    if output_key:
-        outputs = copy.deepcopy(response.get(output_key, []))
-    else:
-        outputs = copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -1272,9 +1268,9 @@ def generate_policy_command_output(response: dict, readable_header: str, output_
         base_policy = dict_safe_get(properties, ["basePolicy", "id"])
         provisioning_state = properties.get("provisioningState")
 
-        data = dict(name=name, location=location, threat_intel_mode=threat_intel_mode, child_policies=child_policies,
-                    firewalls=firewalls, base_policy=base_policy, provisioning_state=provisioning_state,
-                    id=id, tier=tier)
+        data = {"name": name, "location": location, "threat_intel_mode": threat_intel_mode, "child_policies": child_policies,
+                "firewalls": firewalls, "base_policy": base_policy, "provisioning_state": provisioning_state,
+                "id": id, "tier": tier}
         readable_data.append(data)
 
     readable_output = tableToMarkdown(
@@ -2542,10 +2538,7 @@ def generate_ip_group_command_output(response: dict, readable_header: str, outpu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    if output_key:
-        outputs = copy.deepcopy(response.get(output_key, []))
-    else:
-        outputs = copy.deepcopy(response)
+    outputs = copy.deepcopy(response.get(output_key, [])) if output_key else copy.deepcopy(response)
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -2872,17 +2865,16 @@ def main() -> None:
     private_key = params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
-    if tenant_id:
-        if not client_secret and (
-                (private_key and not certificate_thumbprint) or (certificate_thumbprint and not private_key)):
-            raise DemistoException(
-                'When Tenant ID is provided, either Client Secret or Certificate Thumbprint and Private Key must be provided.')
+    if tenant_id and not client_secret and (
+            (private_key and not certificate_thumbprint) or (certificate_thumbprint and not private_key)):
+        raise DemistoException(
+            'When Tenant ID is provided, either Client Secret or Certificate Thumbprint and Private Key must be provided.')
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: AzureFirewallClient = AzureFirewallClient(
             subscription_id=subscription_id,
             resource_group=resource_group,

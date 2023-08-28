@@ -1,13 +1,14 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from typing import Dict, List, Union, Tuple
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 import time
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 NCURION_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 apiVersion = "v1"
 '''GLOBALS/PARAMS'''

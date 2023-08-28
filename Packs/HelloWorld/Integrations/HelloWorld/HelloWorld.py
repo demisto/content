@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -240,8 +242,6 @@ variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json

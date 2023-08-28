@@ -2,4 +2,8 @@
 ignore=auto-test
 
 [known_words]
-WAF
+waf
+
+[file:CloudflareWAF.yml]
+ignore=PR101,MR108
+

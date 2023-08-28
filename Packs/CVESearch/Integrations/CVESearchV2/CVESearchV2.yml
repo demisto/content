@@ -1,4 +1,5 @@
 category: Vulnerability Management
+deprecated: true
 commonfields:
   id: CVE Search v2
   version: -1
@@ -10,27 +11,21 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
-description: Searches for CVE information using circl.lu.
-display: CVE Search v2
+  required: false
+description: Deprecated. Use CIRCL CVE Search instead.
+display: CVE Search v2 (Deprecated)
 name: CVE Search v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The maximum number of CVEs to display.
-      isArray: false
+    - description: The maximum number of CVEs to display.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the latest updated CVEs.
-    execution: false
     name: cve-latest
     outputs:
     - contextPath: CVE.ID
@@ -66,10 +61,7 @@ script:
       isArray: true
       name: cve_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns CVE information by CVE ID.
-    execution: false
     name: cve
     outputs:
     - contextPath: CVE.ID
@@ -99,11 +91,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

@@ -7,7 +7,7 @@ Use the Microsoft Graph integration to fetch and manage alerts from various Micr
 - Microsoft Purview Data Loss Prevention (including any future new signals integrated into M365D).
 
 ## What does this pack do?
-- This conetnt XDM mappings are based on the Office 365 integration, in the Graph API section enable **alertv2** [Doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
+- This content XDM mappings are based on the Office 365 integration, in the Graph API section enable **alertv2** [Doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
 - Unify and standardize alert tracking
 - Correlate security alerts to improve threat protection and response
 - Update alert tags, status, and assignments

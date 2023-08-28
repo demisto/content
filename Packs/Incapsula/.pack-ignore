@@ -1,9 +1,6 @@
 [file:Incapsula]
 ignore=PA116
 
-[file:Incapsula.yml]
-ignore=IN145
-
 [file:Incapsula_image.png]
 ignore=IM111
 

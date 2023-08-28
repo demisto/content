@@ -1,7 +1,7 @@
 import io
 import json
 from pathlib import Path
-
+from typing import Any
 import pytest
 from CommonServerPython import DemistoException
 
@@ -1991,3 +1991,37 @@ def test_validate_base_url(baseurl: str, expected_error: str):
     with pytest.raises(ValueError) as e:
         validate_base_url(baseurl)
     assert str(e.value) == expected_error
+
+
+CREATE_INDICATOR_ARGS = {
+    'category': 'test_cat',
+    'name': 'test_name',
+    'display_name': 'test_display_name',
+    'description': 'test_desc',
+    'platforms': ['platform1', 'platform2'],
+    'data': {
+        '_id': 'test'
+    }
+}
+
+
+def test_create_indicator_command(monkeypatch):
+    import FireEyeHXv2
+
+    class MockClient:
+        def __init__(self, base_url):
+            pass
+
+        def get_token_request(self):
+            return "mock_token"
+
+        def new_indicator_request(self, category, body: dict[str, Any]):
+            return CREATE_INDICATOR_ARGS
+
+    monkeypatch.setattr(FireEyeHXv2, "Client", MockClient)
+
+    args = CREATE_INDICATOR_ARGS
+    from FireEyeHXv2 import Client, create_indicator_command
+    client = Client(base_url='https://www.example.com')
+    command_result = create_indicator_command(client=client, args=args)
+    assert command_result.raw_response == CREATE_INDICATOR_ARGS

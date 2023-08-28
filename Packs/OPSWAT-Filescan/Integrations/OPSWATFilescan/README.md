@@ -1,9 +1,9 @@
 Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction.
 
-## Configure OPSWAT-Filescan on Cortex XSOAR
+## Configure OPSWAT Filescan Sandbox on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OPSWAT-Filescan.
+2. Search for OPSWAT Filescan Sandbox.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -25,9 +25,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### opswat-filescan-scan-url
 
 ***
-Scan URL with OPSWAT Filescan
+Scan URL with OPSWAT Filescan Sandbox
 
-**Note**: OPSWAT Filescan handles URL scanning as a file scan.
+**Note**: OPSWAT Filescan Sandbox handles URL scanning as a file scan.
 
 #### Base Command
 
@@ -88,7 +88,7 @@ Scan URL with OPSWAT Filescan
             "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
             "Score": 1,
             "Type": "file",
-            "Vendor": "Opswat Filescan"
+            "Vendor": "OPSWAT Filescan Sandbox"
         }
     ],
     "File":
@@ -230,14 +230,15 @@ Scan URL with OPSWAT Filescan
 #### Human Readable Output
 
 >### Scan Result (digest):
+
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
->| 1111111111111111111111111111111111111111111111111111111111111111 | https://www.test.com | other | BENIGN | osint, url-render, domain-resolve | html, png |
+>| 1111111111111111111111111111111111111111111111111111111111111111 | <https://www.test.com> | other | BENIGN | osint, url-render, domain-resolve | html, png |
 
 ### opswat-filescan-scan-file
 
 ***
-Scan File with OPSWAT Filescan
+Scan File with OPSWAT Filescan Sandbox
 
 #### Base Command
 
@@ -298,7 +299,7 @@ Scan File with OPSWAT Filescan
             "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
             "Score": 1,
             "Type": "file",
-            "Vendor": "Opswat Filescan"
+            "Vendor": "OPSWAT Filescan Sandbox"
         }
     ],
     "File":
@@ -431,6 +432,7 @@ Scan File with OPSWAT Filescan
 #### Human Readable Output
 
 >### Scan Result (digest):
+
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111111111111111111111111111 | 1234@abcd-efgh-ijkl-mnop-xyz | pe | MALICIOUS | visualization, osint, domain-resolve | html, peexe |
@@ -520,6 +522,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
 #### Human Readable Output
 
 >### Analysis Result:
+
 >| Id | SampleName | SHA256 | Verdict | State | Date |
 >|---|---|---|---|---|---|
 >| 8c38be8c-7cfd-4d64-be41-c98a795c9ce0| bad_file.exe | 834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc | MALICIOUS | success_partial | 03/14/2023, 15:07:07 |

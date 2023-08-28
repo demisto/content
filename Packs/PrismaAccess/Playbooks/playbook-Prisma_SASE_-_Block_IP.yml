@@ -1,0 +1,730 @@
+id: Prisma SASE - Block IP
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma SASE - Block IP
+description: |-
+  This playbook assists in blocking communication with the provided IPs in the Prisma SASE policy.
+  If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
+  And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0d1416b-5806-4da5-88c9-b0e992ec9a41
+    type: start
+    task:
+      id: e0d1416b-5806-4da5-88c9-b0e992ec9a41
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fd285080-85fa-487e-8461-7b8710246907
+    type: condition
+    task:
+      id: fd285080-85fa-487e-8461-7b8710246907
+      version: -1
+      name: Is there an IP to block?
+      description: Is there an IP to block?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0ca5a10c-a607-43ce-8f5d-1308b8db960c
+    type: condition
+    task:
+      id: 0ca5a10c-a607-43ce-8f5d-1308b8db960c
+      version: -1
+      name: Is there an address group provided?
+      description: Is there an address group provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.StaticAddressGroupName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 99f457e4-1a30-4314-8bf7-7bb4f9b6a8e6
+    type: title
+    task:
+      id: 99f457e4-1a30-4314-8bf7-7bb4f9b6a8e6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4b2a7ae5-8d45-4e88-86b1-fa514d8d1d07
+    type: regular
+    task:
+      id: 4b2a7ae5-8d45-4e88-86b1-fa514d8d1d07
+      version: -1
+      name: Get the Address Group List
+      description: Lists all address groups.
+      script: '|||prisma-sase-address-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        complex:
+          root: inputs.StaticAddressGroupName
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 029e1e65-93e4-45e9-82bd-22e586cc5b5e
+    type: regular
+    task:
+      id: 029e1e65-93e4-45e9-82bd-22e586cc5b5e
+      version: -1
+      name: Create a new Static Address Group
+      description: Create a new address group.
+      script: '|||prisma-sase-address-group-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        simple: Block IP group - Created by XSOAR
+      static_addresses:
+        complex:
+          root: PrismaSase.Address
+          accessor: name
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        simple: static
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 729c88ad-57a6-4fe4-8778-9c3356efedda
+    type: regular
+    task:
+      id: 729c88ad-57a6-4fe4-8778-9c3356efedda
+      version: -1
+      name: Create New Security Rule
+      description: Create a new security rule.
+      script: '|||prisma-sase-security-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: deny
+      description:
+        simple: 'Security Rule Created by XSOAR - Due to inc #${incident.id}'
+      destination:
+        complex:
+          root: PrismaSase.AddressGroup
+          accessor: name
+      folder:
+        simple: ${inputs.Folder}
+      name:
+        simple: Security Rule Created by XSOAR
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cb95f552-227b-4184-8773-41c388bd5a66
+    type: condition
+    task:
+      id: cb95f552-227b-4184-8773-41c388bd5a66
+      version: -1
+      name: Check if the IPs already exist in the group
+      description: Check if the IPs already exist in the group.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+          right:
+            value:
+              simple: PrismaSase.AddressGroup.addresses
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 40612048-e6cb-4448-8774-ea6dadce93ab
+    type: regular
+    task:
+      id: 40612048-e6cb-4448-8774-ea6dadce93ab
+      version: -1
+      name: Push Config
+      description: Push the candidate configuration.
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      folders:
+        simple: Remote Networks, Mobile Users, Service Connections
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 24827071-3736-40b3-8b12-13776b0fe3e1
+    type: condition
+    task:
+      id: 24827071-3736-40b3-8b12-13776b0fe3e1
+      version: -1
+      name: Commit and push configuration to folders?
+      description: Commit and push configuration to folders?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      Auto Commit:
+      - "10"
+      Manual:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: Auto Commit
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e8535616-fa92-4784-8196-8633d038b74e
+    type: playbook
+    task:
+      id: e8535616-fa92-4784-8196-8633d038b74e
+      version: -1
+      name: Prisma SASE - Add IPs to Static Address Group
+      description: This playbook appends a Static Address Group with provided IPs.
+      playbookName: Prisma SASE - Add IPs to Static Address Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      AddressGroupName:
+        complex:
+          root: inputs.StaticAddressGroupName
+      AutoCommit:
+        simple: "False"
+      Folder:
+        complex:
+          root: inputs.Folder
+      IP:
+        complex:
+          root: inputs.IP
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaSase.AddressGroup.addresses
+                iscontext: true
+      TSGID:
+        complex:
+          root: inputs.TSGID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: db54723e-8606-4c68-8766-e6de873cbda8
+    type: playbook
+    task:
+      id: db54723e-8606-4c68-8766-e6de873cbda8
+      version: -1
+      name: Prisma SASE - Create Address Object
+      playbookName: Prisma SASE - Create Address Object
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: Else
+      Folder:
+        complex:
+          root: inputs.Folder
+      IP:
+        complex:
+          root: inputs.IP
+      TSGID:
+        complex:
+          root: inputs.TSGID
+      Type:
+        simple: ip_netmask
+      limit:
+        simple: "50"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3469ee80-3730-4d2a-897d-57f051d77b22
+    type: condition
+    task:
+      id: 3469ee80-3730-4d2a-897d-57f051d77b22
+      version: -1
+      name: Choose to commit and push configuration automatically
+      description: Choose to commit and push configuration automatically
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      Push:
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Push
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 1090,
+        "x": -260,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: TSGID
+  value: {}
+  required: false
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: The address value (should match the type).
+  playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'.
+  playbookInputQuery:
+- key: StaticAddressGroupName
+  value: {}
+  required: false
+  description: The static address group name will be appended with IP indicators.
+  playbookInputQuery:
+- key: AutoCommit
+  value: {}
+  required: false
+  description: |-
+    Possible Values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaSase.AddressGroup
+  description: The Prisma Access Address group object.
+  type: unknown
+- contextPath: PrismaSase.AddressGroup.id
+  description: The address group ID.
+- contextPath: PrismaSase.AddressGroup.name
+  description: The address group name.
+- contextPath: PrismaSase.AddressGroup.description
+  description: The address group description.
+- contextPath: PrismaSase.AddressGroup.addresses
+  description: The address group addresses.
+- contextPath: PrismaSase.AddressGroup.dynamic_filter
+  description: The address group filter.
+- contextPath: PrismaSase.AddressGroup.folder
+  description: The address group folder.
+- contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Created security rule.
+- contextPath: PrismaSase.SecurityRule.action
+  description: Security rule action.
+- contextPath: PrismaSase.SecurityRule.application
+  description: Security rule application.
+- contextPath: PrismaSase.SecurityRule.category
+  description: Security rule category.
+- contextPath: PrismaSase.SecurityRule.description
+  description: Security rule description.
+- contextPath: PrismaSase.SecurityRule.destination
+  description: Security rule destination.
+- contextPath: PrismaSase.SecurityRule.folder
+  description: Security rule folder.
+- contextPath: PrismaSase.SecurityRule.from
+  description: Security rule from field (source zone(s)).
+- contextPath: PrismaSase.SecurityRule.id
+  description: Security rule ID.
+- contextPath: PrismaSase.SecurityRule.name
+  description: Security rule name.
+- contextPath: PrismaSase.SecurityRule.position
+  description: Security rule position.
+- contextPath: PrismaSase.SecurityRule.service
+  description: Security rule service.
+- contextPath: PrismaSase.SecurityRule.source
+  description: Security rule source.
+- contextPath: PrismaSase.SecurityRule.source_user
+  description: Security rule source user.
+- contextPath: PrismaSase.SecurityRule.to
+  description: Security rule to field (destination zone(s)).
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  description: The Security rule group object in the rule.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule.profile_setting.group
+  description: Security rule group.
+- contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g., OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+- contextPath: PrismaSase.Address
+  description: Created address object.
+- contextPath: PrismaSase.Address.description
+  description: Address description.
+- contextPath: PrismaSase.Address.folder
+  description: Address folder.
+- contextPath: PrismaSase.Address.id
+  description: Address ID.
+- contextPath: PrismaSase.Address.type
+  description: Address type.
+- contextPath: PrismaSase.Address.address_value
+  description: Address value.
+- contextPath: PrismaSase.Address.name
+  description: Address name.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

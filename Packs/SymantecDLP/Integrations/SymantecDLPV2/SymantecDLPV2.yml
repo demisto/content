@@ -14,14 +14,14 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Max fetch limit is 50
   defaultvalue: '10'
   display: Fetch limit
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: If not selected, will fetch all incident types.
   display: Fetch incidents from type
   name: fetchIncidentType
@@ -29,13 +29,13 @@ configuration:
   - Network
   - Discover
   - Endpoint
-  required: false
   type: 16
+  required: false
 - additionalinfo: The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command.
   display: Incident Status ID
   name: incidentStatusId
-  required: false
   type: 0
+  required: false
 - additionalinfo: If not selected, will fetch high and medium incidents.
   display: Incident Severity
   name: incidentSeverity
@@ -44,29 +44,29 @@ configuration:
   - Low
   - Medium
   - High
-  required: false
   type: 16
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2
@@ -605,9 +605,8 @@ script:
     - contextPath: SymantecDLP.MessageBody
       description: Message body for the incident returned by the Enforce console.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

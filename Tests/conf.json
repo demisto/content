@@ -21,6 +21,33 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE SIEM ingestion - Get Incident Data",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
@@ -675,6 +702,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Netmiko",
+            "playbookID": "Netmiko_test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -956,14 +987,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "integrations": "CVE Search v2",
-            "playbookID": "CVE Search v2 - Test"
-        },
-        {
-            "integrations": "CVE Search v2",
-            "playbookID": "cveReputation Test"
-        },
-        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test",
             "fromversion": "5.0.0"
@@ -1075,6 +1098,7 @@
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-test",
+            "instance_names": "Tenable_SC_secman_api_key",
             "timeout": 240
         },
         {
@@ -1192,11 +1216,6 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "timeout": 3600
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "timeout": 600
         },
         {
             "integrations": "google-vault",
@@ -3144,6 +3163,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "timeout": 1200
         },
         {
@@ -4346,7 +4366,8 @@
         {
             "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLabv2"
+            "integrations": "GitLabv2",
+            "is_mockable": false
         },
         {
             "playbookID": "LGTM-test-playbook",
@@ -4578,7 +4599,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
@@ -4592,7 +4613,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
-            "pid_threshold": 80
+            "pid_threshold": 80,
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
@@ -4805,6 +4827,7 @@
         {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -4967,7 +4990,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
@@ -5107,6 +5131,7 @@
         {
             "playbookID": "Get Original Email - EWS v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -5436,6 +5461,15 @@
                 "Demisto REST API"
             ],
             "playbookID": "FeedLOLBas_test"
+        },
+        {
+            "integrations": "CIRCL CVE Search",
+            "playbookID": "CIRCL CVE Search - Test",
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test"
         }
     ],
     "skipped_tests": {
@@ -5459,7 +5493,7 @@
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
-        "Protectwise-Test": "Issue 28168",
+        "Protectwise-Test": "Issue CRTX-86776",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5582,7 +5616,6 @@
         "Elasticsearch_v2_test-v8": "CRTX-61980",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
@@ -5659,7 +5692,7 @@
         "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Issue CRTX-84209",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
@@ -5716,7 +5749,6 @@
         "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
-        "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
@@ -5725,7 +5757,6 @@
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "FortinetFortiwebVM": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
-        "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
@@ -5745,11 +5776,13 @@
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
-        "SentinelOne V2": "No instance - developed by partner"
+        "SentinelOne V2": "No instance - developed by partner",
+        "CheckPhish": "Issue CRTX-86562"
     },
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
+        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
@@ -5783,7 +5816,6 @@
         "FeedMitreAttackv2",
         "URLHaus",
         "MicrosoftDefenderAdvancedThreatProtection",
-        "CVESearch",
         "CrowdStrikeIntel",
         "Shodan",
         "MailListener",
@@ -5921,8 +5953,8 @@
         "Blocklist_de Feed",
         "BruteForceBlocker Feed",
         "CSVFeed",
-        "CVE Search v2",
         "CheckPhish",
+        "CIRCL",
         "Cloudflare Feed",
         "Cofense Feed",
         "Cortex Data Lake",
@@ -5985,8 +6017,9 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demisto/google-k8s-engine:1.0.0.9467": {
-                "pid_threshold": 11
+            "demisto/google-k8s-engine1.0.0.64696": {
+                "pid_threshold": 11,
+                "memory_threshold": 110
             },
             "demisto/threatconnect-tcex": {
                 "pid_threshold": 11

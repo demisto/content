@@ -502,7 +502,9 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    service_account = params.get('service_account_json', '')
+    service_account = params.get('credentials_service_account_json', {}).get('password') or params.get('service_account_json', '')
+    if not service_account:
+        raise DemistoException('Service Account Private Key file contents must be provided.')
     default_bucket = params.get('default_bucket')
     insecure = params.get('insecure', False)
 

@@ -1,16 +1,11 @@
 args:
-- default: false
-  isArray: false
-  name: instance_name
+- name: instance_name
   required: true
-  secret: false
   description: The name of the instance for which to get its parameters.
-comment: Gets an instance's configuration parameters in order to troubleshoot the
-  instance.
+comment: Gets an instance's configuration parameters in order to troubleshoot the instance.
 commonfields:
   id: TroubleshootGetInstanceParameters
   version: -1
-enabled: false
 name: TroubleshootGetInstanceParameters
 outputs:
 - contextPath: InstanceParameters.instance_name
@@ -26,20 +21,16 @@ outputs:
   description: Whether "Is fetch" is configured.
   type: Boolean
 - contextPath: InstanceParameters.proxy
-  description: Whether "use proxy" is selected. If any parameter is not called proxy,
-    it will be wrong.
+  description: Whether "use proxy" is selected. If any parameter is not called proxy, it will be wrong.
   type: Boolean
 - contextPath: InstanceParameters.proxy_key
-  description: The proxy key in which insecure is hosted. Can be null if no key is
-    found.
+  description: The proxy key in which insecure is hosted. Can be null if no key is found.
   type: String
 - contextPath: InstanceParameters.insecure
-  description: Whether "use unsecure connection" is selected. If any parameter is
-    not called insecure, it will be wrong.
+  description: Whether "use unsecure connection" is selected. If any parameter is not called insecure, it will be wrong.
   type: Boolean
 - contextPath: InstanceParameters.insecure_key
-  description: The insecure key in which insecure is hosted. Can be null if no key
-    is found.
+  description: The insecure key in which insecure is hosted. Can be null if no key is found.
   type: String
 - contextPath: InstanceParameters.type
   description: The type of the integration. Can be JavaScript or Python.
@@ -58,12 +49,11 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 dependson:
   must:

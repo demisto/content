@@ -103,6 +103,12 @@ HTTP_ERRORS = {
     503: '503 Service Unavailable'
 }
 
+VERDICT_TO_SCORE_DICT = {
+    'clean': Common.DBotScore.GOOD,
+    'file_type_unrecognized': Common.DBotScore.SUSPICIOUS,
+    'malware': Common.DBotScore.BAD
+}
+
 # Map severity to Demisto severity for incident creation
 XSOAR_SEVERITY_MAP = {
     'High': 3,
@@ -127,6 +133,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this implementation, no special attributes defined
     """
+
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: Optional[int] = 50, is_incident_event: bool = False,
                  is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None):
@@ -760,7 +767,7 @@ def compile_command_title_string(context_name: str, args: dict, record: int) \
 
     if page_size is None and page:
         page_size = DEFAULT_PAGE_SIZE
-        if DEFAULT_PAGE_SIZE > record:
+        if record < DEFAULT_PAGE_SIZE:
             page_size = record
 
     if (page and page_size) and (page > 0 and page_size > 0):
@@ -1253,7 +1260,7 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
          Return dict according to table field name and value
      """
     dataset: dict = {}
-    if not isinstance(result, (dict, list)):
+    if not isinstance(result, dict | list):
         raise ValueError(f'Unexpected data type {type(result)}:: must be either a list or dict.\ndata={result}')
 
     raw_data = {k: v for attribute in result for (k, v) in attribute.items()} if isinstance(result, list) \
@@ -1416,13 +1423,11 @@ def create_content_query(args: dict) -> dict[str, Any]:
         'offset': offset
     }
 
-    if raw_start_time := args.get('start_time'):
-        if start_time := convert_to_iso8601(raw_start_time):
-            payload['start_time'] = start_time
+    if (raw_start_time := args.get('start_time')) and (start_time := convert_to_iso8601(raw_start_time)):
+        payload['start_time'] = start_time
 
-    if raw_end_time := args.get('end_time'):
-        if end_time := convert_to_iso8601(raw_end_time):
-            payload['end_time'] = end_time
+    if (raw_end_time := args.get('end_time')) and (end_time := convert_to_iso8601(raw_end_time)):
+        payload['end_time'] = end_time
 
     return payload
 
@@ -2265,11 +2270,26 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
              result.
      """
     sha2 = args.get('file', '')
+    reliability = args.get('integration_reliability', 'B - Usually reliable')
     response_verdict = client.get_sandbox_verdict_for_file(sha2) | client.get_file_entity(sha2)
     # Sandbox verdict
     title = "Sandbox Verdict"
+    indicator = None
     if response_verdict:
         readable_output = generic_readable_output([response_verdict], title)
+        score = VERDICT_TO_SCORE_DICT.get(response_verdict.get('verdict', '').lower(), Common.DBotScore.NONE)
+        dbot_score = Common.DBotScore(
+            indicator=sha2,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=INTEGRATION_CONTEXT_NAME,
+            score=score,
+            malicious_description=response_verdict.get('verdict', ''),
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        )
+        indicator = Common.File(
+            sha256=sha2,
+            dbot_score=dbot_score
+        )
     else:
         readable_output = f'{title} does not have data to present.'
 
@@ -2278,7 +2298,8 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
         outputs_key_field='sha2',
         outputs=response_verdict,
-        raw_response=response_verdict
+        raw_response=response_verdict,
+        indicator=indicator
     )
 
 
@@ -2495,6 +2516,8 @@ def main() -> None:
         fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
         fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
+        reliability = params.get('integration_reliability', '')
+        args['integration_reliability'] = reliability
 
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,

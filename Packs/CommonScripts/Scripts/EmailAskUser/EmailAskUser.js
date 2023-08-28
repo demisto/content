@@ -109,7 +109,14 @@ if (addresses.length > 0) {
         emailArgs.bcc = args.bcc;
     }
 
-    return executeCommand('send-mail', emailArgs);
+     // Add additional fields from args to emailArgs
+    for (const key in args) {
+        if (args.hasOwnProperty(key) && !emailArgs.hasOwnProperty(key)) {
+            emailArgs[key] = args[key];
+        }
+    }
+
+  return executeCommand('send-mail', emailArgs);
 
 } else {
     return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};

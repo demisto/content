@@ -3,7 +3,6 @@ comment: Returns a list of all the users marked as away in Cortex XSOAR.
 commonfields:
   id: GetAwayUsers
   version: -1
-enabled: false
 name: GetAwayUsers
 outputs:
 - contextPath: AwayUsers.id
@@ -25,7 +24,6 @@ outputs:
   description: Away user email.
   type: String
 script: '-'
-system: false
 tags:
 - Shift Management
 - widget

@@ -34,7 +34,8 @@ URL_SUFFIX = {
     "ATTACHMENT_PAYLOAD": "api/public/v2/attachment_payloads",
     "COMMENTS": "api/public/v2/comments/",
     "REPORT_ID": "api/public/v2/reports/{}",
-    "CLUSTER": "api/public/v2/clusters"
+    "CLUSTER": "api/public/v2/clusters",
+    "REPORT_ATTACHMENT_PAYLOAD": "/api/public/v2/reports/{}/attachment_payloads"
 }
 
 OUTPUT_PREFIX = {
@@ -1350,6 +1351,54 @@ def cofense_report_image_download_command(client: Client, args: Dict[str, str]) 
     return fileResult(filename, data=raw_response, file_type=entryTypes["image"])
 
 
+def cofense_report_attachment_payload_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Retrieves report attachment payloads based on the filter values provided in the command arguments.
+    Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    params = validate_list_attachment_payload_args(args)
+    report_id = args.get("id")
+    # Validation for empty report_id
+    if not report_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
+    # Appending the report id to the url_suffix
+    url_suffix = URL_SUFFIX["REPORT_ATTACHMENT_PAYLOAD"].format(report_id)
+
+    # Sending http request
+    response = client.http_request(url_suffix, params=params)
+
+    result = response.get("data")
+
+    # Returning if data is empty or not present
+    if not result:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("attachment payloads"))
+
+    if isinstance(result, dict):
+        result = [result]
+
+    # Creating the Human Readable
+    hr_response = prepare_hr_for_attachment_payloads(result)
+
+    # Creating the Context data
+    context_data = remove_empty_elements(result)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX["ATTACHMENT_PAYLOAD"],
+                          outputs_key_field="id",
+                          outputs=context_data,
+                          readable_output=hr_response,
+                          raw_response=response
+                          )
+
+
 def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict, list]:
     """Fetches incidents from Cofense API.
 
@@ -1983,7 +2032,8 @@ def main() -> None:
         'cofense-comment-list': cofense_comment_list_command,
         'cofense-cluster-list': cofense_cluster_list_command,
         'cofense-threat-indicator-update': cofense_threat_indicator_update_command,
-        'cofense-report-image-download': cofense_report_image_download_command
+        'cofense-report-image-download': cofense_report_image_download_command,
+        'cofense-report-attachment-payload-list': cofense_report_attachment_payload_list_command
     }
     command = demisto.command()
     demisto.debug(f'[CofenseTriagev3] Command being called is {command}')

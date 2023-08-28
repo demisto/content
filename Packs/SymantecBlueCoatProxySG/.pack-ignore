@@ -1,0 +1,3 @@
+[file:SymantecBlueCoatProxySG.yml]
+ignore=PR101,MR108
+

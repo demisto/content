@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    taskid: c1380b27-e019-49bc-8aae-8bf8570e50c9
     type: start
     task:
-      id: def7640e-da15-498b-8e70-6498f009d81c
+      id: c1380b27-e019-49bc-8aae-8bf8570e50c9
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    taskid: 6418521e-4b72-4f8e-85f2-2cea269e66cb
     type: regular
     task:
-      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      id: 6418521e-4b72-4f8e-85f2-2cea269e66cb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 195
         }
       }
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 4f1d3aea-f2e4-4e0e-8f9d-f8562cb5ada0
+    taskid: 3204f3dc-398a-49f5-8dda-99d8b8bd3de5
     type: title
     task:
-      id: 4f1d3aea-f2e4-4e0e-8f9d-f8562cb5ada0
+      id: 3204f3dc-398a-49f5-8dda-99d8b8bd3de5
       version: -1
       name: Domain
       type: title
@@ -89,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 370
         }
       }
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 13b20615-803e-421a-8575-d090e3d15e85
+    taskid: 808e5d0f-e4f7-4613-80e0-44a281d88de6
     type: regular
     task:
-      id: 13b20615-803e-421a-8575-d090e3d15e85
+      id: 808e5d0f-e4f7-4613-80e0-44a281d88de6
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -120,13 +120,13 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: "\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\""
+        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 515
         }
       }
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b722a29e-e670-459c-8fdb-176cb5945002
+    taskid: 0b944dcb-d179-4ed2-8699-052237417f6f
     type: regular
     task:
-      id: b722a29e-e670-459c-8fdb-176cb5945002
+      id: 0b944dcb-d179-4ed2-8699-052237417f6f
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -158,6 +158,7 @@ tasks:
       - "82"
       - "81"
       - "80"
+      - "25"
     scriptarguments:
       execution-timeout:
         simple: "30"
@@ -169,7 +170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 690
         }
       }
@@ -182,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6ee40ea5-55ce-47cb-8b5b-3f36f05687d2
+    taskid: 3cbb2bbc-9d51-43f8-8bcb-dd26826fb951
     type: condition
     task:
-      id: 6ee40ea5-55ce-47cb-8b5b-3f36f05687d2
+      id: 3cbb2bbc-9d51-43f8-8bcb-dd26826fb951
       version: -1
       name: check auto extract - 見.香港
       type: condition
@@ -223,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ed708de6-624e-427b-805e-e3db7a91271c
+    taskid: 511c713a-9852-4916-8234-354c09a1d647
     type: regular
     task:
-      id: ed708de6-624e-427b-805e-e3db7a91271c
+      id: 511c713a-9852-4916-8234-354c09a1d647
       version: -1
       name: Set invalid domains
       description: Sets a value into the context with the given context key
@@ -241,13 +242,13 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"none.zip\", \n\"test.notexist\", \n\"test[.com\""
+        simple: "\"test.notexist\", \n\"test[.com\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 1040
         }
       }
@@ -260,10 +261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 7ba77b7b-7b6c-4a10-8f60-3fe4615d1683
+    taskid: ec66e848-fe7c-453d-8784-0d4740a7368f
     type: regular
     task:
-      id: 7ba77b7b-7b6c-4a10-8f60-3fe4615d1683
+      id: ec66e848-fe7c-453d-8784-0d4740a7368f
       version: -1
       name: Print invalid domains
       description: Prints text to war room (Markdown supported)
@@ -273,7 +274,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
       - "84"
       - "83"
     scriptarguments:
@@ -285,7 +285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 1215
         }
       }
@@ -298,23 +298,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5b3998d2-077c-48d9-8a42-c6e4568cf5a9
+    taskid: 086a81ca-0d63-4684-8b54-d05bd4f99f40
     type: condition
     task:
-      id: 5b3998d2-077c-48d9-8a42-c6e4568cf5a9
+      id: 086a81ca-0d63-4684-8b54-d05bd4f99f40
       version: -1
-      name: non extraction - none.zip
+      name: check auto extract - none.zip
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "77"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: notContainsGeneral
+      - - operator: containsGeneral
           left:
             value:
               simple: ${Domain.Name}
@@ -326,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1390
+          "x": 480,
+          "y": 865
         }
       }
     note: false
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 39d3cbb3-dc56-423b-889c-a43f951ca4e5
+    taskid: acec90ce-9367-43fd-86fe-9af543c40fa1
     type: regular
     task:
-      id: 39d3cbb3-dc56-423b-889c-a43f951ca4e5
+      id: acec90ce-9367-43fd-86fe-9af543c40fa1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -358,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 1565
         }
       }
@@ -371,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: b872edd1-d008-40f1-8791-c2dc6aa0f254
+    taskid: b90a47a4-4614-4548-870a-71a1a6865d43
     type: condition
     task:
-      id: b872edd1-d008-40f1-8791-c2dc6aa0f254
+      id: b90a47a4-4614-4548-870a-71a1a6865d43
       version: -1
       name: check auto extract - ötest.com
       type: condition
@@ -399,7 +399,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 865
         }
       }
@@ -412,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: d2fcc6d1-a251-45d6-80fe-20a82b86dc35
+    taskid: 992549a0-1722-44bd-8092-eb7ae1aa2450
     type: condition
     task:
-      id: d2fcc6d1-a251-45d6-80fe-20a82b86dc35
+      id: 992549a0-1722-44bd-8092-eb7ae1aa2450
       version: -1
       name: check auto extract - defang.com
       type: condition
@@ -440,7 +440,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1340,
           "y": 865
         }
       }
@@ -453,10 +453,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 1c8ced05-7c6b-4749-8b76-99f9eebe2a94
+    taskid: f66a49fd-494b-4ad4-83e5-8c08de3bf4e6
     type: condition
     task:
-      id: 1c8ced05-7c6b-4749-8b76-99f9eebe2a94
+      id: f66a49fd-494b-4ad4-83e5-8c08de3bf4e6
       version: -1
       name: check auto extract - www.test.com
       type: condition
@@ -481,7 +481,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1770,
           "y": 865
         }
       }
@@ -494,10 +494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 308ed8c1-989f-4193-829f-70dd13a46e87
+    taskid: 5b51e207-4f37-4049-8a33-e7ca11f06b4a
     type: condition
     task:
-      id: 308ed8c1-989f-4193-829f-70dd13a46e87
+      id: 5b51e207-4f37-4049-8a33-e7ca11f06b4a
       version: -1
       name: check auto extract - test.com
       type: condition
@@ -522,7 +522,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 865
         }
       }
@@ -535,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 5d661594-6536-4cc1-87ac-02a06569faac
+    taskid: 34f766e8-dc90-48da-801a-5017a14d6ffb
     type: condition
     task:
-      id: 5d661594-6536-4cc1-87ac-02a06569faac
+      id: 34f766e8-dc90-48da-801a-5017a14d6ffb
       version: -1
       name: check auto extract - www.xn--t1e2s3t4.com
       type: condition
@@ -563,7 +563,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 2630,
           "y": 865
         }
       }
@@ -576,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 25316fe8-208a-421e-891b-1fd9ddfbce65
+    taskid: 3e232c8e-00c5-435f-8c67-32c3b7748b77
     type: condition
     task:
-      id: 25316fe8-208a-421e-891b-1fd9ddfbce65
+      id: 3e232c8e-00c5-435f-8c67-32c3b7748b77
       version: -1
       name: non extraction - test[.com
       type: condition
@@ -617,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: e4a7e02a-09fe-476c-820e-fed762d09cb4
+    taskid: 1b4cf1c5-633e-496e-8fcf-5e576d72e0fd
     type: condition
     task:
-      id: e4a7e02a-09fe-476c-820e-fed762d09cb4
+      id: 1b4cf1c5-633e-496e-8fcf-5e576d72e0fd
       version: -1
       name: non extraction - test.notexist
       type: condition
@@ -662,7 +662,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 2530,
+        "width": 2960,
         "x": 50,
         "y": 50
       }

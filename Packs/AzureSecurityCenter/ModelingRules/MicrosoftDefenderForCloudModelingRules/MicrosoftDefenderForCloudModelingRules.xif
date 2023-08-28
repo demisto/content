@@ -37,9 +37,9 @@ alter
 	commandLine = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.commandLine")), ","),
 	address = arraymap(Entities, json_extract_scalar("@element", "$.address")),
 	clientIPAddress = arraycreate(json_extract_scalar(properties, "$.extendedProperties.client IP Address")),
-	hostname = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.hostname")), ",")
+	hostname = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.hostName")), ",")
 	| alter
 	xdm.target.host.device_id = coalesce(azureId, json_extract_scalar(properties, "$.resourceIdentifiers.id")),
 	xdm.target.process.command_line = coalesce(commandLine, json_extract_scalar(properties, "$.extendedProperties.command line")),
 	xdm.target.host.ipv4_addresses = coalesce(address, clientIPAddress),
-	xdm.target.host.hostname = coalesce(json_extract_scalar(properties, "$.compromisedEntity", hostname));
+	xdm.target.host.hostname = coalesce(json_extract_scalar(properties, "$.compromisedEntity"), hostname);

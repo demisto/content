@@ -38,13 +38,13 @@ var sendRequest = function(url, param) {
 switch (command) {
     // This is the call made when pressing the integration test button.
     case 'test-module':
-        res = sendRequest(initialurl + '8.8.8.8' + '?apikey='+params.apikey);
+        res = sendRequest(initialurl + '8.8.8.8' + '?apikey='+(params.apikey_creds ? params.apikey_creds.password : params.apikey));
         if (res.query_result === 'Success') {
             return 'ok';
         }
         return res;
     case 'packetmail-ip':
-        var res =  sendRequest(initialurl + args.ip + '?apikey='+params.apikey);
+        var res =  sendRequest(initialurl + args.ip + '?apikey='+(params.apikey_creds ? params.apikey_creds.password : params.apikey));
         md = '';
         maliciousLists = '';
         var keys = Object.keys(res);

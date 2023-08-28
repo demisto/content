@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+from MicrosoftApiModule import *  # noqa: E402
+
 import urllib3
 
 urllib3.disable_warnings()
@@ -11,21 +13,25 @@ API_VERSION = '2021-09-01'
 
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
+                 tenant_id: str = None,
                  enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None,
-                 managed_identities_client_id: str = None):
-        AUTH_TYPES_DICT: dict[str, Any] = {
+                 managed_identities_client_id: str = None,
+                 azure_cloud: Optional[AzureCloud] = None,
+                 ):
+        azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        auth_types_dict: dict[str, Any] = {
             'Authorization Code': {
                 'grant_type': AUTHORIZATION_CODE,
                 'resource': None,
-                'scope': 'https://management.azure.com/.default'
+                'scope': urljoin(azure_cloud.endpoints.resource_manager, '.default'),
             },
             'Device Code': {
                 'grant_type': DEVICE_CODE,
-                'resource': 'https://management.core.windows.net',
-                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+                'resource': azure_cloud.endpoints.management,
+                'scope': urljoin(azure_cloud.endpoints.resource_manager, 'user_impersonation offline_access user.read'),
             }
         }
+
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -35,14 +41,14 @@ class AKSClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),
-            base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, 'organizations/oauth2/v2.0/token'),
+            grant_type=auth_types_dict.get(auth_type, {}).get('grant_type'),
+            base_url=urljoin(azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}'),
             verify=verify,
             proxy=proxy,
-            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),
-            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
-            azure_ad_endpoint=azure_ad_endpoint,
+            resource=auth_types_dict.get(auth_type, {}).get('resource'),
+            scope=auth_types_dict.get(auth_type, {}).get('scope'),
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
             tenant_id=tenant_id,
             enc_key=enc_key,
             redirect_uri=redirect_uri,
@@ -202,6 +208,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
+        azure_cloud = get_azure_cloud(params, 'AzureKubernetesServices')
         client = AKSClient(
             tenant_id=params.get('tenant_id'),
             auth_type=params.get('auth_type', 'Device Code'),
@@ -213,14 +220,13 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            azure_cloud=azure_cloud,
             managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'azure-ks-generate-login-url':
-            return_results(generate_login_url(client.ms_client))
+            return_results(generate_login_url(client.ms_client, login_url=azure_cloud.endpoints.active_directory))
         elif command == 'azure-ks-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-ks-auth-complete':
@@ -237,9 +243,6 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

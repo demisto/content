@@ -31,12 +31,12 @@ The examples below assume you invoke the integration via the server HTTPS endpoi
 ## Usage
 The Generic Webhook integration accepts POST HTTP queries, with the following optional fields in the request body:
 
-| **Field** | **Type** | **Description** |
-| --- | --- | --- |
-| name | string | Name of the incident to be created. |
-| type | string | Type of the incident to be created. If not provided, the value of the integration parameter ***Incident type*** will be used.  |
-| occurred | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time will be used. |
-| raw_json | object | Details of the incident to be created. For example, `{"field1":"value1","field2":"value2"}` |
+| **Field** | **Type** | **Description**                                                                                                                                                                   |
+| --- | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name | string | Name of the incident to be created.                                                                                                                                               |
+| type | string | Type of the incident to be created. If not provided, the value of the integration parameter ***Incident type*** will be used.                                                     |
+| occurred | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time will be used.                                                                                    |
+| raw_json | object | Details of the incident to be created. Headers can be found in a seperate key. For example, `{"field1":"value1","field2":"value2","headers": {"header_field3": "header_value3"}}` |
 
 For example, the following triggers the webhook using cURL:
 

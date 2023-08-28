@@ -14,17 +14,17 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '10'
   display: Fetch Limit
   name: fetch_limit
@@ -32,27 +32,22 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox
 name: ZeroFox
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Fetches an alert by ID.
-    execution: false
     name: zerofox-get-alert
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
@@ -152,21 +147,13 @@ script:
       description: The account associated with the entity.
       type: String
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: The name of the user to which an alert is assigned.
-      isArray: false
+    - description: The name of the user to which an alert is assigned.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Assigns an alert to a user.
-    execution: false
     name: zerofox-alert-user-assignment
     outputs:
     - contextPath: ZeroFox.Alert.ID
@@ -176,15 +163,10 @@ script:
       description: The user to which an alert is assigned.
       type: String
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Closes an alert.
-    execution: false
     name: zerofox-close-alert
     outputs:
     - contextPath: ZeroFox.Alert.ID
@@ -194,15 +176,10 @@ script:
       description: The status of an alert.
       type: String
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Requests a takedown of a specified alert.
-    execution: false
     name: zerofox-alert-request-takedown
     outputs:
     - contextPath: ZeroFox.Alert.ID
@@ -216,28 +193,17 @@ script:
       default: true
       defaultValue: add
       description: Adds or removes tags.
-      isArray: false
       name: action
       predefined:
       - add
       - remove
-      required: false
-      secret: false
-    - default: false
-      description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved by running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: A CSV of tags to be added to or removed from an alert.
-      isArray: false
+    - description: A CSV of tags to be added to or removed from an alert.
       name: tags
       required: true
-      secret: false
-    deprecated: false
     description: Adds tags to and or removes tags from a specified alert.
-    execution: false
     name: zerofox-modify-alert-tags
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
@@ -337,16 +303,10 @@ script:
       description: The account associated with the entity.
       type: String
   - arguments:
-    - default: false
-      description: The account number of the social network (unique ID).
-      isArray: false
+    - description: The account number of the social network (unique ID).
       name: account
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A CSV list of alert types.
-      isArray: false
       name: alert_type
       predefined:
       - account_information
@@ -364,127 +324,48 @@ script:
       - search_query
       - location
       - email
-      required: false
-      secret: false
-    - default: false
-      description: The name of the user assigned to an alert.
-      isArray: false
+    - description: The name of the user assigned to an alert.
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the ZeroFox entity.
-      isArray: false
+    - description: The ID of the ZeroFox entity.
       name: entity
-      required: false
-      secret: false
-    - default: false
-      description: The term ID of the ZeroFox entity.
-      isArray: false
+    - description: The term ID of the ZeroFox entity.
       name: entity_term
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time (in seconds) since an alert was last modified.
-      isArray: false
+    - description: The amount of time (in seconds) since an alert was last modified.
       name: last_modified
-      required: false
-      secret: false
     - default: true
       defaultValue: '10'
       description: The maximum number of alerts to retrieve (0 - 100).
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The ending date-time string (in ISO-8601 format) by which to filter alerts.
-      isArray: false
+    - description: The ending date-time string (in ISO-8601 format) by which to filter alerts.
       name: max_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: The starting date-time string (in ISO-8601 format) by which to filter alerts.
-      isArray: false
+    - description: The starting date-time string (in ISO-8601 format) by which to filter alerts.
       name: min_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: Filters results by the specified network names.
-      isArray: false
+    - description: Filters results by the specified network names.
       name: network
-      required: false
-      secret: false
-    - default: false
-      description: Used for pagination. Starts response with the first filtered alert.
-      isArray: false
+    - description: Used for pagination. Starts response with the first filtered alert.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: CSV list of the ZeroFox page IDs.
-      isArray: false
+    - description: CSV list of the ZeroFox page IDs.
       name: page_id
-      required: false
-      secret: false
-    - default: false
-      description: The URL to the website or social media content that triggered an alert.
-      isArray: false
+    - description: The URL to the website or social media content that triggered an alert.
       name: page_url
-      required: false
-      secret: false
-    - default: false
-      description: The encoded JSON array of strings used for filtering alerts.
-      isArray: false
+    - description: The encoded JSON array of strings used for filtering alerts.
       name: pages
-      required: false
-      secret: false
-    - default: false
-      description: The unique post number of the social network.
-      isArray: false
+    - description: The unique post number of the social network.
       name: post
-      required: false
-      secret: false
-    - default: false
-      description: CSV list of the ZeroFox rule IDs.
-      isArray: false
+    - description: CSV list of the ZeroFox rule IDs.
       name: rule_id
-      required: false
-      secret: false
-    - default: false
-      description: CSV list of the ZeroFox rule names.
-      isArray: false
+    - description: CSV list of the ZeroFox rule names.
       name: rule_name
-      required: false
-      secret: false
-    - default: false
-      description: The matched substring of the protected entity.
-      isArray: false
+    - description: The matched substring of the protected entity.
       name: entity_search
-      required: false
-      secret: false
-    - default: false
-      description: The substring used to filter alerts by the username or display name of a perpetrator.
-      isArray: false
+    - description: The substring used to filter alerts by the username or display name of a perpetrator.
       name: perpetrator_search
-      required: false
-      secret: false
-    - default: false
-      description: The substring used to filter alerts by the username, display name, or entity term name of protected social objects.
-      isArray: false
+    - description: The substring used to filter alerts by the username, display name, or entity term name of protected social objects.
       name: pro_social_obj_search
-      required: false
-      secret: false
-    - default: false
-      description: CSV list of alert IDs.
-      isArray: false
+    - description: CSV list of alert IDs.
       name: alert_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Risk rating of alert.
-      isArray: false
       name: risk_rating
       predefined:
       - Critical
@@ -492,22 +373,14 @@ script:
       - Medium
       - Low
       - Info
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sorts results in ascending or descending order.
-      isArray: false
       name: sort_direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Field used for defining alert filter for sorting.
-      isArray: false
       name: sort_field
       predefined:
       - alert_id
@@ -522,12 +395,8 @@ script:
       - social_network
       - timestamp
       - escalated
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert status.
-      isArray: false
       name: status
       predefined:
       - closed
@@ -536,27 +405,15 @@ script:
       - takedown_denied
       - takedown_requested
       - whitelisted
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If true, returns only escalated alerts.
-      isArray: false
       name: escalated
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Alert tags. Returns alerts containing at least of the tags in the provided CSV list.
-      isArray: false
+    - description: Alert tags. Returns alerts containing at least of the tags in the provided CSV list.
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Returns alerts that match user-defined or default filters and parameters. By default, no filters are applied and the results are sorted by timestamp.
-    execution: false
     name: zerofox-list-alerts
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
@@ -656,44 +513,23 @@ script:
       description: The account associated with the entity.
       type: String
   - arguments:
-    - default: false
-      description: Name of the entity (may be non-unique).
-      isArray: false
+    - description: Name of the entity (may be non-unique).
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Indicates the type of string matching used for comparing entity names to impersonator names.
-      isArray: false
+    - description: Indicates the type of string matching used for comparing entity names to impersonator names.
       name: strict_name_matching
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma-separated list of string tags for tagging the entity. 
         For example:
         label1,label2,label3
-      isArray: false
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command.
-      isArray: false
+    - description: The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command.
       name: policy_id
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: The name of the organization associated with the entity.
-      isArray: false
+    - description: The name of the organization associated with the entity.
       name: organization
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new entity associated with the company of the authorized user.
-    execution: false
     name: zerofox-create-entity
     outputs:
     - contextPath: ZeroFox.Entity.Name
@@ -715,15 +551,10 @@ script:
       description: The name of the organization associated with the entity.
       type: String
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Cancels a takedown of a specified alert.
-    execution: false
     name: zerofox-alert-cancel-takedown
     outputs:
     - contextPath: ZeroFox.Alert.ID
@@ -733,15 +564,10 @@ script:
       description: The status of an alert.
       type: String
   - arguments:
-    - default: false
-      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
-      isArray: false
+    - description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Opens an alert.
-    execution: false
     name: zerofox-open-alert
     outputs:
     - contextPath: ZeroFox.Alert.ID
@@ -751,57 +577,23 @@ script:
       description: The status of an alert.
       type: String
   - arguments:
-    - default: false
-      description: Filters by matching email_address substrings.
-      isArray: false
+    - description: Filters by matching email_address substrings.
       name: email_address
-      required: false
-      secret: false
-    - default: false
-      description: Filters by entity group ID. Can be filtered by multiple group parameters.
-      isArray: false
+    - description: Filters by entity group ID. Can be filtered by multiple group parameters.
       name: group
-      required: false
-      secret: false
-    - default: false
-      description: Filters by entity label ID. Can be filtered by multiple label parameters.
-      isArray: false
+    - description: Filters by entity label ID. Can be filtered by multiple label parameters.
       name: label
-      required: false
-      secret: false
-    - default: false
-      description: Filters by entities with network accounts using an ID. Can be filtered by multiple network parameters.
-      isArray: false
+    - description: Filters by entities with network accounts using an ID. Can be filtered by multiple network parameters.
       name: network
-      required: false
-      secret: false
-    - default: false
-      description: Filters by entities with network accounts using a CSV of network names.
-      isArray: false
+    - description: Filters by entities with network accounts using a CSV of network names.
       name: networks
-      required: false
-      secret: false
-    - default: false
-      description: The index of page to fetch.
-      isArray: false
+    - description: The index of page to fetch.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Filters by entity policy ID. Can be filtered by multiple policy parameters. Can be retrieved running the zerofox-get-policy-types command.
-      isArray: false
+    - description: Filters by entity policy ID. Can be filtered by multiple policy parameters. Can be retrieved running the zerofox-get-policy-types command.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: Filters by an entity type ID. Can be filtered by multiple type parameters. Can be retrieved running the zerofox-get-entity-types command.
-      isArray: false
+    - description: Filters by an entity type ID. Can be filtered by multiple type parameters. Can be retrieved running the zerofox-get-entity-types command.
       name: type
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all entities associated with the company of the authorized user.
-    execution: false
     name: zerofox-list-entities
     outputs:
     - contextPath: ZeroFox.Entity.ID
@@ -840,18 +632,12 @@ script:
     - contextPath: ZeroFox.Entity.TypeName
       description: The name of the type of entity
       type: String
-  - deprecated: false
-    description: Shows a table of all entity type names and IDs in the War Room.
-    execution: false
+  - description: Shows a table of all entity type names and IDs in the War Room.
     name: zerofox-get-entity-types
-  - deprecated: false
-    description: Shows a table of all policy type names and IDs in the War Room.
-    execution: false
+  - description: Shows a table of all policy type names and IDs in the War Room.
     name: zerofox-get-policy-types
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

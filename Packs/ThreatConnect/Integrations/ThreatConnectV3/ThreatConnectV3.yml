@@ -12,6 +12,7 @@ configuration:
   name: accessId
   type: 0
   hidden: true
+  required: false
 - additionalinfo: The API credentials
   display: Access ID
   displaypassword: Secret key
@@ -20,13 +21,13 @@ configuration:
   required: true
 - display: Default Organization
   name: defaultOrg
-  required: false
   type: 0
+  required: false
 - additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
   display: Tags filter for the fetch
   name: tags
-  required: false
   type: 0
+  required: false
 - additionalinfo: The group type to filter the fetched incidents by.
   defaultvalue: Incident
   display: Group Type filter for the fetch
@@ -34,8 +35,8 @@ configuration:
   options:
   - Incident
   - Event
-  required: false
   type: 16
+  required: false
 - additionalinfo: The status to filter the fetched incidents by (if not field will fetch all statuses).
   display: Status filter for the fetch
   name: status
@@ -53,11 +54,10 @@ configuration:
   - No Further Action
   - False Positive
   - Needs Review
-  required: false
   type: 16
+  required: false
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
   required: true
@@ -71,8 +71,8 @@ configuration:
   - securityLabels
   - associatedVictimAssets
   - attributes
-  required: false
   type: 16
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -91,43 +91,42 @@ configuration:
   defaultvalue: '3'
   display: Rating Threshold for Malicious Indicators (needed for reputation calculation)
   name: rating
-  required: false
   type: 0
+  required: false
 - additionalinfo: Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation.
   defaultvalue: '50'
   display: Confidence Threshold for Malicious Indicators (needed for reputation calculation)
   name: confidence
-  required: false
   type: 0
+  required: false
 - additionalinfo: Indicator Reputation Freshness, it is necessary to calculate reputation.
   defaultvalue: '7'
   display: Indicator Reputation Freshness in days (needed for reputation calculation)
   name: freshness
-  required: false
   type: 0
+  required: false
 - name: max_fetch
   display: Maximum number of incidents to fetch
-  required: false
   type: 0
   defaultvalue: '200'
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-description: ThreatConnect's integration is a intelligence-driven security operations solution with
-  intelligence, automation, analytics, and workflows.
+description: ThreatConnect's integration is a intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 display: ThreatConnect v3
 name: ThreatConnect v3
 script:
@@ -138,18 +137,11 @@ script:
       name: ip
       required: true
       isArray: true
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A comma-separated list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A comma-separated list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type IP address.
     name: ip
@@ -214,18 +206,11 @@ script:
       name: url
       required: true
       isArray: true
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a client’s API user has been granted permission. For
-        example, "owner1", "owner2", or "owner3".
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a client’s API user has been granted permission. For example, "owner1", "owner2", or "owner3".
       name: owners
-    - description: A comma-separated list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A comma-separated list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type URL.
     name: url
@@ -290,18 +275,11 @@ script:
       name: file
       required: true
       isArray: true
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A comma-separated list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A comma-separated list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type file.
     name: file
@@ -393,9 +371,11 @@ script:
       name: owner
     - description: The page to take the results from.
       name: page
-    - description: The maximum number of results that can be returned. The default
-        is 500.
+    - description: The maximum number of results that can be returned. The default is 500.
       name: limit
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Retrieves a list of all indicators.
     name: tc-indicators
     outputs:
@@ -525,6 +505,9 @@ script:
       description: The ID of the indicator by which to search.
       name: indicator
       required: true
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Retrieves information about an indicator.
     name: tc-get-indicator
     outputs:
@@ -656,6 +639,9 @@ script:
       name: page
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
     outputs:
@@ -763,7 +749,7 @@ script:
       name: indicator
       required: true
     - auto: PREDEFINED
-      description: The type of the indicator. 
+      description: The type of the indicator.
       name: indicatorType
       predefined:
       - Address
@@ -789,12 +775,9 @@ script:
       - md5
       - sha1
       - sha256
-    - description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
-        - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: The threat rating of the indicator. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: rating
-    - description: The confidence rating of the indicator. Can be "0%" - "Unknown,"
-        "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%"
-        - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+    - description: The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidence
     - description: The description of the indicator.
       name: description
@@ -892,13 +875,12 @@ script:
       description: The name of the incident group.
       name: incidentName
       required: true
-    - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
-        format.
+    - description: The creation time of an incident in the "2017-03-21T00:00:00Z" format.
       name: eventDate
     - description: A comma-separated list of the tags applied to the incident.
       name: tag
     - auto: PREDEFINED
-      description: The security label applied to the incident. 
+      description: The security label applied to the incident.
       name: securityLabel
       predefined:
       - TLP:RED
@@ -959,9 +941,7 @@ script:
       description: The ID of the indicator.
       name: indicator
       required: true
-    description: Associates an indicator with an existing incident. The indicator
-      must exist before running this command. To add an indicator, run the tc-add-indicator
-      command.
+    description: Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
     name: tc-incident-associate-indicator
     outputs:
     - contextPath: TC.Indicator.Name
@@ -1054,18 +1034,11 @@ script:
       name: domain
       required: true
       isArray: true
-    - description: A comma-separated list of a client's organizations, sources, or
-        communities to which a user has permissions. For example, users with admin
-        permissions can search for indicators belonging to all owners.
+    - description: A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A comma-separated list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+    - description: A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A comma-separated list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
+    - description: A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidenceThreshold
     description: Searches for an indicator of type domain.
     name: domain
@@ -1254,13 +1227,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: Whether the updated indicator is a false positive.
-      name: falsePositive
-      predefined:
-      - 'True'
-      - 'False'
-    - auto: PREDEFINED
-      description: The security label applied to the incident. 
+      description: The security label applied to the incident.
       name: securityLabel
       predefined:
       - TLP:RED
@@ -1467,7 +1434,7 @@ script:
     - description: Comma-separated list of the tags to apply to the campaign.
       name: tag
     - auto: PREDEFINED
-      description: The security label applied to the incident. 
+      description: The security label applied to the incident.
       name: securityLabel
       predefined:
       - TLP:RED
@@ -1499,11 +1466,10 @@ script:
     - description: The name of the event group.
       name: name
       required: true
-    - description: The date the event occurred. If the date is not specified,
-        the current date is used.
+    - description: The date the event occurred. If the date is not specified, the current date is used.
       name: eventDate
     - auto: PREDEFINED
-      description: The status of the event. 
+      description: The status of the event.
       name: status
       predefined:
       - Needs Review
@@ -1543,13 +1509,12 @@ script:
       description: The name of the threat group.
       name: name
       required: true
-    - description: The creation time of a threat in the "2017-03-21T00:00:00Z"
-        format.
+    - description: The creation time of a threat in the "2017-03-21T00:00:00Z" format.
       name: eventDate
     - description: A comma-separated list of the tags applied to the threat.
       name: tags
     - auto: PREDEFINED
-      description: The security label applied to the threat. 
+      description: The security label applied to the threat.
       name: securityLabel
       predefined:
       - TLP:RED
@@ -1574,12 +1539,10 @@ script:
     description: Deletes a group.
     name: tc-delete-group
   - arguments:
-    - description: The ID of the group to which to add attributes. To get the ID of
-        the group, run the tc-list-groups command.
+    - description: The ID of the group to which to add attributes. To get the ID of the group, run the tc-list-groups command.
       name: group_id
       required: true
-    - description: The type of attribute to add to the group. The type is located
-        in the UI in a specific group or under Org Config.
+    - description: The type of attribute to add to the group. The type is located in the UI in a specific group or under Org Config.
       name: attribute_type
       required: true
     - description: The value of the attribute.
@@ -1736,22 +1699,16 @@ script:
       type: string
     - description: Add group tags metadata to the results.
       name: include_tags
-      type: bool
     - description: Add group security labels metadata to the results.
       name: include_security_labels
-      type: bool
     - description: Add group attributes metadata to the results.
       name: include_attributes
-      type: bool
     - description: Add group associated groups metadata to the results.
       name: include_associated_groups
-      type: bool
     - description: Add group associated indicators metadata to the results.
       name: include_associated_indicators
-      type: bool
     - description: Add all group metadata to the results.
       name: include_all_metaData
-      type: bool
     description: Returns all groups.
     name: tc-list-groups
     outputs:
@@ -1774,12 +1731,11 @@ script:
       description: The ID of the group.
       type: Number
   - arguments:
-    - description: The ID of the group to which to add the security label. To get
-        the ID, run the tc-list-groups command.
+    - description: The ID of the group to which to add the security label. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     - auto: PREDEFINED
-      description: The security label applied to the document. 
+      description: The security label applied to the document.
       name: security_label_name
       predefined:
       - TLP:RED
@@ -1791,8 +1747,7 @@ script:
     description: Deprecated. Use the tc-update-group command.
     name: tc-add-group-security-label
   - arguments:
-    - description: The ID of the group to which to add the tag. To get the ID, run
-        the tc-list-groups command.
+    - description: The ID of the group to which to add the tag. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     - description: The name of the tag to add to the group.
@@ -1811,8 +1766,7 @@ script:
       description: The entity of the API.
       type: String
     - contextPath: TC.IndicatorType.CasePreference
-      description: 'The case preference of the indicator. For example, "sensitive",
-        "upper", or "lower".'
+      description: 'The case preference of the indicator. For example, "sensitive", "upper", or "lower".'
       type: String
     - contextPath: TC.IndicatorType.Custom
       description: Whether the indicator is a custom indicator.
@@ -1830,8 +1784,7 @@ script:
     - description: The name/ID of the indicator.
       name: indicator
       required: true
-    - description: The ID of the group. To get the ID of the group, run the tc-list-groups
-        command.
+    - description: The ID of the group. To get the ID of the group, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -1852,9 +1805,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Whether the file is malware. If "true", ThreatConnect creates a
-        password-protected ZIP file on your local machine that contains the sample
-        and uploads the ZIP file.
+      description: Whether the file is malware. If "true", ThreatConnect creates a password-protected ZIP file on your local machine that contains the sample and uploads the ZIP file.
       name: malware
       predefined:
       - 'true'
@@ -1862,7 +1813,7 @@ script:
     - description: The password of the ZIP file.
       name: password
     - auto: PREDEFINED
-      description: The security label applied to the document. 
+      description: The security label applied to the document.
       name: security_label
       predefined:
       - TLP:RED
@@ -1896,8 +1847,7 @@ script:
       description: The ID of the group to which the attribute was added.
       type: Number
   - arguments:
-    - description: The ID of the group to retrieve. To get the ID, run the tc-list-groups
-        command.
+    - description: The ID of the group to retrieve. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -1926,8 +1876,7 @@ script:
       description: The status of the group.
       type: String
   - arguments:
-    - description: The ID of the group for which to return the attribute. To get the
-        ID, run the tc-list-groups command.
+    - description: The ID of the group for which to return the attribute. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -1953,8 +1902,7 @@ script:
       description: The value of the attribute.
       type: String
   - arguments:
-    - description: The ID of the group for which to return the security labels. To
-        get the ID, run the tc-list-groups command.
+    - description: The ID of the group for which to return the security labels. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -1971,8 +1919,7 @@ script:
       description: The date the security label was added.
       type: Date
   - arguments:
-    - description: The ID of the group for which to return the tags. To get the ID,
-        run the tc-list-groups command.
+    - description: The ID of the group for which to return the tags. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -2020,8 +1967,7 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-    - description: The ID of the group for which to return the indicators. To get
-        the ID, run the tc-list-groups command.
+    - description: The ID of the group for which to return the indicators. To get the ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -2078,8 +2024,7 @@ script:
       description: The type of the group.
       type: String
   - arguments:
-    - description: The ID of the group. To get the ID of the group, run the tc-list-groups
-        command.
+    - description: The ID of the group. To get the ID of the group, run the tc-list-groups command.
       name: group_id
       required: true
     - description: The ID of the group to associate.
@@ -2148,7 +2093,7 @@ script:
     - description: A comma-separated list of The tags applied to the threat.
       name: tags
     - auto: PREDEFINED
-      description: The security label applied to the threat. 
+      description: The security label applied to the threat.
       name: security_label
       predefined:
       - TLP:RED
@@ -2188,8 +2133,7 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.10.50695
-  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   script: ''
   subtype: python3

@@ -1,10 +1,8 @@
 args:
 - default: true
   description: HTML to convert to Markdown.
-  isArray: false
   name: html
   required: true
-  secret: false
 comment: Converts HTML to Markdown.
 commonfields:
   id: HTMLtoMD
@@ -19,13 +17,11 @@ outputs:
   description: The Markdown that was converted from the passed HTML.
   type: String
 script: '-'
-system: false
 timeout: '0'
 type: python
 tags: []
 dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
-runonce: false
 subtype: python3
 tests:
 - Test_HTMLtoMD

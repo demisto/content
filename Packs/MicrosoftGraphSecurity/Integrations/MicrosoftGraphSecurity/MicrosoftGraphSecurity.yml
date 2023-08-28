@@ -20,148 +20,141 @@ configuration:
   - Legacy Alerts
   - Alerts v2
   section: Connect
-- name: creds_auth_id
   required: false
+- name: creds_auth_id
   type: 9
   section: Connect
   displaypassword: Application ID or Client ID
   hiddenusername: true
-- name: creds_tenant_id
   required: false
+- name: creds_tenant_id
   type: 9
   section: Connect
   displaypassword: Token or Tenant ID
   hiddenusername: true
-- name: creds_enc_key
   required: false
+- name: creds_enc_key
   type: 9
   section: Connect
   displaypassword: Key or Client Secret
   hiddenusername: true
+  required: false
 - additionalinfo: See the Help tab.
   display: Application ID or Client ID
   name: auth_id
-  required: false
   type: 4
   section: Connect
   hidden: true
+  required: false
 - additionalinfo: See the Help tab.
   display: Token or Tenant ID
   name: tenant_id
-  required: false
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Key or Client Secret
   name: enc_key
-  required: false
   type: 4
   section: Connect
   additionalinfo: See the Help tab.
   hidden: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   section: Connect
   displaypassword: Private Key
+  required: false
 - display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   section: Connect
   additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   section: Connect
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+  required: false
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use a self-deployed Azure application
   name: self_deployed
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
-  hidden: false
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '10'
   display: Max incidents per fetch
-  hidden: false
   name: fetch_limit
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Fetch incidents of the given providers only.
   additionalinfo: Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
-  hidden: false
   name: fetch_providers
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents of the given service sources only.
   additionalinfo: Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity",. If empty, incidents of all providers will be fetched.
-  hidden: false
   name: fetch_service_sources
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetched incidents filter
   additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
-  hidden: false
   name: fetch_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -169,20 +162,14 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: When the alert was last modified in the following string format - YYYY-MM-DD
-      isArray: false
       name: last_modified
       predefined:
       - Last24Hours
       - Last48Hours
       - LastWeek
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert severity - set by vendor/provider.
-      isArray: false
       name: severity
       predefined:
       - unknown
@@ -190,48 +177,24 @@ script:
       - low
       - medium
       - high
-      required: false
-      secret: false
-    - default: false
-      description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
-      isArray: false
+    - description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
-      isArray: false
+    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
       name: time_from
-      required: false
-      secret: false
-    - default: false
-      description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
-      isArray: false
+    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
       name: time_to
-      required: false
-      secret: false
-    - default: false
-      description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
-      isArray: false
+    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
       name: filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Alerts v2. Use this field to filter by an alert's classification.
-      isArray: false
       name: classification
       predefined:
       - unknown
       - truePositive
       - falsePositive
       - benignPositive
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Alerts v2. Use this field to filter the alerts by the service or product that created this alert.
-      isArray: false
       name: service_source
       predefined:
       - microsoftDefenderForEndpoint
@@ -240,36 +203,22 @@ script:
       - microsoft365Defender
       - microsoftAppGovernance
       - microsoftDefenderForCloudApps
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Alerts v2. Use this field to filter by alert's status.
-      isArray: false
       name: status
       predefined:
       - unknown
       - new
       - inProgress
       - resolved
-      required: false
-      secret: false
     - description: Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be <= 500).
-      isArray: false
       name: page
-      required: false
     - description: Number of results in a page. Default is 50. The limit for Legacy Alerts is 1000. The limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider.
-      isArray: false
       name: page_size
-      required: false
     - description: Number of total results to return. Default is 50.
-      isArray: false
       name: limit
-      required: false
       defaultValue: 50
-    deprecated: false
     description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
-    execution: false
     name: msg-search-alerts
     outputs:
     - contextPath: MsGraph.Alert.ID
@@ -425,20 +374,12 @@ script:
   - arguments:
     - default: true
       description: The Alert ID - Provider-generated GUID/unique identifier.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: All
+    - defaultValue: All
       description: 'Relevant only for Legacy Alerts. Fields to fetch for a specified alert apart from the basic properties, given as comma separated values, e.g., NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All.'
-      isArray: false
       name: fields_to_include
-      required: false
-      secret: false
-    deprecated: false
     description: Get details for a specific alert.
-    execution: false
     name: msg-get-alert-details
     outputs:
     - contextPath: MsGraph.Alert.ID
@@ -691,88 +632,47 @@ script:
       description: Relevant only for Alerts v2. Alert threat family name.
       type: Unknown
   - arguments:
-    - default: false
-      description: The Alert ID. Provider-generated GUID/unique identifier.
-      isArray: false
+    - description: The Alert ID. Provider-generated GUID/unique identifier.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
-      isArray: false
+    - description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.
       name: closed_date_time
-      required: false
-      secret: false
-    - default: false
-      description: Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).
       name: comments
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Legacy Alerts. Analyst feedback on the alert.
-      isArray: false
       name: feedback
       predefined:
       - unknown
       - truePositive
       - falsePositive
       - benignPositive
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert lifecycle status (stage).
-      isArray: false
       name: status
       predefined:
       - unknown
       - newAlert
       - inProgress
       - resolved
-      required: false
-      secret: false
-    - default: false
-      description: Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
-      isArray: false
+    - description: Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.
       name: vendor_information
-      required: false
-      secret: false
-    - default: false
-      description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.
       name: provider_information
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Alerts v2. Use this field to update the alert's classification.
-      isArray: false
       name: classification
       predefined:
       - unknown
       - truePositive
       - falsePositive
       - benignPositive
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Relevant only for Alerts v2. Use this field to update the alert's determination.
-      isArray: false
       name: determination
       predefined:
       - unknown
@@ -786,11 +686,7 @@ script:
       - maliciousUserActivity
       - lineOfBusinessApplication
       - unwantedSoftware
-      required: false
-      secret: false
-    deprecated: false
     description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
-    execution: false
     name: msg-update-alert
     outputs:
     - contextPath: MsGraph.Alert.ID
@@ -802,20 +698,14 @@ script:
   - arguments:
     - default: true
       description: The alert ID - Provider-generated GUID/unique identifier.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: The comment to add to each alert.
+    - description: The comment to add to each alert.
       isArray: true
       name: comment
       required: true
-      secret: false
       type: string
-    deprecated: False
     description: Relevant only for Alerts v2. create a comment for an existing alert.
-    execution: false
     name: msg-create-alert-comment
     outputs:
     - contextPath: MsGraph.AlertComment.ID
@@ -832,7 +722,6 @@ script:
       type: Date
   - deprecated: true
     description: Deprecated. Use the Azure Active Directory Users integration instead.
-    execution: false
     name: msg-get-users
     outputs:
     - contextPath: MsGraph.User.Email
@@ -850,13 +739,10 @@ script:
   - arguments:
     - default: true
       description: User ID of user to retreive.
-      isArray: false
       name: user_id
       required: true
-      secret: false
     deprecated: true
     description: Deprecated. Use the Azure Active Directory Users integration instead.
-    execution: false
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
@@ -872,10 +758,7 @@ script:
       description: User name
       type: string
   dockerimage: demisto/crypto:1.0.0.58768
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

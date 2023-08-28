@@ -1,80 +1,110 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from RankServiceOwners import score, main, rank, _canonicalize, aggregate
+from RankServiceOwners import score, main, rank, _canonicalize, aggregate, _get_k
 from contextlib import nullcontext as does_not_raise
 
 
-@pytest.mark.parametrize('owners,k,expected_out,expected_raises', [
-    # different names
+@pytest.mark.parametrize('owners,expected_out', [
     (
+        # returned in sorted order
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
+                'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 0.5, 'Justification': ''
+            },
+            {
+                'Name': 'alice', 'Email': 'alice@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
             },
         ],
-        1,
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
+                'Name': 'alice', 'Email': 'alice@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
             },
-        ],
-        does_not_raise(),
+            {
+                'Name': 'bob', 'Email': 'bob@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 0.5, 'Justification': ''
+            },
+        ]
     ),
     (
+        # wraps one test case from _get_k
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
+                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
+            },
+            {
+                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
             },
         ],
-        0,
-        None,
-        pytest.raises(ValueError),
-    ),
-    (
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
+                'Name': 'a', 'Email': 'a@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 10, 'Justification': ''
             },
-        ],
-        -1,
-        None,
-        pytest.raises(ValueError),
-    ),
-    (
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': ''},
-        ],
-        1,
-        None,
-        pytest.raises(KeyError),
+            {
+                'Name': 'b', 'Email': 'b@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'c', 'Email': 'c@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'd', 'Email': 'd@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'e', 'Email': 'e@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+            {
+                'Name': 'f', 'Email': 'f@example.com', 'Source': '',
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': ''
+            },
+        ]
     ),
 ])
-def test_rank(owners, k, expected_out, expected_raises):
-    with expected_raises:
-        assert rank(owners, k=k) == expected_out
+def test_rank(owners, expected_out):
+    assert rank(owners) == expected_out
 
 
 @pytest.mark.parametrize('owner,expected_out', [
     # email with casing, whitespace
     (
-        {'Name': 'Alice ', 'Email': 'aLiCe@example.com ', 'Source': 'source1', 'Timestamp': '1'},
-        {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+        {'name': 'Alice ', 'email': 'aLiCe@example.com ', 'source': 'source1', 'timestamp': '1'},
+        {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
          'Canonicalization': 'alice@example.com'},
     ),
     # name with casing, whitespace
     (
-        {'Name': 'Alice ', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-        {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
+        {'name': 'Alice ', 'email': '', 'source': 'source1', 'timestamp': '1'},
+        {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
     ),
     # neither
     (
-        {'Name': '', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-        {'Name': '', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': ''},
+        {'name': '', 'email': '', 'source': 'source1', 'timestamp': '1'},
+        {'name': '', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': ''},
     ),
 ])
 def test_canonicalize(owner, expected_out):
@@ -85,9 +115,9 @@ def test_canonicalize(owner, expected_out):
     # same email, different names, sources, timestamps
     (
         [
-            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+            {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
              'Canonicalization': 'alice@example.com'},
-            {'Name': 'Bob ', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+            {'name': 'Bob ', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
              'Canonicalization': 'alice@example.com'},
         ],
         [
@@ -97,9 +127,9 @@ def test_canonicalize(owner, expected_out):
     # same email, no names
     (
         [
-            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+            {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
              'Canonicalization': 'alice@example.com'},
-            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+            {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
              'Canonicalization': 'alice@example.com'},
         ],
         [
@@ -109,11 +139,11 @@ def test_canonicalize(owner, expected_out):
     # same email, same names
     (
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+            {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
              'Canonicalization': 'alice@example.com'},
-            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2',
+            {'name': 'Alice', 'email': 'bob@example.com', 'source': 'source2', 'timestamp': '2',
              'Canonicalization': 'bob@example.com'},
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+            {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
              'Canonicalization': 'alice@example.com'},
         ],
         [
@@ -124,8 +154,8 @@ def test_canonicalize(owner, expected_out):
     # no email, different names
     (
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
-            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Canonicalization': 'bob'},
+            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
+            {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'bob'},
         ],
         [
             {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Count': 1},
@@ -135,8 +165,8 @@ def test_canonicalize(owner, expected_out):
     # no email, same names
     (
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
-            {'Name': 'alice', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Canonicalization': 'alice'},
+            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
+            {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'alice'},
         ],
         [
             {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
@@ -145,13 +175,13 @@ def test_canonicalize(owner, expected_out):
     # some emails present, others missing
     (
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+            {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
              'Canonicalization': 'alice@example.com'},
-            {'Name': 'alice', 'Email': '', 'Source': 'source3', 'Timestamp': '3',
+            {'name': 'alice', 'email': '', 'source': 'source3', 'timestamp': '3',
              'Canonicalization': 'alice'},
-            {'Name': 'Bob', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+            {'name': 'Bob', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
              'Canonicalization': 'alice@example.com'},
-            {'Name': 'alice', 'Email': '', 'Source': 'source4', 'Timestamp': '4',
+            {'name': 'alice', 'email': '', 'source': 'source4', 'timestamp': '4',
              'Canonicalization': 'alice'},
         ],
         [
@@ -206,8 +236,8 @@ def test_score(deduplicated, expected_out):
     # ideal input
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -224,8 +254,8 @@ def test_score(deduplicated, expected_out):
     # ideal input with new string field added
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val2'},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val2'},
         ],
         [
             {
@@ -237,8 +267,8 @@ def test_score(deduplicated, expected_out):
     # ideal input with new numerical field added
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 1},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 2},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 1},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 2},
         ],
         [
             {
@@ -250,8 +280,8 @@ def test_score(deduplicated, expected_out):
     # ideal input with some new field values added
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 1},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 1},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -263,8 +293,8 @@ def test_score(deduplicated, expected_out):
     # ideal input with some new field values added
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': 'val1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -276,8 +306,8 @@ def test_score(deduplicated, expected_out):
     # ideal input with some new field values added that we can't handle
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': None},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1', 'New Field': None},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -296,10 +326,10 @@ def test_score(deduplicated, expected_out):
         [None],
         []
     ),
-    # bad input -- Name is None
+    # bad input -- name is None
     (
         [
-            {'Name': None, 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': None, 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -308,10 +338,10 @@ def test_score(deduplicated, expected_out):
             },
         ]
     ),
-    # bad input -- Email is None
+    # bad input -- email is None
     (
         [
-            {'Name': 'a', 'Email': None, 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'a', 'email': None, 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -323,7 +353,7 @@ def test_score(deduplicated, expected_out):
     # bad input -- Source is None
     (
         [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': None, 'Timestamp': '1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': None, 'timestamp': '1'},
         ],
         [
             {
@@ -335,7 +365,7 @@ def test_score(deduplicated, expected_out):
     # bad input -- Timestamp is None
     (
         [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': None},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': None},
         ],
         [
             {
@@ -344,10 +374,10 @@ def test_score(deduplicated, expected_out):
             },
         ]
     ),
-    # bad input -- missing Name
+    # bad input -- missing name
     (
         [
-            {'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -356,10 +386,10 @@ def test_score(deduplicated, expected_out):
             },
         ]
     ),
-    # bad input -- missing Email
+    # bad input -- missing email
     (
         [
-            {'Name': 'a', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': 'a', 'source': 'source1', 'timestamp': '1'},
         ],
         [
             {
@@ -371,7 +401,7 @@ def test_score(deduplicated, expected_out):
     # bad input -- missing Source
     (
         [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Timestamp': '1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'timestamp': '1'},
         ],
         [
             {
@@ -383,7 +413,7 @@ def test_score(deduplicated, expected_out):
     # bad input -- missing Timestamp
     (
         [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1'},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1'},
         ],
         [
             {
@@ -395,8 +425,8 @@ def test_score(deduplicated, expected_out):
     # Timestamp as numerical type
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 1},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 2},
+            {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 1},
+            {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 2},
         ],
         [
             {
@@ -422,3 +452,76 @@ def test_main(mocker, owners, expected_out, capfd):
     # Verify the output value was set
     expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_out})]
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
+
+
+def test_get_k():
+    """
+    These cases are designed to specify the intuition we are trying to implement with the algorithm
+    and verify its default hyperparameters.
+    We assert that if the algorithm matches our intuition at least 80% of the time, it's probably fine.
+
+    See function documentation for explanation of hyperparameters and their defaults.
+    """
+
+    # The first value in each cases is the list of scores output by the model (one per owner)
+    # and the second value is the expected k
+    cases = [
+        # If smallish set of owners, return all or find obvious cutoff
+        ([1], 1),
+        ([1, 1], 2),
+        ([1, 1, 1], 3),
+        ([10, 1, 1], 3),
+        ([1, 1, 1, 1], 4),
+        ([10, 1, 1, 1], 4),
+        ([10, 10, 1, 1], 4),  # or 2; either seems fine
+        ([10, 10, 1, 1], 2),  # or 4; either seems fine
+        ([1, 1, 1, 1, 1], 5),
+        ([10, 1, 1, 1, 1], 5),
+        ([10, 10, 1, 1, 1], 2),
+        ([1, 1, 1, 1, 1, 1], 6),
+        ([1, 1, 1, 1, 1, 1, 1], 7),
+
+        # If larger set of owners, return top handful or find obvious cutoff
+        ([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 5),  # or 2; either seems fine
+        ([10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 2),  # or 5; either seems fine
+        ([10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1], 3),
+        ([10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1], 4),
+        ([10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([100, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1], 5),
+        ([100, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1], 6),
+
+        # Do something reasonable for non-obvious cutoffs
+        ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 5),
+        ([19, 17, 15, 13, 11, 9, 7, 5, 3, 1], 5),
+
+        # Do something reasonable for larger scales
+        ([500, 200, 100, 50, 25, 10, 1], 3),
+    ]
+    num_correct = 0
+    for scores, expected_k in cases:
+        if _get_k(scores) == expected_k:
+            num_correct += 1
+
+    assert (num_correct / len(cases)) >= 0.8
+
+
+@pytest.mark.parametrize('target_k, k_tol, a_tol, min_score_proportion, expected_raises', [
+    (-1, 2, 1.0, 0.75, pytest.raises(ValueError, match="target_k must be non-negative")),
+    (5, -1, 1.0, 0.75, pytest.raises(ValueError, match="k_tol must be non-negative")),
+    (5, 2, -1, 0.75, pytest.raises(ValueError, match="a_tol must be non-negative")),
+    (5, 2, 1.0, -1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 1.1, pytest.raises(ValueError, match="min_score_proportion must be a value between 0 and 1")),
+    (5, 2, 1.0, 0.75, does_not_raise()),
+])
+def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected_raises):
+    scores = [1, 1, 1]
+    with expected_raises:
+        assert _get_k(
+            scores,
+            target_k=target_k,
+            k_tol=k_tol,
+            a_tol=a_tol,
+            min_score_proportion=min_score_proportion,
+        )

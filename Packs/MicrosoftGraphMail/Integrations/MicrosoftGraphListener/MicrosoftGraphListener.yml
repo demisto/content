@@ -7,110 +7,111 @@ commonfields:
   version: -1
 configuration:
 - name: creds_auth_id
-  required: false
   type: 9
   displaypassword: ID or Client ID
   hiddenusername: true
   section: Connect
-- name: creds_refresh_token
   required: false
+- name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
   advanced: true
-- name: creds_enc_key
   required: false
+- name: creds_enc_key
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
   section: Connect
+  required: false
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: refresh_token
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: certificate_thumbprint
-  required: false
   type: 4
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   section: Connect
-- name: creds_auth_code
   required: false
+- name: creds_auth_code
   type: 9
   displaypassword: Authorization code (required for self-deployed Azure app)
   hiddenusername: true
   section: Connect
   advanced: true
+  required: false
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Application redirect URI (required for self-deployed Azure app)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Email address from which to fetch incidents (e.g., "example@demisto.com")
   name: mailbox_to_fetch
   required: true
   type: 0
   section: Collect
+  additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   required: true
@@ -119,39 +120,39 @@ configuration:
   section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   defaultvalue: 15 minutes
   section: Collect
+  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   defaultvalue: '50'
   type: 0
-  required: false
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use a self-deployed Azure application
   name: self_deployed
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Display full email body
   name: display_full_email_body
   defaultvalue: 'false'
@@ -159,6 +160,7 @@ configuration:
   additionalinfo: If not active, only a preview of the email will be fetched.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if fetch incidents is active.
   defaultvalue: 'false'
   display: Mark fetched emails as read
@@ -166,13 +168,14 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
-  required: false
   section: Collect
   advanced: true
+  required: false
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -230,9 +233,7 @@ script:
       name: attach_cids
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Creates a draft message in the specified user's mailbox.
     name: msgraph-mail-create-draft
     outputs:
@@ -326,9 +327,7 @@ script:
       name: attachCIDs
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Replies to an email using Graph Mail Single User.
     name: reply-mail
     outputs:
@@ -377,10 +376,6 @@ script:
       - HTML
     - description: 'Indicates whether to render the email body'
       name: renderBody
-      default: false
-      isArray: false
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -418,9 +413,7 @@ script:
       name: replyTo
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Sends an email using Microsoft Graph.
     name: send-mail
     outputs:
@@ -477,9 +470,7 @@ script:
       name: attach_cids
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     description: The replies to the recipients of a message.
     name: msgraph-mail-reply-to
     polling: true
@@ -489,9 +480,7 @@ script:
       required: true
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Sends a draft email using Microsoft Graph.
     name: msgraph-mail-send-draft
     polling: true
@@ -515,9 +504,7 @@ script:
       defaultValue: '1'
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MSGraphMail.ID
       description: The ID of the email.
@@ -608,9 +595,7 @@ script:
       description: The id of the folder
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MSGraphMailAttachment.ID
       description: The email ID.
@@ -634,26 +619,13 @@ script:
     - name: message_id
       required: true
       description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
-      default: false
-      isArray: false
-      secret: false
     - description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
-      isArray: false
       name: folder_id
-      required: false
-      default: false
-      secret: false
-    - default: false
-      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
-      isArray: false
+    - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
-      required: false
-      secret: false
     - deprecated: true
       description: flag for rate limit retry
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -687,8 +659,6 @@ script:
       type: String
     description: Gets an attachment from the email.
     polling: true
-    deprecated: false
-    execution: false
   - name: msgraph-mail-get-email-as-eml
     arguments:
     - description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
@@ -697,8 +667,6 @@ script:
     - description: flag for rate limit retry
       name: ran_once_flag
       deprecated: true
-      isArray: false
-      required: false
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     outputs:
     - contextPath: File.Size
@@ -752,12 +720,10 @@ script:
       - Read
       - Unread
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.58768
+  dockerimage: demisto/crypto:1.0.0.62834
   isfetch: true
-  runonce: false
   script: ''
   type: python
   subtype: python3

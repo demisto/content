@@ -10,7 +10,6 @@ dockerimage: demisto/python3:3.10.8.37753
 enabled: true
 name: HealthCheckPanicLog
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

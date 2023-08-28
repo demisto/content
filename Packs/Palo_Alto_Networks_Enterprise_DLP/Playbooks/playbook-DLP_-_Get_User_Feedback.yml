@@ -1,0 +1,1090 @@
+id: DLP - Get User Feedback
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: DLP - Get User Feedback
+description: Get the user feedback on a blocked file, whether it is false or true positive and if an exemption is needed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ac6e371-5e4a-48ff-83b1-c850c9e5f71b
+    type: start
+    task:
+      id: 5ac6e371-5e4a-48ff-83b1-c850c9e5f71b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5259d029-62d3-4c1c-8780-bab1a39a125c
+    type: regular
+    task:
+      id: 5259d029-62d3-4c1c-8780-bab1a39a125c
+      version: -1
+      name: Set feedback to "true positive"
+      description: Set incident feedback to "true positive"
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: CONFIRMED_SENSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 1995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f60c42d0-2d84-47e6-882c-d31f9e61eea1
+    type: regular
+    task:
+      id: f60c42d0-2d84-47e6-882c-d31f9e61eea1
+      version: -1
+      name: Set feedback to "False Positive"
+      description: Set feedback to "False Positive"
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: CONFIRMED_FALSE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 1995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 718b2150-b5f9-427f-876f-a3b420aba94b
+    type: condition
+    task:
+      id: 718b2150-b5f9-427f-876f-a3b420aba94b
+      description: ""
+      version: -1
+      name: User answered "Yes"?
+      tags:
+      - AwaitFileInfo
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "Yes":
+      - "1"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 6
+      days: 0
+      weeks: 0
+    slareminder:
+      minutes: 0
+      hours: 1
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2cf63c10-e1f8-4201-8b1f-0de87b4bf0bf
+    type: regular
+    task:
+      id: 2cf63c10-e1f8-4201-8b1f-0de87b4bf0bf
+      version: -1
+      name: 'Set feedback status to "Pending" '
+      description: Set feedback status to "Pending".
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      feedback:
+        simple: PENDING_RESPONSE
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8825f846-2a29-4ff2-8f64-d20891d9b71d
+    type: regular
+    task:
+      id: 8825f846-2a29-4ff2-8f64-d20891d9b71d
+      version: -1
+      name: Save feedback to DLP
+      description: Updates a DLP incident with user feedback.
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      feedback:
+        simple: ${incident.pandlpincidentfeedback}
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3c30c49b-335c-4af2-852d-4495fbaa4532
+    type: regular
+    task:
+      id: 3c30c49b-335c-4af2-852d-4495fbaa4532
+      description: ""
+      version: -1
+      name: Ask user if file contains sensitive info
+      scriptName: DlpAskFeedback
+      type: regular
+      iscommand: false
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      app_name:
+        simple: ${incident.app}
+      data_profile_name:
+        simple: ${incident.pandlpdataprofilename}
+      file_name:
+        simple: ${incident.filename}
+      include_violation_detail:
+        simple: "True"
+      is_follow_up:
+        simple: "False"
+      messenger:
+        complex:
+          root: inputs.MessageApp
+      question_type:
+        simple: ABOUT_FILE
+      snippets:
+        complex:
+          root: inputs.Detections
+      task:
+        simple: AwaitFileInfo
+      user:
+        simple: ${incident.sourceusername}
+      user_display_name:
+        complex:
+          root: inputs.UserDisplayName
+      user_id:
+        complex:
+          root: inputs.UserEmail
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.sourceusername
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ed465bf1-d399-4964-8d83-755bf6ae769e
+    type: regular
+    task:
+      id: ed465bf1-d399-4964-8d83-755bf6ae769e
+      version: -1
+      name: Get eligibility for exemption
+      description: Determines whether the exemption can be granted on incidents from a certain data profile.
+      script: '|||pan-dlp-exemption-eligible'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      data_profile:
+        simple: ${incident.pandlpdataprofilename}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d92324f6-40c6-4164-82d3-8577f5914bf9
+    type: condition
+    task:
+      id: d92324f6-40c6-4164-82d3-8577f5914bf9
+      description: ""
+      version: -1
+      name: Is eligible?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: DLP.exemption.eligible
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 836de274-78a8-45a7-8620-ca5e46c11d00
+    type: condition
+    task:
+      id: 836de274-78a8-45a7-8620-ca5e46c11d00
+      description: ""
+      version: -1
+      name: Is there a previous notification for the file?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "no":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: incident.pandlppreviousfeedback
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlppreviousfeedback
+            iscontext: true
+          right:
+            value:
+              simple: Pending response
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4af13c70-609f-4a0a-8f5a-ac71e07c3b5f
+    type: condition
+    task:
+      id: 4af13c70-609f-4a0a-8f5a-ac71e07c3b5f
+      description: ""
+      version: -1
+      name: Did user ask for exemption?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "No":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlppreviousfeedback
+            iscontext: true
+          right:
+            value:
+              simple: Confirmed sensitive
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlppreviousfeedback
+            iscontext: true
+          right:
+            value:
+              simple: Confirmed false positive
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlppreviousfeedback
+            iscontext: true
+          right:
+            value:
+              simple: Exception not requested
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 706c9b4d-4795-40fc-85a4-52aebb2f1265
+    type: regular
+    task:
+      id: 706c9b4d-4795-40fc-85a4-52aebb2f1265
+      version: -1
+      name: 'Set feedback status to "Pending" '
+      description: Set feedback status to "Pending".
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      feedback:
+        simple: PENDING_RESPONSE
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: af4e4b82-c884-400d-817a-339db9b894e9
+    type: regular
+    task:
+      id: af4e4b82-c884-400d-817a-339db9b894e9
+      description: ""
+      version: -1
+      name: Ask user if exemption needed
+      scriptName: DlpAskFeedback
+      type: regular
+      iscommand: false
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      app_name:
+        simple: ${incident.app}
+      data_profile_name:
+        simple: ${incident.pandlpdataprofilename}
+      file_name:
+        simple: ${incident.filename}
+      include_violation_detail:
+        simple: ${include_violation_detail}
+      is_follow_up:
+        simple: "False"
+      messenger:
+        complex:
+          root: inputs.MessageApp
+      question_type:
+        simple: ABOUT_EXEMPTION
+      task:
+        simple: AwaitFileExemption
+      user:
+        simple: ${incident.sourceusername}
+      user_display_name:
+        complex:
+          root: inputs.UserDisplayName
+      user_id:
+        complex:
+          root: inputs.UserEmail
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.sourceusername
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 32e1dcba-d9e4-4e08-88a5-f4c6ffa6d7cf
+    type: regular
+    task:
+      id: 32e1dcba-d9e4-4e08-88a5-f4c6ffa6d7cf
+      version: -1
+      name: Set include_violation_detail to False
+      description: Set include_violation_detail to False.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: include_violation_detail
+      stringify:
+        simple: "true"
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bc30231f-272d-4d67-84dd-71ddc3a8ea22
+    type: regular
+    task:
+      id: bc30231f-272d-4d67-84dd-71ddc3a8ea22
+      version: -1
+      name: Set include_violation_detail to True
+      description: Set include_violation_detail to True.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: include_violation_detail
+      stringify:
+        simple: "true"
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8d9343fe-43e9-45af-8352-8a708ceddcfb
+    type: title
+    task:
+      id: 8d9343fe-43e9-45af-8352-8a708ceddcfb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 30f5bb1d-8185-48ff-82a8-b7b3a36f195e
+    type: condition
+    task:
+      id: 30f5bb1d-8185-48ff-82a8-b7b3a36f195e
+      description: ""
+      version: -1
+      name: User requested exemption?
+      tags:
+      - AwaitFileExemption
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "Yes":
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cc2b6a1e-6cb9-40dc-8d92-76d2f45a0f4f
+    type: regular
+    task:
+      id: cc2b6a1e-6cb9-40dc-8d92-76d2f45a0f4f
+      version: -1
+      name: 'Save user answer '
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: UserRequestedExemption
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 79a0bc7d-1f74-4108-87d8-84950e2000bc
+    type: regular
+    task:
+      id: 79a0bc7d-1f74-4108-87d8-84950e2000bc
+      version: -1
+      name: 'Save user answer '
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: UserRequestedExemption
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 542df324-ec0e-4bdc-88bb-2597ded24c64
+    type: playbook
+    task:
+      id: 542df324-ec0e-4bdc-88bb-2597ded24c64
+      version: -1
+      name: DLP - Get User Feedback via Email
+      playbookName: DLP - Get User Feedback via Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      SendMailInstance:
+        complex:
+          root: inputs.SendMailInstance
+      Snippets:
+        complex:
+          root: inputs.Detections
+      UserDisplayName:
+        complex:
+          root: inputs.UserDisplayName
+      UserEmail:
+        complex:
+          root: inputs.UserEmail
+      data_profile_name:
+        complex:
+          root: incident
+          accessor: pandlpdataprofilename
+      file_name:
+        complex:
+          root: incident
+          accessor: filename
+      question_type:
+        simple: ABOUT_FILE
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: a28ce6da-2891-44a2-8ea2-6039fba476ec
+    type: condition
+    task:
+      id: a28ce6da-2891-44a2-8ea2-6039fba476ec
+      description: ""
+      version: -1
+      name: Get user feedback by email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.MessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b3bc2121-212c-4ba3-8f8c-25cdc75cb9a1
+    type: condition
+    task:
+      id: b3bc2121-212c-4ba3-8f8c-25cdc75cb9a1
+      description: ""
+      version: -1
+      name: Get user feedback by email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.MessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1492.5,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: fe450185-759c-4239-8ec4-c13ad295257f
+    type: playbook
+    task:
+      id: fe450185-759c-4239-8ec4-c13ad295257f
+      version: -1
+      name: DLP - Get User Feedback via Email
+      playbookName: DLP - Get User Feedback via Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      SendMailInstance:
+        complex:
+          root: inputs.SendMailInstance
+      UserDisplayName:
+        complex:
+          root: inputs.UserDisplayName
+      UserEmail:
+        complex:
+          root: inputs.UserEmail
+      data_profile_name:
+        complex:
+          root: incident
+          accessor: pandlpdataprofilename
+      file_name:
+        complex:
+          root: incident
+          accessor: filename
+      question_type:
+        simple: ABOUT_EXEMPTION
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_14_No": 0.33,
+      "10_15_#default#": 0.1,
+      "21_12_#default#": 0.44,
+      "8_15_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3465,
+        "width": 1620,
+        "x": 670,
+        "y": 750
+      }
+    }
+  }
+inputs:
+- key: UserDisplayName
+  value: {}
+  required: false
+  description: The display name of the user.
+  playbookInputQuery:
+- key: MessageApp
+  value: {}
+  required: false
+  description: "Choose the application to communicate with the users.\nAvailable options:\n- Slack \n- Microsoft Teams"
+  playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
+- key: UserEmail
+  value: {}
+  required: false
+  description: The user email address.
+  playbookInputQuery:
+- key: Detections
+  value: {}
+  required: false
+  description: Detected violation snippets.
+  playbookInputQuery:
+outputs:
+- contextPath: UserRequestedExemption
+  description: Whether the user requested exemption or not.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

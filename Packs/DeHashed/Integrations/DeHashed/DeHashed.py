@@ -1,4 +1,3 @@
-from typing import Union, Dict, Optional, List
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -37,8 +36,8 @@ class Client(BaseClient):
         self.api_key = api_key
         self.email_dbot_score = email_dbot_score
 
-    def dehashed_search(self, asset_type: Optional[str], value: List[str], operation: Optional[str],
-                        results_page_number: Optional[int] = None) -> dict:
+    def dehashed_search(self, asset_type: str | None, value: list[str], operation: str | None,
+                        results_page_number: int | None = None) -> dict:
         """
         this function gets query parameters from demisto and perform a "GET" request to Dehashed api
         :param asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
@@ -55,13 +54,13 @@ class Client(BaseClient):
         query_value = ""
         if len(value) > 1:
             if operation == "is":
-                query_value = " ".join((f'"{value}"' for value in value))
+                query_value = " ".join(f'"{value}"' for value in value)
             elif operation == "contains":
                 query_value = " OR ".join(value)
                 query_value = f"({query_value})"
 
             elif operation == "regex":
-                query_value = " ".join((f"/{value}/" for value in value))
+                query_value = " ".join(f"/{value}/" for value in value)
         else:
             if operation == "is":
                 query_value = f'"{value[0]}"'
@@ -70,10 +69,7 @@ class Client(BaseClient):
             elif operation == 'regex':
                 query_value = f"/{value[0]}/"
 
-        if asset_type == "all_fields":
-            query_string = f"{query_value}"
-        else:
-            query_string = f"{asset_type}:{query_value}"
+        query_string = f"{query_value}" if asset_type == "all_fields" else f"{asset_type}:{query_value}"
 
         if results_page_number:
             return self._http_request(
@@ -124,7 +120,7 @@ def validate_filter_parameters(results_from_value, results_to_value):
 
 
 def filter_results(
-    entries: list, results_from: Union[int, None], results_to: Union[int, None]
+    entries: list, results_from: int | None, results_to: int | None
 ) -> tuple:
     """
     gets raw results returned from the api and limit the number of entries to return to demisto
@@ -144,7 +140,7 @@ def filter_results(
     return entries[results_from - 1:results_to], results_from, results_to
 
 
-def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]:
+def arg_to_int(arg_val: str | None, arg_name: str | None) -> int | None:
     """
     converts commands arguments to integers
     :param arg_name: argument name
@@ -166,16 +162,17 @@ def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]
         )
 
 
-def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
+def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score, reliability):
     return {
         'Indicator': indicator_value,
         'Type': indicator_type,
         'Vendor': INTEGRATION_CONTEXT_BRAND,
-        'Score': dbot_score
+        'Score': dbot_score,
+        'Reliability': reliability
     }
 
 
-def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
+def dehashed_search_command(client: Client, args: dict[str, str]) -> tuple:
     """
     this command returns data regarding a compromised assets given as arguments
     :param client: Demisto client
@@ -237,12 +234,13 @@ def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
         )
 
 
-def email_command(client: Client, args: Dict[str, str]) -> tuple:
+def email_command(client: Client, args: dict[str, str], reliability: str) -> tuple:
     """
     This command returns data regarding a compromised email address
     :param client: Demisto client
     :param args:
     - email: the email address that should be checked
+    :param reliability: The reliability of the intelligence source.
     :return: Demisto outputs
     """
     email_address = argToList(args.get('email'))
@@ -258,7 +256,8 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
                     'Indicator': email_address[0],
                     'Type': 'email',
                     'Vendor': INTEGRATION_CONTEXT_BRAND,
-                    'Score': 0
+                    'Score': 0,
+                    'Reliability': reliability
                 }
         }
         return "No matching results found", context, None
@@ -273,21 +272,23 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
         dbot_score = default_dbot_score_email if len(sources) > 0 else 0
         context = {
             f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
-            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score)
+            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score, reliability)
         }
         return hr, context, query_data
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    email = demisto.params().get("credentials", {}).get('identifier', '')
-    api_key = demisto.params().get("credentials", {}).get('password', '')
+    demisto_params = demisto.params()
+    email = demisto_params.get("credentials", {}).get('identifier', '')
+    api_key = demisto_params.get("credentials", {}).get('password', '')
     base_url = BASE_URL
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    email_dbot_score = demisto.params().get('email_dbot_score', 'SUSPICIOUS')
+    verify_certificate = not demisto_params.get("insecure", False)
+    proxy = demisto_params.get("proxy", False)
+    email_dbot_score = demisto_params.get('email_dbot_score', 'SUSPICIOUS')
+    reliability = demisto_params.get('integration_reliability', '')
 
     LOG(f"Command being called is {demisto.command()}")
     try:
@@ -309,7 +310,7 @@ def main():
         elif demisto.command() == "dehashed-search":
             return_outputs(*dehashed_search_command(client, demisto.args()))
         elif demisto.command() == "email":
-            return_outputs(*email_command(client, demisto.args()))
+            return_outputs(*email_command(client, demisto.args(), reliability))
         else:
             return_error('Command not found.')
     # Log exceptions
@@ -317,5 +318,5 @@ def main():
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

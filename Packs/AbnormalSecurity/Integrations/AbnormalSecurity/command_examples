@@ -1,7 +1,7 @@
 !abnormal-security-check-case-action-status case_id=12345 action_id=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
 !abnormal-security-check-threat-action-status threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action_id=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
-!abnormal-security-list-abnormal-cases filter="gte 2020-12-01T01:01:01Z"
-!abnormal-security-list-threats filter="gte 2020-12-01T01:01:01Z"
+!abnormal-security-list-abnormal-cases filter="lastModifiedTime gte 2020-12-01T01:01:01Z"
+!abnormal-security-list-threats filter="receivedTime gte 2020-12-01T01:01:01Z"
 !abnormal-security-download-threat-log-csv filter="receivedTime gte 2020-12-01T01:01:01Z"
 !abnormal-security-get-threat threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba
 !abnormal-security-get-abnormal-case case_id=12805
@@ -11,7 +11,7 @@
 !abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement reporter=abc@def.com report_type=false-positive
 !abnormal-security-submit-false-negative-report recipient_email=abc@def.com sender_email=def@def.com subject=hello
 !abnormal-security-submit-false-positive-report portal_link=https://portal.abnormalsecurity.com/home/threat-center/remediation-history/123455667
-!abnormal-security-list-abuse-mailbox-campaigns filter="gte 2020-12-01T01:01:01Z"
+!abnormal-security-list-abuse-mailbox-campaigns filter="lastReportedTime gte 2020-12-01T01:01:01Z"
 !abnormal-security-get-abuse-mailbox-campaign campaign_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba
 !abnormal-security-get-employee-identity-analysis email_address="test@test.com"
 !abnormal-security-get-employee-information email_address="test@test.com"

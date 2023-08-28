@@ -34,6 +34,9 @@ ignore=RM106
 [file:playbook-Configuration_Setup.yml]
 ignore=PB106
 
+[file:playbook-Delete_Custom_Content.yml]
+ignore=PB105,PB106
+
 [known_words]
 cliname
 cicd
@@ -41,14 +44,14 @@ bitbucket
 gitlab
 
 [file:ListCreator.yml]
-ignore=BA124
+ignore=BA124,CJ105
 
 [file:ConfigurationSetup.yml]
-ignore=BA124
+ignore=BA124,CJ105
 
 [file:GetPrBranches.yml]
 ignore=BA124
 
 [file:JobCreator.yml]
-ignore=BA124
+ignore=BA124,CJ105
 

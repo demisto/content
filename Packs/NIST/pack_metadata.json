@@ -2,7 +2,7 @@
     "name": "NIST",
     "description": "This Content Pack helps you follow the phases in handling an incident according to the NIST computer security incident handling guidelines.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -45,10 +45,6 @@
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "Active_Directory_Query": {
             "mandatory": false,

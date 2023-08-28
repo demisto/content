@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 from datetime import timezone, tzinfo
 import dateparser
-import demistomock as demisto  # noqa: F401
 import pytz
-from CommonServerPython import *  # noqa: F401
 
 
 def timezone_abbreviations(utc_offset: Optional[timedelta]) -> set[str]:

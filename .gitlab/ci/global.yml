@@ -54,17 +54,16 @@
 
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh | tee --append $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
   - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
   - section_end "Download content-test-conf"
 
-.open-ssh-tunnel:
-  - section_start "Open SSH Tunnel" --collapsed
-  - cat $SSH_CONFIGURATION >> ~/.ssh/config
+.ssh-config-setup:
+  - section_start "SSH config setup" --collapsed
+  - cp $GCP_SSH_CONFIGURATION ~/.ssh/config
   - chmod 700 ~/.ssh/config
-  - ./Tests/scripts/open_ssh_tunnel.sh
-  - section_end "Open SSH Tunnel"
+  - section_end "SSH config setup"
 
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
@@ -120,7 +119,7 @@
   - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - source ./.venv/bin/activate
   - |
-    if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${OVERRIDE_SDK_REF}" ]]; then
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
       pip3 uninstall -y demisto-sdk | tee --append $ARTIFACTS_FOLDER/logs/installations.log
       pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
@@ -175,7 +174,6 @@
     - neo4j-admin dbms set-initial-password contentgraph
     - neo4j start
     - python --version
-    - python2 --version
     - python3 --version
     - pip3 --version
     - node --version
@@ -248,11 +246,8 @@
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
-        echo "flake8 py2 version: $(python2 -m flake8 --version)"
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
-        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests

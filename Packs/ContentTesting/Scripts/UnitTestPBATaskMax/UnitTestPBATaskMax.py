@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 # Final Test: 6.10
 from typing import Dict, TypedDict
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 BLUE1 = "rgb(138, 160, 171)"
 BLUE2 = "rgb(109, 150, 171)"

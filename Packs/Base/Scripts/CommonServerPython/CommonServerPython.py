@@ -119,10 +119,10 @@ def fix_traceback_line_numbers(trace_str):
     """
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
-            block_start < start < end < block_end 
+            block_start < start < end < block_end
             for block_start, block_end in adjusted_lines.items()
         )
-        
+
     for number in re.findall(r'line (\d+)', trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
@@ -193,6 +193,9 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
+    
+    from urllib3 import disable_warnings
+    disable_warnings()
 
     import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
@@ -1591,7 +1594,8 @@ class IntegrationLogger(object):
                     js = js[:-1]
                 to_add.append(js)
                 if IS_PY3:
-                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                    from urllib import parse as urllib_parse
+                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
                     to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
@@ -3339,6 +3343,27 @@ class Common(object):
                 'description': self.description
             }
 
+    class Rank:
+        """
+        Single row in a rank grid field
+
+        :type rank: float / int
+        :param rank: A numerical rank value
+
+        :type source: ``str``
+        :param source: The name of the source from which the rank was taken
+        """
+
+        def __init__(self, rank=None, source=None):
+            self.rank = rank
+            self.source = source
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'rank': self.rank
+            }
+
     class ExternalReference(object):
         """
         ExternalReference class
@@ -3597,6 +3622,27 @@ class Common(object):
                 'ttl': self.dns_ttl,
                 'data': self.dns_record_data
             }
+
+
+    class CPE:
+        """
+        Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
+
+        :type cpe: ``str``
+        :param cpe: a single CPE string
+
+        :return: None
+        :rtype: ``None``
+
+        """
+        def __init__(self, cpe=None):
+            self.cpe = cpe
+
+        def to_context(self):
+            return {
+                'CPE': self.cpe,
+            }
+
 
     class File(Indicator):
         """
@@ -3950,6 +3996,12 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
+        :type vulnerable_products: ``CPE``
+        :param vulnerable_products: A list of CPE objects
+
+        :type vulnerable_configurations: ``CPE``
+        :param vulnerable_configurations: A list of CPE objects
+
         :return: None
         :rtype: ``None``
         """
@@ -3957,8 +4009,8 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None):
-            # type (str, str, str, str, str) -> None
+                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None,
+                     vulnerable_products=None, vulnerable_configurations=None):
 
             # Main indicator value
             self.id = id
@@ -3984,6 +4036,10 @@ class Common(object):
                                                                              indicator_type=DBotScoreType.CVE,
                                                                              integration_name=None,
                                                                              score=Common.DBotScore.NONE)
+
+            # Core custom fields for CVE type
+            self.vulnerable_products = vulnerable_products
+            self.vulnerable_configurations = vulnerable_configurations
 
         def to_context(self):
             cve_context = {
@@ -4032,15 +4088,21 @@ class Common(object):
             if self.traffic_light_protocol:
                 cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
-            if self.publications:
-                cve_context['Publications'] = self.create_context_table(self.publications)
-
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
+
+            if self.publications:
+                cve_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.vulnerable_products:
+                cve_context['VulnerableProducts'] = self.create_context_table(self.vulnerable_products)
+
+            if self.vulnerable_configurations:
+                cve_context['VulnerableConfigurations'] = self.create_context_table(self.vulnerable_configurations)
 
             return ret_value
 
@@ -4381,7 +4443,7 @@ class Common(object):
                      community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
                      tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
                      whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
-                     certificates=None, dns_records=None,):
+                     certificates=None, dns_records=None, rank=None):
 
             # Main indicator value
             self.domain = domain
@@ -4407,6 +4469,7 @@ class Common(object):
             self.organization = organization
             self.sub_domains = sub_domains
             self.updated_date = updated_date
+            self.rank = rank
 
             # Whois related records - Registrar
             self.registrar_name = registrar_name
@@ -4612,6 +4675,9 @@ class Common(object):
 
             if self.certificates:
                 domain_context['Certificates'] = self.create_context_table(self.certificates)
+
+            if self.rank:
+                domain_context['Rank'] = self.create_context_table(self.rank)
 
             return ret_value
 
@@ -6907,6 +6973,23 @@ class CommandResults:
         return return_entry
 
 
+def is_integration_command_execution():
+    """
+    This function determines whether the current execution a script execution or a integration command execution.
+
+    :return: Is the current execution a script execution or a integration command execution.
+    :rtype: ``bool``
+    """
+
+    try:
+        return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
+    except (KeyError, IndexError, TypeError):
+        return True
+
+
+EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
+
+
 def return_results(results):
     """
     This function wraps the demisto.results(), supports.
@@ -6917,17 +7000,24 @@ def return_results(results):
     :return: None
     :rtype: ``None``
     """
+    is_integration = is_integration_command_execution()
     if results is None:
         # backward compatibility reasons
         demisto.results(None)
         return
 
     elif results and isinstance(results, list):
-        result_list = []
+        result_list = [] # type: list
         for result in results:
-            if isinstance(result, (dict, str)):
-                # Results of type dict or str are of the old results format and work with demisto.results()
+            # Results of type dict or str are of the old results format and work with demisto.results()
+            if isinstance(result, dict):
+                if is_integration or result.get('Type') != EntryType.EXECUTION_METRICS:
+                    result_list.append(result)
+                else:
+                    demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
+            elif isinstance(result, str):
                 result_list.append(result)
+
             else:
                 # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
                 return_results(result)
@@ -6935,7 +7025,11 @@ def return_results(results):
             demisto.results(result_list)
 
     elif isinstance(results, CommandResults):
-        demisto.results(results.to_context())
+        context = results.to_context()
+        if is_integration or context.get('Type') != EntryType.EXECUTION_METRICS:
+            demisto.results(context)
+        else:
+            demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
     elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
@@ -6950,8 +7044,14 @@ def return_results(results):
         demisto.results(results.to_entry())
 
     elif hasattr(results, 'to_entry'):
-        demisto.results(results.to_entry())
+        entry = results.to_entry()
+        if is_integration or entry.get('Type') != EntryType.EXECUTION_METRICS:
+            demisto.results(entry)
+        else:
+            demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
+    elif not is_integration and isinstance(results, dict) and results.get('Type') == EntryType.EXECUTION_METRICS:
+        demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
     else:
         demisto.results(results)
 
@@ -7786,7 +7886,7 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
     :type reponse_obj: ``Any``
     :param reponse_obj: The response object to update.
     :type reponse_obj: ``dict``
-    :user_predefiend_keys: An optional argument, 
+    :user_predefiend_keys: An optional argument,
     a dict with predefined keys where the key is the key in the response and value is the key we want to turn the key into.
 
     :return: A response with all keys (if there're any) starts with a capital letter.
@@ -10538,7 +10638,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
-    
+
     demisto.debug('lb: Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res),
                                                                                        [incident_res[id_field] for incident_res in incidents_res]))
     for incident in incidents_res:
@@ -10601,16 +10701,18 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     :return: The new incidents ids
     :rtype: ``dict``
     """
-    demisto.debug('lb: Remove old incidents ids')
+    demisto.debug('lb: Remove old incidents ids, current time is {}'.format(current_time))
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time < deletion_threshold_in_seconds:
+        if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+        else:
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
@@ -10686,28 +10788,24 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
                   "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
-
+    new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
+            'limit': fetch_limit
         }
-    elif len(incidents) < fetch_limit or look_back == 0:
+    else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
+            'limit': new_limit if look_back > 0 else fetch_limit
         }
-    else:
-        remove_incident_ids = False
-        new_last_run = {
-            'time': start_fetch_time,
-        }
-    
-    if look_back > 0:
-        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    else:
-        new_last_run['limit'] = fetch_limit
-    
+        if latest_incident_fetched_time == start_fetch_time:
+            # we are still on the same time, no need to remove old incident ids
+            remove_incident_ids = False
+            
+
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10768,9 +10866,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
-    if found_incidents:
-        updated_last_run.update({'found_incident_ids': found_incidents})
-
+    updated_last_run['found_incident_ids'] = found_incidents
     last_run.update(updated_last_run)
 
     return last_run
@@ -10932,7 +11028,7 @@ def xsiam_api_call_with_retries(
 
     :type headers: ``dict``
     :param headers: headers for the request
-    
+
     :type error_msg: ``str``
     :param error_msg: The error message prefix in case of an error.
 
@@ -11047,18 +11143,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
-
-    elif isinstance(events, str):
-        amount_of_events = len(events.split('\n'))
-
-    else:
+    elif not isinstance(events, str):
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
                                 'list.').format(type_events=type(events)))
     if not data_format:
@@ -11110,7 +11201,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     client = BaseClient(base_url=xsiam_url)
     data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
-    amount_of_events = 0
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)

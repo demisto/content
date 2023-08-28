@@ -155,3 +155,26 @@ def test_extract_text_from_complex_html():
     res = TextFromHTML.text_from_html(args)
 
     assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link\n\n'
+
+
+def test_extract_text_from_specific_tag():
+    """
+    Given
+    - html string:
+        <p>HTML links are defined with the a tag:</p>
+    When
+    - extracting text from the html
+    Then
+    - ensure we return "HTML links are defined with the a tag:"
+    """
+    import TextFromHTML
+
+    html = """<p>HTML links are defined with the a tag:</p>"""
+
+    args = {
+        'html': html,
+        'html_tag': 'p'
+    }
+    res = TextFromHTML.text_from_html(args)
+
+    assert res == 'HTML links are defined with the a tag:'

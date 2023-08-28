@@ -1,0 +1,494 @@
+id: DLP - Get User Feedback via Email
+version: -1
+name: DLP - Get User Feedback via Email
+description: Get the user feedback via email on a blocked file, whether it is false or true positive and if an exemption is needed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77f61963-270e-47b1-8756-3523f1ba8427
+    type: start
+    task:
+      id: 77f61963-270e-47b1-8756-3523f1ba8427
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c9a7e715-455b-40fa-8f7f-88b022820dbb
+    type: condition
+    task:
+      id: c9a7e715-455b-40fa-8f7f-88b022820dbb
+      description: ""
+      version: -1
+      name: Check question type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      About-File:
+      - "13"
+      Exemption:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: About-File
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.question_type
+            iscontext: true
+          right:
+            value:
+              simple: ABOUT_FILE
+    - label: Exemption
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.question_type
+            iscontext: true
+          right:
+            value:
+              simple: ABOUT_EXEMPTION
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4079e400-3d9d-4804-854e-e0fdc938c8f4
+    type: title
+    task:
+      id: 4079e400-3d9d-4804-854e-e0fdc938c8f4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4424314b-6370-45eb-81b7-54731141f854
+    type: regular
+    task:
+      id: 4424314b-6370-45eb-81b7-54731141f854
+      version: -1
+      name: Set feedback to "true positive"
+      description: Set incident feedback to "true positive".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: CONFIRMED_SENSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0190e04d-589a-4b88-8a31-69baf349a053
+    type: regular
+    task:
+      id: 0190e04d-589a-4b88-8a31-69baf349a053
+      version: -1
+      name: Set feedback to "False Positive"
+      description: Set feedback to "False Positive".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: CONFIRMED_FALSE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4ad1815a-3671-4cfc-8dee-90ae6dd38e61
+    type: regular
+    task:
+      id: 4ad1815a-3671-4cfc-8dee-90ae6dd38e61
+      version: -1
+      name: 'Set feedback status to "Pending" '
+      description: Set feedback status to "Pending".
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      feedback:
+        simple: PENDING_RESPONSE
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c7390cc7-b0eb-4312-877b-2044dbd1a04a
+    type: regular
+    task:
+      id: c7390cc7-b0eb-4312-877b-2044dbd1a04a
+      version: -1
+      name: 'Save user answer '
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: UserRequestedExemption
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 47013d2e-6c18-4317-8df7-15ab1c1e2628
+    type: regular
+    task:
+      id: 47013d2e-6c18-4317-8df7-15ab1c1e2628
+      version: -1
+      name: 'Save user answer '
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: UserRequestedExemption
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3b82d100-08c7-4f47-85e3-00e20f2db8d0
+    type: condition
+    task:
+      id: 3b82d100-08c7-4f47-85e3-00e20f2db8d0
+      description: ""
+      version: -1
+      name: Ask file-info via email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "6"
+      "Yes":
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.UserEmail}
+      subject:
+        simple: DLP Feedback - File Info
+      body:
+        simple: |-
+          Hi ${inputs.UserDisplayName},
+
+          We need your feedback: </br>
+
+          Your activity on "${incident.app}" was blocked due to company policy. </br>
+          The data in this activity contains sensitive information which violates ${inputs.data_profile_name}" policy. </br>
+          filename - "${inputs.file_name}" </br></br>
+
+          ${inputs.Snippets}
+
+          </br></br>
+          Please confirm if this file contains sensitive information:
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e619044c-88ec-4f9e-86c5-fd9e78ad3c56
+    type: condition
+    task:
+      id: e619044c-88ec-4f9e-86c5-fd9e78ad3c56
+      description: ""
+      version: -1
+      name: Ask exemption via email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.UserEmail}
+      subject:
+        simple: DLP Feedback - File Exemption
+      body:
+        simple: |-
+          Hi ${inputs.UserDisplayName},
+
+          Do you want to request a temporary exemption for "${inputs.file_name}"?
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1005,
+        "width": 1760,
+        "x": -250,
+        "y": 320
+      }
+    }
+  }
+inputs:
+- key: UserDisplayName
+  value: {}
+  required: false
+  description: The display name of the user.
+  playbookInputQuery:
+- key: data_profile_name
+  value: {}
+  required: false
+  description: The name of the DLP data profile that detected the violation.
+  playbookInputQuery:
+- key: file_name
+  value: {}
+  required: false
+  description: The name of the file that triggered the incident.
+  playbookInputQuery:
+- key: question_type
+  value: {}
+  required: false
+  description: Whether to ask the user about the file content or about an exemption.
+  playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
+- key: UserEmail
+  value: {}
+  required: false
+  description: The user email address.
+  playbookInputQuery:
+- key: Snippets
+  value: {}
+  required: false
+  description: The snippets of the violation.
+  playbookInputQuery:
+outputs:
+- contextPath: UserRequestedExemption
+  type: unknown
+  description: Whether the user requested exemption or not.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

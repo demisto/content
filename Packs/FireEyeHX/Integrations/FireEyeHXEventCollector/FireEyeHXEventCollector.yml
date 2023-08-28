@@ -16,30 +16,29 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: The maximum number of events per fetch.
   additionalinfo: The maximum number of events to fetch every time fetch is executed.
   defaultvalue: 1000
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: The first fetch time, e.g., 1 hour, 3 days
   display: First Fetch Time
   defaultvalue: 3 days
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 script:
   commands:
-  - deprecated: false
-    description: Manual command to fetch events and display them.
+  - description: Manual command to fetch events and display them.
     name: fireeye-hx-get-events
     arguments:
     - name: limit
@@ -55,7 +54,7 @@ script:
       - 'true'
       - 'false'
       required: true
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   script: '-'
   subtype: python3

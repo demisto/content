@@ -1,137 +1,72 @@
 args:
-- default: false
-  defaultValue: type
+- defaultValue: type
   description: The name of the incident field where its type is stored. Default is "type". Change this argument only in case you use a custom field for specifying incident type.
-  isArray: false
   name: incidentTypeFieldName
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of incident types by which to filter. The default is the current incident type. Specify "None" to ignore incident type from deduplication logic.
-  isArray: false
+- description: A comma-separated list of incident types by which to filter. The default is the current incident type. Specify "None" to ignore incident type from deduplication logic.
   name: incidentTypes
-  required: false
-  secret: false
-- default: false
-  defaultValue: 30 days ago
+- defaultValue: 30 days ago
   description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 +0200").
-  isArray: false
   name: existingIncidentsLookback
-  required: false
-  secret: false
-- default: false
-  description: Additional text by which to query incidents.
-  isArray: false
+- description: Additional text by which to query incidents.
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: '3000'
-  description: The maximum number of incidents to fetch. 
-  isArray: false
+- defaultValue: '3000'
+  description: The maximum number of incidents to fetch.
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: emailsubject
   description: Subject of the email.
-  isArray: false
   name: emailSubject
   predefined:
   - Subject of the email.
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbody
+- defaultValue: emailbody
   description: Body of the email.
-  isArray: false
   name: emailBody
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbodyhtml
+- defaultValue: emailbodyhtml
   description: HTML body of the email.
-  isArray: false
   name: emailBodyHTML
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailfrom
+- defaultValue: emailfrom
   description: Incident fields contains the email from value.
-  isArray: false
   name: emailFrom
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: TextOnly
   description: Whether to take into account the email from field for deduplication. "TextOnly" - incidents will be considered as duplicated based on test similarity only, ignoring the sender's address. "Exact" - incidents will be considered as duplicated if their text is similar and their sender is the same. "Domain" -  incidents will be considered as duplicated if their text is similar and their senders' address has the same domain. Default is "Domain".
-  isArray: false
   name: fromPolicy
   predefined:
   - TextOnly
   - Exact
   - Domain
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: All
-  description: Whether to compare the new incident to past closed or non closed incidents only. 
-  isArray: false
+  description: Whether to compare the new incident to past closed or non closed incidents only.
   name: statusScope
   predefined:
   - All
   - ClosedOnly
   - NonClosedOnly
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Whether to close the current incident if a duplicate incident is found.
-  isArray: false
   name: closeAsDuplicate
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0.99'
+- defaultValue: '0.99'
   description: Threshold to consider incident as duplication, number between 0-1
-  isArray: false
   name: threshold
-  required: false
-  secret: false
-- default: false
-  defaultValue: '20'
-  description: Maximum number of duplicate incidents IDs to return. 
-  isArray: false
+- defaultValue: '20'
+  description: Maximum number of duplicate incidents IDs to return.
   name: maxIncidentsToReturn
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of incident fields to populate.
-  isArray: false
+- description: A comma-separated list of incident fields to populate.
   name: populateFields
-  required: false
-  secret: false
-- default: false
-  defaultValue: 30 days ago
+- defaultValue: 30 days ago
   description: Deprecated. Use the *existingIncidentsLookback* argument instead.
-  isArray: false
   name: exsitingIncidentsLookback
-  required: false
-  secret: false
 comment: Can be used to find duplicate emails for incidents of type phishing, including  malicious, spam, and legitimate emails.
 commonfields:
   id: FindDuplicateEmailIncidents
   version: -1
-enabled: false
 name: FindDuplicateEmailIncidents
 outputs:
 - contextPath: duplicateIncident
@@ -147,7 +82,7 @@ outputs:
   description: Duplicate incident name.
   type: Unknown
 - contextPath: duplicateIncident.similarity
-  description: Number in range 0-1 which describe the similarity between the existing incident and the new incident. 
+  description: Number in range 0-1 which describe the similarity between the existing incident and the new incident.
   type: Unknown
 - contextPath: isDuplicateIncidentFound
   description: Whether a duplicate incident was found ("true" or "false").
@@ -169,7 +104,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 - phishing

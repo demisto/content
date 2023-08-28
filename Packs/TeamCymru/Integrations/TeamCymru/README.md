@@ -10,7 +10,9 @@ This integration was integrated and tested with version 1.0 of TeamCymru
     | **Parameter** | **Required** |
     | --- | --- |
     | Use system proxy settings | False |
-    | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g., socks5h://host:1080\). | False |    
+    | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g., socks5h://host:1080\). | False | 
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

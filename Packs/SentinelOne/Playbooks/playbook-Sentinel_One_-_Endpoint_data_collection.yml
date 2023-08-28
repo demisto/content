@@ -2,11 +2,8 @@ id: Sentinel One - Endpoint data collection
 version: -1
 name: Sentinel One - Endpoint data collection
 fromversion: "5.0.0"
-description: |-
-  # Collect endpoint information based on SentinelOne commands.
-
-  Input:
-  * Hostname (Default: ${Endpoint.Hostname})
+deprecated: true
+description: "Deprecated. No available replacement."
 starttaskid: "0"
 tasks:
   "0":

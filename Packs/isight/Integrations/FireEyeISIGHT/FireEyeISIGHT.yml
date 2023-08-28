@@ -15,7 +15,13 @@ configuration:
   name: privateKey
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- displaypassword: Private Key
+  name: credentials_private_key
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Version
   name: version
   defaultvalue: "2.5"
@@ -41,8 +47,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -51,13 +57,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
   script: ''
   type: javascript
@@ -135,8 +141,7 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
-    description: basic search file report by md5/sha1. NOTE - specify only one of
-      md5/sha1 arguments
+    description: basic search file report by md5/sha1. NOTE - specify only one of md5/sha1 arguments
   - name: isight-get-report
     arguments:
     - name: reportID

@@ -10,82 +10,72 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
   type: 0
+  hidden: true
+  required: false
 - display: Client Secret
   name: client_secret
-  required: true
   type: 4
+  hidden: true
+  required: false
+- display: Client ID
+  name: client_id_creds
+  type: 9
+  displaypassword: Client Secret
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-- defaultvalue: 3 days
+  required: false
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '10'
   display: Fetch Limit
   name: fetch_limit
-  required: false
   type: 0
+  required: false
 - defaultvalue: auto-discovery
   display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
   name: time_format
-  required: false
   type: 0
+
+  required: false
 description: Searches for and monitors alarms and events from AlienVault USM Anywhere.
 display: AlienVault USM Anywhere
 name: AlienVault USM Anywhere
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of alarms to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The alarm status by which to filter the results.
-      isArray: false
+    - description: The alarm status by which to filter the results.
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: The alarm priority by which to filter the results.
-      isArray: false
+    - description: The alarm priority by which to filter the results.
       name: priority
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include suppressed alarms in the search. Can be "true" or "false".
-      isArray: false
       name: show_suppressed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
-      isArray: false
       name: time_frame
       predefined:
       - Today
@@ -96,45 +86,21 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
-      required: false
-      secret: false
-    - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
-      isArray: false
+    - description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
-      isArray: false
+    - description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The rule intention by which to filter the results.
-      isArray: false
+    - description: The rule intention by which to filter the results.
       name: rule_intent
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: The rule method by which to filter the results.
-      isArray: false
+    - description: The rule method by which to filter the results.
       name: rule_method
-      required: false
-      secret: false
-    - default: false
-      description: The rule strategy by which to filter the results.
-      isArray: false
+    - description: The rule strategy by which to filter the results.
       name: rule_strategy
       predefined:
       - ''
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves alarms from AlienVault.
-    execution: false
     name: alienvault-search-alarms
     outputs:
     - contextPath: AlienVault.Alarm.ID
@@ -197,13 +163,9 @@ script:
   - arguments:
     - default: true
       description: The alarm ID. Can be obtained by running the `alienvault-search-alarms` command.
-      isArray: false
       name: alarm_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details for an alarm.
-    execution: false
     name: alienvault-get-alarm
     outputs:
     - contextPath: AlienVault.Alarm.ID
@@ -264,35 +226,17 @@ script:
       description: The alarm status.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of alarms to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The account name.
-      isArray: false
+    - description: The account name.
       name: account_name
-      required: false
-      secret: false
-    - default: false
-      description: The event name.
-      isArray: false
+    - description: The event name.
       name: event_name
-      required: false
-      secret: false
-    - default: false
-      description: The source name.
-      isArray: false
+    - description: The source name.
       name: source_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
-      isArray: false
       name: time_frame
       predefined:
       - Today
@@ -303,23 +247,11 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
-      required: false
-      secret: false
-    - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
-      isArray: false
+    - description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
-      isArray: false
+    - description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for events in AlienVault USM Anywhere.
-    execution: false
     name: alienvault-search-events
     outputs:
     - contextPath: AlienVault.Event.Category
@@ -364,13 +296,9 @@ script:
   - arguments:
     - default: true
       description: The ID of the alarm for which to get events. Can be obtained by running the `alienvault-search-alarms` command.
-      isArray: false
       name: alarm_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves events associated with the specified alarm.
-    execution: false
     name: alienvault-get-events-by-alarm
     outputs:
     - contextPath: AlienVault.Event.Category
@@ -412,12 +340,12 @@ script:
     - contextPath: AlienVault.Event.Subcategory
       description: The event subcategory.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

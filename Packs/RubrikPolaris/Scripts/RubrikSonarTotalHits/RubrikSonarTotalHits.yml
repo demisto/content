@@ -2,11 +2,10 @@ comment: Shows the Rubrik Polaris Sonar Total Hits.
 commonfields:
   id: RubrikSonarTotalHits
   version: -1
-dockerimage: demisto/python3:3.10.11.54132
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
 name: RubrikSonarTotalHits
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

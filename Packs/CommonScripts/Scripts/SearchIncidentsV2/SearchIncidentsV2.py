@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from enum import Enum
-import demistomock as demisto
-from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 DEFAULT_LIMIT = 100

@@ -1,48 +1,24 @@
 args:
 - default: true
   description: The file name.
-  isArray: false
   name: fileName
-  required: false
-  secret: false
-- default: false
-  description: Password to protect the ZIP file.
-  isArray: false
+- description: Password to protect the ZIP file.
   name: password
-  required: false
   secret: true
-- default: false
-  description: Password to protect the ZIP file, inserted as a non sensative argument.
-  isArray: false
+- description: Password to protect the ZIP file, inserted as a non sensative argument.
   name: nonsensitive_password
-  required: false
-  secret: false
-- default: false
-  description: The entry ID of the attached ZIPp file in the War Room.
-  isArray: false
+- description: The entry ID of the attached ZIPp file in the War Room.
   name: entryID
-  required: false
-  secret: false
-- default: false
-  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in
-    the War Room.
-  isArray: false
+- description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in the War Room.
   name: lastZipFileInWarroom
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 7z
   description: Tool to extract zip
-  isArray: false
   name: zipTool
   predefined:
   - 7z
   - zipfile
-  required: false
-  secret: false
-comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
-  will be loaded to the War Room and names will be put into the context.
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
 commonfields:
   id: UnzipFile
   version: -1
@@ -54,14 +30,12 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - Utility
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.44723
-runonce: false
+dockerimage: demisto/unzip:1.0.0.61858
 tests:
 - ZipFile-Test
 - UnzipFile-Test

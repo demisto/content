@@ -25,9 +25,9 @@ tasks:
       - "7"
       - "9"
       - "10"
-      - "11"
       - "12"
       - "13"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -245,50 +245,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 04a17761-3b84-492f-87c6-ef29fc4adc7d
-    type: playbook
-    task:
-      id: 04a17761-3b84-492f-87c6-ef29fc4adc7d
-      version: -1
-      name: Block Endpoint - Carbon Black Response V2
-      description: Carbon Black Response - isolate an endpoint for a given hostname.
-      playbookName: Block Endpoint - Carbon Black Response V2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: inputs.Endpoint_hostname
-      Sensor_id:
-        complex:
-          root: inputs.Endpoint_id
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: d438379a-5602-49f9-8d6d-404f9dbe3919
@@ -372,6 +328,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 73a03b52-b75a-4d47-8220-376956270c68
+    type: playbook
+    task:
+      id: 73a03b52-b75a-4d47-8220-376956270c68
+      version: -1
+      name: Block Endpoint - Carbon Black Response V2.1
+      description: Carbon Black Response - isolates an endpoint for a given hostname.
+      playbookName: Block Endpoint - Carbon Black Response V2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+      Sensor_id:
+        complex:
+          root: inputs.Endpoint_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -401,9 +401,6 @@ inputs:
   description: The ID of the endpoint to isolate.
   playbookInputQuery:
 outputs:
-- contextPath: CbResponse.Sensors.CbSensorID
-  description: Carbon Black Response Sensor IDs that were isolated.
-  type: string
 - contextPath: Endpoint
   description: The isolated endpoint.
   type: string
@@ -429,12 +426,6 @@ outputs:
   description: The endpoint's IP address.
 - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
   description: Whether the endpoint is isolated.
-- contextPath: CbResponse.Sensors.Status
-  description: The sensor status.
-  type: unknown
-- contextPath: CbResponse.Sensors.Isolated
-  description: Whether the sensor is isolated.
-  type: unknown
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
   type: string
@@ -456,6 +447,15 @@ outputs:
 - contextPath: Core.Isolation.endpoint_id
   description: The ID of the isolated endpoint.
   type: string
+- contextPath: CarbonBlackEDR.Sensor
+  description: The sensor info.
+  type: unknown
+- contextPath: CarbonBlackEDR.Sensor.id
+  description: The ID of this sensor.
+- contextPath: CarbonBlackEDR.Sensor.is_isolating
+  description: Boolean representing the sensor-reported isolation status.
+- contextPath: CarbonBlackEDR.Sensor.status
+  description: The sensor status.
 tests:
 - Isolate and unisolate endpoint - test
 fromversion: 6.8.0

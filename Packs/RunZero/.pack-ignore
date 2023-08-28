@@ -1,2 +1,6 @@
 [known-words]
-RunZero
+runzero
+
+[file:RunZeroModelingRules.yml]
+ignore=MR108
+

@@ -14,7 +14,6 @@ dockerimage: demisto/python3:3.10.11.56082
 enabled: true
 name: CreatePrismaCloudComputeLink
 runas: DBotWeakRole
-runonce: false
 script: ''
 comment: This script creates a link back to the Prisma Cloud Compute instance.
 scripttarget: 0

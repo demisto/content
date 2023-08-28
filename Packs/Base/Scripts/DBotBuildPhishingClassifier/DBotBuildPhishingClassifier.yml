@@ -1,123 +1,58 @@
 args:
-- default: false
-  description: Additional text by which to query incidents.
-  isArray: false
+- description: Additional text by which to query incidents.
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: Phishing
+- defaultValue: Phishing
   description: A comma-separated list of incident types by which to filter.
-  isArray: false
   name: incidentTypes
-  required: false
-  secret: false
-- default: false
-  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200")'
-  isArray: false
+- description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200")'
   name: fromDate
-  required: false
-  secret: false
-- default: false
-  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200")'
-  isArray: false
+- description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200")'
   name: toDate
-  required: false
-  secret: false
-- default: false
-  defaultValue: '3000'
+- defaultValue: '3000'
   description: The maximum number of incidents to fetch.
-  isArray: false
   name: limit
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Whether to query and fetch incident context.
-  isArray: false
   name: includeContext
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: created
   description: The incident field (created or modified) to specify for the date range.
-  isArray: false
   name: timeField
   predefined:
   - created
   - modified
-  required: false
-  secret: false
-- default: false
-  description: The field name with the label. Supports a comma-separated list, the first non-empty value will be taken.
-  isArray: false
+- description: The field name with the label. Supports a comma-separated list, the first non-empty value will be taken.
   name: tagField
   required: true
-  secret: false
-- default: false
-  defaultValue: '15'
+- defaultValue: '15'
   description: Sample text of which the total number of words are less than or equal to this number will be ignored.
-  isArray: false
   name: removeShortTextThreshold
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0.99'
+- defaultValue: '0.99'
   description: Remove emails with similarity greater than this threshold, range 0-1, where 1 is completly identical.
-  isArray: false
   name: dedupThreshold
-  required: false
-  secret: false
-- default: false
-  description: If non-empty, hash every word with this seed.
-  isArray: false
+- description: If non-empty, hash every word with this seed.
   name: hashSeed
-  required: false
-  secret: false
-- default: false
-  description: The model name to store in the system.
-  isArray: false
+- description: The model name to store in the system.
   name: modelName
-  required: false
-  secret: false
-- default: false
-  defaultValue: '*'
+- defaultValue: '*'
   description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map a label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
-  isArray: false
   name: phishingLabels
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailsubject
+- defaultValue: emailsubject
   description: Incident field name with the email subject.
-  isArray: false
   name: emailsubject
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbody
+- defaultValue: emailbody
   description: Incident field name with the email body (text).
-  isArray: false
   name: emailbody
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailbodyhtml
+- defaultValue: emailbodyhtml
   description: Incident field name with the email body (html).
-  isArray: false
   name: emailbodyhtml
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: Any
   description: The language of the input text. Default is "Any". Can be "Any", "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If "Any"  or "Other" is selected, the script preprocess the entire input, no matter what its acutual language is. If a specific language is selected, the script filters out any other language from the output text.
-  isArray: false
   name: language
   predefined:
   - Any
@@ -129,29 +64,21 @@ args:
   - Italian
   - Dutch
   - Other
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: auto
   description: The training algorithm to use for training the model. Default is "auto". If "auto" is selected, the training algorithm will be chosen automatically based on the number of incidents per each label. Use "from_scratch" to train a new model from scratch, based on your incidents only. In general, "from_scratch" will perform better where the number of incidents is high (500 incidents or more per each verdict). "fine-tune" trains a model based on the out-of-the-box model. "fine-tune" will perform better when the number of incidents is relatively low. It's possible to train multiple models using different algorithms options, and compare their results.
-  isArray: false
   name: trainingAlgorithm
   predefined:
   - auto
   - from_scratch
   - fine_tune
-  required: false
-  secret: false
 comment: Create a phishing classifier using machine learning technique, based on email content.
 commonfields:
   id: DBotBuildPhishingClassifier
   version: -1
-enabled: false
 name: DBotBuildPhishingClassifier
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: 12µs

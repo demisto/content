@@ -1,0 +1,100 @@
+{
+    "forcepoint_security_raw": {
+        "cn1": {
+          "type": "int",
+          "is_array": false
+        },
+        "cn2": {
+          "type": "int",
+          "is_array": false
+        },
+        "dpt": {
+          "type": "int",
+          "is_array": false
+        },
+        "spt": {
+          "type": "int",
+          "is_array": false
+        },
+        "in": {
+          "type": "string",
+          "is_array": false
+        },
+        "out": {
+          "type": "string",
+          "is_array": false
+        },
+        "act": {
+          "type": "string",
+          "is_array": false
+        },
+        "logRecordSource": {
+          "type": "string",
+          "is_array": false
+        },
+        "app": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs1": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs3": {
+          "type": "string",
+          "is_array": false
+        },
+        "dst": {
+          "type": "string",
+          "is_array": false
+        },
+        "dvc": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "dhost": {
+          "type": "string",
+          "is_array": false
+        },
+        "suser": {
+          "type": "string",
+          "is_array": false
+        },
+        "reason": {
+          "type": "string",
+          "is_array": false
+        },
+        "cefName": {
+          "type": "string",
+          "is_array": false
+        },
+        "loginID": {
+          "type": "string",
+          "is_array": false
+        },
+        "request": {
+          "type": "string",
+          "is_array": false
+        },
+        "cefSeverity": {
+          "type": "string",
+          "is_array": false
+        },
+        "requestMethod": {
+          "type": "string",
+          "is_array": false
+        },
+        "requestClientApplication": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+  }

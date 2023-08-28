@@ -13,51 +13,37 @@ configuration:
   type: 9
 - display: SEPM domain for the user
   name: domain
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Local time zone (e.g., +02:30,-06:00)
   name: timeZone
-  required: false
   type: 0
+  required: false
 description: Query the Symantec Endpoint Protection Manager using the official REST API.
 display: Symantec Endpoint Protection v2
 name: Symantec Endpoint Protection V2
 script:
   commands:
   - arguments:
-    - default: false
-      description: A CSV list of the displayed columns.
-      isArray: false
+    - description: A CSV list of the displayed columns.
       name: columns
-      required: false
-      secret: false
-    - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
       name: computerName
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
-      isArray: false
       name: lastUpdate
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The operating system by which to filter.
-      isArray: false
       name: os
       predefined:
       - CentOs
@@ -85,23 +71,11 @@ script:
       - WinXP
       - WinXPEmb
       - WinXPProf64
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to include on each page. The default is 20.
-      isArray: false
+    - description: The number of results to include on each page. The default is 20.
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: The name of the group to which the endpoint belongs. A wild card search can be done using '*' at the end of the query.
       name: groupName
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about endpoints.
-    execution: false
     name: sep-endpoints-info
     outputs:
     - contextPath: SEPM.Endpoint.Hostname
@@ -192,15 +166,9 @@ script:
       description: The update time of the endpoint.
       type: String
   - arguments:
-    - default: false
-      description: The column by which the results are sorted.
-      isArray: false
+    - description: The column by which the results are sorted.
       name: columns
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about groups.
-    execution: false
     name: sep-groups-info
     outputs:
     - contextPath: SEPM.Groups
@@ -227,24 +195,17 @@ script:
     - contextPath: SEPM.Groups.policySerialNumber
       description: The serial number of the policy.
       type: number
-  - deprecated: false
-    description: Returns information about the system, such as version or AV definition.
-    execution: false
+  - description: Returns information about the system, such as version or AV definition.
     name: sep-system-info
     outputs:
     - contextPath: SEPM.ServerAVDefVersion
       description: The version of the AV definition.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the command.
-      isArray: false
+    - description: The ID of the command.
       name: commandId
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the status of a command.
-    execution: false
     name: sep-command-status
     outputs:
     - contextPath: SEPM.LastCommand.CommandDetails
@@ -253,9 +214,7 @@ script:
     - contextPath: SEPM.LastCommand.CommandId
       description: The ID of the command.
       type: string
-  - deprecated: false
-    description: Retrieves the content of the client.
-    execution: false
+  - description: Retrieves the content of the client.
     name: sep-client-content
     outputs:
     - contextPath: SEPM.ClientContentVersions
@@ -264,9 +223,7 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last update of a date.
       type: string
-  - deprecated: false
-    description: Retrieves a list of existing policies.
-    execution: false
+  - description: Retrieves a list of existing policies.
     name: sep-list-policies
     outputs:
     - contextPath: SEPM.PoliciesList.PolicyName
@@ -297,69 +254,42 @@ script:
       description: The list of location IDs belonging to a cloud group assigned to this policy.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the group to which the endpoint belongs.
-      isArray: false
+    - description: The ID of the group to which the endpoint belongs.
       name: groupID
       required: true
-      secret: false
-    - default: false
-      description: The ID of the location of the endpoint.
-      isArray: false
+    - description: The ID of the location of the endpoint.
       name: locationID
       required: true
-      secret: false
-    - default: false
-      description: The type of policy to be assigned.
-      isArray: false
+    - description: The type of policy to be assigned.
       name: policyType
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy to be assigned.
-      isArray: false
+    - description: The ID of the policy to be assigned.
       name: policyID
       required: true
-      secret: false
-    deprecated: false
     description: Assigns an existing policy to a specified location.
-    execution: false
     name: sep-assign-policy
   - arguments:
-    - default: false
-      description: The group ID for which to list locations.
-      isArray: false
+    - description: The group ID for which to list locations.
       name: groupID
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a list of location IDs for a specified group.
-    execution: false
     name: sep-list-locations
     outputs:
     - contextPath: SEPM.Locations.ID
       description: The ID of the location.
       type: Unknown
   - arguments:
-    - default: false
-      description: The IP or hostname of the endpoint.
-      isArray: false
+    - description: The IP or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Adds or removes an endpoint from quarantine.
-      isArray: false
       name: actionType
       predefined:
       - Add
       - Remove
       required: true
-      secret: false
-    deprecated: false
     description: Quarantines an endpoint according to its policy.
-    execution: false
     name: sep-endpoint-quarantine
     outputs:
     - contextPath: SEPM.Quarantine.CommandID
@@ -372,26 +302,18 @@ script:
       description: The IP or hostname of the identifier of the endpoint.
       type: string
   - arguments:
-    - default: false
-      description: The IP address or hostname of the endpoint.
-      isArray: false
+    - description: The IP address or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
-      isArray: false
       name: scanType
       predefined:
       - ScanNow_Quick
       - ScanNow_Full
       - ScanNow_Custom
       required: true
-      secret: false
-    deprecated: false
     description: Scans an endpoint.
-    execution: false
     name: sep-scan-endpoint
     outputs:
     - contextPath: SEPM.Scan.CommandID
@@ -404,15 +326,10 @@ script:
       description: The IP or hostname of the identifier of the endpoint.
       type: Unknown
   - arguments:
-    - default: false
-      description: The IP address or hostname of the endpoint.
-      isArray: false
+    - description: The IP address or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
-    deprecated: false
     description: Updates the content of a specified client.
-    execution: false
     name: sep-update-endpoint-content
     outputs:
     - contextPath: SEPM.Update.Endpoint
@@ -422,75 +339,36 @@ script:
       description: The ID of the command for which to check the status.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the group to which to move the client.
-      isArray: false
+    - description: The ID of the group to which to move the client.
       name: groupID
       required: true
-      secret: false
-    - default: false
-      description: The hardware key of the client to be moved.
-      isArray: false
+    - description: The hardware key of the client to be moved.
       name: hardwareKey
       required: true
-      secret: false
-    deprecated: false
     description: Moves a client to a group.
-    execution: false
     name: sep-move-client-to-group
   - arguments:
-    - default: false
-      description: Sets which columns will be displayed.
-      isArray: false
+    - description: Sets which columns will be displayed.
       name: columns
-      required: false
-      secret: false
-    - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
       name: computerName
-      required: false
-      secret: false
-    - default: false
-      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
-      isArray: false
+    - description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
       name: lastUpdate
-      required: false
-      secret: false
-    - default: false
-      description: The operating system by which to filter.
-      isArray: false
+    - description: The operating system by which to filter.
       name: os
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to include on each page. The default is 20.
-      isArray: false
+    - description: The number of results to include on each page. The default is 20.
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
-      isArray: false
+    - description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
       name: groupName
-      required: false
-      secret: false
-    - default: false
-      description: desiredVersion
-      isArray: false
+    - description: desiredVersion
       name: desiredVersion
-      required: false
-      secret: false
-    deprecated: false
     description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
-    execution: false
     name: sep-identify-old-clients
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - SymantecEndpointProtection_Test
 fromversion: 5.0.0

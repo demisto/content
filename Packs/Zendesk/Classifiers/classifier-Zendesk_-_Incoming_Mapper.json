@@ -86,6 +86,9 @@
                 },
                 "IncomingMirrorError": {
                     "simple": "incomming_mirror_error"
+                },
+                "Assignment Group": {
+                    "simple": "group_id"
                 }
             }
         }
