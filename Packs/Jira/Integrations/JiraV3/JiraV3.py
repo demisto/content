@@ -3838,9 +3838,10 @@ def validate_params(
     basic_oauth, oauth2 = username or api_key, client_id or client_secret
 
     if not basic_oauth and not oauth2:
-        raise DemistoException("foo")
+        raise DemistoException("The required parameters were not provided, see the help window")
     if basic_oauth and oauth2:
-        raise DemistoException("foooo")
+        raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
+                               " with the `Client ID` or `Client Secret` parameters, see the help window")
     if basic_oauth and not (username and api_key):
         raise DemistoException(
             "To use basic authentication the parameters 'User name' and 'API key' are mandatory"
@@ -3935,29 +3936,29 @@ def main():  # pragma: no cover
     }
     try:
         client: JiraBaseClient
-        # if cloud_id:
-        # Configure JiraCloudClient
-        client = JiraCloudClient(
-            cloud_id=cloud_id,
-            verify=verify_certificate,
-            proxy=proxy,
-            client_id=client_id,
-            client_secret=client_secret,
-            callback_url=callback_url,
-            server_url=server_url,
-            username=username,
-            api_key=api_key)
-        # else:
-        #     # Configure JiraOnPremClient
-        #     client = JiraOnPremClient(
-        #         verify=verify_certificate,
-        #         proxy=proxy,
-        #         client_id=client_id,
-        #         client_secret=client_secret,
-        #         callback_url=callback_url,
-        #         server_url=server_url,
-        #         username=username,
-        #         api_key=api_key)
+        if cloud_id:
+            # Configure JiraCloudClient
+            client = JiraCloudClient(
+                cloud_id=cloud_id,
+                verify=verify_certificate,
+                proxy=proxy,
+                client_id=client_id,
+                client_secret=client_secret,
+                callback_url=callback_url,
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
+        else:
+            # Configure JiraOnPremClient
+            client = JiraOnPremClient(
+                verify=verify_certificate,
+                proxy=proxy,
+                client_id=client_id,
+                client_secret=client_secret,
+                callback_url=callback_url,
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
         demisto.debug(f'The configured Jira client is: {type(client)}')
 
         if command == 'test-module':
