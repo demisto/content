@@ -348,23 +348,23 @@ class Client(BaseClient):
             upper = -1
             bounds_len = len(bounds)
             if bounds_len > 2:
-                demisto.log(f"Invalid status code range {range}. Ignoring.")
+                demisto.info(f"Invalid status code range {range}. Ignoring.")
                 continue
             if bounds_len > 0:
                 try:
                     lower = int(bounds[0].lstrip().rstrip())
                     upper = lower
                 except ValueError as e:
-                    demisto.log(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
+                    demisto.info(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
                     continue
             if bounds_len > 1:
                 try:
                     upper = int(bounds[1].lstrip().rstrip())
                 except ValueError as e:
-                    demisto.log(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
+                    demisto.info(f"Couldn't parse bounds for status code range {range}. Exception {e}. Ignoring Range.")
                     continue
             if lower < 100 or lower > 599 or upper < 100 or upper > 599 or lower > upper:
-                demisto.log(f"Invalid status code range {range}. Ignoring.")
+                demisto.info(f"Invalid status code range {range}. Ignoring.")
                 continue
             range_tuple_list.append((lower, upper))
         return range_tuple_list
@@ -387,7 +387,7 @@ class Client(BaseClient):
                     final_list.append(field)
                     demisto.debug(f"Adding {field} to list of Incident fields to query.")
                 else:
-                    demisto.log(f"Ignoring {field} as it is not allowed.")
+                    demisto.info(f"Ignoring {field} as it is not allowed.")
         return final_list
 
     def get_domain_event_query_fields(self):
