@@ -1,0 +1,585 @@
+category: Utilities
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Netcraft
+  version: -1
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  defaultvalue: C - Fairly reliable
+  type: 15
+  section: Collect
+  required: false
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+- defaultvalue: '65'
+  display: Score threshold for IP reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
+  name: threshold_ip
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '65'
+  display: Score threshold for domain reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
+  name: threshold_domain
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  options:
+  - ACTIVE
+  - CLOSED
+  type: 15
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch alerts with type
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+  name: alert_type
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: 'Low'
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: This is the Hello World integration for getting started.
+display: Netcraft
+name: Netcraft
+script:
+  commands:
+  - arguments:
+    - description: The location of the attack that you would like to take down, e.g.
+        a phishing URL, or a fraudulent email address.
+      name: attack
+      required: true
+    - description: ''
+      name: comment
+      required: true
+    - description: ''
+      name: brand
+    - defaultValue: phishing_url
+      description: Add description that the user can get the values by running the command \u201Cattack-type-list\u201D"
+      name: attack_type
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Default value - false
+      name: inactive
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: ''
+      name: force_auth
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: ''
+      name: malware
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: falseShould
+      description: Should be set to true if you believe that the
+        domain name has been registered as part of the fraud. This will ensure that
+        the registrar is contacted to seek suspension of the domain name.
+      name: suspected_fraud_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "The password to extract any archived evidence provided via the evidence\_\
+        parameter, if necessary."
+      name: password
+    - description: The URL where the phishkit archive was found.This parameter is required
+        for phishkit_email attacks.
+      name: phishkit_fetch_url
+    - description: The URL of the phishing attack which uses the referenced phishkit.This
+        parameter is required for phishkit_email and phishkit_archive attacks.
+      name: phishkit_phish_url
+    - description: A free-text field which can be used to keep track of particular attacks.
+      name: customer_label
+    - description: "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
+        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
+        \_\"google-ads\""
+      isArray: true
+      name: tags
+    - description: By default we will use the value of the config param
+      name: region
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: id
+    - description: Valid values:- unverified- inactive_monitoring- verified- contacted_hosting-
+        contacted_police- contacted_upstream- resolved_monitoring- resolved- stale-
+        invalidMultiple values may be provided as a comma-separated list.
+      isArray: true
+      name: statuses
+    - description: ''
+      name: url
+    - auto: PREDEFINED
+      description: ''
+      name: false_positive
+      predefined:
+      - 'true'
+      - 'false'
+    - description: ''
+      name: ip
+    - description: Filter to takedowns that were submitted before the specified takedown
+        ID.
+      name: id_before
+    - description: Filter to takedowns that were submitted after the specified takedown
+        ID.When using this parameter we recommend that you also set the sort parameter
+        to id to ensure that no results are missed.
+      name: id_after
+    - description: "Filter to takedowns that were submitted on or after the date/time\
+        \ provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time\
+        \ information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative\
+        \ date/time formats are also supported, for example\_5 days ago,\_and monday\
+        \ this week"
+      name: date_from
+    - description: "Filter to takedowns that were submitted on or before the date/time\
+        \ provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time\
+        \ information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative\
+        \ date/time formats are also supported, for example\_5 days ago,\_and monday\
+        \ this week"
+      name: date_to
+    - description: Filter to takedowns that were reported by the given user.
+      name: reporter_email
+    - description: ''
+      name: report_source
+    - description: "Add description that the user can get the values by running the\
+        \ command \u201Cattack-type-list\u201D"
+      isArray: true
+      name: attack_types
+    - description: "yes\_- The takedown has been authorised.yes:customer\_- The takedown\
+        \ has been authorised by you.yes:netcraft\_- The takedown has been authorised\
+        \ by Netcraft.no\_- The takedown has not been authorised."
+      name: auth_given
+    - description: "yes\_- The takedown has been escalated.yes:customer\_- The takedown\
+        \ has been escalated by you.yes:netcraft\_- The takedown has been escalated\
+        \ by Netcraft.no\_- The takedown has not been escalated."
+      name: escalated
+    - defaultValue: Status
+      description: Default value - Status
+      name: sort
+    - defaultValue: asc
+      description: Default value - asc
+      name: sort_direction
+    - description: Default value 50, max value 100000
+      name: limit
+    - auto: PREDEFINED
+      description: Default value false.Add description that the max records = 100,000
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    - description: ''
+      name: region
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: takedown_id
+      required: true
+    - description: ''
+      name: customer_label
+    - description: ''
+      name: description
+    - description: ''
+      name: brand
+    - auto: PREDEFINED
+      description: ''
+      name: suspected_fraud_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: ''
+      name: suspected_fraud_hostname
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
+        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
+        \_\"google-ads\""
+      isArray: true
+      name: add_tags
+    - description: "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
+        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
+        \_\"google-ads\""
+      isArray: true
+      name: remove_tags
+    - description: ''
+      name: region
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: takedown_id
+      required: true
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: takedown_id
+      required: true
+    - description: ''
+      name: note_text
+      required: true
+    - auto: PREDEFINED
+      description: 'Default: trueWhen set to true, the note will also be raised to our
+        operations team for further investigation. This should be set if you require
+        a Netcraft staff member to read and respond to your note.'
+      name: notify
+      predefined:
+      - 'true'
+      - 'false'
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: takedown_id
+    - description: ''
+      name: author_mail
+    - defaultValue: '50'
+      description: Default value - 50
+      name: limit
+    - auto: PREDEFINED
+      description: Default - false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - auto: PREDEFINED
+      description: Filter to attack types where automated takedowns are available.
+      name: automated
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Filter to attack types which you have chosen to escalate to managed
+        takedowns after the configured escalation period.
+      name: auto_escalation
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Filter to attack types which you have chosen to automatically authorize
+        takedowns against.
+      name: auto_authorise
+      predefined:
+      - 'true'
+      - 'false'
+    - description: ''
+      name: region
+    - description: Default value 50
+      name: limit
+    - auto: PREDEFINED
+      description: Default value false.
+      name: all_result
+      predefined:
+      - 'true'
+      - 'false'
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: 'The format of content_file is A base64 encoded string of the file"files":
+        [{"content": "file_content","filename": "file_name"}]The purpose of this argument
+        is to support reporting of multiple files with entry_id OR single file by file_content&file_name'
+      name: file_content
+    - description: ''
+      name: file_name
+    - description: ''
+      isArray: true
+      name: entry_id
+    - description: ''
+      name: reason
+    - auto: PREDEFINED
+      description: "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Default 30
+      name: interval_in_seconds
+    - description: Default 600
+      name: timeout_in_seconds
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: ''
+      isArray: true
+      name: urls
+      required: true
+    - description: ''
+      name: reason
+    - auto: PREDEFINED
+      description: "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Default 30
+      name: interval_in_seconds
+    - description: Default 600
+      name: timeout_in_seconds
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: Either a plain text string of the malicious mail in MIME format or
+        if the password paramater is provided, a base64 encoded AES-256-CBC encrypted
+        mail in MIME format. Max message size is 20MiB.
+      name: message
+      required: true
+    - description: The password used to encrypt/decrypt the MIME mail. Should not be
+        provided if the mail is not encrypted.
+      name: password
+    - auto: PREDEFINED
+      description: "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Default 30
+      name: interval_in_seconds
+    - description: Default 600
+      name: timeout_in_seconds
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "An optional argument to get a specific submission.In case that the\
+        \ user provided this value we will execute the \u201Cget submission details\u201D\
+        \_request, and ignore all the others arguments.Note: the response of the get\
+        \ request contains fields that do not exist in the list command, make sure to\
+        \ add them to the yaml file as well."
+      name: submission_uuid
+    - description: Filter submissions by start date
+      name: date_start
+    - description: Filter submissions by end date
+      name: date_end
+    - description: ''
+      name: source_name
+    - description: ''
+      name: state
+    - description: ''
+      name: submission_reason
+    - description: ''
+      name: submitter_email
+    - description: Default 50API argument - page_size
+      name: limit
+    - description: API argument - marker
+      name: next_token
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    - description: Default 50API argument - count
+      name: limit
+    - description: ''
+      name: page
+    - description: Default 50API argument - count
+      name: page_size
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-file-list\u201D."
+      name: file_hash
+      required: true
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    - description: Default 50API argument - count
+      name: limit
+    - description: ''
+      name: page
+    - description: Default 50API argument - count
+      name: page_size
+    description: ''
+    name: ''
+    outputs: ''
+  - arguments:
+    - description: Note
+      name: Argument name
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-list\u201D."
+      name: submission_uuid
+      required: true
+    - description: "Add description that the user can get this value by running the\
+        \ command \u201Csubmission-URL-list\u201D."
+      name: url_uuid
+      required: true
+    - description: "An MD5 hash of the screenshot in question.Add description that the\
+        \ user can get this value by running the command \u201Csubmission-URL-list\u201D\
+        ."
+      name: screenshot_hash
+      required: true
+    description: ''
+    name: ''
+    outputs: ''
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: HelloWorld
+defaultmapperin: HelloWorld-mapper
+fromversion: 5.5.0
