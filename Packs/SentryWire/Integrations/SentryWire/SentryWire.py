@@ -192,7 +192,10 @@ def parse_create_search(response):
 
 
 def create_search_command(client: Client, args: Dict[str, Any]):
-    generate_links = argToBoolean(args.get('generate_links'))
+    if args.get('generate_links'):
+        generate_links = argToBoolean(args.get('generate_links'))
+    else:
+        generate_links = False
 
     response = client.create_search(args)
 
