@@ -4967,30 +4967,21 @@ def test_list_channels(mocker):
         fields match and are listed.
     """
     import SlackV3
-    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_id': 1, 'limit': 1})
+    slack_response_mock = {
+        'ok': True,
+        'channels': json.loads(CHANNELS)}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]}])
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'public_channel': 'public_channel', 'limit': 1})
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(SlackV3, 'list_channels', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    set_integration_context({
-        'channels': json.loads(CHANNELS)
-    })
-    expected_results = {
-        'ID': 'C0475674L3Z',
-        'Name': 'general',
-        'Created': 1666361240,
-        'Creator': 'U047N6DC8VA',
-    }
+    # mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=slack_response_mock)
+    SlackV3.list_channels()
 
-    channel_context = SlackV3.list_channels()
-    channel_id = channel_context['channels']['id']
-    name_normalized = channel_context['channels']['name_normalized']
-    last_set = channel_context['channels']['purpose']['last_set']
-    creator = channel_context['channels']['creator']
-
-    assert channel_id == expected_results['ID']
-    assert name_normalized == expected_results['Name']
-    assert last_set == expected_results['Created']
-    assert creator == expected_results['Creator']
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channels list for None with filter None\n' \
+                                                               '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n' \
+                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the one channel'\
+                                                               ' that will always include everyone. It’s a great spot for announcements and team-wide conversations. |\n'
+    assert demisto.results.called
 
 
 def test_conversation_history(mocker):
@@ -5006,23 +4997,11 @@ def test_conversation_history(mocker):
     # set
     slack_response_mock = {
         'ok': True,
-        'messages': [{'subtype': '', 'error': 'example',
-                      'text': 'this is an example',
-                      'type': 'message',
-                      'userId': 'dummy ',
-                      'team': 'T047KKY8H7V',
-                      'ts': '1690479909.804939',
-                      'user': 'dummy',
-                      'name': 'dummy',
-                      'timestamp': UNEXPIRED_TIMESTAMP}]}
+        'messages': json.loads(MESSAGES)}
     mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'conversation_id': 1, 'limit': 1})
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
-
-    set_integration_context({
-        'conversations': json.loads(MESSAGES)
-    })
 
     # Arrange
     SlackV3.conversation_history()
@@ -5069,3 +5048,4 @@ def test_conversation_replies(mocker):
         '|---|---|---|---|---|---|---|---|\n|' \
         ' N/A | No | N/A | this is an example | ' \
         ' |  | word | dummy |\n'
+

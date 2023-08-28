@@ -2572,31 +2572,22 @@ def list_channels():
     """
     List the conversations in the workspace
     """
-    channel_types = demisto.args().get('channel_types')
+    args = demisto.args()
     # Default for the SDK is public channels, but users can specify "public_channel", "private_channel", "mpim", and "im"
     # Multiple values can be passed for this argument as a comma separated list
-    if channel_types is None:
-        channel_types = 'public_channel'
     # By default archived channels are NOT included by the SDK. Explicitly set this if not set from the CLI or set to False
-    exclude_archived = demisto.args().get('exclude_archived')
-    if exclude_archived is None:
-        exclude_archived = 'true'
-    limit = demisto.args().get('limit')
-    if limit is None:
-        limit = 100
     body = {
-        'types': channel_types,
-        'exclude_archived': exclude_archived,
-        'limit': limit
+        'types': args.get('channel_types'),
+        'exclude_archived': argToBoolean(args.get('exclude_archived', 'true')),
+        'limit': args.get('limit')
     }
-    cursor = demisto.args().get('cursor')
-    if cursor is not None:
-        body['cursor'] = cursor
+    if args.get('cursor'):
+        body['cursor'] = args.get('cursor')
     raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
     # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
     # Supports a single channel name
-    name_filter = demisto.args().get('name_filter')
-    if name_filter is not None:
+    name_filter = args.get('name_filter')
+    if name_filter:
         channels = None
         for channel in raw_response['channels']:
             if channel['name'] == name_filter:
@@ -2607,27 +2598,26 @@ def list_channels():
     else:
         channels = raw_response['channels']
     # Force list for consistent parsing
-    if type(channels) is dict:
+    if isinstance(channels, dict):
         channels = [channels]
     context = []  # type: List
-    if type(channels) is list:
+    if isinstance(channels, list):
         context = []
         for channel in channels:
-            creator = channel['creator']
-            body = {
-                'user': creator
-            }
-            creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-            creator_details = creator_details_response['user']['name']
             entry = {
                 'ID': channel.get('id'),
-                'Name': channel['name'],
-                'Created': channel['created'],
-                'Creator': creator_details,
+                'Name': channel.get('name'),
+                'Created': channel.get('created'),
                 'Purpose': channel.get('purpose', {}).get('value')
             }
+
+            if channel.get('creator'):
+                creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
+                                                                   body={'user': channel.get('creator')})
+                if creator_details_response:
+                    entry['Creator'] = creator_details_response.get('user', {}).get('name')
             context.append(entry)
-        readable_output = tableToMarkdown(f'Channels list for {channel_types} with filter {name_filter}', context)
+        readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': channels,
