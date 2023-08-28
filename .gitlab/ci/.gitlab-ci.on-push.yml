@@ -456,6 +456,7 @@ slack-notify-nightly-build:
       if [[ -n "${NIGHTLY}" ]]; then
         echo "Setting CLOUD_MACHINES_TYPE to nightly"
         CLOUD_MACHINES_TYPE="nightly"
+        GCS_LOCKS_PATH="content-locks/locks-xsiam-ga-nightly"
       fi
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
