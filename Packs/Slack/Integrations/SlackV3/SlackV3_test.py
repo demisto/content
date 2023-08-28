@@ -4967,6 +4967,8 @@ def test_list_channels(mocker):
         fields match and are listed.
     """
     import SlackV3
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_id': 1, 'limit': 1})
+    mocker.patch.object(demisto, 'results')
     mocker.patch.object(SlackV3, 'list_channels', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     set_integration_context({
@@ -5001,28 +5003,35 @@ def test_conversation_history(mocker):
         Conversations are returned.
     """
     import SlackV3
-    mocker.patch.object(SlackV3, 'conversation_history', side_effect=get_integration_context)
+    # set
+    slack_response_mock = {
+        'ok': True,
+        'messages': [{'subtype': '', 'error': 'example',
+                      'text': 'this is an example',
+                      'type': 'message',
+                      'userId': 'dummy ',
+                      'team': 'T047KKY8H7V',
+                      'ts': '1690479909.804939',
+                      'user': 'dummy',
+                      'name': 'dummy',
+                      'timestamp': UNEXPIRED_TIMESTAMP}]}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'conversation_id': 1, 'limit': 1})
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+
     set_integration_context({
         'conversations': json.loads(MESSAGES)
     })
-    expected_results = {
-        'team': 'T047KKY8H7V',
-        'ts': '1690479909.804939',
-        'type': 'message',
-        'user': 'U047D5QSZD4',
-    }
 
-    messages_context = SlackV3.conversation_history()
-    team = messages_context['conversations'][0]['team']
-    ts = messages_context['conversations'][0]['ts']
-    message_type = messages_context['conversations'][0]['type']
-    user = messages_context['conversations'][0]['user']
+    # Arrange
+    SlackV3.conversation_history()
 
-    assert team == expected_results['team']
-    assert ts == expected_results['ts']
-    assert message_type == expected_results['type']
-    assert user == expected_results['user']
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID - 1\n' \
+                                                               '|FullName|HasReplies|Name|Text|ThreadTimeStamp|TimeStamp|Type|' \
+                                                               'UserId|\n|---|---|---|---|---|---|---|---|\n' \
+                                                               '| N/A | No | N/A | this is an example | N/A | 1690479909.804939' \
+                                                               ' | message | dummy |\n'
 
 
 def test_conversation_replies(mocker):
@@ -5038,6 +5047,7 @@ def test_conversation_replies(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call')
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_id': 1, 'limit': 1})
+    mocker.patch.object(demisto, 'results')
     slack_response_mock = {
         'ok': True,
         'messages': [{'subtype': '', 'error': 'example',
@@ -5052,8 +5062,10 @@ def test_conversation_replies(mocker):
     set_integration_context({
         'replies': json.loads(MESSAGES)
     })
-    response = SlackV3.conversation_replies()
-    assert response.readable_output == '### Channel details from Channel ID - 1'\
-                                       '\n|FullName|IsParent|Name|Text|ThreadTimeStamp|TimeStamp|Type|UserId|\n' \
-                                       '|---|---|---|---|---|---|---|---|\n| N/A | No | N/A | this is an example | ' \
-                                       ' |  | word | dummy |\n'
+    SlackV3.conversation_replies()
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID - 1'\
+        '\n|FullName|IsParent|Name|Text|ThreadTimeStamp' \
+        '|TimeStamp|Type|UserId|\n' \
+        '|---|---|---|---|---|---|---|---|\n|' \
+        ' N/A | No | N/A | this is an example | ' \
+        ' |  | word | dummy |\n'
