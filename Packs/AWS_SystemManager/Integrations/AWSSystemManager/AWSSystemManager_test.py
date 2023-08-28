@@ -7,6 +7,7 @@ from typing import NoReturn
 import pytest
 from AWSSystemManager import (
     add_tags_to_resource_command,
+    remove_tags_from_resource_command,
     convert_datetime_to_iso,
     get_association_command,
     get_inventory_command,
@@ -27,6 +28,9 @@ class MockClient:
         pass
 
     def add_tags_to_resource(self, **kwargs) -> NoReturn:
+        pass
+
+    def remove_tags_from_resource(self, **kwargs) -> NoReturn:
         pass
 
     def get_inventory(self, **kwargs) -> NoReturn:
@@ -98,7 +102,6 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
     response = next_token_command_result(next_token, prefix)
     assert response.outputs_prefix == f"AWS.SSM.{prefix}"
     assert response.outputs == next_token
-    assert response.readable_output == f"For more results rerun the command with {next_token=}."
 
 
 @pytest.mark.parametrize(
@@ -182,6 +185,37 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
     assert res.readable_output == "Tags added to resource test_id successfully."
 
 
+def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+
+    When:
+        - The remove_tags_from_resource_command function is called with the provided arguments:
+          - 'resource_type': "test_type"
+          - 'resource_id': "test_id"
+          - 'tag_key': "test_key"
+
+    Then:
+        - The 'add_tags_to_resource' method of 'MockClient' is patched to return a
+          successful response metadata with HTTP status code 200.
+        - The 'readable_output' attribute of 'res' is expected to be
+          "Tag test_key removed from resource test_id successfully."
+    """
+    args = {
+        "resource_type": "test_type",
+        "resource_id": "test_id",
+        "tag_key": "test_key",
+    }
+    mocker.patch.object(
+        MockClient,
+        "remove_tags_from_resource",
+        return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
+    )
+    res = remove_tags_from_resource_command(MockClient(), args)
+    assert res.readable_output == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
+
+
 def test_get_inventory_command(mocker: MockerFixture) -> None:
     """
     Given:
@@ -247,10 +281,7 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     response: list[CommandResults] = get_inventory_command(MockClient(), {})
 
     assert response[0].outputs == "test_token"
-    assert (
-        response[0].readable_output
-        == f"For more results rerun the command with next_token='{response[0].outputs}'."
-    )
+    assert response[0].outputs_prefix == "AWS.SSM.InventoryNextToken"
 
 
 def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
@@ -294,7 +325,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
     )
     assert response[0].outputs == mock_response["Entries"]
     assert response[0].readable_output == (
-        "### AWS SSM Inventory\n"
+        "### AWS SSM Inventory Entry\n"
         "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
         "|---|---|---|---|---|---|---|\n"
         "| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |\n"
@@ -464,13 +495,11 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
 
     assert response[0].outputs == mock_response["DocumentIdentifiers"]
     assert response[0].readable_output == (
-        "### AWS SSM Document\n"
-        "|Created date|Display Name|Document type|Document version|Name|Owner|Platform types|Tags|\n"
-        "|---|---|---|---|---|---|---|---|\n"
-        "| 2018-02-15T05:03:20.597000+02:00 |  | Automation | 1 | AWS-AS | Amazon | Windows,<br>Linux,<br>MacOS | ***values***:  "
-        "|\n"
-        "| 2018-02-15T05:03:23.277000+02:00 |  | Automation | 1 | AWS-A | Amazon | Windows,<br>Linux,<br>MacOS | ***values***:  "
-        "|\n"
+        '### AWS SSM Documents\n'
+        '|Name|Owner|Document version|Document type|Platform types|Created date|\n'
+        '|---|---|---|---|---|---|\n'
+        '| AWS-AS | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:20.597000+02:00 |\n'
+        '| AWS-A | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:23.277000+02:00 |\n'
     )
 
 

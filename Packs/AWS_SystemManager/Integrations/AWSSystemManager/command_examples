@@ -6,3 +6,4 @@
 !aws-ssm-association-version-list association_id=association_id
 !aws-ssm-document-list limit=2
 !aws-ssm-document-get document_name=AWS
+!aws-ssm-tag-remove resource_type=Document resource_id=test_id tag_key=test_key

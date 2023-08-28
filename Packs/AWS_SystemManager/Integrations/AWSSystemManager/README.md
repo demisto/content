@@ -47,14 +47,41 @@ For example, Key=Owner,Value=SysAdmin.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes.<br/>Must specify the name of the managed node in the following format: mi-ID_number ``. For example, ``mi-1a2b3c4d5e6f. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README). | Required | 
+| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes.<br/>Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. </br> | Required | 
+| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
 | tag_key | The name of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 | tag_value | The value of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+
+### aws-ssm-tag-remove
+
+***
+Removes tag keys from the specified resource.
+
+#### Base Command
+
+`aws-ssm-tag-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
+| resource_id | The ID of the resource to remove tags.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README). | Required | 
+| tag_key | The name of the tag which want to be remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!aws-ssm-tag-remove resource_type=Document resource_id=test_id tag_key=test_key```
+#### Human Readable Output
+
+>Tag test_key removed from resource test_id.
 
 ### aws-ssm-inventory-get
 

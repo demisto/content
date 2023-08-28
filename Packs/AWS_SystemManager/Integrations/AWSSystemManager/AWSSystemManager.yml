@@ -73,7 +73,6 @@ script:
       description: |-
         Specifies the type of resource for tagging.
         Note: The ManagedInstance type for this API operation is for on-premises managed nodes.
-        Must specify the name of the managed node in the following format: mi-ID_number ``. For example, ``mi-1a2b3c4d5e6f.
       name: resource_type
       required: true
       predefined:
@@ -104,9 +103,33 @@ script:
       For example, Key=Owner,Value=SysAdmin.
     name: aws-ssm-tag-add
   - arguments:
+    - auto: PREDEFINED
+      description: |-
+        Specifies the type of resource for tagging.
+        Note: The ManagedInstance type for this API operation is for on-premises managed nodes.
+      name: resource_type
+      required: true
+      predefined:
+      - Association
+      - Automation
+      - Document
+      - MaintenanceWindow
+      - ManagedInstance
+      - OpsItem
+      - OpsMetadata
+      - PatchBaseline
+      - Parameter
+    - description: 'The ID of the resource to remove tags.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README)'
+      name: resource_id
+      required: true
+    - description: The name of the tag which want to be remove.
+      name: tag_key
+      required: true
+    description: Removes tag keys from the specified resource.
+    name: aws-ssm-tag-remove
+  - arguments:
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-      defaultvalue: 50
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
     description: Query inventory information. This includes managed node status, such as Stopped or Terminated.
@@ -166,7 +189,6 @@ script:
       required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-      defaultvalue: 50
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
     description: A list of inventory items returned by the request.
@@ -214,7 +236,6 @@ script:
   - arguments:
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-      defaultvalue: 50
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
     description: "Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule."
@@ -417,7 +438,6 @@ script:
       required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-      defaultvalue: 50
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
     description: Retrieves all versions of an association for a specific association ID.
@@ -580,7 +600,7 @@ script:
       type: String
     - contextPath: AWS.SSM.Document.DocumentIdentifiers.Author
       description: The user in your organization who created the document.
-      type: String 
+      type: String
   - arguments:
     - description: The name of the SSM document.
       name: document_name
@@ -589,6 +609,7 @@ script:
       name: document_version
     - description: Specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed.
       name: version_name
+    description: Describes the specified Amazon Web Services Systems Manager document (SSM document).
     name: aws-ssm-document-get
     outputs:
     - contextPath: AWS.SSM.Document.Document.Sha1
@@ -707,13 +728,68 @@ script:
       type: String
     - contextPath: AWS.SSM.Document.Document.CategoryEnum
       description: The value that identifies a document’s category.
-      type: String 
+      type: String
+  - arguments:
+    - description: "The name of the SSM document to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document ARN. Note: to get the document name, use the aws-ssm-document-list command."
+      name: document_name
+      required: true
+    - description: User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused.
+      name: client_token
+    - description: "The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number"
+      name: document_version
+    - description: The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10.
+      name: max_concurrency
+    - description: The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. for more information see in the readme file.)
+      name: max_errors
+    - description: "The execution mode of the automation. Valid modes include the following: Auto and Interactive. The default mode is Auto."
+      name: mode
+      auto: PREDEFINED
+      predefined:
+      - Auto
+      - Interactive
+    - description: The name of the tag.
+      name: tag_key
+    - description: The value of the tag.
+      name: tag_value
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: 30
+    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: {"key1":"value1","key2":"value2"}'
+      name: parameters
+    description: Initiates execution of an Automation runbook.
+    name: aws-ssm-automation-execution-run
+  - arguments:
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: 30
+    - description: The execution ID of the Automation to stop.
+      name: automation_execution_id
+      required: true
+    - description: "The stop request type. Valid types include the following: Cancel and Complete. The default type is Cancel. Can get the value by running the aws-ssm-automation-list command."
+      name: type
+      auto: PREDEFINED
+      predefined:
+      - Cancel
+      - Complete
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Default is false. When set to true, will keep polling results until the command return that the  status of the automation execution is updated to Cancelled.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
+      name: first_run
+      defaultValue: true
+      hidden: true
+    description: Stop an Automation execution.
+    name: aws-ssm-automation-execution-cancel
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.71685
+  dockerimage: demisto/boto3py3:1.0.0.72237
 fromversion: 6.9.0
 marketplaces:
 - xsoar
