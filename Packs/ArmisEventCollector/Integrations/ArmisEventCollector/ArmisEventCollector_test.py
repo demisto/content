@@ -1,4 +1,4 @@
-from ArmisEventCollector import *
+from ArmisEventCollector import Client, datetime, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES
 import pytest
 
 
@@ -34,6 +34,7 @@ class TestHelperFunction:
             - Case 1: Prefer last_fetch_time from last run and convert it to a valid datetime object.
             - Case 2: Use provided fetch_start_time_param (usually current time) datetime object.
             """
+        from ArmisEventCollector import calculate_fetch_start_time
         assert calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) == expected_result
 
     @pytest.mark.parametrize('x, y, expected_result', [(datetime_1, datetime_1, True), (datetime_1, datetime_2, False)])
@@ -48,6 +49,7 @@ class TestHelperFunction:
             - Case 1: Return True.
             - Case 2: Return False.
         """
+        from ArmisEventCollector import are_two_event_time_equal
         assert are_two_event_time_equal(x, y) == expected_result
 
     # test_dedup_events parametrize arguments
@@ -109,6 +111,7 @@ class TestHelperFunction:
             - Case 2: Return list of dedup event and new list of 'new_ids' for next run.
             - Case 3: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
         """
+        from ArmisEventCollector import dedup_events
         assert dedup_events(events, events_last_fetch_ids, unique_id_key) == expected_result
 
     def test_fetch_by_event_type(self, mocker, dummy_client):
@@ -121,6 +124,7 @@ class TestHelperFunction:
             - Perform fetch for the specific event type, update event list and update
               last run dictionary for next fetch cycle.
         """
+        from ArmisEventCollector import fetch_by_event_type
         event_type = EVENT_TYPE('unique_id', 'example:query', 'events')
         events: list[dict] = []
         next_run: dict = {}
@@ -179,6 +183,7 @@ class TestHelperFunction:
         Then:
             - Add _time attribute to each event with a valid time attribute.
         """
+        from ArmisEventCollector import add_time_to_events
         add_time_to_events(events)
         assert events == expected_result
 
@@ -191,6 +196,7 @@ class TestHelperFunction:
         Then:
             - A command result with readable output will be printed to the war-room.
         """
+        from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
         response_with_two_events = [{'time': '2023-01-01T01:00:10.123456+00:00',
                                      '_time': '2023-01-01T01:00:10',
                                      'unique_id': '1'},
@@ -203,6 +209,7 @@ class TestHelperFunction:
 
 
 class TestFetchFlow:
+
     fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
 
     events_with_different_time_1 = [
@@ -341,6 +348,7 @@ class TestFetchFlow:
             - Case 5: Handle the fetch, validate dedup, validate events & last_run variable has IDs from current and last fetch.
 
         """
+        from ArmisEventCollector import fetch_events
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
         mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
         assert fetch_events(dummy_client, max_fetch, last_run,
@@ -358,6 +366,7 @@ class TestFetchFlow:
             - Catch the specific exception, updated the access token and perform a second attempt
               to fetch events for the current event type iteration.
         """
+        from ArmisEventCollector import fetch_events
         events_with_different_time = [
             {
                 'unique_id': '1',

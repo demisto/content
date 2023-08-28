@@ -47,6 +47,10 @@
         "activityUUID": {
             "type": "string",
             "is_array": false
+        },
+        "site": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

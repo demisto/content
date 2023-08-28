@@ -26,7 +26,7 @@ API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts'),
-    'Threat activities': EVENT_TYPE('activityUUID', 'in:activity type:"Threat Detected', 'threat_activities'),
+    'Threat activities': EVENT_TYPE('activityUUID', 'in:activity type:"Threat Detected"', 'threat_activities'),
 }
 
 ''' CLIENT CLASS '''

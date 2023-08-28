@@ -13,7 +13,7 @@ filter alertId != null
 	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
 
 // activities mapping
-filter alertId = null
+filter activityUUID != null
 | alter
 	xdm.network.ip_protocol = protocol,
 	xdm.alert.original_threat_name = content,
