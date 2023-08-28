@@ -613,6 +613,11 @@ def get_azure_cloud(params, integration_name):
                                                  'active_directory': params.get('azure_ad_endpoint')
                                                  or 'https://login.microsoftonline.com'
                                              })
+        # in multiple Graph integrations, the url is called 'url' instead of 'server_url' and the default url is different.
+        if 'url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'microsoft_graph_resource_id': params.get('url')
+                                                        or 'https://graph.microsoft.com'})
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
