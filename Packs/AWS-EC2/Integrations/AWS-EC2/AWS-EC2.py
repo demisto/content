@@ -3085,7 +3085,7 @@ def describe_account_command(args: Dict[str, Any], aws_client) -> CommandResults
         role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.describe_account(
-        AccountId = args.get('account_id')
+        AccountId=args.get('account_id')
     )
     # Parse Datetime object
     response_updated = json.loads(json.dumps(response, cls=DatetimeEncoder))
@@ -3124,7 +3124,7 @@ def describe_ou_command(args: Dict[str, Any], aws_client) -> CommandResults:
         role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.describe_organizational_unit(
-        OrganizationalUnitId = args.get('ou_id')
+        OrganizationalUnitId=args.get('ou_id')
     )
 
     markdown = tableToMarkdown(
@@ -3142,9 +3142,9 @@ def describe_ou_command(args: Dict[str, Any], aws_client) -> CommandResults:
     )
     return command_results
 
-
     # elif command == 'aws-organization-describe-organization':
     #     describe_organization_command(args, aws_client)
+
 
 def describe_organization_command(args: Dict[str, Any], aws_client) -> CommandResults:
     """
@@ -3431,7 +3431,7 @@ def main():
 
         elif command == 'aws-organization-list-roots':
             return_results(list_roots_command(args, aws_client))
-       
+
         elif command == 'aws-organization-list-children':
             return_results(list_children_command(args, aws_client))
 

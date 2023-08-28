@@ -3858,7 +3858,7 @@ script:
       type: String
     - contextPath: AWS.Organization.Organization.MasterAccountEmail
       description: The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization.
-      type: String  
+      type: String
   - arguments:
     - description: The unique identifier (ID) of the organizational unit that you want details about. You can get the ID from the ListOrganizationalUnitsForParent operation.
       name: ou_id
@@ -3875,7 +3875,7 @@ script:
     - contextPath: AWS.Organization.OU.Name
       description: The friendly name of this OU.
       type: String
-  dockerimage: demisto/boto3py3:1.0.0.71685
+  dockerimage: demisto/boto3py3:1.0.0.72237
   runonce: false
   script: '-'
   subtype: python3
