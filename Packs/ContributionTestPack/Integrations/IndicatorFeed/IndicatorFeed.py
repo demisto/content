@@ -3,12 +3,11 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 
-
 def fetch_indicators_mock():
     indicators = []
 
     for i in range(2):
-        if i == 0:
+        if i==0:
             indicators.append({
                 "value": "www.google.com",
                 "rawJSON": {
@@ -18,7 +17,7 @@ def fetch_indicators_mock():
                 }
             }
             )
-        elif i == 1:
+        elif i==1:
             indicators.append({
                 "value": "1.2.3.4",
                 "rawJSON": {
@@ -30,7 +29,6 @@ def fetch_indicators_mock():
             )
 
     return indicators
-
 
 if demisto.command() == 'fetch-indicators':
     indicators = fetch_indicators_mock()
