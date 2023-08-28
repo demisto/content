@@ -841,8 +841,8 @@ def get_organizations_command(project_key=None, start="0", limit="50", account_i
     else:
         url = '/rest/servicedeskapi/organization'
     body = {
-        'start': int(start),
-        'limit': int(limit),
+        'start': arg_to_number(start),
+        'limit': arg_to_number(limit),
     }
 
     if account_id:
