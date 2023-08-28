@@ -5,10 +5,6 @@ An integration module for the Virus Total v3 API.
 API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
-from collections import defaultdict
-from typing import Callable, cast
-
-from dateparser import parse
 
 
 '''
