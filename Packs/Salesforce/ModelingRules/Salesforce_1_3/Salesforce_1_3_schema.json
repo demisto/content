@@ -68,7 +68,11 @@
       },"_LOGIN_KEY_": {
           "type": "string",
           "is_array": false
-      }
+      },
+        "_AUTHENTICATION_METHOD_REFERENCE_": {
+        "type": "string",
+        "is_array": false
+        }
   },"salesforce_eventlogfile_raw": {
       "_METHOD_": {
           "type": "string",
