@@ -34,6 +34,10 @@ class ConditionParser:
 
     def __init__(self, context, conditions, flags=None):
         self.conditions: list
+        self.functions: dict[str, Callable] = {
+            'from_context': partial(demisto.dt, context)
+        }
+        self.modify_functions_with_flags(argToList(flags))
         self.load_conditions(conditions)
         self.default = (
             self.conditions.pop()['default']
@@ -41,10 +45,6 @@ class ConditionParser:
             else ''
         )
         self.validate_conditions()
-        self.functions: dict[str, Callable] = {
-            'from_context': partial(demisto.dt, context)
-        }
-        self.modify_functions_with_flags(argToList(flags))
 
     def modify_functions_with_flags(self, flags: list):
         self.regex_flags = (
