@@ -170,6 +170,24 @@ def bytes_to_readable(response):
     return response, readable_output
 
 
+def parse_create_search(response):
+    try:
+        # Search ID handling
+        search_id = re.search("searchname=([^&]+)", response[0].get("checkstatus")).group(1)
+
+        # Node Name Handling
+        outputs = {"NodeName": []}
+        node_str = ""
+        for i in range(len(response)):
+            node_name = re.search("nodename=([^&]+)", response[i].get("checkstatus")).group(1)
+            outputs["NodeName"].append(node_name)
+            node_str += f"{node_name},"
+        node_str = node_str[:-1]
+        return search_id, outputs, node_str
+    except Exception:
+        raise DemistoException(f'Could not parse search_id from the following response: {response}')
+
+
 ''' COMMANDS '''
 
 
@@ -178,15 +196,7 @@ def create_search_command(client: Client, args: Dict[str, Any]):
 
     response = client.create_search(args)
 
-    search_id = re.search("searchname=(.*?)&", response[0].get("checkstatus")).group(1)
-
-    outputs = {"NodeName": []}
-    node_str = ""
-    for i in range(len(response)):
-        node_name = re.search(r"nodename=([\w\d]+)", response[i].get("checkstatus")).group(1)
-        outputs["NodeName"].append(node_name)
-        node_str += f"{node_name},"
-    node_str = node_str[:-1]
+    search_id, outputs, node_str = parse_create_search(response)
 
     readable_output = f"SearchID : {search_id}\nNodeName(s) : {node_str}"
 
