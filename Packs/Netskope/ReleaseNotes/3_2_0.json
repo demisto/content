@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The event collector was modified to use only v2 of the Netskope API. Users who had the collector configured with V1 of the API might need to enable additional permissions in their Netskope Console. See the integration configration for more info"
+}
