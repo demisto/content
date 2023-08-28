@@ -1595,7 +1595,7 @@ tasks:
       id: a5d924b8-08c5-4e35-8d68-df9b5e9a0865
       version: -1
       name: Set system IDs grid field (type)
-      description: Sets the Azure Compute instance ID to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
