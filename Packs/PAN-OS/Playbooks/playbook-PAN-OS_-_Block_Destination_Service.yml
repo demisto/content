@@ -1,7 +1,7 @@
 id: PAN-OS - Block Destination Service
 version: -1
 name: PAN-OS - Block Destination Service
-description: 'This playbook blocks a Destination IP and Service (TCP or UDP port) by creating a rule for a specific Device Group on PAN-OS. '
+description: 'This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS. '
 starttaskid: "0"
 tasks:
   "0":
@@ -242,7 +242,7 @@ tasks:
       id: 41890197-ea43-4d94-8746-6221d39b4d83
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+      description: Commit the PAN-OS Panorama or firewall configuration.\nIf specified as Panorama, it also pushes the policies to the specified device group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
