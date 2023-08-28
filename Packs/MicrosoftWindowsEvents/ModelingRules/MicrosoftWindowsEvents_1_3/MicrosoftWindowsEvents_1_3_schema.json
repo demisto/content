@@ -87,6 +87,10 @@
       "process_sha256": {
         "type": "string",
         "is_array": false
+      },
+      "task": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
