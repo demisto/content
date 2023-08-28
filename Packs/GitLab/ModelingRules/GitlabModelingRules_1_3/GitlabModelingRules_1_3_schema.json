@@ -1,7 +1,7 @@
 {
   "gitlab_gitlab_raw": {
     "id": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "_vendor": {
@@ -13,11 +13,11 @@
       "is_array": false
     },
     "author_id": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "entity_id": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "entity_type": {
