@@ -60,4 +60,4 @@ tests:
 - no test - Untestable
 dependson:
   must:
-  - Zoom|||zoom-send-notification
+  - Zoom|||send-notification

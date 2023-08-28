@@ -1867,14 +1867,14 @@ Searches chat messages or shared files between a user and an individual contact 
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 >| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 
-### zoom-send-notification
+### send-notification
 
 ***
 Sends messages from your Marketplace Chatbot app on Zoom to either an individual user or to a channel.
 
 #### Base Command
 
-`zoom-send-notification`
+`send-notification`
 
 #### Input
 
@@ -1892,7 +1892,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!zoom-send-notification message=hi to=example@example.com```
+```!send-notification message=hi to=example@example.com```
 
 #### Context Output
 

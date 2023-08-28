@@ -37,6 +37,11 @@ configuration:
 - display: Long running instance
   name: longRunning
   type: 8
+- defaultvalue: 'true'
+  display: Enable Incident Mirroring
+  name: mirroring
+  type: 8
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1185,7 +1190,7 @@ script:
     - contextPath: Zoom.ChatMessage.next_page_token
       type: string
       description: The next page token for pagination.
-  - name: zoom-send-notification
+  - name: send-notification
     description: >
       sending message using chatbot app
     arguments:
@@ -1203,12 +1208,48 @@ script:
     - name: visible_to_user
       description: >
         The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
-      type: boolean
+      type: string
     - name: zoom_ask
       description: >
         send the message as a json or not
       type: boolean
     outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true".
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channelName
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to remove the Zoom administrator (channel creator) from the mirrored channel.
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false' 
+    description: Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
+    name: mirror-investigation
   runonce: false
   longRunning: true
   longRunningPort: true

@@ -145,7 +145,7 @@ def main():
     args['zoom_ask'] = 'true'
     demisto.debug(f"zoom ask: {args}")
     try:
-        demisto.results(demisto.executeCommand('zoom-send-notification', args))
+        demisto.results(demisto.executeCommand('send-notification', args))
     except ValueError as e:
         if 'Unsupported Command' in str(e):
             return_error(f'The command is unsupported by this script. {e}')
