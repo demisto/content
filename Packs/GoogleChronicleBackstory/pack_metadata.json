@@ -2,7 +2,7 @@
     "name": "Chronicle",
     "description": "Retrieve Chronicle detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "2.1.14",
+    "currentVersion": "3.0.2",
     "certification": "certified",
     "author": "Chronicle",
     "url": "https://go.chronicle.security/contact",
@@ -93,7 +93,7 @@
             "display_name": "PassiveTotal"
         },
         "PaloAltoNetworks_PAN_OS_EDL_Management": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Palo Alto Networks PAN-OS EDL Management"
         },
         "Cisco-umbrella": {

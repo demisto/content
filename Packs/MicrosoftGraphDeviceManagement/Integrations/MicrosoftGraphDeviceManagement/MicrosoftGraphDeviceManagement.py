@@ -1,10 +1,11 @@
-''' IMPORTS '''
-import json
-from typing import Any, Tuple
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+''' IMPORTS '''
+import json
+from typing import Any
+
 import urllib3
+from MicrosoftApiModule import *  # noqa: E402
 
 
 # Disable insecure warnings
@@ -39,19 +40,21 @@ class MsGraphClient:
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.graph)
+                                         managed_identities_resource_uri=Resources.graph,
+                                         command_prefix="msgraph-device",
+                                         )
 
-    def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
+    def list_managed_devices(self, limit: int) -> tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', [])[:limit], raw_response
 
-    def find_managed_devices(self, device_name: str) -> Tuple[Any, str]:
+    def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', []), raw_response
 
-    def get_managed_device(self, device_id: str) -> Tuple[Any, str]:
+    def get_managed_device(self, device_id: str) -> tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
@@ -124,7 +127,7 @@ def parse_device_action_results(raw_device_action_results: list) -> list:
     :param raw_device_action_results: The raw list of device action results
     :return: The parsed list of device action results
     """
-    action_results: list = list()
+    action_results: list = []
     for device_action_result in raw_device_action_results:
         action_result = assign_params(**{
             'Name': device_action_result.get('actionName'),
@@ -480,13 +483,13 @@ def main():
             update_windows_device_account_command(client, args)
         elif command == 'msgraph-find-managed-devices-by-name':
             find_managed_devices_command(client, args)
+        elif command == 'msgraph-device-auth-reset':
+            return_results(reset_auth())
 
     # log exceptions
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtins']:
     main()

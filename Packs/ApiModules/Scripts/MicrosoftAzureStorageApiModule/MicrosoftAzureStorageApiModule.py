@@ -1,5 +1,5 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import defusedxml.ElementTree as defused_ET
 
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?' \

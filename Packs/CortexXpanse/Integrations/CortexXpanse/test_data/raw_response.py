@@ -1,4 +1,4 @@
-#adding so null don't get seen as variable.
+# adding so null don't get seen as variable.
 null = None
 false = False
 
@@ -1144,6 +1144,114 @@ LIST_ALERTS_RESPONSE = {
                 "action_pretty": "N/A",
                 "tags": null
             }
+        ]
+    }
+}
+
+ATTACK_SURFACE_RULES_RAW = {
+    "reply": {
+        "total_count": 149,
+        "result_count": 2,
+        "attack_surface_rules": [
+            {
+                "attack_surface_rule_id": "SchneiderElectricEcoStruxureITGateway",
+                "attack_surface_rule_name": "Schneider Electric EcoStruxure IT Gateway",
+                "category": "Attack Surface Reduction",
+                "created": 1689003841000,
+                "description": "Schneider Electric EcoStruxure IT Gateway is a network management and monitoring solution used by organizations to monitor and manage their critical IT infrastruture on-premise, in the cloud, and at the edge. EcoStruxure provides visibility and information about resources across an organization regardless of vendor. This issue specifically identifies the EcoStruxure IT Gateway, the web management login portal EcoStruxure. The EcoStruxure IT Gateway is intended to be accessed from within a secure network and should not be exposed to the Internet. Version number of EcoStruxure is not identified through this policy.",
+                "enabled_status": "On",
+                "knowledge_base_link": null,
+                "modified": 1688074708000,
+                "modified_by": null,
+                "priority": "High",
+                "remediation_guidance": ""
+            },
+            {
+                "attack_surface_rule_id": "Section889Violation",
+                "attack_surface_rule_name": "Section 889 Violation",
+                "category": "Attack Surface Reduction",
+                "created": 1689003841000,
+                "description": "Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services from five organizations: Huawei, Hikvision, Hytera, Dahua, and ZTE. This policy alerts you to usages of such equipment on your network. This policy does not have an Cortex Xpanse-defined default priority \u2013 customers enabling this rule can choose any default priority.\nNote: Other brands that utilize Dahua hardware / firmware may also be identified through this policy.",
+                "enabled_status": "On",
+                "knowledge_base_link": null,
+                "modified": 1688074708000,
+                "modified_by": null,
+                "priority": "High",
+                "remediation_guidance": "Investigate the devices that have been flagged under this policy and work with the owner of the affected assets to remove them from your network.\nFor clarification, Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services that have been flagged under this policy. (Huawei, Hikvision, Hytera, Dahua, ZTE)"
+            }
+        ]
+    }
+}
+
+TAG_APPLY_RAW = {
+    "reply": {
+        "assign_tags": True
+    }
+}
+
+TAG_REMOVE_RAW = {
+    "reply": {
+        "remove_tags": True
+    }
+}
+
+LIST_INCIDENTS_RAW = {
+    "reply": {
+        "incidents": [
+            {
+                "aggregated_score": 75,
+                "alert_categories": null,
+                "alert_count": 4,
+                "alerts_grouping_status": "Enabled",
+                "assigned_user_mail": null,
+                "assigned_user_pretty_name": null,
+                "creation_time": 1688705047063,
+                "critical_severity_alert_count": 0,
+                "description": "'Google WebFramework Angular at suppliers.expander.expanse.co:443' detected by ASM on 3 hosts ",
+                "detection_time": null,
+                "high_severity_alert_count": 0,
+                "host_count": 3,
+                "hosts": [
+                    "1.1.1.1:null",
+                ],
+                "incident_id": "5471",
+                "incident_name": null,
+                "incident_sources": [
+                    "ASM"
+                ],
+                "low_severity_alert_count": 4,
+                "manual_description": null,
+                "manual_score": null,
+                "manual_severity": null,
+                "med_severity_alert_count": 0,
+                "modification_time": 1689048065832,
+                "notes": null,
+                "original_tags": [
+                    "BU:Prod Ev2 Branch"
+                ],
+                "resolve_comment": "",
+                "resolved_timestamp": null,
+                "rule_based_score": 75,
+                "severity": "low",
+                "starred": false,
+                "status": "new",
+                "tags": [],
+                "user_count": 0,
+                "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5471",
+                "xpanse_risk_score": 75
+            }
+        ]
+    }
+}
+
+INCIDENT_UPDATE_RAW = {
+    "reply": True
+}
+
+ALERT_UPDATE_RAW = {
+    "reply": {
+        "alerts_ids": [
+            602,
         ]
     }
 }

@@ -6,7 +6,6 @@ enabled: true
 name: ExpanseEvidenceDynamicSection
 comment: Dynamic Section script used in Expanse Issue layout to display the Latest Evidence structure.
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

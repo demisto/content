@@ -5,8 +5,8 @@ commonfields:
 configuration:
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - additionalinfo: Cyberint API access token.
   display: Cyberint Access Token
   name: access_token
@@ -19,13 +19,13 @@ configuration:
   type: 0
 - display: Create an incident per CSV record
   name: duplicate_alert
-  required: false
   type: 8
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: Severities to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
   name: fetch_severity
@@ -34,26 +34,25 @@ configuration:
   - medium
   - high
   - very_high
-  required: false
   type: 16
+  required: false
 - additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
   display: Fetch Status
   name: fetch_status
-  required: false
   type: 16
   options:
   - open
   - acknowledged
   - closed
+  required: false
 - additionalinfo: Environments to fetch (comma separated). If empty, all available environments will be returned.
   display: Fetch Environment
   name: fetch_environment
-  required: false
   type: 0
+  required: false
 - additionalinfo: Types to fetch. If none is chosen, all types will be returned.
   display: Fetch Types
   name: fetch_type
-  required: false
   type: 16
   options:
   - refund_fraud
@@ -97,89 +96,54 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
+  required: false
 - defaultvalue: '10'
   display: Fetch Limit
   name: max_fetch
-  required: false
   type: 0
   additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max is 100.
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   defaultvalue: 7 days
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
 display: Cyberint
 name: cyberint
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number to return. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Number of results in a page. Default is 10. Must be between 10 and 100.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: ISO-Formatted creation date. Get alerts created since this date (YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: ISO-Formatted creation date. Get alerts created since this date (YYYY-MM-DDTHH:MM:SSZ).
       name: created_date_from
-      required: false
-      secret: false
-    - default: false
-      description: ISO-Formatted creation date. Get alerts created before this date (YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: ISO-Formatted creation date. Get alerts created before this date (YYYY-MM-DDTHH:MM:SSZ).
       name: created_date_to
-      required: false
-      secret: false
-    - default: false
-      description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. created_date_range will overwrite created_date
-      isArray: false
+    - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. created_date_range will overwrite created_date
       name: created_date_range
-      required: false
-      secret: false
-    - default: false
-      description: ISO-Formatted modification date. Get alerts modified since this date (YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: ISO-Formatted modification date. Get alerts modified since this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_from
-      required: false
-      secret: false
-    - default: false
-      description: ISO-Formatted modification date. Get alerts modified before this date (YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: ISO-Formatted modification date. Get alerts modified before this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_to
-      required: false
-      secret: false
-    - default: false
-      description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. modified_date_range will overwrite modified_date
-      isArray: false
+    - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. modified_date_range will overwrite modified_date
       name: modified_date_range
-      required: false
-      secret: false
-    - default: false
-      description: Environment in which the alerts were created. Can be more than one.
+    - description: Environment in which the alerts were created. Can be more than one.
       isArray: true
       name: environments
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Status of the alert. Can be more than one.
       isArray: true
       name: statuses
@@ -187,10 +151,7 @@ script:
       - open
       - acknowledged
       - closed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Severity of the alert. Can be more than one.
       isArray: true
       name: severities
@@ -199,10 +160,7 @@ script:
       - medium
       - high
       - very_high
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of the alert, can be more than one.
       isArray: true
       name: types
@@ -248,11 +206,7 @@ script:
       - email_security_issues
       - certificate_authority_issues
       - other
-      required: false
-      secret: false
-    deprecated: false
     description: List alerts according to parameters
-    execution: false
     name: cyberint-alerts-fetch
     outputs:
     - contextPath: Cyberint.Alert.ref_id
@@ -427,37 +381,26 @@ script:
       description: Attachments related to the alert
       type: String
   - arguments:
-    - default: false
-      description: Reference IDs for the alert(s)
+    - description: Reference IDs for the alert(s)
       isArray: true
       name: alert_ref_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Desired status to update for the alert(s)
-      isArray: false
       name: status
       predefined:
       - open
       - acknowledged
       - closed
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Reason for updating the alerts status to closed. Required when status is closed.
-      isArray: false
       name: closure_reason
       predefined:
       - resolved
       - irrelevant
       - false_positive
-      required: false
-      secret: false
-    deprecated: false
     description: Update the status of one or more alerts.
-    execution: false
     name: cyberint-alerts-status-update
     outputs:
     - contextPath: Cyberint.Alert.ref_id
@@ -470,27 +413,16 @@ script:
       description: Reason for updating the alert to closed if closed.
       type: String
   - arguments:
-    - default: false
-      description: Reference ID of the alert.
-      isArray: false
+    - description: Reference ID of the alert.
       name: alert_ref_id
       required: true
-      secret: false
-    - default: false
-      description: Attachment ID.
-      isArray: false
+    - description: Attachment ID.
       name: attachment_id
       required: true
-      secret: false
-    - default: false
-      description: Attachment file name
-      isArray: false
+    - description: Attachment file name
       name: attachment_name
       required: true
-      secret: false
-    deprecated: false
     description: Get alert attachment.
-    execution: false
     name: cyberint-alerts-get-attachment
     outputs:
     - contextPath: File.Size
@@ -524,21 +456,13 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      description: Reference ID of the alert.
-      isArray: false
+    - description: Reference ID of the alert.
       name: alert_ref_id
       required: true
-      secret: false
-    - default: false
-      description: Analysis report file name.
-      isArray: false
+    - description: Analysis report file name.
       name: report_name
       required: true
-      secret: false
-    deprecated: false
     description: Get alert analysis report.
-    execution: false
     name: cyberint-alerts-analysis-report
     outputs:
     - contextPath: File.Size
@@ -572,10 +496,7 @@ script:
       description: The file extension.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

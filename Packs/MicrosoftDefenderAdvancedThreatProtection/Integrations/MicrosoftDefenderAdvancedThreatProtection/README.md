@@ -78,6 +78,7 @@ Please add the following permissions to the app registration. Choose application
     | Authorization code                                      | for user-auth mode - received from the authorization step. see Detailed Instructions section                                  | False                                    |
     | Azure Managed Identities Client ID                      | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                | UUID                                     |
     | Status to filter out alerts for fetching as incidents   | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.          | New,In Progress,Resolved                 |
+    | DetecitonSource to filter out alters for fetching as incidents.  | The property values are, "Antivirus", "CustomDetection", "CustomTI", "EDR" and "MDO". Comma-separated lists are supported, e.g., Antivirus,EDR.          | CustomDetection,EDR   |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High                              |
     | Maximum number of incidents to fetch                    | The maximum number of incidents to retrieve per fetch.                                                                        | 50                                       |
     | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked.                                                                                  | N/A                                      |
@@ -7147,3 +7148,21 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+
+### microsoft-atp-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`microsoft-atp-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

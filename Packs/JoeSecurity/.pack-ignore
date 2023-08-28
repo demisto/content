@@ -10,12 +10,10 @@ ignore=BA101
 [file:README.md]
 ignore=RM104
 
-[file:JoeSecurity.yml]
-ignore=IN145
-
 [known_words]
 html
-README
+readme
 webid
-RESTful
-JoeSandbox
+restful
+joesandbox
+

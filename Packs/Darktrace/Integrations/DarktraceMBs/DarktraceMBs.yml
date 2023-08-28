@@ -14,26 +14,26 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
   display: Public API Token
   name: publicApiKey
@@ -57,16 +57,16 @@ configuration:
   defaultvalue: '50'
   display: Maximum Model Breaches per Fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 description: Rapid detection of malicious behaviour can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate model breaches and all model breach related actions (such as commenting, acknowledging and model logic info).
 display: Darktrace Model Breaches
 name: DarktraceMBs
@@ -74,15 +74,10 @@ script:
   commands:
   - name: darktrace-get-model-breach
     arguments:
-    - default: false
-      description: Darktrace model breach unique identifier
-      isArray: false
+    - description: Darktrace model breach unique identifier
       name: pbid
       required: true
-      secret: false
-    deprecated: false
     description: Fetch details about a specific Model Breach
-    execution: false
     outputs:
     - contextPath: Darktrace.ModelBreach.pbid
       description: Model breach ID
@@ -134,15 +129,10 @@ script:
       type: String
   - name: darktrace-get-model-breach-comments
     arguments:
-    - default: false
-      description: Darktrace model breach unique identifier
-      isArray: false
+    - description: Darktrace model breach unique identifier
       name: pbid
       required: true
-      secret: false
-    deprecated: false
     description: Fetch all comments for a given model brach
-    execution: false
     outputs:
     - contextPath: Darktrace.ModelBreach.Comment.message
       description: comments on Model Breach
@@ -158,15 +148,10 @@ script:
       type: Unknown
   - name: darktrace-acknowledge-model-breach
     arguments:
-    - default: false
-      description: Acknowledge a given model breach
-      isArray: false
+    - description: Acknowledge a given model breach
       name: pbid
       required: true
-      secret: false
-    deprecated: false
     description: Acknowledge a model breach as specified by Model Breach ID
-    execution: false
     outputs:
     - contextPath: Darktrace.ModelBreach.acknowledged
       description: Whether the model breach is acknowledged in Darktrace
@@ -179,21 +164,13 @@ script:
       type: String
   - name: darktrace-post-comment-to-model-breach
     arguments:
-    - default: false
-      description: Darktrace model breach unique identifier
-      isArray: false
+    - description: Darktrace model breach unique identifier
       name: pbid
       required: true
-      secret: false
-    - default: false
-      description: Comment message
-      isArray: false
+    - description: Comment message
       name: message
       required: true
-      secret: false
-    deprecated: false
     description: Post a comment to a model breach
-    execution: false
     outputs:
     - contextPath: Darktrace.ModelBreach.commented
       description: Whether the model breach is commented in Darktrace
@@ -209,15 +186,10 @@ script:
       type: String
   - name: darktrace-unacknowledge-model-breach
     arguments:
-    - default: false
-      description: Darktrace model breach unique identifier
-      isArray: false
+    - description: Darktrace model breach unique identifier
       name: pbid
       required: true
-      secret: false
-    deprecated: false
     description: Unacknowledge a given model breach
-    execution: false
     outputs:
     - contextPath: Darktrace.ModelBreach.acknowledged
       description: Whether the model breach is acknowledged in Darktrace
@@ -266,11 +238,8 @@ script:
     - contextPath: Darktrace.Model.Component
       description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

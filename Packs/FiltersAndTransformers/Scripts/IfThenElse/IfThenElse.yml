@@ -89,7 +89,6 @@ args:
 - name: optionsB
   description: 'Option flags (comma separated list): available options are `case_insensitive`, `regex_dot_all`, `regex_multiline`, `regex_full_match`, `input_data_type:then=<type>`, `input_data_type:else=<type>`, `input_data_type:lhs=<type>` and `input_data_type:rhs=<type>`. Choose `value`, `json` or `raw` for <type>.'
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

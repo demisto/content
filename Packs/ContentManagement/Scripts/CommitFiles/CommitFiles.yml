@@ -9,7 +9,6 @@ args:
 - auto: PREDEFINED
   description: Which version control integration to use.
   name: git_integration
-  required: false
   predefined:
   - Gitlab
   - GitHub
@@ -39,7 +38,6 @@ outputs:
   description: The pull request text.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

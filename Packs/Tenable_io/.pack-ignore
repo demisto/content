@@ -13,3 +13,5 @@ ignore=PR101
 [file:TenableioEventCollector.yml]
 ignore=MR108
 
+[known_words]
+fqdn

@@ -1,13 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import json
 import random
 import time
 import urllib3
-
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
-
-""" IMPORTS """
 
 # disable insecure warnings
 urllib3.disable_warnings()

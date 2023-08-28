@@ -65,8 +65,7 @@ script:
       description: The change request's title
     - name: service
       required: true
-      description: The device service or port for the connection, for example, "http"
-        or ￼￼￼￼￼￼￼￼Mandatory "tcp/123"
+      description: The device service or port for the connection, for example, "http" or ￼￼￼￼￼￼￼￼Mandatory "tcp/123"
     - name: user
       required: true
       description: The user for the connection
@@ -88,8 +87,7 @@ script:
       - CONTAINING
       - EXACT
       description: The search method for the address
-    description: Find applications containing network objects related to IP address
-      using BusinessFlow
+    description: Find applications containing network objects related to IP address using BusinessFlow
   - name: algosec-get-network-object
     arguments:
     - name: address
@@ -110,22 +108,18 @@ script:
     - name: source
       required: true
       default: true
-      description: source(s) for the query. Multiple values are separated by commas
-        (,)
+      description: source(s) for the query. Multiple values are separated by commas (,)
     - name: destination
       required: true
-      description: destination(s) for the query. Multiple values are separated by
-        commas (,)
+      description: destination(s) for the query. Multiple values are separated by commas (,)
     - name: service
       required: true
-      description: service(s) for the query. Multiple values are separated by commas
-        (,)
+      description: service(s) for the query. Multiple values are separated by commas (,)
     - name: user
       description: user for the query
     - name: application
       description: application for the query
     description: Performs a batch traffic simulation query using Firewall Analyzer
-  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

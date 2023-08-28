@@ -1,16 +1,10 @@
 args:
 - default: true
   description: Value of the indicator.
-  isArray: false
   name: input
   required: true
-  secret: false
-- default: false
-  description: Whether to set validation checks in the indicator. Possible values are "true" and "false".
-  isArray: false
+- description: Whether to set validation checks in the indicator. Possible values are "true" and "false".
   name: update_indicator
-  required: false
-  secret: false
   predefined:
   - 'true'
   - 'false'
@@ -134,11 +128,10 @@ outputs:
   description: The actual score.
   type: Number
 script: '-'
-system: false
 tags:
 - reputation
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0

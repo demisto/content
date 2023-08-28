@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 from typing import List, Optional
 from io import StringIO
 import sys
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from pycti import OpenCTIApiClient, Identity
 
 # Disable insecure warnings

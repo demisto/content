@@ -1,7 +1,7 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
+
 
 MAX_EVENTS = 10
 

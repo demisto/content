@@ -38,8 +38,8 @@ configuration:
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 script:
   script: ''
   type: javascript
@@ -103,7 +103,10 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Comma separated query (e.g., field1=value1,field2=value2)
+      description: Custom fields for incident creation. Comma-separated query or custom-fields-seperator separated query. (e.g., field1=value1,field2=value2).
+    - name: custom-fields-separator
+      description: A custom delimiter to use for the custom-fields. Don't use '=' as a delimiter. Default value is ','.
+      defaultValue: ','
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -267,7 +270,6 @@ script:
       description: Ticket service type
     description: Update exiting incident
   isfetch: true
-  runonce: false
 fromversion: 5.0.0
 tests:
 - Remedy-On-Demand-Test

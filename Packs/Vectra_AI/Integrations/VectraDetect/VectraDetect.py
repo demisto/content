@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Vectra Detect Integration for Cortex XSOAR
 
@@ -9,8 +11,6 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 # Python linting disabled example (disable linting on error code E203)
 # noqa: E203
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import dateparser

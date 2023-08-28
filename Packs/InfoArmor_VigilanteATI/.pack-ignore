@@ -1,6 +1,7 @@
 [file:InfoArmorVigilanteATI.yml]
-ignore=IN124,IN145
+ignore=IN124
 
 [known_words]
-InfoArmor
-VigilanteATI
+infoarmor
+vigilanteati
+

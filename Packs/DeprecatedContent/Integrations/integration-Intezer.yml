@@ -385,7 +385,6 @@ script:
     - contextPath: File.Metadata
       description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
     description: Checks file reputation for uploaded file (up to 20MB)
-  runonce: false
 tests:
 - No test - integration was deprecated, and doesn't need to be tested
 fromversion: 5.0.0

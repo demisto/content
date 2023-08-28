@@ -4,6 +4,7 @@ Use one of the following methods to access the Generic Export Indicators Service
 </~XSOAR>
 
 If you have several Generic Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
+Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
 <~XSOAR>
 
 ### Access the Generic Export Indicators Service by URL and Port (HTTP)
@@ -45,6 +46,15 @@ To access the Generic Export Indicators Service by instance name, make sure *Ins
    In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
 
 </~XSOAR>
+
+#### Note:
+When using more than one server in High Availability (HA) mode, the External Dynamic List (EDL) should be configured to listen on a route, not on a port.
+
+In "route" listen mode, a request received by any of the app servers will be redirected to the one currently running the NGINX container.
+This does not happen in "port" listen mode, that's why "route" mode should be used.
+
+If the app server running the container fails, the container should restart on a different app server.
+Failover time should be about 1 minute plus the container startup time.
 
 ### Modify Request Parameters Through the URL
 Use the following arguments in the URL to change the request:

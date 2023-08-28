@@ -2,10 +2,7 @@ args:
 - defaultValue: Resolved
   default: true
   description: The reason the alert was closed (either 'Resolved' or 'No Action Needed').
-  isArray: false
   name: close_reason
-  required: false
-  secret: false
 comment: IoT alert post processing script to resolve the alert in IoT security portal using API
 commonfields:
   id: iot-security-alert-post-processing
@@ -13,12 +10,11 @@ commonfields:
 enabled: true
 name: iot-security-alert-post-processing
 script: '-'
-system: false
 tags:
 - iot
 - post-processing
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

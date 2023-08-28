@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 import pytest
-from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format
+from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_verion
 
 from CommonServerPython import DemistoException, EntityRelationship, argToList
 
@@ -72,6 +72,16 @@ def test_indicator_creation():
     indicator = generate_indicator(response).to_context()
     assert set(indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"]) == set(
         correct_indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"])
+
+
+@pytest.mark.parametrize("cvss_vector, expected_output", [
+    ("CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 3.0),
+    ("", 0),
+    ("AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 2.0)
+])
+def test_parse_cvss_version(cvss_vector, expected_output):
+    version = get_cvss_verion(cvss_vector)
+    assert version == expected_output
 
 
 @pytest.mark.parametrize("cpe, expected_output, expected_relationships", [

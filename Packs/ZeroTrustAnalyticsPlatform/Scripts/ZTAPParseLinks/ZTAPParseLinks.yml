@@ -6,7 +6,6 @@ commonfields:
   version: -1
 name: ZTAPParseLinks
 script: '-'
-system: false
 tags:
 - ztap
 - dynamic-section

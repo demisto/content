@@ -16,28 +16,30 @@ configuration:
   name: passphrase
   type: 4
   hidden: true
+  required: false
 - name: passphrase_creds
   type: 9
   displaypassword: Certificate Passphrase
   hiddenusername: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: Emergency,Critical
   display: Fetch incidents for severities
   name: severities
-  required: false
   type: 0
 
+  required: false
 description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7
 display: Symantec Managed Security Services
 name: Symantec MSS
@@ -46,100 +48,45 @@ script:
   - arguments:
     - default: true
       description: The incident number in the SOC
-      isArray: false
       name: number
       required: true
-      secret: false
-    - default: false
-      description: To change the incident status
-      isArray: false
+    - description: To change the incident status
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: To change the incident status resolution
-      isArray: false
+    - description: To change the incident status resolution
       name: resolution
-      required: false
-      secret: false
-    - default: false
-      description: Update reference comments
-      isArray: false
+    - description: Update reference comments
       name: reference
-      required: false
-      secret: false
-    - default: false
-      description: To change the incident severity
-      isArray: false
+    - description: To change the incident severity
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: 'To change incident assignment to organization (Note: assign to an organization OR a person is required)'
-      isArray: false
+    - description: 'To change incident assignment to organization (Note: assign to an organization OR a person is required)'
       name: assignOrganization
-      required: false
-      secret: false
-    - default: false
-      description: 'To change incident assignment to person. (Note: assign to an organization OR a person is required)'
-      isArray: false
+    - description: 'To change incident assignment to person. (Note: assign to an organization OR a person is required)'
       name: assignPerson
-      required: false
-      secret: false
-    - default: false
-      description: Incident update comment
-      isArray: false
+    - description: Incident update comment
       name: comments
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an incident's workflow by incident number
-    execution: false
     name: symantec-mss-update-incident
   - arguments:
     - default: true
       description: The incident number in the SOC
-      isArray: false
       name: number
       required: true
-      secret: false
-    deprecated: false
     description: Query an incident by number
-    execution: false
     name: symantec-mss-get-incident
   - arguments:
     - default: true
       description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z). If not supplied, defaults to the last 24 hours
-      isArray: false
       name: time
-      required: false
-      secret: false
-    - default: false
-      description: Comma-delimited list of valid Security Incident severities set by MSS. If not supplied, all severities are returned
-      isArray: false
+    - description: Comma-delimited list of valid Security Incident severities set by MSS. If not supplied, all severities are returned
       name: severities
-      required: false
-      secret: false
-    - default: false
-      description: Comma-delimited list of valid Source IP Addresses. If not supplied, all addresses are returned
-      isArray: false
+    - description: Comma-delimited list of valid Source IP Addresses. If not supplied, all addresses are returned
       name: sourceIp
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of incidents to return. If not supplied,  all incidents are returned
-      isArray: false
+    - description: The maximum number of incidents to return. If not supplied,  all incidents are returned
       name: max
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of incidents
-    execution: false
     name: symantec-mss-incidents-list
   dockerimage: demisto/crypto:1.0.0.63672
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

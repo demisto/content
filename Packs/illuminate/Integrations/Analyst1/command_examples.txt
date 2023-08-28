@@ -1,0 +1,18 @@
+!domain domain=abc.com
+!email email=001toxic@gmail.com
+!ip ip=0.154.17.105
+!file file=00000000000000000000000000000000
+!analyst1-enrich-string string=??
+!analyst1-enrich-ipv6 ip=16::
+!analyst1-enrich-mutex mutex=??
+!analyst1-enrich-http-request http-request=/~
+!url url=104.218.120.128/check.aspx
+!analyst1-evidence-submit source_id=0 tlp=clear fileClassification=u fileContent="example string content to load, replace with actual JSON, TEXT, or reference to full attachment like a PDF to load as Evidence"
+!analyst1-evidence-status uuid=8b7eee23-d71b-d3da-f66b-b4d3917fdb80
+!analyst1-batch-check values=1.2.3.4,abc.com,google.com
+!analyst1-batch-check-post values="1.2.3.4","abc.com","google.com"]
+!analyst1-indicator-by-id indicator_id=983
+!analyst1-get-sensor-config sensor_id=7689
+!analyst1-get-sensor-taskings sensor_id=7689
+!analyst1-get-sensor-diff sensor_id=7682 version=280
+!analyst1-get-sensors page=1 pageSize=50

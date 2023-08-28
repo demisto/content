@@ -10,7 +10,6 @@ commonfields:
 dockerimage: demisto/python3:3.10.11.58677
 enabled: true
 name: GIBIncidentUpdateIncludingClosed
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

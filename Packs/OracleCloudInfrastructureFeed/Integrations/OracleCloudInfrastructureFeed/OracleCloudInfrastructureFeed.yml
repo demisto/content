@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: "true"
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - defaultvalue: https://docs.oracle.com/iaas/tools/public_ip_ranges.json
   display: Server's URL
   name: url
@@ -22,8 +22,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -45,27 +45,27 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: "30"
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: "true"
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: ""
   name: feedExpirationPolicy
   options:
@@ -73,22 +73,22 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - display: ""
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - defaultvalue: "false"
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 description: |-
   Oracle Cloud Infrastructure Feed (OCI Feed)
   This feed provides information about public IP address ranges for services that are deployed in Oracle Cloud Infrastructure.
@@ -104,7 +104,6 @@ script:
     name: oci-get-indicators
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

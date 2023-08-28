@@ -25,6 +25,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
 - display: Premium Subscription
   name: is_premium_api
   defaultvalue: 'false'
@@ -93,9 +94,9 @@ configuration:
   - '* downloaded files'
   - referrer files
   - '* urls'
-  required: false
   type: 16
   defaultvalue: communicating files,* downloaded files,referrer files,* urls
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: Domain Relationships
   name: domain_relationships
@@ -113,9 +114,9 @@ configuration:
   - '* soa records'
   - subdomains
   - '* urls'
-  required: false
   type: 16
   defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: URL Relationships
   name: url_relationships
@@ -130,9 +131,9 @@ configuration:
   - '* redirects to'
   - '* referrer files'
   - '* referrer urls'
-  required: false
   type: 16
   defaultvalue: communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: File Relationships
   name: file_relationships
@@ -159,9 +160,9 @@ configuration:
   - pe resource children
   - pe resource parents
   - '* similar files'
-  required: false
   type: 16
   defaultvalue: '* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files'
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -183,10 +184,8 @@ script:
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -423,10 +422,8 @@ script:
       description: IP address to check.
       isArray: true
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -540,10 +537,8 @@ script:
       description: URL to check.
       isArray: true
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -683,10 +678,8 @@ script:
       description: Domain name to check.
       isArray: true
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -882,11 +875,8 @@ script:
     arguments:
     - name: resource
       required: true
-      default: false
       description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting on. If not supplied, will try to determine if it's a hash or a url.
     - name: resource_type
-      required: false
-      default: false
       description: The type of the resource on which you're commenting.
       auto: PREDEFINED
       predefined:
@@ -942,11 +932,8 @@ script:
     arguments:
     - name: resource
       required: true
-      default: false
       description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting on. If not supplied, will try to determine if it's a hash or a url.
     - name: resource_type
-      required: false
-      default: false
       description: The type of the resource on which you're commenting. If not supplied, will determine if it's a url or a file.
       auto: PREDEFINED
       predefined:
@@ -1035,10 +1022,8 @@ script:
       default: true
       description: 'This endpoint searches any of the following: A file hash, URL, domain, IP address, tag comments.'
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1263,7 +1248,6 @@ script:
     description: Returns passive DNS records by indicator.
     arguments:
     - name: id
-      required: false
       default: true
       description: IP or domain for which to get its DNS data.
     - name: ip
@@ -1302,7 +1286,6 @@ script:
       default: true
       description: ID of the analysis (from file-scan, file-rescan, or url-scan).
     - name: extended_data
-      required: false
       description: Whether to return extended data (last_analysis_results).
       defaultValue: false
     outputs:
@@ -1366,9 +1349,7 @@ script:
       description: File hash (md5, sha1, sha256).
     - name: only_stats
       description: Print only Sigma analysis summary stats.
-      required: false
       defaultValue: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1645,7 +1626,6 @@ script:
       description: The analysis ID.
       type: String
 
-  runonce: false
   dockerimage: demisto/python3:3.10.12.63474
 tests:
 - VirusTotalV3-test

@@ -1,7 +1,6 @@
-import time
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import time
 
 
 def parseSepAvDef(s, res):

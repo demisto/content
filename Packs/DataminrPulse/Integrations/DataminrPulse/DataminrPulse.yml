@@ -16,13 +16,13 @@ configuration:
 - additionalinfo: A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform.
   display: Watchlist Names
   name: watchlist_names
-  required: false
   type: 0
+  required: false
 - additionalinfo: Terms to search within Dataminr Alerts.
   display: Query
   name: query
-  required: false
   type: 0
+  required: false
 - additionalinfo: Filters the incoming alerts with the provided alert type. Default All.
   defaultvalue: All
   display: Alert Type
@@ -32,53 +32,51 @@ configuration:
   - Alert
   - Urgent
   - Flash
-  required: false
   type: 15
+  required: false
 - additionalinfo: The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
   defaultvalue: '40'
   display: Max Fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Indicates whether to allow connections without verifying the SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: The incident fetch interval.
   defaultvalue: '5'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts.
   defaultvalue: 0 seconds
   display: First Fetch Time (not supported)
   hidden: true
   name: first_fetch
-  required: false
   type: 0
+  required: false
 description: Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.
 display: Dataminr Pulse
 name: Dataminr Pulse
 script:
   commands:
-  - deprecated: false
-    description: Retrieves the Watchlists configured on the Dataminr platform.
-    execution: false
+  - description: Retrieves the Watchlists configured on the Dataminr platform.
     name: dataminrpulse-watchlists-get
     outputs:
     - contextPath: DataminrPulse.WatchLists.id
@@ -103,51 +101,26 @@ script:
       description: Name of the company.
       type: String
   - arguments:
-    - default: false
-      description: Comma delimited set of watchlist IDs. Required if watchlist names are not configured in integration configuration and the query is not given.
+    - description: Comma delimited set of watchlist IDs. Required if watchlist names are not configured in integration configuration and the query is not given.
       isArray: true
       name: watchlist_ids
-      required: false
-      secret: false
-    - default: false
-      description: Terms to search within Dataminr Alerts. Required if watchlist names are not configured in integration configuration and the watchlist_ids are not given.
-      isArray: false
+    - description: Terms to search within Dataminr Alerts. Required if watchlist names are not configured in integration configuration and the watchlist_ids are not given.
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: It points to a cursor that you want any alerts after. Note that only one of "from" or "to" can be included per request.
-      isArray: false
+    - description: It points to a cursor that you want any alerts after. Note that only one of "from" or "to" can be included per request.
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: It points to a cursor that you want any alerts before. Note that only one of "from" and "to" can be included per request.
-      isArray: false
+    - description: It points to a cursor that you want any alerts before. Note that only one of "from" and "to" can be included per request.
       name: to
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '40'
+    - defaultValue: '40'
       description: Maximum number of alerts to return. 3333 is maximum value.
-      isArray: false
       name: num
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'yes'
       description: A Boolean indicating that If user does not provide watchlist IDs then it should use configured watchlist names with query parameter.
-      isArray: false
       name: use_configured_watchlist_names
       predefined:
       - 'yes'
       - 'no'
-      required: false
-      secret: false
-    deprecated: false
     description: 'Retrieves the alerts as per the provided watchlist_ids or query or configured watchlist_names parameter in integration. Note: The "from" and "to" arguments should not be included on the first execution, there will not be any "from" or "to" cursor to reference. Only subsequent calls should contain those parameters.'
-    execution: false
     name: dataminrpulse-alerts-get
     outputs:
     - contextPath: DataminrPulse.Alerts.alertId
@@ -439,28 +412,19 @@ script:
       description: '"to" points to a cursor that you want any alerts before.'
       type: String
   - arguments:
-    - default: false
-      description: Unique identifier of the alert whose related alerts to retrieve.
-      isArray: false
+    - description: Unique identifier of the alert whose related alerts to retrieve.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: |-
         When searching for a linked cluster, this flag
         determines whether the alert from which alert_id is used to make request to the server is returned to the result set.
-      isArray: false
       name: include_root
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the alerts related to the provided Alert ID.
-    execution: false
     name: dataminrpulse-related-alerts-get
     outputs:
     - contextPath: DataminrPulse.Alerts.alertId
@@ -745,11 +709,8 @@ script:
     - contextPath: DataminrPulse.Alerts.userTopHashtags
       description: User's top hashtags.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

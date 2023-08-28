@@ -17,17 +17,24 @@ Search Safe Browsing v4
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Check URL Reputation
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,9 +61,11 @@ Check URL Reputation
 
 
 #### Command Example
+
 ```!url url="http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -79,7 +88,9 @@ Check URL Reputation
 #### Human Readable Output
 
 >### Google Safe Browsing APIs - URL Query
->#### Found matches for URL http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
+
+>#### Found matches for URL <http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/>
+
 >cacheDuration|platformType|threat|threatEntryType|threatType
 >---|---|---|---|---
 >300s | ANY_PLATFORM | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE

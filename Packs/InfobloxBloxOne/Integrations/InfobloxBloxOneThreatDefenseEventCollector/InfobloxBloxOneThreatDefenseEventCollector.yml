@@ -13,23 +13,23 @@ configuration:
   name: first_fetch
   type: 0
   defaultvalue: 1 day
-  required: false
   section: Collect
+  required: false
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
   defaultvalue: "1000"
   display: Max events per fetch
   section: Collect
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
 display: "Infoblox BloxOne Threat Defense Event Collector"
 name: Infoblox BloxOne Threat Defense Event Collector
@@ -39,45 +39,37 @@ script:
     - auto: PREDEFINED
       defaultValue: "False"
       description: Set this argument to True in order to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - "True"
       - "False"
       required: true
     - description: Timestamp indicating when to start fetching events.
-      isArray: false
       name: from
       required: true
     - description: Timestamp indicating when to stop fetching events.
-      isArray: false
       name: to
       required: true
     - description: Maximum number of events to fetch.
       defaultValue: 1000
-      isArray: false
       name: limit
       required: true
     - description: offset of the events.
       defaultValue: 0
-      isArray: false
       name: offset
       required: true
     outputs:
     - description: The event data.
       type: Unknown
       contextPath: TestGetEvents
-    deprecated: false
     description: "Gets events. This command is for debugging purposes."
-    execution: false
     name: bloxone-td-event-collector-get-events
-  isfetch: false
   runonce: false
   isfetchevents: true
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

@@ -6,33 +6,33 @@ configuration:
 - defaultvalue: Netscout Arbor Sightline Alert
   display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Server URL (e.g., https://192.168.0.1)
   name: url
   required: true
   type: 0
 - name: User
   displaypassword: API Key
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00). Maximal number of past events to fetch is 10,000.
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched.
   display: Alert Class
   name: alert_class
@@ -46,8 +46,8 @@ configuration:
   - system_event
   - tms
   - traffic
-  required: false
   type: 16
+  required: false
 - additionalinfo: Alert type to filter by. Only one type can be configured at a time. If none is chosen, all types will be fetched.
   display: Alert Type
   name: alert_type
@@ -87,8 +87,8 @@ configuration:
   - spcomm_failure
   - tms_fault
   - traffic_auto_mitigation
-  required: false
   type: 16
+  required: false
 - additionalinfo: Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.
   display: Minimal importance to fetch
   name: importance
@@ -96,24 +96,24 @@ configuration:
   - Low
   - Medium
   - High
-  required: false
   type: 15
+  required: false
 - additionalinfo: Alert status to filter by. If none is chosen, all statuses will be fetched.
   display: Event Status
   name: ongoing
   options:
   - Ongoing
   - Not Ongoing
-  required: false
   type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: DDoS protection and network visibility.
 display: Netscout Arbor Sightline (Peakflow)
 name: NetscoutArborSightline
@@ -123,21 +123,15 @@ script:
   - arguments:
     - default: true
       description: Alert ID to list the annotation for. Can be obtained from the na-sightline-alert-list command.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.AlertAnnotation.AlertID
       description: The alert ID of the annotation.
@@ -160,21 +154,14 @@ script:
     - contextPath: NASightline.AlertAnnotation.Annotations.relationships
       description: Relationships of the annotation (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: Lists the collection of annotations for a given alert.
-    execution: false
     name: na-sightline-alert-annotation-list
   - arguments:
     - default: true
       description: Alert ID. If given, all other arguments will be ignored.
-      isArray: false
       name: alert_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert class to filter by.
-      isArray: false
       name: alert_class
       predefined:
       - bgp
@@ -186,12 +173,8 @@ script:
       - system_event
       - tms
       - traffic
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert type to filter by.
-      isArray: false
       name: alert_type
       predefined:
       - autoclassify_restart
@@ -229,12 +212,8 @@ script:
       - spcomm_failure
       - tms_fault
       - traffic_auto_mitigation
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert classification to filter by.
-      isArray: false
       name: classification
       predefined:
       - Possible Attack
@@ -243,104 +222,58 @@ script:
       - Network Failure
       - Flash Crowd
       - Trivial
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert importance to filter by. For more complex operators use the 'importance_operator' argument.
-      isArray: false
       name: importance
       predefined:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operator to apply on the importance argument (">" is greater than, "<" is less than, "=" is equal to). For example: if the chosen operator is ">" and the chosen importance is "Low", only alerts with and importance greater than Low will be fetched.'
-      isArray: false
       name: importance_operator
       predefined:
       - '<'
       - '='
       - '>'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert status to filter by. If not set, all statuses will be fetched.
-      isArray: false
       name: ongoing
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Alert start time to filter by. For more complex operators use the 'start_time_operator' argument.
-      isArray: false
+    - description: Alert start time to filter by. For more complex operators use the 'start_time_operator' argument.
       name: start_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operator to apply on the "start_time" argument. For example: if the chosen operator is ">" and the given time is "2020-12-01T13:15:00", only alerts with a starting time greater than "2020-12-01T13:15:00" will be fetched.'
-      isArray: false
       name: start_time_operator
       predefined:
       - '='
       - '>'
       - '<'
-      required: false
-      secret: false
-    - default: false
-      description: Alert stop time to filter by. For more complex operators use the 'stop_time_operator' argument.
-      isArray: false
+    - description: Alert stop time to filter by. For more complex operators use the 'stop_time_operator' argument.
       name: stop_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The operator to apply on the "stop_time" argument. For example: if the chosen operator is ">" and the given time is "2020-12-01T13:15:00", only alerts with a stopping time greater than "2020-12-01T13:15:00" will be fetched.'
-      isArray: false
       name: stop_time_operator
       predefined:
       - '='
       - '>'
       - '<'
-      required: false
-      secret: false
-    - default: false
-      description: ID of the managed object associated with the alert. Can be obtained from the na-sightline-managed-object-list command.
-      isArray: false
+    - description: ID of the managed object associated with the alert. Can be obtained from the na-sightline-managed-object-list command.
       name: managed_object_id
-      required: false
-      secret: false
-    - default: false
-      description: The page to return starting from 1.
-      isArray: false
+    - description: The page to return starting from 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Maximal number of alerts to retrieve. Also sets the size of the returned page.
-      isArray: false
+    - description: Maximal number of alerts to retrieve. Also sets the size of the returned page.
       defaultValue: '50'
       name: limit
-      required: false
-      secret: false
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.Alert.alert_class
       description: 'The class of the alert. One of the following: bgp, cloudsignal, data, dos, smart, system_error, system_event ,tms ,traffic.'
@@ -375,41 +308,24 @@ script:
     - contextPath: NASightline.Alert.subobject
       description: Subobject data (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: List all alerts. When an alert ID is given, only the relevant alert will be fetched.
-    execution: false
     name: na-sightline-alert-list
   - arguments:
     - default: true
       description: The mitigation ID to get. Can be obtained from the na-sightline-mitigation-list command.
-      isArray: false
       name: mitigation_id
-      required: false
-      secret: false
-    - default: false
-      description: The page to return starting from 1.
-      isArray: false
+    - description: The page to return starting from 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Maximal number of mitigations to retrieve. Also sets the size of the returned page.
-      isArray: false
+    - description: Maximal number of mitigations to retrieve. Also sets the size of the returned page.
       defaultValue: '50'
       name: limit
-      required: false
-      secret: false
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.Mitigation.description
       description: Description of the mitigation.
@@ -447,101 +363,55 @@ script:
     - contextPath: NASightline.Mitigation.subobject
       description: Subobject data (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: List all mitigations. When a mitigation ID is given, only the relevant mitigation will be fetched.
-    execution: false
     name: na-sightline-mitigation-list
   - arguments:
-    - default: false
-      description: Mitigation name.
-      isArray: false
+    - description: Mitigation name.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: IP version of the traffic that is being mitigated. This attribute cannot be changed once it is set.
-      isArray: false
       name: ip_version
       predefined:
       - IPv4
       - IPv6
       required: true
-      secret: false
-    - default: false
-      description: Description of the mitigation.
-      isArray: false
+    - description: Description of the mitigation.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to start the mitigation (true) or not (false).
-      isArray: false
       name: ongoing
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of mitigation.
-      isArray: false
       name: sub_type
       predefined:
       - tms
       - flowspec
       required: true
-      secret: false
-    - default: false
-      description: 'JSON object that specifies the attributes specific to the mitigation subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}. List of values supported for each sub-type can be found in the Netscout Arbor Sightline documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
-      isArray: false
+    - description: 'JSON object that specifies the attributes specific to the mitigation subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}. List of values supported for each sub-type can be found in the Netscout Arbor Sightline documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
       name: sub_object
       required: true
-      secret: false
-    - default: false
-      description: ID of the alert associated with the mitigation. Can be obtained from the na-sightline-alert-list command.
-      isArray: false
+    - description: ID of the alert associated with the mitigation. Can be obtained from the na-sightline-alert-list command.
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the mitigation template applied to this mitigation. To get a list of available templates and their IDs, run the na-sightline-mitigation-template-list command.
-      isArray: false
+    - description: ID of the mitigation template applied to this mitigation. To get a list of available templates and their IDs, run the na-sightline-mitigation-template-list command.
       name: mitigation_template_id
-      required: false
-      secret: false
-    - default: false
-      description: (Flowspec mitigations only) Comma-separated list of IDs of the routers to which the flowspec announcement is made. To get a list of available routers and their IDs run the na-sightline-router-list command.
-      isArray: false
+    - description: (Flowspec mitigations only) Comma-separated list of IDs of the routers to which the flowspec announcement is made. To get a list of available routers and their IDs run the na-sightline-router-list command.
       name: router_ids
-      required: false
-      secret: false
-    - default: false
-      description: (TMS mitigations only) ID of the managed object associated with the alert. To get a list of available managed objects and their IDs run the na-sightline-managed-object-list command.
-      isArray: false
+    - description: (TMS mitigations only) ID of the managed object associated with the alert. To get a list of available managed objects and their IDs run the na-sightline-managed-object-list command.
       name: managed_object_id
-      required: false
-      secret: false
-    - default: false
-      description: (TMS mitigations only) ID of the TMS group that the associated managed object belongs to. To get a list of available TMS groups and their IDs run the na-sightline-tms-group-list command.
-      isArray: false
+    - description: (TMS mitigations only) ID of the TMS group that the associated managed object belongs to. To get a list of available TMS groups and their IDs run the na-sightline-tms-group-list command.
       name: tms_group_id
-      required: false
-      secret: false
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.Mitigation.id
       description: The ID of the mitagation.
@@ -570,33 +440,23 @@ script:
     - contextPath: NASightline.Mitigation.relationships
       description: Relationships of the mitigation (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: Add a TMS or flowspec mitigation with the attributes and relationships passed in the JSON sub_object.
-    execution: false
     name: na-sightline-mitigation-create
   - arguments:
     - default: true
       description: The mitigation ID to delete. Can be obtained from the na-sightline-mitigation-list command.
-      isArray: false
       name: mitigation_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a given mitigation.
-    execution: false
     name: na-sightline-mitigation-delete
   - arguments:
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.MitigationTemplate.description
       description: The description of the mitigation template.
@@ -625,22 +485,16 @@ script:
     - contextPath: NASightline.MitigationTemplate.relationships
       description: Relationships of the mitigation template (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: Get a list of available mitigation templates.
-    execution: false
     name: na-sightline-mitigation-template-list
   - arguments:
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.Router.advanced_fallback_alg
       description: 'The algorithm used to classify interfaces during auto-configuration that either report no traffic or have no associated BGP information: internal, external, or use_bgp_and_local. use_bgp_and_local classifies each observed flow, based on learned BGP information and the configured IP address space.'
@@ -729,35 +583,21 @@ script:
     - contextPath: NASightline.Router.relationships
       description: Relationships of the router (only visible when extending the data).
       type: Unknown
-    deprecated: false
     description: Get a list of available routers.
-    execution: false
     name: na-sightline-router-list
   - arguments:
-    - default: false
-      description: The page to return starting from 1.
-      isArray: false
+    - description: The page to return starting from 1.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Maximal number of mitigations to retrieve. Also sets the size of the returned page.
-      isArray: false
+    - description: Maximal number of mitigations to retrieve. Also sets the size of the returned page.
       defaultValue: '50'
       name: limit
-      required: false
-      secret: false
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.ManagedObject.autodetected
       description: If true, Sightline automatically detects and configures VPN sites when the match type of a VPN managed object is a route target and the VPN sites match the configured route targets.
@@ -855,22 +695,16 @@ script:
     - contextPath: NASightline.ManagedObject.type
       description: Type of the returned object.
       type: String
-    deprecated: false
     description: Get a list of available managed objects.
-    execution: false
     name: na-sightline-managed-object-list
   - arguments:
     - name: extend_data
       description: Whether to extend the results with all available data.
       auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     outputs:
     - contextPath: NASightline.TMSGroup.check_available_bw
       description: If true, ensures that all TMS appliances or Cisco ASR 9000 vDDoS Protection devices in a group use less than 90% of the allowed traffic rate in order for a mitigation to start.
@@ -941,15 +775,10 @@ script:
     - contextPath: NASightline.TMSGroup.type
       description: Type of the returned object.
       type: String
-    deprecated: false
     description: Get a list of available TMS groups.
-    execution: false
     name: na-sightline-tms-group-list
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -122,11 +122,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">integer</td>
 <td style="width: 508px;">
-<p>Port to use with concentratorIP</p>
-<ul>
-<li>SSL: 54105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -342,11 +345,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32 </td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -448,11 +454,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32 </td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -657,11 +666,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32</td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 <tr>
@@ -670,6 +682,13 @@
 <td style="width: 448px;">
 <p>Render type</p>
 <p>Examples: pcap, logs, logs (csv), logs (xml), or logs (json)</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">renderToContext</td>
+<td style="width: 61px;">boolean </td>
+<td style="width: 448px;">
+<p>If renderToContext is set to True and the render type is set to logs (json), the command will not create a file with the output. It will output to the context data.</p>
 </td>
 </tr>
 </tbody>
@@ -721,11 +740,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 97px;">uint32</td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -772,11 +794,14 @@
 <td style="width: 138px;">concentratorPort</td>
 <td style="width: 63.5px;">uint32</td>
 <td style="width: 436.5px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 <tr>
@@ -922,11 +947,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32 </td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -1039,11 +1067,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32 </td>
 <td style="width: 455px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>
@@ -1230,11 +1261,14 @@
 <td style="width: 97px;">concentratorPort</td>
 <td style="width: 61px;">uint32 </td>
 <td style="width: 448px;">
-<p>Port to use with the concentratorIP parameter</p>
-<ul>
-<li>SSL: 56105</li>
-<li>Non-SSL: 50105</li>
-</ul>
+<p>Port to use with concentratorIP. 50105 (SSL/NON-SSL) for concentrator, 50103 (SSL/NON-SSL) for broker.</p>
+</td>
+</tr>
+<tr>
+<td style="width: 97px;">useSSL</td>
+<td style="width: 61px;">boolean</td>
+<td style="width: 508px;">
+<p>Send request in HTTPS instead of HTTP. By default the parameter is set to True but if your appliance is not configured to use SSL you can change it here.</p>
 </td>
 </tr>
 </tbody>

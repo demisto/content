@@ -10,7 +10,6 @@ comment: Entry widget that shows the number of techniques that were already hand
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.8.37233
 runas: DBotWeakRole
 fromversion: 6.5.0

@@ -1,8 +1,8 @@
-import re
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import re
 import urllib3
 from bs4 import BeautifulSoup, element
-from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 # disable insecure warnings

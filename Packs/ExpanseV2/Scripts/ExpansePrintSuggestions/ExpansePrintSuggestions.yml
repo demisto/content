@@ -41,11 +41,10 @@ comment: Generates and prints a report in markdown format containing useful sugg
 commonfields:
   id: ExpansePrintSuggestions
   version: -1
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: ExpansePrintSuggestions
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

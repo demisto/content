@@ -1,8 +1,7 @@
-from base64 import b64encode
-from typing import Any, Dict
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from base64 import b64encode
+from typing import Any, Dict
 
 
 def encode_string(value: str) -> str:

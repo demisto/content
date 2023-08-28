@@ -21,36 +21,36 @@ configuration:
   defaultvalue: v2
   display: API Version
   name: api_version
-  required: false
   type: 15
   section: Connect
   options:
   - v1
   - v2
+  required: false
 - additionalinfo: 'The first fetch is limited to the last 50,000 events (for each event type).'
   defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   section: Collect
   type: 0
+  required: false
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 30000 events). For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max events per fetch
   section: Collect
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   section: Connect
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Netskope Event Collector integration.
 display: Netskope Event Collector
 name: NetskopeEventCollector
@@ -60,27 +60,16 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display the events.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - default: false
-      description: The maximum number of alerts to return (maximum value - 10000).
-      isArray: false
+    - description: The maximum number of alerts to return (maximum value - 10000).
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns events extracted from SaaS traffic and or logs.
-    execution: false
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

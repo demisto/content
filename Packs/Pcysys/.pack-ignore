@@ -2,8 +2,8 @@
 ignore=RM102,RM104
 
 [file:Pcysys.yml]
-ignore=IN136,IN145
-
+ignore=IN136
 
 [file:Pcysys_image.png]
 ignore=IM111
+

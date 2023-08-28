@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import gzip
 import hashlib
@@ -7,8 +9,6 @@ from typing import Any, Dict, Tuple
 
 import urllib3
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
