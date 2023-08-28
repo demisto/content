@@ -4,6 +4,10 @@
       "type": "string",
       "is_array": false
     },
+    "email": {
+      "type": "string",
+      "is_array": false
+    },
     "application": {
       "type": "string",
       "is_array": false
