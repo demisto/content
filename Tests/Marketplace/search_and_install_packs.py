@@ -46,7 +46,7 @@ GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}
 @lru_cache
 def get_env_var(var_name: str) -> str:
     """
-    Get an environment variable.
+    Get an environment variableeeeee.
     This method adds a cache layer to the 'os.getenv' method, and raises an error if the variable is not set.
 
     Args:
