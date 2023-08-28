@@ -837,7 +837,7 @@ def _update_fields(issue_id, new_data):
 
 def get_organizations_command(project_key=None, start=0, limit=50, account_id=None):
     if project_key:
-        url= f'/rest/servicedeskapi/servicedesk/{project_key}/organization'
+        url = f'/rest/servicedeskapi/servicedesk/{project_key}/organization'
     else:
         url = '/rest/servicedeskapi/organization'
     body = {
