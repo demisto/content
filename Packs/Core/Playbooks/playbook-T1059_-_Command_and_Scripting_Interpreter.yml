@@ -1572,7 +1572,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- T1059 - Command and Scripting Interpreter - Test
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
