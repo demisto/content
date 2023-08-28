@@ -28,27 +28,27 @@ def print_char_values(pw):
 
 def generate_password(args: Dict[str, Any]) -> CommandResults:
     is_debug = argToBoolean(args.get('debug'))
-    min_lowercase = arg_to_number(args.get('min_lcase')) or DEFAULT_MIN
-    max_lowercase = arg_to_number(args.get('max_lcase')) or DEFAULT_MAX
-    min_uppercase = arg_to_number(args.get('min_ucase')) or DEFAULT_MIN
-    max_uppercase = arg_to_number(args.get('max_ucase')) or DEFAULT_MAX
-    min_digits = arg_to_number(args.get('min_digits')) or DEFAULT_MIN
-    max_digits = arg_to_number(args.get('max_digits')) or DEFAULT_MAX
-    min_symbols = arg_to_number(args.get('min_symbols')) or DEFAULT_MIN
-    max_symbols = arg_to_number(args.get('max_symbols')) or DEFAULT_MAX
+    min_lowercase = arg_to_number(args.get('min_lcase', DEFAULT_MIN))
+    max_lowercase = arg_to_number(args.get('max_lcase', DEFAULT_MAX))
+    min_uppercase = arg_to_number(args.get('min_ucase', DEFAULT_MIN))
+    max_uppercase = arg_to_number(args.get('max_ucase', DEFAULT_MAX))
+    min_digits = arg_to_number(args.get('min_digits', DEFAULT_MIN))
+    max_digits = arg_to_number(args.get('max_digits', DEFAULT_MAX))
+    min_symbols = arg_to_number(args.get('min_symbols', DEFAULT_MIN))
+    max_symbols = arg_to_number(args.get('max_symbols', DEFAULT_MAX))
 
-    if min(min_uppercase, min_lowercase, min_digits, min_symbols) < 0:
+    if min(min_uppercase, min_lowercase, min_digits, min_symbols) < 0:  # type:ignore[type-var,operator]
         raise DemistoException("All numeral arguments must be positive.")
 
-    if sum((min_uppercase, min_lowercase, min_digits, min_symbols)) == 0:
+    if sum((min_uppercase, min_lowercase, min_digits, min_symbols)) == 0:  # type:ignore[arg-type]
         raise DemistoException("error: At least one of the following arguments should be above 0: "
                                "min_uppercase, min_lowercase, min_digits, min_symbols")
 
     # randomize the amount of characters we get as per parameters
-    num_upper = randomize_number_in_range(min_uppercase, max_uppercase)
-    num_lower = randomize_number_in_range(min_lowercase, max_lowercase)
-    num_digits = randomize_number_in_range(min_digits, max_digits)
-    num_symbols = randomize_number_in_range(min_symbols, max_symbols)
+    num_upper = randomize_number_in_range(min_uppercase, max_uppercase)  # type:ignore[arg-type]
+    num_lower = randomize_number_in_range(min_lowercase, max_lowercase)  # type:ignore[arg-type]
+    num_digits = randomize_number_in_range(min_digits, max_digits)  # type:ignore[arg-type]
+    num_symbols = randomize_number_in_range(min_symbols, max_symbols)  # type:ignore[arg-type]
 
     if num_upper + num_lower + num_digits + num_symbols == 0:
         raise DemistoException("error: insane password. No character length.")
