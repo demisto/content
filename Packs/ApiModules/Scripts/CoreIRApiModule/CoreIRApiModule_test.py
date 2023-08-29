@@ -3275,7 +3275,7 @@ def test_list_risky_users_hosts_command_raise_exception(
     )
 
     result = list_risky_users_or_host_command(client, command, {id_: "test"})
-    assert result.readable_output == 'The user test was not found'
+    assert result.readable_output == f'The {command} test was not found'
 
 
 @pytest.mark.parametrize(
