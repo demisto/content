@@ -156,10 +156,16 @@ class Client(BaseClient):
         )
 
     def send_notification(self, entity: str, emails: List[str]):
+        payload = {
+            'requestData': {
+                'entityId': entity,
+                'emails': emails
+            }
+        }
         return self._call_api(
-            'GET',
+            'POST',
             'soar/notify',
-            params={'entity': entity, 'emails': emails}
+            json_data=payload
         )
 
 
