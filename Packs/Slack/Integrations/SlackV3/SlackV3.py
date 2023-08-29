@@ -2614,8 +2614,9 @@ def list_channels():
             if channel.get('creator'):
                 creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
                                                                    body={'user': channel.get('creator')})
-                if creator_details_response:
-                    entry['Creator'] = creator_details_response.get('user', {}).get('name')
+                if creator_details_response.get('user'):
+                    user_details: dict[str, str] = creator_details_response.get('user', {})
+                    entry['Creator'] = user_details.get('name')
             context.append(entry)
         readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
         demisto.results({
