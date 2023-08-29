@@ -2702,14 +2702,13 @@ def conversation_replies():
     """
     args = demisto.args()
     channel_id = args.get('channel_id')
-    thread_id = args.get('thread_id')
-    limit = args.get('limit', 100)
     context: list = []
     readable_output: str = ''
     body = {
         'channel': channel_id,
-        'ts': thread_id,
-        'limit': limit}
+        'ts': args.get('thread_timestamp'),
+        'limit': arg_to_number(args.get('limit'))
+    }
     raw_response = send_slack_request_sync(CLIENT, 'conversations.replies', http_verb="GET", body=body)
     messages = raw_response.get('messages', '')
     if not raw_response.get('ok'):
@@ -2731,11 +2730,8 @@ def conversation_replies():
                 user_details = user_details_response.get('user')
                 name = user_details.get('name')
                 full_name = user_details.get('real_name')
-                if 'reply_count' in message:
-                    reply_count = 'Yes'
-            else:
-                if 'reply_count' in message:
-                    reply_count = 'Yes'
+            if 'reply_count' in message:
+                reply_count = 'Yes'
             entry = {
                 'Type': message.get('type'),
                 'Text': message.get('text'),
