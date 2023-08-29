@@ -548,6 +548,15 @@ def content_records_to_incidents(content_records):
 
 
 def fetch_incidents(client: Client, last_run: Dict, first_fetch: str, max_fetch: int):
+    """
+    Logic:
+    1. get all the content-types to fetch
+    2. calculate the start/end time for each content type separately
+    3. get only max fetch of records from each content type + dedup records from last fetch
+    4. save all the fetched record ids + latest record time for each content type in the last run
+    5. filter records that do not match some filters
+    6. parse records into XSOAR incidents
+    """
     demisto.debug(f"last run start of fetch: {last_run}")
     content_types_to_fetch = get_content_types_to_fetch(client)
     demisto.debug(f'Starting to fetch the following content types: {content_types_to_fetch}')
