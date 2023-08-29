@@ -120,7 +120,12 @@ def main():
             try:
                 raw_log = get_raw_log(session, concentrator_ip, concentrator_port)
                 if raw_log is not None and len(raw_log) >= 1:
-                    rsa_rawlogs.append({"date": alert["created"], "id": alert["id"], "name": raw_log[0]["log"], "type": "Raw event"})
+                    rsa_rawlogs.append({
+                        "date": alert["created"],
+                        "id": alert["id"],
+                        "name": raw_log[0]["log"],
+                        "type": "Raw event"
+                    })
             except RSAError as e:
                 return_error(f"Error: {e}")
             except ValueError as e:
