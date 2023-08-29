@@ -77,6 +77,31 @@ Commands affected by this limitation are:
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+### Configure incident mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and RSA NetWitness incidents (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+
+1. Navigate to **Settings** > **Integrations** > **Instances**.
+2. Search for **RSANetWitness v11.5** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in RSA Netwitness incidents will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in RSA Netwitness incidents (`status`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and RSA Netwitness incidents will be reflected in both directions.
+    - None - Turns off incident mirroring.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident  is closed in RSA Netwitness.
+
+Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and RSA Netwitness.
+- When *mirroring in* incidents from RSA Netwitness to Cortex XSOAR:
+  - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in RSA Netwitness that determines whether the incident was closed is the `status` field.
+- Journal entry and task are currently not mirror
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

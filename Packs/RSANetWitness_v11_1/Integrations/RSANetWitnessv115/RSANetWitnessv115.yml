@@ -70,7 +70,8 @@ configuration:
   required: false
   type: 15
 - defaultvalue: "true"
-  display: Mirror closure
+  display: Close Mirrored XSOAR Incident
+  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA Netwitness.
   name: close_incident
   required: false
   type: 8
