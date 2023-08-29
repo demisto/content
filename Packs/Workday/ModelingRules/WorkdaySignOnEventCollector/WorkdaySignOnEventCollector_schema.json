@@ -1,0 +1,152 @@
+{
+    "workday_sign_on_raw": {
+        "_time": {
+            "type": "string",
+            "is_array": true
+        },
+        "signon_datetime": {
+            "type": "string",
+            "is_array": true
+        },
+        "user_name": {
+            "type": "string",
+            "is_array": true
+        },
+        "successful": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "failed_signon": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "invalid_credentials": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "password_changed": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "forgotten_password_reset_request": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "authentication_failure_message": {
+            "type": "string",
+            "is_array": true
+        },
+        "signon_ip_address": {
+            "type": "string",
+            "is_array": true
+        },
+        "signoff_datetime": {
+            "type": "string",
+            "is_array": true
+        },
+        "authentication_channel": {
+            "type": "string",
+            "is_array": true
+        },
+        "authentication_type": {
+            "type": "string",
+            "is_array": true
+        },
+        "workday_account_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "system_account_signon_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "device_type_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "request_originator_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "invalid_for_authentication_channel": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "invalid_for_authentication_policy": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "required_password_change": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "account_disabled_or_expired": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "requires_mfa": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "mfa_authentication_exempt": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "has_grace_period_for_mfa": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "saml_identity_provider_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "browser_type": {
+            "type": "string",
+            "is_array": true
+        },
+        "operating_system": {
+            "type": "string",
+            "is_array": true
+        },
+        "location": {
+            "type": "string",
+            "is_array": true
+        },
+        "access_restriction_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "mfa_enrollment": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "multi_factor_authentication_type_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "duo_authentication_type_reference": {
+            "type": "string",
+            "is_array": true
+        },
+        "short_session_id": {
+            "type": "string",
+            "is_array": true
+        },
+        "device_is_trusted": {
+            "type": "boolean",
+            "is_array": true
+        },
+        "api_client_id": {
+            "type": "string",
+            "is_array": true
+        },
+        "tls_version": {
+            "type": "string",
+            "is_array": true
+        },
+        "tenant_access_read_only": {
+            "type": "boolean",
+            "is_array": true
+        }
+    }
+}

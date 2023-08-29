@@ -18,9 +18,6 @@ display: Workday Signon Event Generator (Beta)
 name: WorkdaySignonEventGenerator
 system: true
 script:
-  commands:
-    - name: Deletethis
-      description: Returns Sign On events extracted from Workday.
   runonce: false
   script: '-'
   type: python
