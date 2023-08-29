@@ -10,14 +10,7 @@ configuration:
   name: google_service_creds
   defaultvalue: ""
   type: 4
-  hidden: false
   required: false
-- displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
-  name: credentials_google_service
-  hiddenusername: true
-  hidden: true
-  type: 9
-  required: true
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
@@ -44,6 +37,14 @@ configuration:
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
   defaultvalue: 'CreationTime'
+  type: 0
+  required: false
+- display: Fetching incidents name field
+  name: fetch_name
+  type: 0
+  required: false
+- display: ""
+  name: project_id
   type: 0
   required: false
 script:

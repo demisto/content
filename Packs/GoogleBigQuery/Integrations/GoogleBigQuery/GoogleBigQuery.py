@@ -131,7 +131,7 @@ def query(query_string, project_id, location, allow_large_results, default_datas
 def get_query_results(query_to_run=None):
     args = demisto.args()
     query_to_run = query_to_run or args['query']
-    project_id = args.get('project_id', None)
+    project_id = demisto.params().get('project_id', None)
     location = args.get('location', None)
     allow_large_results = args.get('allow_large_results', None)
     default_dataset = args.get('default_dataset', None)
@@ -245,7 +245,7 @@ def row_to_incident(row):
     incident = {}
     raw = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
     incident["rawJSON"] = json.dumps(raw)
-    incident_name_field = demisto.params().get("incident_name_field")
+    incident_name_field = demisto.params().get("fetch_name")
     if incident_name_field and incident_name_field in raw:
         incident["name"] = raw[incident_name_field]
     return incident
