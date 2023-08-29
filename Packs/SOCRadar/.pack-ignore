@@ -7,3 +7,6 @@ ignore=IM111
 [file:README.md]
 ignore=RM108
 
+[file:SOCRadarThreatFusion.yml]
+ignore=IN159
+

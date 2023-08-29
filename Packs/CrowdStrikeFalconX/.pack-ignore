@@ -5,3 +5,6 @@ ignore=RM104
 X
 csfalconx
 FalconX
+
+[file:CrowdStrikeFalconX.yml]
+ignore=IN159

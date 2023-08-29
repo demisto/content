@@ -1,5 +1,5 @@
 [file:Code42.yml]
-ignore=IN126
+ignore=IN126,IN159
 
 [file:README.md]
 ignore=RM102

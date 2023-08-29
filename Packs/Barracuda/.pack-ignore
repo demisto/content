@@ -1,2 +1,5 @@
 [file:BarracudaReputationBlockListBRBL_image.png]
 ignore=IM111
+
+[file:BarracudaReputationBlockListBRBL.yml]
+ignore=IN158

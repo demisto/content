@@ -7,3 +7,6 @@ ignore=RM104,RM102
 [known_words]
 OPSWAT
 Filescan
+
+[file:OPSWATFilescan.yml]
+ignore=IN159

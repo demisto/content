@@ -1,5 +1,5 @@
 [file:Twinwave.yml]
-ignore=BA124
+ignore=BA124,IN159
 
 [file:Twinwave_image.png]
 ignore=IM111

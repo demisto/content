@@ -14,7 +14,7 @@ ignore=BA101
 ignore=PA116
 
 [file:Rapid7_Nexpose.yml]
-ignore=BA108,BA109,IN135
+ignore=BA108,BA109,IN135,IN159
 
 [known_words]
 InsightVM

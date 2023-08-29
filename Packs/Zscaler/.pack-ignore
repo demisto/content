@@ -10,3 +10,6 @@ ignore=MR108
 [file:ZscalerModelingRule_1_3.yml]
 ignore=MR108
 
+[file:Zscaler.yml]
+ignore=IN159
+

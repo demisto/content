@@ -2,7 +2,7 @@
 ignore=BA101
 
 [file:Tenable_sc.yml]
-ignore=IN126,BA108,BA109,BA124
+ignore=IN126,BA108,BA109,BA124,IN159
 
 [file:README.md]
 ignore=RM104

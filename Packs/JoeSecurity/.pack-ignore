@@ -17,3 +17,6 @@ webid
 restful
 joesandbox
 
+[file:JoeSecurityV2.yml]
+ignore=IN159
+

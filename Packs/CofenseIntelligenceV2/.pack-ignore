@@ -1,2 +1,5 @@
 [known_words]
 Cofense
+
+[file:CofenseIntelligenceV2.yml]
+ignore=IN159

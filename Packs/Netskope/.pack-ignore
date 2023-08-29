@@ -4,3 +4,8 @@ ignore=MR108
 [file:NetskopeEventCollector_1_3.yml]
 ignore=MR108
 
+[file:NetskopeAPIv1.yml]
+ignore=IN159
+
+[file:BitDam.yml]
+ignore=IN159

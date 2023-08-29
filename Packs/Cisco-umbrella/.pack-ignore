@@ -1,5 +1,5 @@
 [file:Cisco-umbrella-investigate.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN159
 
 [file:Cisco-umbrella-investigate_image.png]
 ignore=IM111

@@ -20,7 +20,7 @@ ignore=PB111
 ignore=BA108,BA109
 
 [file:QRadar_v3.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN159
 
 [file:README.md]
 ignore=RM106

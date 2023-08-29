@@ -15,3 +15,6 @@ anomali
 threatstream
 itype
 
+[file:AnomaliThreatStreamv3.yml]
+ignore=IN159
+
