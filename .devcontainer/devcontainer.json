@@ -97,8 +97,8 @@
 // "overrideFeatureInstallOrder": [
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
-"onCreateCommand": "bash .devcontainer/createCommand.sh",
-"postStartCommand": "poetry install",
+"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+"postStartCommand": "poetry install && poetry run demisto-sdk pre-commit > /dev/null 2>&1 || true",
 "hostRequirements": {
 	"cpus": 4,
 	"memory": "8gb",
