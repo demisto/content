@@ -6,9 +6,7 @@ echo "Fixing permissions"
 
 sudo chown demisto .venv
 sudo chown demisto node_modules
-sudo chown demisto /workspaces
-sudo chown demisto /workspaces/content
-sudo chown demisto /workspaces/content/.vscode
+sudo chown -R demisto /workspaces --exclude /workspaces/content/Packs --exclude /workspaces/content/Tests
 sudo chown -R demisto /workspaces/content/.git
 sudo chown -R demisto $HOME
 
