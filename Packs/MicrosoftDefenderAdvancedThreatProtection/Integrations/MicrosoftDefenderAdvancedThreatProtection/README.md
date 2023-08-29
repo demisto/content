@@ -7169,3 +7169,97 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### microsoft-atp-library-upload-file
+
+---
+Upload file to live response library.
+
+#### Base Command
+
+`microsoft-atp-library-upload-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | EntryID of the file to upload. | Required |
+| description | Description to be added when upload a file. | Required |
+| has_parameters  | Whether the file as parameter. (Default is False) |Optional |
+| override_if_exists  | Whether to override the file if it already exists. Default is True) | Optional |
+
+
+#### Context Example
+
+```json
+{
+  "MicrosoftATP": {
+    "Library": [
+      {
+        "createdBy": "2937973e-bc58-48c6-a2ef-7bc060c6b6b0",
+        "creationTime": "2023-08-29T14:24:01.16254Z",
+        "description": "Test description",
+        "fileName": "my_filename.py",
+        "hasParameters": false,
+        "lastUpdatedTime": "2023-08-29T14:24:01.16254Z",
+        "parametersDescription": null,
+        "sha256": "541bf7bca0a5b9f3962eb15bb8a35c119c6c16ea1c9f7d54c5787a81011046ff"
+      }
+    ]
+  }
+}
+```
+
+### microsoft-atp-library-list-file
+
+---
+List live response library files.
+
+#### Base Command
+
+`microsoft-atp-library-list-file`
+
+#### Input
+
+There are no input arguments for this command.
+
+
+#### Context Example
+
+```json
+{
+  "MicrosoftATP": {
+    "Library": [
+      {
+        "createdBy": "2937973e-bc58-48c6-a2ef-7bc060c6b6b0",
+        "creationTime": "2023-08-29T14:24:01.16254Z",
+        "description": "Test description",
+        "fileName": "my_filename.py",
+        "hasParameters": false,
+        "lastUpdatedTime": "2023-08-29T14:24:01.16254Z",
+        "parametersDescription": null,
+        "sha256": "541bf7bca0a5b9f3962eb15bb8a35c119c6c16ea1c9f7d54c5787a81011046ff"
+      }
+    ]
+  }
+}
+```
+
+### microsoft-atp-library-delete-file
+
+---
+Delete live response library files.
+
+#### Base Command
+
+`microsoft-atp-library-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filename | The filename to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.

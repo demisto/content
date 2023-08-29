@@ -5367,7 +5367,7 @@ def get_successfull_action_results_as_info(client, res):
         script_result = None
     return [
         CommandResults(
-            outputs_prefix='MicrosoftATP.LiveResponseAction',
+            outputs_prefix=f'MicrosoftATP.LiveResponseAction(val.action_id === "{machine_action_id}")',
             outputs=script_result if script_result else res,
             readable_output=tableToMarkdown('Script Results:', script_result, is_auto_json_transform=True)
             if script_result else 'Could not retrieve script results.'
@@ -5427,7 +5427,7 @@ def get_file_get_successfull_action_results(client, res):
         'Commands': res.get('commands')
     }
     return [fileResult('Response Result.gz', f_data.content), CommandResults(
-        outputs_prefix='MicrosoftATP.LiveResponseAction',
+        outputs_prefix=f'MicrosoftATP.LiveResponseAction(val.action_id === "{machine_action_id}")',
         outputs=res,
         readable_output=tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True)
 
