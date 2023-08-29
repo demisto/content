@@ -40,7 +40,6 @@
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
 # Important Integrations
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
 /Packs/QRadar/Integrations/QRadar_v3/* @ilaner
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
