@@ -1,5 +1,9 @@
 import yaml
 
+"""
+Before running tests locally, please make sure there is not a conflicting conftest.py file.
+"""
+
 
 def was_grid_field_value_found(playbook_tasks_data, grid_field_location: str, value: str) -> bool:
     """_summary_
