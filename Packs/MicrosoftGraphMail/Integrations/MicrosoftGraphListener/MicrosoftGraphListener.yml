@@ -1,7 +1,4 @@
 category: Cloud Services
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -12,6 +9,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
@@ -19,12 +17,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - name: creds_enc_key
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
   type: 4
@@ -73,6 +73,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
   type: 4
@@ -101,6 +102,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -147,7 +149,6 @@ configuration:
   name: self_deployed
   type: 8
   section: Connect
-  advanced: false
   required: false
 - display: Incident type
   name: incidentType
@@ -735,13 +736,96 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - description: display name of new folder
+      name: new_folder_name
+      required: true
+    - description: The ID of the parent folder under which to create a new folder.
+      name: parent_folder_id
+    - description: Flag for rate limit retry
+      name: ran_once_flag
+    description: Creates a new folder under the specified folder (parent).
+    name: msgraph-mail-create-folder
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: The Folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: number
+  - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder
+      name: destination_folder_id
+      required: true
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - description: flag for rate limit retry
+      name: ran_once_flag
+    description: Moves a message to a different folder.
+    name: msgraph-mail-move-email
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - description: The maximum number of mail folder lists to return. Default is 20.
+      name: limit
+    - description: flag for rate limit retry
+      name: ran_once_flag
+    description: Returns the mail folder list directly under the root folder.
+    name: msgraph-mail-list-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: Number of child folders
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: Folder display name
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: Target folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: Parent folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread emails in the folder.
+      type: number
+  dockerimage: demisto/crypto:1.0.0.72229
   isfetch: true
   script: ''
   type: python
   subtype: python3
+  runonce: false
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
-defaultclassifier: Microsoft Graph Mail Single User
-defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
