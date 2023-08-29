@@ -45,7 +45,7 @@ To find the appropriate Endpoint URI, use the following resources:
 ## Log ingestion
 
 Note: In order to parse the timestamp correctly, make sure that the timestamp field is in UTC time zone (timestamp ends with "Z").
-The supported time format is yyyy-MM-ddThh:mm:%E3S (2021-12-08 10:00:00.123Z). The relevant field is "lastEventTime".
+The supported time format are yyyy-MM-ddThh:mm:%E3S (2021-12-08 10:00:00.123Z) or yyyy-MM-ddThh:mm:ss (2021-07-01T10:00:00Z). The relevant field is "lastEventTime".
 
 
 ## Licence information
