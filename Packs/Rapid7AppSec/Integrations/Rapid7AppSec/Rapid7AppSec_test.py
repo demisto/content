@@ -13,7 +13,7 @@ from Rapid7AppSec import (ATTACK, DEFAULT_OUTPUT_KEY_FIELD,
                           OutputPrefix, ReadableOutputs, RequestAction,
                           UrlPrefix, generate_readable_output_message)
 
-EXAMPLE_ID = "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+EXAMPLE_ID = "1111"
 
 
 def load_mock_response(file_name: str) -> str:
