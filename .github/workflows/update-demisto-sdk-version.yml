@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       reviewer:
-        description: The reviewer of the PR.
+        description: The reviewer of the PR
         required: true
         type: string
       release_version:
