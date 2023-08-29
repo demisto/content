@@ -5030,28 +5030,25 @@ def test_conversation_replies(mocker):
         Conversations has replies.
     """
     import SlackV3
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call')
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_timestamp': 1234, 'limit': 1})
     mocker.patch.object(demisto, 'results')
     slack_response_mock = {
         'ok': True,
-        'messages': [{'subtype': '', 'error': 'example',
-                      'text': 'this is an example',
-                      'type': 'word',
-                      'userId': 'dummy ',
-                      'user': 'dummy',
-                      'name': 'dummy',
-                      'timestamp': UNEXPIRED_TIMESTAMP}]
-    }
-    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
-    set_integration_context({
-        'replies': json.loads(MESSAGES)
-    })
+        'messages': json.loads(MESSAGES)}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync',
+                        side_effect=[slack_response_mock,
+                                     {'user': js.loads(USERS)[0]},
+                                     {'user': js.loads(USERS)[0]}])
     SlackV3.conversation_replies()
-    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID - 1'\
-        '\n|FullName|IsParent|Name|Text|ThreadTimeStamp' \
-        '|TimeStamp|Type|UserId|\n' \
-        '|---|---|---|---|---|---|---|---|\n|' \
-        ' N/A | No | N/A | this is an example | ' \
-        ' |  | word | dummy |\n'
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID' \
+                                                               ' - 1\n|FullName|IsParent|Name|Text|ThreadTimeStamp' \
+                                                               '|TimeStamp|Type|UserId|\n|---|---|---|---|---|---' \
+                                                               '|---|---|\n| spengler | No | spengler | There are ' \
+                                                               'two types of people in this world, those who can ' \
+                                                               'extrapolate from incomplete data... | ' \
+                                                               ' | 1690479909.804939 | message | U047D5QSZD4 ' \
+                                                               '|\n| spengler | Yes | spengler | Give me a fresh dad' \
+                                                               ' joke | 1690479887.647239 | 1690479887.647239 | message |' \
+                                                               ' U047D5QSZD4 |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
