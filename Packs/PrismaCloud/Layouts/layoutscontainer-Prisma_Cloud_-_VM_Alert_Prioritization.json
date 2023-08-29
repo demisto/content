@@ -46,7 +46,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 22,
                                 "id": "19d3ced0-b339-11e9-b119-d93d58ec6fe8",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -160,9 +160,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "prismacloudreason",
+                                "fieldId": "prismaclouddismissalnote",
                                 "height": 22,
-                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
+                                "id": "101ae170-35f9-11ee-8c1f-a16407f8f329",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -179,10 +179,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
+                                "fieldId": "prismacloudreason",
+                                "height": 22,
+                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
                                 "fieldId": "firstseen",
                                 "height": 22,
                                 "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -193,7 +204,7 @@
                                 "fieldId": "lastseen",
                                 "height": 22,
                                 "id": "a6b97e50-f766-11e9-8c27-6359f1848ae7",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -204,7 +215,7 @@
                                 "fieldId": "riskscore",
                                 "height": 22,
                                 "id": "b062f170-f766-11e9-8c27-6359f1848ae7",
-                                "index": 2,
+                                "index": 3,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -215,7 +226,7 @@
                                 "fieldId": "riskrating",
                                 "height": 22,
                                 "id": "aa6fa880-f766-11e9-8c27-6359f1848ae7",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -711,6 +722,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }
