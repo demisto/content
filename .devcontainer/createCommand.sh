@@ -9,6 +9,7 @@ sudo chown demisto node_modules
 sudo chown demisto /workspaces
 sudo chown demisto /workspaces/content
 sudo chown demisto /workspaces/content/.vscode
+sudo chown -R demisto /workspaces/content/.git
 sudo chown -R demisto $HOME
 
 echo "Setting up VSCode paths"
@@ -21,6 +22,8 @@ rm -f .env
 echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
 echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
-echo "Setting up content dependencies"
+echo "Setting up git safe directory"
 git config --global --add safe.directory /workspaces/content
+
+echo "Setting up content dependencies"
 .hooks/bootstrap
