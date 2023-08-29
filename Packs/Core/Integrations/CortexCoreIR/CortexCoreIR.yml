@@ -1697,6 +1697,7 @@ script:
       required: true
     - description: User’s email address.
       name: email
+      required: true
     description: Reports to WildFire about incorrect hash verdict through Cortex.
     execution: true
     name: core-report-incorrect-wildfire
@@ -2849,7 +2850,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68300
 tests:
 - No tests
 fromversion: 6.2.0

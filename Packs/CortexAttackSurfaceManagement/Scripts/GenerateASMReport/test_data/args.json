@@ -2,7 +2,7 @@
   "alert_name": "Some RDP Alert",
   "alert_details": "Details about the alert here",
   "asmalertsummary": [
-    { "EntryID": "dumm123", "Link": "https://xsiam.com/link" }
+    { "entryid": "dumm123", "link": "https://xsiam.com/link" }
   ],
   "asm_cloud": [
     {
@@ -15,10 +15,10 @@
   ],
   "asm_data_collection": [
     {
-      "Answerer": "fake_user@domain.com",
-      "Options": "NoAutomatedRemediation",
-      "Selected": "File a ServiceNow Ticket",
-      "Timestamp": "1666033665586"
+      "answerer": "fake_user@domain.com",
+      "options": "NoAutomatedRemediation",
+      "selected": "File a ServiceNow Ticket",
+      "timestamp": "1666033665586"
     }
   ],
   "asm_notification": [
@@ -40,18 +40,18 @@
   ],
   "asm_service_detection": [
     {
-      "ScanDone": "True",
-      "ScanNum": "1",
-      "ScanResult": "Open",
-      "ScanState": "open",
-      "Timestamp": "1666033432"
+      "scandone": "True",
+      "scannum": "1",
+      "scanresult": "Open",
+      "scanstate": "open",
+      "timestamp": "1666033432"
     },
     {
-      "ScanDone": "True",
-      "ScanNum": "2",
-      "ScanResult": "Open",
-      "ScanState": "open",
-      "Timestamp": "1666033738"
+      "scandone": "True",
+      "scannum": "2",
+      "scanresult": "Open",
+      "scanstate": "open",
+      "timestamp": "1666033738"
     }
   ],
   "asm_service_owner": [
@@ -91,11 +91,11 @@
   ],
   "asm_tags": [
     {
-      "Key": "Name",
-      "Value": "fake-ssh-ubuntu18",
-      "Source": "AWS"
+      "key": "Name",
+      "value": "fake-ssh-ubuntu18",
+      "source": "AWS"
     },
-    { "Key": "env", "Value": "sbx", "Source": "AWS" }
+    { "key": "env", "value": "sbx", "source": "AWS" }
   ],
  "report_type": "summary"
 }

@@ -4742,6 +4742,7 @@ Sends mail using Gmail.
 | cc | The additional recipient email address (CC). | Optional | 
 | bcc | The additional recipient email address (BCC). | Optional | 
 | htmlBody | The content (body) of the email to be sent in HTML format. | Optional | 
+| force_handle_htmlBody | Choose true if you wish to handle html body as MimeMultipart. Possible values are: False, True. Default is False. | Optional |
 | replyTo | The address that needs to be used to reply to the message. | Optional | 
 | attachNames | A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5. | Optional | 
 | attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 

@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
 
 import hmac
@@ -14,6 +13,8 @@ import requests
 
 from datetime import timedelta
 from urllib.error import HTTPError
+from xml.etree import ElementTree
+
 
 ''' GLOBALS/PARAMS '''
 
@@ -704,20 +705,30 @@ def test_module():
     list_managed_url()
 
 
+def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
+    if not query_xml:
+        return ()
+
+    if not (fields := ElementTree.fromstring(query_xml).find('.//return-fields')):  # noqa:S314 - argument set by user
+        demisto.debug("could not find a 'return-fields' section - will only return default fields")
+        return ()
+    return tuple(field.text for field in fields if field is not None and field.text)
+
+
+DEFAULT_QUERY_KEYS = frozenset(('subject', 'displayfrom', 'displayto', 'receiveddate', 'size', 'attachmentcount', 'status', 'id'))
+
+
 def query(args: dict):
-    headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status', 'ID']
+    query_xml = args.get('queryXml') or ''
+    additional_keys = sorted(set(parse_queried_fields(query_xml)).difference(DEFAULT_QUERY_KEYS))  # non-default keys in query)
+    headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status',
+               'ID'] + additional_keys
     contents = []
     messages_context = []
     limit = arg_to_number(args.get('limit')) or 20
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
 
-    query_xml = ''
-
-    if args.get('queryXml'):
-        query_xml = args.get('queryXml', '')
-    else:
-        query_xml = parse_query_args(args)
     if args.get('dryRun') == 'true':
         return query_xml
 
@@ -734,16 +745,18 @@ def query(args: dict):
                                           page_size=page_size)
 
     for message in messages:
+        additional_dict = {k: message[k] for k in additional_keys}
+
         contents.append({
             'Subject': message.get('subject'),
-            'From': message.get('displayfrom'),
-            'To': message.get('displayto'),
+            'Display From': message.get('displayfrom'),
+            'Display To': message.get('displayto'),
             'Received Date': message.get('receiveddate'),
             'Size': message.get('size'),
             'Attachment Count': message.get('attachmentcount'),
             'Status': message.get('status'),
             'ID': message.get('id')
-        })
+        } | additional_dict)
         messages_context.append({
             'Subject': message.get('subject'),
             'Sender': message.get('displayfrom'),
@@ -753,7 +766,7 @@ def query(args: dict):
             'AttachmentCount': message.get('attachmentcount'),
             'Status': message.get('status'),
             'ID': message.get('id')
-        })
+        } | additional_dict)
 
     return {
         'Type': entryTypes['note'],

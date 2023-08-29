@@ -1,0 +1,741 @@
+{
+	"description": "Layout for Commvault security incidents",
+	"details": {
+		"sections": [{
+				"description": "More information on the access attempts ",
+				"fields": [{
+						"fieldId": "incident_app",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_src",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_srcntdomain",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_srcuser",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dest",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destntdomain",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_duration",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Access Info",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Work Plan",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "workplan"
+			},
+			{
+				"description": "",
+				"fields": [{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [{
+					"fieldId": "incident_details",
+					"isVisible": true
+				}],
+				"isVisible": true,
+				"name": "Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [{
+					"fieldId": "incident_labels",
+					"isVisible": true
+				}],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			},
+			{
+				"description": "",
+				"fields": [{
+					"fieldId": "incident_attachment",
+					"isVisible": true
+				}],
+				"isVisible": true,
+				"name": "Attachments",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": ""
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Bad or Suspicious Indicators",
+				"query": "reputation:Bad or reputation:Suspicious",
+				"queryType": "input",
+				"readOnly": true,
+				"type": "indicators"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Evidence",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "evidence"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Notes",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "notes"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Linked Incidents",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "linkedIncidents"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Incident Timeline",
+				"query": {
+					"categories": [
+						"incidentInfo"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Incident Files",
+				"query": {
+					"categories": [
+						"attachments"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Team",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "team"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Child Incidents",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "childInv"
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Automation Highlights",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "findings"
+			}
+		]
+	},
+	"detailsV2": {
+		"tabs": [{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultoriginatingclient",
+								"height": 22,
+								"id": "7ecb8780-bc1b-11ed-9a47-8f80b8fca606",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "commvaultoriginatingprogram",
+								"height": 22,
+								"id": "82a31c60-bc1b-11ed-9a47-8f80b8fca606",
+								"index": 7,
+								"listId": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "27f7f280-dada-11ed-87f8-a78b181dfc53",
+								"index": 8,
+								"listId": "caseinfoid-field-changed-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "commvaulteventtime",
+								"height": 53,
+								"id": "3d7fcff0-dea5-11ed-a290-d7c781065f89",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 2,
+								"listId": "caseinfoid-field-changed-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [{
+								"endCol": 2,
+								"fieldId": "description",
+								"height": 22,
+								"id": "14768c50-f630-11ed-89c2-ad0c3c7b2f25",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "externallink",
+								"height": 22,
+								"id": "1eff0c60-de98-11ed-a290-d7c781065f89",
+								"index": 1,
+								"listId": "caseinfoid-field-changed-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "eventid",
+								"height": 22,
+								"id": "5c0ff220-f632-11ed-bb13-5149437d4ee9",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultaffectedfilescount",
+								"height": 22,
+								"id": "27d2ea90-de99-11ed-a290-d7c781065f89",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultcreatedfilescount",
+								"height": 22,
+								"id": "299ef800-de99-11ed-a290-d7c781065f89",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultdeletedfilescount",
+								"height": 22,
+								"id": "2b42e400-de99-11ed-a290-d7c781065f89",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultmodifiedfilescount",
+								"height": 22,
+								"id": "3a43fc50-de99-11ed-a290-d7c781065f89",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultrenamedfilescount",
+								"height": 22,
+								"id": "3e29e910-de99-11ed-a290-d7c781065f89",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-770215b0-b8ff-11ed-ad59-5391792cfe0f",
+						"items": [{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "826546c0-b8ff-11ed-ad59-5391792cfe0f",
+								"index": 0,
+								"name": "Disable Data Aging",
+								"scriptId": "CommvaultSecurityIQ|||commvault-security-set-disable-data-aging",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "b0ab5230-bc1b-11ed-9a47-8f80b8fca606",
+								"index": 1,
+								"name": "Assign it to me",
+								"scriptId": "AssignToMeButton",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "fb2cddb0-e4f7-11ed-b26c-b9818f9a9e2f",
+								"index": 2,
+								"listId": "caseinfoid-field-changed-caseinfoid-770215b0-b8ff-11ed-ad59-5391792cfe0f",
+								"name": "Copy Files to War Room",
+								"scriptId": "CommvaultSecurityIQ|||commvault-security-get-copy-files-list-to-war-room",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "c364dea0-bc1b-11ed-9a47-8f80b8fca606",
+								"index": 3,
+								"listId": "caseinfoid-770215b0-b8ff-11ed-ad59-5391792cfe0f",
+								"name": "Close incident",
+								"scriptId": "Builtin|||closeInvestigation",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Quick Actions",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-4dc5b450-ce3e-11ed-b4f7-3ba099b2af3e",
+						"items": [{
+							"endCol": 6,
+							"fieldId": "commvaultfileslist",
+							"height": 106,
+							"id": "8b226420-d545-11ed-8c39-ad81194154e8",
+							"index": 0,
+							"sectionItemType": "field",
+							"startCol": 0
+						}],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Suspicious File List",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-f427c100-d9fe-11ed-8c09-0d1dcab22f95",
+						"items": [{
+								"endCol": 2,
+								"fieldId": "commvaultjobid",
+								"height": 22,
+								"id": "3bb85380-dacd-11ed-87f8-a78b181dfc53",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "starttime",
+								"height": 22,
+								"id": "ca8e7ed0-df74-11ed-b057-25d6f341267c",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "endtime",
+								"height": 22,
+								"id": "c579fd20-df74-11ed-b057-25d6f341267c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commvaultscannedfolderlist",
+								"height": 22,
+								"id": "49bb9030-df75-11ed-81f5-91fd9589a55c",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Job Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			}
+		]
+	},
+	"group": "incident",
+	"id": "Commvault Suspicious File Activity Layout",
+	"name": "Commvault Suspicious File Activity Layout",
+	"system": false,
+	"version": -1,
+	"fromVersion": "6.8.0"
+}

@@ -311,8 +311,7 @@ CHANGED_FILES = [
             PackSupportCondition,
             {},
             {
-                "should_skip": True,
-                "reason": "The pack is not xsoar supported. Pack MyPack support type is: partner.",
+                "should_skip": False,
             },
             {
                 "branch_metadata": {"support": "partner"},

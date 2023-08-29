@@ -431,7 +431,7 @@ script:
       required: true
     description: Reset user session token in Slack.
     name: slack-user-session-reset
-  dockerimage: demisto/slackv3:1.0.0.66900
+  dockerimage: demisto/slackv3:1.0.0.69226
   longRunning: true
   runonce: false
   script: '-'

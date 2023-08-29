@@ -166,6 +166,19 @@ class Client(BaseClient):
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/tags",
                                   json_data=args)
 
+    def add_alert_note(self, args: dict):
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/notes",
+                                  json_data=args)
+
+    def add_alert_details(self, args: dict):
+        if not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
+                               for key_value in argToList(args.get('details'))}
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/details",
+                                  json_data=args)
+
     def remove_alert_tag(self, args: dict):
         args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='DELETE',
@@ -181,6 +194,12 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/"
                                              f"{args.get('alert-id')}/attachments")
+
+    def get_alert_logs(self, args: dict):
+        alert_id = args.get('alert_id')
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/"
+                                             f"{alert_id}/logs")
 
     def get_schedule(self, args: dict):
         if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
@@ -626,6 +645,34 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     return get_request_command(client, args)
 
 
+def add_alert_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertNote',
+        **args
+    }
+    data = client.add_alert_note(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
+def add_alert_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertDetails',
+        **args
+    }
+    data = client.add_alert_details(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
 def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     args = {
         'request_type': ALERTS_SUFFIX,
@@ -646,6 +693,17 @@ def get_alert_attachments(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix="OpsGenie.Alert.Attachment",
         outputs=result.get("data"),
         readable_output=tableToMarkdown("OpsGenie Attachment", result.get("data")),
+        raw_response=result
+    )
+
+
+def get_alert_logs(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_alert_logs(args)
+    data = result.get("data")
+    return CommandResults(
+        outputs_prefix="OpsGenie.AlertLogs",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Logs", data),
         raw_response=result
     )
 
@@ -847,10 +905,12 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                    args.get('timeout_in_seconds', DEFAULT_POLL_TIMEOUT))))
     else:
         results_dict = results.json()
+        outputs_prefix = args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}')
         return CommandResults(
-            outputs_prefix=args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}'),
+            outputs_prefix=outputs_prefix,
             outputs=results_dict.get("data"),
-            readable_output=tableToMarkdown("OpsGenie", results_dict.get('data')),
+            readable_output=tableToMarkdown(f"OpsGenie - {pascalToSpace(outputs_prefix.split('.')[-1])}",
+                                            results_dict.get('data')),
             raw_response=results_dict
         )
 
@@ -1037,8 +1097,11 @@ def main() -> None:
             'opsgenie-get-escalations': get_escalations,
             'opsgenie-escalate-alert': escalate_alert,
             'opsgenie-add-alert-tag': add_alert_tag,
+            'opsgenie-add-alert-note': add_alert_note,
+            'opsgenie-add-alert-details': add_alert_details,
             'opsgenie-remove-alert-tag': remove_alert_tag,
             'opsgenie-get-alert-attachments': get_alert_attachments,
+            'opsgenie-get-alert-logs': get_alert_logs,
             'opsgenie-get-schedules': get_schedules,
             'opsgenie-get-schedule-overrides': get_schedule_overrides,
             'opsgenie-get-on-call': get_on_call,
