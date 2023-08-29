@@ -451,7 +451,7 @@ def filter_records(content_records, filter_data):
                                      filter_accepted_operations):
             filtered_records.append(record)
         else:
-            demisto.debug(f'filtered out record {record.get("id")}')
+            demisto.debug(f'filtered out record {record.get("Id")}')
     return filtered_records
 
 
