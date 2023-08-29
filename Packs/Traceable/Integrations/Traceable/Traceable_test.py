@@ -1389,3 +1389,38 @@ def test_fixing_timestamp():
 
     now_time_str3 = Helper.end_datetime_to_string(now_time)
     assert now_time_str3 == (now_time_str1[:-1] + ".999Z")
+
+
+def test_set_app_url(mocker):
+    from Traceable import Client, fetch_incidents
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_app_url(None)
+    assert client.app_url == ""
+
+    client.set_app_url("")
+    assert client.app_url == ""
+
+    client.set_app_url("https://mock.url")
+    assert client.app_url == "https://mock.url"
+
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = private_api_type_response_handler
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+    assert "eventUrl" in incidents[0]
+    assert incidents[0]["eventUrl"] == ('https://mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time'
+                                        + '=90d&env=Fintech_app')
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_app_url(None)
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert "eventUrl" not in incidents[0]

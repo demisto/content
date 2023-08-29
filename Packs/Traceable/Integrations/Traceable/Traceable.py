@@ -287,8 +287,11 @@ class Client(BaseClient):
         self.securityScoreCategoryList = securityScoreCategoryList
 
     def set_app_url(self, app_url):
-        if app_url is not None and app_url != "":
+        if app_url:
+            demisto.info(f"Setting Traceable Platform UI Base Url to: {app_url}")
             self.app_url = app_url
+        else:
+            demisto.info("No Traceable Platform UI Base Url provided.")
 
     def set_threat_category_list(self, threatCategoryList):
         self.threatCategoryList = threatCategoryList
@@ -473,7 +476,7 @@ class Client(BaseClient):
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
-        demisto.debug("Query is: " + query)
+        demisto.debug(f"Span query: {query}")
         return self.graphql_query(query)
 
     def get_threat_events_query(
@@ -813,20 +816,23 @@ class Client(BaseClient):
                     + "?time=90d&env="
                     + parse.quote(domain_event["environment"]["value"])
                 )
-            else:
-                domain_event["eventUrl"] = None
 
             if Helper.is_error(trace_results, "data", "spans", "results"):
                 msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
                 demisto.info(msg)
             else:
-                demisto.debug(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
-                domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
+                demisto.info(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
+                if len(trace_results["data"]["spans"]["results"]) > 0:
+                    domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
+                else:
+                    demisto.info("Didn't find any spans. Span array length:"
+                                 + f" {len(trace_results['data']['spans']['results'])}."
+                                 + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
 
             events.append(domain_event)
             if first:
                 first = False
-                demisto.info(f"Domain Event: {json.dumps(domain_event, indent=3)}")
+                demisto.debug(f"Domain Event: {json.dumps(domain_event, indent=3)}")
             demisto.debug(
                 f"Complete Domain Event is: {json.dumps(domain_event, indent=2)}"
             )
@@ -887,7 +893,6 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         incident = {
             "name": item["name"],
             "displayname": item["displayname"],
-            "eventUrl": item["eventUrl"],
             "country": item["country"],
             "sourceip": item["sourceip"],
             "riskscore": item["riskscore"],
@@ -897,6 +902,10 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             ),
             "rawJSON": json.dumps(item),
         }
+        if ("eventUrl" in item
+                and item["eventUrl"] is not None
+                and item["eventUrl"] != ""):
+            incident["eventUrl"] = item["eventUrl"]
 
         incidents.append(incident)
 
