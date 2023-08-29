@@ -2084,13 +2084,13 @@ def list_incidents(client: Client, args: dict[str, str]):
 
 
 def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
-
+    look_back = arg_to_number(args.get('look_back', '1'))
     last_run = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
-        look_back=30,
+        look_back=look_back,
         date_format=DATETIME_FORMAT_MILISECONDS,
     )
 
@@ -2127,8 +2127,8 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
     
     # Add logs
-    for counter,incident in enumerate(incidents_res):
-        demisto.debug(f'Got {counter} The incident details from the API are: {str(incident)}')
+    for incident in incidents_res:
+        demisto.debug(f'The incident details from the API are: {str(incident)}')
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2139,8 +2139,8 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
     incidents: List[dict] = []
-    for counter,incident in enumerate(incidents_filtered):
-        demisto.debug(f'Got {counter} The filtered incident details from the API are: {str(incident)}')
+    for incident in incidents_filtered:
+        demisto.debug(f'The filtered incident details from the API are: {str(incident)}')
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
@@ -2156,7 +2156,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         fetch_limit=limit,
         start_fetch_time=start_time,
         end_fetch_time=end_time,
-        look_back=30,
+        look_back=look_back,
         created_time_field='createdAt',
         id_field='incidentId',
         date_format=DATETIME_FORMAT_MILISECONDS,
