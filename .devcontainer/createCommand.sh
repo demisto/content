@@ -8,7 +8,7 @@ sudo chown demisto .venv
 sudo chown demisto node_modules
 sudo chown demisto /workspaces
 sudo chown demisto /workspaces/content
-sudo chown demisto /workspaces/.vscode
+sudo chown demisto /workspaces/content/.vscode
 sudo chown -R demisto $HOME
 
 echo "Setting up VSCode paths"
