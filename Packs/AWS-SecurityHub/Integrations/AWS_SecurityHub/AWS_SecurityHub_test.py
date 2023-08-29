@@ -3,7 +3,7 @@ import demistomock as demisto
 import datetime
 from freezegun import freeze_time
 from CommonServerPython import IncidentStatus
-from AWS_SecurityHub import AWSClient, get_findings_command, fetch_incidents, list_members_command
+from AWS_SecurityHub import AWSClient, get_findings_command, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -143,10 +143,20 @@ FINDINGS = [{
 
 class MockClient:
 
+    def __init__(self, return_findings=True):
+        self.return_findings = return_findings
+
     def get_findings(self, **kwargs):
-        return {'Findings': FINDINGS}
+        if self.return_findings:
+            return {'Findings': FINDINGS}
+        return {'Findings': []}
 
     def batch_update_findings(self, **kwargs):
+        if kwargs["FindingIdentifiers"] == []:
+            raise Exception("<class 'botocore.errorfactory.InvalidInputException'> "
+                            "An error occurred (InvalidInputException) when calling "
+                            "the BatchUpdateFindings operation: Invalid parameter 'FindingIdentifiers'."
+                            " Size '0' is less than minimum value: 1. ")
         return {
             "ResponseMetadata": {
                 "RequestId": "RequestId",
@@ -184,10 +194,32 @@ def test_fetch_incidents(mocker):
     Then:
         - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
     """
+    from AWS_SecurityHub import fetch_incidents
     mocker.spy(demisto, 'setLastRun')
     client = MockClient()
     fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
+
+
+@freeze_time("2022-05-03")
+def test_fetch_with_archive_findings_without_findings(mocker):
+    """
+    Given:
+        - fetch incident with archive_findings parameter set to true.
+    When:
+        - Fetching finding as incident
+    Then:
+        - Verify that the fetch function terminate without errors.
+    """
+    from AWS_SecurityHub import fetch_incidents
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
+    client = MockClient(return_findings=False)
+    try:
+        fetch_incidents(client, 'Low', True, None, 'Both', None, None, None)
+        assert set_last_run_mocker.call_args[0][0]['lastRun'] == '2022-04-18T00:00:00+00:00'
+    except Exception:
+        raise AssertionError('Fail - error message was raised')
 
 
 @freeze_time("2021-03-14T13:34:14.758295Z")
@@ -200,6 +232,7 @@ def test_fetch_incidents_with_filters(mocker):
     Then:
         - Check the filters to get_findings.
     """
+    from AWS_SecurityHub import fetch_incidents
     expected_filters = {
         'CreatedAt': [{
             'Start': '2018-10-24T14:13:20+00:00',

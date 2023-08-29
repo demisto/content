@@ -826,7 +826,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
                         'next_token': next_token})
     demisto.incidents(incidents)
 
-    if archive_findings:
+    if archive_findings and findings:
         kwargs = {
             'FindingIdentifiers': [
                 {'Id': finding['Id'], 'ProductArn': finding['ProductArn']} for finding in findings
@@ -843,7 +843,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:  # type: ignore
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -870,7 +870,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
             }
         ]
     }
-    response = client.get_findings(Filters=filters)
+    response = client.get_findings(Filters=filters)  # type: ignore
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     incident_last_update = finding.get('UpdatedAt', '')
@@ -901,7 +901,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:  # type: ignore
     """
     Mirrors out local changes to the remote system.
     Args:
@@ -955,7 +955,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
 
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
-        response = client.batch_update_findings(**kwargs)
+        response = client.batch_update_findings(**kwargs)   # type: ignore
         demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
@@ -966,6 +966,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
+    return 'Failed to execute test-module command', {}, {}
 
 
 def main():  # pragma: no cover

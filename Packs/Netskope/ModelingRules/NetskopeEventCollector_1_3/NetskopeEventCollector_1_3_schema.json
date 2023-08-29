@@ -2,11 +2,7 @@
   "netskope_netskope_raw": {
     "action": {
       "type": "string",
-      "is_array": false
-    },
-    "alert_name": {
-      "type": "string",
-      "is_array": false
+      "is_array": false    
     },
     "device": {
       "type": "string",
@@ -235,6 +231,110 @@
     "source_log_event": {
       "type": "string",
       "is_array": false
+    },
+    "page": {
+      "type": "string",
+      "is_array": false
+    },
+    "traffic_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "category": {
+      "type": "string",
+      "is_array": false 
+    }, 
+    "ccl": {
+      "type": "string",
+      "is_array": false
+    },   
+    "browser": {
+      "type": "string",
+      "is_array": false
+    },      
+    "browser_session_id": {
+      "type": "int",
+        "is_array": false
+    },      
+    "app_session_id": {
+      "type": "string",
+      "is_array": false   
+    },      
+    "os_version": {
+      "type": "string",
+      "is_array": false
+    },      
+    "userip": {
+      "type": "string",
+      "is_array": false
+    },
+      "src_latitude": {
+        "type": "string",
+        "is_array": false        
+    },
+      "src_longitude": {
+        "type": "string",
+        "is_array": false
+    },
+      "src_timezone": {
+        "type": "string",
+        "is_array": false
+    },
+      "organization_unit": {
+        "type": "string",
+        "is_array": false      
+    },
+      "dst_location": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_country": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_latitude": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_longitude": {
+          "type": "string",
+          "is_array": false
+    },
+        "dst_region": {
+          "type": "string",
+          "is_array": false
+    },
+        "dst_timezone": {
+          "type": "string",
+          "is_array": false
+    },
+        "server_bytes": {
+          "type": "int",
+          "is_array": false
+    },
+        "dom": {
+          "type": "string",
+          "is_array": false
+    },
+        "alert_type": {
+          "type": "string",
+          "is_array": false
+    },
+        "alert_name": {
+          "type": "string",
+          "is_array": false
+    },
+        "referer": {
+          "type": "string",
+          "is_array": false
+    },
+        "instance_id": {
+          "type": "string",
+          "is_array": false
+    },
+        "object_type": {
+          "type": "string",
+          "is_array": false  
     }
   }
 }

@@ -24,7 +24,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     with open(
-        os.path.join("test_data/outputs", file_name), mode="r", encoding="utf-8"
+        os.path.join("test_data/outputs", file_name), encoding="utf-8"
     ) as mock_file:
         return json.loads(mock_file.read())
 
@@ -452,7 +452,7 @@ def test_list_entry_delete_command(
 
 
 @pytest.mark.parametrize(
-    "response_file_name,command_arguments,expected_outputs_len,expected_message_id,expected_recipients",
+    "response_file_name,command_arguments,expected_outputs_len,expected_message_id,expected_recipients,requested_params",
     [
         (
             "message_search.json",
@@ -460,10 +460,13 @@ def test_list_entry_delete_command(
                 "start_date": "1 week",
                 "end_date": "now",
                 "limit": "4",
+                "subject_filter_operator": "contains",
+                "subject_filter_value": "bla bla",
             },
             4,
             [315],
             ["test@test.com"],
+            "bla%20bla",
         ),
         (
             "message_search.json",
@@ -478,6 +481,7 @@ def test_list_entry_delete_command(
             4,
             [315],
             ["test@test.com"],
+            "test%40test.com",
         ),
     ],
 )
@@ -487,6 +491,7 @@ def test_message_search_command(
     expected_outputs_len,
     expected_message_id,
     expected_recipients,
+    requested_params,
     requests_mock,
     mock_client,
 ):
@@ -507,11 +512,12 @@ def test_message_search_command(
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/messages"
-    requests_mock.get(url=url, json=mock_response)
+    mock_request = requests_mock.get(url=url, json=mock_response)
 
     result = message_search_command(mock_client, command_arguments)
     outputs = result.outputs
 
+    assert requested_params in mock_request.last_request.query
     assert result.outputs_prefix == "CiscoSMA.Message"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["mid"] == expected_message_id
