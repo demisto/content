@@ -26,10 +26,10 @@ def websocket_connections(host: str, cluster_id: str, api_key: str):
     demisto.info("Starting websocket connection")
     extra_headers = {"Authorization": f"Bearer {api_key}"}
     with connect(
-        URL.format(host=host, cluster_id=cluster_id, type="message", time=now),
+        URL.format(host=host, cluster_id=cluster_id, type=EventType.MESSAGE.value, time=now),
         additional_headers=extra_headers,
     ) as message_connection, connect(
-        URL.format(host=host, cluster_id=cluster_id, type="maillog", time=now),
+        URL.format(host=host, cluster_id=cluster_id, type=EventType.MAILLOG.value, time=now),
         additional_headers=extra_headers,
     ) as maillog_connection:
         yield message_connection, maillog_connection
