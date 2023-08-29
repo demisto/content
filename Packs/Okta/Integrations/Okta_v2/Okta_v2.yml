@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Okta v2
   version: -1
@@ -10,30 +7,24 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - name: credentials
   type: 9
   displaypassword: API Token (see detailed instructions)
   hiddenusername: true
-  section: Connect
   required: false
+  display: ''
 - display: API Token (see detailed instructions)
   name: apitoken
   type: 4
   hidden: true
-  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
-  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
   required: false
 description: Integration with Okta's cloud-based identity management service.
 display: Okta v2
@@ -212,10 +203,8 @@ script:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
       name: term
-      required: false
     - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required.
       name: advanced_search
-      required: false
     - description: The maximum number of results to return. The default and maximum is 200.
       name: limit
     - auto: PREDEFINED
@@ -322,7 +311,7 @@ script:
       - 'false'
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     description: Lists users in your organization.
     name: okta-list-users
@@ -616,7 +605,7 @@ script:
   - arguments:
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     - defaultValue: '200'
       description: The maximum number of results to return. The default is 200.
@@ -1406,9 +1395,24 @@ script:
       name: appName
     description: Assign a group to an application
     name: okta-assign-group-to-app
-  dockerimage: demisto/python3:3.10.12.68714
+  - arguments:
+    - default: true
+      description: Okta username for which to expire the password.
+      name: username
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
+      predefined:
+      - 'true'
+      - 'false'
+    description: Expires a password for an existing Okta user.
+    execution: true
+    name: okta-expire-password
+  dockerimage: demisto/python3:3.10.13.72123
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
