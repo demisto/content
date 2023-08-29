@@ -38,11 +38,12 @@ from exchangelib.version import VERSIONS as EXC_VERSIONS
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
 def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
-        if self.build:
-            if self.build.major_version != build.major_version:  # removed 'or self.build.minor_version != build.minor_version'
-                continue
+        # removed 'or self.build.minor_version != build.minor_version'
+        if self.build and self.build.major_version != build.major_version:
+            continue
         if self.api_version == api_version:
             return full_name
+    return None
 
 
 Version.fullname = our_fullname
@@ -92,7 +93,7 @@ TOIS_PATH = '/root/Top of Information Store/'
 ENTRY_CONTEXT = "EntryContext"
 CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
                                                                                                                MESSAGE_ID)
-CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
+CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
 CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
 CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
 CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
@@ -345,7 +346,7 @@ def exchangelib_cleanup():     # pragma: no cover
     try:
         exchangelib.close_connections()
     except Exception as ex:
-        demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+        demisto.error(f"Error was found in exchangelib cleanup, ignoring: {ex}")
 
 
 # Prep Functions
@@ -357,12 +358,12 @@ def get_auth_method(auth_method):     # pragma: no cover
         return BASIC
     elif auth_method == 'digest':
         return DIGEST
-    raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
+    raise Exception("{} auth method is not supported. Choose one of {}".format(auth_method, 'ntlm\\basic\\digest'))
 
 
 def get_build(version_str):      # pragma: no cover
     if version_str not in VERSIONS:
-        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(list(VERSIONS.keys()))))
+        raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return VERSIONS[version_str]
 
 
@@ -378,7 +379,7 @@ def get_endpoint_autodiscover(context_dict):      # pragma: no cover
 
 def get_version(version_str):
     if version_str not in VERSIONS:
-        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(list(VERSIONS.keys()))))
+        raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
 
 
@@ -580,7 +581,7 @@ def str_to_unicode(obj):      # pragma: no cover
 
 def filter_dict_null(d):      # pragma: no cover
     if isinstance(d, dict):
-        return dict((k, v) for k, v in list(d.items()) if v is not None)
+        return {k: v for k, v in list(d.items()) if v is not None}
     return d
 
 
@@ -625,7 +626,7 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
         item_ids = [item_ids]
     items = [Item(id=x) for x in item_ids]
     result = list(account.fetch(ids=items))
-    result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
+    result = [x for x in result if not (isinstance(x, ErrorInvalidIdMalformed | ErrorItemNotFound))]
     if len(result) != len(item_ids):
         raise Exception("One or more items were not found/malformed. Check the input item ids")
     return result
@@ -798,7 +799,7 @@ class GetSearchableMailboxes(EWSService):
 
 class SearchMailboxes(EWSService):
     SERVICE_NAME = 'SearchMailboxes'
-    element_container_name = '{%s}SearchMailboxesResult/{%s}Items' % (MNS, TNS)
+    element_container_name = f'{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items'
 
     @staticmethod
     def parse_element(element):      # pragma: no cover
@@ -808,8 +809,8 @@ class SearchMailboxes(EWSService):
 
         result = {
             ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
-            MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text if element.find(
-                '{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)) is not None else None,
+            MAILBOX: element.find(f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress').text if element.find(
+                f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress') is not None else None,
             'subject': element.find("{%s}Subject" % TNS).text if element.find(
                 "{%s}Subject" % TNS) is not None else None,
             'toRecipients': to_recipients,
@@ -892,7 +893,7 @@ class ExpandGroup(EWSService):
 
     def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):      # pragma: no cover
         if email_address in non_dl_emails or email_address in dl_emails:
-            return None
+            return
         dl_emails.add(email_address)
 
         for member in self.expand_group(email_address):
@@ -974,7 +975,7 @@ def get_last_run():
 
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
-    demisto.debug('since_datetime: {}'.format(since_datetime))
+    demisto.debug(f'since_datetime: {since_datetime}')
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
@@ -989,7 +990,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().order_by('datetime_received')
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
-    demisto.debug('Exclude ID list: {}'.format(exclude_ids))
+    demisto.debug(f'Exclude ID list: {exclude_ids}')
 
     for item in qs:
         demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
@@ -997,7 +998,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         try:
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
-                demisto.debug('Appending {}, {}.'.format(item.subject, item.message_id))
+                demisto.debug(f'Appending {item.subject}, {item.message_id}.')
                 if len(result) >= MAX_FETCH:
                     break
         except ValueError as exc:
@@ -1005,7 +1006,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
             raise exc
-    demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
+    demisto.debug(f'EWS V2 - Got total of {len(result)} from ews query. ')
     return result
 
 
@@ -1019,12 +1020,11 @@ def keys_to_camel_case(value):
 
     if value is None:
         return None
-    if isinstance(value, (list, set)):
+    if isinstance(value, list | set):
         return [keys_to_camel_case(v) for v in value]
     if isinstance(value, dict):
-        return dict((keys_to_camel_case(k),
-                     keys_to_camel_case(v) if isinstance(v, (list, dict)) else v)
-                    for (k, v) in list(value.items()))
+        return {keys_to_camel_case(k): keys_to_camel_case(v) if isinstance(v, list | dict) else v
+                for (k, v) in list(value.items())}
 
     return str_to_camel_case(value)
 
@@ -1038,7 +1038,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
+        'HeadersMap': {} if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -1248,7 +1248,7 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
                                         try:
                                             v = str(v)
                                         except:     # noqa: E722
-                                            demisto.debug('cannot parse the header "{}"'.format(h))
+                                            demisto.debug(f'cannot parse the header "{h}"')
                                             continue
 
                                     v = ' '.join(map(str.strip, v.split('\r\n')))
@@ -1286,8 +1286,8 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
-                headers.append("{}: {}".format(header.name, header.value))
+                labels.append({'type': f'Email/Header/{header.name}', 'value': str(header.value)})
+                headers.append(f"{header.name}: {header.value}")
             labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
@@ -1352,18 +1352,18 @@ def fetch_emails_as_incidents(account_email, folder_name):
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
-                demisto.debug('Parsed incident: {}'.format(item.message_id))
+                demisto.debug(f'Parsed incident: {item.message_id}')
                 if incident:
                     incidents.append(incident)
                     last_incident_run_time = item.datetime_received
-                    demisto.debug('Appended incident: {}'.format(item.message_id))
+                    demisto.debug(f'Appended incident: {item.message_id}')
 
                 if len(incidents) >= MAX_FETCH:
                     break
 
-        demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
+        demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)
-        last_incident_run_time = last_fetch_time if not last_incident_run_time else last_incident_run_time
+        last_incident_run_time = last_incident_run_time if last_incident_run_time else last_fetch_time
 
         # making sure both last fetch time and the time of last incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
@@ -1471,7 +1471,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):      # pra
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-    title = 'EWS get attachment got item for "%s", "%s"' % (target_email, get_attachment_name(attachment.name))
+    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment.name)}"'
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
@@ -1573,7 +1573,7 @@ def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder
         'Contents': "Item was moved successfully.",
         'ContentsFormat': formats['text'],
         ENTRY_CONTEXT: {
-            "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
+            f"EWS.Items(val.itemId === '{item_id}')": move_result
         }
     }
 
@@ -1628,7 +1628,7 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
 
 
 def prepare_args(d):      # pragma: no cover
-    d = dict((k.replace("-", "_"), v) for k, v in list(d.items()))
+    d = {k.replace("-", "_"): v for k, v in list(d.items())}
     if 'is_public' in d:
         d['is_public'] = d['is_public'] == 'True'
     return d
@@ -1652,7 +1652,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         return_error("Missing required argument. Provide query or message-id")
 
     if message_id and message_id[0] != '<' and message_id[-1] != '>':
-        message_id = '<{}>'.format(message_id)
+        message_id = f'<{message_id}>'
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
@@ -1668,7 +1668,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     selected_all_fields = (selected_fields == 'all')
 
     if selected_all_fields:
-        restricted_fields = set([x.name for x in Message.FIELDS])  # type: ignore
+        restricted_fields = {x.name for x in Message.FIELDS}  # type: ignore
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
         restricted_fields.update(['id', 'message_id'])  # type: ignore
@@ -1715,7 +1715,7 @@ def get_out_of_office_state(target_mailbox=None):   # pragma: no cover
         MAILBOX: account.primary_smtp_address
     }
     return get_entry_for_object("Out of office state for %s" % account.primary_smtp_address,
-                                'Account.Email(val.Address == obj.{0}).OutOfOffice'.format(MAILBOX),
+                                f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
                                 oof_dict)
 
 
@@ -1764,10 +1764,10 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     def parse_contact(contact):
         contact_dict = parse_object_as_dict_with_serialized_items(contact)
-        for k in contact_dict.keys():
+        for k in contact_dict:
             v = contact_dict[k]
             if isinstance(v, EWSDateTime):
-                contact_dict[k] = v.ewsformat()
+                contact_dict[k] = v.ewsformat()   # pylint: disable=E4702
 
         contact_dict['id'] = contact.id
         if isinstance(contact, Contact) and contact.physical_addresses:
@@ -1793,7 +1793,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
 def create_folder(new_folder_name, folder_path, target_mailbox=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    full_path = "%s\\%s" % (folder_path, new_folder_name)
+    full_path = f"{folder_path}\\{new_folder_name}"
     try:
         if get_folder_by_path(account, full_path):
             return "Folder %s already exists" % full_path
@@ -1907,7 +1907,7 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):      # pragma:
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     is_public = is_default_folder(folder_path, is_public)
     folder = folder_to_context_entry(get_folder_by_path(account, folder_path, is_public))
-    return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
+    return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
 
 
 def folder_to_context_entry(f):
@@ -1941,7 +1941,7 @@ def get_cs_status(search_name, status):
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Search {} status: {}'.format(search_name, status),
+        'Contents': f'Search {search_name} status: {status}',
         'EntryContext': {
             'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
         }
@@ -2006,8 +2006,8 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
         if stdout[1] and stdout[1] != '{}':
-            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-            res = [{k: v for k, v in (s.split(': ') for s in x)} for x in res]
+            res = [r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n')]
+            res = [dict(s.split(': ') for s in x) for x in res]
             entry = {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
@@ -2124,10 +2124,10 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):      # p
         marked_items.append({
             ITEM_ID: item.id,
             MESSAGE_ID: item.message_id,
-            ACTION: 'marked-as-{}'.format(operation)
+            ACTION: f'marked-as-{operation}'
         })
 
-    return get_entry_for_object('Marked items ({} marked operation)'.format(operation),
+    return get_entry_for_object(f'Marked items ({operation} marked operation)',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 marked_items)
 
@@ -2149,7 +2149,7 @@ def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
                     try:
                         v = str(v)
                     except:     # noqa: E722
-                        demisto.debug('cannot parse the header "{}"'.format(h))
+                        demisto.debug(f'cannot parse the header "{h}"')
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
                 attached_email_headers.append((h, v))
@@ -2163,6 +2163,7 @@ def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
+    return None
 
 
 def collect_manual_attachments(manual_attach_obj):      # pragma: no cover
@@ -2204,7 +2205,7 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
             try:
                 file_info = demisto.getFilePath(att_id_inline)
             except Exception as ex:
-                demisto.info("EWS error from getFilePath: {}".format(ex))
+                demisto.info(f"EWS error from getFilePath: {ex}")
                 raise Exception("entry %s does not contain a file" % att_id_inline)
             att_name_inline = file_info["name"]
             with open(file_info["path"], 'rb') as f:
@@ -2217,7 +2218,7 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
         try:
             res = demisto.getFilePath(entry_id)
         except Exception as ex:
-            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
+            raise Exception(f"entry {entry_id} does not contain a file: {str(ex)}")
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
@@ -2237,6 +2238,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
+    replyTo = get_none_empty_addresses(argToList(replyTo))
     render_body = argToBoolean(renderBody)
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
@@ -2416,7 +2418,7 @@ def sub_main():     # pragma: no cover
         error_message = ""
 
         # Office365 regular maintenance case
-        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) \
+        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)) \
                 and 'outlook.office365.com' in EWS_SERVER:
             log_message = "Office365 is undergoing load balancing operations. " \
                           "As a result, the service is temporarily unavailable."
@@ -2483,7 +2485,7 @@ def sub_main():     # pragma: no cover
         else:
             demisto.results(
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
-        demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+        demisto.error(f"{e.__class__.__name__}: {error_message}")
     finally:
         exchangelib_cleanup()
         if log_stream:
@@ -2491,7 +2493,7 @@ def sub_main():     # pragma: no cover
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
                 log_stream.close()
             except Exception as ex:
-                demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
+                demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
 
 def process_main():
@@ -2507,19 +2509,19 @@ def main():     # pragma: no cover
         # collector. `separate_process` flag will run the integration on a separate process that will prevent
         # memory leakage.
         separate_process = demisto.params().get("separate_process", False)
-        demisto.debug("Running as separate_process: {}".format(separate_process))
+        demisto.debug(f"Running as separate_process: {separate_process}")
         if separate_process:
             try:
                 p = Process(target=process_main)
                 p.start()
                 p.join()
             except Exception as ex:
-                demisto.error("Failed starting Process: {}".format(ex))
+                demisto.error(f"Failed starting Process: {ex}")
         else:
             sub_main()
     except Exception as exc:
-        return_error("Found error in EWSv2: {}".format(exc),
-                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
+        return_error(f"Found error in EWSv2: {exc}",
+                     error=f'Error: {exc}\nTraceback: {traceback.format_exc()}')
 
 
 # python2 uses __builtin__ python3 uses builtins
