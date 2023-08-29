@@ -5032,7 +5032,7 @@ def test_conversation_replies(mocker):
     import SlackV3
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call')
-    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_id': 1, 'limit': 1})
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_timestamp': 1234, 'limit': 1})
     mocker.patch.object(demisto, 'results')
     slack_response_mock = {
         'ok': True,
