@@ -4976,12 +4976,13 @@ def test_list_channels(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     # mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=slack_response_mock)
     SlackV3.list_channels()
-
+    assert demisto.results.called
     assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channels list for None with filter None\n' \
                                                                '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n' \
-                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the one channel'\
-                                                               ' that will always include everyone. It’s a great spot for announcements and team-wide conversations. |\n'
-    assert demisto.results.called
+                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the' \
+                                                               ' one channel that will always include everyone. It’s a great'\
+                                                               ' spot for announcements and team-wide conversations. |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 
 def test_conversation_history(mocker):
@@ -4994,23 +4995,29 @@ def test_conversation_history(mocker):
         Conversations are returned.
     """
     import SlackV3
-    # set
     slack_response_mock = {
         'ok': True,
         'messages': json.loads(MESSAGES)}
-    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
+    mocker.patch.object(SlackV3, 'send_slack_request_sync',
+                        side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]},
+                                     {'user': js.loads(USERS)[0]}])
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'conversation_id': 1, 'limit': 1})
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
 
-    # Arrange
     SlackV3.conversation_history()
 
-    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID - 1\n' \
-                                                               '|FullName|HasReplies|Name|Text|ThreadTimeStamp|TimeStamp|Type|' \
-                                                               'UserId|\n|---|---|---|---|---|---|---|---|\n' \
-                                                               '| N/A | No | N/A | this is an example | N/A | 1690479909.804939' \
-                                                               ' | message | dummy |\n'
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID ' \
+                                                               '- 1\n|FullName|HasReplies|Name|Text|ThreadTimeStamp' \
+                                                               '|TimeStamp|Type|UserId|\n|---|---|---|---|---|' \
+                                                               '---|---|---|\n| spengler | No | spengler | There' \
+                                                               ' are two types of people in this world, those' \
+                                                               ' who can extrapolate from incomplete data... | N/A ' \
+                                                               '| 1690479909.804939 | message | U047D5QSZD4 |\n|' \
+                                                               ' spengler | Yes | spengler | Give me a fresh dad joke' \
+                                                               ' | 1690479887.647239 | 1690479887.647239 | message ' \
+                                                               '| U047D5QSZD4 |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 
 def test_conversation_replies(mocker):
@@ -5048,4 +5055,3 @@ def test_conversation_replies(mocker):
         '|---|---|---|---|---|---|---|---|\n|' \
         ' N/A | No | N/A | this is an example | ' \
         ' |  | word | dummy |\n'
-
