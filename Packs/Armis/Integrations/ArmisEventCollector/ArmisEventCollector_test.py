@@ -11,6 +11,38 @@ def dummy_client(mocker):
     return Client(base_url='test_base_url', api_key='test_api_key', access_token='test_access_token', verify=False, proxy=False)
 
 
+class TestClientFunctions:
+
+    def test_fetch_by_aql_query(self, mocker, dummy_client):
+        """
+        Given:
+            - A valid HTTP request parameters.
+        When:
+            - Fetching events.
+        Then:
+            - Send the HTTP request with valid parameters.
+        """
+        first_response = {'data': {'next': 1, 'results': [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }]}}
+
+        second_response = {'data': {'next': None, 'results': [{
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]}}
+
+        expected_result = [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }, {
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]
+        mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
+        assert dummy_client.fetch_by_aql_query('example_query', 3) == expected_result
+
+
 class TestHelperFunction:
 
     date_1 = '2023-01-01T01:00:00'
