@@ -27,7 +27,7 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
-DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -57,7 +57,7 @@ RAW_QUERY = param.get('raw_query', '')
 FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
-TIME_METHOD = param.get('time_method', 'Timestamp-Milliseconds')
+TIME_METHOD = param.get('time_method', 'Simple-Date')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
@@ -79,6 +79,11 @@ def prepare_datetime_format(datetime_format: str):
 
 def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
     """Returns the datetime format of a field in an index.
+    In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
+    for example {
+        'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
+        'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
+    } => 'yyyy-MM-dd HH:mm:ss'
 
     Args:
         es: An ES object.
@@ -89,9 +94,12 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
     mapping = es.indices.get_mapping(index=index)
-    datetime_field = mapping.get(index, {}).get('mappings', {}).get('properties', {}).get(field, {})
 
-    return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
+    for mapper in mapping.values():
+        if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
+            return datetime_format
+
+    return DEFAULT_DATETIME_FORMAT
 
 
 def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
