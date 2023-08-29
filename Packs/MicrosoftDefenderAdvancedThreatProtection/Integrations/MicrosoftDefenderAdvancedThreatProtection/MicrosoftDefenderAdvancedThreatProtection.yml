@@ -5512,16 +5512,20 @@ script:
   - name: microsoft-atp-library-upload-file
     arguments:
     - name: entry_id
+      description: EntryID for file to be upload
       required: true
     - name: description
+      description: Description to be added when upload a file
       required: true
     - name: has_parameters
+      description: Whether the file as parameter
       auto: PREDEFINED
       predefined:
       - "False"
       - "True"
       defaultValue: "False"
     - name: override_if_exists
+      description: Whether to override the file if it already exists
       auto: PREDEFINED
       predefined:
       - "False"
