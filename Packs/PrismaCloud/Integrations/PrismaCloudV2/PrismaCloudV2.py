@@ -1620,8 +1620,15 @@ def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     list_type = args.get('list_type')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
 
     response_items = client.resource_list_request(list_type)
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
     
@@ -1634,7 +1641,8 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.ResourceList',
         outputs_key_field='id',
-        readable_output=tableToMarkdown('Resource Lists Details:',
+        readable_output=f'Showing {len(readable_responses)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Resource Lists Details:',
                                         readable_responses,
                                         headers=headers,
                                         removeNull=True,

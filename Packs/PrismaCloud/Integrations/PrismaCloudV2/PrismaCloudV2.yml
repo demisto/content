@@ -947,6 +947,15 @@ script:
   - arguments:
     - description: The resource list type.
       name: list_type
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
     description: Get resource lists.
     name: prisma-cloud-resource-list
     outputs:
