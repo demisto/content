@@ -104,7 +104,7 @@
 // "overrideFeatureInstallOrder": [
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
-"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+"onCreateCommand": "bash .devcontainer/createCommand.sh",
 "postStartCommand": "poetry install",
 "hostRequirements": {
 	"cpus": 4,
