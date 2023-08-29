@@ -8,6 +8,7 @@ sudo chown demisto /workspaces
 sudo chown demisto /workspaces/content
 sudo chown -R demisto /workspaces/content/.vscode
 sudo chown -R demisto /workspaces/content/.git
+sudo chown -R demisto /workspaces/content/.venv
 sudo chown -R demisto /workspaces/content/package-lock.json
 
 sudo chown -R demisto $HOME
