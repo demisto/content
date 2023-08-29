@@ -94,6 +94,7 @@ def test_determine_excessive_access(mocker):
             return SG_INFO
         elif name == "aws-ec2-create-security-group":
             return new_sg
+        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"int_sg_mapping": {'eni-00000000000000000': ['sg-00000000000000000']}, "port": 22,
@@ -123,6 +124,7 @@ def test_aws_recreate_sg(mocker):
             return new_sg
         elif name == "aws-ec2-describe-instances":
             return INSTANCE_INFO
+        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}

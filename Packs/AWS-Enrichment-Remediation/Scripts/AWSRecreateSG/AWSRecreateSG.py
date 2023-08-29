@@ -2,12 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any, List, Tuple
+from typing import Any
 import traceback
 from random import randint
 
 
-def split_rule(rule: Dict, port: int, protocol: str) -> List[Dict]:
+def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     """
     If there are rules with ranges of ports, split them up
 
@@ -52,10 +52,10 @@ def split_rule(rule: Dict, port: int, protocol: str) -> List[Dict]:
                          'UserIdGroupPairs': [], 'FromPort': port + 1, 'ToPort': 65535},
                         {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
                          'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 65535}]
-    return(res_list)
+    return (res_list)
 
 
-def sg_fix(sg_info: List, port: int, protocol: str, assume_role: str, integration_to_use: str) -> Dict:
+def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, integration_to_use: str) -> dict:
     """
     For a SG determine what needs to be recreated.
     Calls split_rule() if there are rules with ranges of ports to be split up
@@ -168,7 +168,7 @@ def sg_fix(sg_info: List, port: int, protocol: str, assume_role: str, integratio
     return {'new-sg': new_id}
 
 
-def replace_sgs(replace_list: List, int_sg_mapping: Dict, assume_role: str, integration_to_use: str):
+def replace_sgs(replace_list: list, int_sg_mapping: dict, assume_role: str, integration_to_use: str):
     """
     Replace the actual SGs on the interface
 
@@ -194,7 +194,7 @@ def replace_sgs(replace_list: List, int_sg_mapping: Dict, assume_role: str, inte
             raise ValueError('Error on replacing security group(s) on network interface')
 
 
-def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str, assume_role: str, integration_to_use: str) -> List:
+def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, assume_role: str, integration_to_use: str) -> list:
     """
     Pulls info on each SG and then calls sg_fix() to actually create the new SGs
 
@@ -208,7 +208,7 @@ def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str, a
         List: list of SGs to be replaced
     """
     replace_list = []
-    for mapping in int_sg_mapping.keys():
+    for mapping in int_sg_mapping:
         for sg in int_sg_mapping[mapping]:
             cmd_args = {"groupIds": sg, "using": integration_to_use}
             if assume_role:
@@ -227,7 +227,7 @@ def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str, a
     return replace_list
 
 
-def instance_info(instance_id: str, public_ip: str, assume_role: str) -> Tuple[Dict, str]:
+def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[dict, str]:
     """
     Finds interface with public_ip and from this creates interface ID/SG mapping
 
@@ -254,20 +254,19 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> Tuple[D
                     'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
                 mapping_dict = {}
                 for interface in interfaces:
-                    if interface.get('Association'):
-                        if interface.get('Association').get('PublicIp') == public_ip:
-                            match = True
-                            group_list = []
-                            for sg in interface['Groups']:
-                                group_list.append(sg['GroupId'])
-                            mapping_dict[interface['NetworkInterfaceId']] = group_list
-                            integration_to_use = instance['ModuleName']
+                    if interface.get('Association') and interface.get('Association').get('PublicIp') == public_ip:
+                        match = True
+                        group_list = []
+                        for sg in interface['Groups']:
+                            group_list.append(sg['GroupId'])
+                        mapping_dict[interface['NetworkInterfaceId']] = group_list
+                        integration_to_use = instance['ModuleName']
     if match is False:
         raise ValueError('could not find interface with public IP association')
     return mapping_dict, integration_to_use
 
 
-def aws_recreate_sg(args: Dict[str, Any]) -> str:
+def aws_recreate_sg(args: dict[str, Any]) -> str:
     """
     Main command that determines what interface on an EC2 instance has an over-permissive security group on,
     determine which security groups have over-permissive rules and to replace them with a copy of the security group
