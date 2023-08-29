@@ -744,7 +744,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
-                                attachments=None):  # pragma: no cover
+                                attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
         attachments = []
     item_to_reply_to = account.inbox.get(id=in_reply_to)
@@ -754,7 +754,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     subject = subject or item_to_reply_to.subject
     message_body = HTMLBody(html_body) if html_body else body
     reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
-                                          bcc_recipients=bcc)
+                                          bcc_recipients=bcc ,author=from_mailbox ) # todo add to yml
     reply = reply.save(account.drafts)
     m = account.inbox.get(id=reply.id)
 
@@ -2265,14 +2265,14 @@ def send_email(args):
         results.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['html'],
-            'Contents': htmlBody
+            'Contents': args.get('htmlBody')
         })
 
     return results
 
 
 def reply_email(args):  # pragma: no cover
-    account = get_account(args.get('from') or ACCOUNT_EMAIL)
+    account = get_account( ACCOUNT_EMAIL)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
     to = args.get('to').split(",") if args.get('to') else None
@@ -2283,7 +2283,7 @@ def reply_email(args):  # pragma: no cover
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     send_email_reply_to_mailbox(account, args.get('inReplyTo'), to, args.get('body'), subject, bcc, cc, args.get('htmlBody'),
-                                attachments)
+                                attachments, args.get('from'))
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
