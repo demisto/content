@@ -461,7 +461,7 @@ def fetch_incidents():
         for record in last_run.get("last_fetch_events"):
             for key in record:
                 last_events_ids.append(key)
-        demisto.debug(last_events_ids)
+        demisto.debug(f"List of event ids fetched in last poll: {last_events_ids}")
         for event in events:
             if event[alert_id] not in last_events_ids:
                 final_events.append(event)
@@ -818,14 +818,16 @@ def write_to_table_command():
     innerDict: dict = {}
     for obj in records:
         record = json.loads(obj)
-
-        currKey = record.keys()
-        currValue = record.values()
+        currKey = list(record.keys())
+        currValue = list(record.values())
 
         headers.extend(currKey)
 
-        innerDict = dict(zip(currKey, currValue))  # Create a dictionary using zip
-        resultRecords.append(innerDict)  # Append the dictionary to the list
+        innerDict.update(dict(zip(currKey, currValue)))  # Create a dictionary using zip
+    resultRecords.append(innerDict)  # Append the dictionary to the list
+
+    demisto.debug("final array :")
+    demisto.debug(resultRecords)
 
     md = tableToMarkdown("Entries to load into Devo", resultRecords, headers)
     entry["HumanReadable"] = md
@@ -897,6 +899,12 @@ def main():
         elif demisto.command() == "fetch-incidents":
             fetch_incidents()
         elif demisto.command() == "devo-run-query":
+            from_date = int(demisto.args().get("from"))
+            to_date = int(demisto.args().get("to"))
+            current_time = int(time.time())
+
+            if from_date > current_time or to_date > current_time:
+                raise ValueError("Date should not be greature then current time")
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
 
@@ -910,6 +918,12 @@ def main():
                 total = total + COUNT_SINGLE_TABLE
                 demisto.results(run_query_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-get-alerts":
+            from_date = int(demisto.args().get("from"))
+            to_date = int(demisto.args().get("to"))
+            current_time = int(time.time())
+
+            if from_date > current_time or to_date > current_time:
+                raise ValueError("Date should not be greature then current time")
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
