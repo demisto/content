@@ -16,7 +16,7 @@ def search_and_quarantine(farm: str, customer: str, date_range: str, sender: str
             {
                 'farm': farm,
                 'customer': customer,
-                'entities': ids,
+                'entity': ids,
                 'action': 'quarantine'
             }
         )

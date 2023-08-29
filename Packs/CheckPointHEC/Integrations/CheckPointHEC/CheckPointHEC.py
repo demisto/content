@@ -103,7 +103,7 @@ class Client(BaseClient):
 
     def search_emails(self, start_date: str, sender: str = None, subject: str = None):
         entity_filter = {
-            'saas': SAAS_NAMES,
+            'saas': SAAS_NAMES[0],
             'startDate': start_date
         }
         extended_filter = []
@@ -186,7 +186,7 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
 
     incidents: list[dict[str, Any]] = []
     for event in events:
-        if (occurred := event.get('eventCreated')) == last_fetch:
+        if (occurred := event.get('eventCreated')) <= last_fetch:
             continue
 
         event_id = event.get('eventId')
@@ -211,7 +211,11 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int):
             },
         })
 
-    last = incidents[-1]['occurred'] if incidents else datetime.utcnow().isoformat()
+    if incidents:
+        last = incidents[-1]['occurred']
+    else:
+        last = (datetime.utcnow() - timedelta(minutes=10)).isoformat()
+
     demisto.setLastRun({
         'last_fetch': last
     })
