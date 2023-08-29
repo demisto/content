@@ -1238,7 +1238,7 @@ Search for a malware by specified filters.
 | RecordedFuture.DetectionRules.rules.entities      | array    | Recorded Future link attributes.            |
 | RecordedFuture.DetectionRules.rules.entities.id   | string   | Recorded Future link attributes.            |
 | RecordedFuture.DetectionRules.rules.entities.type | string   | Recorded Future link attributes.            |
-| RecordedFuture.DetectionRules.rules.name          | string   | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.entities.name | string   | Recorded Future link attributes.            |
 | RecordedFuture.DetectionRules.rules.content       | string   | Recorded Future link attributes.            |
 | RecordedFuture.DetectionRules.rules.file_name     | string   | Recorded Future link attributes.            |
 
@@ -1247,6 +1247,7 @@ Search for a malware by specified filters.
 
 `recordedfuture-collective-insight`
 
+#### Input
 #### Input
 
 | **Argument Name**  | **Description**                                                                                     | **Required** |
