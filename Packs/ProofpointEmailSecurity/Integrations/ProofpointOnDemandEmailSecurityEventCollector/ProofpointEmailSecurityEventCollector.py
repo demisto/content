@@ -57,7 +57,6 @@ def fetch_events(event_type: EventType, connection: Connection, events_to_fetch:
 
 
 def test_module(host: str, cluster_id: str, api_key: str):
-    global EVENTS_TO_FETCH, TIMEOUT
     # edit the global variables to make the test module faster
     events_to_fetch = 1
     timeout = 10
