@@ -144,7 +144,7 @@ def main():
         lastday = demisto.args()['lastday'].strip()
         maxinc = demisto.args()['maxinc'].strip()
         if maxinc == "":
-            maxcount = 100
+            maxcount = 50
         else:
             maxcount = int(maxinc)
         taskstats, count = GetTaskStats(pb, spb, firstday, lastday, maxcount)
