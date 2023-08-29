@@ -472,8 +472,8 @@ def create_client(timeout: int = 15):
                          'in_hours_from_now, expected_end_time_in_hours_from_now', FETCH_TIMES_TEST_DATA)
 def test_fetch_times_range(last_run, first_fetch_delta, expected_start_time_in_hours_from_now,
                            expected_end_time_in_hours_from_now):
-    from MicrosoftManagementActivity import get_fetch_start_and_end_time
-    fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_delta)
+    from MicrosoftManagementActivity import get_fetch_start_and_end_time_specific_content_type
+    fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time_specific_content_type(last_run, first_fetch_delta)
 
     end_time_datetime = datetime.strptime(fetch_end_time_str, DATE_FORMAT)
     assert is_time_in_expected_delta(end_time_datetime, expected_end_time_in_hours_from_now)
@@ -566,7 +566,7 @@ def test_list_subscriptions(requests_mock, ):
 
 
 def test_get_all_content_type_records(requests_mock):
-    from MicrosoftManagementActivity import get_all_content_type_records
+    from MicrosoftManagementActivity import get_content_type_records
     client = create_client()
     mock_list_content(requests_mock)
 
@@ -578,7 +578,7 @@ def test_get_all_content_type_records(requests_mock):
     requests_mock.get(second_audit_general_blob_uri, json=GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_SECOND_RESPONSE)
     requests_mock.get(third_audit_general_blob_uri, json=GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_THIRD_RESPONSE)
 
-    content_records = get_all_content_type_records(client, "audit.general", TIME_24_HOURS_AGO, TIME_ONE_MINUTE_AGO_STRING)
+    content_records = get_content_type_records(client, "audit.general", TIME_24_HOURS_AGO, TIME_ONE_MINUTE_AGO_STRING)
     content_record_ids = [record['Id'] for record in content_records]
     assert set(content_record_ids) == {"1234", "567", "89"}
 
@@ -749,14 +749,14 @@ def test_fetch_start_time(mocker):
     Then:
         - Ensure the 'fetch_start_time_str' is as expected - 7 days ago from the frozen time.
     """
-    from MicrosoftManagementActivity import get_fetch_start_and_end_time
+    from MicrosoftManagementActivity import get_fetch_start_and_end_time_specific_content_type
 
     last_run = {'last_fetch': '2023-04-02T14:22:49'}
 
     mocker.patch('dateparser.parse', return_value=datetime.strptime('2023-08-02T14:22:49', DATE_FORMAT))
 
     first_fetch_datetime = None
-    fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
+    fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time_specific_content_type(last_run, first_fetch_datetime)
 
     assert fetch_start_time_str == '2023-08-02T14:22:49'
     assert fetch_end_time_str == '2023-08-02T14:32:49'

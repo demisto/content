@@ -125,6 +125,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: Maximum number of incidents per fetch of each content type.
+  defaultvalue: 10
+  display: Maximum number of incidents to fetch.
+  name: max_fetch
+  type: 0
+  required: false
 - defaultvalue: 10 minutes
   display: First fetch time range
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes

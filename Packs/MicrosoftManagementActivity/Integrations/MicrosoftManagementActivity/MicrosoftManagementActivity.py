@@ -1,3 +1,7 @@
+from typing import Tuple
+
+import dateparser
+
 import demistomock as demisto  # noqa: F401
 import jwt
 import urllib3
@@ -12,6 +16,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
 PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
 TIMEOUT_DEFAULT = 15
+DEFAULT_MAX_FETCH_PER_CONTENT_TYPE = 10
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
@@ -150,10 +155,13 @@ class Client(BaseClient):
 
     def list_content_request(self, content_type, start_time, end_time):
         """
+        list all the content in ascending order.
+
         Args:
             content_type: the content type
             start_time: start time to fetch content
             end_time: end time to fetch content
+
         """
         auth_string = self.get_authentication_string()
         headers = {
@@ -335,14 +343,45 @@ def get_content_records_context(content_records):
     return content_records_context
 
 
-def get_all_content_type_records(client, content_type, start_time, end_time):
+def dedup_fetched_records(content_records_in_uri: List[Dict], last_fetched_ids: Set[str], content_type: str):
+
+    filtered_records = []
+
+    for record in content_records_in_uri:
+        if record.get("Id") not in last_fetched_ids:
+            filtered_records.append(record)
+        else:
+            demisto.debug(f'record with ID {record.get("Id")} was already fetched from {content_type=}')
+    return filtered_records
+
+
+def get_content_type_records(
+    client: Client,
+    content_type: str,
+    start_time: str,
+    end_time: str,
+    last_run_fetched_ids: Set[str] = None,
+    max_fetch: int = None
+) -> List[Dict]:
+    if not last_run_fetched_ids:
+        last_run_fetched_ids = set()
+
     content_blobs = client.list_content_request(content_type, start_time, end_time)
     # The list_content request returns a list of content records, each containing a url that holds the actual data
     content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
+
     content_records: List = []
+
     for uri in content_uris:
-        content_records_in_uri = client.get_blob_data_request(uri)
+        content_records_in_uri = sorted(client.get_blob_data_request(uri), key=lambda record: record["CreationTime"])
+        # remove all the records that were already fetched in previous fetch in case returned from the api
+        content_records_in_uri = dedup_fetched_records(content_records_in_uri, last_run_fetched_ids, content_type)
+
         content_records.extend(content_records_in_uri)
+        if max_fetch and len(content_records) >= max_fetch:
+            content_records = content_records[:max_fetch]
+            break
+
     return content_records
 
 
@@ -403,13 +442,16 @@ def filter_records(content_records, filter_data):
     # User specifies the record types by type name, but the API returns the record types by ID.
     # Therefore we transform the names to IDs.
     filter_accepted_record_type_ids = record_types_to_type_ids(
-        filter_accepted_record_types) if filter_accepted_record_types else None
+        filter_accepted_record_types
+    ) if filter_accepted_record_types else None
 
     filtered_records = []
     for record in content_records:
         if does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads,
                                      filter_accepted_operations):
             filtered_records.append(record)
+        else:
+            demisto.debug(f'filtered out record {record.get("id")}')
     return filtered_records
 
 
@@ -418,7 +460,7 @@ def list_content_command(client, args):
     start_time = args.get('start_time')
     end_time = args.get('end_time')
 
-    content_records = get_all_content_type_records(client, content_type, start_time, end_time)
+    content_records = get_content_type_records(client, content_type, start_time, end_time)
     filtered_content_records = filter_records(content_records, args)
     content_records_context = get_content_records_context(filtered_content_records)
     human_readable = create_events_human_readable(content_records_context, content_type)
@@ -432,7 +474,8 @@ def list_content_command(client, args):
 
 
 def get_content_types_to_fetch(client):
-    content_types_to_fetch = demisto.params().get('content_types_to_fetch')
+    if content_types_to_fetch := demisto.params().get('content_types_to_fetch'):
+        content_types_to_fetch = content_types_to_fetch.split(',')
     if not content_types_to_fetch:
         # Was not supplied by the user, so we will return all content types the user is subscribed to
         subscriptions = client.list_subscriptions_request()
@@ -442,20 +485,28 @@ def get_content_types_to_fetch(client):
 
 
 def get_fetch_end_time_based_on_start_time(fetch_start_datetime):
-    is_fetch_start_time_over_10_minutes_ago = (datetime.now() - timedelta(minutes=10) >= fetch_start_datetime)
-    if is_fetch_start_time_over_10_minutes_ago:
-        # Start and end time can't be over 24, so the fetch will end 24  hours after it's start.
-        fetch_end_datetime = fetch_start_datetime + timedelta(minutes=10)
+    """
+    start time and end time must be no more than 24 hours apart, with the start time no more than 7 days in the past.
+    https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference#list-available-content
+    """
+    is_fetch_start_time_over_1_day_ago = (datetime.now() - timedelta(days=1) >= fetch_start_datetime)
+    if is_fetch_start_time_over_1_day_ago:
+        # Start and end time can't be over 24, so the fetch will end 24 hours after it's start.
+        fetch_end_datetime = fetch_start_datetime + timedelta(days=1)
     else:
         fetch_end_datetime = datetime.now()
     return fetch_end_datetime
 
 
-def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
-    if not last_run:
-        fetch_start_datetime = first_fetch_datetime
+def get_fetch_start_and_end_time_specific_content_type(last_run: Dict, first_fetch: str, content_type_time: str):
+    """
+    start time and end time must be no more than 24 hours apart, with the start time no more than 7 days in the past.
+    https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference#list-available-content
+    """
+    if not last_run.get(content_type_time) and not last_run.get("last_fetch"):
+        fetch_start_datetime = dateparser.parse(first_fetch)
     else:
-        last_fetch = last_run.get('last_fetch')
+        last_fetch = last_run.get(content_type_time)
         fetch_start_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
 
     # the start time must be no more than 7 days in the past
@@ -466,33 +517,18 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
     # The API expects strings of format YYYY:DD:MMTHH:MM:SS
     fetch_start_time_str = fetch_start_datetime.strftime(DATE_FORMAT)
     fetch_end_time_str = fetch_end_datetime.strftime(DATE_FORMAT)
-    demisto.debug(f"get_fetch_start_and_end_time: {fetch_start_time_str=}, {fetch_end_time_str=}")
+    demisto.debug(f"Using {fetch_start_time_str=} and {fetch_end_time_str=} for {content_type_time=} for the upcoming fetch")
     return fetch_start_time_str, fetch_end_time_str
 
 
-def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
-    all_content_records = []
-    content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
-        else content_types_to_fetch
-    for content_type in content_types_to_fetch:
-        content_records_of_current_type = get_all_content_type_records(client, content_type, start_time, end_time)
-        all_content_records.extend(content_records_of_current_type)
-    return all_content_records
+def content_records_to_incidents(content_records):
 
-
-def content_records_to_incidents(content_records, start_time, end_time):
     incidents = []
-    start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
-    latest_creation_time_datetime = start_time_datetime
-
     record_ids_already_found: Set = set()
 
     for content_record in content_records:
         incident_creation_time_str = content_record['CreationTime']
-        incident_creation_time_datetime = datetime.strptime(incident_creation_time_str, DATE_FORMAT)
 
-        if incident_creation_time_datetime < start_time_datetime:
-            pass
         incident_creation_time_in_incidents_format = incident_creation_time_str + 'Z'
         record_id = content_record['Id']
         incident = {
@@ -507,27 +543,54 @@ def content_records_to_incidents(content_records, start_time, end_time):
             record_ids_already_found.add(incident['name'])
 
         incidents.append(incident)
-        if incident_creation_time_datetime > latest_creation_time_datetime:
-            latest_creation_time_datetime = incident_creation_time_datetime
 
-    latest_creation_time_str = datetime.strftime(latest_creation_time_datetime, DATE_FORMAT)
-
-    if len(content_records) == 0 or latest_creation_time_str == start_time:
-        latest_creation_time_str = end_time
-
-    return incidents, latest_creation_time_str
+    return incidents
 
 
-def fetch_incidents(client, last_run, first_fetch_datetime):
-    demisto.debug(f"fetch_incidents: {last_run=}, {first_fetch_datetime=}")
-    start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
+def fetch_incidents(client: Client, last_run: Dict, first_fetch: str, max_fetch: int):
+    demisto.debug(f"last run start of fetch: {last_run}")
     content_types_to_fetch = get_content_types_to_fetch(client)
-    content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
-    filtered_content_records = filter_records(content_records, demisto.params())
-    incidents, last_fetch = content_records_to_incidents(filtered_content_records, start_time, end_time)
-    next_run = {'last_fetch': last_fetch}
-    demisto.debug(f"fetch_incidents: {next_run=}")
-    return next_run, incidents
+    demisto.debug(f'Starting to fetch the following content types: {content_types_to_fetch}')
+
+    records_to_fetch = []
+
+    for content_type in content_types_to_fetch:
+        _content_type_last_fetched_ids = f'{content_type}_last_fetched_ids'
+        _content_type_time = f'{content_type}_time'
+
+        last_fetched_ids = last_run.get(_content_type_last_fetched_ids)
+        if last_fetched_ids is not None:
+            last_fetched_ids = set(last_fetched_ids)
+
+        start_time, end_time = get_fetch_start_and_end_time_specific_content_type(last_run, first_fetch, _content_type_time)
+        content_records_of_current_type = get_content_type_records(
+            client, content_type, start_time, end_time, last_fetched_ids, max_fetch
+        )
+
+        if content_records_of_current_type:
+            latest_record_creation_time = get_latest_incident_created_time(
+                content_records_of_current_type, "CreationTime", date_format=DATE_FORMAT
+            )
+            fetched_ids = [record["Id"] for record in content_records_of_current_type]
+            demisto.debug(f'Fetching the following records {fetched_ids} for {content_type=}')
+        else:
+            latest_record_creation_time = end_time
+            fetched_ids = []
+
+        last_run.update(
+            {
+                _content_type_time: latest_record_creation_time,
+                _content_type_last_fetched_ids: fetched_ids
+            }
+        )
+
+        records_to_fetch.extend(content_records_of_current_type)
+
+    filtered_content_records = filter_records(records_to_fetch, demisto.params())
+    incidents = content_records_to_incidents(filtered_content_records)
+
+    demisto.debug(f"last run end of fetch: {last_run}")
+    return last_run, incidents
 
 
 def calculate_timeout_value(params: dict, args: dict) -> int:
@@ -542,8 +605,7 @@ def main():
     base_url = demisto.params().get('base_url', 'https://manage.office.com/api/v1.0/')
     verify_certificate = not demisto.params().get('insecure', False)
 
-    first_fetch_delta = demisto.params().get('first_fetch_delta', '10 minutes').strip()
-    first_fetch_datetime, _ = parse_date_range(first_fetch_delta)
+    first_fetch = demisto.params().get('first_fetch_delta', '10 minutes').strip()
 
     proxy = demisto.params().get('proxy', False)
     args = demisto.args()
@@ -602,7 +664,9 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_datetime=first_fetch_datetime)
+                first_fetch=first_fetch,
+                max_fetch=arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH_PER_CONTENT_TYPE
+            )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
