@@ -337,16 +337,15 @@ def search_incidents(client, args):
                 'value': now * 1000
             }))
     data = {
-        'filters': [{
-            'conditions': conditions
-        }],
+        'start': args['last_page'],
+        'length': 10, # customer will set this to his limit
         'sorts': [{
             'field_name': 'create_date',
             'type': 'asc'
         }]
     }
-    response = client.post('/incidents/query', data)
-    return response
+    response = client.post('/incidents/query_paged', data)
+    return response.get('data', {})
 
 
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
@@ -1036,12 +1035,14 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
 
 def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
+    integration_context = demisto.getIntegrationContext()
+    last_page = integration_context.get('last_page', 0)
     if not last_run:
         last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
         args = {'date-created-after': FETCH_TIME}
     else:
         args = {'date-created-after': normalize_timestamp(last_run)}
-
+    args['last_page'] = last_page
     resilient_incidents = search_incidents(client, args)
     incidents = []
 
@@ -1075,7 +1076,10 @@ def fetch_incidents(client):
                 if incident_creation_time > last_incident_creation_time:
                     last_incident_creation_time = incident_creation_time
 
+        page_size = 100  # customer set this according to his needs.
+        integration_context['last_page'] = last_page + page_size
         demisto.setLastRun({'time': last_incident_creation_time})
+        demisto.setIntegrationContext(integration_context)
     demisto.incidents(incidents)
 
 
