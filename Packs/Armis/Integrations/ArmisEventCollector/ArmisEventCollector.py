@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any, NamedTuple
+import itertools
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -164,14 +165,14 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time_par
     """
     if last_fetch_time:
         last_fetch_datetime = arg_to_datetime(last_fetch_time)
-        if not isinstance(last_fetch_datetime, datetime):
+        if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
         return last_fetch_datetime
     else:
         return fetch_start_time_param
 
 
-def are_two_event_time_equal(x: datetime, y: datetime):
+def are_two_datetime_equal_by_second(x: datetime, y: datetime):
     return (x.year == y.year) and (x.month == y.month) and (x.day == y.day)\
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
@@ -183,18 +184,19 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     additional handling is necessary.
 
     Cases:
-    1.  All events from the current fetch cycle have the same timestamp.
+    1.  Empty event list (no new events received from API response).
+        Meaning: Usually means there are not any more events to fetch at the moment.
+        Handle: Return empty list of events and the unchanged list of 'events_last_fetch_ids' for next run.
+
+    2.  All events from the current fetch cycle have the same timestamp.
         Meaning: There are potentially more events with the same timestamp in the next fetch.
         Handle: Add the list of fetched events IDs to current 'events_last_fetch_ids' from last run,
-                return list of dedup event and updated list of 'events_last_fetch_ids' for next run.
+                return list of new events and updated list of 'events_last_fetch_ids' for next run.
 
-    2.  Most recent event has later timestamp then other events in the response.
+    3.  Most recent event has later timestamp then other events in the response.
         Meaning: This is the normal case where events in the response have different timestamps.
-        Handle: Return list of dedup event and new list of 'new_ids' for next run.
-
-    3.  Empty event list (no new events received from API response).
-        Meaning: Usually means there are not any more events to fetch at the moment.
-        Handle: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
+        Handle: Return list of new events and a list of 'new_ids' containing only IDs of
+                events with identical latest time (up to second) for next run.
 
     Args:
         events (list[dict]): List of events from the current fetch response.
@@ -204,23 +206,34 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     Returns:
         tuple[list[dict], list[str]: The list of dedup events and ID list of events of current fetch.
     """
-    # remove events that already appeared in last fetch
-    dedup_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
-    # get ids of dedup events
-    new_ids: list[str] = [event.get(unique_id_key, '') for event in dedup_events]
-
+    # TODO make sure to test all the changed cases in this function
+    # case 1
     if not events:
-        return dedup_events, events_last_fetch_ids
+        demisto.debug('debug-log: Dedup case 1 - Empty event list (no new events received from API response).')
+        return [], events_last_fetch_ids
 
-    latest_event_from_response = arg_to_datetime(events[-1].get('time'))
-    earliest_event_from_response = arg_to_datetime(events[0].get('time'))
+    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
 
-    if isinstance(latest_event_from_response, datetime) and isinstance(earliest_event_from_response, datetime)\
-            and are_two_event_time_equal(latest_event_from_response, earliest_event_from_response):
+    earliest_event_datetime = arg_to_datetime(events[0].get('time'))
+    latest_event_datetime = arg_to_datetime(events[-1].get('time'))
+
+    # case 2
+    if earliest_event_datetime and latest_event_datetime and\
+            are_two_datetime_equal_by_second(latest_event_datetime, earliest_event_datetime):
+        demisto.debug('debug-log: Dedup case 2 - All events from the current fetch cycle have the same timestamp.')
+        new_ids = [event.get(unique_id_key, '') for event in new_events]
         events_last_fetch_ids.extend(new_ids)
-        return dedup_events, events_last_fetch_ids
+        return new_events, events_last_fetch_ids
+
+    # case 3
     else:
-        return dedup_events, new_ids
+        demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
+        latest_event_timestamp = events[-1].get('time', '')[:19]
+        events_with_identical_latest_time = list(
+            itertools.takewhile(lambda x: x.get('time', '')[:19] == latest_event_timestamp, reversed(events)))
+        new_ids = [event.get(unique_id_key, '') for event in events_with_identical_latest_time]
+
+        return new_events, new_ids
 
 
 def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, client: Client,
@@ -321,7 +334,7 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
         datetime: The from_date argument as a datetime object or None if the argument is invalid.
     """
     from_date_datetime = arg_to_datetime(from_date)
-    return from_date_datetime if isinstance(from_date_datetime, datetime) else None
+    return from_date_datetime if from_date_datetime else None
 
 
 def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str | list]):
@@ -367,7 +380,7 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -398,11 +411,11 @@ def main():
             return_results(test_module(client))
 
         elif command in ('fetch-events', 'armis-get-events'):
+            should_return_results = False
+
             if command == 'armis-get-events':
                 last_run = {}
                 should_return_results = True
-            else:
-                should_return_results = False
 
             should_push_events = (command == 'fetch-events' or should_push_events)
 

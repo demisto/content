@@ -49,8 +49,8 @@ class TestHelperFunction:
             - Case 1: Return True.
             - Case 2: Return False.
         """
-        from ArmisEventCollector import are_two_event_time_equal
-        assert are_two_event_time_equal(x, y) == expected_result
+        from ArmisEventCollector import are_two_datetime_equal_by_second
+        assert are_two_datetime_equal_by_second(x, y) == expected_result
 
     # test_dedup_events parametrize arguments
     case_all_events_with_same_time = ([
@@ -89,7 +89,7 @@ class TestHelperFunction:
     }, {
         'unique_id': '3',
         'time': '2023-01-01T01:00:30.123456+00:00'
-    }], ['1', '3']))
+    }], ['3']))
     case_empty_event_list: tuple = ([], ['1', '2', '3'], 'unique_id', ([], ['1', '2', '3']))
 
     @pytest.mark.parametrize('events, events_last_fetch_ids, unique_id_key, expected_result', [
@@ -128,7 +128,7 @@ class TestHelperFunction:
         event_type = EVENT_TYPE('unique_id', 'example:query', 'events')
         events: list[dict] = []
         next_run: dict = {}
-        last_run = {'events_last_fetch_time': '2023-01-01T02:00:00', 'events_last_fetch_ids': ['2', '3']}
+        last_run = {'events_last_fetch_time': '2023-01-01T01:00:20', 'events_last_fetch_ids': ['1', '2']}
         fetch_start_time_param = datetime.now()
         response = [
             {
@@ -148,8 +148,8 @@ class TestHelperFunction:
 
         fetch_by_event_type(event_type, events, next_run, dummy_client, 1, last_run, fetch_start_time_param)
 
-        assert events == [{'unique_id': '1', 'time': '2023-01-01T01:00:10.123456+00:00'}]
-        assert next_run == {'events_last_fetch_ids': ['1'], 'events_last_fetch_time': '2023-01-01T01:00:10.123456+00:00'}
+        assert events == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
+        assert next_run == {'events_last_fetch_ids': ['3'], 'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00'}
 
     # test_add_time_to_events parametrize arguments
     case_one_event = (
@@ -272,7 +272,7 @@ class TestFetchFlow:
         ['Events'],
         events_with_different_time_1,
         events_with_different_time_1,
-        {'events_last_fetch_ids': ['1', '2', '3'],
+        {'events_last_fetch_ids': ['3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
     case_second_fetch = (  # type: ignore
@@ -283,7 +283,7 @@ class TestFetchFlow:
         ['Events'],
         events_with_different_time_2,
         events_with_different_time_2,
-        {'events_last_fetch_ids': ['4', '5', '6'],
+        {'events_last_fetch_ids': ['6'],
             'events_last_fetch_time': '2023-01-01T01:01:00.123456+00:00', 'access_token': 'test_access_token'}
     )
     case_second_fetch_with_duplicates = (  # type: ignore
@@ -386,7 +386,7 @@ class TestFetchFlow:
         mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
         mocker.patch.object(Client, 'update_access_token')
         if fetch_start_time:
-            last_run = {'events_last_fetch_ids': ['1', '2', '3'],
+            last_run = {'events_last_fetch_ids': ['3'],
                         'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00',
                         'access_token': 'test_access_token'}
             assert fetch_events(dummy_client, 1000, {}, fetch_start_time, [
