@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import tempfile
 
 
@@ -1142,6 +1144,29 @@ def update_edl_command(args: dict, params: dict):
     return hr, {}, {}
 
 
+@debug_function
+def get_edl_command(args: dict, params: dict):
+    results = {}
+    with APP.test_client() as c:
+        resp = c.get('/')
+        header_dict = {}
+        for entry in resp.headers.to_wsgi_list():
+            if entry[0] and entry[1]:
+                header_dict[entry[0]] = entry[1]
+        results = {
+            "Values": (resp.text).splitlines(),
+            "ResponseHeaders": header_dict,
+            "Count": len((resp.text).splitlines())
+        }
+    return CommandResults(
+        outputs_prefix="Edl",
+        outputs_key_field="Values",
+        outputs=results,
+        raw_response=results,
+        ignore_auto_extract=True
+    )
+
+
 def initialize_edl_context(params: dict):
     global EDL_ON_DEMAND_CACHE_PATH
     limit = try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
@@ -1237,6 +1262,9 @@ def main():
         initialize_edl_context(params)
         if command == 'long-running-execution':
             run_long_running(params)
+        elif command == 'get-edl':
+            results = get_edl_command(demisto.args(), params)
+            return_results(results)
         elif command in commands:
             readable_output, outputs, raw_response = commands[command](demisto.args(), params)
             return_outputs(readable_output, outputs, raw_response)
