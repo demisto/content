@@ -5,7 +5,7 @@
 # If there is a lock for some machine, and its job status is not running, the lock is removed.
 # If we want to lock specific machine, set $LOCK_MACHINE_NAME=requested_machine_to_lock variable.
 
-#=================================
+#==================================
 #   Main Execution Point
 #===================================
 set -e
