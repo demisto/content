@@ -5,16 +5,16 @@
 # If there is a lock for some machine, and its job status is not running, the lock is removed.
 # If we want to lock specific machine, set $LOCK_MACHINE_NAME=requested_machine_to_lock variable.
 
-#==================================
+#=================================
 #   Main Execution Point
-#===================================
+#==================================
 set -e
 
 touch CloudEnvVariables
 
 # Filter out not enabled and unnecessary machines
 CLOUD_SERVERS_FILE=$(cat $CLOUD_SERVERS_FILE)
-
+LOCK_MACHINE_NAME="qa2-test-9992101943618"
 TEST_MACHINES_LIST=$(jq --arg flow_type "$1" 'to_entries | map(select(.value.enabled == true and .value.flow_type == $flow_type)) | from_entries' "$CLOUD_SERVERS_FILE")
 
 # Get the number of existing machines
