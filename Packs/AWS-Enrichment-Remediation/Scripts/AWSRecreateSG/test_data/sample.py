@@ -19,11 +19,11 @@ SG_INFO = [
                             "Ipv6Ranges": [
 
                             ],
-                            "PrefixListIds":[
+                            "PrefixListIds": [
 
                             ],
                             "ToPort":65535,
-                            "UserIdGroupPairs":[
+                            "UserIdGroupPairs": [
 
                             ]
                         },
@@ -38,16 +38,16 @@ SG_INFO = [
                             "Ipv6Ranges": [
 
                             ],
-                            "PrefixListIds":[
+                            "PrefixListIds": [
 
                             ],
                             "ToPort":22,
-                            "UserIdGroupPairs":[
+                            "UserIdGroupPairs": [
 
                             ]
                         }
                     ],
-                    "IpPermissionsEgress":[
+                    "IpPermissionsEgress": [
                         {
                             "FromPort": 0,
                             "IpProtocol": "tcp",
@@ -59,23 +59,23 @@ SG_INFO = [
                             "Ipv6Ranges": [
 
                             ],
-                            "PrefixListIds":[
+                            "PrefixListIds": [
 
                             ],
                             "ToPort":65535,
-                            "UserIdGroupPairs":[
+                            "UserIdGroupPairs": [
 
                             ]
                         }
                     ],
-                    "OwnerId":"717007404259",
-                    "Region":"us-east-1",
-                    "VpcId":"vpc-061c242911e464170"
+                    "OwnerId": "717007404259",
+                    "Region": "us-east-1",
+                    "VpcId": "vpc-061c242911e464170"
                 }
             ]
         },
-        "HumanReadable":"### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-0408c2745d3d13b15 | demo-sg | 717007404259 | us-east-1 | vpc-061c242911e464170 |\n",
-        "ImportantEntryContext":"None",
+        "HumanReadable": "### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-0408c2745d3d13b15 | demo-sg | 717007404259 | us-east-1 | vpc-061c242911e464170 |\n",
+        "ImportantEntryContext": "None",
         "EntryContext":{
             "AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)": [
                 {
