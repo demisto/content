@@ -22,4 +22,5 @@ echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
 echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
 echo "Setting up content dependencies"
+git config --global --add safe.directory /workspaces/content
 .hooks/bootstrap
