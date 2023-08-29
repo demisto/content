@@ -69,7 +69,7 @@ repos:
     args: ["-ud", "-n", "--no-validate", "-g"]
 
   - id: validate
-    args: ["-g", "--skip-pack-dependencies"]
+    args: ["--skip-pack-dependencies", "-g"]
 
   - id: secrets
     args: ["--ignore-entropy"]
