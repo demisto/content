@@ -28,8 +28,8 @@ class Pagination():
     """
 
     def __init__(self, limit: str, page: str | None = None, page_size: str | None = None):
-        self.page = arg_to_number(page)
-        self.page_size = arg_to_number(page_size)
+        self.page = arg_to_number(page_size and page)
+        self.page_size = arg_to_number(page and page_size)
         self.limit = arg_to_number(limit)
 
 
@@ -699,13 +699,12 @@ def update_vulnerability_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    vulnerability_id = args[XsoarArgKey.VULNERABILITY]
+    vulnerability_id = args.get(XsoarArgKey.VULNERABILITY, "")
 
     client.update_vulnerability(
         vulnerability_id=vulnerability_id,
-        severity=args.get("severity") and args["severity"].upper(),
-        status=args.get("status") and args["status"].upper().replace(" ", "_"),
-    )
+        severity=args.get("severity", "").upper(),
+        status=args.get("status", "").upper().replace(" ", "_"),)
     return CommandResults(
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY.value,
@@ -730,7 +729,7 @@ def list_vulnerability_command(client: Client, args: dict[str, Any]) -> CommandR
     return list_handler(
         pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
                               page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args[XsoarArgKey.LIMIT]),
+                              limit=args.get(XsoarArgKey.LIMIT)),
         obj_id=args.get(XsoarArgKey.VULNERABILITY),
         obj_type=OutputPrefix.VULNERABILITY,
         request_command=client.list_vulnerability,
@@ -753,10 +752,10 @@ def list_vulnerability_history_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        obj_id=args[XsoarArgKey.VULNERABILITY],
+        obj_id=args.get(XsoarArgKey.VULNERABILITY, ""),
         request_command=client.get_vulnerability_history,
         obj_type=OutputPrefix.VULNERABILITY_HISTORY,
-        add_to_output=AddToOutput(data_to_add={"vulnerability_id": args[XsoarArgKey.VULNERABILITY]}),
+        add_to_output=AddToOutput(data_to_add={"vulnerability_id": args.get(XsoarArgKey.VULNERABILITY, "")}),
     )
 
 
@@ -775,12 +774,12 @@ def create_vulnerability_comment_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.create_vulnerability_comment(
-        vulnerability_id=args[XsoarArgKey.VULNERABILITY], comment_content=args["comment_content"]
+        vulnerability_id=args.get(XsoarArgKey.VULNERABILITY, ""), comment_content=args.get("comment_content", "",)
     )
     return CommandResults(
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY_COMMENT.value,
-            action=ReadableOutputs.ADDED.value.format(args[XsoarArgKey.VULNERABILITY]),
+            action=ReadableOutputs.ADDED.value.format(args.get(XsoarArgKey.VULNERABILITY, "")),
         )
     )
 
@@ -800,15 +799,15 @@ def update_vulnerability_comment_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.update_vulnerability_comment(
-        vulnerability_id=args[XsoarArgKey.VULNERABILITY],
-        comment_id=args[XsoarArgKey.COMMENT],
-        comment_content=args["comment_content"],
+        vulnerability_id=args.get(XsoarArgKey.VULNERABILITY, ""),
+        comment_id=args.get(XsoarArgKey.COMMENT, ""),
+        comment_content=args.get("comment_content", ""),
     )
     return CommandResults(
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY_COMMENT,
             action=ReadableOutputs.UPDATED,
-            object_id=args[XsoarArgKey.COMMENT],
+            object_id=args.get(XsoarArgKey.COMMENT, ""),
         )
     )
 
@@ -828,12 +827,12 @@ def delete_vulnerability_comment_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return delete_handler(
-        obj_id=args[XsoarArgKey.VULNERABILITY],
-        sub_obj_id=args[XsoarArgKey.COMMENT],
+        obj_id=args.get(XsoarArgKey.VULNERABILITY, ""),
+        sub_obj_id=args.get(XsoarArgKey.COMMENT, ""),
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY_COMMENT,
             action=ReadableOutputs.DELETED,
-            object_id=args[XsoarArgKey.COMMENT],
+            object_id=args.get(XsoarArgKey.COMMENT, ""),
         ),
         request_command=client.delete_vulnerability_comment,
     )
@@ -858,12 +857,189 @@ def list_vulnerability_comment_command(
         obj_id=args.get(XsoarArgKey.COMMENT),
         headers=Headers.VULNERABILITY_COMMENT,
         obj_type=OutputPrefix.VULNERABILITY_COMMENT,
-        request_command=partial(client.list_vulnerability_comment, args[XsoarArgKey.VULNERABILITY]),
-        add_to_output=AddToOutput(data_to_add={"vulnerability_id": args[XsoarArgKey.VULNERABILITY]}),
+        request_command=partial(client.list_vulnerability_comment, args.get(XsoarArgKey.VULNERABILITY, "")),
+        add_to_output=AddToOutput(data_to_add={"vulnerability_id": args.get(XsoarArgKey.VULNERABILITY, "")}),
     )
 
 
 @logger
+def list_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List scans.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, 50)),
+        headers=Headers.SCAN,
+        obj_id=args.get(XsoarArgKey.SCAN),
+        obj_type=OutputPrefix.SCAN,
+        title="Scan list",
+        request_command=client.list_scan,
+    )
+
+
+@ logger
+def submit_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Submit a scan.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.submit_scan(
+        scan_config_id=args.get("scan_config_id"),
+        scan_type=args.get("scan_type", "").upper(),
+        parent_scan_id=args.get("parent_scan_id"),
+    )
+    return CommandResults(readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+                                                                           action=ReadableOutputs.SUBMITTED))
+
+
+def delete_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a scan.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return delete_handler(
+        obj_id=args.get(XsoarArgKey.SCAN, ""),
+        readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+                                                         object_id=args.get(XsoarArgKey.SCAN, ""),
+                                                         action=ReadableOutputs.DELETED),
+        request_command=client.delete_scan,
+    )
+
+
+@ logger
+def list_scan_engine_events_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    List scan engine events.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.SCAN, ""),
+        request_command=client.list_scan_engine_event,
+        obj_type=OutputPrefix.ENGINE_EVENT,
+        add_to_output=PrefixToResponse(data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")},
+                                       prefix="Event", id_key="scan_id")
+    )
+
+
+@ logger
+def list_scan_platform_events_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    List scan platform events.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.SCAN, ""),
+        request_command=client.list_scan_platform_event,
+        obj_type=OutputPrefix.PLATFORM_EVENT,
+        add_to_output=PrefixToResponse(
+            data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")}, prefix="Event", id_key="scan_id")
+    )
+
+
+@ logger
+def get_scan_execution_detail_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    Get scan execution details.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.SCAN, ""),
+        request_command=client.get_scan_execution_details,
+        obj_type=OutputPrefix.EXECUTION_DETAIL,
+        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")})
+    )
+
+
+@ logger
+def get_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get scan action.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.SCAN, ""),
+        request_command=client.get_scan_action,
+        obj_type=OutputPrefix.SCAN,
+        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")})
+    )
+
+
+@ logger
+def submit_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Submit scan action.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.submit_scan_action(
+        scan_id=args.get(XsoarArgKey.SCAN, ""),
+        action=args.get("action", "").upper(),
+    )
+    return CommandResults(
+        readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+                                                         action=ReadableOutputs.CHANGED.value.format(
+                                                             args.get("action", "")),
+                                                         object_id=args.get(XsoarArgKey.SCAN, ""))
+    )
+
+
+@ logger
 def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication.
@@ -889,7 +1065,7 @@ def test_module(client: Client) -> str:
 """ HELPER FUNCTIONS """
 
 
-@logger
+@ logger
 def list_handler(
     obj_id: str | None,
     obj_type: str,
@@ -946,7 +1122,7 @@ def list_handler(
     )
 
 
-@logger
+@ logger
 def get_appsec_response(response: dict[str, Any] | list[dict[str, Any]]) -> dict[str, Any] | list[dict[str, Any]]:
     """
     Get the relevant data from the API response.
@@ -965,7 +1141,7 @@ def get_appsec_response(response: dict[str, Any] | list[dict[str, Any]]) -> dict
         return [response]
 
 
-@logger
+@ logger
 def create_list_command_results(data: list,
                                 obj_type: str,
                                 response: dict[str, Any] | list[dict[str, Any]],
@@ -1008,17 +1184,16 @@ def create_list_command_results(data: list,
         headers=headers,
         readable_parser=readable_parser
     )
-    command_results = CommandResults(
+    return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=generate_output_prefix(obj_type),
+        outputs_prefix=f"{INTEGRATION_OUTPUT_PREFIX}.{obj_type}",
         outputs_key_field=outputs_key_field,
         outputs=outputs,
         raw_response=response,
     )
-    return command_results
 
 
-@logger
+@ logger
 def handle_list_request(request_command: Callable,
                         pagination: Pagination | None = None,
                         obj_id: str | None = None,) -> dict[str, Any] | list[dict[str, Any]]:
@@ -1044,7 +1219,7 @@ def handle_list_request(request_command: Callable,
     return request_command()
 
 
-@logger
+@ logger
 def parse_list_response(data: list[dict[str, Any]],
                         use_flatten_dict: bool,
                         remove_html_tags: bool,
@@ -1072,7 +1247,7 @@ def parse_list_response(data: list[dict[str, Any]],
     return parsed_response
 
 
-@logger
+@ logger
 def create_list_readable_output(
         data: list[dict[str, Any]],
         obj_type: str,
@@ -1102,23 +1277,7 @@ def create_list_readable_output(
     )
 
 
-@logger
-def generate_output_prefix(
-    object_type: str,
-) -> str:
-    """
-    Generate an output prefix.
-
-    Args:
-        object_type (str): Object type.
-
-    Returns:
-        str: Output prefix.
-    """
-    return f"{INTEGRATION_OUTPUT_PREFIX}.{object_type}"
-
-
-@logger
+@ logger
 def delete_handler(
     obj_id: str,
     readable_output: str,
@@ -1145,7 +1304,7 @@ def delete_handler(
     return CommandResults(readable_output=readable_output)
 
 
-@logger
+@ logger
 def flatten_dict(obj: dict | list, separator="_", prefix="") -> dict:
     """
     Flatten a dictionary. For example: {"a": {"b": "c"}, "d": "e"} will flatten to {"a_b": "c", "d": "e"}
@@ -1171,7 +1330,7 @@ def flatten_dict(obj: dict | list, separator="_", prefix="") -> dict:
     )
 
 
-@logger
+@ logger
 def generate_readable_output_message(
     object_type: str,
     action: str,
@@ -1195,7 +1354,7 @@ def generate_readable_output_message(
     )
 
 
-@logger
+@ logger
 def clean_html_tags(to_clean: dict[str, Any]) -> dict[str, Any]:
     """
     Clean HTML tags from AppSec response.
@@ -1216,7 +1375,7 @@ def clean_html_tags(to_clean: dict[str, Any]) -> dict[str, Any]:
         return to_clean
 
 
-@logger
+@ logger
 def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
     """
     Generate API endpoint for list request.
@@ -1234,10 +1393,10 @@ def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
 def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
-    base_url = params["url"]
+    base_url = params.get("url", "")
     api_key = dict_safe_get(params, ["api_key", "password"])
-    insecure: bool = argToBoolean(params["insecure"])
-    proxy = argToBoolean(params["proxy"])
+    insecure: bool = not params.get("insecure", False)
+    proxy = argToBoolean(params.get("proxy", ""))
     command = demisto.command()
     try:
         client: Client = Client(
@@ -1254,6 +1413,14 @@ def main() -> None:
             f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY_COMMENT}-update": update_vulnerability_comment_command,
             f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY_COMMENT}-delete": delete_vulnerability_comment_command,
             f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY_COMMENT}-list": list_vulnerability_comment_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-list": list_scan_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-submit": submit_scan_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-delete": delete_scan_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-engine-event-list": list_scan_engine_events_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-platform-event-list": list_scan_platform_events_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-execution-details-get": get_scan_execution_detail_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-get": get_scan_action_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-submit": submit_scan_action_command,
         }
         if command == "test-module":
             return_results(test_module(client))

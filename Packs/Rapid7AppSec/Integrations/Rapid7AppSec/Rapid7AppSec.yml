@@ -19,9 +19,11 @@ configuration:
   required: false
   type: 8
 - display: API Key
+  hiddenpassword: true
   name: api_key
   required: true
   type: 9
+  password: false
 description: Rapid7 AppSec integration allows the management of applications vulnerabilities
   and scans.
 display: Rapid7AppSec
@@ -80,7 +82,7 @@ script:
       name: limit
       required: false
     description: List vulnerabilities. Vulnerabilities are aspects of your app that
-      can make it susceptible to attackers.
+      can make it susceptible to attackers. If a vulnerability_id is given, the command will return the information about the wanted vulnerability.
     execution: false
     name: app-sec-vulnerability-list
     outputs:
@@ -213,7 +215,7 @@ script:
       isArray: false
       name: comment_id
       required: true
-    - description: The content of the Vulnerability Comment.
+    - description: The new content of the Vulnerability Comment.
       isArray: false
       name: comment_content
       required: true
@@ -245,7 +247,7 @@ script:
       isArray: false
       name: comment_id
       required: false
-    description: List vulnerabilities comments.
+    description: List vulnerabilities comments. If a comment_id is given, the command will return the information about the wanted comment.
     execution: false
     name: app-sec-vulnerability-comment-list
     outputs:
@@ -440,7 +442,7 @@ script:
       required: false
     description: List scans. Scans attack the URLs in your app to identify behaviors
       that could be exploited by attackers. The specific attack types, URLs, and many
-      other options are set in the scan configs.
+      other options are set in the scan configs.  If a scan_id is given, the command will return the information about the wanted scan.
     execution: false
     name: app-sec-scan-list
     outputs:
@@ -583,7 +585,7 @@ script:
       name: limit
       required: false
     description: List scan configs. A Scan Config defines all the necessary information
-      required to perform a scan of an app.  Mainly used to submit scans.
+      required to perform a scan of an app. If a scan_config_id is given, the command will return the information about the wanted scan config. Mainly used to submit scans.
     execution: false
     name: app-sec-scan-config-list
     outputs:
@@ -636,7 +638,7 @@ script:
       name: limit
       required: false
     description: List apps. An App owns Scan Configs, Schedules, Scans, and Vulnerabilities.  Mainly
-      used to understand vulnerabilities and scan config outputs.
+      used to understand vulnerabilities and scan config outputs. If a app_id is given, the command will return the information about the wanted app.
     execution: false
     name: app-sec-app-list
     outputs:
@@ -651,7 +653,7 @@ script:
       isArray: false
       name: module_id
       required: false
-    description: List modules. Mainly used to understand vulnerabilities outputs.
+    description: List modules. If a module_id is given, the command will return the information about the wanted module. Mainly used to understand vulnerabilities outputs.
     execution: false
     name: app-sec-module-list
     outputs:
@@ -685,7 +687,7 @@ script:
       required: false
     description: List attack templates. An Attack Template describes if and how Attacks
       should be executed during the execution of a Scan. Mainly used to understand
-      the scan config outputs.
+      the scan config outputs. If a attack_template_id is given, the command will return the information about the wanted attack.
     execution: false
     name: app-sec-attack-template-list
     outputs:
@@ -729,7 +731,7 @@ script:
       required: false
     description: List engines. An Engine encapsulates the state and high-level attributes
       of the components which may be installed and running on a specific On-Premise
-      host.
+      host. If a engine_id is given, the command will return the information about the wanted engine.
     execution: false
     name: app-sec-engine-list
     outputs:
@@ -778,7 +780,7 @@ script:
       required: false
     description: List engine groups. An Engine Group is a resource which defines a
       container for a logical grouping of Engines and therefore the purpose of assigning
-      Scans to one of those Engines. Mainly used to understand the scan config outputs.
+      Scans to one of those Engines. Mainly used to understand the scan config outputs. If a engine_group_id is given, the command will return the information about the wanted engine group.
     execution: false
     name: app-sec-engine-group-list
     outputs:
