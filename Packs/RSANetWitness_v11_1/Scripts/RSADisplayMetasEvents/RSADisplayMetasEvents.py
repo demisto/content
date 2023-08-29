@@ -25,7 +25,11 @@ def display_metas():
         or 'metasevents' not in incident['CustomFields']
         or not len(incident['CustomFields']['metasevents'])
     ):
-        return {'Type': entryTypes['note'], 'ContentsFormat': formats['markdown'], 'Contents': 'No event available for this incident.'}
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': 'No event available for this incident.'
+        }
 
     metasevents = incident['CustomFields']['metasevents'][0]
 

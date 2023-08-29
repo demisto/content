@@ -1,12 +1,10 @@
 commonfields:
   id: RSA_DisplayMetasEvents
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.13.72123
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: RSA_DisplayMetasEvents
-pswd: ""
+comment: Use this script to display Meta Events inside the layout
 runas: DBotWeakRole
 runonce: false
 script: ''
