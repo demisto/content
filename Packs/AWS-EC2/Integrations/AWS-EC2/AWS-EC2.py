@@ -2937,7 +2937,7 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-def list_roots_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def list_roots_command(args: Dict[str, Any], aws_client):
     """
     aws-organization-list-roots command: Lists the roots that are defined in the current organization.
 
@@ -2957,7 +2957,7 @@ def list_roots_command(args: Dict[str, Any], aws_client) -> CommandResults:
     )
     response = client.list_roots()
     if len(response['Roots']) == 0:
-        return 'No roots were found.'
+        return_results('No roots were found.')
     else:
         markdown = tableToMarkdown(
             "AWS Roots",
@@ -2972,12 +2972,13 @@ def list_roots_command(args: Dict[str, Any], aws_client) -> CommandResults:
             raw_response=response,
             readable_output=markdown,
         )
-        return command_results
+        return_results(command_results)
 
 
-def list_children_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def list_children_command(args: Dict[str, Any], aws_client):
     """
-   aws-organization-list-children: Lists all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
+   aws-organization-list-children: Lists all of the organizational units (OUs) or accounts that
+   are contained in the specified parent OU or root.
 
     Args:
         client (Client): aws_client client to use.
@@ -2997,14 +2998,14 @@ def list_children_command(args: Dict[str, Any], aws_client) -> CommandResults:
         raise ValueError("`child_type` can only be `ACCOUNT` or `ORGANIZATIONAL_UNIT`")
     kwargs = {}
     if args.get('max_results') is not None:
-        kwargs.update({'MaxResults': int(args.get('max_results'))})
+        kwargs.update({'MaxResults': int(args['max_results'])})
     if args.get('next_token') is not None:
-        kwargs.update({'NextToken': args.get('next_token')})
-    kwargs.update({'ParentId': args.get('parent_id')})
-    kwargs.update({'ChildType': args.get('child_type')})
+        kwargs.update({'NextToken': args['next_token']})
+    kwargs.update({'ParentId': args['parent_id']})
+    kwargs.update({'ChildType': args['child_type']})
     response = client.list_children(**kwargs)
     if len(response['Children']) == 0:
-        return 'No children were found.'
+        return_results('No children were found.')
     else:
         markdown = tableToMarkdown(
             "AWS Children",
@@ -3019,12 +3020,13 @@ def list_children_command(args: Dict[str, Any], aws_client) -> CommandResults:
             raw_response=response,
             readable_output=markdown,
         )
-        return command_results
+        return_results(command_results)
 
 
-def list_parents_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def list_parents_command(args: Dict[str, Any], aws_client):
     """
-    aws-organization-list-parents: Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child OU or account.
+    aws-organization-list-parents: Lists the root or organizational units (OUs) that
+    serve as the immediate parent of the specified child OU or account.
 
     Args:
         client (Client): aws_client client to use.
@@ -3042,13 +3044,13 @@ def list_parents_command(args: Dict[str, Any], aws_client) -> CommandResults:
     )
     kwargs = {}
     if args.get('max_results') is not None:
-        kwargs.update({'MaxResults': int(args.get('max_results'))})
+        kwargs.update({'MaxResults': int(args['max_results'])})
     if args.get('next_token') is not None:
-        kwargs.update({'NextToken': args.get('next_token')})
-    kwargs.update({'ChildId': args.get('child_id')})
+        kwargs.update({'NextToken': args['next_token']})
+    kwargs.update({'ChildId': args['child_id']})
     response = client.list_parents(**kwargs)
     if len(response['Parents']) == 0:
-        return 'No parents were found.'
+        return_results('No parents were found.')
     else:
         markdown = tableToMarkdown(
             "AWS Parents",
@@ -3063,10 +3065,10 @@ def list_parents_command(args: Dict[str, Any], aws_client) -> CommandResults:
             raw_response=response,
             readable_output=markdown,
         )
-        return command_results
+        return_results(command_results)
 
 
-def describe_account_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def describe_account_command(args: Dict[str, Any], aws_client):
     """
     aws-organization-describe-account: Retrieves Organizations-related information about the specified account.
 
@@ -3102,10 +3104,10 @@ def describe_account_command(args: Dict[str, Any], aws_client) -> CommandResults
         raw_response=response_updated,
         readable_output=markdown,
     )
-    return command_results
+    return_results(command_results)
 
 
-def describe_ou_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def describe_ou_command(args: Dict[str, Any], aws_client):
     """
     aws-organization-describe-ou: Retrieves information about an organizational unit (OU).
 
@@ -3140,15 +3142,16 @@ def describe_ou_command(args: Dict[str, Any], aws_client) -> CommandResults:
         raw_response=response,
         readable_output=markdown,
     )
-    return command_results
+    return_results(command_results)
 
     # elif command == 'aws-organization-describe-organization':
     #     describe_organization_command(args, aws_client)
 
 
-def describe_organization_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def describe_organization_command(args: Dict[str, Any], aws_client):
     """
-    aws-organization-describe-organization: Retrieves information about the organization that the user's account belongs to.
+    aws-organization-describe-organization: Retrieves information about
+    the organization that the user's account belongs to.
 
     Args:
         client (Client): aws_client client to use.
@@ -3179,7 +3182,7 @@ def describe_organization_command(args: Dict[str, Any], aws_client) -> CommandRe
         raw_response=response,
         readable_output=markdown,
     )
-    return command_results
+    return_results(command_results)
 
 
 def main():
@@ -3430,22 +3433,22 @@ def main():
             release_hosts_command(args, aws_client)
 
         elif command == 'aws-organization-list-roots':
-            return_results(list_roots_command(args, aws_client))
+            list_roots_command(args, aws_client)
 
         elif command == 'aws-organization-list-children':
-            return_results(list_children_command(args, aws_client))
+            list_children_command(args, aws_client)
 
         elif command == 'aws-organization-list-parents':
-            return_results(list_parents_command(args, aws_client))
+            list_parents_command(args, aws_client)
 
         elif command == 'aws-organization-describe-account':
-            return_results(describe_account_command(args, aws_client))
+            describe_account_command(args, aws_client)
 
         elif command == 'aws-organization-describe-ou':
-            return_results(describe_ou_command(args, aws_client))
+            describe_ou_command(args, aws_client)
 
         elif command == 'aws-organization-describe-organization':
-            return_results(describe_organization_command(args, aws_client))
+            describe_organization_command(args, aws_client)
 
     except Exception as e:
         LOG(e)
