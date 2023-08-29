@@ -150,26 +150,37 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time_param: datetime) -> datetime:
+def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: datetime | None):
     """ Calculates the fetch start time.
+        There are three cases for fetch start time calculation:
+        - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
+        - Case 2: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument).
+        - Case 3: first fetch in the instance (no last_run), this will return None
+                  (The request will get the last events from the API in the
+                  page size of 'max_events' (fetch-events / armis-get-events commands).
 
     Args:
-        last_fetch_time (str): Last fetch time (from last run).
-        fetch_start_time_param (datetime): Fetch start time (usually current time).
+        last_fetch_time (str | None): Last fetch time (from last run).
+        fetch_start_time (datetime | None): Fetch start time.
 
     Raises:
-        DemistoException: If the transformation of last_fetch_time to datetime object failed.
+        DemistoException: If the transformation to to datetime object failed.
 
     Returns:
         datetime: Fetch start time value for current fetch cycle.
     """
+    # case 1
     if last_fetch_time:
         last_fetch_datetime = arg_to_datetime(last_fetch_time)
         if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
         return last_fetch_datetime
+    # case 2
+    elif fetch_start_time:
+        return fetch_start_time
+    # case 3
     else:
-        return fetch_start_time_param
+        return None
 
 
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):
@@ -206,7 +217,6 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     Returns:
         tuple[list[dict], list[str]: The list of dedup events and ID list of events of current fetch.
     """
-    # TODO make sure to test all the changed cases in this function
     # case 1
     if not events:
         demisto.debug('debug-log: Dedup case 1 - Empty event list (no new events received from API response).')
@@ -237,7 +247,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
 
 
 def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, client: Client,
-                        max_fetch: int, last_run: dict, fetch_start_time_param: datetime):
+                        max_fetch: int, last_run: dict, fetch_start_time: datetime | None):
     """ Fetch events by specific event type.
 
     Args:
@@ -247,16 +257,13 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
         client (Client): Armis client to use for API calls.
         max_fetch (int): Max number of events to fetch.
         last_run (dict): Last run dictionary.
-        fetch_start_time_param (datetime): Fetch start time (usually current time).
+        fetch_start_time (datetime | None): Fetch start time.
     """
     last_fetch_ids = f'{event_type.type}_last_fetch_ids'
     last_fetch_time = f'{event_type.type}_last_fetch_time'
 
     demisto.debug(f'debug-log: handling event-type: {event_type.type}')
-    if last_run:
-        event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time_param)
-    else:
-        event_type_fetch_start_time = None
+    event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time)
 
     response = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
@@ -276,7 +283,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
         next_run.update(last_run)
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time_param: datetime,
+def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time: datetime | None,
                  event_types_to_fetch: list[str]):
     """ Fetch events from Armis API.
 
@@ -284,7 +291,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
         client (Client): Armis client to use for API calls.
         max_fetch (int): Max number of alerts to fetch.
         last_run (dict): Last run dictionary.
-        fetch_start_time_param (datetime): Fetch start time (usually current time).
+        fetch_start_time (datetime | None): Fetch start time.
         event_types_to_fetch (list[str]): List of event types to fetch.
 
     Returns:
@@ -295,12 +302,12 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
 
     for event_type in event_types_to_fetch:
         try:
-            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client, max_fetch, last_run, fetch_start_time_param)
+            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client, max_fetch, last_run, fetch_start_time)
         except Exception as e:
             if "Invalid access token" in str(e):
                 client.update_access_token()
                 fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
-                                    max_fetch, last_run, fetch_start_time_param)
+                                    max_fetch, last_run, fetch_start_time)
 
     next_run['access_token'] = client._access_token
 
@@ -393,9 +400,8 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
     should_push_events = argToBoolean(args.get('should_push_events', False))
-    from_date_datetime = None
-    if from_date := args.get('from_date'):
-        from_date_datetime = handle_from_date_argument(from_date)
+    from_date = args.get('from_date')
+    fetch_start_time = handle_from_date_argument(from_date) if from_date else None
 
     demisto.debug(f'Command being called is {command}')
 
@@ -423,7 +429,7 @@ def main():  # pragma: no cover
                 client=client,
                 max_fetch=max_fetch,
                 last_run=last_run,
-                fetch_start_time_param=from_date_datetime or datetime.now(),
+                fetch_start_time=fetch_start_time,
                 event_types_to_fetch=event_types_to_fetch,
             )
 

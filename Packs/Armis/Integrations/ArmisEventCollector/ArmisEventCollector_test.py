@@ -13,21 +13,27 @@ def dummy_client(mocker):
 
 class TestHelperFunction:
 
-    # test_calculate_fetch_start_time & test_are_two_event_time_equal parametrize arguments
     date_1 = '2023-01-01T01:00:00'
     date_2 = '2023-01-01T02:00:00'
     datetime_1 = arg_to_datetime(date_1)
     datetime_2 = arg_to_datetime(date_2)
 
+    # test_calculate_fetch_start_time parametrize arguments
+    case_last_run_exist = (date_1, datetime_2, datetime_1)
+    case_from_date_parameter = (None, datetime_1, datetime_1)  # type: ignore
+    case_first_fetch_no_from_date_parameter = (None, None, None)
+
     @pytest.mark.parametrize(
         "last_fetch_time, fetch_start_time_param, expected_result", [
-            (date_1, datetime_2, datetime_1), (None, datetime_2, datetime_2)]
+            case_last_run_exist, case_from_date_parameter, case_first_fetch_no_from_date_parameter]
     )
     def test_calculate_fetch_start_time(self, last_fetch_time, fetch_start_time_param, expected_result):
         """
         Given:
-            - Case 1: last_fetch_time from last run exist
-            - Case 2: last_fetch_time from last run does not exist (first fetch)
+            - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
+            - Case 2: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument).
+            - Case 3: first fetch in the instance (no last_run),
+                      this will set the current date time (fetch-events / armis-get-events commands).
         When:
             - Calculating fetch start time from current fetch cycle.
         Then:
@@ -237,6 +243,10 @@ class TestFetchFlow:
         {
             'unique_id': '6',
             'time': '2023-01-01T01:01:00.123456+00:00'
+        },
+        {
+            'unique_id': '7',
+            'time': '2023-01-01T01:01:00.123456+00:00'
         }]
     events_with_duplicated_from_1 = [
         {
@@ -249,6 +259,10 @@ class TestFetchFlow:
         },
         {
             'unique_id': '6',
+            'time': '2023-01-01T01:01:00.123456+00:00'
+        },
+        {
+            'unique_id': '7',
             'time': '2023-01-01T01:01:00.123456+00:00'
         }]
     events_with_same_time = [  # type: ignore
@@ -283,7 +297,7 @@ class TestFetchFlow:
         ['Events'],
         events_with_different_time_2,
         events_with_different_time_2,
-        {'events_last_fetch_ids': ['6'],
+        {'events_last_fetch_ids': ['7', '6'],
             'events_last_fetch_time': '2023-01-01T01:01:00.123456+00:00', 'access_token': 'test_access_token'}
     )
     case_second_fetch_with_duplicates = (  # type: ignore
@@ -296,8 +310,12 @@ class TestFetchFlow:
         [{
             'unique_id': '6',
             'time': '2023-01-01T01:01:00.123456+00:00'
+        },
+            {
+            'unique_id': '7',
+            'time': '2023-01-01T01:01:00.123456+00:00'
         }],
-        {'events_last_fetch_ids': ['6'],
+        {'events_last_fetch_ids': ['7', '6'],
             'events_last_fetch_time': '2023-01-01T01:01:00.123456+00:00', 'access_token': 'test_access_token'}
     )
 
