@@ -1978,6 +1978,20 @@ class MsClient:
                                                overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
+    def upload_to_library(self, data, file):
+        cmd_url = 'libraryfiles'
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, data=data, files=file)
+        return response
+
+    def list_library(self):
+        cmd_url = 'libraryfiles'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
+    def delete_from_library(self, filename):
+        cmd_url = f'libraryfiles/{filename}'
+        self.ms_client.http_request(method='DELETE', url_suffix=cmd_url, return_empty_response=True)
+
     def download_file(self, url_link):
         try:
             response = requests.get(url=url_link, verify=self.ms_client.verify)
@@ -5471,6 +5485,61 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
+# -------------- Library ---------------
+def upload_library_file(client, args):
+    entry_ids = argToList(args['entry_id'])
+    description = args['description']
+    HasParameters = args.get("has_parameters", "false")
+    OverrideIfExists = args.get("override_if_exists", "true")
+    outputs = []
+    for entry_id in entry_ids:
+        info_file = demisto.getFilePath(entry_id)
+        file_path = info_file['path']
+        file_name = info_file['name']
+
+        f = open(file_path, 'rb')
+        file_name = urllib.parse.quote(file_name)
+        files = {
+            "file": (file_name, f)
+        }
+        data = {
+            "fileName": file_name,
+            "HasParameters": HasParameters.lower(),
+            "OverrideIfExists": OverrideIfExists.lower(),
+            "Description": description
+        }
+
+        res = client.upload_to_library(data, files)
+        res.pop('@odata.context', None)
+        outputs.append(res)
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Library',
+        outputs=outputs,
+        readable_output='Upload completed.')
+
+
+def list_library_file(client):
+
+    res = client.list_library()
+    md = tableToMarkdown('Processing Listing. This may take a few minutes.', res.get('value', []))
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Library',
+        outputs=res.get('value', []),
+        readable_output=md)
+
+
+def delete_library_file(client, args):
+    file_name = args['filename']
+    file_name = urllib.parse.quote(file_name)
+    client.delete_from_library(file_name)
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Library',
+        readable_output='Deletion completed.')
+
+
 def main():  # pragma: no cover
     params: dict = demisto.params()
     params_endpoint_type = params.get('endpoint_type') or 'Worldwide'
@@ -5696,6 +5765,14 @@ def main():  # pragma: no cover
             return_results(sc_delete_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-batch-update':
             return_results(sc_update_batch_indicators_command(client, args))
+
+        elif command == 'microsoft-atp-library-upload-file':
+            return_results(upload_library_file(client, args))
+        elif command == 'microsoft-atp-library-list-file':
+            return_results(list_library_file(client))
+        elif command == 'microsoft-atp-library-delete-file':
+            return_results(delete_library_file(client, args))
+
         elif command == 'microsoft-atp-live-response-put-file':
             return_results(put_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-get-file':

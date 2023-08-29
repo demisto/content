@@ -1488,7 +1488,7 @@ script:
       name: machine_id
       required: true
     - description: |-
-        The file SHA1 hash to stop and quarantine on the machine. 
+        The file SHA1 hash to stop and quarantine on the machine.
         When providing multiple values, each value is checked for the same machine_id.
       isArray: true
       name: file_hash
@@ -5509,6 +5509,34 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
+  - name: microsoft-atp-library-upload-file
+    arguments:
+    - name: entry_id
+      required: true
+    - name: description
+      required: true
+    - name: has_parameters
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      defaultValue: "False"
+    - name: override_if_exists
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      defaultValue: "True"
+    description: Upload file to live response library
+  - name: microsoft-atp-library-list-file
+    arguments: []
+    description: List live response library files
+  - name: microsoft-atp-library-delete-file
+    arguments:
+    - name: filename
+      required: true
+      description: the filename to delete
+    description: Delete a file from live response library.
   dockerimage: demisto/crypto:1.0.0.68914
   isfetch: true
   runonce: false
