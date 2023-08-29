@@ -237,6 +237,11 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'resource', json_data=data)
 
+    def resource_list_request(self, list_type: str):
+        params = assign_params(listType=list_type)
+
+        return self._http_request('GET', 'v1/resource_list', params=params)
+
     def account_list_request(self, exclude_account_group_details: str):
         data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
 
@@ -1613,6 +1618,33 @@ def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
+def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    list_type = args.get('list_type')
+
+    response_items = client.resource_list_request(list_type)
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+    
+    readable_responses = deepcopy(response_items)
+    nested_headers = {'resourceListType': 'Type'}
+    for readable_response in readable_responses:
+        extract_nested_values(readable_response, nested_headers)
+
+    headers = ['name', 'id', 'Type', 'description', 'lastModifiedBy']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.ResourceList',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown('Resource Lists Details:',
+                                        readable_responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
 def account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     exclude_account_group_details = args.get('exclude_account_group_details', 'false')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
@@ -2025,12 +2057,14 @@ def main() -> None:
             'prisma-cloud-error-file-list': error_file_list_command,
 
             'prisma-cloud-resource-get': resource_get_command,
+            'prisma-cloud-resource-list': resource_list_command,
             'prisma-cloud-account-list': account_list_command,
             'prisma-cloud-account-status-get': account_status_get_command,
             'prisma-cloud-account-owner-list': account_owner_list_command,
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
+            
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
         }

@@ -945,6 +945,33 @@ script:
       description: Prisma Cloud resource specific data.
       type: Unknown
   - arguments:
+    - description: The resource list type.
+      name: list_type
+    description: Get resource lists.
+    name: prisma-cloud-resource-list
+    outputs:
+    - contextPath: PrismaCloud.ResourceList.id
+      description: Prisma Cloud resource list ID.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.name
+      description: Resource list name.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.resourceListType
+      description: Resource list type.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.description
+      description: Resource list description.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedBy
+      description: Resource list last modified user.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedTs
+      description: Resource list last modified time.
+      type: Date
+    - contextPath: PrismaCloud.ResourceList.members
+      description: Resource list members.
+      type: Unknown
+  - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to exclude account group details.
