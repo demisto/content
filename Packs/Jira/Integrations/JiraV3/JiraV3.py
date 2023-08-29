@@ -117,7 +117,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         their own connectivity test
         """
 
-    def http_request(self, method: str, headers: dict[str, str] = {}, url_suffix='', params=None,
+    def http_request(self, method: str, headers: dict[str, str] | None = None, url_suffix='', params=None,
                      data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
                      files: Dict[str, Any] | None = None) -> Any:
         """This method wraps the _http_request that comes from the BaseClient class,
@@ -126,6 +126,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Depends on the resp_type parameter: The response of the API endpoint.
         """
+        if headers is None:
+            headers = {}
         if self.is_basic_auth:
             request_headers = self.get_headers_with_basic_auth(headers=headers)
         else:
@@ -134,11 +136,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                                   json_data=json_data, resp_type=resp_type, ok_codes=ok_codes, files=files,
                                   headers=request_headers)
 
-    def get_headers_with_access_token(self, headers: dict[str, str] = {}) -> dict[str, str]:
+    def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
         """This method inserts the access_token of the client to the headers request,
         by calling the get_access_token method, which is an abstract method,
         and every child class must implement it.
         """
+        if headers is None:
+            headers = {}
         access_token = self.get_access_token()
         # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
         # to work, and this way, we have the option to receive the extra headers and send them in the API request.
@@ -148,6 +152,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         This method inserts the encoded key into the request headers.
         """
+        if headers is None:
+            headers = {}
         basic_auth_bytes = f"{self.username}:{self.api_key}".encode()
         encoded_key = base64.b64encode(basic_auth_bytes).decode("utf-8")
         return self._headers | headers | {"Authorization": f"Basic {encoded_key}"}
