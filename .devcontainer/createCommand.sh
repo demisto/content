@@ -30,5 +30,5 @@ git config --global --add safe.directory /workspaces/content
 echo "Setting up content dependencies"
 .hooks/bootstrap
 
-echo "Run demisto-sdk pre-commit to cache dependencies
+echo "Run demisto-sdk pre-commit to cache dependencies"
 poetry run demisto-sdk pre-commit > /dev/null 2>&1 || true
