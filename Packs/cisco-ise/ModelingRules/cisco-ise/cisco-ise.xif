@@ -30,7 +30,7 @@ alter
         xdm.target.port = to_integer(arrayindex(regextract(_raw_log, "DestinationPort=(\d+),"),0)),
         xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+),"),0)),
         xdm.source.user.username = coalesce(UserName1, UserName2),
-        xdm.network.application_protocol = arrayindex(regextract(_raw_log, "Protocol=([^,]+),"),0) 
+        xdm.network.application_protocol = arrayindex(regextract(_raw_log, "Protocol=([^,]+),"),0),
         xdm.event.outcome = if(get_description ~= "[Ss][Uu][Cc][Cc][Ee]", XDM_CONST.OUTCOME_SUCCESS, get_description ~= "[Ff][Aa][Ii][Ll]", XDM_CONST.OUTCOME_FAILED, null);
 
 // CISE_Alarm Parsing
