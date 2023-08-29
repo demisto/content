@@ -477,11 +477,11 @@ def fetch_incidents():
         for ed in event[extra_data]:
             if event[extra_data][ed] and isinstance(event[extra_data][ed], str):
                 event[extra_data][ed] = urllib.parse.unquote_plus(event[extra_data][ed])
-        cur_events.append({event[alert_id]:event[event_date]/1000})
+        cur_events.append({event[alert_id]: event[event_date] / 1000})
         inc = alert_to_incident(event, user_prefix)
         incidents.append(inc)
 
-    #Combine the previously stored alert list with newly fetched alerts
+    # Combine the previously stored alert list with newly fetched alerts
     if last_run.get("last_fetch_events"):
         for record in last_run.get("last_fetch_events"):
             demisto.debug(record)
@@ -494,12 +494,12 @@ def fetch_incidents():
         # set the to_time to current to_time, if no data recieved
         new_last_run["from_time"] = to_time
 
-    from_previous_poll:list = []
+    from_previous_poll: list = []
 
-    #Before completing the run removing the expired alerts in a list based on the timestamp
+    # Before completing the run removing the expired alerts in a list based on the timestamp
     for record in cur_events:
         for timestamp in record.values():
-            if(timestamp > from_time):
+            if (timestamp > from_time):
                 from_previous_poll.append(record)
 
     new_last_run["last_fetch_events"] = from_previous_poll
@@ -813,9 +813,9 @@ def write_to_table_command():
         "ReadableContentsFormat": formats["markdown"],
         "EntryContext": {"Devo.QueryLink": createContext(querylink)},
     }
-    headers:list = []
-    resultRecords:list = []
-    innerDict:dict = {}
+    headers: list = []
+    resultRecords: list = []
+    innerDict: dict = {}
     for obj in records:
         record = json.loads(obj)
 
@@ -837,7 +837,6 @@ def write_to_table_command():
     entry_linq["HumanReadable"] = md_linq
 
     return [entry, entry_linq]
-
 
 
 def write_to_lookup_table_command():
