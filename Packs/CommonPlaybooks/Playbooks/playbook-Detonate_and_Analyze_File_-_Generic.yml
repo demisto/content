@@ -402,7 +402,6 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "20"
       - "22"
     scriptarguments:
       brandname:
@@ -447,14 +446,8 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: webid
+          accessor: ID
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Joe.Analysis.ID
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -544,14 +537,8 @@ tasks:
       webid:
         complex:
           root: Joe.Analysis
-          accessor: webid
+          accessor: ID
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Joe.Analysis.ID
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -720,50 +707,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 59b9b222-8339-41b5-88f5-410d11ad9a20
-    type: playbook
-    task:
-      id: 59b9b222-8339-41b5-88f5-410d11ad9a20
-      version: -1
-      name: Detonate and Analyze File - JoeSecurity
-      description: |-
-        Detonates one or more files using the Joe Security - Joe Sandbox integration.
-        Returns relevant reports to the War Room and file reputations to the context data.
-        All file types are supported.
-      playbookName: Detonate and Analyze File - JoeSecurity
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: baac5ee9-b37f-4ad7-80fe-b7021e116faf
@@ -822,20 +765,35 @@ tasks:
       id: 9bdf9a41-2a91-4582-8640-d40a3401e20d
       version: -1
       name: Detonate File - JoeSecurity V2
+      description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
       playbookName: Detonate File - JoeSecurity V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "1200"
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 280,
           "y": 580
         }
       }
@@ -855,8 +813,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1625,
-        "width": 2090,
-        "x": -120,
+        "width": 1900,
+        "x": 70,
         "y": 70
       }
     }

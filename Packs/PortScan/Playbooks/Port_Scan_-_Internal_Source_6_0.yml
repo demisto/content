@@ -252,59 +252,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
-    taskid: b36eb901-609e-4f57-81bf-cfdde3341de1
-    type: playbook
-    task:
-      id: b36eb901-609e-4f57-81bf-cfdde3341de1
-      version: -1
-      name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for IP addresses and hosts related to that specific hash. \nThe output provided by the playbook facilitates pivoting searches for possibly affected hosts, IP addresses, or users."
-      playbookName: PANW - Hunting and threat detection by indicator type V2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "121"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.InvolvedFileMD5
-          transformers:
-          - operator: uniq
-      SHA1:
-        complex:
-          root: inputs.InvolvedFileSHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.InvolvedFileSHA256
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 817.5,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "67":
     id: "67"
     taskid: c5bef220-05dd-4981-8b80-8c3077e2dafd
@@ -763,7 +710,6 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "59"
       - "98"
       - "111"
       - "130"
@@ -772,7 +718,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1707.5,
           "y": 865
         }
       }
@@ -830,7 +776,6 @@ tasks:
     nexttasks:
       '#none#':
       - "129"
-      - "131"
     scriptarguments:
       key:
         simple: PaloAltoNetworksXDREndpoint
@@ -940,7 +885,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
+          "x": 1707.5,
           "y": 1010
         }
       }
@@ -1110,7 +1055,6 @@ tasks:
     nexttasks:
       '#default#':
       - "129"
-      - "131"
       "yes":
       - "84"
     separatecontext: false
@@ -1205,7 +1149,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
+          "x": 2137.5,
           "y": 1010
         }
       }
@@ -1988,40 +1932,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 1247.5,
           "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "131":
-    id: "131"
-    taskid: a69ba452-d5fc-480e-8be7-351d21d20a3c
-    type: playbook
-    task:
-      id: a69ba452-d5fc-480e-8be7-351d21d20a3c
-      version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "123"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3150,
-          "y": 2360
         }
       }
     note: false
@@ -2050,7 +1962,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2745,
-        "width": 3450,
+        "width": 4020,
         "x": -70,
         "y": 50
       }

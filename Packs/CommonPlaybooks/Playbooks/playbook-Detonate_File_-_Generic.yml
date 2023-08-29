@@ -932,9 +932,9 @@ tasks:
         complex:
           root: inputs.File
       interval:
-        simple: "10"
+        simple: "1"
       timeout:
-        simple: "60"
+        simple: "15"
     separatecontext: true
     continueonerrortype: ""
     loop:
