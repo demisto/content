@@ -6,6 +6,7 @@ import time
 import traceback
 from datetime import datetime
 import urllib3
+import re
 
 import requests
 
@@ -136,30 +137,65 @@ severity_to_text = [
     'Low',
     'Medium',
     'High',
-    'Critical']
-
-BASE_URL = demisto.params()['url']
-ACCESS_KEY = demisto.params().get('credentials_access_key', {}).get('password') or demisto.params()['access-key']
-SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.params()['secret-key']
+    'Critical'
+]
+PARAMS = demisto.params()
+BASE_URL = PARAMS['url']
+ACCESS_KEY = PARAMS.get('credentials_access_key', {}).get('password') or PARAMS.get('access-key')
+SECRET_KEY = PARAMS.get('credentials_secret_key', {}).get('password') or PARAMS.get('secret-key')
 USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
 AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
-NEW_HEADERS = {
-    'X-ApiKeys': f'accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}',
+HEADERS = AUTH_HEADERS | {
     'accept': "application/json",
-    'content-type': "application/json"
+    'content-type': "application/json",
+    'User-Agent': USER_AGENT_HEADERS_VALUE
 }
-USE_SSL = not demisto.params()['unsecure']
+USE_SSL = not PARAMS['unsecure']
+USE_PROXY = PARAMS['proxy']
 
-if not demisto.params()['proxy']:
+if not USE_PROXY:
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
 
+class Client(BaseClient):
+
+    def list_scan_filters(self):
+        return self._http_request(
+            'GET', 'filters/scans/reports')
+
+    def get_scan_history(self, scan_id, params) -> dict:
+        remove_nulls_from_dictionary(params)
+        return self._http_request(
+            'GET', f'scans/{scan_id}/history',
+            params=params)
+
+    def initiate_export_scan(self, scan_id: str, params: dict, body: dict) -> dict:
+        remove_nulls_from_dictionary(params)
+        remove_nulls_from_dictionary(body)
+        return self._http_request(
+            'POST',
+            f'scans/{scan_id}/export',
+            params=params, json_data=body)
+
+    def check_export_scan_status(self, scan_id: str, file_id: str) -> dict:
+        return self._http_request(
+            'GET', f'scans/{scan_id}/export/{file_id}/status')
+
+    def download_export_scan(self, scan_id: str, file_id: str, file_format: str) -> dict:
+        return fileResult(
+            f'scan_{scan_id}_{file_id}.{file_format.lower()}',
+            self._http_request(
+                'GET', f'scans/{scan_id}/export/{file_id}/download',
+                resp_type='content'),
+            EntryType.ENTRY_INFO_FILE)
+
+
 def flatten(d):
     r = {}  # type: ignore
-    for k, v in d.items():
+    for v in d.values():
         if isinstance(v, dict):
             r.update(flatten(v))
     d.update(r)
@@ -294,14 +330,15 @@ def get_scan_error_message(response, scan_id):
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, body=None, **kwargs):
     if endpoint:
         endpoint = '/' + endpoint
-    full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
+    full_url = f"{BASE_URL}scans/{scan_id!s}{endpoint}"
     try:
         res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, json=body, params=kwargs)
         res.raise_for_status()
         return res.json()
-    except HTTPError:
+    except HTTPError as e:
+        demisto.debug(str(e))
         if ignore_license_error and res.status_code in (403, 500):
-            return
+            return None
         err_msg = get_scan_error_message(res, scan_id)
         if demisto.command() != 'test-module':
             return_error(err_msg)
@@ -318,6 +355,7 @@ def get_scan_info(scans_result_elem):
     if response:
         response['info'].update(scans_result_elem)
         return response['info']
+    return None
 
 
 def send_vuln_details_request(plugin_id, date_range=None):
@@ -400,8 +438,8 @@ def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
     return res.json()
 
 
-def test_module():
-    send_scan_request()
+def test_module(client: Client):
+    client.list_scan_filters()
     return 'ok'
 
 
@@ -555,10 +593,10 @@ def get_asset_details_command() -> CommandResults:
         info = send_asset_details_request(asset_id)
         attrs = send_asset_attributes_request(asset_id)
         if attrs:
-            attributes = []
-            for attr in attrs.get("attributes", []):
-                attributes.append({attr.get('name', ''): attr.get('value', '')})
-            info["info"]["attributes"] = attributes
+            info["info"]["attributes"] = [
+                {attr.get('name', ''): attr.get('value', '')}
+                for attr in attrs.get("attributes", [])
+            ]
 
     except DemistoException as e:
         return_error(f'Failed to include custom attributes. {e}')
@@ -595,6 +633,7 @@ def get_vulnerabilities_by_asset_command():
             'Hostname': indicator
         }
         return entry
+    return None
 
 
 def get_scan_status_command():
@@ -682,7 +721,7 @@ def export_request(request_params: dict, assets_or_vulns: str) -> dict:
         dict: The UUID of the assets export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export'
-    res = requests.post(full_url, headers=NEW_HEADERS, verify=USE_SSL, json=request_params)
+    res = requests.post(full_url, headers=HEADERS, verify=USE_SSL, json=request_params)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()
@@ -699,7 +738,7 @@ def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> d
         dict: Status of the export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/status'
-    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    res = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()
@@ -717,7 +756,7 @@ def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) ->
         dict: Status of the export job or raise DemistoException.
     """
     full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/chunks/{chunk_id}'
-    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    res = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
     if res.status_code != 200:
         raise DemistoException(res.text)
     return res.json()
@@ -757,16 +796,16 @@ def export_assets_build_command_result(chunks_details_list: list[dict]) -> Comma
     for chunk_details in chunks_details_list:
         human_readable_to_append = {}
         if fqdns := chunk_details.get('fqdns'):
-            human_readable_to_append.update({'DNS NAME (FQDN)': fqdns[0]})
-        if tag := chunk_details.get("tags"):
-            if first_tag := tag[0]:
-                human_readable_to_append.update({'TAGS': f'{first_tag.get("key")}:{first_tag.get("value")}'})
-        if sources := chunk_details.get("sources"):
-            if first_source := sources[0]:
-                human_readable_to_append.update({'SOURCE': first_source.get('name')})
-        if network_interfaces := chunk_details.get('network_interfaces'):
-            if first_network_interfaces := network_interfaces[0]:
-                human_readable_to_append.update({'IPV4 ADDRESS': first_network_interfaces.get('ipv4s')})
+            human_readable_to_append['DNS NAME (FQDN)'] = fqdns[0]
+        if (tag := chunk_details.get("tags")) and (first_tag := tag[0]):
+            human_readable_to_append['TAGS'] = f'{first_tag.get("key")}:{first_tag.get("value")}'
+        if (sources := chunk_details.get("sources")) and (first_source := sources[0]):
+            human_readable_to_append['SOURCE'] = first_source.get('name')
+        if (
+            (network_interfaces := chunk_details.get('network_interfaces'))
+            and (first_network_interfaces := network_interfaces[0])
+        ):
+            human_readable_to_append['IPV4 ADDRESS'] = first_network_interfaces.get('ipv4s')
         human_readable_to_append.update(
             {'ASSET ID': chunk_details.get('id'),
              'SYSTEM TYPE': chunk_details.get('system_types'),
@@ -964,7 +1003,7 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'assets')
             command_results = export_assets_build_command_result(chunks_details_list)
             return PollResult(command_results)
-        elif status == 'PROCESSING' or status == 'QUEUED':
+        elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
                 response=None,
                 partial_result=CommandResults(
@@ -1054,16 +1093,10 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
         Range if valid else raise DemistoException.
     """
     if range:
-        range_without_spaces = range.strip()
-        nums_list = range_without_spaces.split("-")
-        if len(nums_list) < 2:
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        elif float(nums_list[0]) > float(nums_list[1]):
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        elif float(nums_list[0]) < 0.1 or float(nums_list[1]) > 10.0:
-            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
-        else:
-            return float(nums_list[0]), float(nums_list[1])
+        nums = tuple(map(float, range.split("-")))
+        if len(nums) != 2 or not 0.1 <= nums[0] <= nums[1] <= 10.0:
+            raise DemistoException('Please specify a valid vprScoreRange. The VPR values range is 0.1-10.0.')
+        return nums  # type: ignore
     return None, None
 
 
@@ -1092,7 +1125,7 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
             command_results = export_vulnerabilities_build_command_result(chunks_details_list)
             return PollResult(command_results)
-        elif status == 'PROCESSING' or status == 'QUEUED':
+        elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
                 response=None,
                 partial_result=CommandResults(
@@ -1114,33 +1147,284 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         return request_uuid_export_vulnerabilities(args)
 
 
+def scan_filters_human_readable(filters: list) -> str:
+    context_to_hr = {
+        'name': 'Filter name',
+        'readable_name': 'Filter Readable name',
+        'type': 'Filter Control type',
+        'regex': 'Filter regex',
+        'readable_regex': 'Readable regex',
+        'operators': 'Filter operators',
+        'group_name': 'Filter group name',
+    }
+    return tableToMarkdown(
+        'Tenable IO Scan Filters',
+        [d | d.get('control', {}) for d in filters],
+        headers=list(context_to_hr),
+        headerTransform=context_to_hr.get,
+        removeNull=True)
+
+
+def list_scan_filters_command(client: Client) -> CommandResults:
+
+    response_dict = client.list_scan_filters()
+    filters = response_dict.get('filters', [])
+
+    return CommandResults(
+        outputs_prefix='TenableIO.ScanFilter',
+        outputs_key_field='name',
+        outputs=filters,
+        readable_output=scan_filters_human_readable(filters),
+        raw_response=response_dict)
+
+
+def scan_history_readable(history: list) -> str:
+    context_to_hr = {
+        'id': 'History id',
+        'scan_uuid': 'History uuid',
+        'status': 'Status',
+        'is_archived': 'Is archived',
+        'custom': 'Targets custom',
+        'default': 'Targets default',
+        'visibility': 'Visibility',
+        'time_start': 'Time start',
+        'time_end': 'Time end',
+    }
+    return tableToMarkdown(
+        'Tenable IO Scan History',
+        [d | d.get('targets', {}) for d in history],
+        headers=list(context_to_hr),
+        headerTransform=context_to_hr.get,
+        removeNull=True)
+
+
+def scan_history_pagination_params(args: dict) -> dict:
+    '''
+    Generate pagination parameters for scanning history based on the given arguments.
+
+    This function calculates the 'limit' and 'offset' parameters for pagination
+    based on the provided 'page' and 'pageSize' arguments. If 'page' and 'pageSize'
+    are valid integer values, the function returns a dictionary containing 'limit'
+    and 'offset' calculated accordingly. If 'page' or 'pageSize' are not valid integers,
+    the function falls back to using the 'limit' argument or defaults to 50 with an
+    'offset' of 0.
+
+    Args:
+        args (dict): The demisto.args() dictionary containing the optional arguments for pagination: 'page', 'pageSize', 'limit'.
+
+    Returns:
+        dict: A dictionary containing the calculated 'limit' and 'offset' parameters
+              for pagination.
+    '''
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('pageSize'))
+    if isinstance(page, int) and isinstance(page_size, int):
+        return {
+            'limit': page_size,
+            'offset': (page - 1) * page_size
+        }
+
+    else:
+        return {
+            'limit': args.get('limit', 50),
+            'offset': 0
+        }
+
+
+def scan_history_params(args: dict) -> dict:
+    sort_fields = argToList(args.get('sortFields'))
+    sort_order = argToList(args.get('sortOrder'))
+
+    if len(sort_order) == 1:
+        sort_order *= len(sort_fields)
+
+    return {
+        'sort': ','.join(
+            f'{field}:{order}'
+            for field, order
+            in zip(sort_fields, sort_order)),
+        'exclude_rollover': args['excludeRollover'],
+    } | scan_history_pagination_params(args)
+
+
+def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandResults:
+
+    response_json = client.get_scan_history(
+        args['scanId'],
+        scan_history_params(args))
+    history = response_json.get('history', '')
+
+    return CommandResults(
+        outputs_prefix='TenableIO.ScanHistory',
+        outputs_key_field='id',
+        outputs=history,
+        readable_output=scan_history_readable(history))
+
+
+def build_filters(filters: str | None) -> dict:
+    """
+    Build a dictionary of filter information from a filters string.
+
+    Args:
+        filters (str, optional): A string containing filters in the format "name quality value" separated by commas.
+                                 Escaped commas (\\,) and spaces (\\s) are treated as literal characters.
+                                 Defaults to None.
+
+    Returns:
+        dict: A dictionary where keys are in the format 'filter.i.filter', 'filter.i.quality', and 'filter.i.value',
+              and values correspond to the name, quality, and value of each filter component.
+
+    Example:
+        filters = "name1 good value1\\,with\\,commas, name2\\swith\\sspaces excellent value2"
+        result = build_filters(filters)
+        # Output:
+        # {
+        #     'filter.0.filter': 'name1',
+        #     'filter.0.quality': 'good',
+        #     'filter.0.value': 'value1,with,commas',
+        #     'filter.1.filter': 'name2 with spaces',
+        #     'filter.1.quality': 'excellent',
+        #     'filter.1.value': 'value2'
+        # }
+    """
+    if not filters:
+        return {}
+
+    # split by comma without escaped commas
+    split_filters = re.split(r'(?<!\\),', filters)
+    # remove delimiters and split into name, quality and value
+    filters = (f.replace('\\,', ',').split() for f in split_filters)
+
+    result: dict = {}
+    for i, (name, quality, value) in enumerate(filters):
+        result |= {
+            f'filter.{i}.filter': re.sub(r'(?<!\\)\\s', ' ', name),
+            f'filter.{i}.quality': re.sub(r'(?<!\\)\\s', ' ', quality),
+            f'filter.{i}.value': re.sub(r'(?<!\\)\\s', ' ', value)
+        }
+
+    return result
+
+
+def export_scan_body(args: dict) -> dict:
+
+    if chapters := args.get('chapters'):
+        chapters = ';'.join(argToList(chapters))
+    elif args['format'] in ('PDF', 'HTML'):
+        raise DemistoException('The "chapters" field must be provided for PDF or HTML formats.')
+
+    body = {
+        'format': args['format'].lower(),
+        'chapters': chapters,
+        'filter.search_type': args['filterSearchType'].lower(),
+        'asset_id': args.get('assetId'),
+    } | build_filters(args.get('filter'))
+
+    return body
+
+
+def initiate_export_scan(args: dict, client: Client) -> str:
+    return client.initiate_export_scan(
+        args['scanId'],
+        params={
+            'history_id': args.get('historyId'),
+            'history_uuid': args.get('historyUuid')
+        },
+        body=export_scan_body(args)
+    ).get('file', '')
+
+
+@polling_function(
+    'tenable-io-export-scan',
+    poll_message='Preparing scan report:',
+    interval=15,
+    requires_polling_arg=False)
+def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
+    '''
+    Calls three endpoints. The first (called with initiate_export_scan) initiates an export and returns a file ID.
+    The second (called with client.check_export_scan_status) checks the status of the export and the function polls
+    until the status is 'ready'. The third endpoint is then called (with client.download_export_scan) which downloads
+    the file and returns a dict with it's contents (using fileResult).
+    '''
+
+    scan_id = args['scanId']
+    file_id = (
+        args.get('fileId')
+        or initiate_export_scan(args, client))
+    demisto.debug(f'{file_id=}')
+
+    status_response = client.check_export_scan_status(scan_id, file_id)
+    demisto.debug(f'{status_response=}')
+
+    match status_response.get('status'):
+        case 'ready':
+            return PollResult(
+                client.download_export_scan(
+                    scan_id, file_id, args['format']),
+                continue_to_poll=False)
+
+        case 'loading':
+            return PollResult(
+                None,
+                continue_to_poll=True,
+                args_for_next_run={
+                    'fileId': file_id,
+                    'scanId': scan_id,
+                    'format': args['format'],  # not necessary but avoids confusion
+                })
+
+        case _:
+            raise DemistoException(
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
+
+
 def main():  # pragma: no cover
+
     if not (ACCESS_KEY and SECRET_KEY):
         raise DemistoException('Access Key and Secret Key must be provided.')
-    if demisto.command() == 'test-module':
-        demisto.results(test_module())
-    elif demisto.command() == 'tenable-io-list-scans':
+
+    client = Client(
+        BASE_URL,
+        verify=USE_SSL,
+        proxy=USE_PROXY,
+        ok_codes=(200,),
+        headers=HEADERS
+    )
+    args = demisto.args()
+    command = demisto.command()
+
+    if command == 'test-module':
+        demisto.results(test_module(client))
+    elif command == 'tenable-io-list-scans':
         demisto.results(get_scans_command())
-    elif demisto.command() == 'tenable-io-launch-scan':
+    elif command == 'tenable-io-launch-scan':
         demisto.results(launch_scan_command())
-    elif demisto.command() == 'tenable-io-get-scan-report':
+    elif command == 'tenable-io-get-scan-report':
         demisto.results(get_report_command())
-    elif demisto.command() == 'tenable-io-get-vulnerability-details':
+    elif command == 'tenable-io-get-vulnerability-details':
         demisto.results(get_vulnerability_details_command())
-    elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
+    elif command == 'tenable-io-get-vulnerabilities-by-asset':
         demisto.results(get_vulnerabilities_by_asset_command())
-    elif demisto.command() == 'tenable-io-get-scan-status':
+    elif command == 'tenable-io-get-scan-status':
         demisto.results(get_scan_status_command())
-    elif demisto.command() == 'tenable-io-pause-scan':
+    elif command == 'tenable-io-pause-scan':
         demisto.results(pause_scan_command())
-    elif demisto.command() == 'tenable-io-resume-scan':
+    elif command == 'tenable-io-resume-scan':
         demisto.results(resume_scan_command())
-    elif demisto.command() == 'tenable-io-get-asset-details':
+    elif command == 'tenable-io-get-asset-details':
         return_results(get_asset_details_command())
-    elif demisto.command() == 'tenable-io-export-assets':
-        return_results(export_assets_command(demisto.args()))
-    elif demisto.command() == 'tenable-io-export-vulnerabilities':
-        return_results(export_vulnerabilities_command(demisto.args()))
+    elif command == 'tenable-io-export-assets':
+        return_results(export_assets_command(args))
+    elif command == 'tenable-io-export-vulnerabilities':
+        return_results(export_vulnerabilities_command(args))
+    elif command == 'tenable-io-list-scan-filters':
+        return_results(list_scan_filters_command(client))
+    elif command == 'tenable-io-get-scan-history':
+        return_results(get_scan_history_command(args, client))
+    elif command == 'tenable-io-export-scan':
+        return_results(export_scan_command(args, client))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
