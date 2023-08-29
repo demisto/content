@@ -20,6 +20,17 @@ configuration:
   hiddenusername: true
   type: 9
   required: true
+- display: Events to fetch
+  name: events_to_fetch
+  type: 0
+  required: true
+  defaultvalue: 30
+- display: Fetch events timeout
+  name: fetch_timeout
+  type: 0
+  required: true
+  defaultvalue: 20
+
 - display: XSIAM request limit
   name: limit
   type: 0
