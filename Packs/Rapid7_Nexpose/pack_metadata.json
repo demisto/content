@@ -15,6 +15,12 @@
     "keywords": [
         "nexpose"
     ],
+    "dependencies": {
+        "CVESearch": {
+            "mandatory": false,
+            "display_name": "CVE Search"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2",
