@@ -167,7 +167,7 @@ script:
     - contextPath: ReversingLabs.tc_report
       description: Full report
       type: String
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.69217
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
   runonce: false
   script: '-'
   subtype: python3
