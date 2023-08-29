@@ -776,7 +776,6 @@ class MicrosoftClient(BaseClient):
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
 
