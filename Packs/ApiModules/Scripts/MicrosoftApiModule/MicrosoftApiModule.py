@@ -1448,7 +1448,7 @@ def should_delay_request(next_request_time: float):
     # Checking if the next_request_time has passed.
     if now >= next_request_time:
         return
-    raise Exception(f"The request will be delayed until {dateparser.parse(str(next_request_time))}")
+    raise Exception(f"The request will be delayed until {datetime.fromtimestamp(next_request_time)}")
 
 
 def get_azure_managed_identities_client_id(params: dict) -> str | None:

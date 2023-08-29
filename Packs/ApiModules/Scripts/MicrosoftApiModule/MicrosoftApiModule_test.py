@@ -1,4 +1,4 @@
-
+import freezegun
 from requests import Response
 from MicrosoftApiModule import *
 import demistomock as demisto
@@ -21,7 +21,7 @@ APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 RESOURCES = ['https://resource1.com', 'https://resource2.com']
-
+FREEZE_STR_DATE = "1970-01-01 0:00:00"
 
 def oproxy_client_tenant():
     tenant_id = TENANT
@@ -725,3 +725,89 @@ def test_generate_login_url():
                    f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
                    f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
     assert expected_url in result.readable_output, "Login URL is incorrect"
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+def test_should_delay_true():
+    """
+    Given:
+        - Mocked context with later next request time than the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return the expected value.
+    """
+    from MicrosoftApiModule import should_delay_request
+    from datetime import datetime
+
+    mocked_next_request_time = datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp() + 1.0
+    excepted_error = f"The request will be delayed until {datetime.fromtimestamp(mocked_next_request_time)}"
+    with pytest.raises(Exception) as e:
+        should_delay_request(mocked_next_request_time)
+    assert str(e.value) == excepted_error
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+def test_should_delay_false():
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return with no error.
+    """
+    from MicrosoftApiModule import should_delay_request
+    from datetime import datetime
+
+    mocked_next_request_time = datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp()
+    should_delay_request(mocked_next_request_time)
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+@pytest.mark.parametrize('mocked_next_request_time,excepted', [(2, 4.0), (3, 8.0), (6, 64.0)])
+def test_calculate_next_request_time(mocked_next_request_time, excepted):
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return with no error.
+    """
+    from MicrosoftApiModule import calculate_next_request_time
+    assert calculate_next_request_time(mocked_next_request_time) == excepted
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+@pytest.mark.parametrize('mocked_delay_request_counter,excepted',
+                         [({'delay_request_counter': 5}, {'next_request_time': 32.0, 'delay_request_counter': 6}),
+                          ({'delay_request_counter': 6}, {'next_request_time': 64.0, 'delay_request_counter': 7}),
+                          ({'delay_request_counter': 7}, {'next_request_time': 64.0, 'delay_request_counter': 7})])
+def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_counter, excepted):
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the _oproxy_authorize function.
+     Then:
+        - Ensure the function return with no error and the context has been set with the right values.
+    """
+    from datetime import datetime
+    # pytest raises a warning when there is error in the stderr, this is a workaround to disable it
+    with capfd.disabled():
+        client = oproxy_client_refresh()
+        error = Response()
+        error.status_code = 400
+        error.reason = "Bad Request"
+        mocked_next_request_time = {'next_request_time': datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp()}
+
+        mocked_context = mocked_next_request_time | mocked_delay_request_counter
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value=mocked_context)
+        mocker.patch.object(client, '_oproxy_authorize_build_request', return_value=error)
+        res = mocker.patch.object(demisto, 'setIntegrationContext')
+
+        with pytest.raises(Exception):
+            client._oproxy_authorize()
+        assert res.call_args[0][0] == excepted
+
