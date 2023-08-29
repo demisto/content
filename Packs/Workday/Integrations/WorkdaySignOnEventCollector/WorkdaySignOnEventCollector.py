@@ -99,20 +99,25 @@ def filter_and_check_events(events: list, target_datetime_str: str, checksums: s
     Returns:
     - list: A refined list of non-duplicate events.
     """
-    target_datetime = datetime.fromisoformat(target_datetime_str)
-
+    target_datetime = datetime.strptime(target_datetime_str, '%Y-%m-%dT%H:%M:%SZ')
     start_time = target_datetime - timedelta(seconds=1)
     end_time = target_datetime + timedelta(seconds=1)
 
-    potential_duplicates = [event for event in events if
-                            start_time <= datetime.fromisoformat(event['Signon_DateTime']) <= end_time]
+    refined_events = []
+    events_with_datetime = [(event, datetime.strptime(event['Signon_DateTime'], '%Y-%m-%dT%H:%M:%SZ'))
+                            for event in events]
+    potential_duplicates = [
+        (event['Short_Session_ID'], event['User_Name'], event['Successful'], event['Signon_DateTime'])
+        for event, event_datetime in events_with_datetime
+        if start_time <= event_datetime <= end_time
+    ]
 
-    formatted_events = [(event['Short_Session_ID'], event['User_Name'], event['Successful'], event['Signon_DateTime'])
-                        for event in potential_duplicates]
+    checked_events = check_events_against_checksums(potential_duplicates, checksums)
 
-    non_duplicates = check_events_against_checksums(formatted_events, checksums)
+    refined_events.extend(checked_events)
+    refined_events.extend(event for event, event_datetime in events_with_datetime if start_time > event_datetime or event_datetime > end_time)
 
-    return non_duplicates
+    return refined_events
 
 
 def get_future_duplicates_within_timeframe(events: list, to_time: str) -> list:
@@ -127,14 +132,15 @@ def get_future_duplicates_within_timeframe(events: list, to_time: str) -> list:
     - list: A list of events within the specified timeframe which could be a duplicate for the next fetch.
     """
     # Convert the to_time string to a datetime object
-    end_time = datetime.fromisoformat(to_time)
+    target_datetime_str = to_time.replace('Z', '+00:00')
+    end_time = datetime.fromisoformat(target_datetime_str)
 
     # Define the start time for the timeframe
     start_time = end_time - timedelta(seconds=1)
 
     # Filter events based on the timeframe
     future_duplicates = [event for event in events if
-                         start_time <= datetime.fromisoformat(event['Signon_DateTime']) <= end_time]
+                         start_time <= datetime.fromisoformat(event['Signon_DateTime'].replace('Z', '+00:00')) <= end_time]
 
     return future_duplicates
 
@@ -319,6 +325,11 @@ def convert_to_json(response: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     account_signon_data = response_data.get('Response_Data', {})
 
+    # Ensure 'Workday_Account_Signon' is a list
+    workday_account_signons = account_signon_data.get('Workday_Account_Signon')
+    if isinstance(workday_account_signons, dict):
+        account_signon_data['Workday_Account_Signon'] = [workday_account_signons]
+
     return raw_json_response, account_signon_data
 
 
@@ -389,11 +400,10 @@ def get_sign_on_events_command(client: Client, from_date: str, to_date: str, lim
     return sign_on_events, CommandResults(readable_output=readable_output)
 
 
-def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: datetime, last_run: dict):
+def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict):
     """
     Fetches sign on logs from Workday.
     Args:
-        first_fetch: first fetch date.
         client: Client object.
         max_fetch: max logs to fetch set by customer.
         last_run: last run object.
@@ -402,7 +412,13 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: da
         Sign on logs from Workday.
 
     """
-    from_date = last_run.get('last_fetch_time', first_fetch.strftime(DATE_FORMAT))
+    current_time = datetime.utcnow()
+    if 'last_fetch_time' not in last_run:
+        first_fetch_time = current_time - timedelta(minutes=1)
+        first_fetch_str = first_fetch_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        from_date = last_run.get('last_fetch_time', first_fetch_str)
+    else:
+        from_date = last_run.get('last_fetch_time')
     previous_run_checksums = last_run.get('previous_run_checksums', set())
     to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     demisto.debug(f'Getting Sign On Events {from_date=}, {to_date=}.')
@@ -411,10 +427,10 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: da
     if sign_on_events:
         demisto.debug("Got sign_on_events. Begin processing.")
         non_duplicates = filter_and_check_events(events=sign_on_events, target_datetime_str=from_date, checksums=previous_run_checksums)
-        sign_on_events.extend(non_duplicates)
-        process_events(sign_on_events)
 
-        future_potential_duplicates = get_future_duplicates_within_timeframe(events=sign_on_events, to_time=to_date)
+        process_events(non_duplicates)
+
+        future_potential_duplicates = get_future_duplicates_within_timeframe(events=non_duplicates, to_time=to_date)
         checksums_for_next_iteration = {
             generate_checksum(
                 event['Short_Session_ID'],
@@ -423,11 +439,15 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: da
                 event['Signon_DateTime']
             ) for event in future_potential_duplicates}
 
-        demisto.debug(f"Done processing {len(sign_on_events)} sign_on_events.")
+        demisto.debug(f"Done processing {len(non_duplicates)} sign_on_events.")
         last_run = {'last_fetch_time': to_date, 'previous_run_checksums': checksums_for_next_iteration}
         demisto.debug(f"Saving last run as {last_run}")
+    else:
+        # Handle the case where no events were retrieved
+        last_run['last_fetch_time'] = current_time
+        non_duplicates = []
 
-    return sign_on_events, last_run
+    return non_duplicates, last_run
 
 
 def module_of_testing(client: Client) -> str:  # pragma: no cover
@@ -457,7 +477,6 @@ def main() -> None:  # pragma: no cover
 
     tenant_name = params.get('tenant_name')
     url = params.get('base_url')
-    # url = r'https://services1.myworkday.com/ccx/service/cnx/Identity_Management/v37.0'
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     token = params.get('token', {}).get('password')
@@ -465,9 +484,6 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch = arg_to_datetime(arg=params.get('first_fetch', '3 days'),
-                                  arg_name='First fetch time',
-                                  required=True)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -500,7 +516,6 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f'Starting new fetch with last_run as {last_run}')
             sign_on_events, new_last_run = fetch_sign_on_events_command(client=client,
                                                                         max_fetch=max_fetch,
-                                                                        first_fetch=first_fetch,  # type: ignore
                                                                         last_run=last_run)
             demisto.debug("Done fetching events, sending to XSIAM.")
             send_events_to_xsiam(

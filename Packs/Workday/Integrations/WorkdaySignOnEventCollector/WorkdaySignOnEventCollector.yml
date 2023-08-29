@@ -21,14 +21,6 @@ configuration:
   displaypassword: Password
   section: Connect
   hiddenusername: false
-- name: token
-  required: true
-  defaultvalue:
-  type: 9
-  additionalinfo: 'Non-expiry Workday API refresh token.'
-  displaypassword: Refresh Token
-  hiddenusername: true
-  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   required: false

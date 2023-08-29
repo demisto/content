@@ -1,42 +1,63 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-import io
+import unittest
+from WorkdaySignonEventGenerator import random_datetime_in_range, random_string, random_guid, xml_generator
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+class TestWorkdaySignonEventGenerator(unittest.TestCase):
+
+    def test_random_datetime_in_range(self) -> None:
+        """
+        Given:
+            - A start datetime '2023-08-21T11:46:02Z' and an end datetime '2023-08-21T11:47:02Z'
+
+        When:
+            - Generating a random datetime in the given range
+
+        Then:
+            - Ensure that the random datetime generated falls within the specified range
+        """
+        random_date = random_datetime_in_range('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z')
+        self.assertTrue('2023-08-21T11:46:02Z' <= random_date <= '2023-08-21T11:47:02Z')
+
+    def test_random_string(self) -> None:
+        """
+        Given:
+            - No initial conditions
+
+        When:
+            - Generating a random string of default length 10
+
+        Then:
+            - Ensure that the length of the generated string is 10
+        """
+        self.assertEqual(len(random_string()), 10)
+
+    def test_random_guid(self) -> None:
+        """
+        Given:
+            - No initial conditions
+
+        When:
+            - Generating a random GUID-like string of default length 6
+
+        Then:
+            - Ensure that the length of the generated string is 6
+        """
+        self.assertEqual(len(random_guid()), 6)
+
+    def test_xml_generator(self) -> None:
+        """
+        Given:
+            - A start datetime '2023-08-21T11:46:02Z', an end datetime '2023-08-21T11:47:02Z', and a count 1
+
+        When:
+            - Generating an XML response containing Workday sign-on events
+
+        Then:
+            - Ensure that the XML response contains exactly one Workday sign-on event
+        """
+        xml_response = xml_generator('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z', 1)
+        self.assertEqual(xml_response.count('<wd:Workday_Account_Signon>'), 1)
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+if __name__ == '__main__':
+    unittest.main()

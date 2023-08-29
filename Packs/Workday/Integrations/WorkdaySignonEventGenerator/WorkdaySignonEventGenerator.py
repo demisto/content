@@ -5,20 +5,14 @@ from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response
 from CommonServerPython import *
 
-
-
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 APP: Flask = Flask('xsoar-workday-signon')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-
-
 
 SIGNON_ITEM_TEMPLATE = """
                 <wd:Workday_Account_Signon>
@@ -85,6 +79,7 @@ def generate_xml_template(from_date, to_date, count, total_responses):
 </env:Envelope>
 """
 
+
 def random_datetime_in_range(start_str, end_str):
     start_datetime = datetime.strptime(start_str, DATE_FORMAT)
     end_datetime = datetime.strptime(end_str, DATE_FORMAT)
@@ -108,7 +103,8 @@ def xml_generator(from_datetime, to_datetime, count):
     # Determine the number of Workday_Account_Signon items
     num_signon_items = random.randint(1, count)
 
-    template = generate_xml_template(from_date=from_datetime, to_date=to_datetime, total_responses=num_signon_items, count=num_signon_items)
+    template = generate_xml_template(from_date=from_datetime, to_date=to_datetime, total_responses=num_signon_items,
+                                     count=num_signon_items)
 
     # Generate Workday_Account_Signon items
     signon_items = []
@@ -164,14 +160,8 @@ def module_of_testing():
 
 
 def main():
-
     if demisto.command() == 'test-module':
-        # server = WSGIServer(('0.0.0.0', port), APP)
         module_of_testing()
-        # while True:
-        #     port = int(demisto.params().get('longRunningPort', ''))
-        #     server = WSGIServer(('0.0.0.0', port), APP)
-        #     server.serve_forever()
     elif demisto.command() == 'long-running-execution':
         while True:
             port = int(demisto.params().get('longRunningPort', '5000'))
@@ -180,7 +170,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
