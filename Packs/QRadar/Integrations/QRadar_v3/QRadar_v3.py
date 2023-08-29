@@ -349,6 +349,8 @@ class QueryStatus(str, Enum):
     PARTIAL = 'partial'
 
 
+FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
+
 ''' CLIENT CLASS '''
 
 
@@ -3711,11 +3713,11 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     offenses_modified = client.offenses_list(range_=range_,
                                              filter_=filter_modified,
                                              sort='+last_persisted_time',
-                                             fields='id,start_time,event_count,last_persisted_time,close_time')
+                                             fields=FIELDS_MIRRORING)
     offenses_closed = client.offenses_list(range_=range_,
                                            filter_=filter_closed,
                                            sort='+close_time',
-                                           fields='id,start_time,event_count,last_persisted_time,close_time')
+                                           fields=FIELDS_MIRRORING)
     last_update_modified, last_update_closed = last_update, last_update
     if offenses_modified:
         last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
