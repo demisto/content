@@ -1,5 +1,5 @@
-id: 81c11e74-cf23-4727-827c-ac97ed3008bc
-version: 53
+id: Recorded Future - Threat Actor Search
+version: -1
 description: Template playbook to initiate an Automated Threat Hunt based on the Threat Map in Recorded Future. The Playbook fetches links related to the Threat Actors part of the Threat Map from Recorded Future and launches a hunt in the SIEM for any detections within the environment.
 vcShouldKeepItemLegacyProdMachine: false
 name: Recorded Future - Threat Actor Search
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -204,8 +205,7 @@ tasks:
       id: 67f95ffc-b389-4a5f-846d-d96a51df6615
       version: -1
       name: Download Detection Rules Manually
-      description: Utilize the Recorded Future portal to download any detection rules
-        found.
+      description: Utilize the Recorded Future portal to download any detection rules found.
       type: regular
       iscommand: false
       brand: ""
@@ -264,8 +264,7 @@ tasks:
       id: 60f95f3c-9db3-4ff6-88a1-e5b0af47d927
       version: -1
       name: Is SIEM enabled?
-      description: Checks if there is an active instance of the Recorded Future API
-        integration enabled.
+      description: Checks if there is an active instance of the Recorded Future API integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -357,9 +356,7 @@ tasks:
       id: 31c3d1dc-1af8-421a-885c-8df3b94eb86d
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes,
-        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
-        hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -490,6 +487,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -520,6 +518,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -550,6 +549,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -645,8 +645,7 @@ tasks:
       id: cbecb65e-bafc-43f3-875c-14c2a519a111
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
-        IP addresses, domains, or urls. '
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -750,6 +749,6 @@ inputs:
   value: {}
   required: false
   description: The threat actor to enrich & hunt indicators for.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: 92a59bb9-bad5-47ac-8163-ceca424539eb

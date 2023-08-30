@@ -473,7 +473,7 @@ class Actions:
 # === === === === === === === === === === === === === === ===
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """Main method used to run actions."""
     try:
         demisto_params = demisto.params()
