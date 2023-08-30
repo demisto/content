@@ -118,6 +118,10 @@ MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
     "records": [{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}],
 }
+MOCK_WRITER_ARGS1 = {
+    "tableName": "whatever.table",
+    "records": ['{"foo": "hello"}', '{"foo": "world"}', '{"foo": "demisto"}'],
+}
 MOCK_LOOKUP_WRITER_ARGS = {
     "lookupTableName": "hello.world.lookup",
     "headers": ["foo", "bar", "baz"],
@@ -184,27 +188,24 @@ MOCK_EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
-        "eventdate": "1234567890.0",
+        "eventdate": 1234567890.0,
         "context": "value1",
     },
     {
         "alertId": "456",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": "1234567891.0",
+        "eventdate": 1234567891.0,
         "context": "value2",
     },
     {
         "alertId": "789",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": "1234567892.0",
+        "eventdate": 1234567892.0,
         "context": "value3",
     },
 ]
 
-EXPECTED_LAST_RUN_DATA = {
-    "from_time": "1234567892.0",
-    "last_fetch_events": ["123", "456", "789"],
-}
+EXPECTED_LAST_RUN_DATA = {'from_time': 1234567.892, 'last_fetch_events': []}
 
 
 class MOCK_LOOKUP(object):
@@ -348,7 +349,7 @@ def test_multi_query(
 @patch("Devo_v2.Sender")
 def test_write_devo(mock_load_results, mock_write_args):
     mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
-    mock_write_args.return_value = MOCK_WRITER_ARGS
+    mock_write_args.return_value = MOCK_WRITER_ARGS1
     results = write_to_table_command()
     assert len(results[0]["EntryContext"]["Devo.RecordsWritten"]) == 3
     assert results[0]["EntryContext"]["Devo.LinqQuery"] == "from whatever.table"
