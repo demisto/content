@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: AWS-WAF
+name: AWS WAF
+rules: ''
+schema: ''
+tags: AWS-WAF
