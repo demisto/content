@@ -630,9 +630,19 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+    def create_filter_dict(self, filter_keys, filter_values):
+        return {
+            filter_key: filter_value
+            for filter_key, filter_value in zip(filter_keys, filter_values)
+            if len(filter_value) != 0
+            }    
+
     def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = 'cloud-detection/rules'
+        filter_keys = ["siteIds", "groupIds", "accountIds"]
+        filter_values = [site_ids, group_ids, account_ids]
+        filter_dict = self.create_filter_dict(filter_keys, filter_values)
         payload = {
             "data": {
                 "expiration": expiration_date,
@@ -648,14 +658,9 @@ class Client(BaseClient):
             },
             "filter": {
                 "tenant": "true",
+                **filter_dict
             }
         }
-        if len(site_ids) != 0:
-            payload["filter"]["siteIds"] = site_ids
-        if len(group_ids) != 0:
-            payload["filter"]["groupIds"] = group_ids
-        if len(account_ids) != 0:
-            payload["filter"]["accountIds"] = account_ids
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
@@ -667,6 +672,9 @@ class Client(BaseClient):
     def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = f'cloud-detection/rules/{rule_id}'
+        filter_keys = ["siteIds", "groupIds", "accountIds"]
+        filter_values = [site_ids, group_ids, account_ids]
+        filter_dict = self.create_filter_dict(filter_keys, filter_values)
         payload = {
             "data": {
                 "expiration": expiration_date,
@@ -682,14 +690,9 @@ class Client(BaseClient):
             },
             "filter": {
                 "tenant": "true",
+                **filter_dict
             }
         }
-        if len(site_ids) != 0:
-            payload["filter"]["siteIds"] = site_ids
-        if len(group_ids) != 0:
-            payload["filter"]["groupIds"] = group_ids
-        if len(account_ids) != 0:
-            payload["filter"]["accountIds"] = account_ids
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
