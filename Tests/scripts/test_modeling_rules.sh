@@ -1,5 +1,17 @@
 #!/bin/bash
 set -e
+
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
+
+if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
+  echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
+  cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites />
+EOF
+  exit 0
+fi
+
 XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
 
 # Get XSIAM Tenant Config Details

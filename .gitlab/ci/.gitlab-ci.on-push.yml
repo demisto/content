@@ -475,12 +475,7 @@ slack-notify-nightly-build:
     - section_end "Run Tests"
 
     - section_start "Test Modeling Rules"
-    - |
-      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
-        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
-      else
-        echo "No modeling rules were marked for testing during test collection"
-      fi
+    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
     - section_start "Cloud Machine information"
