@@ -381,10 +381,43 @@
                         "moved": false,
                         "name": "DoC Details",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 0,
                         "y": 2
-                    }
+                    },
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-a1518d40-3556-11ee-b6d7-43215be57d6b",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "stamushostfirstseen",
+								"height": 22,
+								"id": "d3456b90-4290-11ee-816d-07e14dea38c7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stamushostlastseen",
+								"height": 22,
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Asset Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
                 ],
                 "type": "custom"
             },

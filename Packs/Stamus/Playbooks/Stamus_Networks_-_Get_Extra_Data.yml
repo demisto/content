@@ -245,6 +245,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -261,6 +262,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2c2a86ca-b9ce-453a-821b-f31b892a11fc
+    type: regular
+    task:
+      id: 2c2a86ca-b9ce-453a-821b-f31b892a11fc
+      version: -1
+      name: Enrich Incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      stamushostfirstseen:
+        simple: ${StamusIntegration.HostInsights.host_id.first_seen}
+      stamushostlastseen:
+        simple: ${StamusIntegration.HostInsights.host_id.last_seen}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
 view: |-
   {
     "linkLabelsPosition": {},
