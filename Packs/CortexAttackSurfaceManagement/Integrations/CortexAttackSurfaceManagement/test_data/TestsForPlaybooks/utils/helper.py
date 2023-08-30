@@ -4,6 +4,27 @@ import yaml
 Before running tests locally, please make sure there is not a conflicting conftest.py file.
 """
 
+"""Classes"""
+
+
+class PlaybookDataLoader:
+    def __init__(self, playbook_path):
+        self.playbook_path = playbook_path
+
+    @property
+    def playbook_tasks_data(self):
+        playbook_data = load_yaml_file(self.playbook_path)
+        tasks = playbook_data["tasks"]
+        return tasks
+
+    @property
+    def full_playbook_data(self):
+        playbook_data = load_yaml_file(self.playbook_path)
+        return playbook_data
+
+
+"""Helper Functions"""
+
 
 def was_grid_field_value_found(playbook_tasks_data, grid_field_location: str, value: str) -> bool:
     """_summary_
