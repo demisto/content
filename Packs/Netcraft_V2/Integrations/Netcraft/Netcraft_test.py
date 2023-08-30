@@ -59,4 +59,3 @@ import pytest
 def load_json(path):
     with open(f'test_data/{path}') as f:
         return json.loads(f.read())
-
