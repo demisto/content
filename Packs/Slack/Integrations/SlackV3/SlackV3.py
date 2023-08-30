@@ -2682,7 +2682,7 @@ def conversation_history():
             context.append(entry)
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
     else:
-        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}')
+        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
