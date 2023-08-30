@@ -15,9 +15,8 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 urllib3.disable_warnings()  # Disable insecure warnings
-  # fixme remove default values
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
-GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID')
+GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL')
 JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
 JIRA_VERIFY_SSL = "true" in os.environ.get("JIRA_VERIFY_SSL", "True").lower()
 JIRA_API_KEY = os.environ["JIRA_API_KEY"]
@@ -152,17 +151,17 @@ def main():
         install_logging('convert_test_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f'JUnit path: {options.junit_path}'). # fixme join logger.info
-        logging.info(f'Gitlab server url: {options.url}')
-        logging.info(f'Gitlab project id: {options.gitlab_project_id}')
-        logging.info(f'Jira server url: {JIRA_SERVER_URL}')
-        logging.info(f'Jira verify SSL: {JIRA_VERIFY_SSL}')
-        logging.info(f'Jira project id: {JIRA_PROJECT_ID}')
-        logging.info(f'Jira issue type: {JIRA_ISSUE_TYPE}')
-        logging.info(f'Jira component: {JIRA_COMPONENT}')
-        logging.info(f'Jira labels: {JIRA_LABELS}')
-        logging.info(f'Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}')
-        logging.info(f'Max days to reopen: {options.max_days_to_reopen}')
+        logging.info(f'JUnit path: {options.junit_path}\n'
+                     f'Gitlab server url: {options.url}\n'
+                     f'Gitlab project id: {options.gitlab_project_id}\n'
+                     f'Jira server url: {JIRA_SERVER_URL}\n'
+                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
+                     f'Jira project id: {JIRA_PROJECT_ID}\n'
+                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
+                     f'Jira component: {JIRA_COMPONENT}\n'
+                     f'Jira labels: {JIRA_LABELS}\n'
+                     f'Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n'
+                     f'Max days to reopen: {options.max_days_to_reopen}\n')
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
 
