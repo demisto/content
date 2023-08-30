@@ -92,6 +92,10 @@ tasks:
     scriptarguments:
       ip:
         simple: ${incident.stamustarget}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -280,7 +284,7 @@ tasks:
         simple: ${StamusIntegration.HostInsights.host_id.last_seen}
       hostnames:
         simple: ${StamusIntegration.HostInsights.host_id.hostname.host}
-      usernames:
+      deviceusername:
         simple: ${StamusIntegration.HostInsights.host_id.username.user}
       stamushostroles:
         simple: ${StamusIntegration.HostInsights.host_id.roles.name}

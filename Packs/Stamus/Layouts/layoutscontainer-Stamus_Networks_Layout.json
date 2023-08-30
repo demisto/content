@@ -418,7 +418,7 @@
 							},
                             {
 								"endCol": 2,
-								"fieldId": "usernames",
+								"fieldId": "deviceusername",
 								"height": 22,
 								"index": 3,
 								"sectionItemType": "field",
