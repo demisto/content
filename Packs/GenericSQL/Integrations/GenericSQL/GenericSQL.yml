@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL
+  id: Generic SQL - dev
   version: -1
 configuration:
 - defaultvalue: MySQL
@@ -12,6 +12,7 @@ configuration:
   - Microsoft SQL Server
   - Microsoft SQL Server - MS ODBC Driver
   - Oracle
+  - Teradata
   required: true
   type: 15
 - display: Database host
@@ -99,8 +100,8 @@ configuration:
   type: 13
   required: false
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
-display: Generic SQL
-name: Generic SQL
+display: Generic SQL - dev
+name: Generic SQL - dev
 script:
   commands:
   - arguments:

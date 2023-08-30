@@ -117,7 +117,7 @@ class Client:
                      username=self.username,
                      password=self.password,
                      host=self.host,
-                     port=self.port,
+                     port=arg_to_number(self.port),
                      database=self.dbname,
                      query=self.connect_parameters)
         if self.ssl_connect:
@@ -135,6 +135,9 @@ class Client:
             if engine is None:  # (first time or expired) need to initialize
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
+        elif self.dialect == "Teradata":
+            demisto.debug('Initializing engine for Teradata dialect')
+            engine = sqlalchemy.create_engine(f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}')
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
@@ -157,20 +160,26 @@ class Client:
         headers = []
         if results:
             # if the table isn't empty
-            headers = list(results[0].keys() if results[0].keys() else '')
+            if self.dialect == "Teradata":
+                headers = list(result.keys())
+            else:
+                headers = list(results[0].keys() if results[0].keys() else '')
         return results, headers
 
 
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
     """
-    In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
+    In case no port was chosen, a default port will be chosen according to the SQL db type. Returns a port for
     Microsoft SQL Server and ODBC Driver 18 for SQL Server where it seems to be required.
-    For the other drivers a None port is supported
+    Returns a default port for Teradata too.
+    For the other drivers a None port is supported.
     :param dialect: sql db type
     :return: default port needed for connection
     """
     if dialect in {'Microsoft SQL Server', 'ODBC Driver 18 for SQL Server'}:
         return "1433"
+    if dialect == "Teradata":
+        return "1025"
     return None
 
 
@@ -282,11 +291,20 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
-        # converting an sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
-        # converting b'' and datetime objects to readable ones
-        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+
+        if client.dialect == "Teradata":
+            table = []
+            for row in result:
+                convert_tup_to_dic = {header: col for header, col in zip(headers, row)}
+                table.append(convert_tup_to_dic)
+        else:
+            # converting a sqlalchemy object to a table
+            converted_table = [dict(row) for row in result]
+            # converting b'' and datetime objects to readable ones
+            table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+
         table = table[skip:skip + limit]
+        print(table)
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
