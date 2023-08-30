@@ -481,7 +481,7 @@ def fetch_incidents(client: Client, params: dict):
     if table:
         last_run = update_last_run_after_fetch(table, last_run, params.get('fetch_parameters', ''),
                                                params.get('column_name', ''), params.get('id_column', ''))
-    demisto.debug(f'GenericSQL - Next run aftedr incidents fetching: {json.dumps(last_run)}')
+    demisto.debug(f'GenericSQL - Next run after incidents fetching: {json.dumps(last_run)}')
     demisto.debug(f"GenericSQL - Number of incidents before filtering: {len(result)}")
     demisto.debug(f"GenericSQL - Number of incidents after filtering: {len(incidents)}")
     demisto.debug(f"GenericSQL - Number of incidents skipped: {(len(result) - len(incidents))}")
