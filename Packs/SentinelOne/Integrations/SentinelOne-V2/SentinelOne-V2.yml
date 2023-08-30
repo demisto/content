@@ -64,11 +64,19 @@ configuration:
   - UNRESOLVED
   - IN_PROGRESS
   required: false
+- name: fetch_threat_incident_statuses
+  display: 'Define which Threats should be fetched.'
+  type: 16
+  required: false
+  options:
+  - RESOLVED
+  - UNRESOLVED
+  - IN_PROGRESS
 - name: fetch_limit
   display: 'Fetch limit: The maximum number of threats or alerts to fetch'
   type: 0
-  defaultvalue: '10'
   required: false
+  defaultvalue: '10'
 - name: fetch_site_ids
   display: Site IDs
   type: 0
@@ -77,37 +85,37 @@ configuration:
 - name: block_site_ids
   display: Block Site IDs
   type: 0
-  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
+  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
+- display: Trust any certificate (not secure)
+  name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- additionalinfo: Use the "API Token (Recommended)" parameter instead.
-  display: API Token (Deprecated)
+- display: API Token (Deprecated)
   name: token
   type: 4
   required: false
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
-  defaultvalue: None
+  defaultvalue: 'None'
   display: Incident Mirroring Direction
   name: mirror_direction
+  type: 15
+  required: false
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  type: 15
-  required: false
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -380,6 +388,8 @@ script:
     - description: 'A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
+    - description: 'Incident status. Example: "in_progress".'
+      name: incidentStatuses
     description: Returns threats according to the specified filters.
     name: sentinelone-get-threats
     outputs:
@@ -2301,7 +2311,7 @@ script:
       description: IP Address
     - contextPath: SentinelOne.MAC.mac
       description: MAC Address
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   ismappable: true
   isremotesyncin: true
