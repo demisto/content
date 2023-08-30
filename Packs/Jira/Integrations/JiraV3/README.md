@@ -57,6 +57,20 @@ Leave the *Client ID* and *Client Secret* fields empty and fill in the following
 - *User name* - enter the your user email
 - *API key* - enter the API token, to generate API token see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
+##### Basic Authentication permissions
+Ensure that you possess the necessary permissions by navigating to **Project Settings** -> **Permissions** in the project.
+Locate permissions for the tasks listed below:
+* Browse projects
+* Create issues
+* Edit issues
+* Delete issues
+* Transition issues
+* Create attachments
+* Add comments
+* Link issues
+
+
+
 ### OAuth 2.0
 For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
 
