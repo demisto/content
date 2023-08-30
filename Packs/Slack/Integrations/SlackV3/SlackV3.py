@@ -2588,12 +2588,11 @@ def list_channels():
     # Supports a single channel name
     name_filter = args.get('name_filter')
     if name_filter:
-        channels = None
         for channel in raw_response['channels']:
             if channel['name'] == name_filter:
                 channels = [channel]
                 break
-        if channels is None:
+        else:
             return_error(f"No channel found with name: {name_filter}")
     else:
         channels = raw_response['channels']
