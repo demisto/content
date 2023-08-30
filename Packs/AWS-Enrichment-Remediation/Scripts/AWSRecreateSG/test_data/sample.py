@@ -8,7 +8,7 @@ SG_INFO = [
                     "GroupId": "sg-00000000000000001",
                     "GroupName": "demo-sg",
                     "IpPermissions": [
-                         {
+                        {
                             "FromPort": 0,
                             "IpProtocol": "tcp",
                             "IpRanges": [
@@ -83,7 +83,7 @@ SG_INFO = [
                     "GroupId": "sg-0408c2745d3d13b15",
                     "GroupName": "demo-sg",
                     "IpPermissions": [
-                       {
+                        {
                             "FromPort": 0,
                             "IpProtocol": "tcp",
                             "IpRanges": [
