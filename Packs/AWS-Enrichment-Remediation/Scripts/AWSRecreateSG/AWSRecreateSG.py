@@ -248,19 +248,19 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[d
     match = False
     for instance in instance_info:
         # Check if returned error, in the case of multiple integration instances only one should pass.
-        if not isError(instance):
-            if instance.get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces'):
-                interfaces = instance.get('Contents').get(
-                    'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
-                mapping_dict = {}
-                for interface in interfaces:
-                    if interface.get('Association') and interface.get('Association').get('PublicIp') == public_ip:
-                        match = True
-                        group_list = []
-                        for sg in interface['Groups']:
-                            group_list.append(sg['GroupId'])
-                        mapping_dict[interface['NetworkInterfaceId']] = group_list
-                        integration_to_use = instance['ModuleName']
+        if not isError(instance) and \
+           instance.get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces'):
+            interfaces = instance.get('Contents').get(
+                'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
+            mapping_dict = {}
+            for interface in interfaces:
+                if interface.get('Association') and interface.get('Association').get('PublicIp') == public_ip:
+                    match = True
+                    group_list = []
+                    for sg in interface['Groups']:
+                        group_list.append(sg['GroupId'])
+                    mapping_dict[interface['NetworkInterfaceId']] = group_list
+                    integration_to_use = instance['ModuleName']
     if match is False:
         raise ValueError('could not find interface with public IP association')
     return mapping_dict, integration_to_use

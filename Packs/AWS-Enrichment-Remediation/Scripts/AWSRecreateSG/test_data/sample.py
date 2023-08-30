@@ -22,7 +22,7 @@ SG_INFO = [
                             "PrefixListIds": [
 
                             ],
-                            "ToPort":65535,
+                            "ToPort": 65535,
                             "UserIdGroupPairs": [
 
                             ]
@@ -41,7 +41,7 @@ SG_INFO = [
                             "PrefixListIds": [
 
                             ],
-                            "ToPort":22,
+                            "ToPort": 22,
                             "UserIdGroupPairs": [
 
                             ]
@@ -62,7 +62,7 @@ SG_INFO = [
                             "PrefixListIds": [
 
                             ],
-                            "ToPort":65535,
+                            "ToPort": 65535,
                             "UserIdGroupPairs": [
 
                             ]
@@ -76,7 +76,7 @@ SG_INFO = [
         },
         "HumanReadable": "### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-0408c2745d3d13b15 | demo-sg | 717007404259 | us-east-1 | vpc-061c242911e464170 |\n",
         "ImportantEntryContext": "None",
-        "EntryContext":{
+        "EntryContext": {
             "AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)": [
                 {
                     "Description": "sldkjdlskfjs",
@@ -84,17 +84,17 @@ SG_INFO = [
                     "GroupName": "demo-sg",
                     "IpPermissions": [
                        {
-                        "FromPort": 0,
-                        "IpProtocol": "tcp",
-                        "IpRanges": [
-                            {
-                                "CidrIp": "0.0.0.0/0"
-                            }
-                        ],
-                           "Ipv6Ranges": "None",
-                           "PrefixListIds": "None",
-                           "ToPort": 65535,
-                           "UserIdGroupPairs": "None"
+                            "FromPort": 0,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [
+                                {
+                                    "CidrIp": "0.0.0.0/0"
+                                }
+                            ],
+                            "Ipv6Ranges": "None",
+                            "PrefixListIds": "None",
+                            "ToPort": 65535,
+                            "UserIdGroupPairs": "None"
                        }
                     ],
                     "IpPermissionsEgress": [
