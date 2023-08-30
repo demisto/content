@@ -754,7 +754,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     subject = subject or item_to_reply_to.subject
     message_body = HTMLBody(html_body) if html_body else body
     reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
-                                          bcc_recipients=bcc ,author=from_mailbox ) # todo add to yml
+                                          bcc_recipients=bcc, author=from_mailbox)
     reply = reply.save(account.drafts)
     m = account.inbox.get(id=reply.id)
 
@@ -2248,7 +2248,7 @@ def send_email(args):
         from_address=args.get('from')
     )
     result_object = {
-        'from': account.primary_smtp_address,
+        'from': args.get('from') or account.primary_smtp_address,
         'to': to,
         'subject': subject,
         'attachments': attachments_names
@@ -2272,12 +2272,12 @@ def send_email(args):
 
 
 def reply_email(args):  # pragma: no cover
-    account = get_account( ACCOUNT_EMAIL)
+    account = get_account(ACCOUNT_EMAIL)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
     to = args.get('to').split(",") if args.get('to') else None
     subject = args.get('subject')
-    subject = subject[:252] + '...' if len(subject) > 255 else subject
+    subject = subject[:252] + '...' if subject and len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
@@ -2285,7 +2285,7 @@ def reply_email(args):  # pragma: no cover
     send_email_reply_to_mailbox(account, args.get('inReplyTo'), to, args.get('body'), subject, bcc, cc, args.get('htmlBody'),
                                 attachments, args.get('from'))
     result_object = {
-        'from': account.primary_smtp_address,
+        'from': args.get('from') or account.primary_smtp_address,
         'to': to,
         'subject': subject,
         'attachments': attachments_names
