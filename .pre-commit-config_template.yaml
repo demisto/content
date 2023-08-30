@@ -134,7 +134,7 @@ repos:
     - freezegun==1.2.2 ; python_version >= "3.8" and python_version < "3.11"
     - future==0.18.3 ; python_version >= "3.8" and python_version < "3.11"
     - gitdb==4.0.10 ; python_version >= "3.8" and python_version < "3.11"
-    - gitpython==3.1.30 ; python_version >= "3.8" and python_version < "3.11"
+    - gitpython==3.1.32 ; python_version >= "3.8" and python_version < "3.11"
     - giturlparse==0.10.0 ; python_version >= "3.8" and python_version < "3.11"
     - google-api-core==2.11.1 ; python_version >= "3.8" and python_version < "3.11"
     - google-api-core[grpc]==2.11.1 ; python_version >= "3.8" and python_version < "3.11"
