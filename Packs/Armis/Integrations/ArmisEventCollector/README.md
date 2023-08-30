@@ -37,7 +37,7 @@ Manual command to fetch and display events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required |
-| from_date | The date from which to fetch events. the format should be YYYY-MM-DD, if not specified, the current date will be used. | Optional |
+| from_date | The date from which to fetch events. the format should be YYYY-MM-DD. If not specified, the current date will be used. | Optional |
 
 #### Context Output
 
