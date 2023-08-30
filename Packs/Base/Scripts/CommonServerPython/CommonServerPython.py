@@ -6922,7 +6922,7 @@ class CommandResults:
                 if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
-                    human_readable = self.outputs
+                    human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
@@ -6931,7 +6931,7 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
-                outputs[outputs_key] = self.outputs # type: ignore[assignment]
+                outputs[outputs_key] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
