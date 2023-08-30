@@ -3692,6 +3692,23 @@ script:
     - defaultValue: '50'
       description: The maximum number of indicators to return.
       name: limit
+    - description: The number of indicators that are to be skipped and not included in the result.
+      name: skip
+    - description: The value of the indicator to get.
+      name: indicator_value
+    - description: The title of the indicator to get.
+      name: indicator_title
+    - auto: PREDEFINED
+      description: The type of the indicator to get.
+      name: indicator_type
+      predefined:
+      - FileSha1
+      - FileSha256
+      - FileMd5
+      - IpAddress
+      - DomainName
+      - Url
+      - CertificateThumbprint
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
