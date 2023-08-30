@@ -26,6 +26,7 @@ args:
   auto: PREDEFINED
   predefined:
   - case_insensitive
+  - list_compare
   - regex_dot_all
   - regex_multiline
   - regex_full_match

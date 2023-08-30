@@ -12,8 +12,7 @@ class ConditionParser:
         'null': None
     }
 
-    operator_functions: dict[type, Callable] = {
-        # comparison operators:
+    comparison_operators: dict[type, Callable] = {
         ast.Eq: lambda x, y: x == y,
         ast.NotEq: lambda x, y: x != y,
         ast.Lt: lambda x, y: x < y,
@@ -22,13 +21,19 @@ class ConditionParser:
         ast.GtE: lambda x, y: x >= y,
         ast.In: lambda x, y: x in y,
         ast.NotIn: lambda x, y: x not in y,
-        # boolean operators:
+    }
+
+    boolean_operators: dict[type, Callable] = {
         ast.And: lambda x, y: x and y,
         ast.Or: lambda x, y: x or y,
-        # unary operators:
+    }
+
+    unary_operators: dict[type, Callable] = {
         ast.Not: lambda x: not x,
         ast.USub: lambda x: -x,
-        # binary operators:
+    }
+
+    binary_operators: dict[type, Callable] = {
         ast.Add: lambda x, y: x + y,
     }
 
@@ -59,9 +64,23 @@ class ConditionParser:
         if 'case_insensitive' in flags:
             def eq(x, y):
                 return repr(x).lower() == repr(y).lower()
-            self.operator_functions |= {
+            self.comparison_operators |= {
                 ast.Eq: eq,
                 ast.NotEq: lambda x, y: not eq(x, y),
+            }
+        if 'list_compare' in flags:
+            def to_deep_search(func):
+                return lambda x, y: (
+                    func(x, y) or (
+                        any(func(x, i) for i in y)
+                        if isinstance(y, list)
+                        else False
+                    )
+                )
+            self.comparison_operators = {
+                k: to_deep_search(v)
+                for k, v
+                in self.comparison_operators.items()
             }
 
     def load_conditions(self, conditions):
@@ -106,24 +125,24 @@ class ConditionParser:
             case ast.Compare:
                 left = self.get_value(node.left)
                 return all(
-                    self.operator_functions[type(op)](
+                    self.comparison_operators[type(op)](
                         left, left := self.get_value(right)  # noqa: F841
                     )
                     for op, right in zip(node.ops, node.comparators)
                 )
             case ast.BoolOp:
                 return reduce(
-                    self.operator_functions[type(node.op)],
+                    self.boolean_operators[type(node.op)],
                     map(self.get_value, node.values)
                 )
-            case ast.UnaryOp:
-                return self.operator_functions[type(node.op)](
-                    self.get_value(node.operand)
-                )
             case ast.BinOp:
-                return self.operator_functions[type(node.op)](
+                return self.binary_operators[type(node.op)](
                     self.get_value(node.left),
                     self.get_value(node.right)
+                )
+            case ast.UnaryOp:
+                return self.unary_operators[type(node.op)](
+                    self.get_value(node.operand)
                 )
             case _:
                 raise KeyError(node.__class__.__name__)
