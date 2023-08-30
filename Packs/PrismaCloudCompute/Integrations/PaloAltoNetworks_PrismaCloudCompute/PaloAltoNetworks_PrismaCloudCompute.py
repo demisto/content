@@ -420,7 +420,7 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
-    def get_file_integrity_events(self, hostname):
+    def get_file_integrity_events(self, limit, hostname=None, event_id=None):
         """
         Get runtime file integrity audit events
 
@@ -433,7 +433,8 @@ class PrismaCloudComputeClient(BaseClient):
         endpoint = "audits/runtime/file-integrity"
 
         headers = self._headers
-        params = assign_params(hostname=hostname, limit=10, sort="time", reverse=True)
+        params = assign_params(hostname=hostname, id=event_id,
+                               limit=limit, sort="time", reverse=True)
 
         return self._http_request('get', endpoint, params=params, headers=headers)
 
@@ -1988,8 +1989,19 @@ def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: di
         HTTP Response object
     """
     hostname = args.get('hostname')
-    response = client.get_file_integrity_events(hostname)
-    return response
+    event_id = args.get('event_id')
+    limit = args.get('limit')
+    if hostname and event_id:
+        raise DemistoException("Either event_id or hostname must be supplied, not both.")
+    elif not hostname and not event_id:
+        raise DemistoException("Either event_id or hostname is required.")
+    response = client.get_file_integrity_events(limit, hostname=hostname, event_id=event_id)
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.FileIntegrity',
+        outputs_key_field='_id',
+        outputs=format_context(response),
+        raw_response=response
+    )
 
 
 def main():
@@ -2114,3 +2126,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
