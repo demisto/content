@@ -681,12 +681,15 @@ class Client(BaseClient):
                 "description": description
             },
             "filter": {
-                "siteIds": site_ids,
                 "tenant": "true",
-                "groupIds": group_ids,
-                "accountIds": account_ids
             }
         }
+        if len(site_ids) != 0:
+            payload["filter"]["siteIds"] = site_ids
+        if len(group_ids) != 0:
+            payload["filter"]["groupIds"] = group_ids
+        if len(account_ids) != 0:
+            payload["filter"]["accountIds"] = account_ids
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
