@@ -372,40 +372,40 @@ script:
       description: The virtualization type of the instance.
       type: string
   - arguments:
-      - description: One or more filters. See AWS documentation for details & filter options.
-        name: filters
-      - description: The IAM instance profile associations.
-        name: associationIds
-      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-        name: maxResults
-      - description: The token for the next set of results.
-        name: nextToken
-      - description: The AWS region. If not specified, the default region will be used.
-        name: region
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
+    - description: One or more filters. See AWS documentation for details & filter options.
+      name: filters
+    - description: The IAM instance profile associations.
+      name: associationIds
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: maxResults
+    - description: The token for the next set of results.
+      name: nextToken
+    - description: The AWS region. If not specified, the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     description: Describes your IAM instance profile associations.
     name: aws-ec2-describe-iam-instance-profile-associations
     outputs:
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
-        description: The Amazon Resource Name (ARN) of the instance profile.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
-        description: The ID of the instance profile.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
-        description: The state of the association.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
-        description: The ID of the instance.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
-        description: The ID of the association.
-        type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
+      description: The state of the association.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
+      description: The ID of the association.
+      type: string
   - arguments:
     - description: One or more filters.
       name: filters
@@ -1101,10 +1101,10 @@ script:
       required: true
     - description: The ID of the instance. For EC2-VPC, you can specify either the instance ID or the network interface ID, but not both. The operation fails if you specify an instance ID unless exactly one network interface is attached.
       name: instanceId
-    - auto: PREDEFINED
-      defaultValue: 'False'
-      description: For a VPC in an EC2-Classic account, specify true to allow an Elastic IP address that is already associated with an instance or network interface to be reassociated with the specified instance or network interface. Otherwise, the operation fails. In a VPC in an EC2-VPC-only account, reassociation is automatic, therefore you can specify false to ensure the operation fails if the Elastic IP address is already associated with another resource.
+    - description: For a VPC in an EC2-Classic account, specify true to allow an Elastic IP address that is already associated with an instance or network interface to be reassociated with the specified instance or network interface. Otherwise, the operation fails. In a VPC in an EC2-VPC-only account, reassociation is automatic, therefore you can specify false to ensure the operation fails if the Elastic IP address is already associated with another resource.
       name: allowReassociation
+      auto: PREDEFINED
+      defaultValue: 'False'
       predefined:
       - 'True'
       - 'False'
@@ -1216,9 +1216,9 @@ script:
       required: true
     - description: A description for the new image.
       name: description
-    - auto: PREDEFINED
-      description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the noReboot option is set, Amazon EC2 wont shut down the instance before creating the image. When this option is used, file system integrity on the created image cant be guaranteed.
+    - description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the noReboot option is set, Amazon EC2 wont shut down the instance before creating the image. When this option is used, file system integrity on the created image cant be guaranteed.
       name: noReboot
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -1413,9 +1413,9 @@ script:
     - description: The Availability Zone in which to create the volume. Use DescribeAvailabilityZones to list the Availability Zones that are currently available to you.
       name: availabilityZone
       required: true
-    - auto: PREDEFINED
-      description: Specifies whether the volume should be encrypted.
+    - description: Specifies whether the volume should be encrypted.
       name: encrypted
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -1427,9 +1427,9 @@ script:
       name: size
     - description: The snapshot from which to create the volume.
       name: snapshotId
-    - auto: PREDEFINED
-      description: The volume type.
+    - description: The volume type.
       name: volumeType
+      auto: PREDEFINED
       predefined:
       - standard
       - io1
@@ -1572,7 +1572,7 @@ script:
       required: true
     - description: The AWS Region, if not specified the default region will be used.
       name: region
-    - description: The Amazon Resource Name (ARN) of the role to assume.
+    - description: 'The Amazon Resource Name (ARN) of the role to assume.'
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
@@ -1582,9 +1582,9 @@ script:
     execution: true
     name: aws-ec2-delete-volume
   - arguments:
-    - defaultValue: '1'
-      description: The number of instances to launch. must be grater then 0.
+    - description: The number of instances to launch. must be grater then 0.
       name: count
+      defaultValue: '1'
       required: true
     - description: The ID of the AMI, which you can get by calling DescribeImages . An AMI is required to launch an instance and must be specified here or in a launch template.
       name: imageId
@@ -1598,9 +1598,9 @@ script:
       name: subnetId
     - description: The user data to make available to the instance.This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation.
       name: userData
-    - auto: PREDEFINED
-      description: If you set this parameter to true , you cant terminate the instance using the Amazon EC2 console, CLI, or API.
+    - description: If you set this parameter to true , you cant terminate the instance using the Amazon EC2 console, CLI, or API.
       name: disableApiTermination
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -1662,8 +1662,8 @@ script:
     - description: The dedicated Host ID.
       name: host_id
     description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using RunInstances , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using DescribeInstances.
-    execution: true
     name: aws-ec2-run-instances
+    execution: true
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
       description: The AMI launch index, which can be used to find this instance in the launch group.
@@ -2229,15 +2229,18 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    - description: |-
+        The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     - description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.
       name: IpPermissionsfromPort
-    - description: The IP protocol name (tcp, udp, icmp, icmpv6) or number.
+    - description: |-
+        The IP protocol name (tcp, udp, icmp, icmpv6) or number.
       name: IpPermissionsIpProtocol
     - description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes.
       name: IpPermissionsToPort
-    - description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
+    - description: |-
+        The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
       name: IpRangesCidrIp
     - description: |-
         A description for the security group rule that references this IPv4 address range.
@@ -2265,7 +2268,7 @@ script:
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
-    - description: The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID.
+    - description: 'The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID.'
       name: UserIdGroupPairsGroupName
     - description: The status of a VPC peering connection, if applicable.
       name: UserIdGroupPairsPeeringStatus
@@ -2380,11 +2383,11 @@ script:
     - description: The name of the region that contains the AMI to copy.
       name: sourceRegion
       required: true
-    - description: A description for the new AMI in the destination region.
+    - description: 'A description for the new AMI in the destination region.'
       name: description
-    - auto: PREDEFINED
-      description: Specifies whether the destination snapshots of the copied image should be encrypted. The default CMK for EBS is used unless a non-default AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
+    - description: Specifies whether the destination snapshots of the copied image should be encrypted. The default CMK for EBS is used unless a non-default AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
       name: encrypted
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -2432,7 +2435,6 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy the snapshot within the same region or from one region to another.
-    execution: true
     name: aws-ec2-copy-snapshot
     outputs:
     - contextPath: AWS.EC2.Snapshots.SnapshotId
@@ -2441,14 +2443,15 @@ script:
     - contextPath: AWS.EC2.Snapshots.Region
       description: The Region where the snapshot is located.
       type: string
+    execution: true
   - arguments:
     - description: ne or more filters.
       name: filters
     - description: One or more Reserved Instance IDs. Separated by comma.
       name: reservedInstancesIds
-    - auto: PREDEFINED
-      description: Describes whether the Reserved Instance is Standard or Convertible.
+    - description: Describes whether the Reserved Instance is Standard or Convertible.
       name: offeringClass
+      auto: PREDEFINED
       predefined:
       - standard
       - convertible
@@ -2623,15 +2626,15 @@ script:
       name: description
     - description: The ID of the network interface attachment. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment.
       name: attachmentId
-    - auto: PREDEFINED
-      description: Indicates whether the network interface is deleted when the instance is terminated. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment.
+    - description: Indicates whether the network interface is deleted when the instance is terminated. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment.
       name: deleteOnTermination
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - description: The AWS Region, if not specified the default region will be used.
       name: region
-    - description: The Amazon Resource Name (ARN) of the role to assume.
+    - description: 'The Amazon Resource Name (ARN) of the role to assume.'
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
@@ -2644,27 +2647,27 @@ script:
     - description: The ID of the instance.
       name: instanceId
       required: true
-    - auto: PREDEFINED
-      description: Specifies whether source/destination checking is enabled. A value of true means that checking is enabled, and false means that checking is disabled. This value must be false for a NAT instance to perform NAT.
+    - description: Specifies whether source/destination checking is enabled. A value of true means that checking is enabled, and false means that checking is disabled. This value must be false for a NAT instance to perform NAT.
       name: sourceDestCheck
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: If the value is true , you can't terminate the instance using the Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter for Spot Instances.
+    - description: If the value is true , you can't terminate the instance using the Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter for Spot Instances.
       name: disableApiTermination
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: Specifies whether the instance is optimized for Amazon EBS I/O. This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal EBS I/O performance. This optimization isn't available with all instance types. Additional usage charges apply when using an EBS Optimized instance.
+    - description: Specifies whether the instance is optimized for Amazon EBS I/O. This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal EBS I/O performance. This optimization isn't available with all instance types. Additional usage charges apply when using an EBS Optimized instance.
       name: ebsOptimized
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: Set to true to enable enhanced networking with ENA for the instance.  This option is supported only for HVM instances. Specifying this option with a PV instance can make it unreachable.
+    - description: Set to true to enable enhanced networking with ENA for the instance.  This option is supported only for HVM instances. Specifying this option with a PV instance can make it unreachable.
       name: enaSupport
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -2687,12 +2690,12 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Using this action to change the security groups associated with an elastic network interface (ENI) attached to an instance in a VPC can result in an error if the instance has more than one ENI. To change the security groups associated with an ENI attached to an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute action.
-    execution: true
     name: aws-ec2-modify-instance-attribute
+    execution: true
   - arguments:
-    - auto: PREDEFINED
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+    - description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
       name: DryRun
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -2767,15 +2770,15 @@ script:
   - arguments:
     - description: The IPv4 network range to allow or deny, in CIDR notation (for example 172.16.0.0/24 ).
       name: CidrBlock
-    - auto: PREDEFINED
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+    - description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
       name: DryRun
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
+    - description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
       name: Egress
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -2808,7 +2811,7 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
     description: Creates an entry (a rule) in a network ACL with the specified rule number.
     name: aws-ec2-create-network-acl-entry
@@ -2821,9 +2824,9 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    - auto: PREDEFINED
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+    - description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
       name: DryRun
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -3010,7 +3013,7 @@ script:
       description: The current state of the EC2 Fleet.
       type: String
     - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState
-      description: The previous state of the EC2 Fleet.
+      description: 'The previous state of the EC2 Fleet.'
       type: String
     - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId
       description: The ID of the EC2 Fleet.
@@ -3651,15 +3654,15 @@ script:
     - description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions.
       name: SessionNumber
       required: true
-    - description: The VXLAN ID for the Traffic Mirror session.
+    - description: 'The VXLAN ID for the Traffic Mirror session.'
       name: VirtualNetworkId
     - description: The description of the Traffic Mirror session.
       name: Description
-    - description: The tags to assign to a Traffic Mirror session.
+    - description: 'The tags to assign to a Traffic Mirror session.'
       name: Tags
     - description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
       name: DryRun
-    - description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+    - description: 'Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.'
       name: ClientToken
     description: Creates a Traffic Mirror session.
     name: aws-ec2-create-traffic-mirror-session
@@ -3747,8 +3750,8 @@ script:
     - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
       name: IpPermissionsFull
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
-    execution: true
     name: aws-ec2-revoke-security-group-egress-rule
+    execution: true
   - arguments:
     - description: The Availability Zone in which to allocate the Dedicated Host.
       name: availability_zone
@@ -3756,9 +3759,9 @@ script:
     - description: The number of Dedicated Hosts to allocate to your account with these parameters.
       name: quantity
       required: true
-    - auto: PREDEFINED
-      description: Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. The default is "on".
+    - description: Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. The default is "on".
       name: auto_placement
+      auto: PREDEFINED
       predefined:
       - 'on'
       - 'off'
@@ -3910,7 +3913,7 @@ script:
     - contextPath: AWS.Organization.OU.Name
       description: The friendly name of this organizational unit (OU).
       type: String
-  dockerimage: demisto/boto3py3:1.0.0.72237
+  dockerimage: demisto/boto3py3:1.0.0.72785
   runonce: false
   script: '-'
   subtype: python3
