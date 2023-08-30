@@ -3786,7 +3786,7 @@ script:
       name: max_results
     - description: The token for the next set of results.
       name: next_token
-    - description: The unique identifier (ID) for the parent root or OU whose children you want to list.
+    - description: The unique identifier (ID) for the parent root or organizational unit (OU) whose children you want to list.
       name: parent_id
       required: true
     - description: Filters the output to include only the specified child type.
@@ -3809,10 +3809,10 @@ script:
       name: max_results
     - description: The token for the next set of results.
       name: next_token
-    - description: The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.
+    - description: The unique identifier (ID) of the organizational unit (OU) or account whose parent containers you want to list. Don't specify a root.
       name: child_id
       required: true
-    description: Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child OU or account.
+    description: Lists the root or organizational units (OUs) that serve as the immediate parent of the specified child organizational unit (OU) or account.
     name: aws-organization-list-parents
     outputs:
     - contextPath: AWS.Organization.Parents.Id
@@ -3825,7 +3825,7 @@ script:
     - description: The unique identifier (ID) of the Amazon Web Services account that you want information about. You can get the ID from the ListAccounts or ListAccountsForParent operations.
       name: account_id
       required: true
-    description: Retrieves Organizations-related information about the specified account.
+    description: Retrieves organizations-related information about the specified account.
     name: aws-organization-describe-account
     outputs:
     - contextPath: AWS.Organization.Account.Id
@@ -3867,13 +3867,13 @@ script:
     name: aws-organization-describe-ou
     outputs:
     - contextPath: AWS.Organization.OU.Id
-      description: The unique identifier (ID) associated with this OU.
+      description: The unique identifier (ID) associated with this organizational unit (OU).
       type: String
     - contextPath: AWS.Organization.OU.Arn
-      description: The Amazon Resource Name (ARN) of this OU.
+      description: The Amazon Resource Name (ARN) of this organizational unit (OU).
       type: String
     - contextPath: AWS.Organization.OU.Name
-      description: The friendly name of this OU.
+      description: The friendly name of this organizational unit (OU).
       type: String
   dockerimage: demisto/boto3py3:1.0.0.72237
   runonce: false

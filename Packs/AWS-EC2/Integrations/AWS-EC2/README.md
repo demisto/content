@@ -3243,7 +3243,7 @@ Lists all of the organizational units (OUs) or accounts that are contained in th
 | --- | --- | --- |
 | max_results | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
 | next_token | The token for the next set of results. | Optional | 
-| parent_id | The unique identifier (ID) for the parent root or OU whose children you want to list. | Required | 
+| parent_id | The unique identifier (ID) for the parent root or organizational unit (OU) whose children you want to list. | Required | 
 | child_type | Filters the output to include only the specified child type. Possible values are: ACCOUNT, ORGANIZATIONAL_UNIT. | Required | 
 
 #### Context Output
@@ -3299,7 +3299,7 @@ Lists the root or organizational units (OUs) that serve as the immediate parent 
 | --- | --- | --- |
 | max_results | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
 | next_token | The token for the next set of results. | Optional | 
-| child_id | The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root. | Required | 
+| child_id | The unique identifier (ID) of the organizational unit (OU) or account whose parent containers you want to list. Don't specify a root. | Required | 
 
 #### Context Output
 
@@ -3335,7 +3335,7 @@ Lists the root or organizational units (OUs) that serve as the immediate parent 
 ### aws-organization-describe-account
 
 ***
-Retrieves Organizations-related information about the specified account.
+Retrieves organization-related information about the specified account.
 
 #### Base Command
 
@@ -3462,9 +3462,9 @@ Retrieves information about an organizational unit (OU).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Organization.OU.Id | String | The unique identifier \(ID\) associated with this OU. | 
-| AWS.Organization.OU.Arn | String | The Amazon Resource Name \(ARN\) of this OU. | 
-| AWS.Organization.OU.Name | String | The friendly name of this OU. | 
+| AWS.Organization.OU.Id | String | The unique identifier \(ID\) associated with this organizational unit (OU). | 
+| AWS.Organization.OU.Arn | String | The Amazon Resource Name \(ARN\) of this organizational unit (OU). | 
+| AWS.Organization.OU.Name | String | The friendly name of this organizational unit (OU). | 
 
 #### Command example
 ```!aws-organization-describe-ou ou_id=ou-6666-66666666```
