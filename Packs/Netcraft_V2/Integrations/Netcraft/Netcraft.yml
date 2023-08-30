@@ -103,9 +103,6 @@ configuration:
 
 
 script:
-  script: '-'
-  type: python
-  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: ''
     arguments:
@@ -183,7 +180,7 @@ script:
     - description: |
         By default we will use the value of the config param
       name: region
-    outputs: ''
+    outputs: []
     description: |
       ''
   - name: ''
@@ -278,7 +275,7 @@ script:
     - description: |
         ''
       name: region
-    outputs: ''
+    outputs: []
     description: |
       ''
   - name: ''
@@ -328,7 +325,7 @@ script:
     - description: |
         ''
       name: region
-    outputs: ''
+    outputs: []
     description: |
       ''
   - name: ''
@@ -342,7 +339,7 @@ script:
         ''
     description: |
       ''
-    outputs: ''
+    outputs: []
   - name: ''
     arguments:
     - name: Argument name
@@ -367,7 +364,7 @@ script:
       - 'false'
     description: |
       ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -392,7 +389,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -436,7 +433,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -477,7 +474,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -511,7 +508,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -547,7 +544,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -586,7 +583,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -608,7 +605,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -626,7 +623,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -639,7 +636,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -652,7 +649,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -674,7 +671,7 @@ script:
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   - arguments:
     - description: |
         Note
@@ -695,14 +692,17 @@ script:
         ."
       name: screenshot_hash
       required: true
+    script: '-'
+    type: python
+    dockerimage: demisto/python3:3.10.12.63474
     description: |
       ''
     name: ''
-    outputs: ''
+    outputs: []
   subtype: python3
   isfetch: true
   runonce: false
-fromversion: 5.5.0
+fromversion: 6.9.0
 tests:
 - No tests (deprecated)
 sectionOrder:
