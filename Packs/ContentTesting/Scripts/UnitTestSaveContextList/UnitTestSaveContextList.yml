@@ -8,7 +8,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestSaveContextList
 comment: ''
@@ -21,3 +21,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+runonce: false
