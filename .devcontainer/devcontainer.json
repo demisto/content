@@ -97,7 +97,7 @@
 // "overrideFeatureInstallOrder": [
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
-"onCreateCommand": "sudo dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && sudo chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+"onCreateCommand": "sudo dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
 "postStartCommand": "poetry install && poetry run demisto-sdk pre-commit 2>&1 >/dev/null || true",
 "hostRequirements": {
 	"cpus": 4,
