@@ -635,7 +635,7 @@ class Client(BaseClient):
             filter_key: filter_value
             for filter_key, filter_value in filter_dict.items()
             if len(filter_value) != 0
-            }  
+        }  
 
     def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
