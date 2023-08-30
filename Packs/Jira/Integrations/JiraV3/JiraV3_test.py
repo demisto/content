@@ -229,19 +229,16 @@ def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
 
 
 @pytest.mark.parametrize(
-    "username, api_key, expected_results",
+    "username, api_key",
     [
         (
             "dummy_username",
             "dummy_api_key",
-            {"basic_auth_call_count": 1, "oauth2_call_count": 0},
         ),
-        ("", "", {"basic_auth_call_count": 0, "oauth2_call_count": 1}),
+        ("", ""),
     ],
 )
-def test_http_request(
-    mocker, username: str, api_key: str, expected_results: dict[str, int]
-):
+def test_http_request(mocker, username: str, api_key: str):
     """
     Given:
         - username and api_key
@@ -262,8 +259,8 @@ def test_http_request(
     mocker.patch.object(client, "_http_request")
     client.http_request("GET")
 
-    assert basic_auth_mock.call_count == expected_results["basic_auth_call_count"]
-    assert oauth2_mock.call_count == expected_results["oauth2_call_count"]
+    assert basic_auth_mock.call_count == int(bool(client.username))
+    assert oauth2_mock.call_count == int(not bool(client.username))
 
 
 def test_test_module_basic_auth(mocker):
@@ -293,9 +290,11 @@ def test_module_oauth2(mocker):
     from JiraV3 import test_module
     client = jira_base_client_mock()
     mocker.patch.object(client, "test_instance_connection")
-    with pytest.raises(DemistoException) as e:
+    with pytest.raises(
+        DemistoException,
+        match="In order to authorize the instance, first run the command `!jira-oauth-start`"
+    ):
         test_module(client)
-    assert "In order to authorize the instance, first run the command `!jira-oauth-start`" in str(e.value)
 
 
 @pytest.mark.parametrize(
@@ -304,7 +303,7 @@ def test_module_oauth2(mocker):
         pytest.param(
             {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
             "The required parameters were not provided, see the help window",
-            id="no provided any auth params"
+            id="no auth params provided"
         ),
         pytest.param(
             {
@@ -374,7 +373,7 @@ def test_validate_auth_params(params: dict[str, str]):
         - run `validate_auth_params` function
     Then:
         - Ensure that when provided valid auth params
-          the function does not throw an error raise
+          the function does not raise
     """
     from JiraV3 import validate_auth_params
     validate_auth_params(**params)

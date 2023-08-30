@@ -105,7 +105,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                  callback_url: str, api_version: str, username: str, api_key: str):
         self.username = username
         self.api_key = api_key
-        self.is_basic_auth = self.username and self.api_key
+        self.is_basic_auth = bool(self.username and self.api_key)
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
         self.api_version = api_version
@@ -126,8 +126,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Depends on the resp_type parameter: The response of the API endpoint.
         """
-        if headers is None:
-            headers = {}
         if self.is_basic_auth:
             request_headers = self.get_headers_with_basic_auth(headers=headers)
         else:
@@ -141,22 +139,18 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         by calling the get_access_token method, which is an abstract method,
         and every child class must implement it.
         """
-        if headers is None:
-            headers = {}
         access_token = self.get_access_token()
         # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
         # to work, and this way, we have the option to receive the extra headers and send them in the API request.
-        return self._headers | headers | {'Authorization': f'Bearer {access_token}'}
+        return self._headers | (headers or {}) | {'Authorization': f'Bearer {access_token}'}
 
     def get_headers_with_basic_auth(self, headers: Dict[str, str] | None = None) -> dict[str, str]:
         """
         This method inserts the encoded key into the request headers.
         """
-        if headers is None:
-            headers = {}
         basic_auth_bytes = f"{self.username}:{self.api_key}".encode()
         encoded_key = base64.b64encode(basic_auth_bytes).decode("utf-8")
-        return self._headers | headers | {"Authorization": f"Basic {encoded_key}"}
+        return self._headers | (headers or {}) | {"Authorization": f"Basic {encoded_key}"}
 
     # Authorization methods
     def get_access_token(self) -> str:
@@ -2985,13 +2979,16 @@ def test_module(client: JiraBaseClient) -> str:
     show them the steps in order to test the instance.
     """
     if client.is_basic_auth:
-        client.test_instance_connection()
+        client.test_instance_connection()  # raises on failure
         return "ok"
-    raise DemistoException('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                           ' and complete the process in the URL that is returned. You will then be redirected'
-                           ' to the callback URL . Copy the authorization code found in the query parameter'
-                           ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                           ' the process.')
+    else:
+        raise DemistoException(
+            'In order to authorize the instance, first run the command `!jira-oauth-start`,'
+            ' and complete the process in the URL that is returned. You will then be redirected'
+            ' to the callback URL . Copy the authorization code found in the query parameter'
+            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
+            ' the process.'
+            )
 
 
 def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tuple[Dict[str, Any], int | None]:
@@ -3843,18 +3840,18 @@ def validate_auth_params(
 ) -> None:
     basic_oauth, oauth2 = username or api_key, client_id or client_secret
 
-    if not basic_oauth and not oauth2:
+    if (not basic_oauth) and (not oauth2):
         raise DemistoException("The required parameters were not provided, see the help window")
     if basic_oauth and oauth2:
         raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
                                " with the `Client ID` or `Client Secret` parameters, see the help window")
     if basic_oauth and not (username and api_key):
         raise DemistoException(
-            "To use basic authentication the parameters 'User name' and 'API key' are mandatory"
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory"
         )
     if oauth2 and not (client_id and client_secret):
         raise DemistoException(
-            "To use OAuth 2.0 the parameters 'Client ID' and 'Client Secret' are mandatory"
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory"
         )
 
 
