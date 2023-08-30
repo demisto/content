@@ -182,25 +182,25 @@ EXPECTED_LABELS = [
     {"type": "alertName", "value": "Sample Alert"},
     {"type": "alertDescription", "value": "This is a sample alert"},
 ]
-LAST_RUN_DATA = {"from_time": 1234567000.0, "last_fetch_events": []}
+LAST_RUN_DATA = {"from_time": 1690703069, "last_fetch_events": []}
 
 MOCK_EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
-        "eventdate": 1234567890.0,
+        "eventdate": 1691307869000,
         "context": "value1",
     },
     {
         "alertId": "456",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": 1234567891.0,
+        "eventdate": 1691394269000,
         "context": "value2",
     },
     {
         "alertId": "789",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": 1234567892.0,
+        "eventdate": 1691480669000,
         "context": "value3",
     },
 ]
