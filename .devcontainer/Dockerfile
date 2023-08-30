@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install dos2unix git python2 curl -y \
     && rm -rf /features \
     && git clone https://github.com/devcontainers/features.git /features \
     && cd /features \
-    # locking to the latest master commit in this repo to prevent breaking changes
+    # locking to the latest master commit in this repo (https://github.com/devcontainers/features.git) to prevent breaking changes
     # We should update this commit hash from time to time to
     && git checkout 96bff0097028001e6e4126c5528d37cb8c13e785
 
