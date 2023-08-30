@@ -1,7 +1,7 @@
 [MODEL: dataset=sonicwall_ns_raw]
 alter
 proto=uppercase(arrayindex(regextract(_raw_log,"proto\=([^=]+)\/"),0)),
-proto_original=arrayindex(regextract(_raw_log,"proto\=([^=]+)\s"),0)
+proto_original=arrayindex(regextract(_raw_log,"proto\=([^=]+)\s"),0),
 httpMethod=arrayindex(regextract(_raw_log,"op\=([^=]+)[\s|\"]"),0)
 | alter
 xdm.event.type=arrayindex(regextract(_raw_log,"id\=([^=]+)[\s|\"]"),0),
