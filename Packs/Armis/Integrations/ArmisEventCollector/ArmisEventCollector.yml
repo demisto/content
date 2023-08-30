@@ -39,7 +39,7 @@ configuration:
   options:
   - Alerts
   - Threat activities
-description: 'Collects alerts & threat activities from Armis resources.'
+description: Collects alerts & threat activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
 script:
@@ -53,10 +53,10 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The date from which to fetch events. the format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS, if not specified, the current date will be used.
+    - description: The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used.
       name: from_date
       required: false
-    description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
   runonce: false
   isfetchevents: true
