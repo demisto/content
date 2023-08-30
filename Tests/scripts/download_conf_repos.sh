@@ -29,9 +29,15 @@ clone_repository_with_fallback_branch() {
   local retry_count=$4
   local sleep_time=${5:-10}  # default sleep time is 10 seconds.
 
-  clone_repository "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
-  local exit_code=$?
-  if [ ${exit_code} -ne 0 ]; then
+  git ls-remote --exit-code --quiet --heads "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1 && branch_exists=0 || branch_exists=$?
+
+  if [ "${branch_exists}" -ne 0 ]; then
+    clone_repository "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
+    local exit_code=$?
+  else
+    local exit_code=1
+  fi
+  if [ "${exit_code}" -ne 0 ]; then
     # Failed to clone with branch, try again with fallback_branch.
     echo "Failed to clone ${repo_name} with branch ${branch}, exit code:${exit_code}, trying to clone with branch ${fallback_branch}!"
     clone_repository "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
