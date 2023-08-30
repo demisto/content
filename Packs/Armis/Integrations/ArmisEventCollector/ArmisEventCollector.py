@@ -251,10 +251,13 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
 
     # case 3
     else:
-        demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
         # Note that the following timestamps comparison are made between strings and assume
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
+        demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
+
         latest_event_timestamp = events[-1].get('time', '')[:19]
+        # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
+        # and take only the events with identical latest time
         events_with_identical_latest_time = list(
             itertools.takewhile(lambda x: x.get('time', '')[:19] == latest_event_timestamp, reversed(events)))
         new_ids = [event.get(unique_id_key, '') for event in events_with_identical_latest_time]
@@ -342,8 +345,7 @@ def add_time_to_events(events):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            event['_time'] = event.get('time')
 
 
 def handle_from_date_argument(from_date: str) -> datetime | None:
