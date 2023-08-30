@@ -162,6 +162,8 @@ display: Cortex XDR - IOC
 name: Cortex XDR - IOC
 script:
   commands:
+    description: Create a file with all the ioc's that are going to sync to xdr.
+    name: xdr-iocs-to-keep-file'
   - arguments:
     - auto: PREDEFINED
       default: true
