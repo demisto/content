@@ -318,12 +318,12 @@ def test_module_oauth2(mocker):
         ),
         pytest.param(
             {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
-            "To use basic authentication the parameters 'User name' and 'API key' are mandatory",
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory",
             id="only `username` parameter was provided"
         ),
         pytest.param(
             {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
-            "To use OAuth 2.0 the parameters 'Client ID' and 'Client Secret' are mandatory",
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory",
             id="only `client_id` parameter was provided"
         )
     ]
