@@ -18,3 +18,4 @@
 !aws-organization-describe-ou ou_id=ou-11111-11111111
 !aws-organization-describe-account account_id=111111111111
 !aws-organization-describe-organization
+!aws-ec2-describe-iam-instance-profile-associations
