@@ -42,11 +42,12 @@ demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --
   --xsiam-token="$XSIAM_TOKEN" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \
   ${MODELING_RULES_TO_TEST}
 exit_code=$?
+  echo "Finished testing Modeling Rules, exit_code=$exit_code"
 
 if [[ $exit_code -ne 0 ]]; then
   echo "Failed to test modeling rules"
   if [ -z "${NIGHTLY}" ] && [ -n "${MODELING_RULES_RESULTS_FILE_NAME}" ]; then
-    echo "This is not a nightly build, converting the results to Jira issues and exiting with 0"
+    echo "This is a nightly build, converting the results to Jira issues and exiting with 0"
     python3 "${CURRENT_DIR}/Tests/scripts/convert_test_result_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
     exit $? # exit with the exit code of the python script
   else

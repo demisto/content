@@ -15,7 +15,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 urllib3.disable_warnings()  # Disable insecure warnings
-
+  # fixme remove default values
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
@@ -152,7 +152,7 @@ def main():
         install_logging('convert_test_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f'JUnit path: {options.junit_path}')
+        logging.info(f'JUnit path: {options.junit_path}'). # fixme join logger.info
         logging.info(f'Gitlab server url: {options.url}')
         logging.info(f'Gitlab project id: {options.gitlab_project_id}')
         logging.info(f'Jira server url: {JIRA_SERVER_URL}')
@@ -171,7 +171,7 @@ def main():
             if test_suite.failures or test_suite.errors:
                 create_jira_issue(jira_server, test_suite, options, now)
             else:
-                logging.info(f"Skipped creating Jira issue for {test_suite.name}")
+                logging.debug(f"Skipped creating Jira issue for successful test {test_suite.name}")
 
     except Exception as e:
         logging.exception(f'Failed to create jira issues from JUnit results: {e}')
