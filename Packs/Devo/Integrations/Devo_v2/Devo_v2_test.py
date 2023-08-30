@@ -182,7 +182,7 @@ EXPECTED_LABELS = [
     {"type": "alertName", "value": "Sample Alert"},
     {"type": "alertDescription", "value": "This is a sample alert"},
 ]
-LAST_RUN_DATA = {"from_time": "1234567000.0", "last_fetch_events": []}
+LAST_RUN_DATA = {"from_time": 1234567000.0, "last_fetch_events": []}
 
 MOCK_EVENTS = [
     {
