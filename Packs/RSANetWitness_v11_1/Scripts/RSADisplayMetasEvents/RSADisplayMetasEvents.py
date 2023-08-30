@@ -5,7 +5,11 @@ from CommonServerPython import *  # noqa: F401
 ''' COMMAND FUNCTION '''
 
 
-def CamelCaseToDotCase(key):
+def CamelCaseToDotCase(key: str) -> str:
+    '''
+    Convert camel case string to dot case string.
+    ex: eventSource => event.source
+    '''
     dot_format = ""
     for char in key:
         if char.isupper():
@@ -16,7 +20,10 @@ def CamelCaseToDotCase(key):
     return dot_format
 
 
-def display_metas():
+def display_metas() -> dict:
+    '''
+    Return metas event alert markdown to display it in dynamic section.
+    '''
     incident = demisto.incident()
 
     if (
@@ -31,10 +38,8 @@ def display_metas():
             'Contents': 'No event available for this incident.'
         }
 
-    metasevents = incident['CustomFields']['metasevents'][0]
-
+    metasevents = incident.get('CustomFields', {}).get('metasevents', [])[0]
     markdown = tableToMarkdown('', metasevents, headers=metasevents.keys(), headerTransform=CamelCaseToDotCase)
-
     return {'Type': entryTypes['note'], 'ContentsFormat': formats['markdown'], 'Contents': markdown}
 
 

@@ -18,6 +18,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
 DEFAULT_MAX_INCIDENT_ALERTS = 50
 
 # =========== Mirroring Mechanism Globals ===========
+MAX_TIME_MIRROR_INC = 24
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -875,7 +876,6 @@ def fetch_incidents(client: Client, params: dict) -> list:
 
         incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
-                    "dbotMirrorId" : inc_id,
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order
         incidents.insert(0, incident)
@@ -1184,7 +1184,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name='RSA Netwitness incident')
 
     for field in OUTGOING_MIRRORED_FIELDS:
-        incident_type_scheme.add_field(name=field, description='the description for the field')
+        incident_type_scheme.add_field(name=field)
 
     mapping_response.add_scheme_type(incident_type_scheme)
 
@@ -1192,6 +1192,15 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def xsoar_status_to_rsa_status(xsoar_status: int, xsoar_close_reason: str) -> str:
+    """
+    xsoar_status_to_rsa_status: Convert XSOAR status to RSA status
+    Args:
+        xsoar_status: XSOAR status
+        xsoar_close_reason: XSOAR close reason
+
+    Returns:
+        str: RSA status
+    """
     if xsoar_status == 2 and xsoar_close_reason == "False positive":
         return "ClosedFalsePositive"
     elif xsoar_status == 2:
@@ -1232,10 +1241,9 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     response = client.get_incident_request(new_incident_id)
     rsa_status = xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason)
 
-    if rsa_status != None and response["status"] != rsa_status:
+    if rsa_status and response["status"] != rsa_status:
         demisto.debug(f"Current status should be {rsa_status} on RSA but is {response['status']}, updating incident...")
-        # if you're brave enough you can pull request to do assignee
-        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response["assignee"])
+        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response.get("assignee"))
         demisto.debug(json.dumps(response))
     else:
         demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
@@ -1267,11 +1275,12 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
 
     response = client.get_incident_request(inc_id)
 
+    # check if the user enable alerts fetching
     if fetch_alert:
         grid_alerts = []
         demisto.debug(f'Pulling alerts from incident {inc_id} !')
         inc_alert_count = response.get('alertCount')
-        if params['import_alerts'] and inc_alert_count <= max_fetch_alerts:
+        if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f'{len(alerts)} alerts pulled !')
             response['alerts'] = alerts
@@ -1321,7 +1330,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {last_update_format}')
 
     # setting request
-    since = last_update_format - timedelta(days=7)
+    since = last_update_format - timedelta(days=MAX_TIME_MIRROR_INC)
     since_format = since.strftime(DATE_FORMAT)
     until_format = last_update_format.strftime(DATE_FORMAT)
     response, items = paging_command(max_fetch_incidents, None, None, client.list_incidents_request, until=until_format, since=since_format)
@@ -1333,7 +1342,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     clean_old_inc_context()
     intCont = get_integration_context().get("IncidentsDataCount", {})
     for inc in items:
-        if intCont.get(inc.get('id')) != None:
+        if intCont.get(inc.get('id')):
             demisto.debug(f"Last run incident {inc.get('id')} => "
                           f"Alert count: {intCont.get(inc.get('id'), {}).get('alertCount')} "
                           f"Event count: {intCont.get(inc.get('id'), {}).get('eventCount')}")
@@ -1380,7 +1389,7 @@ def clean_old_inc_context():
         inc_created =  arg_to_datetime(inc.get("Created", ""))
         inc_created = inc_created.replace(tzinfo=timezone.utc)
         diff = current_time - inc_created
-        if diff.days <= 24: # maximum RSA aggregation time 24 days
+        if diff.days <= MAX_TIME_MIRROR_INC: # maximum RSA aggregation time 24 days
             res[inc_id] = inc
         else:
             demisto.debug(f"Incident {inc_id} has expired => {diff.days}")
@@ -1391,7 +1400,7 @@ def clean_old_inc_context():
     demisto.setIntegrationContext(int_cont)
 
 
-def clean_secret_integration_context() -> str:
+def clean_secret_integration_context() -> dict:
     """
     Sanitize context for output purpose
     """
@@ -1461,13 +1470,10 @@ def main() -> None:
             incidents = fetch_incidents(client, params)
             demisto.incidents(incidents)
         elif command == 'get-remote-data':
-            demisto.info('########### MIRROR IN => remote-data #############')
             return_results(get_remote_data_command(client, args, params))
         elif demisto.command() == 'get-modified-remote-data':
-            demisto.info('########### MIRROR IN => modified remote data #############')
             return_results(get_modified_remote_data_command(client, args, params))
         elif command == 'update-remote-system':
-            demisto.info('########### MIRROR OUT #############')
             return_results(update_remote_system_command(client, args, params))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
