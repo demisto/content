@@ -69,6 +69,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: c91fc254-410b-425e-87b2-c69a28f65349
@@ -575,7 +576,7 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '48'
+      - "51"
       yes:
       - '45'
     separatecontext: false
@@ -597,37 +598,6 @@ tasks:
         "position": {
           "x": 900,
           "y": 3750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '48':
-    id: '48'
-    taskid: da1d7739-25a2-416b-8c41-98d80f898913
-    type: regular
-    task:
-      id: da1d7739-25a2-416b-8c41-98d80f898913
-      version: -1
-      name: Continue with the incident investigation
-      description: Continue manually with the alert investigation.
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '45'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1270,
-          "y": 3920
         }
       }
     note: false
@@ -863,10 +833,10 @@ tasks:
     continueonerrortype: ""
   '59':
     id: '59'
-    taskid: fbf6583d-dc19-4d34-84cd-2655d7e6aa29
+    taskid: cea6fc52-c615-4970-8e75-f7f951dad1ed
     type: regular
     task:
-      id: fbf6583d-dc19-4d34-84cd-2655d7e6aa29
+      id: cea6fc52-c615-4970-8e75-f7f951dad1ed
       version: -1
       name: Retrieve the suspected file
       description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
@@ -880,8 +850,7 @@ tasks:
     scriptarguments:
       endpoint_ids:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       windows_file_paths:
         complex:
           root: inputs.Path
@@ -937,6 +906,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "61":
     id: "61"
     taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
@@ -1003,10 +973,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
+    taskid: 1a0a2f79-bbc0-491c-8033-03ca361661b2
     type: playbook
     task:
-      id: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
+      id: 1a0a2f79-bbc0-491c-8033-03ca361661b2
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1034,8 +1004,7 @@ tasks:
         simple: 'False'
       EndpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       FileContainment:
         simple: 'True'
       FileHash:
@@ -1080,12 +1049,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "63":
     id: "63"
-    taskid: 461f2351-9e50-443b-8486-795bc963d33c
+    taskid: ae8b7fd8-a619-440e-8a0f-29f736962b07
     type: playbook
     task:
-      id: 461f2351-9e50-443b-8486-795bc963d33c
+      id: ae8b7fd8-a619-440e-8a0f-29f736962b07
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1121,8 +1091,7 @@ tasks:
         simple: 'True'
       agentID:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       timeRange:
         simple: 2 hours ago
     separatecontext: false
@@ -1145,12 +1114,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "64":
     id: "64"
-    taskid: f232d4e1-9457-469a-805a-2064f2f0c30e
+    taskid: 387cd1d4-5c07-4139-8ecf-0e91e678eb23
     type: playbook
     task:
-      id: f232d4e1-9457-469a-805a-2064f2f0c30e
+      id: 387cd1d4-5c07-4139-8ecf-0e91e678eb23
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1178,8 +1148,7 @@ tasks:
         simple: 'True'
       EndpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       FileContainment:
         simple: 'True'
       FileHash:
@@ -1275,12 +1244,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "65":
     id: "65"
-    taskid: d59aca07-8dd0-410e-8c3f-a971980653cf
+    taskid: 00b572f6-e0ae-4ef3-8b2b-3bb91d76984e
     type: playbook
     task:
-      id: d59aca07-8dd0-410e-8c3f-a971980653cf
+      id: 00b572f6-e0ae-4ef3-8b2b-3bb91d76984e
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1297,8 +1267,7 @@ tasks:
           root: inputs.AutoEradication
       EndpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       FilePath:
         complex:
           root: alert
@@ -1355,12 +1324,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "66":
     id: "66"
-    taskid: 32acfe19-fb1e-43f7-8302-9f695f5173cb
+    taskid: b016a74c-d983-4cf8-89ac-5cb2c29a282b
     type: playbook
     task:
-      id: 32acfe19-fb1e-43f7-8302-9f695f5173cb
+      id: b016a74c-d983-4cf8-89ac-5cb2c29a282b
       version: -1
       name: Recovery Plan
       description: |-
@@ -1382,8 +1352,7 @@ tasks:
           root: inputs.SHA256
       endpointID:
         complex:
-          root: alert
-          accessor: agentid
+          root: inputs.agentID
       releaseFile:
         simple: 'False'
       unIsolateEndpoint:
@@ -1408,6 +1377,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "67":
     id: "67"
     taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
@@ -2096,7 +2066,6 @@ view: |-
       "34_67_Yes": 0.54,
       "46_47_#default#": 0.54,
       "46_66_yes": 0.49,
-      "47_48_#default#": 0.5,
       "55_35_#default#": 0.19,
       "58_35_#default#": 0.33,
       "6_35_Blocked": 0.12,
@@ -2334,9 +2303,17 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery:
+- key: agentID
+  value:
+    complex:
+      root: alert
+      accessor: agentid
+  required: false
+  description: The agent ID's of the endpoints in the alert
+  playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Local Analysis alert Investigation - Test
 fromversion: 6.6.0
 marketplaces:
   - marketplacev2

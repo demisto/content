@@ -41,14 +41,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Handle False Positive Alerts
-* Wildfire Detonate and Analyze File
 * Ticket Management - Generic
+* Eradication Plan
+* Wildfire Detonate and Analyze File
+* Handle False Positive Alerts
+* Enrichment for Verdict
 * Endpoint Investigation Plan
 * Recovery Plan
 * Containment Plan
-* Enrichment for Verdict
-* Eradication Plan
 
 ### Integrations
 
@@ -61,11 +61,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* setParentIncidentFields
 * core-retrieve-files
+* core-report-incorrect-wildfire
 * internal-wildfire-get-report
 * core-retrieve-file-details
-* core-report-incorrect-wildfire
-* setParentIncidentFields
 * closeInvestigation
 
 ## Playbook Inputs
@@ -104,6 +104,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
 | addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. |  | Optional |
 | CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| agentID | The agent ID's of the endpoints in the alert | alert.agentid | Optional |
 
 ## Playbook Outputs
 
