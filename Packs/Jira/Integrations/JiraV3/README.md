@@ -41,24 +41,25 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
 
-Please configure only one of the following fields:
+Configure only one of the following fields:
 
-1. Cloud ID - Used for Jira Cloud instance.
-2. OnPrem - Leave the Cloud ID empty, and fill in the rest of the fields.
+- Cloud ID - Used for Jira Cloud instance.
+- OnPrem - Leave the Cloud ID empty, and fill in the rest of the fields.
 
 ##### Cloud ID
 
-Go to your [Admin page](https://admin.atlassian.com/), click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
+1. Go to your [Admin page](https://admin.atlassian.com/).
+2. Click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
 `https://admin.atlassian.com/s/{cloud_id}/users`
 
 ## Authentication
 ### Basic Authentication
 Leave the *Client ID* and *Client Secret* fields empty and fill in the following fields:
-- *User name* - enter the your user email
-- *API key* - enter the API token, to generate API token see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
+- *User name* -Enter your user email.
+- *API key* - Enter the API token. To generate API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
 ##### Basic Authentication permissions
-Ensure that you possess the necessary permissions by navigating to **Project Settings** -> **Permissions** in the project.
+Ensure that you possess the necessary permissions by navigating to **Project Settings** > **Permissions** in the project.
 Locate permissions for the tasks listed below:
 * Browse projects
 * Create issues
@@ -72,7 +73,7 @@ Locate permissions for the tasks listed below:
 
 
 ### OAuth 2.0
-For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
 
 #### Cloud authentication
 
