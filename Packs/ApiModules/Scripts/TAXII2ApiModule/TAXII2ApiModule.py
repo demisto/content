@@ -625,7 +625,8 @@ class Taxii2FeedClient:
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object)
         report['relationships'] = relationships
-        fields['Report Object References'] = [{'objectstixid': obj_refs_excluding_relationships_prefix}]
+        if obj_refs_excluding_relationships_prefix:
+            fields['Report Object References'] = [{'objectstixid': obj_refs_excluding_relationships_prefix}]
         report["fields"] = fields
         return [report]
 
