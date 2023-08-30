@@ -2592,37 +2592,34 @@ def list_channels():
                 channels = [channel]
                 break
         else:
-            return_error(f"No channel found with name: {name_filter}")
+            raise DemistoException(f'No channel found with name: {name_filter}')
     else:
         channels = raw_response['channels']
     # Force list for consistent parsing
     if isinstance(channels, dict):
         channels = [channels]
     context = []  # type: List
-    if isinstance(channels, list):
-        context = []
-        for channel in channels:
-            entry = {
-                'ID': channel.get('id'),
-                'Name': channel.get('name'),
-                'Created': channel.get('created'),
-                'Purpose': channel.get('purpose', {}).get('value')
-            }
-
-            if channel.get('creator'):
-                creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
-                                                                   body={'user': channel.get('creator')})
-                entry['Creator'] = creator_details_response['user']['name']
-            context.append(entry)
-        readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': channels,
-            'EntryContext': {'Slack.Channels': context},
-            'ContentsFormat': formats['json'],
-            'HumanReadable': readable_output,
-            'ReadableContentsFormat': formats['markdown']
-        })
+    for channel in channels:
+        entry = {
+            'ID': channel.get('id'),
+            'Name': channel.get('name'),
+            'Created': channel.get('created'),
+            'Purpose': channel.get('purpose', {}).get('value')
+        }
+        if channel.get('creator'):
+            creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
+                                                               body={'user': channel.get('creator')})
+            entry['Creator'] = creator_details_response['user']['name']
+        context.append(entry)
+    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': channels,
+        'EntryContext': {'Slack.Channels': context},
+        'ContentsFormat': formats['json'],
+        'HumanReadable': readable_output,
+        'ReadableContentsFormat': formats['markdown']
+    })
 
 
 def conversation_history():
@@ -2642,47 +2639,48 @@ def conversation_history():
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
     messages = raw_response.get('messages', '')
     if not raw_response.get('ok'):
-        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response)
+        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}',
+                               res=raw_response)
     if isinstance(messages, dict):
         messages = [messages]
-    if isinstance(messages, list):
-        context = []  # type: List
-        for message in messages:
-            thread_ts = 'N/A'
-            has_replies = 'No'
-            name = 'N/A'
-            full_name = 'N/A'
-            if 'subtype' not in message:
-                user_id = message.get('user')
-                user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
-                                                                body={'user': user_id})
-                user_details = user_details_response.get('user')
-                full_name = user_details.get('real_name')
-                name = user_details.get('name')
-                if 'thread_ts' in message:
-                    thread_ts = message.get('thread_ts')
-                    has_replies = 'Yes'
-            elif 'thread_ts' in message:
+    if not isinstance(messages, list):
+        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}',
+                               res=raw_response)
+    context = []  # type: List
+    for message in messages:
+        thread_ts = 'N/A'
+        has_replies = 'No'
+        name = 'N/A'
+        full_name = 'N/A'
+        if 'subtype' not in message:
+            user_id = message.get('user')
+            user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET",
+                                                            body={'user': user_id})
+            user_details = user_details_response.get('user')
+            full_name = user_details.get('real_name')
+            name = user_details.get('name')
+            if 'thread_ts' in message:
                 thread_ts = message.get('thread_ts')
                 has_replies = 'Yes'
-                full_name = message.get('username')
-                name = message.get('username')
-                thread_ts = message.get('thread_ts')
-                has_replies = 'Yes'
-            entry = {
-                'Type': message.get('type'),
-                'Text': message.get('text'),
-                'UserId': message.get('user'),
-                'Name': name,
-                'FullName': full_name,
-                'TimeStamp': message.get('ts'),
-                'HasReplies': has_replies,
-                'ThreadTimeStamp': thread_ts
-            }
-            context.append(entry)
-        readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
-    else:
-        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response)
+        elif 'thread_ts' in message:
+            thread_ts = message.get('thread_ts')
+            has_replies = 'Yes'
+            full_name = message.get('username')
+            name = message.get('username')
+            thread_ts = message.get('thread_ts')
+            has_replies = 'Yes'
+        entry = {
+            'Type': message.get('type'),
+            'Text': message.get('text'),
+            'UserId': message.get('user'),
+            'Name': name,
+            'FullName': full_name,
+            'TimeStamp': message.get('ts'),
+            'HasReplies': has_replies,
+            'ThreadTimeStamp': thread_ts
+        }
+        context.append(entry)
+    readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
@@ -2714,37 +2712,35 @@ def conversation_replies():
         return_error(f'An error occurred while listing conversation replies: {error}')
     if isinstance(messages, dict):
         messages = [messages]
-    if isinstance(messages, list):
-        for message in messages:
-            reply_count = 'No'
-            name = 'N/A'
-            full_name = 'N/A'
-            if 'subtype' not in message:
-                user_id = message.get('user')
-                body = {
-                    'user': user_id
-                }
-                user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-                user_details = user_details_response.get('user')
-                name = user_details.get('name')
-                full_name = user_details.get('real_name')
-            if 'reply_count' in message:
-                reply_count = 'Yes'
-            entry = {
-                'Type': message.get('type'),
-                'Text': message.get('text'),
-                'UserId': message.get('user'),
-                'Name': name,
-                'FullName': full_name,
-                'TimeStamp': message.get('ts'),
-                'ThreadTimeStamp': message.get('thread_ts'),
-                'IsParent': reply_count
+    if not isinstance(messages, list):
+        raise DemistoException(f'An error occurred while listing conversation replies: {raw_response.get("error")}')
+    for message in messages:
+        reply_count = 'No'
+        name = 'N/A'
+        full_name = 'N/A'
+        if 'subtype' not in message:
+            user_id = message.get('user')
+            body = {
+                'user': user_id
             }
-            context.append(entry)
-        readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
-    else:
-        error = raw_response.get('error')
-        return_error(f'An error occurred while listing conversation replies: {error}')
+            user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+            user_details = user_details_response.get('user')
+            name = user_details.get('name')
+            full_name = user_details.get('real_name')
+        if 'reply_count' in message:
+            reply_count = 'Yes'
+        entry = {
+            'Type': message.get('type'),
+            'Text': message.get('text'),
+            'UserId': message.get('user'),
+            'Name': name,
+            'FullName': full_name,
+            'TimeStamp': message.get('ts'),
+            'ThreadTimeStamp': message.get('thread_ts'),
+            'IsParent': reply_count
+        }
+        context.append(entry)
+    readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
