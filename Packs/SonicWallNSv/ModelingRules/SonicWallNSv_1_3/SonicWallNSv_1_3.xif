@@ -28,6 +28,7 @@ xdm.target.url=arrayindex(regextract(_raw_log,"dstname\=([^=]+)[\s|\"]"),0),
 xdm.event.outcome_reason=arrayindex(regextract(_raw_log,"code\=([^=]+)[\s|\"]"),0),
 xdm.network.http.referrer=arrayindex(regextract(_raw_log,"referer\=([^=]+)[\s|\"]"),0),
 xdm.target.file.filename=arrayindex(regextract(_raw_log,"fileid\=([^=]+)[\s|\"]"),0),
+xdm.source.user.username=arrayindex(regextract(_raw_log,"\susr\=\"([\w\.\-\@]+)\"\s"),0),
 xdm.alert.original_threat_id=arrayindex(regextract(_raw_log,"sid\=([^=]+)[\s|\"]"),0),
 xdm.alert.subcategory=arrayindex(regextract(_raw_log,"ipscat\=([^=]+)[\s|\"]"),0),
 xdm.alert.severity=arrayindex(regextract(_raw_log,"ipspri\=([^=]+)[\s|\"]"),0);
