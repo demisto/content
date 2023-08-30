@@ -172,6 +172,54 @@ class Client(BaseClient):
 
         return response
 
+    def get_a_list_of_vendors_request(self, page_size, page_number):
+        params = assign_params(pageSize=page_size, pageNumber=page_number)
+
+        headers = self._headers
+
+        response = self.http_request("get", "vendors",params=params, headers=headers)
+
+        return response
+
+    def get_the_details_of_a_specific_vendor_request(self, vendorDomain):
+        headers = self._headers
+
+        response = self._http_request("get", f"vendors/{vendorDomain}/details", headers=headers)
+
+        return response
+
+    def get_the_activity_of_a_specific_vendor_request(self, vendorDomain):
+        headers = self._headers
+
+        response = self._http_request("get", f"vendors/{vendorDomain}/activity", headers=headers)
+
+        return response
+
+    def get_a_list_of_vendor_cases_request(self, filter_, page_size, page_number):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number)
+
+        headers = self._headers
+
+        response = self.http_request("get", "vendor-cases",params=params, headers=headers)
+
+        return response
+
+    def get_the_details_of_a_vendor_case_request(self, caseId):
+        headers = self._headers
+
+        response = self.http_request("get", f"vendor-cases/{caseId}", headers=headers)
+
+        return response
+
+    def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(self, start, end):
+        params = assign_params(start=start, end=end)
+
+        headers = self._headers
+
+        response = self.http_request("get", "abuse_mailbox/not_analyzed",params=params, headers=headers)
+
+        return response
+
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
     case_id = str(args.get('case_id', ''))
@@ -528,6 +576,88 @@ def submit_false_positive_report_command(client, args):
 
     return command_results
 
+def get_a_list_of_vendors_command(client, args):
+  page_size = str(args.get('page_size', ''))
+  page_number = str(args.get('page_number', ''))
+  response = client.get_a_list_of_vendors_request(page_size, page_number)
+
+  command_results = CommandResults(
+    outputs_prefix='AbnormalSecurity.VendorsList', outputs_key_field='vendorDomain', outputs=response, raw_response=response
+  )
+
+  return command_results
+
+
+def get_the_details_of_a_specific_vendor_command(client, args):
+  vendorDomain = str(args.get('vendor_domain', ''))
+
+  response = client.get_the_details_of_a_specific_vendor_request(vendorDomain)
+  command_results = CommandResults(
+    outputs_prefix='AbnormalSecurity.VendorDetails',
+    outputs_key_field='vendorDomain',
+    outputs=response,
+    raw_response=response,
+  )
+
+  return command_results
+
+
+def get_the_activity_of_a_specific_vendor_command(client, args):
+  vendorDomain = str(args.get('vendor_domain', ''))
+
+  response = client.get_the_activity_of_a_specific_vendor_request(vendorDomain)
+  command_results = CommandResults(
+      outputs_prefix='AbnormalSecurity.VendorActivity',
+      outputs_key_field="",
+    outputs=response,
+    raw_response=response,
+  )
+
+  return command_results
+
+
+def get_a_list_of_vendor_cases_command(client, args):
+  filter_ = str(args.get('filter', ''))
+  page_size = str(args.get('page_size', ''))
+  page_number = str(args.get('page_number', ''))
+
+  response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
+
+  command_results = CommandResults(
+    outputs_prefix='AbnormalSecurity.VendorCases',
+ outputs_key_field="vendorCaseId", outputs=response, raw_response=response
+  )
+
+  return command_results
+
+
+def get_the_details_of_a_vendor_case_command(client, args):
+  case_id= str(args.get('case_id', ''))
+
+  response = client.get_the_details_of_a_vendor_case_request(case_id)
+  command_results = CommandResults(
+      outputs_prefix='AbnormalSecurity.VendorCaseDetails',
+      outputs_key_field='vendorCaseId',
+    outputs=response,
+    raw_response=response,
+  )
+
+  return command_results
+
+
+def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
+  start = str(args.get('start', ''))
+  end = str(args.get('end', ''))
+
+  response = client.get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(start, end)
+
+  command_results = CommandResults(
+      outputs_prefix='AbnormalSecurity.UnanalyzedAbuseCampaigns',
+      outputs_key_field='abx_message_id', outputs=response, raw_response=response
+  )
+
+  return command_results
+
 
 def test_module(client):
     # Run a sample request to retrieve mock data
@@ -582,6 +712,8 @@ def main():
             # Abuse Mailbox commands
             'abnormal-security-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
             'abnormal-security-get-abuse-mailbox-campaign': get_details_of_an_abuse_mailbox_campaign_command,
+            "abnormal-security-list-unanalyzed-abuse-mailbox-campaigns":
+                get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command,
 
             # Employee commands
             'abnormal-security-get-employee-identity-analysis': get_employee_identity_analysis_genome_data_command,
@@ -596,6 +728,21 @@ def main():
                 submit_false_negative_report_command,
             'abnormal-security-submit-false-positive-report':
                 submit_false_positive_report_command,
+
+            # Vendor commands
+            "abnormal-security-list-vendors":
+                get_a_list_of_vendors_command,
+            "abnormal-security-get-vendor-details":
+                get_the_details_of_a_specific_vendor_command,
+            "abnormal-security-get-vendor-activity":
+                get_the_activity_of_a_specific_vendor_command,
+
+            #Vendor Case commands
+            "abnormal-security-list-vendor-cases":
+                get_a_list_of_vendor_cases_command,
+            "abnormal-security-get-vendor-case-details":
+                get_the_details_of_a_vendor_case_command,
+
         }
 
         if command == 'test-module':

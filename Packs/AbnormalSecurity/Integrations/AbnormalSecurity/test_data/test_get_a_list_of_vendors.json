@@ -1,0 +1,15 @@
+{
+    "vendors": [
+        {
+            "vendorDomain": "test-domain-1.com"
+        },
+        {
+            "vendorDomain": "test-domain-2.com"
+        },
+        {
+            "vendorDomain": "test-domain-2.com"
+        }
+    ],
+    "pageNumber": 1,
+    "nextPageNumber": 2
+}
