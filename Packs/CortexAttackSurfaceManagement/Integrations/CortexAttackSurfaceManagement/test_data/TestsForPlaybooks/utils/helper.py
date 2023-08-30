@@ -80,7 +80,7 @@ def load_yaml_file(file_path: str):
 
     Returns:
         Any: returns a dictionary representation of the yaml file given.
-    """    
+    """
     with open(file_path, "r") as file:
         data = yaml.safe_load(file)
     return data
