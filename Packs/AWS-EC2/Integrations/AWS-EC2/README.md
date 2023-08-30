@@ -316,11 +316,11 @@ Describes your IAM instance profile associations.
         "EC2": {
             "IamInstanceProfileAssociations": [
                 {
-                    "AssociationId": "iip-assoc-00703b768cac5f379",
-                    "InstanceId": "i-0b2ac6221e4803e7d",
+                    "AssociationId": "association1",
+                    "InstanceId": "instance1",
                     "IamInstanceProfile": {
-                        "Arn": "arn:aws:iam::664798938958:instance-profile/eks-9cc37c80-4a5a-5fef-3819-0f97cab9a721",
-                        "Id": "AIPAZVSI2Y5HGZPSEDD3Q"
+                        "Arn": "arn:aws:iam::000000000000:instance-profile/eks-00000000-0000-0000-0000-00000000",
+                        "Id": "AAAAA"
                     },
                     "State": "associated"
                 },
@@ -328,8 +328,8 @@ Describes your IAM instance profile associations.
                     "AssociationId": "iip-assoc-0fdeba1a2861d2580", 
                     "InstanceId": "i-06bab8afb71d19fea",
                     "IamInstanceProfile": {
-                        "Arn": "arn:aws:iam::664798938958:instance-profile/eks-acc39684-414f-e424-a929-d1732a674339",
-                        "Id": "AIPAZVSI2Y5HJ3WGJF57M"
+                        "Arn": "arn:aws:iam::000000000000:instance-profile/eks-00000000-0000-0000-0000-00000001",
+                        "Id": "CCCCC"
                     }, 
                     "State": "associated"
                 }
