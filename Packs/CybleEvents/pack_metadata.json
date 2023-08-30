@@ -16,7 +16,10 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "CommonScripts": {}
+        "CommonScripts": {
+            "mandatory": false,
+            "display_name": "Common Scripts"
+        }
     },
     "marketplaces": [
         "xsoar",
