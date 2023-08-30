@@ -15,6 +15,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - display: Number of events to fetch per type
   name: max_fetch
   additionalinfo: The maximum number of events to fetch per event type.
@@ -24,9 +25,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
 - display: Event types to fetch
   name: event_types_to_fetch
   section: Collect
@@ -50,7 +53,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The date from which to fetch events. the format should be YYYY-MM-DD, if not specified, the current date will be used.
+    - description: The date from which to fetch events. the format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS, if not specified, the current date will be used.
       name: from_date
       required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.

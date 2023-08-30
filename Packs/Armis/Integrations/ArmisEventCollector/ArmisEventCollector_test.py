@@ -20,7 +20,8 @@ class TestClientFunctions:
         When:
             - Fetching events.
         Then:
-            - Send the HTTP request with valid parameters.
+            - Make sure the request is sent with right parameters.
+            - Make sure the pagination logic performs as expected.
         """
         first_response = {'data': {'next': 1, 'results': [{
             'unique_id': '1',

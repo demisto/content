@@ -72,7 +72,9 @@ class Client(BaseClient):
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
-        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list
+        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
+        # The response's 'next' attribute carries the index to start the next request in the
+        # pagination (using the 'from' request parameter), or null if there are no more pages left.
         while (next := raw_response.get('data', '').get('next')) and (len(results) < max_fetch):
             if next < max_fetch:
                 params['length'] = max_fetch - next
@@ -184,6 +186,18 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
 
 
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):
+    """Calculate if two datetime objects are equal up to the seconds value.
+        Even though the 'time' attribute of each event has milliseconds,
+        the API request supports time filtering of only up to seconds.
+        There for, all events with the same time up to a seconds are considered to have the same time.
+
+    Args:
+        x (datetime): First datetime.
+        y (datetime): Second datetime.
+
+    Returns:
+        Boolean: True if both datetime objects have the same time up to seconds, False otherwise.
+    """
     return (x.year == y.year) and (x.month == y.month) and (x.day == y.day)\
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
@@ -239,7 +253,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     else:
         demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
         # Note that the following timestamps comparison are made between strings and assume
-        # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.000000+00:00"
+        # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
         latest_event_timestamp = events[-1].get('time', '')[:19]
         events_with_identical_latest_time = list(
             itertools.takewhile(lambda x: x.get('time', '')[:19] == latest_event_timestamp, reversed(events)))
