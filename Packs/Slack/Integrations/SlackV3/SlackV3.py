@@ -2642,7 +2642,7 @@ def conversation_history():
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
     messages = raw_response.get('messages', '')
     if not raw_response.get('ok'):
-        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}')
+        raise DemistoException(f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response)
     if isinstance(messages, dict):
         messages = [messages]
     if isinstance(messages, list):
