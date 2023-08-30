@@ -2,7 +2,7 @@ The Microsoft Management Activity API integration enables you to subscribe or un
 
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events).
 
-## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
+## Grant Cortex XSOAR Authorization in Microsoft Management Activity API Test
 To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
 
 1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
