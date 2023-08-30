@@ -95,7 +95,6 @@ class NoSuchEntityException(BaseException):
     pass
 
 
-
 @pytest.mark.parametrize('args, res', PAGINATION_CHECK)
 def test_list_user_policies(mocker, args, res):
     """
