@@ -1052,7 +1052,7 @@ def list_attached_role_policies_command(args: dict, client) -> list[CommandResul
     ):  # optional keys, renaming to match AWS API
         if (value := args.get(demisto_key)) is not None:
             aws_args[aws_key] = value
-    
+
     if (max_itmes := aws_args.get("MaxItems")) is not None:
         aws_args["MaxItems"] = int(max_itmes)
     try:
@@ -1082,8 +1082,10 @@ def list_attached_role_policies_command(args: dict, client) -> list[CommandResul
             raw_response=raw_response,
             outputs=query_outputs,
             outputs_prefix="AWS.IAM.Roles.AttachedPolicies.Query",
-            readable_output=f"Listed {len(policies)} attached policies for role {role_name}" if not raw_response.get("IsTruncated")
-            else f"Listed {len(policies)} role policies but more are available. Either increase the `maxItems` argument, or use `marker` argument with the value from context."
+            readable_output=f"Listed {len(policies)} attached policies for role {role_name}"
+            if not raw_response.get("IsTruncated")
+            else (f"Listed {len(policies)} role policies but more are available. "
+                  "Either increase the `maxItems` argument, or use `marker` argument with the value from context.")
         )
     ]
 

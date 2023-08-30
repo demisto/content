@@ -476,9 +476,9 @@ def test_get_user_not_found_user_exception(mocker):
 @pytest.mark.parametrize("is_truncated,expeted_second_output,expected_marker",
                          (pytest.param(True, (
                              "Listed 2 role policies but more are available. "
-                             "Either increase the `limit` argument, or use `marker` argument with the value from context."
+                             "Either increase the `maxItems` argument, or use `marker` argument with the value from context."
                          ), 'some_marker', id="truncated",),
-                         pytest.param(False, "Listed 2 attached policies for role test-role", None, id="not truncated")))
+                             pytest.param(False, "Listed 2 attached policies for role test-role", None, id="not truncated")))
 def test_list_attached_role_policies(mocker, is_truncated: bool, expeted_second_output: str, expected_marker: str | None) -> None:
     """
     Given:
