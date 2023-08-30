@@ -29,17 +29,23 @@ clone_repository_with_fallback_branch() {
   local retry_count=$4
   local sleep_time=${5:-10}  # default sleep time is 10 seconds.
 
-  git ls-remote --exit-code --quiet --heads "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1 && branch_exists=0 || branch_exists=$?
+  # Check if branch exists in the repository.
+  git ls-remote --exit-code --quiet --heads "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+  local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
+    echo "Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}"
+    local exit_code=1
+  else
     clone_repository "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
-  else
-    local exit_code=1
+    if [ "${exit_code}" -ne 0 ]; then
+      echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}"
+    fi
   fi
   if [ "${exit_code}" -ne 0 ]; then
-    # Failed to clone with branch, try again with fallback_branch.
-    echo "Failed to clone ${repo_name} with branch ${branch}, exit code:${exit_code}, trying to clone with branch ${fallback_branch}!"
+    # Trying to clone from fallback branch.
+    echo "Trying to clone repository:${repo_name} with branch ${fallback_branch}!"
     clone_repository "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
@@ -58,7 +64,7 @@ clone_repository_with_fallback_branch() {
 # Replace slashes '/' in the branch name with underscores '_'.
 UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH//\//_}
 
-echo "Getting conf from branch ${UNDERSCORE_BRANCH} (With fallback to master)"
+echo "Getting conf from branch ${UNDERSCORE_BRANCH} (${CI_COMMIT_BRANCH}), With fallback to master"
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
