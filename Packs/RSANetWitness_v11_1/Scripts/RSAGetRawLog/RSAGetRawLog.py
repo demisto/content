@@ -95,7 +95,7 @@ def main():
     rsa_nb_meta = 1
     rsa_metas = inc.get("CustomFields").get("metasevents", [])
     # check in case we forgot to set XSOAR parameter right
-    if rsa_alerts is None:
+    if not rsa_alerts:
         return_results(CommandResults(readable_output="No alert/event found in this incident."))
 
     id_set_alerts = create_id_set(rsa_alerts)
@@ -119,7 +119,7 @@ def main():
             concentrator_port = f"5010{res[1][-1]}"
             try:
                 raw_log = get_raw_log(session, concentrator_ip, concentrator_port)
-                if raw_log is not None and len(raw_log) >= 1:
+                if raw_log and len(raw_log) >= 1:
                     rsa_rawlogs.append({
                         "date": alert["created"],
                         "id": alert["id"],

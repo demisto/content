@@ -86,21 +86,26 @@ To setup the mirroring follow these instructions:
 1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for **RSANetWitness v11.5** and select your integration instance.
 3. Enable **Fetches incidents**.
-4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+4. To ensure that fetch incidents works:
+   1. Select the **Fetches incidents** radio button.
+   2. Under **Incident type**, select NetWitness Incident.
+5. To ensure that mirroring works, ensure that fetch incidents works and then:
+   1. Under **Mapper (incoming)**, select RSA NetWitness v11.5 - incoming mapper.
+6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in RSA Netwitness incidents will be reflected in XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents will be reflected in RSA Netwitness incidents (`status`).
     - Incoming And Outgoing - Changes in XSOAR incidents and RSA Netwitness incidents will be reflected in both directions.
     - None - Turns off incident mirroring.
-5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident  is closed in RSA Netwitness.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident  is closed in RSA Netwitness.
 
 Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
 **Important Notes**
 
-- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and RSA Netwitness.
 - When *mirroring in* incidents from RSA Netwitness to Cortex XSOAR:
   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in RSA Netwitness that determines whether the incident was closed is the `status` field.
-- Journal entry and task are currently not mirror
+- Journal entry, task and assignee are currently not mirror
+- Because of the implementation of RSA API (you can get 1 incident by id or every incidents using a date), incidents are mirror for 24 days
 
 ## Commands
 

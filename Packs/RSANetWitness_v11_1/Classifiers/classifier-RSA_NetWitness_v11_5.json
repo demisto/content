@@ -60,6 +60,9 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
                 "occurred": {
                     "simple": "created"
                 },
