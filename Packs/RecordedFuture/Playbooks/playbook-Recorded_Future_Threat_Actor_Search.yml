@@ -1,7 +1,6 @@
 id: Recorded Future - Threat Actor Search
 version: -1
 description: Template playbook to initiate an Automated Threat Hunt based on the Threat Map in Recorded Future. The Playbook fetches links related to the Threat Actors part of the Threat Map from Recorded Future and launches a hunt in the SIEM for any detections within the environment.
-vcShouldKeepItemLegacyProdMachine: false
 name: Recorded Future - Threat Actor Search
 starttaskid: "0"
 tasks:
@@ -751,4 +750,4 @@ inputs:
   description: The threat actor to enrich & hunt indicators for.
   playbookInputQuery:
 outputs: []
-sourceplaybookid: 92a59bb9-bad5-47ac-8163-ceca424539eb
+fromversion: 6.9.0
