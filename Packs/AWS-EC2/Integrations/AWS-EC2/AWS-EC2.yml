@@ -398,7 +398,7 @@ script:
         description: The ID of the instance profile.
         type: string
       - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
-        description: The state of the association
+        description: The state of the association.
         type: string
       - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
         description: The ID of the instance.
