@@ -45,9 +45,13 @@ if ! DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk modeling-rules test --help 
   MODELING_RULES_RESULTS_ARG=(" --junit-path" "${MODELING_RULES_RESULTS_FILE_NAME}")
   echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS_FILE_NAME}"
 else
-  echo "Testing Modeling Rules - demisto-sdk version is too old, skipping junit report generation"
+  echo "Testing Modeling Rules - demisto-sdk version is too old, creating empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   MODELING_RULES_RESULTS_ARG=()
   MODELING_RULES_RESULTS_FILE_NAME=""
+  cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites />
+EOF
 fi
 
 demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" \
