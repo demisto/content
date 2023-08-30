@@ -41,11 +41,11 @@ configuration:
     name: incidentType
     type: 13
     required: false
-  - display: Custom Alert Table name(If not provided, 'siem.logtrust.alert.info' will be used.)
+  - display: Custom Alert Table name(if not provided, 'siem.logtrust.alert.info' will be used)
     name: table_name
     type: 0
     required: false
-  - display: Custom Alert Table prefix (Provide prefix if custom table name provided.)
+  - display: Custom Alert Table prefix (provide prefix if custom table name provided)
     name: prefix
     type: 0
     required: false
@@ -58,7 +58,7 @@ configuration:
     type: 0
     required: false
     hidden: true
-  - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
+  - display: Fetch Incident Limit(must be between 10 and 100; advisable 50 for better performance.)
     name: fetch_incidents_limit
     type: 0
     required: false
@@ -81,12 +81,12 @@ configuration:
     name: proxy
     type: 8
     required: false
-  - display: Fetch Incidents Lookback Time (in seconds). (Should be between 3600 (1 hour) to 86400 (24 hours).)
+  - display: Fetch Incidents Lookback Time (in seconds). Must be between 3600 (1 hour; default) to 86400 (24 hours).
     name: fetch_incidents_lookback_seconds
     type: 0
     required: false
     defaultvalue: "3600"
-  - display: Fetch Incident Time Frame (Should be in seconds)
+  - display: Fetch Incident Time Frame (in seconds)
     name: fetch_incidents_window
     type: 0
     required: false
