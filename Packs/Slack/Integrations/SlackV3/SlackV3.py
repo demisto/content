@@ -2586,8 +2586,7 @@ def list_channels():
     raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
     # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
     # Supports a single channel name
-    name_filter = args.get('name_filter')
-    if name_filter:
+    if name_filter := args.get('name_filter'):
         for channel in raw_response['channels']:
             if channel['name'] == name_filter:
                 channels = [channel]
