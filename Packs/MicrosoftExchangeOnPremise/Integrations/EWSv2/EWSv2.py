@@ -536,10 +536,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-            exchangelib.items.DistributionList,
-            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+                exchangelib.items.DistributionList,
+                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -1256,7 +1256,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                        and header.name != 'Content-Type':
+                                       and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -2154,8 +2154,7 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                 v = ' '.join(map(str.strip, v.split('\r\n')))
                 attached_email_headers.append((h, v))
             for header in item.headers:
-                if (header.name, header.value) not in attached_email_headers \
-                    and header.name != 'Content-Type':
+                if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
@@ -2418,8 +2417,7 @@ def sub_main():  # pragma: no cover
         error_message = ""
 
         # Office365 regular maintenance case
-        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)) \
-            and 'outlook.office365.com' in EWS_SERVER:
+        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)) and 'outlook.office365.com' in EWS_SERVER:
             log_message = "Office365 is undergoing load balancing operations. " \
                           "As a result, the service is temporarily unavailable."
             if demisto.command() == 'fetch-incidents':

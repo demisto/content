@@ -383,7 +383,7 @@ def test_send_mail_with_from_arg(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email({'to': "test@gmail.com", 'subject' : "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
