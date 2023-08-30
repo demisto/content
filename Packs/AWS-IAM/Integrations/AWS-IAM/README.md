@@ -1944,8 +1944,13 @@ List all managed policies that are attached to the specified IAM role.
                 "AttachedPolicies": {
                     "Policies": [
                         {
-                            "PolicyArn": "arn:aws:iam::000000000000:policy/my-role-arn",
+                            "PolicyArn": "arn:aws:iam::000000000000:policy/my-policy",
                             "PolicyName": "my-policy-name",
+                            "RoleName": "myRoleName"
+                        },
+                        {
+                            "PolicyArn": "arn:aws:iam::000000000001:policy/my-other-policy",
+                            "PolicyName": "my-other-policy-name",
                             "RoleName": "myRoleName"
                         }
                     ],
@@ -1965,10 +1970,8 @@ List all managed policies that are attached to the specified IAM role.
 ### Attached Policies for Role myRoleName
 |PolicyArn|PolicyName|RoleName|
 |---|---|---|
-| arn:aws:iam::000000000000:policy/my-role-arn | my-policy-name | myRoleName |
+| arn:aws:iam::000000000000:policy/my-policy | my-policy-name | myRoleName |
+| arn:aws:iam::000000000001:policy/my-other-policy | my-other-policy-name | myRoleName |
 
 
->|IsTruncated|
->|---|
->| false |
-
+Listed 2 attached policies for role test-role

@@ -473,7 +473,13 @@ def test_get_user_not_found_user_exception(mocker):
     assert 'User userName was not found.' in contents.get('HumanReadable')
 
 
-def test_list_attached_role_policies(mocker):
+@pytest.mark.parametrize("is_truncated,expeted_second_output,expected_marker",
+                         (pytest.param(True, (
+                             "Listed 2 role policies but more are available. "
+                             "Either increase the `limit` argument, or use `marker` argument with the value from context."
+                         ), 'some_marker', id="truncated",),
+                         pytest.param(False, "Listed 2 attached policies for role test-role", None, id="not truncated")))
+def test_list_attached_role_policies(mocker, is_truncated: bool, expeted_second_output: str, expected_marker: str | None) -> None:
     """
     Given:
         args = {'roleName': 'test-role'}.
@@ -488,9 +494,10 @@ def test_list_attached_role_policies(mocker):
     response = {
         'AttachedPolicies': [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1'},
                              {'PolicyName': 'policy2', 'PolicyArn': 'Arn2'}],
-        'IsTruncated': True,
-        'Marker': 'some_marker'
+        'IsTruncated': is_truncated,
     }
+    if is_truncated:
+        response['Marker'] = expected_marker
 
     client = Boto3Client()
     mocker.patch.object(client, "list_attached_role_policies", return_value=response)
@@ -505,7 +512,7 @@ def test_list_attached_role_policies(mocker):
                                          '|---|---|---|\n| Arn1 | policy1 | test-role |\n| Arn2 | policy2 | test-role |\n')
     assert result[0].raw_response == response
 
-    assert result[1].outputs == {'IsTruncated': True, 'Marker': 'some_marker'}
+    assert result[1].outputs['IsTruncated'] is is_truncated
+    assert result[1].outputs.get('Marker') == expected_marker
     assert result[1].raw_response == response
-    assert result[1].readable_output == ("### Attached Policies Query for test-role\n|IsTruncated|Marker|\n|---|---|\n| "
-                                         "true | some_marker |\n")
+    assert result[1].readable_output == expeted_second_output
