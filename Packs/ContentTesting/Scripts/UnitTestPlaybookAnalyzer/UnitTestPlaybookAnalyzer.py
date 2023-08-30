@@ -142,11 +142,8 @@ def main():
         spb = demisto.args()['subplaybook'].strip()
         firstday = demisto.args()['firstday'].strip()
         lastday = demisto.args()['lastday'].strip()
-        maxinc = demisto.args()['maxinc'].strip()
-        if maxinc == "":
-            maxcount = 50
-        else:
-            maxcount = int(maxinc)
+        maxinc = (demisto.args().get('maxinc') or "").strip() or 50
+        maxcount = arg_to_number(maxinc)
         taskstats, count = GetTaskStats(pb, spb, firstday, lastday, maxcount)
         demisto.setContext("PlaybookStatistics", json.dumps(taskstats))
         smarkdown = SummaryMarkdown(pb, spb, firstday, lastday, count)
