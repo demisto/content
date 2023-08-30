@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -971,10 +972,10 @@ def test_execute_raw_query(mocker):
 
 
 @pytest.mark.parametrize('datetime_format, expected', [
-    ('YYYY-MM-DD HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('yyyy-MM-dd HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('yyyy-MM-DD HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('YYYY-MM-dd HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('YYYY-MM-DDTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('yyyy-MM-ddTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('yyyy-MM-DDTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('YYYY-MM-ddTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
     ('yy-MM-DD HH:mm:ss', 'YY-MM-DD HH:mm:ss'),
     ('YYYY-MM-d HH:mm:ss', 'YYYY-MM-d HH:mm:ss'),
 ])
@@ -989,34 +990,29 @@ def test_prepare_datetime_format(datetime_format, expected):
     Then
         - Make sure that the returned format is as expected.
         - Make sure that the result of converting a datetime object with Arrow format function using the returned
-        datetime format does not contain any alphabetic character.
+        datetime format does not contain any alphabetic character (except `T`).
     """
     formatted_datetime = Elasticsearch_v2.prepare_datetime_format(datetime_format)
     assert formatted_datetime == expected
-    assert not any(c.isalpha() for c in arrow.get(datetime.now()).format(formatted_datetime))
+    assert not any(c.replace('T', '').isalpha() for c in arrow.get(datetime.now()).format(formatted_datetime))
 
 
 class MockES:
     class MockIndices:
         @staticmethod
         def get_mapping(index):
-            return {
-                'my_index': {
-                    'mappings': {
-                        'properties': {
-                            'created_at': {
-                                'type': 'date',
-                                'format': 'yyyy-MM-dd HH:mm:ss'
-                            }
-                        }
-                    }
-                }
-            }
+            with open('test_data/mapping.json') as f:
+                data = json.load(f)
+            return data['mapping_without_date_time_format'] if index == 'default' else data['mapping_with_date_time_format']
 
     indices = MockIndices
 
 
-def test_get_datetime_field_format():
+@pytest.mark.parametrize('index, expected_format', [
+    ('default', 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+    ('custom', 'yyyy-MM-dd HH:mm:ss'),
+])
+def test_get_datetime_field_format_default_format(index, expected_format):
     """
     Given
       - An ES object.
@@ -1030,7 +1026,7 @@ def test_get_datetime_field_format():
         - Make sure that the returned field format is as expected.
     """
     es = MockES
-    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'yyyy-MM-dd HH:mm:ss'
+    assert Elasticsearch_v2.get_datetime_field_format(es, index, 'created_at') == expected_format
 
 
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
@@ -1038,7 +1034,7 @@ def test_get_datetime_field_format():
     ('123456', 'Timestamp-Milliseconds', '', 123456),
     ('123456', 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, 123456),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD', '2023-07-01'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, '2023-07-01 00:00:00'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, '2023-07-01T00:00:00.000+0000'),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
     (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ssZ', '2023-07-01 02:30:00+0000'),
