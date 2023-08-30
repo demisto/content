@@ -1,4 +1,3 @@
-from __future__ import annotations
 import datetime
 import json
 from pathlib import Path
@@ -17,7 +16,10 @@ from AWSSystemManager import (
     list_versions_association_command,
     next_token_command_result,
     validate_args,
-    get_document_command
+    get_document_command,
+    get_automation_execution_command,
+    list_automation_executions_command,
+    get_automation_execution_status
 )
 from pytest_mock import MockerFixture
 from CommonServerPython import CommandResults, DemistoException
@@ -52,6 +54,12 @@ class MockClient:
         pass
 
     def describe_document(self, **kwargs) -> NoReturn:
+        pass
+
+    def get_automation_execution(self, **kwargs) -> NoReturn:
+        pass
+
+    def describe_automation_executions(self, **kwargs) -> NoReturn:
         pass
 
 
@@ -147,6 +155,13 @@ def test_convert_datetime_to_iso(data: dict, expected_response: dict) -> None:
     """
     response = convert_datetime_to_iso(data)
     assert response == expected_response
+
+
+def test_get_automation_execution_status(mocker: MockerFixture) -> None:
+    mocker.patch.object(MockClient, "get_automation_execution", return_value={
+                        "AutomationExecution": {"AutomationExecutionStatus": "Success"}})
+    response = get_automation_execution_status("test_id", MockClient())
+    assert response == "Success"
 
 
 """ Test For The Command Functions """
@@ -506,7 +521,6 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
 def test_get_documents_command(mocker: MockerFixture) -> None:
     mock_response: dict = util_load_json("test_data/get_document_response.json")
     mocker.patch.object(MockClient, "describe_document", return_value=mock_response)
-
     response = get_document_command({"document_name": "test_name"}, MockClient())
 
     assert response.outputs == mock_response["Document"]
@@ -515,4 +529,34 @@ def test_get_documents_command(mocker: MockerFixture) -> None:
         '|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|\n'
         '|---|---|---|---|---|---|---|---|\n'
         '| 2022-10-11T01:06:56.878000+03:00 | Change the test |  |  | AWS | Amazon | Windows,<br>Linux,<br>MacOS | Active |\n'
+    )
+
+
+def test_get_automation_execution_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/get_automation_execution.json")
+    mocker.patch.object(MockClient, "get_automation_execution", return_value=mock_response)
+    response = get_automation_execution_command({"execution_id": "test_id"}, MockClient())
+
+    assert response.outputs == mock_response['AutomationExecution']
+    assert response.readable_output == (
+        '### AWS SSM Automation Execution\n'
+        '|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|'
+        'Executed By|\n|---|---|---|---|---|---|---|---|\n'
+        '| AutomationExecutionId | AWS | 1 | 2023-08-29T19:00:50.101000+03:00 | 2023-08-29T19:00:51.618000+03:00 | Success |'
+        ' Auto | arn |\n'
+    )
+
+
+def test_list_automation_executions_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/list_automation_executions.json")
+    mocker.patch.object(MockClient, "describe_automation_executions", return_value=mock_response)
+    response = list_automation_executions_command({}, MockClient())
+
+    assert response[0].outputs == mock_response['AutomationExecutionMetadataList']
+    assert response[0].readable_output == (
+        '### AWS SSM Automation Executions\n'
+        '|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|'
+        'Executed By|\n|---|---|---|---|---|---|---|---|\n'
+        '|  |  | 1 | 2023-08-30T19:00:50.433000+03:00 | 2023-08-30T19:00:51.963000+03:00 | Success | Auto | arn |\n'
+        '|  | AWS | 1 | 2023-08-30T19:00:50.141000+03:00 | 2023-08-30T19:00:51.807000+03:00 | Success | Auto | arn |\n'
     )

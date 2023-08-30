@@ -96,10 +96,10 @@ script:
       required: true
     description: |-
       Adds or overwrites one tag for the specified resource.
-      Tags are metadata that you can assign to your automations, documents, managed nodes, maintenance windows, Parameter Store parameters, and patch baselines.
-      Tags enable you to categorize your resources in different ways, for example, by purpose, owner, or environment.
+      Tags are metadata that you can assign to the automations, documents, managed nodes, maintenance windows, Parameter Store parameters, and patch baselines.
+      Tags enable you to categorize the resources in different ways, for example, by purpose, owner, or environment.
       Each tag consists of a key and an optional value, both of which you define.
-      For example, you could define a set of tags for your account’s managed nodes that helps you track each node’s owner and stack level.
+      For example, you could define a set of tags for the account’s managed nodes that helps you track each node’s owner and stack level.
       For example, Key=Owner,Value=SysAdmin.
     name: aws-ssm-tag-add
   - arguments:
@@ -391,7 +391,7 @@ script:
       description: By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions.
       type: Boolean
     - contextPath: AWS.SSM.Association.AssociationDescription.CalendarNames
-      description: The names or Amazon Resource Names (ARNs) of the Change Calendar type documents your associations are gated under. The associations only run when that change calendar is open.
+      description: The names or Amazon Resource Names (ARNs) of the Change Calendar type documents the associations are gated under. The associations only run when that change calendar is open.
       type: String
     - contextPath: AWS.SSM.Association.AssociationDescription.TargetLocations.Accounts
       description: The Amazon Web Services accounts targeted by the current Automation execution.
@@ -498,13 +498,13 @@ script:
       description: The severity level that is assigned to the association.
       type: String
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance
-      description: The mode for generating association compliance. can specify AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by your direct call to the PutComplianceItems API operation.
+      description: The mode for generating association compliance. can specify AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by the direct call to the PutComplianceItems API operation.
       type: String
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.ApplyOnlyAtCronInterval
       description: By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions.
       type: Boolean
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames
-      description: 'The names or Amazon Resource Names (ARNs) of the Change Calendar type documents your associations are gated under. The associations for this version only run when that Change Calendar is open. '
+      description: 'The names or Amazon Resource Names (ARNs) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. '
       type: String
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts
       description: The Amazon Web Services accounts targeted by the current Automation execution.
@@ -599,7 +599,7 @@ script:
       description: The current status of a document review.
       type: String
     - contextPath: AWS.SSM.Document.DocumentIdentifiers.Author
-      description: The user in your organization who created the document.
+      description: The user in the organization who created the document.
       type: String
   - arguments:
     - description: The name of the SSM document.
@@ -703,7 +703,7 @@ script:
       description: An optional field specifying the version of the artifact associated with the document.
       type: String
     - contextPath: AWS.SSM.Document.Document.Author
-      description: The user in your organization who created the document.
+      description: The user in the organization who created the document.
       type: String
     - contextPath: AWS.SSM.Document.Document.ReviewInformation.ReviewedTime
       description: The time that the reviewer took action on the document review request.
@@ -754,9 +754,13 @@ script:
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
       defaultValue: 30
-    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: {"key1":"value1","key2":"value2"}'
+    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: {\"InstanceId\":[\"i-dummy\"]}'
       name: parameters
+    - description: This is for the polling to work. not for the user.
+      hidden: true
+      name: execution_id
     description: Initiates execution of an Automation runbook.
+    polling: true
     name: aws-ssm-automation-execution-run
   - arguments:
     - description: The interval in seconds between each poll.
@@ -784,6 +788,302 @@ script:
       hidden: true
     description: Stop an Automation execution.
     name: aws-ssm-automation-execution-cancel
+  - arguments:
+    - description: "The unique identifier for an existing automation execution to examine. The execution ID is returned by aws-ssm-automation-execution-run command when the execution of an Automation runbook is initiated. Note: if execution_id not provide the command return a list of executions."
+      name: execution_id
+    - description: The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. The default value is 50.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of items to return. (received this token from a previous call.)
+      name: next_token
+    description: If the argument execution_id is provide the command return detailed information about a particular Automation execution. if not provide the command provides details about all active and terminated Automation executions.
+    name: aws-ssm-automation-execution-list
+    outputs:
+    - contextPath: AWS.SSM.AutomationExecutionNextToken
+      description: The token for the next set of items to return.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionId
+      description: The execution ID.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.DocumentName
+      description: The name of the Automation runbook used during the execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.DocumentVersion
+      description: The version of the document to use during execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
+      description: The time the execution started.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
+      description: The time the execution finished.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionStatus
+      description: The execution status of the Automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.StepName
+      description: The name of this execution step.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Action
+      description: The action this step performs. The action determines the behavior of the step.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TimeoutSeconds
+      description: The timeout seconds of the step.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.OnFailure
+      description: The action to take if the step fails. The default value is Abort.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.MaxAttempts
+      description: The maximum number of tries to run the action of the step. The default value is 1.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.ExecutionStartTime
+      description: If a step has begun execution, this contains the time the step started. If the step is in Pending status, this field isn’t populated.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.ExecutionEndTime
+      description: If a step has finished execution, this contains the time the execution ended. If the step hasn’t yet concluded, this field isn’t populated.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.StepStatus
+      description: The execution status for this step.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.ResponseCode
+      description: The response code returned by the execution of the step.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Inputs
+      description: Fully-resolved values passed into the step before execution.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Outputs
+      description: Returned values from the execution of the step.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Response
+      description: A message associated with the response code for an execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.FailureMessage
+      description: If a step failed, this message explains why the execution failed.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureStage
+      description: 'The stage of the Automation execution when the failure occurred. The stages include the following: InputValidation, PreVerification, Invocation, PostVerification.'
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureType
+      description: 'The type of Automation failure. Failure types include the following: Action, Permission, Throttling, Verification, Internal.'
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.Details
+      description: Detailed information about the Automation step failure.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.StepExecutionId
+      description: The unique ID of a step execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.OverriddenParameters
+      description: A user-specified list of parameters to override when running a step.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.IsEnd
+      description: The flag which can be used to end automation no matter whether the step succeeds or fails.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.NextStep
+      description: The next step after the step succeeds.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.IsCritical
+      description: The flag which can be used to help decide whether the failure of current step leads to the Automation failure.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.ValidNextSteps
+      description: Strategies used when step fails, support Continue and Abort. Abort will fail the automation when the step fails. Continue will ignore the failure of current step and allow automation to run the next step. With conditional branching, AWS add step:stepName to support the automation to go to another specific step.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Targets.Values
+      description: User-defined criteria that maps to Key
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Accounts
+      description: The Amazon Web Services accounts targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Regions
+      description: The Amazon Web Services Regions targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxConcurrency
+      description: The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxErrors
+      description: The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.ExecutionRoleName
+      description: The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.State
+      description: The state of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.StepExecutionsTruncated
+      description: A boolean value that indicates if the response contains the full list of the Automation step executions. If true, use the DescribeAutomationStepExecutions API operation to get the full list of step executions.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.Parameters.
+      description: The key-value map of execution parameters, which were supplied when calling StartAutomationExecution.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.Outputs
+      description: The list of execution outputs as defined in the Automation runbook.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.FailureMessage
+      description: A message describing why an execution has failed, if the status is set to Failed.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Mode
+      description: The automation execution mode.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ParentAutomationExecutionId
+      description: The AutomationExecutionId of the parent automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ExecutedBy
+      description: The Amazon Resource Name (ARN) of the user who ran the automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.CurrentStepName
+      description: The name of the step that is currently running.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.CurrentAction
+      description: The action of the step that is currently running.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetParameterName
+      description: The parameter name.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Targets.Values
+      description: User-defined criteria that maps to Key.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetMaps
+      description: The specified key-value mapping of document parameters to target resources.
+      type: List Of Dictionaries
+    - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets.ParameterValues
+      description: A list of parameter values sent to targets that resolved during the Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets.Truncated
+      description: A boolean value indicating whether the resolved target list is truncated.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.MaxConcurrency
+      description: The MaxConcurrency value specified by the user when the execution started.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.MaxErrors
+      description: The MaxErrors value specified by the user when the execution started.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Target
+      description: The target of the execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.Accounts
+      description: The Amazon Web Services accounts targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.Regions
+      description: The Amazon Web Services Regions targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxConcurrency
+      description: The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxErrors
+      description: The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.ExecutionRoleName
+      description: The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ProgressCounters.TotalSteps
+      description: The total number of steps run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.ProgressCounters.SuccessSteps
+      description: The total number of steps that successfully completed in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.ProgressCounters.FailedSteps
+      description: The total number of steps that failed to run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.ProgressCounters.CancelledSteps
+      description: The total number of steps that the system cancelled in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.ProgressCounters.TimedOutSteps
+      description: The total number of steps that timed out in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution.
+      type: Number
+    - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TriggeredAlarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.TriggeredAlarms.State
+      description: The state of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.AutomationSubtype
+      description: The subtype of the Automation operation. Currently, the only supported value is ChangeRequest.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ScheduledTime
+      description: The date and time the Automation operation is scheduled to start.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.DocumentName
+      description: The name of the Automation runbook used in a runbook workflow.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.DocumentVersion
+      description: The version of the Automation runbook used in a runbook workflow.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.Parameters
+      description: The key-value map of execution parameters, which were supplied when calling StartChangeRequestExecution.
+      type: Dictionary
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetParameterName
+      description: The name of the parameter used as the target resource for the rate-controlled runbook workflow. Required if you specify Targets.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.Targets.Values
+      description: User-defined criteria that maps to Key. For example, if you specified tag:ServerRole, you could specify value:WebServer to run a command on instances that include EC2 tags of ServerRole,WebServer.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetMaps
+      description: A key-value mapping of runbook parameters to target resources. Both Targets and TargetMaps can’t be specified together.
+      type: List Of Dictionaries
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.MaxConcurrency
+      description: The MaxConcurrency value specified by the user when the operation started, indicating the maximum number of resources that the runbook operation can run on at the same time.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.MaxErrors
+      description: The MaxErrors value specified by the user when the execution started, indicating the maximum number of errors that can occur during the operation before the updates are stopped or rolled back.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Accounts
+      description: The Amazon Web Services accounts targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Regions
+      description: The Amazon Web Services Regions targeted by the current Automation execution.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxConcurrency
+      description: The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxErrors
+      description: The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.ExecutionRoleName
+      description: The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.OpsItemId
+      description: The ID of an OpsItem that is created to represent a Change Manager change request.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.AssociationId
+      description: The ID of a State Manager association used in the Automation operation.
+      type: String
+    - contextPath: AWS.SSM.AutomationExecution.ChangeRequestName
+      description: The name of the Change Manager change request.
+      type: String
   isfetch: false
   runonce: false
   script: '-'

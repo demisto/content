@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         ListAssociationsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
         DocumentDescriptionTypeDef,
+        DescribeAutomationExecutionsRequestRequestTypeDef
     )
 
 """ CONSTANTS """
@@ -150,13 +151,29 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
         outputs_prefix=f"AWS.SSM.{outputs_prefix}",
         outputs=next_token,
         outputs_key_field=outputs_prefix,
-        readable_output="test"  # TODO need to check way is not working when remove this line
+        readable_output="test"  # TODO need to delete after CIAC-8157 is merged
     )
 
 
-def get_automation_execution_status(ssm_client: "SSMClient", execution_id: str) -> str:
+def get_automation_execution_status(execution_id: str, ssm_client: "SSMClient",) -> str:
     response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
     return response["AutomationExecution"]["AutomationExecutionStatus"]
+
+
+def parse_automation_execution(automation: dict) -> dict[str, Any]:
+    """Parses an automation execution 
+        and returns a dict contain the parsed automation.
+    """
+    return {
+        'Automation Execution Id': automation.get('AutomationExecutionId'),
+        "Document Name": automation.get("DocumentName"),
+        "Document Version": automation.get("DocumentVersion"),
+        "Start Time": automation.get("ExecutionStartTime"),
+        "End Time": automation.get("ExecutionEndTime"),
+        "Automation Execution Status": automation.get("AutomationExecutionStatus"),
+        "Mode": automation.get("Mode"),
+        "Executed By": automation.get("ExecutedBy")
+    }
 
 
 """ COMMAND FUNCTIONS """
@@ -671,94 +688,122 @@ def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> Comma
     )
 
 
-def list_automation_executions_command(args: dict, ssm_client: "SSMClient") -> CommandResults:
-    if execution_id := args.get("execution_id"):
-        response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
-        response = convert_datetime_to_iso(response)
-    else:
-        kwargs = {
-            "Filters": [
-                {"Key": "ExecutionStatus", "Values": [args.get("status", "InProgress")]}
-            ]
-        }
-        response = ssm_client.describe_automation_executions(**kwargs)
-
+def get_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
+    automation_execution = ssm_client.get_automation_execution(AutomationExecutionId=args['execution_id'])["AutomationExecution"]
+    automation_execution = convert_datetime_to_iso(automation_execution)
     return CommandResults(
-        outputs=response.get("AutomationExecution"),
-        outputs_key_field='AutomationExecutionId',
         outputs_prefix='AWS.SSM.AutomationExecution',
+        outputs_key_field='AutomationExecutionId',
+        outputs=automation_execution,
+        readable_output=tableToMarkdown(
+            name="AWS SSM Automation Execution",
+            t=parse_automation_execution(automation_execution),
+            headers=['Automation Execution Id', 'Document Name', 'Document Version',
+                     'Start Time', 'End Time', 'Automation Execution Status', 'Mode', "Executed By"],
+        )
     )
+
+
+def list_automation_executions_command(args: dict, ssm_client: "SSMClient") -> list[CommandResults]:
+    kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
+            "MaxResults": arg_to_number(args.get("limit", 50)) or 50
+    }
+    if next_token := args.get("next_token"):
+        kwargs["NextToken"] = next_token
+
+    response = ssm_client.describe_automation_executions(**kwargs)
+    response = convert_datetime_to_iso(response)
+
+    command_results: list[CommandResults] = []
+    if next_token := response.get("NextToken"):
+        command_results.append(
+            next_token_command_result(next_token, "AutomationExecutionNextToken")
+        )
+    automation_execution_list = response["AutomationExecutionMetadataList"]
+    command_results.append(
+        CommandResults(
+            outputs=automation_execution_list,
+            outputs_key_field='AutomationExecutionId',
+            outputs_prefix='AWS.SSM.AutomationExecution',
+            readable_output=tableToMarkdown(
+                name="AWS SSM Automation Executions",
+                t=[parse_automation_execution(automation) for automation in automation_execution_list],
+                headers=['Automation Execution Id', 'Document Name', 'Document Version',
+                         'Start Time', 'End Time', 'Automation Execution Status', 'Mode', "Executed By"],
+            )
+        )
+    )
+    return command_results
 
 
 @polling_function(
     name="aws-ssm-automation-execution-run",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    requires_polling_arg=False,  # means it will always be default to poll, poll=true
+    requires_polling_arg=False,  # means it will always be default to poll, poll=true,
 )
 def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
-    document_name = args["document_name"]
-    client_token = args.get("client_token")
-    document_version = args.get("document_version")
-    max_concurrency = args.get("max_concurrency")
-    max_error = args.get("max_error")
-    mode = args.get("mode", "Auto")
+    """Execute an AWS SSM automation execution and poll for its status.
+
+    Args:
+        args (dict[str, Any]): The arguments provided to the function.
+        ssm_client (BaseClient): The AWS SSM client.
+        the args['execution_id'] provide after the first run of the command,
+            provide in the yml with hidden=true.
+
+    Returns:
+        PollResult: The result of the polling operation.
+
+    Raises:
+        DemistoException: If there's an issue with the automation execution.
+        DemistoException: If the JSON string is not in a valid structure.
+    """
+    execution_id = args.get("execution_id")
     tag_key = args.get("tag_key")
-    tag_value = args.get("tag_value")  # TODO check if need both key and value tag
-    if parameters := args.get("parameters"):
-        try:
-            parameters = json.loads(parameters)
-        except Exception as e:
-            raise DemistoException(
-                'The parameters argument is not in a valid JSON structure. For example: {"key": "value"}'
-            ) from e
+    tag_value = args.get("tag_value")
+    if not execution_id:  # if this is the first time the function is called
+        if parameters := args.get("parameters"):
+            try:
+                parameters = json.loads(parameters)
+            except Exception as e:
+                raise DemistoException(
+                    'The parameters argument is not in a valid JSON structure. For example: {"key": "value"}'
+                ) from e
 
-    kwargs = {"DocumentName": document_name}
-    kwargs |= {
-        k: v
-        for k, v
-        in (
-            ("Parameters", parameters),
-            ("ClientToken", client_token),
-            ("DocumentVersion", document_version),
-            ("MaxConcurrency", max_concurrency),
-            ("MaxErrors", max_error),
-            ("Mode", mode)
-        )
-        if v
-    }
-    if tag_key and tag_value:
-        kwargs["Tags"] = [{"Key": tag_key, "Value": tag_value}]
+        kwargs = {
+            "DocumentName": args["document_name"],
+            "Mode": args.get("mode", "Auto"),
+            **({"Tags": [{"Key": tag_key, "Value": tag_value}]} if tag_key and tag_value else {}),
+            **{k: v for k, v in [
+                ("Parameters", parameters),
+                ("ClientToken", args.get("client_token")),
+                ("DocumentVersion", args.get("document_version")),
+                ("MaxConcurrency", args.get("max_concurrency")),
+                ("MaxErrors", args.get("max_error")),
+            ] if v}
+        }
 
-    if execution_id := args.get(
-        "execution_id"
-    ):  # if execution id provided, check status
-        status = get_automation_execution_status(ssm_client, execution_id)
-        if status == "InProgress":
-            return PollResult(
-                partial_result=CommandResults(
-                    readable_output=f"Execution {execution_id} is in progress"
-                ),
-                response=None,
-                continue_to_poll=True,
-                args_for_next_run=args,
-            )
-        return PollResult(  # if execution not in progress, return the status and end the polling loop
-            response=CommandResults(
-                readable_output=f"Execution {execution_id} is {status}"
-            ),
-            continue_to_poll=False,
-        )
-    else:  # if execution id not provided, start execution
-        res = ssm_client.start_automation_execution(**kwargs)
-        args["execution_id"] = res["AutomationExecutionId"]
+        execution_id = ssm_client.start_automation_execution(**kwargs)["AutomationExecutionId"]
+        args["execution_id"] = execution_id
         return PollResult(
-            partial_result=CommandResults(
-                readable_output=f"Execution {args['execution_id']} is in progress"
-            ),
+            partial_result=CommandResults(readable_output=f"Execution {args['execution_id']} is in progress"),
             response=None,
             continue_to_poll=True,
-            args_for_next_run=args,
+            args_for_next_run=args
         )
+    status = get_automation_execution_status(execution_id, ssm_client)
+    if status == "InProgress":
+        return PollResult(
+            partial_result=CommandResults(readable_output=f"Execution {execution_id} is in progress"),
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=args
+        )
+    return PollResult(  # if execution not in progress, return the status and end the polling loop
+        response=CommandResults(
+            readable_output=f"Execution {execution_id} is {status}"
+        ),
+        continue_to_poll=False,
+    )
 
 
 @polling_function(
@@ -776,7 +821,7 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
     if not argToBoolean(
         args.get("first_run")
     ):  # first_run is hidden argument in the yml file.
-        status = get_automation_execution_status(ssm_client, automation_execution_id)
+        status = get_automation_execution_status(automation_execution_id, ssm_client)
         if status == "Cancelled":
             return PollResult(
                 response=CommandResults(
@@ -879,6 +924,8 @@ def main():
             case "aws-ssm-document-get":
                 return_results(get_document_command(args, ssm_client))
             case "aws-ssm-automation-execution-list":
+                if args.get("execution_id"):
+                    return_results(get_automation_execution_command(args, ssm_client))
                 return_results(list_automation_executions_command(args, ssm_client))
             case "aws-ssm-automation-execution-run":
                 return_results(run_automation_execution_command(args, ssm_client))
