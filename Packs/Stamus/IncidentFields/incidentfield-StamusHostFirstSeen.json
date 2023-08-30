@@ -13,7 +13,7 @@
     "id": "incident_stamushostfirstseen",
     "isReadOnly": false,
     "locked": false,
-    "name": "StamusHostFirstSeen",
+    "name": "Stamus Host First Seen",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

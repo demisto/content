@@ -407,6 +407,30 @@
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostnames",
+								"height": 22,
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
+								"endCol": 2,
+								"fieldId": "usernames",
+								"height": 22,
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stamushostroles",
+								"height": 22,
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
