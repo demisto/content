@@ -1199,7 +1199,7 @@ def option_handler():
     parser.add_argument('-pn', '--pack_names',
                         help=("Target packs to upload to gcs."),
                         required=True)
-    parser.add_argument('-p', '--pack_names_flag',
+    parser.add_argument('-p', '--upload_specific_pack',
                         help=("Indication if the -p flag is used and only specific packs are uploded"),
                         default=False)
     parser.add_argument('-n', '--ci_build_number',
@@ -1238,7 +1238,7 @@ def main():
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     modified_packs_to_upload = option.pack_names or ""
-    packs_flag = option.pack_names_flag
+    packs_flag = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1285,7 +1285,8 @@ def main():
     packs_list = list(filter(lambda x: x.name not in IGNORED_FILES,
                              all_content_packs)) if (is_bucket_upload_flow and not packs_flag) else \
         list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
-
+    print(f'confition (is_bucket_upload_flow and not packs_flag) is {is_bucket_upload_flow and not packs_flag}')
+    print(f'packs list = {packs_list}')
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
