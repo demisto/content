@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 from argparse import Namespace, ArgumentParser
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from collections.abc import Callable
 
@@ -70,16 +70,21 @@ def shutdown(ssh: SSHClient, server_ip: str, ttl: int | None = None) -> bool:
 
 
 def tqdm_progress4_update(tqdm_progress: tqdm) -> Callable[[bytes, int, int, tuple[str, int]], None]:
-    last_bytes = [0]  # This is a hack to make the variable mutable inside the closure.
+    # This is a hack to make the variable mutable inside the closure.
+    last_bytes = [0]
+    last_time = [datetime.utcnow()]
 
     def update_to(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
         tqdm_progress.total = size
         tqdm_progress.desc = f"Downloading {filename!r} ..."
         tqdm_progress.update(sent - last_bytes[0])
         last_bytes[0] = sent
-        logging.info(f"Downloading from {peer_name[0]}:{peer_name[1]} {filename!r} "
-                     f"progress: {float(sent) / float(size) * 100:.2f}% "
-                     f"({humanize.naturalsize(sent, binary=True, gnu=True)}/{humanize.naturalsize(size, binary=True, gnu=True)})")
+        if datetime.utcnow() - last_time[0] > timedelta(seconds=1) or sent == size:
+            last_time[0] = datetime.utcnow()
+            logging.info(f"Downloading from {peer_name[0]}:{peer_name[1]} {filename!r} "
+                         f"progress: {float(sent) / float(size) * 100:.2f}% "
+                         f"({humanize.naturalsize(sent, binary=True, gnu=True)}/"
+                         f"{humanize.naturalsize(size, binary=True, gnu=True)})")
 
     return update_to
 
