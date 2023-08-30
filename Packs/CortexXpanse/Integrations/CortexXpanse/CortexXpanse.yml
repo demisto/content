@@ -686,6 +686,8 @@ script:
   script: ''
   subtype: python3
   type: python
+defaultmapperin: Xpanse - Incoming Mapper
+defaultclassifier: Xpanse - Classifier
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test
