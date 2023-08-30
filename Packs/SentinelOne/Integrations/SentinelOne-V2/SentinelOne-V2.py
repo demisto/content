@@ -630,19 +630,22 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def create_filter_dict(self, filter_keys, filter_values):
+    def _create_filter_dict(self, filter_dict):
         return {
             filter_key: filter_value
-            for filter_key, filter_value in zip(filter_keys, filter_values)
+            for filter_key, filter_value in filter_dict.items()
             if len(filter_value) != 0
-            }    
+            }  
 
     def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = 'cloud-detection/rules'
-        filter_keys = ["siteIds", "groupIds", "accountIds"]
-        filter_values = [site_ids, group_ids, account_ids]
-        filter_dict = self.create_filter_dict(filter_keys, filter_values)
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids
+        }
+        filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
                 "expiration": expiration_date,
@@ -672,9 +675,12 @@ class Client(BaseClient):
     def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = f'cloud-detection/rules/{rule_id}'
-        filter_keys = ["siteIds", "groupIds", "accountIds"]
-        filter_values = [site_ids, group_ids, account_ids]
-        filter_dict = self.create_filter_dict(filter_keys, filter_values)
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids
+        }
+        filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
                 "expiration": expiration_date,
