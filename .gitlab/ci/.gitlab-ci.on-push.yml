@@ -432,7 +432,6 @@ slack-notify-nightly-build:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
-    CLOUD_MACHINES_TYPE: "build"
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -532,7 +531,11 @@ xsiam_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "nightly"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   variables:
+    CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
@@ -558,6 +561,7 @@ xsoar_ng_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
   variables:
+    CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
