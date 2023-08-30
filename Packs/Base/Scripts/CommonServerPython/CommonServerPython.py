@@ -6931,7 +6931,7 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
-                outputs[outputs_key] = self.outputs
+                outputs[outputs_key] = self.outputs # type: ignore[assignment]
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
