@@ -372,7 +372,7 @@ script:
       description: The virtualization type of the instance.
       type: string
   - arguments:
-      - description: One or more filters. See documentation for details & filter options.
+      - description: One or more filters. See AWS documentation for details & filter options.
         name: filters
       - description: The IAM instance profile associations.
         name: associationIds
@@ -380,9 +380,9 @@ script:
         name: maxResults
       - description: The token for the next set of results.
         name: nextToken
-      - description: The AWS Region, if not specified the default region will be used
+      - description: The AWS region. If not specified, the default region will be used.
         name: region
-      - description: The Amazon Resource Name (ARN) of the role to assume
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
       - description: An identifier for the assumed role session.
         name: roleSessionName

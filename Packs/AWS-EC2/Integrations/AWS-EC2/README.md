@@ -287,11 +287,11 @@ Describes your IAM instance profile associations.
 
 | **Argument Name**   | **Description**                                                                                                                                           | **Required** |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| filters             | One or more filters. See documentation for details `&` filter options.                                                                                    | Optional     | 
+| filters             | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details `&` filter options.  | Optional     | 
 | associationIds      | The IAM instance profile associations.                                                                                                                    | Optional     | 
 | maxResults          | The maximum number of results to return in a single call. Specify a value between 5 and 1000.                                                             | Optional     | 
 | nextToken           | The token for the next set of results.                                                                                                                    | Optional     | 
-| region              | The AWS Region, if not specified the default region will be used.                                                                                         | Optional     | 
+| region              | The AWS regio. If not specified the default region will be used.                                                                                          | Optional     | 
 | roleArn             | The Amazon Resource Name (ARN) of the role to assume.                                                                                                     | Optional     | 
 | roleSessionName     | An identifier for the assumed role session.                                                                                                               | Optional     | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional     | 
@@ -302,7 +302,7 @@ Describes your IAM instance profile associations.
 |---------------------------------------------------------------|----------|---------------------------------------------------------|
 | AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn | string   | The Amazon Resource Name (ARN) of the instance profile. | 
 | AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id  | string   | The ID of the instance profile.                         | 
-| AWS.EC2.IamInstanceProfileAssociations.State                  | string   | The state of the association                            | 
+| AWS.EC2.IamInstanceProfileAssociations.State                  | string   | The state of the association.                           | 
 | AWS.EC2.IamInstanceProfileAssociations.InstanceId             | string   | The ID of the instance.                                 | 
 | AWS.EC2.IamInstanceProfileAssociations.AssociationId          | string   | The ID of the association.                              | 
 
