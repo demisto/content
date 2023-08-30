@@ -153,6 +153,7 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
+    demisto.info('Starting create file ioc to keep')
     with open(file_path, 'w') as _file:
         has_iocs = False
         for ioc in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
@@ -324,6 +325,17 @@ def iocs_to_keep(client: Client):
     finally:
         os.remove(temp_file_path)
     return_outputs('sync with XDR completed.')
+
+
+def get_iocs_to_keep_file():
+    demisto.info('get_iocs_to_keep_file executed')
+    temp_file_path = get_temp_file()
+    try:
+        create_file_iocs_to_keep(temp_file_path)
+        with open(temp_file_path, 'r') as _tmpfile:
+            return_results(fileResult('xdr-ioc-to-keep-file', _tmpfile.read()))
+    finally:
+        os.remove(temp_file_path)
 
 
 def create_last_iocs_query(from_date, to_date):
@@ -633,6 +645,8 @@ def main():  # pragma: no cover
             set_sync_time(demisto.args()['time'])
         elif command == 'xdr-iocs-create-sync-file':
             get_sync_file()
+        elif command == 'xdr-iocs-to-keep-file':
+            get_iocs_to_keep_file()
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
