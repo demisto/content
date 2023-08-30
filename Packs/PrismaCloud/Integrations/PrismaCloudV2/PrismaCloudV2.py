@@ -242,6 +242,12 @@ class Client(BaseClient):
 
         return self._http_request('GET', 'v1/resource_list', params=params)
 
+    def user_roles_list_request(self, user_id: str):
+        return self._http_request('GET', f'user/role/{user_id}')
+
+    def all_user_roles_list_request(self):
+        return self._http_request('GET', f'user/role')
+
     def account_list_request(self, exclude_account_group_details: str):
         data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
 
@@ -1642,8 +1648,43 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='PrismaCloud.ResourceList',
         outputs_key_field='id',
         readable_output=f'Showing {len(readable_responses)} of {total_response_amount} results:\n'
-                        + tableToMarkdown('Resource Lists Details:',
+                        + tableToMarkdown('Resources Details:',
                                         readable_responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    user_id = args.get('user_id')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    if user_id:
+        response_items = client.user_roles_list_request(user_id)
+        response_items = [response_items]
+    else:
+        response_items = client.all_user_roles_list_request()
+    
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+
+    headers = ['name', 'id', 'roleType', 'description']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.UserRoles',
+        outputs_key_field='id',
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('User Roles Details:',
+                                        response_items,
                                         headers=headers,
                                         removeNull=True,
                                         headerTransform=pascalToSpace),
@@ -2066,6 +2107,7 @@ def main() -> None:
 
             'prisma-cloud-resource-get': resource_get_command,
             'prisma-cloud-resource-list': resource_list_command,
+            'prisma-cloud-user-roles-list': user_roles_list_command,
             'prisma-cloud-account-list': account_list_command,
             'prisma-cloud-account-status-get': account_status_get_command,
             'prisma-cloud-account-owner-list': account_owner_list_command,

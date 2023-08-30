@@ -981,6 +981,69 @@ script:
       description: Resource list members.
       type: Unknown
   - arguments:
+    - description: The user id to get roles of.
+      name: user_id
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get user roles lists.
+    name: prisma-cloud-user-roles-list
+    outputs:
+    - contextPath: PrismaCloud.UserRoles.id
+      description: Prisma Cloud user roles ID.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.name
+      description: User roles name.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.resourceListIds
+      description: User roles resource list IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.description
+      description: User roles description.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedBy
+      description: User roles last modified user.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedTs
+      description: User roles last modified time.
+      type: Date
+    - contextPath: PrismaCloud.UserRoles.associatedUsers
+      description: User roles associated users.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.restrictDismissalAccess
+      description: Whether dismissal access is restricted for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.UserRoles.roleType
+      description: User roles role type.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.additionalAttributes
+      description: User roles additional attributes.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositoryIds
+      description: User roles code repository IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroupIds
+      description: User roles account group IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.resourceLists
+      description: User roles resource lists.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.permissionGroup
+      description: User roles permission group.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositories
+      description: User roles code repositories.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroups
+      description: User roles account groups.
+      type: Unknown
+  - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to exclude account group details.
