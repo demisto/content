@@ -36,8 +36,8 @@ def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Converts the junit report to a jira issues')
     parser.add_argument("-jp", "--junit-path", help='JUnit report file path', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
-    parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
-    parser.add_argument('-d', '--max_days_to_reopen', default=30, type=int,
+    parser.add_argument('-gp', '--gitlab-project-id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
+    parser.add_argument('-d', '--max-days-to-reopen', default=30, type=int,
                         help='The max days to reopen a closed issue')
     options = parser.parse_args()
 
