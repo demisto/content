@@ -1042,7 +1042,7 @@ def tag_role_command(args, client):
                                f"\nencountered the following exception: {str(e)}")
 
 
-def list_attached_role_policies(args: dict, client) -> list[CommandResults]:
+def list_attached_role_policies_command(args: dict, client) -> list[CommandResults]:
     aws_args = {"RoleName": (role_name := args["roleName"])}
 
     for demisto_key, aws_key in (
@@ -1390,7 +1390,7 @@ def main():     # pragma: no cover
         elif command == 'aws-iam-get-access-key-last-used':
             return_results(get_access_key_last_used_command(args, client))
         elif command == 'aws-iam-list-attached-role-policies':
-            return_results(list_attached_role_policies(args, client))
+            return_results(list_attached_role_policies_command(args, client))
     except Exception as e:
         LOG(str(e))
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(

@@ -78,6 +78,9 @@ class Boto3Client:
     def get_user(self):
         pass
 
+    def list_attached_role_policies(self):
+        pass
+
     @property
     def exceptions(self):
         raise NoSuchEntityException
@@ -91,8 +94,6 @@ class Mock_Exceptions(BaseException):
 class NoSuchEntityException(BaseException):
     pass
 
-    def list_attached_role_policies(self):
-        pass
 
 
 @pytest.mark.parametrize('args, res', PAGINATION_CHECK)
@@ -495,7 +496,7 @@ def test_list_attached_role_policies(mocker):
     client = Boto3Client()
     mocker.patch.object(client, "list_attached_role_policies", return_value=response)
 
-    result = AWS_IAM.list_attached_role_policies(args, client)
+    result = AWS_IAM.list_attached_role_policies_command(args, client)
 
     assert len(result) == 2
 
