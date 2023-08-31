@@ -97,7 +97,7 @@ validate-content-conf:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
   script:
-    - !reference [ .validate_content_test_conf_merged ]
+    - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
 
 .generic-prepare-testing-bucket:

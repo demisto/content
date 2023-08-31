@@ -56,7 +56,7 @@ clone_repository_with_fallback_branch() {
     echo "Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}"
     local exit_code=1
   else
-    echo "Branch ${branch} exists in ${repo_name} trying to clone!"
+    echo "Branch ${branch} exists in ${repo_name}, trying to clone"
     clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ "${exit_code}" -ne 0 ]; then
@@ -65,11 +65,11 @@ clone_repository_with_fallback_branch() {
   fi
   if [ "${exit_code}" -ne 0 ]; then
     # Trying to clone from fallback branch.
-    echo "Trying to clone repository:${repo_name} with branch ${fallback_branch}!"
+    echo "Trying to clone repository:${repo_name} with fallback branch ${fallback_branch}!"
     clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
-      echo "Failed to clone ${repo_name} with branch:${fallback_branch}, exit code:${exit_code}, exiting!"
+      echo "ERROR: Failed to clone ${repo_name} with fallback branch:${fallback_branch}, exit code:${exit_code}, exiting!"
       exit ${exit_code}
     else
       echo "Successfully cloned ${repo_name} with branch:${fallback_branch}"
@@ -81,7 +81,7 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
-echo "Getting content-test-conf and infra repositories with branch:${CI_COMMIT_BRANCH}, With fallback to master"
+echo "Getting content-test-conf and infra repositories with branch:${CI_COMMIT_BRANCH}, with fallback to master"
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
