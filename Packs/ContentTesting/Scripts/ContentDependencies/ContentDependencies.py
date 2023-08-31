@@ -46,7 +46,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
     if script == "":
         return []
     try:
-        lines = ast.dump(ast.parse(script), indent="").splitlines()  # type: ignore
+        lines = ast.dump(ast.parse(script), indent="").splitlines() # type: ignore
     except Exception as ex:
         return_results(f"CalledAutomation: Error parsing script {scrname} - Error: {str(ex)}")
         return []
@@ -58,7 +58,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
     names = []
 
     for lin in lines:
-        if not watchname and "Call" in lin:
+        if not watchname and "Call" in lin :
             watchname = True
             continue
         if watchname:
@@ -86,7 +86,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
                 if "Constant(value=" in lin:
                     parts = lin.split("'")
                     if len(parts) > 1:
-                        name = parts[1]
+                        name=parts[1]
                         watchval = False
                         watchname = False
                         names.append(name)
@@ -120,8 +120,8 @@ def GetEntities(playbooks: list) -> dict:
                 spbname = t['task'].get('name', "notaskname")
                 if spbname not in entities:
                     entities[spbname] = {'etype': "playbook", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                entities[pbname]['pcalls'].append(spbname)  # type: ignore
-                entities[spbname]['pcalled'].append(pbname)  # type: ignore
+                entities[pbname]['pcalls'].append(spbname) # type: ignore
+                entities[spbname]['pcalled'].append(pbname) # type: ignore
             elif "scriptId" in t['task'].keys():
                 scrname = GetAutomationName(t['task']['scriptId'])
                 if scrname != "":
@@ -129,21 +129,21 @@ def GetEntities(playbooks: list) -> dict:
                 else:
                     scrname = t['task']['scriptId']
                     script = ""
-                    stype = ""
+                    stype  = ""
                 if scrname not in entities:
                     entities[scrname] = {'etype': "script", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                entities[pbname]['scalls'].append(scrname)  # type: ignore
-                entities[scrname]['pcalled'].append(pbname)  # type: ignore
+                entities[pbname]['scalls'].append(scrname) # type: ignore
+                entities[scrname]['pcalled'].append(pbname) # type: ignore
                 if stype == "python":
                     calls = CalledAutomation(scrname, script)
                 else:
                     calls = []
                 if len(calls) > 0:
-                    entities[scrname]['scalls'].extend(calls)  # type: ignore
+                    entities[scrname]['scalls'].extend(calls) # type: ignore
                     for s in calls:
                         if s not in entities:
                             entities[s] = {'etype': "script", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                        entities[s]['scalled'].append(scrname)  # type: ignore
+                        entities[s]['scalled'].append(scrname) # type: ignore
 
     return entities
 
@@ -165,7 +165,7 @@ def PlaybookCsv(key: str, ent: dict) -> str:
         for val in calls:
             output += f"Playbook, {key}, Calledby, Playbook, {val}\n"
 
-    return (output)
+    return(output)
 
 
 def ScriptCsv(key: str, ent: dict) -> str:
@@ -185,7 +185,7 @@ def ScriptCsv(key: str, ent: dict) -> str:
         for val in calls:
             output += f"Automation, {key}, Calledby, Playbook, {val}\n"
 
-    return (output)
+    return(output)
 
 
 def PlaybookMarkdown(key: str, ent: dict) -> str:
@@ -205,7 +205,7 @@ def PlaybookMarkdown(key: str, ent: dict) -> str:
         for val in calls:
             output += f"    Called by: Playbook: {val}\n"
 
-    return (output)
+    return(output)
 
 
 def ScriptMarkdown(key: str, ent: dict) -> str:
@@ -225,7 +225,7 @@ def ScriptMarkdown(key: str, ent: dict) -> str:
         for val in calls:
             output += f"    Called by: Playbook: {val}\n"
 
-    return (output)
+    return(output)
 
 
 def main():
@@ -259,7 +259,7 @@ def main():
         if outfmt == "csv":
             demisto.results(fileResult(filename, output))
         else:
-            field = args.get("fieldname", "").strip()
+            field = args.get("fieldname","").strip()
             if field != "":
                 demisto.executeCommand("setIncident", {'customFields': json.dumps({field: output})})
             else:

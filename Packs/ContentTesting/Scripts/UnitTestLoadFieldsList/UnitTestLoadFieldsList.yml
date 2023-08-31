@@ -8,7 +8,6 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-comment: ''
 dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestLoadFieldsList

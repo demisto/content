@@ -16,7 +16,7 @@ STATFIELD = 'avgdur'
 
 
 def NewWidgetStat(name: str, color: str, label: str, data: list) -> dict:
-    wstat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
+    wstat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': [] }
     return wstat
 
 
@@ -40,7 +40,7 @@ def main():
         for key, val in stats.items():
             if val[STATFIELD] == 0:
                 continue
-            newstat = NewWidgetStat("", COLORS[i % length], val['name'], val[STATFIELD])
+            newstat = NewWidgetStat("", COLORS[i%length], val['name'], val[STATFIELD])
             wstats.append(newstat)
             i += 1
 
@@ -53,3 +53,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

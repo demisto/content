@@ -7,7 +7,6 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestMultiSelect
-comment: ""
 runas: Administrator
 script: ''
 scripttarget: 0
