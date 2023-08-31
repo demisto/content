@@ -11,7 +11,7 @@ ignore=BA124
 ignore=BA124
 
 [file:DBotPredictIncidentsBatch.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124
 
 [file:ExtendQueryBasedOnPhishingLabels.yml]
 ignore=BA124

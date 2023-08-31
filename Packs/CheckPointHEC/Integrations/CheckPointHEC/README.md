@@ -1,24 +1,24 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
 This integration was integrated and tested with version 1.0.0 of CheckPointHEC
 
-## Configure CheckPointHEC on Cortex XSOAR
+## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CheckPointHEC.
+2. Search for Check Point Harmony Email and Collaboration (HEC).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
     | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Maximum number of incidents per fetch | False |
+    | Fetch incidents |  |
+    | Incident type |  |
+    | Maximum number of incidents per fetch |  |
     | Client ID | True |
     | Client Secret | True |
-    | First fetch time | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Incidents Fetch Interval | False |
+    | First fetch time |  |
+    | Trust any certificate (not secure) |  |
+    | Use system proxy settings |  |
+    | Incidents Fetch Interval |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

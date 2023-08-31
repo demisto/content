@@ -362,7 +362,7 @@ def test_send_mail(mocker):
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
     results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
@@ -492,6 +492,36 @@ def test_list_parse_item_as_dict():
     effetive_right_res = return_value.get("effective_rights")
     assert type(effetive_right_res) is list
     assert len(effetive_right_res) == 2
+
+
+def test_parse_item_as_dict_with_empty_field():
+    """
+    Given -
+        a Message where effective rights is None and other fields are false\empty strings.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        effective rights field was removed from response other empty\negative fields aren't.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=None,
+                      is_read=False
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert 'effective_rights' not in return_value
+    assert return_value['body'] == ''
+    assert return_value['is_read'] is False
 
 
 def test_get_entry_for_object_empty():

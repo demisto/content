@@ -82,26 +82,28 @@ else
   fi
 
 fi
+echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_BUCKET_UPLOAD = $FORCE_BUCKET_UPLOAD"
 
-if [ -z "${BUCKET_UPLOAD}" ]; then
+if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
   python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
 else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
   REMOVE_PBS=true
-  BUCKET_UPLOAD_FLOW=true
   GCS_PRIVATE_BUCKET="marketplace-dist-private"
-  if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
+  if [ -n "${FORCE_BUCKET_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
     # In case the workflow is force upload, we override the forced packs
     echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
     OVERRIDE_ALL_PACKS=true
     CONTENT_PACKS_TO_UPLOAD="${PACKS_TO_UPLOAD}"
     IS_FORCE_UPLOAD=true
+    BUCKET_UPLOAD_FLOW=false
   else
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
     echo "Updating the following content packs to production: $CONTENT_PACKS_TO_UPLOAD ..."
+    BUCKET_UPLOAD_FLOW=true
     IS_FORCE_UPLOAD=false
   fi
   python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$CONTENT_PACKS_TO_UPLOAD" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"

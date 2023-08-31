@@ -19,19 +19,32 @@ For more details about the authentication used in this integration, see [Microso
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
-| auth_id | ID \(received from the admin consent \- see Detailed Instructions \(?\) | False |
-| tenant_id | Token \(received from the admin consent \- see Detailed Instructions \(?\) section\) | False |
-| enc_key | Key \(received from the admin consent \- see Detailed Instructions \(?\) | False |
+| azure_cloud | Azure Cloud. | False |
+| auth_id | The Auth ID. | False |
+| tenant_id | Token or tenant ID. | False |
+| enc_key | Key or client secret. | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+| url | Server URL, see note below regarding Azure cloud options. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | self_deployed | Use a self deployed Azure Application | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
+1. Azure cloud options
+
+    | Azure Cloud | Description                                                              |
+    |-------------|--------------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud.                                      |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC).                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High).       |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD).                      |
+    | Germany     | Azure cloud for the German Government.                                    |
+    | China       | Azure cloud for the Chinese Government.  
+
+
+5. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -1023,3 +1036,21 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
 >| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
+
+
+### msgraph-device-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-device-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

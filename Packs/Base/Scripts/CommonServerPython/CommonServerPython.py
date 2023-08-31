@@ -44,6 +44,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -6885,7 +6886,7 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
-        raw_response = None  # type: ignore[assignment]
+        raw_response = self.raw_response  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
@@ -6902,9 +6903,6 @@ class CommandResults:
                         outputs[key] = []
 
                     outputs[key].append(value)
-
-        if self.raw_response:
-            raw_response = self.raw_response
 
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
@@ -7964,11 +7962,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.utcnow() + timedelta(hours=timezone)
-        start_time = datetime.utcnow() + timedelta(hours=timezone)
+        utc_now = datetime.utcnow()
+        end_time = utc_now + timedelta(hours=timezone)
+        start_time = utc_now + timedelta(hours=timezone)
     else:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
+        now = datetime.now()
+        end_time = now + timedelta(hours=timezone)
+        start_time = now + timedelta(hours=timezone)
 
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
@@ -8694,7 +8694,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8787,6 +8787,11 @@ if 'requests' in sys.modules:
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :type params_parser: ``callable``
+            :param params_parser: How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
+            see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8799,6 +8804,8 @@ if 'requests' in sys.modules:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
+                if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
+                    params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # Execute
                 res = self._session.request(
@@ -10645,7 +10652,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res),
+    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents),
                                                                                       [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 
@@ -11079,11 +11086,12 @@ def split_data_to_chunks(data, target_chunk_size):
     :type data: ``list`` or a ``string``
     :param data: A list of data or a string delimited with \n  to split to chunks.
     :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk.
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
 
-    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
+    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11099,7 +11107,8 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11123,6 +11132,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
     :return: None
     :rtype: ``None``
@@ -11200,7 +11212,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)

@@ -2531,3 +2531,21 @@ Lists all resource groups.
 >|---|---|---|
 >| cloud-shell | eastus |  |
 >| demi | centralus | Owner: Demi |
+
+
+### azure-sentinel-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-sentinel-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

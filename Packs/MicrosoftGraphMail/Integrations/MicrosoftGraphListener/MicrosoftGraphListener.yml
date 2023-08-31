@@ -142,11 +142,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use a self-deployed Azure application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - display: Incident type
   name: incidentType
@@ -402,11 +403,23 @@ script:
     - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attach_ids
+      hidden: true
     - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
+      hidden: true
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       name: attach_cids
+      isArray: true
+      hidden: true
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      name: attachNames
+      isArray: true
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attachCIDs
       isArray: true
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
@@ -487,7 +500,7 @@ script:
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
-  - description: Run this command to rerun the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
   - name: msgraph-mail-list-emails
@@ -722,7 +735,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.62834
+  dockerimage: demisto/crypto:1.0.0.68914
   isfetch: true
   script: ''
   type: python
