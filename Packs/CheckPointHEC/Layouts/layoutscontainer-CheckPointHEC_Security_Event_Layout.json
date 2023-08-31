@@ -21,7 +21,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "checkpointheccustomer",
+								"fieldId": "checkpointhecfarm",
 								"height": 53,
 								"id": "bc5fbb10-362e-11ee-b944-c7997e9b1fa5",
 								"index": 0,
