@@ -286,7 +286,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def pre_process_result_query(client: Client, result: Sequence[Row], headers: list[str]) -> list[dict]:
+def pre_process_result_query(client: Client, result: dict, headers: list[str]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
