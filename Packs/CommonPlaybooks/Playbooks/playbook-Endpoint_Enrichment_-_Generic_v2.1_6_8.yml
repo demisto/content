@@ -84,10 +84,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+    taskid: ddba13dd-92fc-47a3-8ffe-b849c626eb22
     type: condition
     task:
-      id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+      id: ddba13dd-92fc-47a3-8ffe-b849c626eb22
       version: -1
       name: Is there an endpoint to enrich?
       description: Checks whether there is at least one endpoint to enrich (by hostname).
@@ -108,7 +108,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Hostname
