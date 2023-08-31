@@ -1,0 +1,258 @@
+id: e0ecc7fe-58fd-40fa-80bc-edcf68f7701b
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: DomainTools Check Domain Risk Score By Iris Tags
+description: This playbook call iris ivestigate api with a given "tag". Check active
+  domains with high risk score then alerts user and outputs all high risk domains
+  in the current incident indicators.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89d688bd-2022-42de-86e8-e89f16fddd75
+    type: start
+    task:
+      id: 89d688bd-2022-42de-86e8-e89f16fddd75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: aa12ab62-4652-4bbd-856e-07e8f782d8f8
+    type: regular
+    task:
+      id: aa12ab62-4652-4bbd-856e-07e8f782d8f8
+      version: -1
+      name: Query Domains by Tag(s)
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      include_context:
+        simple: "true"
+      tagged_with_any:
+        complex:
+          root: lists
+          accessor: Iris_Tags_To_Query
+          transformers:
+          - operator: trim
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
+    type: title
+    task:
+      id: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7f7c51fa-bb6b-428f-8733-d61b567e8fd1
+    type: regular
+    task:
+      id: 7f7c51fa-bb6b-428f-8733-d61b567e8fd1
+      version: -1
+      name: Manually Review High Risk Score Domains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 89608c66-3554-4d6e-8868-80b0d49b7d9b
+    type: condition
+    task:
+      id: 89608c66-3554-4d6e-8868-80b0d49b7d9b
+      version: -1
+      name: Is there any Active and High Risk Score Domain?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    scriptarguments:
+      first:
+        complex:
+          root: DomainTools.PivotedDomains
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DomainTools.PivotedDomains.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: lists.DT_HighRiskScore_Threshold
+                iscontext: true
+          - - operator: isTrue
+              left:
+                value:
+                  simple: DomainTools.PivotedDomains.Registration.DomainStatus
+                iscontext: true
+          transformers:
+          - operator: count
+      second:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 988dc9a1-069f-44ae-85dc-add6627a6ced
+    type: regular
+    task:
+      id: 988dc9a1-069f-44ae-85dc-add6627a6ced
+      version: -1
+      name: Add High Risk Domain to Indicator
+      description: Sets Data for a Domain in the Indicator Table
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools.PivotedDomains
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DomainTools.PivotedDomains.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: lists.DT_HighRiskScore_Threshold
+                iscontext: true
+          - - operator: isTrue
+              left:
+                value:
+                  simple: DomainTools.PivotedDomains.Registration.DomainStatus
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1045,
+        "width": 760,
+        "x": 110,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

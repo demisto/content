@@ -1,0 +1,237 @@
+id: 54636776-0cdd-4dba-8ee5-c578077c9ca0
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: DomainTools Check New Domains by Iris Hash
+description: This playbook retrieves domain from a given `search hash` with built-in
+  “first_seen” param. . Outputs all new domains in the current incident indicators.
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 54e1f882-5cb1-4fef-8360-4f19bc4ebab4
+    type: start
+    task:
+      id: 54e1f882-5cb1-4fef-8360-4f19bc4ebab4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 76506aac-fc02-4eeb-8647-89c283f577bd
+    type: regular
+    task:
+      id: 76506aac-fc02-4eeb-8647-89c283f577bd
+      version: -1
+      name: Load Search Hash
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      include_context:
+        simple: "true"
+      search_hash:
+        simple: ${inputs.search_hash}
+      using:
+        simple: DomainTools Iris_instance_1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bcc8bf32-94ea-42b7-8da8-de49a413fa85
+    type: condition
+    task:
+      id: bcc8bf32-94ea-42b7-8da8-de49a413fa85
+      version: -1
+      name: Is there New Domains?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      first:
+        complex:
+          root: DomainTools.PivotedDomains
+          accessor: Name
+          transformers:
+          - operator: count
+      second:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0140060d-a836-4803-8b6c-dd5c1ce452e4
+    type: title
+    task:
+      id: 0140060d-a836-4803-8b6c-dd5c1ce452e4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 30bb7efb-604f-4f86-8cfa-cd6c08b64ae5
+    type: regular
+    task:
+      id: 30bb7efb-604f-4f86-8cfa-cd6c08b64ae5
+      version: -1
+      name: Create an Indicator
+      description: Sets Data for a Domain in the Indicator Table
+      tags:
+      - new_domains
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domaintools_data:
+        simple: ${DomainTools.PivotedDomains}
+      incident_id:
+        simple: ${CreateIncidentByDate.CurrentIncidentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 195b68e7-d7c2-4af2-8606-5cd8761f7499
+    type: regular
+    task:
+      id: 195b68e7-d7c2-4af2-8606-5cd8761f7499
+      version: -1
+      name: Manually Review the Incident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: search_hash
+  value: {}
+  required: true
+  description: the "search hash" that has a built in “first seen within” parameter.
+  playbookInputQuery: null
+outputs: []
+quiet: true
