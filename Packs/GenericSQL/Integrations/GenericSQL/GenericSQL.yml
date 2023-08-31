@@ -89,6 +89,10 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Connect with LDAP (for Teradata DB)
+  name: is_ldap
+  type: 8
+  required: false
 - display: Connection Pool Time to Live (seconds)
   additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600

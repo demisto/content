@@ -37,7 +37,7 @@ class Client:
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
                  database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
-                 pool_ttl=DEFAULT_POOL_TTL):
+                 pool_ttl=DEFAULT_POOL_TTL, is_ldap=False):
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -48,6 +48,7 @@ class Client:
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
+        self.is_ldap = is_ldap
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -137,7 +138,11 @@ class Client:
                 cache[cache_key] = engine
         elif self.dialect == "Teradata":
             demisto.debug('Initializing engine for Teradata dialect')
-            engine = sqlalchemy.create_engine(f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}')
+            if self.is_ldap:
+                engine_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
+            else:
+                engine_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+            engine = sqlalchemy.create_engine(engine_url)
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
@@ -295,8 +300,8 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         if client.dialect == "Teradata":
             table = []
             for row in result:
-                convert_tup_to_dic = {header: col for header, col in zip(headers, row)}
-                table.append(convert_tup_to_dic)
+                row_dict = {header: col for header, col in zip(headers, row)}
+                table.append(row_dict)
         else:
             # converting a sqlalchemy object to a table
             converted_table = [dict(row) for row in result]
@@ -545,6 +550,7 @@ def main():
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
+        is_ldap = params.get('is_ldap', False)
         verify_certificate: bool = not params.get('insecure', False)
         pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
@@ -554,7 +560,7 @@ def main():
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
-                        pool_ttl=pool_ttl)
+                        pool_ttl=pool_ttl, is_ldap=is_ldap)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
