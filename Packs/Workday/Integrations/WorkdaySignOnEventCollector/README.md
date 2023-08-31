@@ -35,12 +35,12 @@ Returns Sign On events extracted from Workday.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| limit | The maximum number of events to return. Possible values are: . Default is 1000. | Optional | 
-| from_date | The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: . | Required | 
-| to_date | The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: . | Required | 
+| **Argument Name**  | **Description**                                                                                                                                                                                      | **Required** |
+|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False.                                               | Required     | 
+| limit              | The maximum number of events to return. Default is 1000.                                                                                                                                             | Optional     | 
+| from_date          | The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. | Required     | 
+| to_date            | The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.                                                                           | Required     | 
 
 #### Context Output
 
