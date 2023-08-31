@@ -20,6 +20,9 @@
     "hidden": false,
     "openEnded": false,
     "associatedToAll": false,
+    "associatedTypes": [
+        "Xpanse Alert"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
