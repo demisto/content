@@ -372,6 +372,41 @@ script:
       description: The virtualization type of the instance.
       type: string
   - arguments:
+      - description: One or more filters. See AWS documentation for details & filter options.
+        name: filters
+      - description: The IAM instance profile associations.
+        name: associationIds
+      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+        name: maxResults
+      - description: The token for the next set of results.
+        name: nextToken
+      - description: The AWS region. If not specified, the default region will be used.
+        name: region
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+    description: Describes your IAM instance profile associations.
+    name: aws-ec2-describe-iam-instance-profile-associations
+    outputs:
+      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
+        description: The Amazon Resource Name (ARN) of the instance profile.
+        type: string
+      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
+        description: The ID of the instance profile.
+        type: string
+      - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
+        description: The state of the association.
+        type: string
+      - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
+        description: The ID of the association.
+        type: string
+  - arguments:
     - description: One or more filters.
       name: filters
     - description: One or more image IDs, Seperated by comma
@@ -3768,7 +3803,7 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.72237
   runonce: false
   script: '-'
   subtype: python3
