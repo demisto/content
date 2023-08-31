@@ -24,7 +24,7 @@ The permissions required to use this integration depends on which operations you
     | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
     | Index time field (for sorting sort and limiting data) |  | False |
     | Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
-    | Time field type |  | False |
+    | Time field type | When selecting Simple-Date with multiple indexes where each index has a different custom date format, it will take the format from the first index. | False |
     | Map JSON fields into labels |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | The maximum number of results to return per fetch. |  | False |
