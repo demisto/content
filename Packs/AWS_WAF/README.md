@@ -18,17 +18,17 @@ To create or configure the Amazon S3 collector, use the information described [h
 2. Press **Add New Istance**.
 3. Fill in the following parameters: 
 
-| Field Name        | Description | Value   |
-|-------------------|-------------|---------|
-| SQS URL           |             |         |
-| Name              |             |         |
-| AWS Client ID     |             |         |
-| AWS Client Secret |             |         |
-| Log Type          |             | Generic |
-| Log Format        |             | Json    |
-| Vendor            |             | aws     |
-| Product           |             | waf     |
-| Compression       |             | gzip    | 
+| **Field Name**    | **Description** | **Value** |
+|-------------------|-----------------|-----------|
+| SQS URL           | test            | test      |
+| Name              | test            | test      |
+| AWS Client ID     | test            | test      |
+| AWS Client Secret | test            | test      |
+| Log Type          | test            | Generic   |
+| Log Format        | test            | Json      |
+| Vendor            | test            | aws       |
+| Product           | test            | waf       |
+| Compression       | test            | gzip      |
 
 
 </~XSIAM>
