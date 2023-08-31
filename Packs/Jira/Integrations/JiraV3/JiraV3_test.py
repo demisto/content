@@ -313,7 +313,7 @@ def test_module_oauth2(mocker):
                 "client_secret": "dummy_client_secret"
             },
             "The `User name` or `API key` parameters cannot be provided together"
-            " with the `Client ID` or `Client Secret` parameters. see the help window"
+            " with the `Client ID` or `Client Secret` parameters. See the help window"
             " for more information.",
             id="both types of auth params are provided"
         ),
