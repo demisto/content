@@ -109,7 +109,7 @@ script:
       description: The incident priority. Can be Low, Medium, High, or Critical.
       type: String
     - contextPath: RSANetWitness115.Incidents.riskScore
-      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The incident risk score is calculated based on the associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.status
       description: The current incident status.
@@ -243,7 +243,7 @@ script:
       description: The incident priority. Can be Low, Medium, High, or Critical.
       type: String
     - contextPath: RSANetWitness115.Incidents.riskScore
-      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The incident risk score is calculated based on the associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.status
       description: The current incident status.
@@ -330,7 +330,7 @@ script:
     - description: The unique incident identifier.
       name: id
       required: true
-    description: Remove a single incident using the incident’s unique identifier.
+    description: Remove a single incident using the incident's unique identifier.
     name: rsa-nw-remove-incident
   - arguments:
     - description: The unique incident identifier.
