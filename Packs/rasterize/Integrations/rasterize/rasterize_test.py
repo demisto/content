@@ -345,7 +345,7 @@ class TestRasterizeIncludeUrl:
 def test_rasterize_html_no_internet_access(mocker):
     """
     Validates that when calling the command rasterize_html_command
-    No http requests are executed.
+    No http requests are executed. - CIAC-8142
     """
     import requests
     mock = Mock()
