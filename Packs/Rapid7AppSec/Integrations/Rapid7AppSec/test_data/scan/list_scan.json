@@ -33,7 +33,7 @@
         "id": "1111",
         "failure_reason": "CANCELED",
         "validation": {
-          "parent_scan_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          "parent_scan_id": "1111"
         },
         "status": "PENDING"
       }

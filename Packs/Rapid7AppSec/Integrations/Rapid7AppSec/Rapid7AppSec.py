@@ -20,6 +20,7 @@ SCAN = "scan"
 SCAN_ACTION = "scan-action"
 RESPONSE_TYPE = "response"
 CLEAN_HTML_TAGS = re.compile('<.*?>')
+API_LIMIT = 1000
 
 
 class Pagination():
@@ -28,6 +29,15 @@ class Pagination():
     """
 
     def __init__(self, limit: str, page: str | None = None, page_size: str | None = None):
+        if any([page and not page_size, page_size and not page]):
+            raise ValueError("In order to use pagination, please insert both page and page_size or insert limit.")
+
+        if limit and arg_to_number(limit) > API_LIMIT:
+            raise ValueError(f"Limit maximum value is {API_LIMIT}.")
+
+        if page_size and arg_to_number(page_size) > API_LIMIT:
+            raise ValueError(f"Page size maximum value is {API_LIMIT}.")
+
         self.page = arg_to_number(page_size and page)
         self.page_size = arg_to_number(page and page_size)
         self.limit = arg_to_number(limit)
@@ -87,10 +97,10 @@ class Headers(list, Enum):
         "vulnerability_score",
     ]
     VULNERABILITY_COMMENT = [
+        'content',
         'id',
         'vulnerability_id',
         'author_id',
-        'content',
         'create_time',
         'update_time',
     ]
@@ -236,6 +246,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None,
     ) -> dict[str, Any]:
         """
@@ -244,6 +255,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Vulnerability ID . Defaults to None.
 
         Returns:
@@ -256,6 +268,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -386,6 +399,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None,
     ) -> dict[str, Any]:
         """
@@ -394,6 +408,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Attack template ID . Defaults to None.
 
         Returns:
@@ -406,6 +421,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -488,6 +504,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None
     ) -> dict[str, Any]:
         """
@@ -496,6 +513,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Scan ID . Defaults to None.
 
         Returns:
@@ -508,6 +526,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -558,6 +577,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None
     ) -> dict[str, Any]:
         """
@@ -566,6 +586,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Scan Config ID . Defaults to None.
 
         Returns:
@@ -578,6 +599,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -586,6 +608,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None
     ) -> dict[str, Any]:
         """
@@ -594,6 +617,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): App ID . Defaults to None.
 
         Returns:
@@ -606,6 +630,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -614,6 +639,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None
     ) -> dict[str, Any]:
         """
@@ -622,6 +648,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Engine group ID . Defaults to None.
 
         Returns:
@@ -634,6 +661,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -642,6 +670,7 @@ class Client(BaseClient):
         self,
         index: int | None = None,
         size: int | None = None,
+        page_token: str | None = None,
         obj_id: str | None = None
     ) -> dict[str, Any]:
         """
@@ -650,6 +679,7 @@ class Client(BaseClient):
         Args:
             index (int | None): Index for pagination. Defaults to None.
             size (int | None): Size for pagination. Defaults to None.
+            page_token (str | None): Page token for pagination. Defaults to None.
             obj_id(str | None): Engine ID . Defaults to None.
 
         Returns:
@@ -662,6 +692,7 @@ class Client(BaseClient):
                 {
                     "index": index,
                     "size": size,
+                    "page-token": page_token,
                 }
             ),
         )
@@ -703,8 +734,8 @@ def update_vulnerability_command(
 
     client.update_vulnerability(
         vulnerability_id=vulnerability_id,
-        severity=args.get("severity", "").upper(),
-        status=args.get("status", "").upper().replace(" ", "_"),)
+        severity=args.get("severity") and args.get("severity", "").upper(),
+        status=args.get("status") and args.get("status", "").upper().replace(" ", "_"),)
     return CommandResults(
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY.value,
@@ -729,7 +760,7 @@ def list_vulnerability_command(client: Client, args: dict[str, Any]) -> CommandR
     return list_handler(
         pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
                               page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT)),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
         obj_id=args.get(XsoarArgKey.VULNERABILITY),
         obj_type=OutputPrefix.VULNERABILITY,
         request_command=client.list_vulnerability,
@@ -899,7 +930,7 @@ def submit_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.submit_scan(
-        scan_config_id=args.get("scan_config_id"),
+        scan_config_id=args.get("scan_config_id", ""),
         scan_type=args.get("scan_type", "").upper(),
         parent_scan_id=args.get("parent_scan_id"),
     )
@@ -1036,6 +1067,191 @@ def submit_scan_action_command(client: Client, args: dict[str, Any]) -> CommandR
                                                          action=ReadableOutputs.CHANGED.value.format(
                                                              args.get("action", "")),
                                                          object_id=args.get(XsoarArgKey.SCAN, ""))
+    )
+
+
+@logger
+def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get attack.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.ATTACK),
+        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),
+        title="Attack metadata",
+        headers=Headers.ATTACK.value,
+        obj_type=OutputPrefix.ATTACK,
+        add_to_output=AddToOutput(
+            data_to_add={"module_id": args.get(XsoarArgKey.MODULE)}),
+    )
+
+
+@logger
+def get_attack_documentation_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    Get attack documentation.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.ATTACK),
+        request_command=partial(
+            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),
+        obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
+        use_flatten_dict=False,
+        add_to_output=AddToOutput(
+            data_to_add={
+                "module_id": args.get(XsoarArgKey.MODULE), "id": args.get(XsoarArgKey.ATTACK)}
+        ),
+    )
+
+
+@logger
+def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List scan configs.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        headers=Headers.SCAN_CONFIG,
+        obj_id=args.get("scan_config_id"),
+        obj_type=OutputPrefix.SCAN_CONFIG,
+        title="Scan Config list",
+        request_command=client.list_scan_config,
+    )
+
+
+@logger
+def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List apps.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        obj_id=args.get("app_id"),
+        title="App list",
+        obj_type=OutputPrefix.APP,
+        request_command=client.list_app,
+    )
+
+
+@logger
+def list_attack_template_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    List attack templates.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        obj_id=args.get("attack_template_id"),
+        title="Attack Template list",
+        obj_type=OutputPrefix.ATTACK_TEMPLATE,
+        request_command=client.list_attack_template,
+    )
+
+
+@logger
+def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List engine groups.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        obj_id=args.get("engine_group_id"),
+        obj_type=OutputPrefix.ENGINE_GROUP,
+        request_command=client.list_engine_group,
+    )
+
+
+@logger
+def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List engines.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
+                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
+                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        obj_id=args.get("engine_id"),
+        obj_type=OutputPrefix.ENGINE,
+        request_command=client.list_engine,
+    )
+
+
+@logger
+def list_module_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List modules.
+
+    Args:
+        client (Client): Session to AppSec to run API requests.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return list_handler(
+        obj_id=args.get(XsoarArgKey.MODULE),
+        obj_type=OutputPrefix.MODULE,
+        request_command=client.list_module,
     )
 
 
@@ -1212,11 +1428,49 @@ def handle_list_request(request_command: Callable,
         request_command = partial(request_command,
                                   obj_id=obj_id)
     elif pagination:
-        request_command = partial(request_command,
-                                  index=pagination.page and pagination.page - 1,
-                                  size=pagination.page_size or pagination.limit)
+        request_command = request_with_pagination(
+            request_command=request_command,
+            pagination=pagination
+        )
 
     return request_command()
+
+
+@ logger
+def request_with_pagination(request_command: Callable,
+                            pagination: Pagination,
+                            page_token: str | None = None) -> Callable:
+    """
+    Handle request with pagination.
+
+    Args:
+        request_command (Callable | None, optional): List request command. Defaults to None.
+        pagination (Pagination | None, optional): Pagination arguments. Defaults to None.
+
+    Returns:
+        Callable: Request with the relevant pagination parameters.
+    """
+    if (pagination.page_size is not None and pagination.page * pagination.page_size <= API_LIMIT) \
+            or pagination.page_size is None:
+        return partial(request_command,
+                       index=pagination.page and pagination.page - 1,
+                       size=pagination.page_size or pagination.limit,
+                       page_token=page_token)
+    else:
+        size_to_get = int(API_LIMIT / pagination.page_size)
+        data = request_command(index=None,
+                               size=API_LIMIT,
+                               page_token=page_token)
+
+        page_token = dict_safe_get(data, keys=["metadata", "page_token"])
+
+        pagination.page -= size_to_get
+
+        pagination.page = None if pagination.page == 0 else pagination.page
+
+        return request_with_pagination(request_command=request_command,
+                                       pagination=pagination,
+                                       page_token=page_token,)
 
 
 @ logger
@@ -1274,6 +1528,7 @@ def create_list_readable_output(
         t=readable_table,
         headers=headers or list(data[0].keys() if len(data) > 0 else []),
         headerTransform=string_to_table_header,
+        removeNull=True
     )
 
 
@@ -1421,6 +1676,15 @@ def main() -> None:
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-execution-details-get": get_scan_execution_detail_command,
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-get": get_scan_action_command,
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-submit": submit_scan_action_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-get": get_attack_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-documentation-get": get_attack_documentation_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-config-list": list_scan_config_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-app-list": list_app_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-template-list": list_attack_template_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-group-list": list_engine_group_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-list": list_engine_command,
+            f"{INTEGRATION_COMMAND_PREFIX}-module-list": list_module_command,
+
         }
         if command == "test-module":
             return_results(test_module(client))

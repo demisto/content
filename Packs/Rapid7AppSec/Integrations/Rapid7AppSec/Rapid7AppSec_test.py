@@ -1,6 +1,5 @@
 import json
 import os
-from http import HTTPStatus
 from typing import Callable
 from urllib.parse import urljoin
 
@@ -260,7 +259,118 @@ def test_no_content_commands(
             f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.SCAN}",
             DEFAULT_OUTPUT_KEY_FIELD,
         ),
-
+        (
+            {"module_id": EXAMPLE_ID, "attack_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-get",
+            f"{UrlPrefix.MODULE}/{EXAMPLE_ID}/attacks/{EXAMPLE_ID}",
+            "vulnerability/get_attack.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ATTACK}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"module_id": EXAMPLE_ID, "attack_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-documentation-get",
+            f"{UrlPrefix.MODULE}/{EXAMPLE_ID}/attacks/{EXAMPLE_ID}/documentation",
+            "vulnerability/get_attack_documentation.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ATTACK_DOCUMENTATION}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-config-list",
+            f"{UrlPrefix.SCAN_CONFIG}",
+            "scan/list_scan_config.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.SCAN_CONFIG}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"scan_config_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-config-list",
+            f"{UrlPrefix.SCAN_CONFIG}/{EXAMPLE_ID}",
+            "scan/get_scan_config.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.SCAN_CONFIG}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-app-list",
+            f"{UrlPrefix.APP}",
+            "scan/list_app.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.APP}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"app_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-app-list",
+            f"{UrlPrefix.APP}/{EXAMPLE_ID}",
+            "scan/get_app_engine_group.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.APP}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-module-list",
+            f"{UrlPrefix.MODULE}",
+            "scan/list_modules.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.MODULE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"module_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-module-list",
+            f"{UrlPrefix.MODULE}/{EXAMPLE_ID}",
+            "scan/list_modules.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.MODULE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-template-list",
+            f"{UrlPrefix.ATTACK_TEMPLATE}",
+            "scan/list_attack_template.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ATTACK_TEMPLATE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"attack_template_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-template-list",
+            f"{UrlPrefix.ATTACK_TEMPLATE}/{EXAMPLE_ID}",
+            "scan/get_attack_template.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ATTACK_TEMPLATE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-group-list",
+            f"{UrlPrefix.ENGINE_GROUP}",
+            "scan/list_engine_group.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ENGINE_GROUP}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"engine_group_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-group-list",
+            f"{UrlPrefix.ENGINE_GROUP}/{EXAMPLE_ID}",
+            "scan/get_app_engine_group.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ENGINE_GROUP}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {},
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-list",
+            f"{UrlPrefix.ENGINE}",
+            "scan/list_engine.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ENGINE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
+        (
+            {"engine_id": EXAMPLE_ID},
+            f"{INTEGRATION_COMMAND_PREFIX}-engine-list",
+            f"{UrlPrefix.ENGINE}/{EXAMPLE_ID}",
+            "scan/get_engine.json",
+            f"{INTEGRATION_OUTPUT_PREFIX}.{OutputPrefix.ENGINE}",
+            DEFAULT_OUTPUT_KEY_FIELD,
+        ),
     ),
 )
 def test_list_commands(
@@ -288,9 +398,14 @@ def test_list_commands(
      - Ensure that outputs id is correct.
     """
 
-    from Rapid7AppSec import (get_scan_action_command,
+    from Rapid7AppSec import (get_attack_command,
+                              get_attack_documentation_command,
+                              get_scan_action_command,
                               get_scan_execution_detail_command,
-                              list_scan_command,
+                              list_app_command, list_attack_template_command,
+                              list_engine_command, list_engine_group_command,
+                              list_module_command, list_scan_command,
+                              list_scan_config_command,
                               list_scan_engine_events_command,
                               list_scan_platform_events_command,
                               list_vulnerability_command,
@@ -305,6 +420,14 @@ def test_list_commands(
         f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-platform-event-list": list_scan_platform_events_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-execution-details-get": get_scan_execution_detail_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-get": get_scan_action_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-get": get_attack_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-documentation-get": get_attack_documentation_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-config-list": list_scan_config_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-app-list": list_app_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{ATTACK}-template-list": list_attack_template_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-engine-group-list": list_engine_group_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-engine-list": list_engine_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-module-list": list_module_command,
     }
     url = urljoin(
         mock_client._base_url,
@@ -317,4 +440,62 @@ def test_list_commands(
     assert result.outputs_prefix == output_prefix
     assert result.outputs_key_field == outputs_key_field
     assert result.outputs[0][result.outputs_key_field] == EXAMPLE_ID
+    assert result.raw_response == json_response
+
+
+@pytest.mark.parametrize(
+    ("args", "endpoints"),
+    (
+        (
+            {"page": "21", "page_size": "50", "limit": "50"},
+            [("vulnerabilities?size=1000", "vulnerability/list.json"),
+             ("vulnerabilities?index=0&size=50&page-token=string", "vulnerability/list_2.json")],
+        ),
+        (
+            {"page": "41", "page_size": "50", "limit": "50"},
+            [("vulnerabilities?size=1000", "vulnerability/list.json"),
+             ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
+             ("vulnerabilities?index=0&size=50&page-token=string2", "vulnerability/list_3.json")
+             ],
+        ),
+        (
+            {"page": "61", "page_size": "50", "limit": "50"},
+            [("vulnerabilities?size=1000", "vulnerability/list.json"),
+             ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
+             ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
+             ("vulnerabilities?index=0&size=50&page-token=string2", "vulnerability/list_2.json")
+             ],
+        ),
+    ),
+)
+def test_pagination(
+    requests_mock,
+    mock_client: Client,
+    args: dict[str, Any],
+    endpoints: list,
+):
+    """
+    Scenario: Test pagination with page-token.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - app-sec-vulnerability-list called.
+
+    Then:
+     - Ensure that output prefix is correct.
+     - Ensure that outputs raw_response field is correct.
+    """
+
+    from Rapid7AppSec import list_vulnerability_command
+
+    for endpoint, json_path in endpoints:
+        json_response = load_mock_response(file_name=json_path)
+        url = urljoin(
+            mock_client._base_url,
+            endpoint
+        )
+        requests_mock.get(url=url, json=json_response)
+
+    result = list_vulnerability_command(mock_client, args)
+    assert result.outputs_prefix == "Rapid7AppSec.Vulnerability"
     assert result.raw_response == json_response
