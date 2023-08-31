@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set +e
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
 clone_repository() {
   local host=$1
   local user=$2
@@ -11,7 +15,7 @@ clone_repository() {
   local sleep_time=${7:-10}  # default sleep time is 10 seconds.
   local exit_code=0
   local i=1
-  echo "Cloning ${repo_name} from ${host} branch:${branch} with ${retry_count} retries"
+  echo -e "${GREEN}Cloning ${repo_name} from ${host} branch:${branch} with ${retry_count} retries${NC}"
   if [ -z "${user}" ] && [ -z "${token}" ]; then
     user_info=""
   else
@@ -21,10 +25,10 @@ clone_repository() {
   for ((i=1; i <= retry_count; i++)); do
     git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
-      echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again"
+      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again${NC}"
       sleep "${sleep_time}"
     else
-      echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, exhausted all ${retry_count} retries"
+      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, exhausted all ${retry_count} retries${NC}"
       break
     fi
   done
@@ -42,7 +46,7 @@ clone_repository_with_fallback_branch() {
   local fallback_branch="${8:-master}"
 
   # Check if branch exists in the repository.
-  echo "Checking if branch ${branch} exists in ${repo_name}"
+  echo -e "${GREEN}Checking if branch ${branch} exists in ${repo_name}${NC}"
   if [ -z "${user}" ] && [ -z "${token}" ]; then
     user_info=""
   else
@@ -53,30 +57,30 @@ clone_repository_with_fallback_branch() {
   local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
-    echo "Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}"
+    echo -e "${RED}Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}${NC}"
     local exit_code=1
   else
-    echo "Branch ${branch} exists in ${repo_name}, trying to clone"
+    echo -e "${GREEN}Branch ${branch} exists in ${repo_name}, trying to clone${NC}"
     clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ "${exit_code}" -ne 0 ]; then
-      echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}"
+      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}${NC}"
     fi
   fi
   if [ "${exit_code}" -ne 0 ]; then
     # Trying to clone from fallback branch.
-    echo "Trying to clone repository:${repo_name} with fallback branch ${fallback_branch}!"
+    echo -e "${RED}Trying to clone repository:${repo_name} with fallback branch ${fallback_branch}!${NC}"
     clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
-      echo "ERROR: Failed to clone ${repo_name} with fallback branch:${fallback_branch}, exit code:${exit_code}, exiting!"
+      echo -e "${RED}ERROR: Failed to clone ${repo_name} with fallback branch:${fallback_branch}, exit code:${exit_code}, exiting!${NC}"
       exit ${exit_code}
     else
-      echo "Successfully cloned ${repo_name} with branch:${fallback_branch}"
+      echo -e "${GREEN}Successfully cloned ${repo_name} with fallback branch:${fallback_branch}${NC}"
       return 0
     fi
   else
-    echo "Successfully cloned ${repo_name} with branch:${branch}"
+    echo -e "${GREEN}Successfully cloned ${repo_name} with branch:${branch}${NC}"
     return 0
   fi
 }
@@ -120,4 +124,5 @@ mv ./infra/gcp ./gcp
 rm -rf ./infra
 
 set -e
-echo "Successfully downloaded configuration files"
+echo "Successfully cloned content-test-conf and infra repositories"
+
