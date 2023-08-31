@@ -1853,7 +1853,8 @@
         },
         {
             "integrations": "Jira V3",
-            "playbookID": "JiraV3 Test"
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth"
         },
         {
             "integrations": "ipinfo",
