@@ -249,8 +249,8 @@ def check_configuration():
     # Deprecated: this parameter is never used
     if FETCH_INCIDENTS_DEDUPE:
         dedupe_conf = check_type(FETCH_INCIDENTS_DEDUPE, dict)
-        assert isinstance(
-            dedupe_conf["cooldown"], int | float
+        assert (isinstance(
+            dedupe_conf["cooldown"],  int) or isinstance(dedupe_conf["cooldown"], float)
         ), "Invalid fetch_incidents_deduplication configuration"
 
     return True
@@ -290,7 +290,7 @@ def demisto_ISO(s_epoch):
 
 # We will assume timestamp_from and timestamp_to will be the same format or to will be None
 def get_time_range(timestamp_from, timestamp_to):
-    if isinstance(timestamp_from, int | float):
+    if isinstance(timestamp_from, int) or isinstance(timestamp_from, float):
         t_from = timestamp_from
         t_to = time.time() if timestamp_to is None else timestamp_to
     elif isinstance(timestamp_from, str):
@@ -706,7 +706,7 @@ def multi_table_query_command(offset, items):
     time_range = get_time_range(timestamp_from, timestamp_to)
 
     futures = []
-    all_results: list[dict] = []
+    all_results: List[dict] = []
     sub_queries = []
 
     ds_read = ds.Reader(
