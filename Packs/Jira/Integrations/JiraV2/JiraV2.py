@@ -79,12 +79,12 @@ def jira_req(
                 raise DemistoException(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
             elif rj.get('errors'):
                 errors = rj["errors"]
+                error_messages = []
                 if isinstance(errors, list):
-                    error_messages = []
                     for error in errors:
                         error_messages.append(",".join(error.values()))
                 else:
-                    error_messages = ",".join(errors.values())
+                    error_messages.append(",".join(errors.values()))
                 raise DemistoException(f'Status code: {result.status_code}\nMessages: {error_messages}')
             else:
                 raise DemistoException(f'Status code: {result.status_code}\nError text: {result.text}')
