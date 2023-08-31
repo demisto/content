@@ -3,7 +3,6 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
-
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
@@ -31,7 +30,6 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
-
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
@@ -123,7 +121,6 @@ SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
