@@ -73,7 +73,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res.status_code == 401:
+            if hasattr(e.res, 'status_code') and e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
                 )
@@ -396,6 +396,7 @@ class Client(BaseClient):
         limit: int,
         search_option: str,
         cisco_host: str,
+        timeout: int = None,
         sender_filter_operator: str = None,
         sender_filter_value: str = None,
         recipient_filter_operator: str = None,
@@ -460,7 +461,8 @@ class Client(BaseClient):
             **format_custom_query_args(custom_query),
         )
 
-        return self._http_request("GET", "message-tracking/messages", params=params, params_parser=urllib.parse.quote)
+        return self._http_request("GET", "message-tracking/messages", params=params,
+                                  params_parser=urllib.parse.quote, timeout=timeout)
 
     def message_details_get_request(
         self,
@@ -1258,6 +1260,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     search_option = "messages"
     file_sha_256 = args.get("file_sha_256")
     custom_query = args.get("custom_query")
+    timeout = arg_to_number(args.get("timeout")) if args.get("timeout") else None
 
     validate_related_arguments(
         args=args,
@@ -1287,6 +1290,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
         search_option=search_option,
         file_sha_256=file_sha_256,
         custom_query=custom_query,
+        timeout=timeout,
     )
 
     messages_lists = [

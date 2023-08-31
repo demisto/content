@@ -415,6 +415,8 @@ script:
     - name: sender_list
       description: A comma-separated list of senders to delete.
       isArray: true
+    - name: timeout
+      description: Timeout for the operation in seconds.
     outputs: []
   - name: cisco-sma-message-search
     description: Search tracking messages.
