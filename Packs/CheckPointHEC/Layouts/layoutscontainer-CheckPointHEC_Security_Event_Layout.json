@@ -305,7 +305,7 @@
 								"height": 53,
 								"id": "abaa10c0-3635-11ee-b944-c7997e9b1fa5",
 								"index": 2,
-								"name": "Get action result",
+								"name": "Get Action Result",
 								"scriptId": "CheckPointHEC|||checkpointhec-get-action-result",
 								"sectionItemType": "button",
 								"startCol": 0
@@ -333,6 +333,20 @@
 											},
 											"type": "shortText"
 										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "checkpointheccampaigntask"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "shortText"
+										}
 									]
 								],
 								"height": 53,
@@ -340,6 +354,60 @@
 								"index": 3,
 								"name": "Run Phishing Campaign",
 								"scriptId": "RunCPPhishingCampaign",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"customer": {
+										"complex": {
+											"accessor": "checkpointheccustomer",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
+									},
+									"farm": {
+										"complex": {
+											"accessor": "checkpointhecfarm",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
+									},
+									"task": {
+										"complex": {
+											"accessor": "checkpointheccampaigntask",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "checkpointheccampaigntask"
+												}
+											},
+											"operator": "isNotEmpty",
+											"right": null,
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 53,
+								"id": "d46a3d40-4806-11ee-8b3e-2fd74623537f",
+								"index": 4,
+								"name": "Get Campaign Result",
+								"scriptId": "CheckPointHEC|||checkpointhec-get-action-result",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -380,7 +448,7 @@
 								],
 								"height": 53,
 								"id": "4754b380-3452-11ee-972b-17833fbd34fb",
-								"index": 4,
+								"index": 5,
 								"name": "Send Warning",
 								"scriptId": "CheckPointHEC|||checkpointhec-send-notification",
 								"sectionItemType": "button",

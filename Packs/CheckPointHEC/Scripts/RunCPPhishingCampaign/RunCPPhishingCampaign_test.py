@@ -13,6 +13,9 @@ def test_search_and_quarantine_with_results(mocker):
         if name == 'checkpointhec-send-action':
             return [{'Contents': {'task': 1}}]
 
+        if name == 'setIncident':
+            return [{'Contents': None}]
+
         raise ValueError(f'Error: Unknown command or command/argument pair: {name} {args!r}')
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)

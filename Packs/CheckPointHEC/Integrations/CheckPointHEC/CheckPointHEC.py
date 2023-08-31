@@ -253,7 +253,7 @@ def checkpointhec_get_scan_info(client: Client, entity: str) -> CommandResults:
         sec_result = entities[0]['entitySecurityResult']
         for tool, verdict in sec_result['combinedVerdict'].items():
             if verdict not in (None, 'clean'):
-                outputs[tool] = sec_result[tool]
+                outputs[tool] = json.dumps(sec_result[tool])
         return CommandResults(
             outputs_prefix='CheckPointHEC.ScanResult',
             outputs=outputs

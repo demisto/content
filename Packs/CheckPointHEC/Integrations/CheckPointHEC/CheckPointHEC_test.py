@@ -248,7 +248,7 @@ def test_checkpointhec_get_scan_info_success(mocker):
 
     result = checkpointhec_get_scan_info(client, '00000000000000000000000000000000')
     get_entity.assert_called_once()
-    assert result.outputs == {'av': mock_response['responseData'][0]['entitySecurityResult']['av']}
+    assert result.outputs == {'av': json.dumps(mock_response['responseData'][0]['entitySecurityResult']['av'])}
 
 
 def test_checkpointhec_get_scan_info_fail(mocker):

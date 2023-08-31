@@ -10,7 +10,7 @@ def search_and_quarantine(farm: str, customer: str, date_range: str, sender: str
             'subject': subject
         }
     )
-    if ids := result[0]['Contents']['ids']:
+    if ids := result[0].get('Contents', {}).get('ids'):
         result = demisto.executeCommand(
             "checkpointhec-send-action",
             {
@@ -18,6 +18,15 @@ def search_and_quarantine(farm: str, customer: str, date_range: str, sender: str
                 'customer': customer,
                 'entity': ids,
                 'action': 'quarantine'
+            }
+        )
+        task = result[0]['Contents']['task']
+        demisto.executeCommand(
+            "setIncident",
+            {
+                'customFields': json.dumps({
+                    'checkpointheccampaigntask': task
+                })
             }
         )
     return result
