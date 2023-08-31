@@ -13,11 +13,14 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search
+display: O365 - Security And Compliance - Content Search (Deprecated)
+deprecated: true
 name: SecurityAndCompliance
 script:
   commands:

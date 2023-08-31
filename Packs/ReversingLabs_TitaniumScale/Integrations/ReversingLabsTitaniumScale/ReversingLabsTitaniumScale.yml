@@ -14,6 +14,7 @@ configuration:
 - display: Verify host certificates
   name: verify
   type: 8
+  required: false
 - defaultvalue: C - Fairly reliable
   display: Reliability
   name: reliability
@@ -26,14 +27,17 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: '2'
   display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
   name: wait_time_seconds
   type: 0
+  required: false
 - defaultvalue: '30'
   display: Number of report fetching retries. Default is 30.
   name: num_of_retries
   type: 0
+  required: false
 description: ReversingLabs advanced file decomposition appliance.
 detaileddescription: TitaniumScale provides real-time and deep inspection of files.
 display: ReversingLabs TitaniumScale

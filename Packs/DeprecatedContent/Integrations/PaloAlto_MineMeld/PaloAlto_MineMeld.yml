@@ -14,6 +14,7 @@ configuration:
 - display: Block list names e.g.(BlackListIPv4, BlackListURL,Malicious)
   name: blacklist
   type: 0
+  required: false
 - additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
   defaultvalue: 'False'
   display: Stateless
@@ -22,12 +23,15 @@ configuration:
   - 'True'
   - 'False'
   type: 15
+  required: false
 - display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
   name: whitelist
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat intelligence.
 deprecated: true
 display: Palo Alto Networks MineMeld (Deprecated)

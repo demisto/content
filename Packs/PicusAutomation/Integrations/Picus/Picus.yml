@@ -15,9 +15,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Run commands on Picus and automate security validation with playbooks.
 display: Picus Security
 name: Picus

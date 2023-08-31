@@ -19,22 +19,28 @@ configuration:
 - display: CA Certificate
   name: ca_certificate
   type: 12
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Registry Identity Token
   name: identitytoken
   type: 4
   hiddenusername: true
+  required: false
 - displaypassword: Registry Password
   name: Registry Username
   type: 9
+  required: false
 - display: Registry Server Address (e.g. docker.io)
   name: registry_serveraddress
   type: 0
+  required: false
 description: The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
 display: Docker Engine API
 name: Docker Engine API

@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"the 'occurred' argument has been replaced by the time range arguments.\nAlso, The parameters in *UnitTestPlaybookAnalyzer* script *playbook*, *firstday* and *lastday* are mandatory now."}

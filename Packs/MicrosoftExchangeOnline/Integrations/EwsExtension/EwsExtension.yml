@@ -16,16 +16,19 @@ configuration:
   name: credentials
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
 display: O365 - EWS - Extension (Deprecated)
 name: EwsExtension

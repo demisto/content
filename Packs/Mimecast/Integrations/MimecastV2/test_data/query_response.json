@@ -1,0 +1,131 @@
+{
+    "response": {
+        "meta": {
+            "pagination": {
+                "recordStart": 0,
+                "pageSize": 25
+            },
+            "status": 200
+        },
+        "data": [
+            {
+                "items": [
+                    {
+                        "size": 2262,
+                        "attachmentcount": 0,
+                        "subject": "Netting",
+                        "displaytoaddresslist": [
+                            {
+                                "displayableName": "",
+                                "emailAddress": "test1"
+                            }
+                        ],
+                        "displayfrom": "test1",
+                        "displayfromaddress": "test1",
+                        "id": "test1_id",
+                        "smash": "test1_smash",
+                        "displayto": "test1",
+                        "receiveddate": "2023-08-06T07:23:00+0000",
+                        "status": "ARCHIVED"
+                    },
+                    {
+                        "size": 11370,
+                        "attachmentcount": 0,
+                        "subject": "RE",
+                        "displaytoaddresslist": [
+                            {
+                                "displayableName": "",
+                                "emailAddress": "test2"
+                            }
+                        ],
+                        "displayfrom": "test2",
+                        "displayfromaddress": "test2",
+                        "id": "test2_id",
+                        "smash": "test2_smash",
+                        "displayto": "test2",
+                        "receiveddate": "2023-08-06T07:23:00+0000",
+                        "status": "ARCHIVED"
+                    },
+                    {
+                        "size": 5280,
+                        "attachmentcount": 0,
+                        "subject": "Re",
+                        "displaytoaddresslist": [
+                            {
+                                "displayableName": "",
+                                "emailAddress": "test3"
+                            }
+                        ],
+                        "displayfrom": "test3",
+                        "displayfromaddress": "test3",
+                        "id": "test3_id",
+                        "smash": "test3_smash",
+                        "displayto": "test3",
+                        "receiveddate": "2023-08-06T07:23:00+0000",
+                        "status": "ARCHIVED"
+                    }
+                ],
+                "queryDuration": 176
+            }
+        ],
+        "fail": []
+    },
+    "query_contents": [
+        {
+            "Subject": "Netting",
+            "Display From": "test1",
+            "Display To": "test1",
+            "Received Date": "2023-08-06T07:23:00+0000",
+            "Size": 2262,
+            "Attachment Count": 0,
+            "Status": "ARCHIVED",
+            "ID": "test1_id",
+            "displayfromaddress": "test1", 
+            "displaytoaddresslist": [
+                {
+                    "displayableName": "",
+                    "emailAddress": "test1"
+                }
+            ],
+            "smash": "test1_smash"
+        },
+        {
+            "Subject": "RE",
+            "Display From": "test2",
+            "Display To": "test2",
+            "Received Date": "2023-08-06T07:23:00+0000",
+            "Size": 11370,
+            "Attachment Count": 0,
+            "Status": "ARCHIVED",
+            "ID": "test2_id",
+            "displayfromaddress": "test2",
+            "displaytoaddresslist": [
+                {
+                    "displayableName": "",
+                    "emailAddress": "test2"
+                }
+            ],
+            "smash": "test2_smash"
+        },
+        {
+            "Subject": "Re",
+            "Display From": "test3",
+            "Display To": "test3",
+            "Received Date": "2023-08-06T07:23:00+0000",
+            "Size": 5280,
+            "Attachment Count": 0,
+            "Status": "ARCHIVED",
+            "ID": "test3_id",
+            "displayfromaddress": "test3", 
+            "displaytoaddresslist": [
+                {
+                    "displayableName": "",
+                    "emailAddress": "test3"
+                }
+            ],
+            "smash": "test3_smash"
+        }
+    ]
+}
+
+

@@ -23,6 +23,7 @@ configuration:
   - DoD
   - Custom
   advanced: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   required: true
@@ -46,6 +47,7 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '30'
   additionalinfo: The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit.
   display: Fetch alerts timeout
@@ -53,17 +55,20 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1000'
   display: Number of alerts for each fetch.
   name: limit
   type: 0
   additionalinfo: Due to API limitations, the maximum is 10,000.
   section: Collect
+  required: false
 - display: Fetch events
   name: isFetchEvents
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   type: 0
@@ -71,17 +76,20 @@ configuration:
   advanced: true
   additionalinfo: |-
     More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+  required: false
 - display: Verify SSL Certificate
   name: verify
   type: 8
   section: Connect
   advanced: true
   defaultvalue: 'true'
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Microsoft 365 Defender Event Collector integration.
 display: Microsoft Defender for Endpoint Event Collector
 name: Microsoft 365 Defender Event Collector

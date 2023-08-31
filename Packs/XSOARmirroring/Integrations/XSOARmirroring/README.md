@@ -26,6 +26,7 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
     | Use system proxy settings |  | False |
     | Debug mode (will print debug logs to info) |  | False |
     | Mirror Playbook ID | A parameter integration that removes the playbookId field from incoming incidents. Note: When set to true \(default\), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type \(if configured locally\). | False |
+    | Fetch incident history | Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted. Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system. | False |
 
 4. To set up the mirroring, enable *Fetching incidents* in your instance configuration.
 5. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:

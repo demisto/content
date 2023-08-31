@@ -26,9 +26,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - name: alert_status
   display: Fetch alerts with status
   defaultvalue: Open
@@ -37,6 +39,7 @@ configuration:
   options:
   - Open
   - Closed
+  required: false
 - name: alert_type
   display: Fetch alerts with type
   defaultvalue:
@@ -45,6 +48,7 @@ configuration:
   options:
   - Runtime
   - Posture
+  required: false
 - name: severities
   display: Severity of alerts to fetch
   defaultvalue: Low,Medium,High,Critical
@@ -56,28 +60,34 @@ configuration:
   - Medium
   - High
   - Critical
+  required: false
 - name: max_fetch
   display: Max incident to fetch
   defaultvalue: "50"
   type: 0
   additionalinfo: ""
+  required: false
 - name: first_fetch
   display: First fetch time
   defaultvalue: 3 days
   type: 0
   additionalinfo:
+  required: false
 - name: neosec_node_url
   display: Neosec Node URL (Optional)
   defaultvalue:
   type: 0
   additionalinfo: ""
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Neosec Incident
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Neosec is reinventing application security. Its pioneering SaaS platform gives security professionals visibility into behavior across their entire API estate. Built for organizations that expose APIs to partners, suppliers, and users, Neosec discovers all your APIs, analyzes their behavior, and stops threats lurking inside.
 display: Neosec
 name: Neosec

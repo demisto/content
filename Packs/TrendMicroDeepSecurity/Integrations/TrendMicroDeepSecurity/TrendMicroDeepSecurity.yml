@@ -14,18 +14,22 @@ configuration:
   name: api_secret
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Secret
   name: credentials_api_secret
   additionalinfo: The API secret key
   hiddenusername: true
   type: 9
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Cloud Security Protection
 display: Trend Micro Deep Security
 name: Trend Micro Deep Security
@@ -3955,7 +3959,7 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   subtype: python3
   type: python

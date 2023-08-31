@@ -56,4 +56,4 @@ dependson:
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.12.63474

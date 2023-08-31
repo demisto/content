@@ -6,6 +6,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: Cyberint API access token.
   display: Cyberint Access Token
   name: access_token
@@ -20,9 +21,11 @@ configuration:
   name: duplicate_alert
   type: 8
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: Severities to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
   name: fetch_severity
@@ -32,6 +35,7 @@ configuration:
   - high
   - very_high
   type: 16
+  required: false
 - additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
   display: Fetch Status
   name: fetch_status
@@ -40,10 +44,12 @@ configuration:
   - open
   - acknowledged
   - closed
+  required: false
 - additionalinfo: Environments to fetch (comma separated). If empty, all available environments will be returned.
   display: Fetch Environment
   name: fetch_environment
   type: 0
+  required: false
 - additionalinfo: Types to fetch. If none is chosen, all types will be returned.
   display: Fetch Types
   name: fetch_type
@@ -90,21 +96,26 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
+  required: false
 - defaultvalue: '10'
   display: Fetch Limit
   name: max_fetch
   type: 0
   additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max is 100.
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   defaultvalue: 7 days
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
 display: Cyberint
 name: cyberint

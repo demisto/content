@@ -8,10 +8,12 @@ configuration:
   display: Use HTTPS to communicate with the API
   name: https
   type: 8
+  required: false
 - additionalinfo: Only required to bypass rate limits and/or use HTTPS
   display: API Key
   name: apikey
   type: 4
+  required: false
 - additionalinfo: See https://members.ip-api.com/docs/json for details
   defaultvalue: "536608767"
   display: Fields to return
@@ -22,10 +24,12 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -39,6 +43,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -48,10 +53,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 description: |
   This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
 

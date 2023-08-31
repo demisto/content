@@ -21,9 +21,8 @@ Go to your [Developer console](https://developer.atlassian.com/console/myapps/) 
 
 #### Cloud ID
 
-Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by clicking the three dots and choosing **Manage users**. Your Cloud ID will appear in the URL:
+Go to your [Admin page](https://admin.atlassian.com/), click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
 `https://admin.atlassian.com/s/{cloud_id}/users`
-(If you do not have it, click **Products** and add the `Jira Software` product to your products list.)
 
 #### Cloud Scopes
 
@@ -34,10 +33,10 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 * read:jira-work
 * read:jira-user
 * write:jira-work
-* read:jql:jira
 
 #### Granular Scopes
 
+* read:jql:jira
 * read:issue-details:jira
 * write:board-scope:jira-software
 * read:board-scope:jira-software

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import regex
 from CommonServerPython import *  # noqa: F401
+# pylint: disable=no-member
 
 
 def main():

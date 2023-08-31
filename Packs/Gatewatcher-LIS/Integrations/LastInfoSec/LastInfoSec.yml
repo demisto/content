@@ -11,9 +11,11 @@ configuration:
 - display: Check the TLS certificate
   name: check_cert
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: This integration allow to interact with the Gatewatcher LastInfoSec product via API.
 display: LastInfoSec
 name: LastInfoSec

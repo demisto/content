@@ -23,18 +23,22 @@ configuration:
   display: The topic for which to publish the 'dxl-push-ip'.
   name: push_ip_topic
   type: 0
+  required: false
 - defaultvalue: DXL_PUSH_URL
   display: The topic for which to publish the 'dxl-push-url'.
   name: push_url_topic
   type: 0
+  required: false
 - defaultvalue: DXL_PUSH_DOMAIN
   display: The topic for which to publish the 'dxl-push-domain'.
   name: push_domain_topic
   type: 0
+  required: false
 - defaultvalue: DXL_PUSH_HASH
   display: The topic for which to publish the 'dxl-push-hash'.
   name: push_hash_topic
   type: 0
+  required: false
 description: McAfee DXL client
 display: McAfee DXL
 name: McAfee DXL

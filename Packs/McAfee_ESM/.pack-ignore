@@ -1,12 +1,5 @@
 [file:McAfee_ESM_v2.yml]
 ignore=IN126,BA108,BA109
 
-[file:McAfee_ESM_v2_-_Test.yml]
-ignore=auto-test
-
-[file:playbook-McAfee_ESM_Watchlists_-_Test.yml]
-ignore=auto-test
-
-
 [file:McAfee_ESM_v2_image.png]
 ignore=IM111

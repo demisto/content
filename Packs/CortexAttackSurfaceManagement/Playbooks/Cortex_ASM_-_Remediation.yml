@@ -66,7 +66,7 @@ tasks:
             value:
               complex:
                 root: alert.asmcloud
-                accessor: Provider
+                accessor: provider
             iscontext: true
           right:
             value:
@@ -78,7 +78,7 @@ tasks:
             value:
               complex:
                 root: alert.asmcloud
-                accessor: Provider
+                accessor: provider
             iscontext: true
           right:
             value:
@@ -90,7 +90,7 @@ tasks:
             value:
               complex:
                 root: alert.asmcloud
-                accessor: Provider
+                accessor: provider
             iscontext: true
           right:
             value:
@@ -187,12 +187,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: Azure-NSG
-          accessor: ID
+          accessor: id
       AzureVMPrivateIP:
         complex:
           root: alert.asmprivateip
@@ -200,7 +200,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmprivateip.Source
+                  simple: alert.asmprivateip.source
                 iscontext: true
               right:
                 value:
@@ -264,12 +264,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: S3-BucketName
-          accessor: ID
+          accessor: id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -315,12 +315,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: AWS-EC2
-          accessor: ID
+          accessor: id
       Port:
         complex:
           root: alert
@@ -352,7 +352,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -380,12 +380,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: GCP-VMNAME
-          accessor: ID
+          accessor: id
       GcpNetwork:
         complex:
           root: alert.asmsystemids
@@ -393,16 +393,16 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: GCP-VPC
-          accessor: ID
+          accessor: id
       GcpProject:
         complex:
           root: alert.asmcloud
-          accessor: Project
+          accessor: project
           transformers:
           - operator: FirstArrayElement
       GcpZone:
@@ -412,12 +412,12 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
                   simple: GCP-ZONE
-          accessor: ID
+          accessor: id
       RemotePort:
         complex:
           root: alert
@@ -443,7 +443,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false

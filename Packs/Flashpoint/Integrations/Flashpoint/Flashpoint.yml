@@ -9,9 +9,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Server URL
   additionalinfo: Server URL to connect to Flashpoint.
   name: url
@@ -28,11 +30,13 @@ configuration:
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc).'
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Whether to fetch the Flashpoint alerts or the compromised credentials. Would choose "Compromised Credentials" if nothing selected.
   defaultvalue: Compromised Credentials
   display: Fetch Type
@@ -41,22 +45,27 @@ configuration:
   - 'Compromised Credentials'
   - 'Alerts'
   type: 15
+  required: false
 - additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before.
   defaultvalue: 'true'
   display: Fetch fresh compromised credentials alerts
   name: is_fresh_compromised_credentials
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -70,6 +79,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -79,10 +89,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 script:
   script: ''
   type: python
@@ -1023,7 +1035,7 @@ script:
     - contextPath: Flashpoint.CompromisedCredential.sort
       description: Sort value of the IoC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   subtype: python3
