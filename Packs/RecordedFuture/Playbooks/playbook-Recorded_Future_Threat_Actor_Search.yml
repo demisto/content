@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6ed1083f-2314-4227-8e95-e475dfbead01
+    taskid: 77c2800f-5bc5-4e58-89dc-59acb3d6e189
     type: start
     task:
-      id: 6ed1083f-2314-4227-8e95-e475dfbead01
+      id: 77c2800f-5bc5-4e58-89dc-59acb3d6e189
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e12cbc42-ef46-4d18-818c-f149a21ca50a
+    taskid: 5e6d35e2-073b-47b6-8a96-443fe44fb82a
     type: regular
     task:
-      id: e12cbc42-ef46-4d18-818c-f149a21ca50a
+      id: 5e6d35e2-073b-47b6-8a96-443fe44fb82a
       version: -1
       name: Threat Actor Map Search
       description: Get threat actors map.
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ccca74d5-56a3-4c10-8767-6d1e59693e04
+    taskid: b936a7ba-c115-4cfc-835b-b4fc75ce964e
     type: regular
     task:
-      id: ccca74d5-56a3-4c10-8767-6d1e59693e04
+      id: b936a7ba-c115-4cfc-835b-b4fc75ce964e
       version: -1
       name: Threat Actor Links Search
       description: Search links
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 452f5aad-cb71-4d20-82bf-3ca0cb0a984d
+    taskid: 8400c994-4dc0-44ed-8486-753319712b53
     type: condition
     task:
-      id: 452f5aad-cb71-4d20-82bf-3ca0cb0a984d
+      id: 8400c994-4dc0-44ed-8486-753319712b53
       version: -1
       name: Detection Rules Returned?
       description: Was there a detection rule found?
@@ -155,10 +155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 62be24f0-9d33-440c-8bb2-392912ba8487
+    taskid: 6e2d72df-a069-439c-80c7-870316314aba
     type: condition
     task:
-      id: 62be24f0-9d33-440c-8bb2-392912ba8487
+      id: 6e2d72df-a069-439c-80c7-870316314aba
       version: -1
       name: IoCs Returned?
       description: Were IoCs returned for the threat actor?
@@ -198,10 +198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 67f95ffc-b389-4a5f-846d-d96a51df6615
+    taskid: 933d18a0-ca4e-45a2-8765-d8249a85e029
     type: regular
     task:
-      id: 67f95ffc-b389-4a5f-846d-d96a51df6615
+      id: 933d18a0-ca4e-45a2-8765-d8249a85e029
       version: -1
       name: Download Detection Rules Manually
       description: Utilize the Recorded Future portal to download any detection rules found.
@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ef016d48-a86a-4b07-8967-72459c28335d
+    taskid: 1d9d1382-eb04-476f-8fff-2ea959e22595
     type: title
     task:
-      id: ef016d48-a86a-4b07-8967-72459c28335d
+      id: 1d9d1382-eb04-476f-8fff-2ea959e22595
       version: -1
       name: Done
       description: Post detection to collective insight
@@ -257,13 +257,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 60f95f3c-9db3-4ff6-88a1-e5b0af47d927
+    taskid: 61d221dc-4277-48da-8449-a744852c542d
     type: condition
     task:
-      id: 60f95f3c-9db3-4ff6-88a1-e5b0af47d927
+      id: 61d221dc-4277-48da-8449-a744852c542d
       version: -1
       name: Is SIEM enabled?
-      description: Checks if there is an active instance of the Recorded Future API integration enabled.
+      description: Checks if there is an active instance of Splunk or QRadar enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 31c3d1dc-1af8-421a-885c-8df3b94eb86d
+    taskid: 355ec7d4-87c8-4019-8bac-d32e178adafa
     type: playbook
     task:
-      id: 31c3d1dc-1af8-421a-885c-8df3b94eb86d
+      id: 355ec7d4-87c8-4019-8bac-d32e178adafa
       version: -1
       name: Splunk Indicator Hunting
       description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
@@ -363,60 +363,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    scriptarguments:
-      IPAddress:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-      IndexName:
-        simple: '*'
-      MD5:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-      SHA1:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "40"
-      SHA256:
-        complex:
-          root: ExtractedIndicators
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          accessor: File
-      SelectFields:
-        simple: source,timestamp
-      URLDomain:
-        complex:
-          root: ExtractedIndicators
-          accessor: Domain
-      earliest_time:
-        simple: -1d
-      event_limit:
-        simple: "100"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -434,16 +380,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 3ec9b0b1-8d8f-4dfd-889e-5fa6f2a5d501
+    taskid: 7f2917d3-1b3a-40a6-81d8-6d60cbdf36dd
     type: regular
     task:
-      id: 3ec9b0b1-8d8f-4dfd-889e-5fa6f2a5d501
+      id: 7f2917d3-1b3a-40a6-81d8-6d60cbdf36dd
       version: -1
       name: Detection Rules Search
       description: Search detection rules.
@@ -477,10 +423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b0a72ad5-ac85-415a-8556-8326314c324d
+    taskid: 5fa4d495-bb82-4308-8ecc-71725f6bb7c0
     type: title
     task:
-      id: b0a72ad5-ac85-415a-8556-8326314c324d
+      id: 5fa4d495-bb82-4308-8ecc-71725f6bb7c0
       version: -1
       name: Enrich Threat Actor
       type: title
@@ -508,10 +454,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 22e2ab74-4f85-4a2c-81c8-526ef2fab8cc
+    taskid: 9d406a87-005a-43b0-8dbd-3476f0e2e73d
     type: title
     task:
-      id: 22e2ab74-4f85-4a2c-81c8-526ef2fab8cc
+      id: 9d406a87-005a-43b0-8dbd-3476f0e2e73d
       version: -1
       name: Look For Detection Rules
       type: title
@@ -539,10 +485,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 60c67fad-e6b3-4023-848c-77b29ad34dcf
+    taskid: 177272bf-3c22-439d-8a59-522a344b8dd3
     type: title
     task:
-      id: 60c67fad-e6b3-4023-848c-77b29ad34dcf
+      id: 177272bf-3c22-439d-8a59-522a344b8dd3
       version: -1
       name: Hunt Related IoCs
       type: title
@@ -570,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 13c44858-db8b-4c5b-886e-066fc297b146
+    taskid: 1d9af62d-bd63-47bc-8fa2-7235af3f1291
     type: regular
     task:
-      id: 13c44858-db8b-4c5b-886e-066fc297b146
+      id: 1d9af62d-bd63-47bc-8fa2-7235af3f1291
       version: -1
       name: Hunt Indicators Manually
       description: Review the indicators and initiate a manual investigation.
@@ -601,10 +547,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: d8cb2954-c902-4951-88b2-fe805b0c1dbb
+    taskid: 16c113eb-688f-4bef-8591-b7ee0e05d881
     type: regular
     task:
-      id: d8cb2954-c902-4951-88b2-fe805b0c1dbb
+      id: 16c113eb-688f-4bef-8591-b7ee0e05d881
       version: -1
       name: Extract Links
       description: commands.local.cmd.extract.indicators
@@ -638,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: cbecb65e-bafc-43f3-875c-14c2a519a111
+    taskid: f3e9b929-1dc3-4472-8dc3-b137e27f26f8
     type: playbook
     task:
-      id: cbecb65e-bafc-43f3-875c-14c2a519a111
+      id: f3e9b929-1dc3-4472-8dc3-b137e27f26f8
       version: -1
       name: QRadar Indicator Hunting V2
       description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
@@ -652,59 +598,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    scriptarguments:
-      IPAddress:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-      InvestigationIPFields:
-        simple: sourceip,destinationip
-      InvestigationUserFields:
-        simple: username
-      MD5:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-      QradarIPfield:
-        simple: sourceip,destinationip
-      SHA1:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "40"
-      SHA256:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-      TimeFrame:
-        simple: LAST 7 DAYS
-      URLDomain:
-        complex:
-          root: ExtractedIndicators
-          accessor: Domain
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -722,7 +615,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -750,4 +643,6 @@ inputs:
   description: The threat actor to enrich & hunt indicators for.
   playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
 fromversion: 6.9.0
