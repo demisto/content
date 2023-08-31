@@ -12,8 +12,8 @@ alter
     DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     get_description1 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
     get_description2 = arrayindex(regextract(_raw_log, "FailureReason=([^\,]+)"),0),
-    mac_address1 = regextract(_raw_log, "EndPointMACAddress=([^\,]+)"),
-    mac_address2 = regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),
+    mac_address1 = arrayindex(regextract(_raw_log, "EndPointMACAddress=([^\,]+)"),0),
+    mac_address2 = arrayindex(regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),0),
     logSeverity = arrayindex(regextract(_raw_log, "\b(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\b"),0)
 | alter 
     xdm.event.type = logType,
