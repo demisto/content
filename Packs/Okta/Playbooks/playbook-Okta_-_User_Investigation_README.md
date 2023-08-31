@@ -15,8 +15,8 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * CountArraySize
-* GetTime
 * Set
+* GetTime
 
 ### Commands
 
@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | UserEmail | The user email to search Okta logs. |  | Optional |
-| LoginCountry | The Country from which the user logged in. |  | Optional |
+| LoginCountry | The Country code from which the user logged in.<br/>Country Code Alpha 2 \(Example: US\) |  | Optional |
 | ASN | The ASN from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
@@ -47,7 +47,7 @@ This playbook does not use any sub-playbooks.
 | UserApplication |  Applications used by the user. | unknown |
 | NumOfOktaFailedLogon | Number of failed login. | unknown |
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
-| LogonCountry | The countries from which the user logged in. | unknown |
+| LogonCountries | The countries from which the user logged in. | unknown |
 
 ## Playbook Image
 
