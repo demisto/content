@@ -123,6 +123,14 @@
       "element": {
         "type": "string",
         "is_array": true
+      },
+      "app": {
+        "type": "string",
+        "is_array": true
+      },
+      "deliveryCode": {
+        "type": "string",
+        "is_array": true
       }
     }
   }
