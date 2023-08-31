@@ -516,19 +516,14 @@ xsiam_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
-  artifacts:
-    when: always
-    expire_in: 14 days
-    reports:
-      junit:
-        - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
-    paths:
-      - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+      variables:
+        CLOUD_MACHINES_TYPE: "nightly"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   variables:
-    CLOUD_MACHINES_TYPE: "nightly"
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+    CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -551,6 +546,14 @@ xsiam_server_ga:
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
+  artifacts:
+    when: always
+    expire_in: 14 days
+    reports:
+      junit:
+        - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+    paths:
+      - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
 
 xsoar_ng_server_ga:
   extends:
