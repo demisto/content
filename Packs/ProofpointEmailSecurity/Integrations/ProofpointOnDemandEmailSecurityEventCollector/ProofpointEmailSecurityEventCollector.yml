@@ -20,27 +20,10 @@ configuration:
   hiddenusername: true
   type: 9
   required: true
-- display: Events to fetch
-  name: events_to_fetch
+- display: Fetch interval in seconds
+  name: fetch_interval
   type: 0
   required: true
-  defaultvalue: 30
-- display: Fetch events timeout
-  name: fetch_timeout
-  type: 0
-  required: true
-  defaultvalue: 20
-
-- display: XSIAM request limit
-  name: limit
-  type: 0
-  defaultvalue: 1000
-  required: true
-- display: Request retries
-  name: retries
-  type: 0
-  defaultvalue: 5
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -51,6 +34,11 @@ script:
   commands:
     - description: Manual command to fetch events and display them.
       name: proofpoint-get-events
+      arguments:
+        - description: The start time to get events, expressed in isoformat.
+          name: since_time
+        - description: The end time to get events, expressed in isoformat.
+          name: to_time
 
   dockerimage: devdemisto/websockets:11.0.3.69389
   longRunning: true
