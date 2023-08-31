@@ -309,6 +309,10 @@ def http_request(uri: str, method: str, headers: dict = {},
         return result.text
 
     json_result = json.loads(xml2json(result.text))
+    xpath = params.get("xpath")
+
+    demisto.debug(f'{xpath=}')
+    demisto.debug(f'{json_result=}')
 
     # handle raw response that does not contain the response key, e.g configuration export
     if ('response' not in json_result or '@code' not in json_result['response']) and \
@@ -373,6 +377,7 @@ def http_request(uri: str, method: str, headers: dict = {},
     if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
         error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
         if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+            demisto.debug("get all the device group names")
             device_group_names = get_device_groups_names()
             if DEVICE_GROUP not in device_group_names:
                 error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
@@ -1826,16 +1831,24 @@ def prettify_address_group(address_group: Dict) -> Dict:
 @logger
 def panorama_get_address_group(address_group_name: str):
     params = {
-        'action': 'get',
+        'action': 'show',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
         'key': API_KEY
     }
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
+    try:
+        result = http_request(
+            URL,
+            'GET',
+            params=params,
+        )
+    except Exception:
+        params['action'] = 'get'
+        result = http_request(
+            URL,
+            'GET',
+            params=params,
+        )
 
     return result['response']['result']['entry']
 
