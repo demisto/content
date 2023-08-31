@@ -557,11 +557,11 @@ script:
     - description: The ID of the service desk from which the organization list will be returned. This can alternatively be a project identifier.
       name: projectKey
       required: false
-    - description: The starting index of the returned objects. Base index 0. See the Pagination section for more details.
+    - description: The starting index of the returned objects. Base index 0.
       name: start
       required: false
       defaultValue: "0"
-    - description: The maximum number of items to return per page. Default, 50. See the Pagination section for more details.
+    - description: The maximum number of items to return per page. Default, 50.
       name: limit
       required: false
       defaultValue: "50"
