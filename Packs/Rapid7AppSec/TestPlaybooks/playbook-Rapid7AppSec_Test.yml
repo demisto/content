@@ -1,5 +1,6 @@
 id: playbook-Rapid7AppSec_Test
 version: 27
+fromversion: 6.9.0
 vcShouldKeepItemLegacyProdMachine: false
 name: playbook-Rapid7AppSec_Test
 starttaskid: "0"
