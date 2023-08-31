@@ -1508,7 +1508,35 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.71685
+  - name: aws-iam-list-attached-role-policies
+    arguments:
+    - description: The name (friendly name, not ARN) of the role to list attached policies for.
+      name: roleName
+      required: true
+    - name: pathPrefix
+      description: The path prefix for filtering the results. This parameter is optional. If it is not included, it defaults to a slash (/), listing all policies.
+    - name: maxItems
+      description: The maximum number of items to return in the command's output.
+    - name: marker
+      description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+    description: List all managed policies that are attached to the specified IAM role.
+    outputs:
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.RoleName
+      description: The role name.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName
+      description: The policy name.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
+      description: The policy ARN.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated
+      description: Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received.
+      type: boolean
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
+      description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
+      type: string
+  dockerimage: demisto/boto3py3:1.0.0.72740
   runonce: false
   script: '-'
   subtype: python3
