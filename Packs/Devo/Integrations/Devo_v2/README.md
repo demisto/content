@@ -81,6 +81,8 @@ of the time that other traditional time series databases can't.
     * __Custom Alert table name__ If not provided, 'siem.logtrust.alert.info' will be used.
     * __Custom Alert table prefix__ Please provide if Custom alert table name is provided.
     * __Fetch Incident Limit__ If not provided, '50' will be used.
+    * __Fetch Incidents Lookback Time (in seconds)__ Must be between 3600 (1 hour) to 86400 (24 hours). Default: 3600.
+    * __Fetch Incident Time Frame (in seconds)__.
 4. Click __Test__ to validate the URLs, token, and connection.
 Note: single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes. To override that follow the below setps:
 - Login to xsoar.
