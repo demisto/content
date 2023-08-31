@@ -1231,9 +1231,6 @@ script:
     - contextPath: Zoom.ChatMessage.at_items.start_position
       type: integer
       description: The start position of the mention.
-    - contextPath: Zoom.ChatMessage.next_page_token
-      type: string
-      description: The next page token for pagination.
   - arguments:
     - description: The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
       name: channel

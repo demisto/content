@@ -40,24 +40,24 @@ You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGR
 1. Navigate to https://marketplace.zoom.us/
 2. Build Team Chat Apps
 
-![enter image description here](doc_file/create-team-chat-app.gif)
+![enter image description here](doc_files/create-team-chat-app.gif)
 #### Configure App Settings:
 1. Enter your XSOAR server URL in all Redirect URLS
 2. In the Team Chat Subscription section under BOT endpoint URL add `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME` For example, https://my.demisto.live/instance/execute/zoom-bot. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
-![enter image description here](doc_file/bot_endpoint_url.gif)
+![enter image description here](doc_files/bot_endpoint_url.gif)
 
 1. Add scope permissions:
     - Enable Chatbot within Zoom Team Chat Client /imchat:bot
     - Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin
     - View and manage all users' team chat channels /chat_channel:write:admin
     - View all user information /user:read:admin
-![enter image description here](doc_file/scope.png)
+![enter image description here](doc_files/scope-premissions.png)
 
-5. If Mirroring is Enable in the integration configuration
+1. If Mirroring is Enable in the integration configuration
     <a name="secret-token"></a>
    - Get the **secret token** from the "Features" page under the "Token" section and add it
     to the system configuration
-    ![enter image description here](doc_file/secret_token.png)
+    ![enter image description here](doc_files/zoom-token.png)
 
    - In the Zoom ChatBOT app configure Event Subscriptions: in the "Features" page
    Under the "General Features" section, you should see "Event Subscriptions." enable the toggle switch to turn on Event Subscriptions if it's not already enabled.
@@ -66,12 +66,10 @@ You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGR
       - Event notification endpoint URL: Enter the XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
        **Just after setting up/configuration of XSOAR side you can validate the URL**
       - Event types: Click on the "Select events" button, and from the list of events, select "send message sent."
-![enter image description here](doc_file/add-event.gif)
+![enter image description here](doc_files/add-event.gif)
   
 1. In the Local Test section, click on the "Add" button to test your app and authorize your XSOAR app.
- ![enter image description here](doc_file/test.gif)
-
-
+ ![enter image description here](doc_files/test-zoom-app.gif)
 
 
 ## Commands
@@ -1925,3 +1923,36 @@ There is no context output for this command.
 
 >### Message
 >Message sent to Zoom successfully. Message ID is: 20230815153245201_BPK3S3S_aw1
+
+
+## mirror-investigation
+
+***
+Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
+
+#### Base Command
+
+`mirror-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
+| autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". | Optional | 
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". | Optional | 
+| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| kickAdmin | Whether to remove the Zoom administrator (channel creator) from the mirrored channel. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!mirror-investigation direction="FromDemisto" channelName="example"```
+
+#### Human Readable Output
+
+> Investigation mirrored successfully, channel:example
+

@@ -4,7 +4,6 @@ import Zoom
 import pytest
 from CommonServerPython import DemistoException, CommandResults
 import demistomock as demisto
-from unittest.mock import patch
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -1781,7 +1780,8 @@ def test_zoom_send_notification_command(mocker):
         Validate the command results including outputs and readable output
     """
     client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient", bot_client_secret="mocksecret")
+                    client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient",
+                    bot_client_secret="mocksecret")
 
     expected_request_payload = {
         'message': 'Hello from @dima!',
@@ -1809,6 +1809,7 @@ def test_zoom_send_notification_command(mocker):
     assert result.outputs == expected_response
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
+
 @pytest.mark.parametrize("channel_name, investigation_id, expected_result", [
     ('Channel1', None, 'JID1'),                # Scenario 1: Find by channel_name
     (None, 'Incident123', 'JID1'),            # Scenario 2: Find by investigation_id
@@ -1835,7 +1836,7 @@ def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expecte
 
     # Assert the result
     assert result == expected_result
-    
+
 
 # Test cases for check_authentication_bot_parameters
 @pytest.mark.parametrize("bot_Jid, client_id, client_secret, expected_exception", [
@@ -1843,7 +1844,7 @@ def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expecte
     (None, None, None, None),                        # Scenario 2: All parameters None
     ('bot_Jid', None, None, DemistoException),       # Scenario 3: bot_Jid provided, others None
     (None, 'client_id', None, DemistoException),     # Scenario 4: client_id provided, others None
-    (None, None, 'client_secret', DemistoException), # Scenario 5: client_secret provided, others None
+    (None, None, 'client_secret', DemistoException),  # Scenario 5: client_secret provided, others None
 ])
 def test_check_authentication_bot_parameters(bot_Jid, client_id, client_secret, expected_exception):
     """
@@ -1875,8 +1876,8 @@ def test_get_user_id_from_token(mocker):
 
     # Assert the result
     assert result == 'mock_user_id'
-  
-    
+
+
 def test_mirror_investigation_create_new_channel(mocker):
     """
     Given a mock client and relevant arguments,
@@ -1926,7 +1927,8 @@ async def test_check_and_handle_entitlement(mocker):
     # Mock integration context
     mock_integration_context = {
         'messages': json.dumps([
-            {'message_id': 'MessageID123', 'entitlement': '3dcaae6d-d4d2-45b3-81a7-834bce779009@2b03d219-bbac-4333-84a2-d329d7296baa',
+            {'message_id': 'MessageID123',
+             'entitlement': '3dcaae6d-d4d2-45b3-81a7-834bce779009@2b03d219-bbac-4333-84a2-d329d7296baa',
              'reply': 'thanks', 'expiry': '2023-08-29 12:32:40', 'sent': '2023-08-29 12:27:42', 'default_response': 'NoResponse'}
         ])
     }
@@ -1942,7 +1944,7 @@ async def test_check_and_handle_entitlement(mocker):
     result = await check_and_handle_entitlement(text, message_id, user_name)
 
     assert result == 'thanks'  # Adjust the expected reply as needed
-    
+
 
 @pytest.mark.parametrize("entitlement, expected_result", [
     ("guid123@incident456|task789", ("guid123", "incident456", "task789")),  # Scenario 1: Full entitlement
@@ -1964,7 +1966,7 @@ def test_extract_entitlement(entitlement, expected_result):
 
     # Assert the result against the expected outcome
     assert result == expected_result
- 
+
 
 # @pytest.mark.asyncio
 # async def test_check_for_unanswered_questions(mocker):
@@ -1996,7 +1998,7 @@ async def test_answer_question(mocker):
     Then:
     - Validate that the function correctly handles the entitlement and returns the incident_id.
     """
-    
+
     mock_question = {
         'entitlement': 'guid123@incident456|task789',
         'to_jid': 'ToJID123'

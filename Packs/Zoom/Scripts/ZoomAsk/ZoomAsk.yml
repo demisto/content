@@ -57,3 +57,4 @@ tests:
 dependson:
   must:
   - Zoom|||send-notification
+fromversion: 5.0.0

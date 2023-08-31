@@ -1,11 +1,5 @@
-from CommonServerPython import entryTypes
-import Zoom
 import unittest
 from unittest.mock import patch, MagicMock
-from io import StringIO
-import json
-from datetime import datetime
-from dateparser import parse as dateparser_parse
 import demistomock as demisto
 
 # Import the functions from the script you want to test
@@ -13,17 +7,17 @@ from ZoomAsk import parse_option_text, generate_json
 
 
 class ZoomAsk_test(unittest.TestCase):
-    
+
     @patch('demistomock.executeCommand')
     @patch('demistomock.get')
     def test_parse_option_text_with_color(self, mock_get, mock_executeCommand):
         # Test parsing an option text with color information
         option_text = 'Option1#blue'
         text, style = parse_option_text(option_text)
-        
+
         # Verify parsing results
-        self.assertEqual(text, 'Option1')
-        self.assertEqual(style, 'Primary')
+        assert text == 'Option1'
+        assert style == 'Primary'
 
     @patch('demistomock.executeCommand')
     @patch('demistomock.get')
@@ -31,11 +25,11 @@ class ZoomAsk_test(unittest.TestCase):
         # Test parsing an option text without color information
         option_text = 'Option2'
         text, style = parse_option_text(option_text)
-        
+
         # Verify parsing results
-        self.assertEqual(text, 'Option2')
-        self.assertEqual(style, 'Default')
-    
+        assert text == 'Option2'
+        assert style == 'Default'
+
     @patch('demistomock.executeCommand')
     @patch('demistomock.get')
     def test_generate_json_button(self, mock_get, mock_executeCommand):
@@ -47,17 +41,18 @@ class ZoomAsk_test(unittest.TestCase):
             'responseType': 'button',
             # Other necessary inputs
         }
-        
+
         # Mock executeCommand response
         mock_executeCommand.return_value = [{'Contents': 'Entitlement123'}]
-        
+
         # Mock datetime
         datetime_mock = MagicMock()
         datetime_mock.strftime.return_value = '2023-08-29 12:00:00'
         with patch('your_script_file.datetime', datetime_mock):
             # Call the function to generate JSON
-            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'], demisto.args()['option2']], demisto.args()['responseType'])
-        
+            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'],
+                                      demisto.args()['option2']], demisto.args()['responseType'])
+
         # Verify the generated JSON
         expected_json = {
             "head": {
@@ -82,7 +77,7 @@ class ZoomAsk_test(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(json_data, expected_json)
+        assert json_data == expected_json
 
     @patch('demistomock.executeCommand')
     @patch('demistomock.get')
@@ -95,17 +90,18 @@ class ZoomAsk_test(unittest.TestCase):
             'responseType': 'dropdown',
             # Other necessary inputs
         }
-        
+
         # Mock executeCommand response
         mock_executeCommand.return_value = [{'Contents': 'Entitlement123'}]
-        
+
         # Mock datetime
         datetime_mock = MagicMock()
         datetime_mock.strftime.return_value = '2023-08-29 12:00:00'
         with patch('your_script_file.datetime', datetime_mock):
             # Call the function to generate JSON
-            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'], demisto.args()['option2']], demisto.args()['responseType'])
-        
+            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'],
+                                      demisto.args()['option2']], demisto.args()['responseType'])
+
         # Verify the generated JSON
         expected_json = {
             "body": [
@@ -128,12 +124,13 @@ class ZoomAsk_test(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(json_data, expected_json)
+        assert json_data == expected_json
 
         # Add assertions to check the expected behavior of the main function
         # For example, check if certain executeCommand calls were made, etc.
 
     # Add more test cases for other functions and scenarios
+
 
 if __name__ == '__main__':
     unittest.main()
