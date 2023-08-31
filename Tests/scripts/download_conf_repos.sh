@@ -12,8 +12,13 @@ clone_repository() {
   local exit_code=0
   local i=1
   echo "Cloning ${repo_name} from ${host} branch:${branch} with ${retry_count} retries"
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    user_info="${user}:${token}@"
+  fi
   for ((i=1; i <= retry_count; i++)); do
-    git clone --depth=1 "https://${user}:${token}@${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
+    git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
       echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again"
       sleep "${sleep_time}"
@@ -37,7 +42,12 @@ clone_repository_with_fallback_branch() {
 
   # Check if branch exists in the repository.
   echo "Checking if branch ${branch} exists in ${repo_name}"
-  git ls-remote --exit-code --quiet --heads "https://${user}:${token}@${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    user_info="${user}:${token}@"
+  fi
+  git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
