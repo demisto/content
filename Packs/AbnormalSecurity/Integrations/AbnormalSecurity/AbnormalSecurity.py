@@ -602,6 +602,8 @@ def main():
             headers['Mock-Data'] = "True"
             test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
+        elif command == 'fetch_incidents':
+           fetch_incidents()
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore
         else:
