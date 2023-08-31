@@ -2985,7 +2985,7 @@ def test_module(client: JiraBaseClient) -> str:
         raise DemistoException(
             'In order to authorize the instance, first run the command `!jira-oauth-start`,'
             ' and complete the process in the URL that is returned. You will then be redirected'
-            ' to the callback URL . Copy the authorization code found in the query parameter'
+            ' to the callback URL. Copy the authorization code found in the query parameter'
             ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
             ' the process.'
         )
