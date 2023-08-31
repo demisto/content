@@ -34,7 +34,7 @@ class Client(BaseClient):
         response = self._http_request('get', 'threats_export/csv', params=params, headers=headers, resp_type='response')
         return response
 
-    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_, page_size, page_number, subtenant):
+    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_='', page_size=None, page_number=None, subtenant=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
 
         headers = self._headers
@@ -43,7 +43,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_, page_size, page_number, subtenant):
+    def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_='', page_size=None, page_number=None, subtenant=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
 
         headers = self._headers
@@ -52,7 +52,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source, subtenant=None):
+    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
 
         headers = self._headers
@@ -529,6 +529,146 @@ def submit_false_positive_report_command(client, args):
     return command_results
 
 
+def get_a_list_of_vendors_command(client, args):
+    page_size = str(args.get('page_size', ''))
+    page_number = str(args.get('page_number', ''))
+    response = client.get_a_list_of_vendors_request(page_size, page_number)
+    markdown = '### List of Vendors\n'
+    markdown += tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.VendorsList',
+        outputs_key_field='vendorDomain',
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_the_details_of_a_specific_vendor_command(client, args):
+    vendor_domain = str(args.get('vendor_domain', ''))
+
+    response = client.get_the_details_of_a_specific_vendor_request(vendor_domain)
+    markdown = '### Vendor Domain Details\n'
+    markdown += tableToMarkdown('', response, removeNull=True)
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.VendorDetails',
+        outputs_key_field='vendorDomain',
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_the_activity_of_a_specific_vendor_command(client, args):
+    vendor_domain = str(args.get('vendor_domain', ''))
+
+    response = client.get_the_activity_of_a_specific_vendor_request(vendor_domain)
+    markdown = '### Vendor Activity\n'
+    markdown += tableToMarkdown('', response.get('eventTimeline'), removeNull=True)
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.VendorActivity',
+        outputs_key_field="",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_a_list_of_vendor_cases_command(client, args):
+    filter_ = str(args.get('filter', ''))
+    page_size = str(args.get('page_size', ''))
+    page_number = str(args.get('page_number', ''))
+
+    response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
+    markdown = '### List of Cases\n'
+    markdown += tableToMarkdown('Vendor Case IDs', response.get('vendorCases'), removeNull=True)
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.VendorCases',
+        outputs_key_field="vendorCaseId",
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def get_the_details_of_a_vendor_case_command(client, args):
+    case_id = str(args.get('case_id', ''))
+
+    response = client.get_the_details_of_a_vendor_case_request(case_id)
+
+    markdown = '### Case Details\n'
+    markdown += tableToMarkdown('', response, removeNull=True)
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.VendorCaseDetails',
+        outputs_key_field='vendorCaseId',
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
+    start = str(args.get('start', ''))
+    end = str(args.get('end', ''))
+
+    response = client.get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(start, end)
+    markdown = '### Unanalyzed Abuse Mailbox Campaigns\n'
+    markdown += tableToMarkdown('', response.get('results', []), removeNull=True)
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='AbnormalSecurity.UnanalyzedAbuseCampaigns',
+        outputs_key_field='abx_message_id',
+        outputs=response,
+        raw_response=response
+    )
+
+  return command_results
+
+def convert_to_incidents(events):
+    return [{'name':'', 'occurred':'', 'details':''} for event in events]
+
+def fetch_incidents(client : Client, params):
+    max_results = arg_to_number(arg=params.get('max_fetch', 20), arg_name='max_fetch', required=False)
+    first_fetch_time = arg_to_datetime(params.get('first_fetch'), "1 hour").strftime(DATE_FORMAT)
+
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('last_fetch', first_fetch_time)
+    threats_filter_str = f"receivedTime gte {last_fetch}"
+
+    threats = client.get_a_list_of_threats_request(filter_=threats_filter_str)
+    threat_incidents = convert_to_incidents(threats)
+
+    abusecampaigns_filter_str = f"lastReportedTime gte {last_fetch}"
+    abuse_campaigns = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_=abusecampaigns_filter_str)
+    abuse_campaign_incidents = convert_to_incidents(abuse_campaigns)
+
+    cases_filter_str = f"createdTime gte {last_fetch}"
+    cases = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_=cases_filter_str)
+    cases_incidents = convert_to_incidents(cases)
+
+    all_incidents = threat_incidents + abuse_campaign_incidents + cases_incidents
+
+    if all_incidents:
+        last_fetch = ""
+
+    next_run = {"last_fetch":last_fetch}
+
+    return next_run, all_incidents
+
+
+
 def test_module(client):
     # Run a sample request to retrieve mock data
     client.get_a_list_of_threats_request(None, None, None, None)
@@ -603,7 +743,9 @@ def main():
             test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
         elif command == 'fetch_incidents':
-           fetch_incidents()
+           next_run, incidents = fetch_incidents(client, params)
+           demisto.setLastRun(next_run)
+           demisto.incidents(incidents)
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore
         else:
