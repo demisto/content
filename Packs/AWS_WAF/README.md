@@ -16,7 +16,8 @@ To create or configure the Amazon S3 collector, use the information described [h
 
 1. Navigate to **Settings** > **Configuration** > **Data Sources** > **Amazon S3**.
 2. Press **Add New Istance**.
-3. Fill in the following parameters:
+3. Fill in the following parameters: 
+
 | Field Name        | Description | Value   |
 |-------------------|-------------|---------|
 | SQS URL           |             |         |
