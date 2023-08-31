@@ -554,7 +554,7 @@ script:
     description: Adds the user to a project.
     name: jira-add-user-to-project
   - arguments: 
-    - description: The ID of the service desk from which the organization list will be returned. This can alternatively be a project identifier.
+    - description: The project key of the service desk from which the organization list will be returned. This can alternatively be a project ID.
       name: projectKey
       required: false
     - description: The starting index of the returned objects. Base index 0.
