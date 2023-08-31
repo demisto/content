@@ -88,7 +88,7 @@ script:
       description: The ID of the app of the vulnerability (dependencies - use app-sec-app-list to get more information about the app).
       type: String
     - contextPath: Rapid7AppSec.Vulnerability.root_cause_url
-      description: 'The vulnerability root cause URL. For example: http://test.test..com/test'
+      description: 'The vulnerability root cause URL. For example: http://test.com/test'
       type: String
     - contextPath: Rapid7AppSec.Vulnerability.root_cause_method
       description: 'The vulnerability root cause method. For example: GET.'
