@@ -1,4 +1,4 @@
-// Development container for Content
+// Development container for Content.
 {
 	"name": "XSOAR Content",
 	"build": {
