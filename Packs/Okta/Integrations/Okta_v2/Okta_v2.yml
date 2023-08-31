@@ -1,4 +1,7 @@
 category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Okta v2
   version: -1
@@ -7,24 +10,31 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - name: credentials
   type: 9
   displaypassword: API Token (see detailed instructions)
   hiddenusername: true
+  section: Connect
   required: false
   display: ''
 - display: API Token (see detailed instructions)
   name: apitoken
   type: 4
   hidden: true
+  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
+  advanced: true
   required: false
 description: Integration with Okta's cloud-based identity management service.
 display: Okta v2
@@ -1412,9 +1422,9 @@ script:
     name: okta-expire-password
   dockerimage: demisto/python3:3.10.13.72123
   runonce: false
-  script: ''
+  script: ""
   subtype: python3
   type: python
 fromversion: 5.0.0
 tests:
-- OktaV2-Test
+  - OktaV2-Test
