@@ -39,6 +39,9 @@ script:
           name: since_time
         - description: The end time to get events, expressed in isoformat.
           name: to_time
+        - description: Should push events
+          name: should_push_events
+          defaultValue: 'false'
 
   dockerimage: devdemisto/websockets:11.0.3.69389
   longRunning: true

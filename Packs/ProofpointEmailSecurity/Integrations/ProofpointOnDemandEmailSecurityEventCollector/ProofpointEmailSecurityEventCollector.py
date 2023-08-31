@@ -58,6 +58,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
             date = datetime.utcnow()
         # the `ts` parameter is not always in UTC, so we need to convert it
         event["_time"] = date.astimezone(tz.tzutc()).isoformat()
+        event["event_type"] = event_type.value
         events.append(event)
     demisto.debug(f"Fetched {len(events)} events of type {event_type}")
     return events
@@ -67,7 +68,10 @@ def get_events(host: str, cluster_id: str, api_key: str, since_time: str | None,
     with websocket_connections(host, cluster_id, api_key, since_time, to_time) as (message_connection, maillog_connection):
         message_events = fetch_events(EventType.MESSAGE, message_connection, FETCH_INTERVAL_IN_SECONDS)
         maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, FETCH_INTERVAL_IN_SECONDS)
-        return CommandResults(outputs={"ProofpointEmailSecurityEventCollector": message_events + maillog_events})
+        return CommandResults(outputs_prefix="ProopolintEmailSecurityEvents",
+                              outputs_key_field="id",
+                              outputs=message_events + maillog_events,
+                              )
 
 
 def test_module(host: str, cluster_id: str, api_key: str):
