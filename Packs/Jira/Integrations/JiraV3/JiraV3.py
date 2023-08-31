@@ -2988,7 +2988,7 @@ def test_module(client: JiraBaseClient) -> str:
             ' to the callback URL . Copy the authorization code found in the query parameter'
             ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
             ' the process.'
-            )
+        )
 
 
 def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tuple[Dict[str, Any], int | None]:

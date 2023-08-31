@@ -379,6 +379,27 @@ def test_validate_auth_params(params: dict[str, str]):
     validate_auth_params(**params)
 
 
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        ("dummy_username", "dummy_api_key"),
+        ("", "")
+    ]
+)
+def test_client_is_basic_auth_or_oauth(username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run `__init__` method for `JiraBaseClient` class
+    Then:
+        - Ensure that when the client class receives both username and api_key,
+          the `is_basic_auth` flag is True otherwise False
+    """
+    client = jira_base_client_mock(username, api_key)
+    assert client.is_basic_auth == bool(username)
+
+
 class TestJiraGetIssueCommand:
     def test_create_file_info_from_attachment(self, mocker):
         """
