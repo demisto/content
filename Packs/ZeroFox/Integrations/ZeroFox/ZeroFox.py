@@ -1100,10 +1100,9 @@ def get_modified_remote_data_command(
     args = GetModifiedRemoteDataArgs(args)
     last_update = args.last_update
 
-    # Get alerts created before `last_update` and modified after `last_update`
+    # Get alerts modified after `last_update`
     list_alert_params = {
         "last_modified_min_date": str(last_update),
-        "max_timestamp": str(last_update),
     }
 
     try:
