@@ -84,7 +84,7 @@ else
 fi
 echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_BUCKET_UPLOAD = $FORCE_BUCKET_UPLOAD"
 
-UPLOAD_SPECICF_PACKS=false
+UPLOAD_SPECIFIC_PACKS=false
 if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
   python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -pn $CONTENT_PACKS_TO_UPLOAD -p $UPLOAD_SPECICF_PACKS -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
@@ -102,7 +102,7 @@ else
     BUCKET_UPLOAD_FLOW=false
   else
     if [ -n "${PACKS_TO_UPLOAD}" ]; then
-      UPLOAD_SPECICF_PACKS=true
+      UPLOAD_SPECIFIC_PACKS=true
     fi
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
@@ -110,7 +110,7 @@ else
     BUCKET_UPLOAD_FLOW=true
     IS_FORCE_UPLOAD=false
   fi
-  echo "UPLOAD_SPECICF_PACKS = $UPLOAD_SPECICF_PACKS"
+  echo "UPLOAD_SPECIFIC_PACKS = $UPLOAD_SPECIFIC_PACKS, BUCKET_UPLOAD_FLOW= $BUCKET_UPLOAD_FLOW"
   python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "$CONTENT_PACKS_TO_UPLOAD" -p $UPLOAD_SPECICF_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
   if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then

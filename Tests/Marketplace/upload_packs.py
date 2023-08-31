@@ -1200,7 +1200,7 @@ def option_handler():
                         help=("Target packs to upload to gcs."),
                         required=True)
     parser.add_argument('-p', '--upload_specific_pack',
-                        help=("Indication if the -p flag is used and only specific packs are uploded"),
+                        type=str2bool, help=("Indication if the -p flag is used and only specific packs are uploded"),
                         default=False)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
