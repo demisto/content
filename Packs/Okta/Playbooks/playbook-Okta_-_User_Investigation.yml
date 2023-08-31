@@ -1742,7 +1742,7 @@ outputs:
   description: Number of failed login from ASN by all users.
   type: unknown
 - contextPath: LogonCountry
-  description: The countries from which the user logged in
+  description: The countries from which the user logged in.
   type: unknown
 quiet: true
 tests:

@@ -47,7 +47,7 @@ This playbook does not use any sub-playbooks.
 | UserApplication |  Applications used by the user. | unknown |
 | NumOfOktaFailedLogon | Number of failed login. | unknown |
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
-| LogonCountry | The countries from which the user logged in | unknown |
+| LogonCountry | The countries from which the user logged in. | unknown |
 
 ## Playbook Image
 
