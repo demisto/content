@@ -1,8 +1,10 @@
+from sqlite3 import Row
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Tuple, Dict, List, Callable, Optional
+from typing import Any, Tuple, Dict, List, Callable, Optional, Sequence
 import sqlalchemy
 import pymysql
 import hashlib
@@ -11,6 +13,8 @@ from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
+
+TERADATA = "Teradata"
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -137,7 +141,7 @@ class Client:
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
         # Teradata has a unique connection, unlike the others with URL object
-        elif self.dialect == "Teradata":
+        elif self.dialect == TERADATA:
             demisto.debug('Initializing engine for Teradata dialect')
             if self.is_ldap:
                 engine_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
@@ -282,6 +286,22 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     return msg if msg else 'ok', {}, []
 
 
+def pre_process_result_query(client: Client, result: Sequence[Row], headers: List[str]) -> List[dict]:
+    """
+    This function pre-processes the query's result to a list of dictionaries.
+    """
+    if client.dialect == "Teradata":
+        table = [dict(zip(headers, row)) for row in result]
+
+    else:
+        # converting a sqlalchemy object to a table
+        converted_table = [dict(row) for row in result]
+        # converting b'' and datetime objects to readable ones
+        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+
+    return table
+
+
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """
     Executes the sql query with the connection that was configured in the client
@@ -299,20 +319,12 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
 
-        if client.dialect == "Teradata":
-            table = []
-            for row in result:
-                row_dict = {header: col for header, col in zip(headers, row)}
-                table.append(row_dict)
-        else:
-            # converting a sqlalchemy object to a table
-            converted_table = [dict(row) for row in result]
-            # converting b'' and datetime objects to readable ones
-            table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
-
+        table = pre_process_result_query(client=client, result=result, headers=headers)
         table = table[skip:skip + limit]
+
         print(headers)
         [print(row) for row in table]
+
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
