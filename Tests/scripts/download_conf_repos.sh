@@ -16,6 +16,7 @@ clone_repository() {
     user_info=""
   else
     user_info="${user}:${token}@"
+    # If either user or token is not empty, then we need to add them to the url.
   fi
   for ((i=1; i <= retry_count; i++)); do
     git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
@@ -45,6 +46,7 @@ clone_repository_with_fallback_branch() {
   if [ -z "${user}" ] && [ -z "${token}" ]; then
     user_info=""
   else
+    # If either user or token is not empty, then we need to add them to the url.
     user_info="${user}:${token}@"
   fi
   git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
