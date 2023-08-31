@@ -169,7 +169,7 @@ class Client:
             if self.dialect == "Teradata":
                 headers = list(result.keys())
             else:
-                headers = list(results[0].keys() if results[0].keys() else '')
+                headers = list(results[0].keys() or ())
         return results, headers
 
 
