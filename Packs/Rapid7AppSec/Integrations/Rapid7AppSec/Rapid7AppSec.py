@@ -32,15 +32,15 @@ class Pagination():
         if any([page and not page_size, page_size and not page]):
             raise ValueError("In order to use pagination, please insert both page and page_size or insert limit.")
 
-        if limit and arg_to_number(limit) > API_LIMIT:
-            raise ValueError(f"Limit maximum value is {API_LIMIT}.")
-
-        if page_size and arg_to_number(page_size) > API_LIMIT:
-            raise ValueError(f"Page size maximum value is {API_LIMIT}.")
-
         self.page = arg_to_number(page_size and page)
         self.page_size = arg_to_number(page and page_size)
-        self.limit = arg_to_number(limit)
+        self.limit = arg_to_number(limit) or 50
+
+        if self.limit and self.limit > API_LIMIT:
+            raise ValueError(f"Limit maximum value is {API_LIMIT}.")
+
+        if self.page_size and self.page_size > API_LIMIT:
+            raise ValueError(f"Page size maximum value is {API_LIMIT}.")
 
 
 @dataclass
@@ -1450,8 +1450,8 @@ def request_with_pagination(request_command: Callable,
     Returns:
         Callable: Request with the relevant pagination parameters.
     """
-    if (pagination.page_size is not None and pagination.page * pagination.page_size <= API_LIMIT) \
-            or pagination.page_size is None:
+    if (pagination.page_size is not None and pagination.page is not None
+            and pagination.page * pagination.page_size <= API_LIMIT) or pagination.page_size is None:
         return partial(request_command,
                        index=pagination.page and pagination.page - 1,
                        size=pagination.page_size or pagination.limit,
@@ -1462,11 +1462,10 @@ def request_with_pagination(request_command: Callable,
                                size=API_LIMIT,
                                page_token=page_token)
 
-        page_token = dict_safe_get(data, keys=["metadata", "page_token"])
+        page_token = dict_safe_get(data, ["metadata", "page_token"])
 
-        pagination.page -= size_to_get
-
-        pagination.page = None if pagination.page == 0 else pagination.page
+        if pagination.page:
+            pagination.page -= size_to_get
 
         return request_with_pagination(request_command=request_command,
                                        pagination=pagination,
