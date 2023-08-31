@@ -58,7 +58,7 @@ jobs:
           fi
 
           # Install node packages
-          npm install .
+          npm install --no-fund --no-audit .
           git config diff.renameLimit 6000
           echo "========== Build Parameters =========="
           python3 --version
