@@ -59,6 +59,7 @@ configuration:
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
   type: 16
+  defaultvalue: UNRESOLVED
   options:
   - RESOLVED
   - UNRESOLVED
@@ -67,6 +68,7 @@ configuration:
 - name: fetch_threat_incident_statuses
   display: 'Define which Threats should be fetched.'
   type: 16
+  defaultvalue: UNRESOLVED
   required: false
   options:
   - RESOLVED
