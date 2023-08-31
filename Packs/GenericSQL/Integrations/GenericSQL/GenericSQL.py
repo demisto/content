@@ -176,10 +176,11 @@ def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect in {'Microsoft SQL Server', 'ODBC Driver 18 for SQL Server'}:
-        return "1433"
-    if dialect == "Teradata":
-        return "1025"
+    return {
+                "Microsoft SQL Server" : "1433",
+                "ODBC Driver 18 for SQL Server": "1433", 
+                "Teradata": "1025",
+                }.get("dicalect")
     return None
 
 
