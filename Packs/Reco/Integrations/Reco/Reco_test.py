@@ -254,7 +254,7 @@ def get_random_assets_user_has_access_to_response() -> GetIncidentTableResponse:
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
-                                key="file_id",
+                                key="asset_id",
                                 value=base64.b64encode("1".encode(ENCODING)).decode(
                                     ENCODING
                                 ),
