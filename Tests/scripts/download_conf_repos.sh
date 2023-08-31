@@ -69,7 +69,7 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
-echo "Getting conf from branch ${CI_COMMIT_BRANCH}, With fallback to master"
+echo "Getting content-test-conf and infra repositories with branch:${CI_COMMIT_BRANCH}, With fallback to master"
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
