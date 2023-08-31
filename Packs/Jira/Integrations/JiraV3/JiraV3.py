@@ -3841,17 +3841,17 @@ def validate_auth_params(
     basic_oauth, oauth2 = username or api_key, client_id or client_secret
 
     if (not basic_oauth) and (not oauth2):
-        raise DemistoException("The required parameters were not provided, see the help window")
+        raise DemistoException("The required parameters were not provided. See the help window for more information.")
     if basic_oauth and oauth2:
         raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
-                               " with the `Client ID` or `Client Secret` parameters, see the help window")
+                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
     if basic_oauth and not (username and api_key):
         raise DemistoException(
-            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory"
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
         )
     if oauth2 and not (client_id and client_secret):
         raise DemistoException(
-            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory"
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory."
         )
 
 

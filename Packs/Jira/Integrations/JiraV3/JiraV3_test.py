@@ -292,7 +292,7 @@ def test_module_oauth2(mocker):
     mocker.patch.object(client, "test_instance_connection")
     with pytest.raises(
         DemistoException,
-        match="In order to authorize the instance, first run the command `!jira-oauth-start`"
+        match="In order to authorize the instance, first run the command `!jira-oauth-start`."
     ):
         test_module(client)
 
