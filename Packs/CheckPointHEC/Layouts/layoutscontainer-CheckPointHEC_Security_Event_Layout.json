@@ -321,12 +321,17 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhecreported"
+													"simple": "checkpointhectype"
 												}
 											},
-											"operator": "isTrue",
-											"right": null,
-											"type": "boolean"
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "alert"
+												}
+											},
+											"type": "shortText"
 										}
 									]
 								],
@@ -359,17 +364,17 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhecreported"
+													"simple": "checkpointhectype"
 												}
 											},
-											"operator": "isFalse",
+											"operator": "isNotEqualString",
 											"right": {
 												"isContext": false,
 												"value": {
-													"simple": ""
+													"simple": "alert"
 												}
 											},
-											"type": "boolean"
+											"type": "shortText"
 										}
 									]
 								],
