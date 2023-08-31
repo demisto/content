@@ -4,8 +4,8 @@ This pack includes Cortex XSIAM content.
 
 
 ## Configuration on Server Side
-For information on configuring **ACL web logging**, please refer to the following documentation [here](https://docs.aws.amazon.com/waf/latest/developerguide/logging-management.html).
-For information on sending logs ACL web logging to **S3 bucket**, please refer to the following documentation [here](https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html).
+- For information on configuring **ACL web logging**, please refer to the following documentation [here](https://docs.aws.amazon.com/waf/latest/developerguide/logging-management.html).
+- For information on sending logs ACL web logging to **S3 bucket**, please refer to the following documentation [here](https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html).
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Amazon S3](#amazon-s3) collector.
