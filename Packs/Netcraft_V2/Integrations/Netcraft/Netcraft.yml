@@ -5,6 +5,9 @@ name: Netcraft
 display: Netcraft
 category: Utilities
 description: This is the Hello World integration for getting started.
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Takedown Server URL
   name: takedown_url
@@ -64,6 +67,16 @@ configuration:
   type: 0
   section: Collect
   required: true
+- defaultvalue: None
+  display: Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -72,39 +85,34 @@ configuration:
   advanced: true
   required: false
 
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  type: 15
-  section: Collect
-  advanced: true
-  required: false
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
-  name: alert_type
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: 'Low'
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
-  required: true
-  type: 15
-  section: Collect
-
-
 script:
   commands:
-  - name: ''
+  - name: get-modified-remote-data
+    arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    description: |
+      Get the list of incidents (takedowns) that were modified since the last update time.
+      This method is used for debugging purposes. The get-modified-remote-data command
+      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+  - name: get-remote-data
+    arguments:
+    - description: The remote incident (takedown) ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident (takedown) is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets remote incident (takedown) data. This method does not update the current incidents, and should be used for debugging purposes only.
+  - name: update-remote-system
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
+
+  - name: 'netcraft-attack-report'
     arguments:
     - name: attack
       required: true
@@ -183,20 +191,24 @@ script:
     outputs: []
     description: |
       ''
-  - name: ''
+  - name: 'netcraft-takedown-list'
     arguments:
-    - name: Argument name
-      description: |
-        Note
-    - name: id
-      description: |
-        ''
     - name: statuses
       description: |
-        Valid values:- unverified- inactive_monitoring- verified- contacted_hosting-
-        contacted_police- contacted_upstream- resolved_monitoring- resolved- stale-
-        invalidMultiple values may be provided as a comma-separated list.
+        Multiple values may be provided as a comma-separated list.
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - unverified
+      - inactive_monitoring
+      - verified
+      - contacted_hosting
+      - contacted_police
+      - contacted_upstream
+      - resolved_monitoring
+      - resolved
+      - stale
+      - invalid
     - name: url
       description: |
         ''
@@ -278,11 +290,8 @@ script:
     outputs: []
     description: |
       ''
-  - name: ''
+  - name: 'netcraft-takedown-update'
     arguments:
-    - name: Argument name
-      description: |
-        Note
     - name: takedown_id
       description: |
         ''
@@ -328,11 +337,8 @@ script:
     outputs: []
     description: |
       ''
-  - name: ''
+  - name: 'netcraft-takedown-escalate'
     arguments:
-    - name: Argument name
-      description: |
-        Note
     - name: takedown_id
       required: true
       description: |
@@ -340,11 +346,8 @@ script:
     description: |
       ''
     outputs: []
-  - name: ''
+  - name: 'netcraft-takedown-note-create'
     arguments:
-    - name: Argument name
-      description: |
-        Note
     - description: |
         ''
       name: takedown_id
@@ -365,10 +368,8 @@ script:
     description: |
       ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-takedown-note-list'
+    arguments:
     - description: |
         ''
       name: takedown_id
@@ -388,12 +389,9 @@ script:
       - 'false'
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-attack-type-list'
+    arguments:
     - auto: PREDEFINED
       description: |
         Filter to attack types where automated takedowns are available.
@@ -432,12 +430,10 @@ script:
       - 'false'
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-file-report-submit'
+    polling: true
+    arguments:
     - description: |
         ''
       name: reporter_email
@@ -473,12 +469,9 @@ script:
       name: timeout_in_seconds
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-url-report-submit'
+    arguments:
     - description: |
         ''
       name: reporter_email
@@ -507,12 +500,9 @@ script:
       name: timeout_in_seconds
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-email-report-submit'
+    arguments:
     - description: |
         ''
       name: reporter_email
@@ -543,12 +533,9 @@ script:
       name: timeout_in_seconds
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-submission-list'
+    arguments:
     - description: |
         "An optional argument to get a specific submission.In case that the\
         \ user provided this value we will execute the \u201Cget submission details\u201D\
@@ -580,14 +567,11 @@ script:
     - description: |
         API argument - marker
       name: next_token
-    description: |
-      ''
-    name: ''
-    outputs: []
-  - arguments:
     - description: |
-        Note
-      name: Argument name
+        ''
+    outputs: []
+  - name: 'netcraft-submission-file-list'
+    arguments:
     - description: |
         "Add description that the user can get this value by running the\
         \ command \u201Csubmission-list\u201D."
@@ -604,12 +588,9 @@ script:
       name: page_size
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
-    - description: |
-        Note
-      name: Argument name
+  - name: 'netcraft-file-screenshot-get'
+    arguments:
     - description: |
         "Add description that the user can get this value by running the\
         \ command \u201Csubmission-list\u201D."
@@ -622,9 +603,9 @@ script:
       required: true
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
+  - name: 'netcraft-submission-mail-list'
+    arguments:
     - description: |
         Note
       name: Argument name
@@ -635,9 +616,9 @@ script:
       required: true
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
+  - name: 'netcraft-mail-screenshot-get'
+    arguments:
     - description: |
         Note
       name: Argument name
@@ -648,9 +629,9 @@ script:
       required: true
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
+  - name: 'netcraft-submission-url-list'
+    arguments:
     - description: |
         Note
       name: Argument name
@@ -670,9 +651,9 @@ script:
       name: page_size
     description: |
       ''
-    name: ''
     outputs: []
-  - arguments:
+  - name: 'netcraft-url-screenshot-get'
+    arguments:
     - description: |
         Note
       name: Argument name
@@ -692,21 +673,20 @@ script:
         ."
       name: screenshot_hash
       required: true
-    script: '-'
-    type: python
-    dockerimage: demisto/python3:3.10.12.63474
     description: |
       ''
-    name: ''
     outputs: []
+  script: '-'
+  type: python
+  dockerimage: demisto/python3:3.10.12.63474
   subtype: python3
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
 fromversion: 6.9.0
 tests:
 - No tests (deprecated)
-sectionOrder:
-- Connect
-- Collect
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
