@@ -302,7 +302,7 @@ def test_module_oauth2(mocker):
     [
         pytest.param(
             {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
-            "The required parameters were not provided, see the help window",
+            "The required parameters were not provided. See the help window for more information.",
             id="no auth params provided"
         ),
         pytest.param(
@@ -313,7 +313,8 @@ def test_module_oauth2(mocker):
                 "client_secret": "dummy_client_secret"
             },
             "The `User name` or `API key` parameters cannot be provided together"
-            " with the `Client ID` or `Client Secret` parameters, see the help window",
+            " with the `Client ID` or `Client Secret` parameters, see the help window"
+            " for more information.",
             id="both types of auth params are provided"
         ),
         pytest.param(
