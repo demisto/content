@@ -2,15 +2,18 @@
 set +e
 
 clone_repository() {
-  local repo_name=$1
-  local branch=$2
-  local retry_count=$3
-  local sleep_time=$4
+  local host=$1
+  local user=$2
+  local token=$3
+  local repo_name=$4
+  local branch=$5
+  local retry_count=$6
+  local sleep_time=${7:-10}  # default sleep time is 10 seconds.
   local exit_code=0
   local i=1
-  echo "Cloning ${repo_name} from branch: ${branch} with ${retry_count} retries"
+  echo "Cloning ${repo_name} from ${host} branch:${branch} with ${retry_count} retries"
   for ((i=1; i <= retry_count; i++)); do
-    git clone --depth=1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
+    git clone --depth=1 "https://${user}:${token}@${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
       echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again"
       sleep "${sleep_time}"
@@ -23,15 +26,18 @@ clone_repository() {
 }
 
 clone_repository_with_fallback_branch() {
-  local repo_name=$1
-  local branch=$2
-  local fallback_branch="${3:-master}"
-  local retry_count=$4
-  local sleep_time=${5:-10}  # default sleep time is 10 seconds.
+  local host=$1
+  local user=$2
+  local token=$3
+  local repo_name=$4
+  local branch=$5
+  local retry_count=$6
+  local sleep_time=${7:-10}  # default sleep time is 10 seconds.
+  local fallback_branch="${8:-master}"
 
   # Check if branch exists in the repository.
   echo "Checking if branch ${branch} exists in ${repo_name}"
-  git ls-remote --exit-code --quiet --heads "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+  git ls-remote --exit-code --quiet --heads "https://${user}:${token}@${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
@@ -39,7 +45,7 @@ clone_repository_with_fallback_branch() {
     local exit_code=1
   else
     echo "Branch ${branch} exists in ${repo_name} trying to clone!"
-    clone_repository "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
+    clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ "${exit_code}" -ne 0 ]; then
       echo "Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}"
@@ -48,7 +54,7 @@ clone_repository_with_fallback_branch() {
   if [ "${exit_code}" -ne 0 ]; then
     # Trying to clone from fallback branch.
     echo "Trying to clone repository:${repo_name} with branch ${fallback_branch}!"
-    clone_repository "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
+    clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
       echo "Failed to clone ${repo_name} with branch:${fallback_branch}, exit code:${exit_code}, exiting!"
@@ -63,10 +69,7 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
-# Replace slashes '/' in the branch name with underscores '_'.
-UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH//\//_}
-
-echo "Getting conf from branch ${UNDERSCORE_BRANCH} (${CI_COMMIT_BRANCH}), With fallback to master"
+echo "Getting conf from branch ${CI_COMMIT_BRANCH}, With fallback to master"
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
@@ -83,7 +86,7 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
-clone_repository_with_fallback_branch "content-test-conf" "${UNDERSCORE_BRANCH}" "master" 3
+clone_repository_with_fallback_branch "code.pan.run" "gitlab-ci-token" "${CI_JOB_TOKEN}" "xsoar/content-test-conf" "${CI_COMMIT_BRANCH}"  "master" 3
 
 cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
@@ -96,7 +99,7 @@ if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
 fi
 rm -rf ./content-test-conf
 
-clone_repository_with_fallback_branch "infra" "${UNDERSCORE_BRANCH}" "master" 3
+clone_repository_with_fallback_branch "code.pan.run" "gitlab-ci-token" "${CI_JOB_TOKEN}" "xsoar/infra" "${CI_COMMIT_BRANCH}" "master" 3
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
