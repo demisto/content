@@ -660,3 +660,71 @@ Reset user session token in Slack.
 #### Context Output
 
 There is no context output for this command.
+### slack-list-channels
+
+***
+List all of the channels in the organization workspace. This command required scopes depend on the type of channel-like object you're working with. To use the command, you'll need at least one of the channels:, groups:, im: or mpim: scopes corresponding to the conversation type you're working with.
+
+#### Base Command
+
+`slack-list-channels`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name_filter | Supply this argument to only return channels with this name . | Optional | 
+| channel_types | Default is "public_channel". You can provide a comma separated list of other channels to include in your results. Possible options are: "public_channel", "private_channel", "mpim", and "im".  Including these options may require changes to your Bot's OAuth scopes in order to read channels like private, group message, or personal messages. | Optional | 
+| exclude_archived | Default is true (exclude archived channels). This setting allows the command to read channels that have been archived. | Optional | 
+| limit | Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results. | Optional | 
+| cursor | Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request's response_metadata . | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Channels.ID | string | The ID for the channel | 
+| Slack.Channels.Name | string | Name of the channel | 
+| Slack.Channels.Created | number | Epoch timestamp when the channel was created | 
+| Slack.Channels.Creator | string | ID for the creator of the channel | 
+| Slack.Channels.Purpose | string | The purpose, or description, of the channel | 
+### slack-get-conversation-history
+
+***
+Fetches a conversation's history of messages and events
+
+#### Base Command
+
+`slack-get-conversation-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | The channel ID associated with the Slack channel. | Required | 
+| limit | Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results. | Optional | 
+| conversation_id | Conversation id. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### slack-get-conversation-replies
+
+***
+Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
+
+#### Base Command
+
+`slack-get-conversation-replies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | ID of the channel. | Required | 
+| thread_id | ID of the thread. | Required | 
+| limit | limit. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
