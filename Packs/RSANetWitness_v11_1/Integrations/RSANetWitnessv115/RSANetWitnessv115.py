@@ -19,6 +19,7 @@ DEFAULT_MAX_INCIDENT_ALERTS = 50
 
 # =========== Mirroring Mechanism Globals ===========
 MAX_TIME_MIRROR_INC = 24
+MAX_NB_MIRROR_PULL = 1500
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -1330,13 +1331,13 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {last_update_format}')
 
     # setting request
-    since = last_update_format - timedelta(days=MAX_TIME_MIRROR_INC)
+    datetime_now = datetime.now()
+    since = datetime_now - timedelta(days=MAX_TIME_MIRROR_INC)
     since_format = since.strftime(DATE_FORMAT)
-    until_format = last_update_format.strftime(DATE_FORMAT)
-    response, items = paging_command(max_fetch_incidents, None, None, client.list_incidents_request, until=until_format, since=since_format)
-    page_number = response.get('pageNumber')
-    total_pages = response.get('totalPages')
-    demisto.debug(f"Total Retrieved Incidents : {len(items)}\n Page number {page_number} out of {total_pages}")
+    until_format = datetime_now.strftime(DATE_FORMAT)
+    response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request, until=until_format, since=since_format)
+
+    demisto.debug(f"Total Retrieved Incidents : {len(items)} in {response.get('totalPages')} pages")
 
     # clean the integration context data of "old" incident
     clean_old_inc_context()

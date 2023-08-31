@@ -1,4 +1,6 @@
-Use this script to get RAW log
+Use this script to get RAW log.
+Each RSA Netwitness log contains the eventsource meta that contain an ip address that can be requested using RSA NetWitness Packets and Logs.
+This log is after set in the field rsarawlogslist.
 
 ## Script Data
 
@@ -34,3 +36,36 @@ There are no inputs for this script.
 
 ---
 There are no outputs for this script.
+
+
+## Script Examples
+
+### Example command
+
+```!RSA_GetRawLog```
+
+### Context Example
+
+```json
+ {
+    "RSA Alerts": [
+        {
+            "created": "2023-07-03T11:04:16.408Z",
+            "detail": null,
+            "events": [
+                {
+                    "destination": {},
+                    "eventSource": "1.1.1.1:56005",
+                    "eventSourceId": "12123434",
+                    "source": {}
+                }
+            ],
+            "id": "123456789",
+            "riskScore": "50",
+            "source": "NetWitness Investigate",
+            "title": "Incident name",
+            "type": "Log",
+        },
+    ]
+}
+```
