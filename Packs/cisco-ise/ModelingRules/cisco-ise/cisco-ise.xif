@@ -90,8 +90,8 @@ alter
     xdm.alert.description = coalesce(get_cause, get_description),
     xdm.source.ipv4 = coalesce(check_src_ipv4_1, check_src_ipv4_2, check_src_ipv4_3),
     xdm.source.ipv6 = coalesce(check_src_ipv6_1, check_src_ipv6_2, check_src_ipv6_3),
-    xdm.source.host.ipv4_addresses = check_src_ipv4_4,
-    xdm.source.host.ipv6_addresses = check_src_ipv6_4,
+    xdm.source.host.ipv4_addresses = arraycreate(check_src_ipv4_4),
+    xdm.source.host.ipv6_addresses = arraycreate(check_src_ipv6_4),
     xdm.source.host.mac_addresses = arraycreate(coalesce(check_src_mac_1, check_src_mac_2, check_src_mac_3)),
     xdm.target.ipv4 = check_tar_ipv4,
     xdm.target.ipv6 = check_tar_ipv6,
@@ -118,7 +118,8 @@ alter
     DeviceIPAddress_ipv4 = arrayindex(regextract(_raw_log, "Device IP Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
     DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     src_mac_address = regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),
-    tar_mac_address = regextract(_raw_log, "Called-Station-ID=([^\,]+)")
+    tar_mac_address = regextract(_raw_log, "Called-Station-ID=([^\,]+)"),
+    src_port = arrayindex(regextract(_raw_log, "(?:NAS-Port|Device Port)=([^\,\;]+)"),0)
 | alter 
     xdm.event.type = logType,
     xdm.alert.severity = logSeverity,
@@ -127,7 +128,6 @@ alter
     xdm.event.description = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
     xdm.source.ipv4 = coalesce(framedIP_ipv4, DeviceIPAddress_ipv4),
     xdm.source.ipv6 = coalesce(framedIP_ipv6, DeviceIPAddress_ipv6 ),
-    xdm.source.port = to_integer(arrayindex(regextract(_raw_log, "Device Port=(\d+),"),0)),
     xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
     xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log, "NAS-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
     xdm.intermediate.ipv6 = arrayindex(regextract(_raw_log, "NAS-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
@@ -137,7 +137,7 @@ alter
     xdm.source.interface = arrayindex(regextract(_raw_log, "NAS-Port-Id=([^\,\;]+)"),0),
     xdm.source.host.mac_addresses = src_mac_address,
     xdm.target.host.mac_addresses = tar_mac_address,
-    xdm.source.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=([^\,\;]+)"),0)),
+    xdm.source.port = to_integer(src_port),
     xdm.event.operation_sub_type = arrayindex(regextract(_raw_log, "Acct-Status-Type=([^\,\;]+)"),0),
     xdm.network.session_id = arrayindex(regextract(_raw_log, "Acct-Session-Id=([^\,\;]+)"),0),
     xdm.source.sent_packets = to_integer(arrayindex(regextract(_raw_log, "Acct-Output-Packets=([^\,\;]+)"),0)),
