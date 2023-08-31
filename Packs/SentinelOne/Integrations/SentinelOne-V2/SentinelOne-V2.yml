@@ -106,7 +106,7 @@ configuration:
   type: 19
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
-  defaultvalue: 'None'
+  defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
   type: 15
