@@ -1792,12 +1792,18 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
+    $proxy = (ConvertTo-Boolean $integration_params.proxy)
+
+    if(!$proxy) {
+        $env:HTTP_PROXY = ''
+        $env:HTTPS_PROXY = ''
+    }
 
     try {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $proxy)
 
         # Executing oauth2 commands
         switch ($command) {
