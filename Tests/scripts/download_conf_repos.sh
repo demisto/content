@@ -30,6 +30,7 @@ clone_repository_with_fallback_branch() {
   local sleep_time=${5:-10}  # default sleep time is 10 seconds.
 
   # Check if branch exists in the repository.
+  echo "Checking if branch ${branch} exists in ${repo_name}"
   git ls-remote --exit-code --quiet --heads "https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
@@ -37,6 +38,7 @@ clone_repository_with_fallback_branch() {
     echo "Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}"
     local exit_code=1
   else
+    echo "Branch ${branch} exists in ${repo_name} trying to clone!"
     clone_repository "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ "${exit_code}" -ne 0 ]; then
