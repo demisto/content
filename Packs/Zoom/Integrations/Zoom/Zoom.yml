@@ -36,6 +36,7 @@ configuration:
   hidden: true
 - display: Long running instance
   name: longRunning
+  section: Collect
   type: 8
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
@@ -1190,9 +1191,16 @@ script:
     - contextPath: Zoom.ChatMessage.next_page_token
       type: string
       description: The next page token for pagination.
+  - arguments:
+    - description: The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel
+    - description: The ID of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel_id
+    description: Archives a Slack channel.
+    name: close-channel
   - name: send-notification
     description: >
-      sending message using chatbot app
+      Send a message using chatbot app.
     arguments:
     - name: message
       description: the message
@@ -1211,7 +1219,7 @@ script:
       type: string
     - name: zoom_ask
       description: >
-        send the message as a json or not
+        send the message as a json black for asking questions the user
       type: boolean
     outputs: []
   - arguments:

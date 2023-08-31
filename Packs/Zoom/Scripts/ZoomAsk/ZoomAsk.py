@@ -85,19 +85,17 @@ def generate_json(text, options, response_type):
 
 
 def main():
-    res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
-                                                    'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+    demisto_args = demisto.args()
+    res = demisto.executeCommand('addEntitlement', {'persistent': demisto_args.get('persistent')})
     if isError(res[0]):
-        demisto.results(res)
-        sys.exit(0)
+        return_results(res)
     entitlement = demisto.get(res[0], 'Contents')
-    option1 = demisto.get(demisto.args(), 'option1')
-    option2 = demisto.get(demisto.args(), 'option2')
-    extra_options = argToList(demisto.args().get('additionalOptions', ''))
-    reply = demisto.get(demisto.args(), 'reply')
-    response_type = demisto.get(demisto.args(), 'responseType')
-    lifetime = demisto.get(demisto.args(), 'lifetime')
-    zoom_instance = demisto.get(demisto.args(), 'zoomInstance')
+    option1 = demisto_args.get('option1')
+    option2 = demisto_args.get('option2')
+    extra_options = argToList(demisto_args.get('additionalOptions', ''))
+    reply = demisto_args.get('reply')
+    response_type = demisto_args.get('responseType', 'buttons')
+    lifetime = demisto_args.get('lifetime', '1 day')
     try:
         parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
         assert parsed_date is not None, f'could not parse in {lifetime}'
@@ -108,19 +106,16 @@ def main():
         assert parsed_date is not None
         expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
-    default_response = demisto.get(demisto.args(), 'defaultResponse')
+    default_response = demisto_args.get('defaultResponse')
 
     entitlement_string = entitlement + '@' + demisto.investigation()['id']
-    if demisto.get(demisto.args(), 'task'):
-        entitlement_string += '|' + demisto.get(demisto.args(), 'task')
+    if demisto_args.get('task'):
+        entitlement_string += '|' + demisto_args.get('task')
 
     args = {
         'ignoreAddURL': 'true',
     }
-    if zoom_instance:
-        args.update({
-            'using': zoom_instance
-        })
+
     user_options = [option1, option2]
     if extra_options:
         user_options += extra_options
@@ -132,8 +127,8 @@ def main():
         'expiry': expiry,
         'default_response': default_response
     })
-    to = demisto.get(demisto.args(), 'user')
-    channel = demisto.get(demisto.args(), 'channel')
+    to = args.get('user')
+    channel = args.get('channel_id')
 
     if to:
         args['to'] = to
@@ -145,7 +140,7 @@ def main():
     args['zoom_ask'] = 'true'
     demisto.debug(f"zoom ask: {args}")
     try:
-        demisto.results(demisto.executeCommand('send-notification', args))
+        return_results(demisto.executeCommand('send-notification', args))
     except ValueError as e:
         if 'Unsupported Command' in str(e):
             return_error(f'The command is unsupported by this script. {e}')

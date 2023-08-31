@@ -9,55 +9,67 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. '<https://api.zoom.us/v2/>') |  | False |
-    | Account ID (OAuth) |  | False |
-    | Client ID (OAuth) |  | False |
-    | Client Secret (OAuth) |  | False |
-    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Long running instance| |False |
-    | Listen Port| |False|
-    | Bot JID| | False|
-    | Bot Client ID (OAuth)| | False|
-    | Bot Client Secret (OAuth)| | False|
+    | `Server URL` (e.g. '<https://api.zoom.us/v2/>') |  | False |
+    | `Account ID (OAuth)` |  | False |
+    | `Client ID (OAuth)` |  | False |
+    | `Client Secret (OAuth)` |  | False |
+    | `API Key (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | `API Secret (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | `API Key (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | `API Secret (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | `Use system proxy settings` |  | False |
+    | `Trust any certificate (not secure)` |  | False |
+    | `Long running instance`| Enable in order to use zoom-ask and for mirroring |False |
+    | `Listen Port`| |False|
+    | `Bot JID`| | False|
+    | `Bot Client ID (OAuth)`| | False|
+    | `Bot Client Secret (OAuth)`| | False|
+    | `Secret Token`| For mirroring [Configuring Secret Token](#secret-token)|False|
+    | `Mirroring` | Enable Incident Mirroring. [See how to configure the app](#secret-token) | False |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+1. Click **Test** to validate the URLs, token, and connection.
 
 
 ####server configuration
-In the Server Configuration section, verify that the value for the instance.execute.external.<INTEGRATION-INSTANCE-NAME> key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.<INTEGRATION-INSTANCE-NAME> and set the value to true. See the following reference article for further information.
-You can now trigger the webhook URL: <CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>. For example, https://my.demisto.live/instance/execute/webhook. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+In the Server Configuration section, verify that the value for the instance.execute.external.I`NTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.`INTEGRATION-INSTANCE-NAME` and set the value to true. See the following reference article for further information.
+You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`. For example, https://my.demisto.live/instance/execute/webhook. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
 ## Create Zoom ChatBOT app
 1. Navigate to https://marketplace.zoom.us/
 2. Build Team Chat Apps
 
 ![enter image description here](doc_file/create-team-chat-app.gif)
-
+#### Configure App Settings:
 1. Enter your XSOAR server URL in all Redirect URLS
-2. In the Team Chat Subscription section under BOT endpoint URL add <CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME> For example, https://my.demisto.live/instance/execute/zoom-bot. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+2. In the Team Chat Subscription section under BOT endpoint URL add `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME` For example, https://my.demisto.live/instance/execute/zoom-bot. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
 ![enter image description here](doc_file/bot_endpoint_url.gif)
 
 1. Add scope permissions:
-    - Enable Chatbot within Zoom Team Chat Client /imchat:botDelete
-    - Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:adminDelete
+    - Enable Chatbot within Zoom Team Chat Client /imchat:bot
+    - Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin
     - View and manage all users' team chat channels /chat_channel:write:admin
     - View all user information /user:read:admin
 ![enter image description here](doc_file/scope.png)
+
+5. If Mirroring is Enable in the integration configuration
+    <a name="secret-token"></a>
+   - Get the **secret token** from the "Features" page under the "Token" section and add it
+    to the system configuration
+    ![enter image description here](doc_file/secret_token.png)
+
+   - In the Zoom ChatBOT app configure Event Subscriptions: in the "Features" page
+   Under the "General Features" section, you should see "Event Subscriptions." enable the toggle switch to turn on Event Subscriptions if it's not already enabled.
+   Add New Event Subscription
+      - Name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
+      - Event notification endpoint URL: Enter the XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
+       **Just after setting up/configuration of XSOAR side you can validate the URL**
+      - Event types: Click on the "Select events" button, and from the list of events, select "send message sent."
+![enter image description here](doc_file/add-event.gif)
   
-  
-4. In local test section click on the Add button to test your app and authorize your xsoar app
+1. In the Local Test section, click on the "Add" button to test your app and authorize your XSOAR app.
  ![enter image description here](doc_file/test.gif)
-
-
-
-
-
 
 
 

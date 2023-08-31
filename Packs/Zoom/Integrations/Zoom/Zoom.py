@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
@@ -409,7 +410,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
     return ''
 
 
-def save_entitlement(entitlement, message_id, reply, expiry, default_response):
+def save_entitlement(entitlement, message_id, reply, expiry, default_response, to_jid):
     """
     Saves an entitlement with its thread
 
@@ -431,7 +432,8 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response):
         'reply': reply,
         'expiry': expiry,
         'sent': datetime.strftime(datetime.utcnow(), DATE_FORMAT),
-        'default_response': default_response
+        'default_response': default_response,
+        'to_jid': to_jid
     })
 
     set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
@@ -469,7 +471,6 @@ async def check_for_unanswered_questions():
     if messages:
         messages = json.loads(messages)
         now = datetime.utcnow()
-        now_string = datetime.strftime(datetime.utcnow(), DATE_FORMAT)
         updated_messages = []
 
         for message in messages:
@@ -479,7 +480,7 @@ async def check_for_unanswered_questions():
                 expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
                 if expiry < now:
                     demisto.debug(f"message expired: {message}")
-                    _ = answer_question(message.get('default_response'), message, email='')
+                    _ = await answer_question(message.get('default_response'), message, email='')
                     updated_messages.append(message)
                     continue
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
@@ -492,7 +493,6 @@ async def check_for_unanswered_questions():
             #     poll_time_minutes = get_poll_minutes(now, sent)
             #     if minutes < poll_time_minutes:
             #         continue
-            message['last_poll_time'] = now_string
             updated_messages.append(message)
         if updated_messages:
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
@@ -549,20 +549,20 @@ def run_log_running(port: int, is_test: bool = False):
             time.sleep(5)
 
 
-def long_running(port):
-    integration_logger = IntegrationLogger()
-    integration_logger.buffering = False
-    log_config = dict(uvicorn.config.LOGGING_CONFIG)
-    while True:
-        try:
-            demisto.debug('long running')
-            uvicorn.run(app, host="0.0.0.0", port=port, log_config=log_config)
-            # check_for_unanswered_questions()
-        except Exception as e:
-            demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
-            demisto.updateModuleHealth(f'An error occurred: {str(e)}')
-        finally:
-            time.sleep(5)
+# def long_running(port):
+#     integration_logger = IntegrationLogger()
+#     integration_logger.buffering = False
+#     log_config = dict(uvicorn.config.LOGGING_CONFIG)
+#     while True:
+#         try:
+#             demisto.debug('long running')
+#             uvicorn.run(app, host="0.0.0.0", port=port, log_config=log_config)
+#             # check_for_unanswered_questions()
+#         except Exception as e:
+#             demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
+#             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
+#         finally:
+#             time.sleep(5)
 
 
 async def process_entitlement_reply(
@@ -595,15 +595,21 @@ async def process_entitlement_reply(
         "robot_jid": robotJid,
         "account_id": accountId
     }
+    demisto.debug(f"json: {json_data_all}")
     await CLIENT.zoom_send_notification(url_suffix, json_data_all)
 
 
-def answer_question(text: str, question: dict, email: str = ''):
+async def answer_question(text: str, question: dict, email: str = ''):
     entitlement = question.get('entitlement', '')
+    to_jid = question.get('to_jid')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.debug("handleEntitlementForUser")
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
+        account_id = CLIENT.account_id
+        botJid = CLIENT.botJid
+        if account_id and botJid:
+            _ = await process_entitlement_reply(text, account_id, botJid, to_jid)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
@@ -612,7 +618,7 @@ def answer_question(text: str, question: dict, email: str = ''):
 
 async def handle_text(investigation_id: str, text: str, operator_email: str, operator_name: str):
     """
-    Handles text received in the Slack workspace (not DM)
+    Handles text received from Zoom 
 
     Args:
         investigation_id: The mirrored investigation ID
@@ -626,7 +632,6 @@ async def handle_text(investigation_id: str, text: str, operator_email: str, ope
                          email=operator_email,
                          footer=MESSAGE_FOOTER
                          )
-
 
 
 async def handle_listen_error(error: str):
@@ -700,7 +705,7 @@ async def event_url_validation(payload):
 
 
 @app.post('/')
-async def handle_zoom_button_click(request: Request):
+async def handle_zoom_response(request: Request):
     demisto.debug(f"request: {request}")
     request = await request.json()
     demisto.debug(f"request: {request}")
@@ -2093,22 +2098,32 @@ To find the appropriate values, refer to the ChatMessageNextToken located in the
     )
 
 
-def get_channel_id_from_context(channel_name: str = None) -> str:
+def get_channel_jid_from_context(channel_name: str, investigation_id: str):
     """
-    Retrieves Microsoft Teams channel ID
-    :param channel_name: Name of channel to get ID of
-    :param team_aad_id: AAD ID of team to search channel in
-    :param investigation_id: Demisto investigation ID to search mirrored channel of
-    :return: Requested channel ID
+    Retrieves a Zoom channel JID based on the provided criteria.
+    
+    :param channel_name: The name of the channel to get the JID for.
+    :param investigation_id: The Demisto investigation ID to search for a mirrored channel.
+    
+    :return: The requested channel JID or None if not found.
     """
-    # investigation_id = investigation_id or ''
-    integration_context: dict = get_integration_context()
-    mirrors: list = json.loads(integration_context.get('mirrors', '[]'))
-    mirrored_channel_filter = list(filter(lambda m: m["channel_name"] == channel_name, mirrors))
+    # Initialize investigation_id as an empty string if not provided.
+    investigation_id = investigation_id or ''
+    
+    integration_context = get_integration_context()
+    mirrors = json.loads(integration_context.get('mirrors', '[]'))
+    
+    # Filter mirrors based on the provided criteria.
+    if investigation_id:
+        mirrored_channel_filter = next((m for m in mirrors if m["investigation_id"] == investigation_id), None)
+    else:
+        mirrored_channel_filter = next((m for m in mirrors if m["channel_name"] == channel_name), None)
+    
     if mirrored_channel_filter:
-        mirror = mirrors.pop(mirrors.index(mirrored_channel_filter[0]))
-        return mirror['channel_id'] + '@conference.xmpp.zoom.us'
+        return mirrored_channel_filter.get('channel_jid')
+    
     return None
+
 
 
 def send_notification(client, **args) -> CommandResults:
@@ -2126,14 +2141,17 @@ def send_notification(client, **args) -> CommandResults:
     original_message = args.get('originalMessage', '')  # From server
     # entry = args.get('entry')
     # severity = args.get('severity')  # From server
-    # entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
+    entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     channel = args.get('channel')
     ignore_add_url = args.get('ignoreAddURL', False) or args.get('IgnoreAddURL', False)
-    # investigation_id = args.get('investigationId')  # From server, available from demisto v6.1 and above
+    investigation_id = None
+    if entry_object:
+        investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
     
     if message_type and message_type != MIRROR_TYPE:
-        demisto.info(f"Message type is not in permitted options. Received: {message_type}")
-        return
+        # if message_type == 'investigationClosed':
+        #     return close_channel(client)
+        return(f"Message type is not in permitted options. Received: {message_type}")
     
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
@@ -2152,7 +2170,7 @@ def send_notification(client, **args) -> CommandResults:
     else:
         message = {"head": {"type": "message", "text": args.get("message", "")}}
     if channel:
-        channel_id = get_channel_id_from_context(channel) 
+        channel_id = get_channel_jid_from_context(channel, investigation_id) 
     if (to and channel_id):
         raise DemistoException(TOO_MANY_JID)
     if not to and not channel_id:
@@ -2189,10 +2207,15 @@ def send_notification(client, **args) -> CommandResults:
     if raw_data:
         message_id = raw_data.get("message_id")
         if entitlement:
-            save_entitlement(entitlement, message_id, reply, expiry, default_response)
+            save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
     return CommandResults(
         readable_output=f'Message sent to Zoom successfully. Message ID is: {raw_data.get("message_id")}'
     )
+
+
+def get_user_id_from_token(client):
+    admin_user_result = client.zoom_get_user_id_from_token()
+    return admin_user_result.get('id')
 
 
 def mirror_investigation(client, **args) -> CommandResults:
@@ -2204,11 +2227,14 @@ def mirror_investigation(client, **args) -> CommandResults:
     type = args.get('type', 'all')
     direction = args.get('direction', 'Both')
     channel_name = args.get('channelName')
-    autoclose = argToBoolean(args.get('autoclose', True))
+    # autoclose = argToBoolean(args.get('autoclose', True))
+    autoclose = demisto.args().get('autoclose', 'true')
     kick_admin = argToBoolean(args.get('kickAdmin', False))
     send_first_message = False
     
     investigation = demisto.investigation()
+    investigation_id = investigation.get('id')
+    demisto.debug(f"investigation_id: {investigation_id}")
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         return_error('Can not perform this action in playground.')
 
@@ -2216,54 +2242,49 @@ def mirror_investigation(client, **args) -> CommandResults:
     demisto.debug(f"integration_context: {integration_context}")
     if not integration_context or not integration_context.get('mirrors', []):
         mirrors: list = []
+        current_mirror = []
     else:
         mirrors = json.loads(integration_context['mirrors'])
+        demisto.debug(f"mirrors: {mirrors}")
+        current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
+        
     # get user id from token
-    admin_user_result = client.zoom_get_user_id_from_token()
-    demisto.debug(f"admin_user_result: {admin_user_result}")
-    admin_user_id = admin_user_result.get('id')
-    investigation_id = investigation.get('id')
-    current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
+    admin_user_id = get_user_id_from_token(client)
+    
     channel_filter: list = []
     if channel_name:
-        demisto.debug(channel_name)
+        # check if channel already exsist
         channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
+        
     if not current_mirror:
-        demisto.debug(channel_name)
         channel_name = channel_name or f'incident-{investigation_id}'
-        demisto.debug(channel_name)
+        
         if not channel_filter:
             # create new channel
-            json_data ={
-                "channel_settings": {
-                    "add_member_permissions": 1,
-                    "new_members_can_see_previous_messages_files": True,
-                    "posting_permissions": 1,
-                },
-                "name": channel_name,
-                "type": 3,
-            }
-            url_suffix = f"/chat/users/{admin_user_id}/channels"
-            raw_data = client.zoom_create_channel(url_suffix, json_data)
-            demisto.debug(f"raw_data: {raw_data}")
-            channel_id = raw_data.get('id')
+            result = zoom_create_channel_command(client=client, user_id=admin_user_id, channel_type='Public channel',
+                                                 channel_name=channel_name, member_emails=admin_user_id)
+            channel_jid = result.outputs['jid']
+            channel_id = result.outputs['id']
             send_first_message = True
         else:
             mirrored_channel = channel_filter[0]
+            channel_jid = mirrored_channel['channel_jid']
             channel_id = mirrored_channel['channel_id']
             channel_name = mirrored_channel['channel_name']
             
         mirror = {
+            'channel_jid': channel_jid,
             'channel_id': channel_id,
             'channel_name': channel_name,
             'investigation_id': investigation.get('id'),
             'mirror_type': type,
             'mirror_direction': direction,
-            'auto_close': autoclose,
+            'auto_close': bool(strtobool(autoclose)),
             'mirrored': False
         }
     else:
         mirror = mirrors.pop(mirrors.index(current_mirror[0]))
+        channel_jid = mirror['channel_jid']
         channel_id = mirror['channel_id']
         if type:
             mirror['mirror_type'] = type
@@ -2294,21 +2315,72 @@ def mirror_investigation(client, **args) -> CommandResults:
                     }
                 ]
             },
-            "to_jid": channel_id + '@conference.xmpp.zoom.us',
+            "to_jid": channel_jid,
             "robot_jid": client.botJid,
             "account_id": client.account_id
         }
         client.zoom_send_notification(url_suffix, json_data_all)
-    if kick_admin:
-        demisto.debug("kick-admin:")
-        url_suffix = f'/chat/users/{admin_user_id}/channels/{channel_id}/members/{admin_user_id}'
-        res = client.zoom_remove_from_channel(url_suffix)
-        demisto.debug(f"res: {res}")
+    # if kick_admin:
+    #     demisto.debug("kick-admin:")
+    #     url_suffix = f'/chat/users/{admin_user_id}/channels/{channel_id}/members/{admin_user_id}'
+    #     res = client.zoom_remove_from_channel(url_suffix)
+    #     demisto.debug(f"res: {res}")
     return CommandResults(
-        readable_output=f'Investigation mirrored successfully, channel:{channel_name},{channel_id}'
+        readable_output=f'Investigation mirrored successfully, channel:{channel_name},{channel_jid}'
     )
+    
+    
+def find_mirror_by_investigation() -> dict:
+    """
+    Finds a mirrored channel by the mirrored investigation
+
+    Returns:
+        The mirror object
+    """
+    mirror: dict = {}
+    investigation = demisto.investigation()
+    demisto.debug(f"investigation: {investigation}")
+    if investigation:
+        integration_context = get_integration_context(SYNC_CONTEXT)
+        demisto.debug(f"integration_context: {integration_context}")
+        if integration_context.get('mirrors'):
+            mirrors = json.loads(integration_context['mirrors'])
+            investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
+                                               mirrors))
+            if investigation_filter:
+                mirror = investigation_filter[0]
+
+    return mirror
 
 
+def close_channel(client, **args):
+    """
+        if AutoClose is true in mirroring
+        delete the mirrored zoom channel from zoom and from the context
+    """
+    demisto.debug(f"args close channel: {args}")
+    client = client
+    admin_user_id = get_user_id_from_token(client)
+    mirror = find_mirror_by_investigation()
+    demisto.debug(f"mirror: {mirror}")
+    channel_id = None
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if mirror:
+        mirrors = json.loads(integration_context['mirrors'])
+        channel_id = mirror.get('channel_id', '')
+        channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
+        demisto.debug(f"channel: {channel_id}")
+        for mirror in channel_mirrors:
+            mirror['remove'] = True
+            demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
+                                        mirror['auto_close'])
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    if channel_id:
+        zoom_delete_channel_command(client=client, channel_id=channel_id, user_id=admin_user_id)
+        return_results('Channel successfully delete.')
+    return_error('Channel not found')
+    
+       
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -2322,7 +2394,7 @@ def main():  # pragma: no cover
     bot_client_secret = params.get('bot_credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    botJID = params.get('botJID', None)
+    botJID = params.get('botJID', None) 
     global SECRET_TOKEN
     SECRET_TOKEN = params.get('secret_token').get('identifier')
     global LONG_RUNNING
@@ -2365,6 +2437,8 @@ def main():  # pragma: no cover
             run_log_running(port)
         elif command == 'mirror-investigation':
             results = mirror_investigation(client, **args)
+        elif command == 'close-channel':
+            results = close_channel(client, **args)
         elif command == 'zoom-create-user':
             results = zoom_create_user_command(client, **args)
         elif command == 'zoom-create-meeting':
