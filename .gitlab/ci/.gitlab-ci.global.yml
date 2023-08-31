@@ -349,7 +349,6 @@
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - section_end "Check Spelling"
-    - !reference [ .validate_content_test_conf_branch_merged ]
     - section_start "Validate landingPageSections.json"
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
@@ -366,6 +365,7 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
 .jobs-done-check:
