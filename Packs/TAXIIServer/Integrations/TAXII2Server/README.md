@@ -20,9 +20,15 @@ You can add a collection description as is done in *collection1_name*, or enter 
 
 ## How to Access the TAXII2 Server
 
-Use one of the following options:
+(For Cortex XSOAR 6.x) Use one of the following options:
+
 - **https://*demisto_address*/instance/execute/*instance_name*/{taxii2_api_endpoint}/**
 - **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
+
+(For Cortex XSOAR 8 and Cortex XSIAM) Use one of the following options:
+- **https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/{taxii2_api_endpoint}/**
+- **http://demisto_address:listen_port/{taxii2_api_endpoint}/**
+
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
@@ -152,10 +158,15 @@ TIM fields (system generated and custom). An example of these two related object
 
 
 #### Find the information required for the Sentinel TAXII connector
-
+**For Cortex XSOAR 6.x:**
   1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
-  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their ids. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
- 
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
+
+**For Cortex XSOAR 8 and Cortex XSIAM**
+  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/threatintel
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/threatintel/collections/ | jq .` to get a list of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest.
+
+
  Response Example:
   ```JSON
   {
