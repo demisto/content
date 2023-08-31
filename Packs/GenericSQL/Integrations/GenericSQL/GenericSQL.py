@@ -136,6 +136,7 @@ class Client:
             if engine is None:  # (first time or expired) need to initialize
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
+        # Teradata has a unique connection, unlike the others with URL object
         elif self.dialect == "Teradata":
             demisto.debug('Initializing engine for Teradata dialect')
             if self.is_ldap:
