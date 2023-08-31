@@ -1993,6 +1993,8 @@ script:
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.Description
       description: A human readable description of the action performed on the path.
+      type: string
+    description: Get runtime file integrity audit events
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
