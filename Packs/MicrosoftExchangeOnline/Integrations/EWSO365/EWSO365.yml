@@ -79,7 +79,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Max incidents per fetch (up to 50)
+- display: Maximum number of incidents per fetch (up to 200). Performance might be affected by a value higher than 50.
   name: max_fetch
   type: 0
   defaultvalue: '50'
@@ -956,7 +956,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.66850
+  dockerimage: demisto/py3ews:1.0.0.72375
   isfetch: true
   script: ''
   subtype: python3
