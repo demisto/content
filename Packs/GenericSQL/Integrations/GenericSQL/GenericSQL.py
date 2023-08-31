@@ -117,7 +117,7 @@ class Client:
                      username=self.username,
                      password=self.password,
                      host=self.host,
-                     port=arg_to_number(self.port),
+                     port=self.port,
                      database=self.dbname,
                      query=self.connect_parameters)
         if self.ssl_connect:
