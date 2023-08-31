@@ -20,7 +20,7 @@
         "Access",
         "Sinkhole",
         "Sinkholing",
-        "DNS Sinkhole",
+        "DNS Sinkhole"
     ],
     "dependencies": {
         "CommonPlaybooks": {
