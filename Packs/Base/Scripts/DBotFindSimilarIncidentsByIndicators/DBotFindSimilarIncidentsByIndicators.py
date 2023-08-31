@@ -621,7 +621,7 @@ def main():
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
-        return_outputs_tagged(similar_incidents, context, 'similarIncidents')
+        return_results(return_outputs_tagged(similar_incidents, context, 'similarIncidents'))
     else:
         return_no_similar_incident_found_entry()
 
