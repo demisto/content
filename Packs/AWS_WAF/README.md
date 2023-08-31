@@ -8,7 +8,7 @@ For information on configuring **ACL web logging**, please refer to the followin
 For information on sending logs ACL web logging to **S3 bucket**, please refer to the following documentation [here](https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html).
 
 ## Collect Events from Vendor
-In order to use the collector, use the [Amazon S3](#amazon-s3) option.
+In order to use the collector, use the [Amazon S3](#amazon-s3) collector.
 
 ### Amazon S3
 To create or configure the Amazon S3 collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
@@ -20,10 +20,10 @@ To create or configure the Amazon S3 collector, use the information described [h
 
 | **Field Name**    | **Description**                                                                                    | **Value**         |
 |-------------------|----------------------------------------------------------------------------------------------------|-------------------|
-| SQS URL           | The ARN of the Amazon SQS that you configured in the AWS Management Console                        | <YourSQSURL>      |
-| Name              | A descriptive name for your log collection configuration                                           | <InstanceName>    |
-| AWS Client ID     |  The Access key ID, which was received when configuring access keys for the AWS IAM user in AWS    | <AWSClientID>     |
-| AWS Client Secret | The Secret access key, which was received when configuring access keys for the AWS IAM user in AWS | <AWSClientSecret> |
+| SQS URL           | The ARN of the Amazon SQS that you configured in the AWS Management Console                        | \<YourSQSURL\>      |
+| Name              | A descriptive name for your log collection configuration                                           | \<InstanceName\>    |
+| AWS Client ID     |  The Access key ID, which was received when configuring access keys for the AWS IAM user in AWS    | \<AWSClientID\>     |
+| AWS Client Secret | The Secret access key, which was received when configuring access keys for the AWS IAM user in AWS | \<AWSClientSecret\> |
 | Log Type          | Select Generic to configure your log collection to receive generic logs from Amazon S3             | Generic           |
 | Log Format        | Select the log format type as JSON                                                                 | Json              |
 | Vendor            | Set as 'aws'                                                                                       | aws               |
