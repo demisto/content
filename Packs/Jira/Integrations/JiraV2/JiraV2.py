@@ -84,7 +84,7 @@ def jira_req(
                     for error in errors:
                         error_messages.append(",".join(error.values()))
                 else:
-                    error_messages = ",".join(rj["errors"].values())
+                    error_messages = ",".join(errors.values())
                 raise DemistoException(f'Status code: {result.status_code}\nMessages: {error_messages}')
             else:
                 raise DemistoException(f'Status code: {result.status_code}\nError text: {result.text}')
