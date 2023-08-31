@@ -195,7 +195,7 @@ Returns threats according to the specified filters.
 | classifications | A comma-separated list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
 | site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional |
-| incidentStatuses | Incident status. Example: "in_progress". | Optional |
+| incident_statuses | Incident status. Example: "IN_PROGRESS, UNRESOLVED". | Optional |
 
 #### Context Output
 

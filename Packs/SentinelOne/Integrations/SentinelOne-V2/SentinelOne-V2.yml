@@ -388,8 +388,8 @@ script:
     - description: 'A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
-    - description: 'Incident status. Example: "in_progress".'
-      name: incidentStatuses
+    - description: 'Incident status. Example: "IN_PROGRESS, UNRESOLVED".'
+      name: incident_statuses
     description: Returns threats according to the specified filters.
     name: sentinelone-get-threats
     outputs:

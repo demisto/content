@@ -248,7 +248,7 @@ class Client(BaseClient):
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, updated_from=None, resolved='false', display_name=None,
                             query=None, threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None,
-                            include_resolved_param=True, incidentStatuses=None):
+                            include_resolved_param=True, incident_statuses=None):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
         created_before_parsed = None
@@ -286,7 +286,7 @@ class Client(BaseClient):
             siteIds=site_ids,
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
-            incidentStatuses=argToList(incidentStatuses)
+            incidentStatuses=argToList(incident_statuses.lower() if incident_statuses is not None else None)
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
@@ -634,7 +634,7 @@ class Client(BaseClient):
         return {
             filter_key: filter_value
             for filter_key, filter_value in filter_dict.items()
-            if len(filter_value) != 0
+            if filter_value
         }
 
     def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
@@ -3305,7 +3305,7 @@ def fetch_threats(client: Client, args):
     threats = client.get_threats_request(limit=args.get('fetch_limit'),
                                          created_after=args.get('last_fetch_date_string'),
                                          site_ids=args.get('fetch_site_ids'),
-                                         incidentStatuses=','.join(args.get('fetch_threat_incident_statuses')).lower())
+                                         incident_statuses=','.join(args.get('fetch_threat_incident_statuses')).lower())
     for threat in threats:
         rank = threat.get('rank')
         threat.update(get_mirroring_fields(args))
