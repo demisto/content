@@ -304,7 +304,8 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
 
         table = table[skip:skip + limit]
-        print(table)
+        print(headers)
+        [print(row) for row in table]
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
