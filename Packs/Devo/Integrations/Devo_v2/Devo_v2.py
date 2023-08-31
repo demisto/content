@@ -249,9 +249,7 @@ def check_configuration():
     # Deprecated: this parameter is never used
     if FETCH_INCIDENTS_DEDUPE:
         dedupe_conf = check_type(FETCH_INCIDENTS_DEDUPE, dict)
-        assert (isinstance(
-            dedupe_conf["cooldown"],  int) or isinstance(dedupe_conf["cooldown"], float)
-        ), "Invalid fetch_incidents_deduplication configuration"
+        assert (isinstance(dedupe_conf["cooldown"], int | float)), "Invalid fetch_incidents_deduplication configuration"
 
     return True
 
