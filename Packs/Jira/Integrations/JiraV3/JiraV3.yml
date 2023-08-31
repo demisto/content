@@ -1408,7 +1408,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0
