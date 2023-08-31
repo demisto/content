@@ -36,38 +36,47 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: "10"
   type: 0
+  required: false
 - display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: "10"
   type: 0
+  required: false
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: "10"
   type: 0
+  required: false
 - display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: "10"
   type: 0
+  required: false
 - display: Preferred Vendors List. CSV list of vendors which are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ""
   type: 12
+  required: false
 - display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
   name: preferredVendorsThreshold
   defaultvalue: ""
   type: 0
+  required: false
 - display: Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned.
   name: fullResponseGlobal
   defaultvalue: "false"
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

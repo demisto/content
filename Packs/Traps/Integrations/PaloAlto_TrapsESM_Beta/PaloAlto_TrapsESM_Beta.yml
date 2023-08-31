@@ -10,9 +10,11 @@ configuration:
 - display: Username of Account to be used.
   name: username
   type: 0
+  required: false
 - display: Password of Account to be used.
   name: password
   type: 4
+  required: false
 description: |-
   Deprecated. Use CortexXDR instead.
 display: Palo Alto Traps ESM (Deprecated)

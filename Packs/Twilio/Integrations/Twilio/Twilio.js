@@ -6,7 +6,7 @@ var sendRequest = function(method, url, body) {
         throw('Account SID and Auth token must be provided.');
     }
     var res = http(
-        params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
+        params.server.replace(/[\/]+$/, '')+'/'+account_sid+'/Messages.json',
         {
             Method: method,
             Body: body,

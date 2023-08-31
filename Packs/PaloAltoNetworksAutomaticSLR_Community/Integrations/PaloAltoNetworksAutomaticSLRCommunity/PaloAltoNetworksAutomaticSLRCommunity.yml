@@ -32,6 +32,7 @@ configuration:
   name: ngfw_tls_verify
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Customer Support Portal (CSP) API Key
   name: csp_api_key
   defaultvalue: default-csp-api-key
@@ -49,16 +50,19 @@ configuration:
   defaultvalue: "true"
   type: 8
   additionalinfo: Verify Palo Alto Networks Customer Support Portal (CSP) TLS Certificate
+  required: false
 - display: XSOAR System Proxy
   name: system_proxy
   defaultvalue: "false"
   type: 8
   additionalinfo: Use the configured system proxy for XSOAR to route requests
+  required: false
 - display: Enable Verbose Output
   name: system_debug
   defaultvalue: "false"
   type: 8
   additionalinfo: Enable Verbose (Debug) Output - Do NOT enable unless needed!
+  required: false
 - display: Customer Account Name
   name: slr_account_name
   defaultvalue: ACME Inc

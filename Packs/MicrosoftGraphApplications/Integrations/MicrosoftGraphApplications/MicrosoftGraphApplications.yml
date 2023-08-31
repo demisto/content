@@ -12,6 +12,7 @@ configuration:
   type: 0
   additionalinfo:
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -24,6 +25,7 @@ configuration:
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -31,6 +33,7 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -38,6 +41,7 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - name: authentication_type
   display: Authentication Type
   defaultvalue: Device Code
@@ -49,6 +53,7 @@ configuration:
   - Azure Managed Identities
   section: Connect
   advanced: true
+  required: false
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
   defaultvalue:
@@ -56,6 +61,7 @@ configuration:
   additionalinfo: ""
   section: Connect
   advanced: true
+  required: false
 - name: credentials
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
@@ -64,12 +70,14 @@ configuration:
   type: 9
   additionalinfo: ""
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 description: Use the Azure Active Directory Applications integration to manage authorized applications.
 display: Azure Active Directory Applications
 name: MicrosoftGraphApplications
@@ -253,7 +261,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.64970
+  dockerimage: demisto/crypto:1.0.0.66562
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test

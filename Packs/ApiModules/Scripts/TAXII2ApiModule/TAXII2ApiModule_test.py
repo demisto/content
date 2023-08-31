@@ -260,8 +260,8 @@ class TestInitServer:
         )
         mock_client.init_server()
         assert isinstance(mock_client.server, v20.Server)
-        assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
-        assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
+        assert mock_auth_header_key in mock_client.server._conn.session.headers
+        assert mock_client.server._conn.session.headers.get(mock_auth_header_key) == mock_password
 
 
 class TestInitRoots:
@@ -633,6 +633,44 @@ class TestFetchingStixObjects:
         mock_client.update_last_modified_indicator_date(last_modifies_param)
 
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
+
+    @pytest.mark.parametrize(
+        'objects_to_fetch_param', ([], ['example_type'], ['example_type1', 'example_type2'])
+    )
+    def test_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
+        """
+               Scenario: Test handling for objects_to_fetch parameter.
+
+               Given:
+                - A : objects_to_fetch parameter is not set and therefor default to an empty list.
+                - B : objects_to_fetch parameter is set to a list of one object type.
+                - C : objects_to_fetch parameter is set to a list of two object type.
+
+
+               When:
+               - Fetching stix objects from a collection.
+
+               Then:
+               - A : the poll_collection method sends the HTTP request without the match[type] parameter,
+                     therefor fetching all available object types in the collection.
+               - B : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object type in the collection.
+               - C : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object types in the collection.
+        """
+
+        class mock_collection_to_fetch:
+            get_objects = []
+
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=mock_collection_to_fetch,
+                                       proxies=[], verify=False, objects_to_fetch=objects_to_fetch_param)
+        mock_as_pages = mocker.patch.object(v21, 'as_pages', return_value=[])
+        mock_client.poll_collection(page_size=1)
+
+        if objects_to_fetch_param:
+            mock_as_pages.assert_called_with([], per_request=1, type=objects_to_fetch_param)
+        else:
+            mock_as_pages.assert_called_with([], per_request=1)
 
 
 class TestParsingIndicators:
@@ -1150,17 +1188,18 @@ class TestParsingIndicators:
         Then:
          - Make sure all the fields are being parsed correctly.
         """
-        indicator_obj = {"id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85,
-                         "lang": "en", "type": "indicator", "created": "2020-05-14T00:14:05.401Z",
-                         "modified": "2020-05-14T00:14:05.401Z", "name": "suspicious_domain: test.org",
-                         "description": "TS ID: 55475482483; iType: suspicious_domain; ",
-                         "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
-                         "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
-                         "labels": ["medium"],
-                         "indicator_types": ["anomalous-activity"],
-                         "extensions": {
-                             "extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
-                         "pattern_version": "2.1", "spec_version": "2.1"}
+        indicator_obj = {
+            "id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85, "lang": "en",
+            "type": "indicator", "created": "2020-05-14T00:14:05.401Z", "modified": "2020-05-14T00:14:05.401Z",
+            "name": "suspicious_domain: test.org", "description": "TS ID: 55475482483; iType: suspicious_domain; ",
+            "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+            "labels": ["medium"],
+            "indicator_types": ["anomalous-activity"],
+            "extensions":
+            {"extension-definition--1234": {"CustomFields": {"tags": ["medium"],
+                                                             "description": "test"}}},
+            "pattern_version": "2.1", "spec_version": "2.1"}
 
         indicator_obj['value'] = 'test.org'
         indicator_obj['type'] = 'Domain'

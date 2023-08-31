@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# pack version: 3.2.0
 import io
 import json
 import traceback

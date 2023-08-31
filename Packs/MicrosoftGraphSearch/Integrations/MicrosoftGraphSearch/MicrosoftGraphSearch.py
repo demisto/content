@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from MicrosoftApiModule import *  # noqa: E402
 
 
 ''' IMPORTS '''
@@ -128,8 +129,6 @@ def main():     # pragma: no cover
     except Exception as e:
         return_error(str(e))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

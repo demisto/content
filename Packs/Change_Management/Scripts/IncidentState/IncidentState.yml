@@ -6,7 +6,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: IncidentState
 runas: DBotWeakRole

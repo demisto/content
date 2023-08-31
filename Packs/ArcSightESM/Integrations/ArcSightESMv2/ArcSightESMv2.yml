@@ -14,35 +14,44 @@ configuration:
 - display: Fetch events as incidents via Query Viewer ID. Mandatory fields for query are "Start Time" and "Event ID".
   name: viewerId
   type: 0
+  required: false
 - display: Fetch cases as incidents via Query Viewer ID. Mandatory fields for query are "Create Time" and "ID".
   name: casesQueryViewerId
   type: 0
+  required: false
 - defaultvalue: '2000'
   display: The maximum number of unique IDs expected to be fetched.
   name: max_unique
   type: 0
+  required: false
 - defaultvalue: '50'
   display: The maximum number of incidents to fetch each time. Default is 50, maximum is 300.
   name: fetch_chunk_size
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Use REST Endpoints
   name: use_rest
   defaultvalue: "false"
   type: 8
   additionalinfo: Use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
 display: ArcSight ESM v2
 name: ArcSight ESM v2

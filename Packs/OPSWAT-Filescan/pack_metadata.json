@@ -2,7 +2,7 @@
     "name": "OPSWAT Filescan Sandbox",
     "description": "Unique adaptive threat analysis technology",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "OPSWAT",
     "url": "https://docs.opswat.com/filescan",
     "email": "threatintel@opswat.com",
@@ -10,8 +10,24 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": ["Malware", "Simulation", "Threat Intelligence", "New"],
-    "useCases": ["Threat Intelligence Management", "Malware"],
-    "keywords": ["scan", "adaptive", "threat analysis", "zero-day", "IOC"],
-    "marketplaces": ["xsoar"]
+    "tags": [
+        "Malware",
+        "Simulation",
+        "Threat Intelligence",
+        "New"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Malware"
+    ],
+    "keywords": [
+        "scan",
+        "adaptive",
+        "threat analysis",
+        "zero-day",
+        "IOC"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
 }

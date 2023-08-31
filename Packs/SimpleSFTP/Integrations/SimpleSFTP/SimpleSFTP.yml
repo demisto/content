@@ -13,6 +13,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Username
   name: authentication
   type: 9
@@ -22,6 +23,7 @@ configuration:
   defaultvalue: "22"
   type: 0
   additionalinfo: Defaults to 22
+  required: false
 script:
   script: ''
   type: python

@@ -1,8 +1,13 @@
-winlogbeat.event_logs:
-  - name: Security
-    event_id: 510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
+winlogbeat.event_logs: 
+  - name: AD FS Auditing
     processors:
       - add_fields:
           fields:
             vendor: microsoft
-            product: windows
+            product: adfs
+  - name: AD FS/Admin
+    processors:
+      - add_fields:
+          fields:
+            vendor: microsoft
+            product: adfs

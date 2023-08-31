@@ -25,54 +25,67 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
 - display: Premium Subscription
   name: is_premium_api
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
   type: 0
+  required: false
 - display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: '10'
   type: 0
+  required: false
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: '10'
   type: 0
+  required: false
 - display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
+  required: false
 - display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
   type: 12
+  required: false
 - display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
   name: preferredVendorsThreshold
   defaultvalue: '5'
   type: 0
+  required: false
 - display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS
   name: crowdsourced_yara_rules_enabled
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Crowdsourced Yara Rules Threshold
   name: yaraRulesThreshold
   defaultvalue: '1'
   type: 0
+  required: false
 - display: Sigma and Intrusion Detection Rules Threshold
   name: SigmaIDSThreshold
   defaultvalue: '5'
   type: 0
+  required: false
 - display: Domain Popularity Ranking Threshold
   name: domain_popularity_ranking
   defaultvalue: '10000'
   type: 0
+  required: false
 - display: 'Premium Subscription Only: Relationship Files Threshold'
   name: relationship_threshold
   defaultvalue: '3'
   type: 0
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: IP Relationships
   name: ip_relationships
@@ -83,6 +96,7 @@ configuration:
   - '* urls'
   type: 16
   defaultvalue: communicating files,* downloaded files,referrer files,* urls
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: Domain Relationships
   name: domain_relationships
@@ -102,6 +116,7 @@ configuration:
   - '* urls'
   type: 16
   defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: URL Relationships
   name: url_relationships
@@ -118,6 +133,7 @@ configuration:
   - '* referrer urls'
   type: 16
   defaultvalue: communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls
+  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: File Relationships
   name: file_relationships
@@ -146,12 +162,15 @@ configuration:
   - '* similar files'
   type: 16
   defaultvalue: '* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files'
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 script:
   script: ''
   type: python
