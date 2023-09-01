@@ -1090,8 +1090,8 @@ script:
     name: upload_sample
     arguments: []
   - arguments: []
-    name: vmray-get-license-usage-detections
-    description: Get the used quota of detections
+    name: vmray-get-license-usage-verdicts
+    description: Get the used quota of verdicts
   - arguments: []
     name: vmray-get-license-usage-reports
     description: Get the used quota of reports

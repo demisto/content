@@ -1348,7 +1348,7 @@ def get_summary_command():
     return_results(file_entry)
 
 
-def vmray_get_license_usage_detections_command():
+def vmray_get_license_usage_verdicts_command():
     """
 
     Returns:
@@ -1359,18 +1359,18 @@ def vmray_get_license_usage_detections_command():
     data = raw_response.get('data')
 
     entry = dict()
-    entry['DetectionsQuota'] = data.get('detector_quota')
-    entry['DetectionsRemaining'] = data.get('detector_remaining')
-    entry['DetectionsUsage'] = round((100 / float(data.get('detector_quota')))
-                                     * (float(data.get('detector_quota')) - float(data.get('detector_remaining'))), 2)
+    entry['VerdictsQuota'] = data.get('verdict_quota')
+    entry['VerdictsRemaining'] = data.get('verdict_remaining')
+    entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
+                                     * (float(data.get('verdict_quota')) - float(data.get('verdict_remaining'))), 2)
     entry['PeriodEndDate'] = data.get('end_date')
 
-    markdown = tableToMarkdown('VMRay Detections Quota Information', entry, headers=[
-                               'DetectionsQuota', 'DetectionsRemaining', 'DetectionsUsage', 'PeriodEndDate'])
+    markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
+                               'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='VMRay.DetectionsQuota',
+        outputs_prefix='VMRay.VerdicsQuota',
         outputs_key_field='PeriodEndDate',
         outputs=entry
     )
@@ -1442,8 +1442,8 @@ def main():
             get_iocs_command()
         elif command == 'vmray-get-summary':
             get_summary_command()
-        elif command == 'vmray-get-license-usage-detections':
-            vmray_get_license_usage_detections_command()
+        elif command == 'vmray-get-license-usage-verdicts':
+            vmray_get_license_usage_verdicts_command()
         elif command == 'vmray-get-license-usage-reports':
             vmray_get_license_usage_reports_command()
     except Exception as exc:

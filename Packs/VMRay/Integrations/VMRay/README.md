@@ -43,7 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - [vmray-get-iocs](#vmray-get-iocs): Get IOCs for a sample
 - [vmray-get-job-by-id](#vmray-get-job-by-id): Get information for a job
 - [vmray-get-summary](#vmray-get-summary): Download Summary JSON v2 for an analysis
-- [vmray-get-license-usage-detections](#vmray-get-license-usage-detections): Get the used quota of detections
+- [vmray-get-license-usage-verdicts](#vmray-get-license-usage-verdicts): Get the used quota of verdicts
 - [vmray-get-license-usage-reports](#vmray-get-license-usage-reports): Get the used quota of reports
 
 
