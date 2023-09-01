@@ -637,7 +637,7 @@ def get_a_list_of_vendors_command(client, args):
   response = client.get_a_list_of_vendors_request(page_size, page_number)
 
   command_results = CommandResults(
-    outputs_prefix='AbnormalSecurity.VendorsList', outputs_key_field='vendorDomain', outputs=response, raw_response=response
+      outputs_prefix='AbnormalSecurity.VendorsList', outputs_key_field='vendorDomain', outputs=response, raw_response=response
   )
 
   return command_results
