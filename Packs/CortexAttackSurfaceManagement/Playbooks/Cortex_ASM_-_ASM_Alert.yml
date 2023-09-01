@@ -307,7 +307,7 @@ tasks:
             value:
               complex:
                 root: alert.asmservicedetection
-                accessor: ScanResult
+                accessor: scanresult
                 transformers:
                 - operator: LastArrayElement
             iscontext: true
@@ -319,7 +319,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -442,7 +442,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -452,7 +452,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -464,7 +464,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -476,7 +476,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -488,7 +488,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -500,7 +500,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -671,13 +671,13 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: Manual remediation
       val2:
         complex:
           root: alert.asmdatacollection
-          accessor: Timestamp
+          accessor: timestamp
       val3:
         simple: Manual remediation completed
       val4:
@@ -726,7 +726,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -781,11 +781,11 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         complex:
           root: alert.asmnotification
-          accessor: Type
+          accessor: type
           transformers:
           - operator: concat
             args:
@@ -796,7 +796,7 @@ tasks:
       val2:
         complex:
           root: alert.asmnotification
-          accessor: Timestamp
+          accessor: timestamp
       val3:
         simple: Resolved by service owner
       val4:
@@ -839,7 +839,7 @@ tasks:
       gridfield:
         simple: asmalertsummary
       keys:
-        simple: Link,EntryID
+        simple: link,entryid
       val1:
         complex:
           root: demistoUrls
@@ -1167,7 +1167,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: Manual remediation
       val2:
@@ -1225,7 +1225,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -1245,7 +1245,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -2219,7 +2219,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2227,7 +2227,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2235,12 +2235,12 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
                         simple: Azure-Compute-ID
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2256,12 +2256,12 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
                         simple: GCP-Project-Number
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2277,12 +2277,12 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmcloud.Provider
+                        simple: alert.asmcloud.provider
                       iscontext: true
                     right:
                       value:
                         simple: AWS
-                accessor: Project
+                accessor: project
             iscontext: true
           right:
             value:
@@ -2298,12 +2298,12 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
                         simple: GCP-Folder-Number
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2319,12 +2319,12 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmcloud.Provider
+                        simple: alert.asmcloud.provider
                       iscontext: true
                     right:
                       value:
                         simple: Azure
-                accessor: Organization
+                accessor: organization
             iscontext: true
           right:
             value:
@@ -2823,7 +2823,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: close service port from internet
       val2:
@@ -2878,12 +2878,12 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: alert.asmserviceowner.Email
+                        simple: alert.asmserviceowner.email
                       iscontext: true
                     right:
                       value:
                         simple: '@'
-                accessor: Email
+                accessor: email
             iscontext: true
           right:
             value: {}
@@ -2932,12 +2932,12 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: alert.asmserviceowner.Email
+                  simple: alert.asmserviceowner.email
                 iscontext: true
               right:
                 value:
                   simple: '@'
-          accessor: Email
+          accessor: email
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3195,8 +3195,8 @@ inputs:
           </p>
           <p>
               <b>Alert Details:</b> ${alert.details}<br>
-              <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-              <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              <b>Action Taken:</b> ${alert.asmremediation.[0].action}<br>
+              <b>Action Outcome:</b> ${alert.asmremediation.[0].outcome}<br>
           </p>
       </body>
       </html>
@@ -3215,17 +3215,17 @@ inputs:
 - key: AcceptedRiskDs
   value: {}
   required: false
-  description: Comma separated list of instance/VM IDs that are considered accepted risk and that should be closed.
+  description: Comma-separated list of instance/VM IDs that are considered an accepted risk and that should be closed.
   playbookInputQuery:
 - key: AcceptedRiskProjects
   value: {}
   required: false
-  description: Comma separated list of projects numbers that are considered accepted risk and that should be closed.  For example, the could be list of GCP projects and AWS accounts.
+  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects and AWS accounts.
   playbookInputQuery:
 - key: AcceptedRiskOther
   value: {}
   required: false
-  description: Comma separated list of other items that are considered accepted risk and that should be closed. For example, the could be list of folders numbers in GCP and subscription IDs in Azure.
+  description: Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure.
   playbookInputQuery:
 - key: JiraProjectKey
   value:

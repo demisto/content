@@ -4,10 +4,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.10.48392
+comment: ''
+dockerimage: demisto/python3:3.10.12.68300
 enabled: true
 name: UnitTestPBAStats
-comment: ""
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
