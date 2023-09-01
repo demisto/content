@@ -13,6 +13,21 @@ configuration:
   hiddenusername: true
   display: ""
   required: false
+- display: Use IDS flag
+  name: check_to_ids
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: This is to enable checking of the boolean flag to_ids. The flag
+    allows you to indicate if an attribute should be actionable or not
+- display: ORG names to use for reputation checks
+  name: allowed_orgs
+  type: 0
+  required: false
+  additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). 
+    When pulling data from MISP you may have data coming from a reliable source.
+    However, some of the orgs are including things like 8.8.8.8 in their feeds.
+    This parameter is used to filter such orgs out by specifying the exact list of orgs to trust
 - display: Use system proxy settings
   name: proxy
   type: 8
