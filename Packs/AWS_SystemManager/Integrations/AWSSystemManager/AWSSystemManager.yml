@@ -762,6 +762,10 @@ script:
     description: Initiates execution of an Automation runbook.
     polling: true
     name: aws-ssm-automation-execution-run
+    outputs:
+    - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionId
+      description: The unique ID of a newly scheduled automation execution.
+      type: String
   - arguments:
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
@@ -778,7 +782,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Default is false. When set to true, will keep polling results until the command return that the  status of the automation execution is updated to Cancelled.
-      name: polling
+      name: include_polling
       predefined:
       - 'true'
       - 'false'
@@ -786,6 +790,7 @@ script:
       name: first_run
       defaultValue: true
       hidden: true
+    polling: true
     description: Stop an Automation execution.
     name: aws-ssm-automation-execution-cancel
   - arguments:
@@ -1084,12 +1089,121 @@ script:
     - contextPath: AWS.SSM.AutomationExecution.ChangeRequestName
       description: The name of the Change Manager change request.
       type: String
+  - arguments:
+    - description: If provided, lists only the specified command.
+      name: command_id
+    - description: The maximum number of items to return for this call.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
+      name: next_token
+    name: aws-ssm-command-list
+    outputs:
+    - contextPath: AWS.SSM.CommandNextToken
+      description: The token for the next set of items to return. (Received this token from a previous call.)
+      type: String
+    - contextPath: AWS.SSM.Commands.CommandId
+      description: A unique identifier for this command.
+      type: String
+    - contextPath: AWS.SSM.Commands.DocumentName
+      description: The name of the document requested for execution.
+      type: String
+    - contextPath: AWS.SSM.Commands.DocumentVersion
+      description: The Systems Manager document (SSM document) version.
+      type: String
+    - contextPath: AWS.SSM.Commands.Comment
+      description: User-specified information about the command, such as a brief description of what the command should do.
+      type: String
+    - contextPath: AWS.SSM.Commands.ExpiresAfter
+      description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+      type: String
+    - contextPath: AWS.SSM.Commands.Parameters
+      description: The parameter values to be inserted in the document when running the command.
+      type: String
+    - contextPath: AWS.SSM.Commands.InstanceIds
+      description: The managed node IDs against which this command was requested.
+      type: String
+    - contextPath: AWS.SSM.Commands.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.Commands.Targets.Values
+      description: User-defined criteria that maps to Key.
+      type: String
+    - contextPath: AWS.SSM.Commands.RequestedDateTime
+      description: The date and time the command was requested.
+      type: String
+    - contextPath: AWS.SSM.Commands.Status
+      description: The status of the command.
+      type: String
+    - contextPath: AWS.SSM.Commands.StatusDetails
+      description: A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status.
+      type: String
+    - contextPath: AWS.SSM.Commands.OutputS3Region
+      description: (Deprecated) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket.
+      type: String
+    - contextPath: AWS.SSM.Commands.OutputS3BucketName
+      description: The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command.
+      type: String
+    - contextPath: AWS.SSM.Commands.OutputS3KeyPrefix
+      description: The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command.
+      type: String
+    - contextPath: AWS.SSM.Commands.MaxConcurrency
+      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. '
+      type: String
+    - contextPath: AWS.SSM.Commands.MaxErrors
+      description: The maximum number of errors allowed before the system stops sending the command to additional targets.
+      type: String
+    - contextPath: AWS.SSM.Commands.TargetCount
+      description: The number of targets for the command.
+      type: Number
+    - contextPath: AWS.SSM.Commands.CompletedCount
+      description: 'The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable.'
+      type: Number
+    - contextPath: AWS.SSM.Commands.ErrorCount
+      description: The number of targets for which the status is Failed or Execution Timed Out.
+      type: Number
+    - contextPath: AWS.SSM.Commands.DeliveryTimedOutCount
+      description: The number of targets for which the status is Delivery Timed Out.
+      type: Number
+    - contextPath: AWS.SSM.Commands.ServiceRole
+      description: The Identity and Access Management (IAM) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
+      type: String
+    - contextPath: AWS.SSM.Commands.NotificationConfig.NotificationArn
+      description: 'An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. '
+      type: String
+    - contextPath: AWS.SSM.Commands.NotificationConfig.NotificationEvents
+      description: The different events for receive notifications.
+      type: String
+    - contextPath: AWS.SSM.Commands.NotificationConfig.NotificationType
+      description: The type of notification.
+      type: String
+    - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName
+      description: 'The name of the CloudWatch Logs log group where to send command output. If don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: `aws/ssm/SystemsManagerDocumentName`'
+      type: String
+    - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchOutputEnabled
+      description: Enables Systems Manager to send command output to CloudWatch Logs.
+      type: Boolean
+    - contextPath: AWS.SSM.Commands.TimeoutSeconds
+      description: The TimeoutSeconds value specified for a command.
+      type: Number
+    - contextPath: AWS.SSM.Commands.AlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false.
+      type: Boolean
+    - contextPath: AWS.SSM.Commands.AlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm specified in the configuration.
+      type: String
+    - contextPath: AWS.SSM.Commands.TriggeredAlarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.Commands.TriggeredAlarms.State
+      description: The name of the CloudWatch alarm.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.72237
+  dockerimage: demisto/boto3py3:1.0.0.72785
 fromversion: 6.9.0
 marketplaces:
 - xsoar

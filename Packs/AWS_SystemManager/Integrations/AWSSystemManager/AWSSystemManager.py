@@ -36,6 +36,12 @@ REGEX_PATTERNS = {
 """ Helper functions """
 
 
+# def format_parametres_arguments(parameters: str) -> dict[str, Any]:
+#     REGEX= "(?:(?P<key>\w+):(?P<values>(?:[\w,]+(?!:)))+),?"
+#     match_ = re.search(REGEX, parameters)
+#     pass
+
+
 def validate_args(args: dict[str, Any]) -> NoReturn | None:
     """Validates the arguments in the provided dictionary using regular expressions,
     from the constants REGEX_PATTERNS.
@@ -757,6 +763,7 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
         DemistoException: If there's an issue with the automation execution.
         DemistoException: If the JSON string is not in a valid structure.
     """
+
     execution_id = args.get("execution_id")
     tag_key = args.get("tag_key")
     tag_value = args.get("tag_value")
@@ -807,20 +814,16 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
 
 
 @polling_function(
-    name="aws-ssm-automation-execution-run",
+    name="aws-ssm-automation-execution-cancel",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    requires_polling_arg=True,
-    polling_arg_name="polling",  # if demisto.args['polling'] equals to false, polling will stop after first run
+    requires_polling_arg=False  # TODO check if needed
 )
 def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     automation_execution_id = args["automation_execution_id"]
     type_ = args.get("type", "Cancel")
     include_polling = argToBoolean(args.get("include_polling", False))
 
-    # Handling polling logic
-    if not argToBoolean(
-        args.get("first_run")
-    ):  # first_run is hidden argument in the yml file.
+    if not argToBoolean(args.get("first_run")):  # first_run is hidden argument in the yml file.
         status = get_automation_execution_status(automation_execution_id, ssm_client)
         if status == "Cancelled":
             return PollResult(
@@ -844,16 +847,82 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
         AutomationExecutionId=automation_execution_id, Type=type_
     )
     args["first_run"] = False
+    status = get_automation_execution_status(automation_execution_id, ssm_client)
+    stop_polling: bool = status not in ("Cancelling", "Cancelled")
 
     return PollResult(
         response=CommandResults(
-            readable_output=f"Cancellation command was sent successful {automation_execution_id}"
+            readable_output=f"Cancellation command was sent successful.\nExecution {automation_execution_id} is {status}"
         ),  # if the polling is stop after first run, this will be the final result in the war room
         partial_result=CommandResults(
-            readable_output=f"Cancellation command was sent successful {automation_execution_id}"
+            readable_output=f"Cancellation command was sent successful.\Execution {automation_execution_id} is {status}"
         ),  # if the polling is not stop after first run, this will be the partial result
-        continue_to_poll=include_polling,
+        continue_to_poll=include_polling and not stop_polling,
     )
+
+
+def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
+    def _parse_list_command(commands: list[dict]):
+        return [
+            {
+                "Command Id": command.get("CommandId"),
+                "Status": command.get("Status"),
+                "Requested date": command.get("RequestedDateTime"),
+                "Document name": command.get("DocumentName"),
+                "Comment": command.get("Comment"),
+                "Target Count": command.get("TargetCount"),
+                "Error Count": command.get("ErrorCount"),
+                "Delivery Timed Out Count": command.get("DeliveryTimedOutCount"),
+                "Completed Count": command.get("CompletedCount"),
+            }
+            for command in commands]
+
+    kwargs = {
+        "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
+    }
+    if next_token := args.get("next_token"):
+        kwargs["NextToken"] = next_token
+    if command_id := args.get("command_id"):
+        kwargs["CommandId"] = command_id
+    response = ssm_client.list_commands(**kwargs)
+    response = convert_datetime_to_iso(response)
+    with open("Packs/AWS_SystemManager/Integrations/AWSSystemManager/get_commands_response.json", "w") as f:
+        json.dump(response, f)
+    commands = response.get("Commands", [])
+    command_result = []
+    if next_token := response.get("NextToken"):
+        command_result.append(
+            next_token_command_result(next_token, "CommandNextToken"),
+        )
+
+    command_result.append(CommandResults(
+        outputs=commands,
+        outputs_key_field="CommandId",
+        outputs_prefix="AWS.SSM.Command",
+        readable_output=tableToMarkdown(
+            name="AWS SSM Commands",
+            t=_parse_list_command(commands),
+            headers=["Command Id", "Status", "Requested date",
+                     "Document name", "Comment", "Target Count", "Error Count",
+                     "Delivery Timed Out Count", "Completed Count"]
+        )
+    ))
+    return command_result
+
+
+def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
+    # document_name = args["document_name"]
+    # instance_ids = argToList(args.get("instance_ids"))
+    # document_version = args.get("document_version", "default")
+    # max_concurrency = args.get("max_concurrency", "10")
+    # max_errors = args.get("max_errors", "10")
+    # parameters = args.get("parameters")
+    # comment = args.get("comment")
+    # output_s3_bucket_name = args.get("output_s3_bucket_name")
+    # output_s3_key_prefix = args.get("output_s3_key_prefix")
+    # timeout_seconds = args.get("timeout_seconds")
+    # interval_in_seconds = arg_to_number(args.get("interval_in_seconds", 30))
+    pass
 
 
 def test_module(ssm_client: "SSMClient") -> str:
@@ -931,6 +1000,10 @@ def main():
                 return_results(run_automation_execution_command(args, ssm_client))
             case "aws-ssm-automation-execution-cancel":
                 return_results(cancel_automation_execution_command(args, ssm_client))
+            case "aws-ssm-command-list":
+                return_results(list_commands_command(args, ssm_client))
+            case "aws-ssm-command-run":
+                return_results(run_command_command(args, ssm_client))
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)

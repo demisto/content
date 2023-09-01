@@ -19,10 +19,13 @@ from AWSSystemManager import (
     get_document_command,
     get_automation_execution_command,
     list_automation_executions_command,
-    get_automation_execution_status
+    get_automation_execution_status,
+    run_automation_execution_command,
+    list_commands_command
+
 )
 from pytest_mock import MockerFixture
-from CommonServerPython import CommandResults, DemistoException
+from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
 
 
 class MockClient:
@@ -60,6 +63,12 @@ class MockClient:
         pass
 
     def describe_automation_executions(self, **kwargs) -> NoReturn:
+        pass
+
+    def start_automation_execution(self, **kwargs) -> NoReturn:
+        pass
+
+    def list_commands(self, **kwargs) -> NoReturn:
         pass
 
 
@@ -560,3 +569,46 @@ def test_list_automation_executions_command(mocker: MockerFixture) -> None:
         '|  |  | 1 | 2023-08-30T19:00:50.433000+03:00 | 2023-08-30T19:00:51.963000+03:00 | Success | Auto | arn |\n'
         '|  | AWS | 1 | 2023-08-30T19:00:50.141000+03:00 | 2023-08-30T19:00:51.807000+03:00 | Success | Auto | arn |\n'
     )
+
+
+def test_list_commands_command(mocker: MockerFixture) -> None:
+    mock_response: dict = util_load_json("test_data/list_commands_response.json")
+    mocker.patch.object(MockClient, "list_commands", return_value=mock_response)
+    response = list_commands_command({}, MockClient())
+
+    assert response[0].outputs == mock_response['Commands']
+    assert response[0].readable_output == (
+        '### AWS SSM Commands\n'
+        '|Command Id|Status|Requested date|Document name|Comment|Target Count|Error Count|Delivery Timed Out Count|'
+        'Completed Count|\n|---|---|---|---|---|---|---|---|---|\n'
+        '| CommandId | Success | 2023-08-31T13:34:00.596000+03:00 | AWS | test | 1 | 0 | 0 | 1 |\n'
+        '| CommandId | Success | 2023-08-31T12:06:45.879000+03:00 | AWS- |  | 0 | 0 | 0 | 0 |\n'
+    )
+
+
+def test_run_automation_execution_command(mocker: MockerFixture) -> None:
+    args = {
+        "document_name": "AWS",
+        "parameters": json.dumps({"InstanceId": ["i-1234567890abcdef0"]}),
+        "polling": True,
+    }
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch.object(MockClient, "get_automation_execution", return_value={
+        "AutomationExecution": {"AutomationExecutionStatus": "Success"}})
+    mocker.patch.object(MockClient, "start_automation_execution", return_value={
+        "AutomationExecutionId": "test_id"})
+
+    result: CommandResults = run_automation_execution_command(args, MockClient())
+
+    assert result.readable_output == 'Execution test_id is in progress'
+
+    args_to_next_run = result.scheduled_command._args
+    assert args_to_next_run == {
+        'document_name': 'AWS',
+        'parameters': '{"InstanceId": ["i-1234567890abcdef0"]}',
+        'polling': True,
+        'execution_id': 'test_id',
+        'hide_polling_output': True
+    }
+    result = run_automation_execution_command(args_to_next_run, MockClient())
+    assert result.readable_output == 'Execution test_id is Success'
