@@ -177,7 +177,7 @@ class Client(BaseClient):
 
         headers = self._headers
 
-        response = self.http_request("get", "vendors",params=params, headers=headers)
+        response = self._http_request("get", "vendors",params=params, headers=headers)
 
         return response
 
@@ -200,14 +200,14 @@ class Client(BaseClient):
 
         headers = self._headers
 
-        response = self.http_request("get", "vendor-cases",params=params, headers=headers)
+        response = self._http_request("get", "vendor-cases",params=params, headers=headers)
 
         return response
 
     def get_the_details_of_a_vendor_case_request(self, caseId):
         headers = self._headers
 
-        response = self.http_request("get", f"vendor-cases/{caseId}", headers=headers)
+        response = self._http_request("get", f"vendor-cases/{caseId}", headers=headers)
 
         return response
 
@@ -216,7 +216,7 @@ class Client(BaseClient):
 
         headers = self._headers
 
-        response = self.http_request("get", "abuse_mailbox/not_analyzed",params=params, headers=headers)
+        response = self._http_request("get", "abuse_mailbox/not_analyzed",params=params, headers=headers)
 
         return response
 
@@ -582,7 +582,7 @@ def get_a_list_of_vendors_command(client, args):
   response = client.get_a_list_of_vendors_request(page_size, page_number)
 
   command_results = CommandResults(
-    outputs_prefix='AbnormalSecurity.VendorsList', outputs_key_field='vendorDomain', outputs=response, raw_response=response
+      outputs_prefix='AbnormalSecurity.VendorsList', outputs_key_field='vendorDomain', outputs=response, raw_response=response
   )
 
   return command_results
