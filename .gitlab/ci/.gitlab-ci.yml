@@ -46,7 +46,7 @@ variables:
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
-  SDK_REF: "master"
+  SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
   TEST_UPLOAD: "true"
   NATIVE_CANDIDATE_IMAGE: "latest"
