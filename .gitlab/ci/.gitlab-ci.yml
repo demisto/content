@@ -46,13 +46,13 @@ variables:
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
-  SDK_REF: "test-modeling-rules-junit" # FIXME The default sdk branch to use
+  SDK_REF: "master"
   OVERRIDE_ALL_PACKS: "false"
   TEST_UPLOAD: "true"
   NATIVE_CANDIDATE_IMAGE: "latest"
   DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
-  OVERRIDE_SDK_REF: "1" # FIXME revert to empty.
+  OVERRIDE_SDK_REF: ""
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
   FF_USE_FASTZIP: "true"
