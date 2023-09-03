@@ -632,11 +632,14 @@ def test_query(mocker):
 
 def test_empty_query(mocker):
     """
+    Test case for the 'query' function of the MimecastV2 integration, where no args are given.
 
-    Args:
-        mocker:
-
-    Returns:
+    GIVEN:
+        - a mocked HTTP request to Mimecast API with query data,
+    WHEN:
+        - 'query' function is called with the no arguments,
+    THEN:
+        - Make sure no exception is raised.
 
     """
     error = {"field": "query",
@@ -649,7 +652,7 @@ def test_empty_query(mocker):
         if not data[0].get('query'):
             raise Exception(json.dumps(error))
         else:
-            return []
+            return [], None
     mocker.patch.object(MimecastV2, 'request_with_pagination', side_effect=query_mocked_api)
     results = MimecastV2.query({})
 
