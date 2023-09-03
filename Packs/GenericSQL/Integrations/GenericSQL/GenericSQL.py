@@ -112,6 +112,12 @@ class Client:
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
         return cache
 
+    def _create_engine_url_for_teradata(self) -> str:
+        if self.is_ldap:
+            return f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
+        else:
+            return f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
@@ -144,10 +150,7 @@ class Client:
         # Teradata has a unique connection, unlike the others with URL object
         elif self.dialect == TERADATA:
             demisto.debug('Initializing engine for Teradata dialect')
-            if self.is_ldap:
-                engine_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
-            else:
-                engine_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+            engine_url = self._create_engine_url_for_teradata()
             engine = sqlalchemy.create_engine(engine_url)
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
