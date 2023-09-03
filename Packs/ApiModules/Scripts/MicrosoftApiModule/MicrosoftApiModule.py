@@ -993,11 +993,12 @@ class MicrosoftClient(BaseClient):
 
         if not oproxy_response.ok:
             next_request_time = calculate_next_request_time(delay_request_counter=delay_request_counter)
-            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter)
+            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter,
+                                          context=context)
             self._raise_authentication_error(oproxy_response)
 
         # In case of success, reset the retry mechanism arguments.
-        set_retry_mechanism_arguments()
+        set_retry_mechanism_arguments(context=context)
         # Oproxy authentication succeeded
         try:
             gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
@@ -1426,18 +1427,20 @@ def calculate_next_request_time(delay_request_counter: int) -> float:
     return next_request_time.timestamp()
 
 
-def set_retry_mechanism_arguments(next_request_time: float = 0.0, delay_request_counter: int = 1):
+def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0, delay_request_counter: int = 1):
     """
         Sets the next_request_time in the integration context.
         This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
     """
+    context = context if context else {}
     next_counter = delay_request_counter + 1
-    next_integration_context = {'next_request_time': next_request_time, 'delay_request_counter': next_counter}
 
+    context['next_request_time'] = next_request_time
+    context['delay_request_counter'] = next_counter
     # Should reset the context retry arguments.
     if next_request_time == 0.0:
-        next_integration_context['delay_request_counter'] = 1
-    set_integration_context(next_integration_context)
+        context['delay_request_counter'] = 1
+    set_integration_context(context)
 
 
 def should_delay_request(next_request_time: float):
