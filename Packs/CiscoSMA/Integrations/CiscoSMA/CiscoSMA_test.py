@@ -917,6 +917,7 @@ def test_test_message_search_command_with_timout(
     Then:
      - Ensure outputs prefix is correct.
      - Ensure number of items is correct.
+     - Ensure that the timeout argument was sent.
      - Validate outputs' fields.
     """
     from CiscoSMA import message_search_command
