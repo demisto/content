@@ -130,9 +130,14 @@ def mock_workday_endpoint():
     count_pattern = r'<bsvc:Count>(\d+)</bsvc:Count>'
 
     # Extract values using regex
-    from_datetime = re.search(from_datetime_pattern, request_text).group(1)
-    to_datetime = re.search(to_datetime_pattern, request_text).group(1)
-    count = int(re.search(count_pattern, request_text).group(1))
+    from_datetime_match = re.search(from_datetime_pattern, request_text)
+    from_datetime = from_datetime_match.group(1) if from_datetime_match else "2023-08-23T18:20:03Z"
+
+    to_datetime_match = re.search(to_datetime_pattern, request_text)
+    to_datetime = to_datetime_match.group(1) if to_datetime_match else "2023-08-23T18:20:08Z"
+
+    count_match = re.search(count_pattern, request_text)
+    count = int(count_match.group(1)) if count_match else 1
 
     # Use the extracted values to generate the response XML
     response_xml = xml_generator(from_datetime, to_datetime, count)

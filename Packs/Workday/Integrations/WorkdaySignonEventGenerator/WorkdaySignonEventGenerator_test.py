@@ -1,9 +1,12 @@
 import unittest
-from WorkdaySignonEventGenerator import random_datetime_in_range, random_string, xml_generator
+from WorkdaySignonEventGenerator import (
+    random_datetime_in_range,
+    random_string,
+    xml_generator,
+)
 
 
 class TestWorkdaySignonEventGenerator(unittest.TestCase):
-
     def test_random_datetime_in_range(self) -> None:
         """
         Given:
@@ -15,8 +18,10 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the random datetime generated falls within the specified range
         """
-        random_date = random_datetime_in_range('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z')
-        self.assertTrue('2023-08-21T11:46:02Z' <= random_date <= '2023-08-21T11:47:02Z')
+        random_date = random_datetime_in_range(
+            "2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z"
+        )
+        self.assertTrue("2023-08-21T11:46:02Z" <= random_date <= "2023-08-21T11:47:02Z")
 
     def test_random_string(self) -> None:
         """
@@ -55,9 +60,9 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the XML response contains exactly one Workday sign-on event
         """
-        xml_response = xml_generator('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z', 1)
-        self.assertEqual(xml_response.count('<wd:Workday_Account_Signon>'), 1)
+        xml_response = xml_generator("2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z", 1)
+        self.assertEqual(xml_response.count("<wd:Workday_Account_Signon>"), 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
