@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Callable
+from collections.abc import Callable
 from urllib.parse import urljoin
 
 import pytest

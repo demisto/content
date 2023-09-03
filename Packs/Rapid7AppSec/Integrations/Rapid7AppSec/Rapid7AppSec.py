@@ -1,10 +1,11 @@
 import copy
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
 from http import HTTPStatus
-from typing import Any, Callable
+from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
