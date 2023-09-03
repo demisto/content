@@ -209,6 +209,29 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable
     return uninstalled_count == len(packs_to_uninstall)
 
 
+def uninstall_tests_pack(client: demisto_client, hostname):
+    """ chacks if tests pack installed and uninstalling thet.
+    Args:
+        client (demisto_client): The client to connect to.
+        hostname (str): cloud hostname
+
+    Returns (bool):
+        A flag that indicates if the operation succeeded or not.
+    """
+    installed_packs = get_all_installed_packs(client, [])
+    logging.info(f'All installed packs in server: {hostname}, are: {installed_packs}')
+    if 'test-pack' in installed_packs:
+        successful_uninstall, _ = uninstall_pack(client, 'test-pack')
+        if successful_uninstall:
+            logging.info("Finished uninstalling test pack- Succeeded")
+        else:
+            logging.error("Failed to uninstall test pack")
+            return False
+    else:
+        logging.info("test pack was not found")
+    return True
+
+
 def get_updating_status(client: demisto_client,
                         attempts_count: int = 5,
                         sleep_interval: int = 60,
@@ -509,6 +532,7 @@ def options_handler():
     parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--is_nightly', type=str2bool, help='Is nightly build')
 
     options = parser.parse_args()
 
@@ -542,6 +566,9 @@ def main():
     unremovable_packs = options.unremovable_packs.split(',')
     success &= reset_core_pack_version(client, unremovable_packs)
     if success:
+        if options.is_nightly and cloud_servers_path.startswith('xsoar_ng'):
+            # in the NG nightly we are not uninstalling only the test pack
+            success = uninstall_tests_pack(client, host)
         if options.one_by_one:
             success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
         else:

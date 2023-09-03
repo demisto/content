@@ -559,7 +559,12 @@ xsoar_ng_server_ga:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
       when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "nightly"
+        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly"
+        timeout: 20 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
