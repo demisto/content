@@ -535,6 +535,9 @@ def options_handler():
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--is_nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('--cloud_server_type', help='the type of the server')
+
+
 
     options = parser.parse_args()
 
@@ -568,8 +571,8 @@ def main():
     unremovable_packs = options.unremovable_packs.split(',')
     success &= reset_core_pack_version(client, unremovable_packs)
     if success:
-        logging.info(f'{options.is_nightly=} {options.cloud_servers_path.startswith("xsoar_ng")=}')
-        if options.is_nightly and options.cloud_servers_path.startswith('xsoar_ng'):
+        logging.info(f'{options.is_nightly=} {options.cloud_server_type=}')
+        if options.is_nightly and options.cloud_server_type == 'XSOAR-NG':
             # in the NG nightly we are not uninstalling only the test pack
             success = uninstall_tests_pack(client, host)
         elif options.one_by_one:
