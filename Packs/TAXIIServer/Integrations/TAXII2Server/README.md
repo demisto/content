@@ -26,7 +26,7 @@ You can add a collection description as is done in *collection1_name*, or enter 
 - **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
 
 (For Cortex XSOAR 8 and Cortex XSIAM) Use one of the following options:
-- **https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/{taxii2_api_endpoint}/**
+- `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
 - **http://demisto_address:listen_port/{taxii2_api_endpoint}/**
 
 
