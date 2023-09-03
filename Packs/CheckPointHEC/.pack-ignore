@@ -15,3 +15,8 @@ ignore=IF113
 
 [file:incidentfield-CheckPointHEC_Task.json]
 ignore=IF113
+
+[known_words]
+HEC
+CP
+Saas
