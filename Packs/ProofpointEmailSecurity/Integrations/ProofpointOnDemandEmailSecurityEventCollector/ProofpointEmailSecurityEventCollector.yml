@@ -23,7 +23,7 @@ configuration:
 - display: Fetch interval in seconds
   name: fetch_interval
   type: 0
-  defaultValue: 60
+  defaultvalue: 60
   required: true
 - display: Use system proxy settings
   name: proxy
