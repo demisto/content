@@ -490,7 +490,7 @@ EXPECTED_LAST_RUN_FOR_LOOK_BACK = {
     },
     'second_fetch': {
         'limit': 3,
-        'time': '2022-12-22T13:53:05.000000',
+        'time': '2022-12-22T11:53:05.000000',
         'found_incident_ids': {
             'SOC-402': '',
             'SOC-403': '',
@@ -498,7 +498,7 @@ EXPECTED_LAST_RUN_FOR_LOOK_BACK = {
     },
     'third_fetch': {
         'limit': 3,
-        'time': '2022-12-22T13:53:05.000000',
+        'time': '2022-12-22T11:53:05.000000',
         'found_incident_ids': {
             'SOC-402': '',
             'SOC-403': '',
