@@ -1,4 +1,3 @@
-import json
 import re
 from typing import Any, NoReturn, TYPE_CHECKING
 
@@ -16,13 +15,37 @@ if TYPE_CHECKING:
         ListAssociationsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
         DocumentDescriptionTypeDef,
-        DescribeAutomationExecutionsRequestRequestTypeDef
+        DescribeAutomationExecutionsRequestRequestTypeDef,
+        ListCommandsRequestRequestTypeDef,
+        SendCommandRequestRequestTypeDef
     )
-
+# TODO document_version default value?
 """ CONSTANTS """
 
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
-
+FINAL_STATUSES_AUTOMATION = {
+    "Success": "The automation completed successfully.",
+    "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
+    "Cancelled": "The automation was stopped by a requester before it completed.",
+    "Failed": "The automation didn't complete successfully. This is a terminal state."
+}
+FINAL_STATUSES_COMMAND = {
+    "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned \
+        an exit code of zero.\
+        All command invocations have reached a terminal state, and the value of max-errors wasn't reached. \
+        This status doesn't mean the command was successfully processed on all specified or targeted managed nodes.",
+    "Failed": "The command wasn't successful on the managed node.",
+    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations \
+        doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Cancelled": "The command was canceled before it was completed.",
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. \
+        The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied \
+        doesn't count against the parent command’s max-errors limit, \
+        but does contribute to whether the parent command status is Success or Failed.",
+    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. "
+}
 REGEX_PATTERNS = {
     "association_id": (r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
                        "Invalid association id: {association_id}"),
@@ -40,6 +63,29 @@ REGEX_PATTERNS = {
 #     REGEX= "(?:(?P<key>\w+):(?P<values>(?:[\w,]+(?!:)))+),?"
 #     match_ = re.search(REGEX, parameters)
 #     pass
+
+def format_document_version(document_version: str | None) -> str:
+    """
+    Formats an AWS Systems Manager (SSM) document version .
+    convert the string to the correct format for the API call.
+    Args:
+        document_version (str | None): The document version to format.
+
+    Returns:
+        str: The formatted document version string.
+            - If "latest", it returns "$LATEST".
+            - If None or any other value, it returns "$DEFAULT".
+
+    Example:
+        version = "latest"
+        formatted_version = format_document_version(version)
+        print(Formatted version)
+        $LATEST
+    """
+    if document_version == "latest":
+        return "$LATEST"
+
+    return document_version or "$DEFAULT"
 
 
 def validate_args(args: dict[str, Any]) -> NoReturn | None:
@@ -152,23 +198,88 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
     Returns:
     -------
         CommandResults: A CommandResults object with the next token as the output.
+    Example:
+    -------
+        next_token_command_result("token", "InventoryNextToken")
+        in the context output(war room):
+        {
+            AWS:
+                SSM:
+                    InventoryNextToken:
+                        NextToken: "token"
+        }
     """
     return CommandResults(
-        outputs_prefix=f"AWS.SSM.{outputs_prefix}",
-        outputs=next_token,
-        outputs_key_field=outputs_prefix,
+        outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {'NextToken': next_token}},
         readable_output="test"  # TODO need to delete after CIAC-8157 is merged
     )
 
 
 def get_automation_execution_status(execution_id: str, ssm_client: "SSMClient",) -> str:
+    """
+    Retrieves the status of an AWS Systems Manager Automation execution.
+
+    Args:
+        execution_id (str): The unique identifier of the Automation execution.
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        str: The status of the Automation execution, which can be one of the following values:
+           - 'Pending'
+           - 'InProgress'
+           - 'Waiting'
+           - 'Success'
+           - 'TimedOut'
+           - 'Cancelling'
+           - 'Cancelled'
+           - 'Failed'
+           - 'PendingApproval'
+           - 'Approved'
+           - 'Rejected'
+           - 'Scheduled'
+           - 'RunbookInProgress'
+           - 'PendingChangeCalendarOverride'
+           - 'ChangeCalendarOverrideApproved'
+           - 'ChangeCalendarOverrideRejected'
+           - 'CompletedWithSuccess'
+           - 'CompletedWithFailure',
+
+    """
     response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
     return response["AutomationExecution"]["AutomationExecutionStatus"]
 
 
-def parse_automation_execution(automation: dict) -> dict[str, Any]:
+def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
+    """
+    Gets the status of an AWS Systems Manager (SSM) command.
+
+    Args:
+        command_id (str): The unique identifier of the command.
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        str: The status of the command.
+        ## Possible values:
+        - Pending
+        - InProgress
+        - Cancelling
+        - Delayed
+        - Success
+        - Delivery Timed Out
+        - Execution Timed Out
+        - Failed
+        - Canceled
+        - Undeliverable
+        - Terminated
+        - Access Denied
+    """
+    return ssm_client.list_commands(CommandId=command_id)["Commands"][0]["Status"]
+
+
+def parse_automation_execution(automation: dict[str, Any]) -> dict[str, Any]:
     """Parses an automation execution 
         and returns a dict contain the parsed automation.
+        for the readable_output function.
     """
     return {
         'Automation Execution Id': automation.get('AutomationExecutionId'),
@@ -239,9 +350,7 @@ def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
         list[CommandResults]: A list of CommandResults containing the inventory information.
     """
 
-    def _parse_inventory_entities(
-        entities: list["InventoryResultEntityTypeDef"],
-    ) -> list[dict]:
+    def _parse_inventory_entities(entities: list["InventoryResultEntityTypeDef"]) -> list[dict]:
         """Parses a list of entities and returns a list of dictionaries containing relevant information.
 
         Args:
@@ -255,7 +364,7 @@ def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
         parsed_entities = []
         for entity in entities:
             entity_content = dict_safe_get(
-                entity, ["Data", "AWS:InstanceInformation", "Content"], [{}]
+                entity, ["AWS:InstanceInformation", "Content"], [{}]
             )
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
@@ -288,10 +397,10 @@ def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
         )
 
     entities = response.get("Entities", [])
-    # Extract the Data field from the object and add it to the main dictionary
-    # for item in entities:  # TODO
-    #     item.update(item["Data"])
-    #     item.pop("Data")
+    # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
+    for item in entities:
+        item.update(item["Data"])
+        item.pop("Data")
 
     command_results.append(
         CommandResults(
@@ -656,6 +765,20 @@ def list_documents_command(args: dict[str, Any], ssm_client: "SSMClient") -> lis
 
 
 def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
+    """
+    Retrieves information about an AWS Systems Manager (SSM) document.
+
+    Args:
+        args (dict[str, Any]): A dictionary containing command arguments.
+            - document_name (str, required): The name of the SSM document.
+            - document_version (str, optional): The version of the SSM document to retrieve.
+            - version_name (str, optional): The name of the version of the SSM document to retrieve.
+
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        CommandResults: An object containing the results of the command.
+    """
     def _parse_document(document: "DocumentDescriptionTypeDef"):
         return {
             "Name": document.get("Name"),
@@ -667,18 +790,12 @@ def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> Comma
             "Created date": document.get("CreatedDate"),
             "Status": document.get("Status"),
         }
-
-    document_version = args.get("document_version")
-    version_name = args.get("version_name")
-
-    if document_version == "default":
-        document_version = "$DEFAULT"
-    elif document_version == "latest":
-        document_version = "$LATEST"
-
     kwargs = {"Name": args["document_name"]}
-    kwargs.update({"DocumentVersion": document_version}) if document_version else None
-    kwargs.update({"VersionName": version_name}) if version_name else None
+    kwargs["DocumentVersion"] = format_document_version(args.get("document_version"))
+
+    if version_name := args.get("version_name"):
+        kwargs["VersionName"] = version_name
+
     response = ssm_client.describe_document(**kwargs)
     response = convert_datetime_to_iso(response)
     document = response["Document"]
@@ -695,6 +812,18 @@ def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> Comma
 
 
 def get_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
+    """
+    Retrieves information about an AWS Systems Manager (SSM) automation execution.
+
+    Args:
+        args (dict[str, Any]): A dictionary containing command arguments.
+            - execution_id (str): The unique identifier of the automation execution.
+
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        CommandResults: An object containing the results of the command.
+    """
     automation_execution = ssm_client.get_automation_execution(AutomationExecutionId=args['execution_id'])["AutomationExecution"]
     automation_execution = convert_datetime_to_iso(automation_execution)
     return CommandResults(
@@ -710,7 +839,21 @@ def get_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
     )
 
 
-def list_automation_executions_command(args: dict, ssm_client: "SSMClient") -> list[CommandResults]:
+def list_automation_executions_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
+    """
+    Lists AWS Systems Manager (SSM) automation executions.
+
+    Args:
+        args (dict): A dictionary containing command arguments.
+            - limit (int, optional): The maximum number of results to return (default is 50).
+            - next_token (str, optional): A token to continue listing executions from a previous query.
+
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        list[CommandResults]: A list of objects containing the results of the command.
+        if next_token provide in the response, the first CommandResults in the list will contain the next token.
+    """
     kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
             "MaxResults": arg_to_number(args.get("limit", 50)) or 50
     }
@@ -748,22 +891,28 @@ def list_automation_executions_command(args: dict, ssm_client: "SSMClient") -> l
     requires_polling_arg=False,  # means it will always be default to poll, poll=true,
 )
 def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
-    """Execute an AWS SSM automation execution and poll for its status.
-
+    """
+    Initiates or polls the status of an AWS Systems Manager (SSM) automation execution.
+    Note: The argument "execution_id" is hidden in the yml file, and is used to pass the execution id between polling
     Args:
-        args (dict[str, Any]): The arguments provided to the function.
-        ssm_client (BaseClient): The AWS SSM client.
-        the args['execution_id'] provide after the first run of the command,
-            provide in the yml with hidden=true.
+        args (dict[str, Any]): A dictionary containing command arguments.
+            - document_name (str, required): The name of the SSM automation document.
+            - execution_id (str, optional): The unique identifier of the automation execution.
+                require for polling only.
+            - tag_key (str, optional): The key for tagging the automation execution.
+            - tag_value (str, optional): The value for tagging the automation execution.
+            - parameters (str, optional): JSON-formatted string containing automation parameters.  #TODO change to regex
+            - mode (str, optional): The execution mode (default is "Auto").
+            - client_token (str, optional): A unique identifier for the automation execution.
+            - document_version (str, optional): The version of the SSM document to use.
+            - max_concurrency (str, optional): The maximum number of targets to run the automation concurrently.
+            - max_error (str, optional): The maximum number of errors allowed before stopping the automation.
+
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
 
     Returns:
-        PollResult: The result of the polling operation.
-
-    Raises:
-        DemistoException: If there's an issue with the automation execution.
-        DemistoException: If the JSON string is not in a valid structure.
+        PollResult: An object containing the results of the command and whether to continue polling.
     """
-
     execution_id = args.get("execution_id")
     tag_key = args.get("tag_key")
     tag_value = args.get("tag_value")
@@ -783,14 +932,13 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
             **{k: v for k, v in [
                 ("Parameters", parameters),
                 ("ClientToken", args.get("client_token")),
-                ("DocumentVersion", args.get("document_version")),
                 ("MaxConcurrency", args.get("max_concurrency")),
                 ("MaxErrors", args.get("max_error")),
             ] if v}
         }
-
+        kwargs["DocumentVersion"] = format_document_version(args.get("document_version"))
         execution_id = ssm_client.start_automation_execution(**kwargs)["AutomationExecutionId"]
-        args["execution_id"] = execution_id
+        args["execution_id"] = execution_id  # needed for the polling and is `hidden: true` in the yml file.
         return PollResult(
             partial_result=CommandResults(readable_output=f"Execution {args['execution_id']} is in progress"),
             response=None,
@@ -798,18 +946,18 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
             args_for_next_run=args
         )
     status = get_automation_execution_status(execution_id, ssm_client)
-    if status == "InProgress":
-        return PollResult(
-            partial_result=CommandResults(readable_output=f"Execution {execution_id} is in progress"),
-            response=None,
-            continue_to_poll=True,
-            args_for_next_run=args
+    if status in FINAL_STATUSES_AUTOMATION:
+        return PollResult(  # if execution not in progress, return the status and end the polling loop
+            response=CommandResults(
+                readable_output=FINAL_STATUSES_AUTOMATION[status]
+            ),
+            continue_to_poll=False,
         )
-    return PollResult(  # if execution not in progress, return the status and end the polling loop
-        response=CommandResults(
-            readable_output=f"Execution {execution_id} is {status}"
-        ),
-        continue_to_poll=False,
+    return PollResult(
+        partial_result=CommandResults(readable_output=f"Execution {execution_id} is in progress"),
+        response=None,
+        continue_to_poll=True,
+        args_for_next_run=args
     )
 
 
@@ -819,21 +967,35 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
     requires_polling_arg=False  # TODO check if needed
 )
 def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
+    """
+    Cancels an AWS Systems Manager (SSM) automation execution or monitors its cancellation status.
+        Note: the argument "first_run" is hidden: true in the yml file,
+            and is used to determine if this is the first time the function.
+
+    Args:
+        args (dict[str, Any]): A dictionary containing command arguments.
+            - automation_execution_id (str): The unique identifier of the automation execution to cancel.
+            - type (str, optional): The type of cancellation (default is "Cancel").
+            - include_polling (bool, optional): Whether to continue polling the cancellation status (default is False).
+
+    Returns:
+        PollResult: An object containing the results of the command and whether to continue polling.
+    """
     automation_execution_id = args["automation_execution_id"]
     type_ = args.get("type", "Cancel")
     include_polling = argToBoolean(args.get("include_polling", False))
 
-    if not argToBoolean(args.get("first_run")):  # first_run is hidden argument in the yml file.
+    if not argToBoolean(args.get("first_run")):
         status = get_automation_execution_status(automation_execution_id, ssm_client)
-        if status == "Cancelled":
+        if status in FINAL_STATUSES_AUTOMATION:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"Execution {automation_execution_id} is {status}"
+                    readable_output=FINAL_STATUSES_AUTOMATION[status]
                 ),
                 continue_to_poll=False,
             )
         else:
-            return PollResult(
+            return PollResult(  # CONTINUE POLLING
                 partial_result=CommandResults(
                     readable_output=f"Execution {automation_execution_id} is {status}"
                 ),
@@ -848,20 +1010,34 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
     )
     args["first_run"] = False
     status = get_automation_execution_status(automation_execution_id, ssm_client)
-    stop_polling: bool = status not in ("Cancelling", "Cancelled")
 
     return PollResult(
         response=CommandResults(
-            readable_output=f"Cancellation command was sent successful.\nExecution {automation_execution_id} is {status}"
+            readable_output="Cancellation command was sent successful."
         ),  # if the polling is stop after first run, this will be the final result in the war room
         partial_result=CommandResults(
-            readable_output=f"Cancellation command was sent successful.\Execution {automation_execution_id} is {status}"
+            readable_output="Cancellation command was sent successful."
         ),  # if the polling is not stop after first run, this will be the partial result
-        continue_to_poll=include_polling and not stop_polling,
+        continue_to_poll=include_polling,
     )
 
 
 def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list[CommandResults]:
+    """
+    Lists AWS Systems Manager (SSM) commands.
+
+    Args:
+        args (dict[str, Any]): A dictionary containing command arguments.
+            - limit (int, optional): The maximum number of results to return (default is 50).
+            - next_token (str, optional): A token to continue listing commands from a previous query.
+            - command_id (str, optional): The unique identifier of a specific command to retrieve.
+
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        list[CommandResults]: A list of objects containing the results of the command.
+        if next_token provide in the response, the first CommandResults in the list will contain the next token.    
+    """
     def _parse_list_command(commands: list[dict]):
         return [
             {
@@ -877,7 +1053,7 @@ def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
             }
             for command in commands]
 
-    kwargs = {
+    kwargs: "ListCommandsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     if next_token := args.get("next_token"):
@@ -886,8 +1062,7 @@ def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
         kwargs["CommandId"] = command_id
     response = ssm_client.list_commands(**kwargs)
     response = convert_datetime_to_iso(response)
-    with open("Packs/AWS_SystemManager/Integrations/AWSSystemManager/get_commands_response.json", "w") as f:
-        json.dump(response, f)
+
     commands = response.get("Commands", [])
     command_result = []
     if next_token := response.get("NextToken"):
@@ -910,22 +1085,125 @@ def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
     return command_result
 
 
-def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
-    # document_name = args["document_name"]
-    # instance_ids = argToList(args.get("instance_ids"))
-    # document_version = args.get("document_version", "default")
-    # max_concurrency = args.get("max_concurrency", "10")
-    # max_errors = args.get("max_errors", "10")
-    # parameters = args.get("parameters")
-    # comment = args.get("comment")
-    # output_s3_bucket_name = args.get("output_s3_bucket_name")
-    # output_s3_key_prefix = args.get("output_s3_key_prefix")
-    # timeout_seconds = args.get("timeout_seconds")
-    # interval_in_seconds = arg_to_number(args.get("interval_in_seconds", 30))
-    pass
+@polling_function(
+    name="aws-ssm-command-run",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    requires_polling_arg=False,  # means it will always be default to poll, poll=true,
+)
+def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:  # TODO Invocation
+    if command_id := args.get("command_id"):
+        status = get_command_status(command_id, ssm_client)
+        if status in FINAL_STATUSES_COMMAND:
+            return PollResult(
+                response=CommandResults(
+                    readable_output=FINAL_STATUSES_COMMAND[status]
+                ),
+                continue_to_poll=False,
+            )
+        else:
+            return PollResult(
+                partial_result=CommandResults(readable_output=f"Command {command_id} is {status}"),
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None
+            )
+
+    kwargs: "SendCommandRequestRequestTypeDef" = {
+        "DocumentName": args["document_name"],
+        "InstanceIds": argToList(args["instance_ids"]),
+        "DocumentVersion": format_document_version(args.get("document_version"))
+    }
+    if comment := args.get("comment"):
+        kwargs["Comment"] = comment
+    if output_s3_bucket_name := args.get("output_s3_bucket_name"):
+        kwargs["OutputS3BucketName"] = output_s3_bucket_name
+    if output_s3_key_prefix := args.get("output_s3_key_prefix"):
+        kwargs["OutputS3KeyPrefix"] = output_s3_key_prefix
+    if timeout_seconds := arg_to_number(args.get("timeout_seconds")):
+        kwargs["TimeoutSeconds"] = timeout_seconds
+    if max_concurrency := args.get("max_concurrency"):
+        kwargs["MaxConcurrency"] = max_concurrency
+    if max_errors := args.get("max_errors"):
+        kwargs["MaxErrors"] = max_errors
+    if parameters := args.get("parameters"):
+        try:
+            kwargs["Parameters"] = json.loads(parameters)  # TODO CHANGE TO REGEX
+        except Exception as e:
+            raise DemistoException(
+                'The parameters argument is not in a valid JSON structure. For example: {"key": "value"}'
+            ) from e
+
+    command = ssm_client.send_command(**kwargs)["Command"]
+    command_id = command["CommandId"]
+    args["command_id"] = command_id
+    return PollResult(
+        response=None,
+        continue_to_poll=True,
+        args_for_next_run=args,
+        partial_result=CommandResults(
+            readable_output=f"Command {command_id}was sent successful.",
+            outputs=command
+        )
+    )
+
+
+@polling_function(
+    name="aws-ssm-command-cancel",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    requires_polling_arg=False  # TODO check if needed
+)
+def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
+    command_id = args["command_id"]
+    include_polling = argToBoolean(args.get("include_polling", False))
+
+    if not argToBoolean(args.get("first_run")):
+        status = get_command_status(command_id, ssm_client)
+        if status in FINAL_STATUSES_COMMAND:  # STOP POLLING
+            return PollResult(
+                response=CommandResults(
+                    readable_output=FINAL_STATUSES_COMMAND[status]
+                ),
+                continue_to_poll=False,
+            )
+        else:
+            return PollResult(  # CONTINUE POLLING
+                partial_result=CommandResults(
+                    readable_output=f"Execution {command_id} is {status}"
+                ),
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None
+            )
+
+    # Initial command execution
+    kwargs = {"CommandId": command_id}
+    if instance_ids := argToList(args.get("instance_ids")):
+        kwargs["InstanceIds"] = argToList(instance_ids)
+    ssm_client.cancel_command(**kwargs)
+    args["first_run"] = False
+    status = get_command_status(command_id, ssm_client)
+
+    return PollResult(
+        response=CommandResults(
+            readable_output="Cancellation command was sent successful."
+        ),  # if the polling is stop after first run, this will be the final result in the war room
+        partial_result=CommandResults(
+            readable_output="Cancellation command was sent successful."
+        ),  # if the polling is not stop after first run, this will be the partial result
+        continue_to_poll=include_polling,
+    )
 
 
 def test_module(ssm_client: "SSMClient") -> str:
+    """
+    Tests the connectivity to AWS Systems Manager (SSM) by listing associations.
+
+    Args:
+        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+
+    Returns:
+        str: A status message indicating the success of the test.
+    """
     ssm_client.list_associations(MaxResults=1)
     return "ok"
 
@@ -936,12 +1214,12 @@ def main():
     args = demisto.args()
     verify_certificate = not params.get("insecure", True)
 
+    aws_access_key_id = params["credentials"]["identifier"]
+    aws_secret_access_key = params["credentials"]["password"]
     aws_default_region = params["defaultRegion"]
     aws_role_arn = params.get("roleArn")
     aws_role_session_name = params.get("roleSessionName")
     aws_role_session_duration = params.get("sessionDuration")
-    aws_access_key_id = dict_safe_get(params, ["credentials", "identifier"])
-    aws_secret_access_key = dict_safe_get(params, ["credentials", "password"])
     aws_role_policy = None  # added it for using AWSClient class without changing the code
     timeout = params["timeout"]
     retries = params["retries"]
@@ -967,7 +1245,7 @@ def main():
         retries,
     )
 
-    ssm_client = config_aws_session(args, aws_client)  # ssm, Simple Systems Manager
+    ssm_client = config_aws_session(args, aws_client)
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -1004,6 +1282,8 @@ def main():
                 return_results(list_commands_command(args, ssm_client))
             case "aws-ssm-command-run":
                 return_results(run_command_command(args, ssm_client))
+            case "aws-ssm-command-cancel":
+                return_results(cancel_command_command(args, ssm_client))
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)

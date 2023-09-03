@@ -1090,7 +1090,7 @@ script:
       description: The name of the Change Manager change request.
       type: String
   - arguments:
-    - description: If provided, lists only the specified command.
+    - description: A unique identifier for this command. If provided, lists only the specified command.
       name: command_id
     - description: The maximum number of items to return for this call.
       name: limit
@@ -1198,6 +1198,161 @@ script:
     - contextPath: AWS.SSM.Commands.TriggeredAlarms.State
       description: The name of the CloudWatch alarm.
       type: String
+  - arguments:
+    - description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). 
+      name: document_name
+      required: true
+    - description: The IDs of the managed nodes where the command should run. Can get from aws-ssm-inventory-get command. (Can specify up to 50 IDs.)
+      name: instance_ids
+      required: true
+      isArray: true
+    - description: The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number.
+      name: document_version
+    - description: The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. The default value is 50.
+      name: max_concurrency
+      defaultValue: 50
+    - description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. The default value is 0.
+      name: max_errors
+      defaultValue: 0
+    - description: The required and optional parameters specified in the document being run.
+      name: parameters
+    - description: User-specified information about the command, such as a brief description of what the command should do.
+      name: comment
+    - description: The name of the S3 bucket where command execution responses should be stored.
+      name: output_s3_bucket_name
+    - description: The directory structure within the S3 bucket where the responses should be stored.
+      name: output_s3_key_prefix
+    - description: If this time is reached and the command hasn’t already started running, it won’t run.
+      name: timeout_seconds
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: 30
+    - description: A unique identifier for this command. This is for the polling to work. not for the user.
+      name: command_id
+      hidden: true
+    polling: true 
+    name: aws-ssm-command-run
+    outputs:
+    - contextPath: AWS.SSM.Command.CommandId
+      description: A unique identifier for this command.
+      type: String
+    - contextPath: AWS.SSM.Command.DocumentName
+      description: The name of the document requested for execution.
+      type: String
+    - contextPath: AWS.SSM.Command.DocumentVersion
+      description: The Systems Manager document (SSM document) version.
+      type: String
+    - contextPath: AWS.SSM.Command.Comment
+      description: User-specified information about the command, such as a brief description of what the command should do.
+      type: String
+    - contextPath: AWS.SSM.Command.ExpiresAfter
+      description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+      type: String
+    - contextPath: AWS.SSM.Command.Parameters.string
+      description: The parameter values to be inserted in the document when running the command.
+      type: String
+    - contextPath: AWS.SSM.Command.InstanceIds
+      description: The managed node IDs against which this command was requested.
+      type: String
+    - contextPath: AWS.SSM.Command.Targets.Key
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+      type: String
+    - contextPath: AWS.SSM.Command.Targets.Values
+      description: User-defined criteria that maps to Key.
+      type: String
+    - contextPath: AWS.SSM.Command.RequestedDateTime
+      description: The date and time the command was requested.
+      type: String
+    - contextPath: AWS.SSM.Command.Status
+      description: The status of the command.
+      type: String
+    - contextPath: AWS.SSM.Command.StatusDetails
+      description: A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status.
+      type: String
+    - contextPath: AWS.SSM.Command.OutputS3Region
+      description: (Deprecated) You can no longer specify this parameter. The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket.
+      type: String
+    - contextPath: AWS.SSM.Command.OutputS3BucketName
+      description: The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command.
+      type: String
+    - contextPath: AWS.SSM.Command.OutputS3KeyPrefix
+      description: The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command.
+      type: String
+    - contextPath: AWS.SSM.Command.MaxConcurrency
+      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. '
+      type: String
+    - contextPath: AWS.SSM.Command.MaxErrors
+      description: The maximum number of errors allowed before the system stops sending the command to additional targets.
+      type: String
+    - contextPath: AWS.SSM.Command.TargetCount
+      description: The number of targets for the command.
+      type: Number
+    - contextPath: AWS.SSM.Command.CompletedCount
+      description: 'The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable.'
+      type: Number
+    - contextPath: AWS.SSM.Command.ErrorCount
+      description: The number of targets for which the status is Failed or Execution Timed Out.
+      type: Number
+    - contextPath: AWS.SSM.Command.DeliveryTimedOutCount
+      description: The number of targets for which the status is Delivery Timed Out.
+      type: Number
+    - contextPath: AWS.SSM.Command.ServiceRole
+      description: The Identity and Access Management (IAM) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
+      type: String
+    - contextPath: AWS.SSM.Command.NotificationConfig.NotificationArn
+      description: An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. Run Command pushes notifications about command status changes to this topic.
+      type: String
+    - contextPath: AWS.SSM.Command.NotificationConfig.NotificationEvents
+      description: The different events for which you can receive notifications.
+      type: String
+    - contextPath: AWS.SSM.Command.NotificationConfig.NotificationType
+      description: The type of notification.
+      type: String
+    - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName
+      description: "The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName"
+      type: String
+    - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
+      description: Enables Systems Manager to send command output to CloudWatch Logs.
+      type: Boolean
+    - contextPath: AWS.SSM.Command.TimeoutSeconds
+      description: The TimeoutSeconds value specified for a command.
+      type: Number
+    - contextPath: AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure
+      description: When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch.
+      type: Boolean
+    - contextPath: AWS.SSM.Command.AlarmConfiguration.Alarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.Command.TriggeredAlarms.Name
+      description: The name of the CloudWatch alarm.
+      type: String
+    - contextPath: AWS.SSM.Command.TriggeredAlarms.State
+      description: The state of the CloudWatch alarm.
+      type: String
+  - arguments:
+    - description: The ID of the command to cancel. Can get from the aws-ssm-command-list command.
+      name: command_id
+      required: true
+    - description: A list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested.
+      name: instance_ids
+      isArray: true
+    - auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: Default is false. When set to true, will keep polling results until the command return that the  status of the command execution is updated to Cancelled.
+      name: include_polling
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: 30
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
+      name: first_run
+      defaultValue: true
+      hidden: true
+    polling: true
+    description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
+    name: aws-ssm-command-cancel
   isfetch: false
   runonce: false
   script: '-'

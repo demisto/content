@@ -1,10 +1,11 @@
-import datetime
+from datetime import datetime
 import json
 from pathlib import Path
-from typing import NoReturn
+from typing import Any, NoReturn
 
 import pytest
 from AWSSystemManager import (
+    format_document_version,
     add_tags_to_resource_command,
     remove_tags_from_resource_command,
     convert_datetime_to_iso,
@@ -21,7 +22,9 @@ from AWSSystemManager import (
     list_automation_executions_command,
     get_automation_execution_status,
     run_automation_execution_command,
-    list_commands_command
+    list_commands_command,
+    get_command_status
+
 
 )
 from pytest_mock import MockerFixture
@@ -81,6 +84,27 @@ def util_load_json(path: str) -> dict:
 
 
 @pytest.mark.parametrize(
+    'document_version, expected_response',
+    [
+        ('test_version', 'test_version'),
+        (None, "$DEFAULT"),
+        ('latest', "$LATEST")
+    ],
+    ids=['custom version', 'default version when the arg equal None', 'latest version']
+)
+def test_format_document_version(document_version: str, expected_response: str) -> None:
+    """
+    Given
+        a document version,
+    When
+        `format_document_version` is called with the document version,
+    Then
+        it should return the expected formatted response.
+    """
+    assert format_document_version(document_version) == expected_response
+
+
+@pytest.mark.parametrize(
     ("args", "expected_error_message"),
     [
         ({"instance_id": "test_id"}, "Invalid instance id: test_id"),
@@ -88,8 +112,17 @@ def util_load_json(path: str) -> dict:
         ({"association_id": "test_id"}, "Invalid association id: test_id"),
         ({"association_version": "test_version"}, "Invalid association version: test_version"),
     ],
+    ids=["Invalid instance id", "Invalid document name", "Invalid association id", "Invalid association version"],
 )
 def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
+    """
+    Given
+        specific arguments and their expected error messages,
+    When
+        the `validate_args` function is called with the arguments,
+    Then
+        it should raise a DemistoException with the expected error message.
+    """
     with pytest.raises(DemistoException, match=expected_error_message):
         validate_args(args)
 
@@ -97,7 +130,7 @@ def test_validate_args(args: dict[str, str], expected_error_message: str) -> Non
 @pytest.mark.parametrize(
     ("next_token", "prefix"),
     [
-        ("test_token", "test_prefix"),
+        ("test_token", "test_prefix")
     ],
 )
 def test_next_token_command_result(next_token: str, prefix: str) -> None:
@@ -111,14 +144,11 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
           parameter and "test_prefix" as the prefix parameter.
 
     Then:
-        - The response's 'outputs_prefix' attribute is expected to be equal to 'AWS.SSM.test_prefix'.
-        - The response's 'outputs' attribute is expected to be equal to the provided next_token value.
-        - The response's 'readable_output' attribute is expected to be formatted with the provided
-          next_token value for rerunning the command.
+        The response's 'outputs' attribute (to_context()) is expected to be equal to the provided next_token value.
     """
     response = next_token_command_result(next_token, prefix)
-    assert response.outputs_prefix == f"AWS.SSM.{prefix}"
-    assert response.outputs == next_token
+    to_context = response.to_context()
+    assert to_context.get('EntryContext') == {f'AWS.SSM.{prefix}(val.NextToken)': {'NextToken': next_token}}
 
 
 @pytest.mark.parametrize(
@@ -129,15 +159,15 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
             {"Associations": [{"LastExecutionDate": "test"}]},
         ),
         (
-            {"Associations": [{"LastExecutionDate": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000)}]},
+            {"Associations": [{"LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000)}]},
             {"Associations": [{"LastExecutionDate": "2023-07-25T18:51:28.607000"}]},
         ),
         (
             {
                 "AssociationDescription":
                 {
-                    "LastExecutionDate": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000),
-                    "Date": datetime.datetime(2023, 7, 25, 18, 51, 28, 607000),
+                    "LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000),
+                    "Date": datetime(2023, 7, 25, 18, 51, 28, 607000),
                 },
             },
             {
@@ -147,30 +177,54 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
             },
         ),
     ],
+    ids=["dict with string value",
+         "dict with key that contain datetime object",
+         "dict with multiply keys with datetime object"],
 )
-def test_convert_datetime_to_iso(data: dict, expected_response: dict) -> None:
+def test_convert_datetime_to_iso(data: dict[str, Any], expected_response: dict[str, Any]) -> None:
     """
     Given:
-        data (dict): The input dictionary containing 'LastExecutionDate' values to be tested.
-        expected_response (dict): The expected output dictionary with 'LastExecutionDate'
-                                 values formatted as strings.
+        data (dict): The input dictionary containing  datetime object.
+        expected_response (dict): The expected output dictionary with datetime object formatted as strings.
 
     When:
-        - The convert_last_execution_date function is called with the provided 'data' dictionary.
+        - The convert_datetime_to_iso function is called with the provided 'data' dictionary.
 
     Then:
-        - The response from the function is expected to be equal to the 'expected_response'
-          dictionary, with 'LastExecutionDate' values formatted consistently.
+        - The response from the function is expected to be equal to the 'expected_response'/
+        (modify only the keys that contain datetime object.)
     """
-    response = convert_datetime_to_iso(data)
-    assert response == expected_response
+    assert convert_datetime_to_iso(data) == expected_response
 
 
 def test_get_automation_execution_status(mocker: MockerFixture) -> None:
-    mocker.patch.object(MockClient, "get_automation_execution", return_value={
-                        "AutomationExecution": {"AutomationExecutionStatus": "Success"}})
-    response = get_automation_execution_status("test_id", MockClient())
-    assert response == "Success"
+    """
+    Given:
+        a mocker with a patched `get_automation_execution` method that returns an automation execution status of "Success",
+    When:
+        the `get_automation_execution_status` function is called with a test execution_id and a MockClient,
+    Then:
+        it should return the expected automation execution status, which is "Success".
+    """
+    mocker.patch.object(MockClient,
+                        "get_automation_execution",
+                        return_value={"AutomationExecution": {"AutomationExecutionStatus": "Success"}})
+    assert get_automation_execution_status("test_id", MockClient()) == "Success"
+
+
+def test_get_command_status(mocker: MockerFixture) -> None:
+    """
+    Given:
+        a mocker with a patched `get_command_invocation` method that returns a command status of "Success",
+    When:
+        the `get_command_status` function is called with a test command_id and a MockClient,
+    Then:
+        it should return the expected command status, which is "Success".
+    """
+    mocker.patch.object(MockClient,
+                        "list_commands",
+                        return_value={"Commands": [{"Status": "Success"}]})
+    assert get_command_status("test_id", MockClient()) == "Success"
 
 
 """ Test For The Command Functions """
@@ -205,8 +259,8 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
         "add_tags_to_resource",
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
-    res = add_tags_to_resource_command(args, MockClient())
-    assert res.readable_output == "Tags added to resource test_id successfully."
+    response = add_tags_to_resource_command(args, MockClient())
+    assert response.readable_output == "Tags added to resource test_id successfully."
 
 
 def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
@@ -243,17 +297,20 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
 def test_get_inventory_command(mocker: MockerFixture) -> None:
     """
     Given:
+    ----
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
+    ----
         - The get_inventory_command function is called with the provided MockClient and
           an empty dictionary as arguments.
 
     Then:
-        - The 'get_inventory' method of 'MockClient' is patched to return a mock inventory response.
-        - The 'outputs' attribute is expected to match the 'Entities'
+    ----
+        - The `get_inventory` method of `MockClient` is patched to return a mock inventory response.
+        - The `outputs` attribute is expected to match the 'Entities'
           value from the mock response.
-        - The 'readable_output' attribute is expected to have a formatted
+        - The `readable_output` attribute is expected to have a formatted
           table representation of the mock response's 'Entities'.
 
     Note:
@@ -282,6 +339,7 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
 def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -> None:
     """Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+        check `next_token_command_result` function for more details.
 
     When:
         - The get_inventory_command function is called with the provided MockClient and
@@ -293,10 +351,8 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
           with a "NextToken".
         - The 'outputs' attribute is expected to be the "NextToken" value
           from the mock response.
-        - The 'readable_output' attribute is expected to contain a message
-          indicating how to retrieve more results using the provided next_token.
 
-    Note: the test_get_inventory_command function test checking when the response is not return a Next Token value.
+    Note: the `test_get_inventory_command` function test checking when the response is not return a Next Token value.
             the res[1] contains the inventory response.
     """
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
@@ -304,8 +360,8 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     response: list[CommandResults] = get_inventory_command({}, MockClient())
 
-    assert response[0].outputs == "test_token"
-    assert response[0].outputs_prefix == "AWS.SSM.InventoryNextToken"
+    to_context = response[0].to_context()
+    assert to_context.get('EntryContext') == {'AWS.SSM.InventoryNextToken(val.NextToken)': {'NextToken': "test_token"}}
 
 
 def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
@@ -363,11 +419,13 @@ def test_list_inventory_entry_command_raise_error() -> None:
         - The list_inventory_entry_command function is called with the provided arguments:
           - 'instance_id': "bla-0a00aaa000000000a"
           - 'type_name': "test_type_name"
-    the instance_id is not valid because is not match the regex of the instance id. {should begin with i-}.
 
     Then:
         - The function call is expected to raise a DemistoException with a message that matches
           "Invalid instance id: bla-0a00aaa000000000a".
+    Note:
+        the instance_id is not valid because is not match the regex of the instance id.(should begin with i-.)
+        Check `validate_args` function for more details.
     """
     with pytest.raises(
         DemistoException, match="Invalid instance id: bla-0a00aaa000000000a",
@@ -542,6 +600,14 @@ def test_get_documents_command(mocker: MockerFixture) -> None:
 
 
 def test_get_automation_execution_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        a mocker with a patched `get_automation_execution` method that returns a mock response,
+    When:
+        the `get_automation_execution_command` function is called with a test execution_id and a MockClient,
+    Then:
+        it should return the expected CommandResults object with the specified outputs and readable_output.
+    """
     mock_response: dict = util_load_json("test_data/get_automation_execution.json")
     mocker.patch.object(MockClient, "get_automation_execution", return_value=mock_response)
     response = get_automation_execution_command({"execution_id": "test_id"}, MockClient())
@@ -557,6 +623,14 @@ def test_get_automation_execution_command(mocker: MockerFixture) -> None:
 
 
 def test_list_automation_executions_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        a mocker with a patched `describe_automation_executions` method that returns a mock response,
+    When:
+        the `list_automation_executions_command` function is called with an empty argument and a MockClient,
+    Then:
+        it should return the expected CommandResults object with the specified outputs and readable_output.
+    """
     mock_response: dict = util_load_json("test_data/list_automation_executions.json")
     mocker.patch.object(MockClient, "describe_automation_executions", return_value=mock_response)
     response = list_automation_executions_command({}, MockClient())
@@ -572,6 +646,14 @@ def test_list_automation_executions_command(mocker: MockerFixture) -> None:
 
 
 def test_list_commands_command(mocker: MockerFixture) -> None:
+    """
+    Given:
+        a mocker with a patched `list_commands` method that returns a mock response,
+    When:
+        the `list_commands_command` function is called with an empty argument and a MockClient,
+    Then:
+        it should return the expected CommandResults object with the specified outputs and readable_output.
+    """
     mock_response: dict = util_load_json("test_data/list_commands_response.json")
     mocker.patch.object(MockClient, "list_commands", return_value=mock_response)
     response = list_commands_command({}, MockClient())
@@ -586,7 +668,17 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
     )
 
 
-def test_run_automation_execution_command(mocker: MockerFixture) -> None:
+@pytest.mark.parametrize(
+    'status, expected_message',
+    [
+        ("Success", "The automation completed successfully."),
+        ("Failed", "The automation didn't complete successfully. This is a terminal state."),
+        ("Cancelled", "The automation was stopped by a requester before it completed."),
+        ("TimedOut", "A step or approval wasn't completed before the specified timeout period.")
+    ],
+    ids=['status is Success', 'status is Failed', 'status is Cancelled', 'status is TimedOut']
+)
+def test_run_automation_execution_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
     args = {
         "document_name": "AWS",
         "parameters": json.dumps({"InstanceId": ["i-1234567890abcdef0"]}),
@@ -594,7 +686,7 @@ def test_run_automation_execution_command(mocker: MockerFixture) -> None:
     }
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     mocker.patch.object(MockClient, "get_automation_execution", return_value={
-        "AutomationExecution": {"AutomationExecutionStatus": "Success"}})
+        "AutomationExecution": {"AutomationExecutionStatus": status}})
     mocker.patch.object(MockClient, "start_automation_execution", return_value={
         "AutomationExecutionId": "test_id"})
 
@@ -611,4 +703,4 @@ def test_run_automation_execution_command(mocker: MockerFixture) -> None:
         'hide_polling_output': True
     }
     result = run_automation_execution_command(args_to_next_run, MockClient())
-    assert result.readable_output == 'Execution test_id is Success'
+    assert result.readable_output == expected_message
