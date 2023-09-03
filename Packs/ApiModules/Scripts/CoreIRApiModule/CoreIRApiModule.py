@@ -3903,7 +3903,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
                 if not_found_message in error_message:
-                    return CommandResults(readable_output=f'The user {id_} {not_found_message}')
+                    return CommandResults(readable_output=f'The {command} {id_} {not_found_message}')
                 else:
                     raise DemistoException(error_message)
             else:
