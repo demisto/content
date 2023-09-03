@@ -419,9 +419,6 @@ script:
   - name: cisco-sma-message-search
     description: Search tracking messages.
     arguments:
-    - name: timeout
-      description: |-
-        Timeout for the operation in seconds.
     - name: start_date
       description: |-
         Start date in ISO format or <number> <time unit>,
@@ -439,8 +436,8 @@ script:
     - name: page_size
       description: Number of results per page. Maximum value is 100.
     - name: limit
-      description: The maximum number of records to retrieve.
       defaultValue: 50
+      description: The maximum number of records to retrieve.
     - name: sender_filter_operator
       description: Sender filter operator.
       auto: PREDEFINED
@@ -478,8 +475,7 @@ script:
     - name: attachment_name_value
       description: Attachment name value.
     - name: cisco_host
-      description: |-
-        Cisco host.
+      description: Cisco host.
       defaultValue: All_Hosts
     - name: file_sha_256
       description: |-

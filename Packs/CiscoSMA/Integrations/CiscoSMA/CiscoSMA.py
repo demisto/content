@@ -32,9 +32,9 @@ class Client(BaseClient):
     """Client class to interact with Cisco SMA API."""
 
     def __init__(
-        self, server_url: str, username: str, password: str, verify: bool, proxy: bool
+        self, server_url: str, username: str, password: str, verify: bool, proxy: bool, timeout: None | int = 60
     ):
-        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
+        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy, timeout=timeout)
         self.username = username
         self.password = password
         self.handle_request_headers()
@@ -396,7 +396,6 @@ class Client(BaseClient):
         limit: int,
         search_option: str,
         cisco_host: str,
-        timeout: int = None,
         sender_filter_operator: str = None,
         sender_filter_value: str = None,
         recipient_filter_operator: str = None,
@@ -462,7 +461,7 @@ class Client(BaseClient):
         )
 
         return self._http_request("GET", "message-tracking/messages", params=params,
-                                  params_parser=urllib.parse.quote, timeout=timeout)
+                                  params_parser=urllib.parse.quote)
 
     def message_details_get_request(
         self,
@@ -1260,7 +1259,6 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     search_option = "messages"
     file_sha_256 = args.get("file_sha_256")
     custom_query = args.get("custom_query")
-    timeout = arg_to_number(args.get("timeout")) if args.get("timeout") else None
 
     validate_related_arguments(
         args=args,
@@ -1289,8 +1287,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
         cisco_host=cisco_host,
         search_option=search_option,
         file_sha_256=file_sha_256,
-        custom_query=custom_query,
-        timeout=timeout,
+        custom_query=custom_query
     )
 
     messages_lists = [
@@ -1855,7 +1852,7 @@ def main() -> None:
     filter_value = params.get("filter_value")
     recipient_filter_operator = params.get("recipient_filter_operator")
     recipient_filter_value = params.get("recipient_filter_value")
-
+    timeout = arg_to_number(params.get("timeout")) if params.get("timeout") else None
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -1884,6 +1881,7 @@ def main() -> None:
             password,
             verify_certificate,
             proxy,
+            timeout=timeout
         )
 
         if command == "test-module":

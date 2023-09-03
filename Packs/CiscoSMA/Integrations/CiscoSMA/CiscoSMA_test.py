@@ -896,6 +896,7 @@ def test_format_timestamp(timestamp, output_format, expected_result):
         ),
     ],
 )
+@patch("CiscoSMA.Client.handle_request_headers", mock_access_token)
 def test_test_message_search_command_with_timout(
     response_file_name,
     command_arguments,
@@ -903,8 +904,7 @@ def test_test_message_search_command_with_timout(
     expected_message_id,
     expected_recipients,
     requested_params,
-    requests_mock,
-    mock_client,
+    requests_mock
 ):
     """
     Scenario: Tracking message search.
@@ -921,7 +921,8 @@ def test_test_message_search_command_with_timout(
      - Validate outputs' fields.
     """
     from CiscoSMA import message_search_command
-
+    from CiscoSMA import Client
+    mock_client = Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False, timeout=90)
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/messages"
     mock_request = requests_mock.get(url=url, json=mock_response)

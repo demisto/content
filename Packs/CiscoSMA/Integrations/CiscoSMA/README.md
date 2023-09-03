@@ -13,12 +13,13 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
     | Username |  | True |
     | Password |  | True |
     | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Timestamp in ISO format or &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
     | Filter by | Message field by which to filter the results. | False |
     | Filter operator | Operator on the message field. | False |
     | Filter value | The value to search for. | False |
     | Recipient filter operator | Recipient operator filter. | False |
     | Recipient filter value | Recipient filter value to fetch by message field. | False |
+    | Timeout | Timeout for the integration HTTP requests in seconds. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
@@ -430,12 +431,10 @@ Search tracking messages.
 #### Base Command
 
 `cisco-sma-message-search`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeout | Timeout for the operation in seconds. | Optional | 
 | start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
 | end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
 | page | Page number of paginated results.<br/>Minimum value is 1. | Optional | 
