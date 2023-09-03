@@ -568,7 +568,7 @@ def main():
     unremovable_packs = options.unremovable_packs.split(',')
     success &= reset_core_pack_version(client, unremovable_packs)
     if success:
-        if options.is_nightly and cloud_servers_path.startswith('xsoar_ng'):
+        if options.is_nightly and options.cloud_servers_path.startswith('xsoar_ng'):
             # in the NG nightly we are not uninstalling only the test pack
             success = uninstall_tests_pack(client, host)
         if options.one_by_one:
