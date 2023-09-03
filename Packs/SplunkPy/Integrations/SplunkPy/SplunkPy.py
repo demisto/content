@@ -1426,7 +1426,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
                 if new_owner:
                     changed_data['owner'] = new_owner
                 else:
-                    demisto.error(f'New owner was not found while userMapping is enabled. Delta is {delta}')
+                    demisto.error('New owner was not found while userMapping is enabled.')
             elif field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
 
