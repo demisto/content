@@ -153,7 +153,7 @@ json5 = "^0.9.10"
 tqdm = "^4.66.1"
 tabulate = ">=0.8.9,<0.10.0"
 jira = "^3.5.2"
-junitparser = ">=2.8.0,<3.0.0"
+junitparser = "^3.1.0"
 
 [tool.ruff]
 select = [
