@@ -397,6 +397,135 @@ EXPECTED_LAST_RUN = {
     },
 }
 
+
+INCIDENTS_FOR_LOOK_BACK = {
+    "totalCount": 23,
+    "offset": 0,
+    "count": 23,
+    "maxCount": 10000,
+    "incidents": [
+        {
+            "incidentId": "SOC-402",
+            "name": "Exabeam Alert Active Service Discovery via Net Tool found",
+            "baseFields": {
+                "incidentType": ["ueba"],
+                "owner": "unassigned",
+                "queue": "1",
+                "priority": "medium",
+                "status": "new",
+                "startedDate": 1671709985000,
+                "createdAt": 1671709985000,
+                "createdBy": "admin",
+                "updatedAt": 1671709985000,
+                "updatedBy": "system",
+            },
+        },
+        {
+            "incidentId": "SOC-403",
+            "name": "Exabeam Alert Active Service Discovery via Net Tool found",
+            "baseFields": {
+                "incidentType": ["ueba"],
+                "owner": "unassigned",
+                "queue": "1",
+                "priority": "medium",
+                "status": "new",
+                "startedDate": 1671710285000,
+                "createdAt": 1671710285000,
+                "createdBy": "admin",
+                "updatedAt": 1671710285000,
+                "updatedBy": "system",
+            },
+        },
+    ],
+}
+
+EXPECTED_INCIDENTS_FOR_LOOK_BACK = {
+    'first_fetch': [
+        {
+            'incidentId': 'SOC-402',
+            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
+            'baseFields': {
+                'incidentType': [
+                    'ueba'
+                ],
+                'owner': 'unassigned',
+                'queue': '1',
+                'priority': 'medium',
+                'status': 'new',
+                'startedDate': '2022-12-07T13:46:43Z',
+                'createdAt': '2022-12-22T11:58:05Z',
+                'createdBy': 'admin',
+                'updatedAt': '2022-12-07T13:53:19Z',
+                'updatedBy': 'system'
+            }
+        },
+        {
+            'incidentId': 'SOC-403',
+            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
+            'baseFields': {
+                'incidentType': [
+                    'ueba'
+                ],
+                'owner': 'unassigned',
+                'queue': '1',
+                'priority': 'medium',
+                'status': 'new',
+                'startedDate': '2022-12-07T14:03:07Z',
+                'createdAt': '2022-12-07T14:08:14Z',
+                'createdBy': 'admin',
+                'updatedAt': '2022-12-07T14:08:21Z',
+                'updatedBy': 'system'
+            }
+        }]
+}
+
+EXPECTED_LAST_RUN_FOR_LOOK_BACK = {
+    'first_fetch': {
+        'limit': 5,
+        'time': '2022-12-22T11:58:05.001000',
+        'found_incident_ids': {
+            'SOC-402': '',
+            'SOC-403': '',
+        }
+    },
+    'second_fetch': {
+        'limit': 3,
+        'time': '2022-12-22T13:53:05.000000',
+        'found_incident_ids': {
+            'SOC-402': '',
+            'SOC-403': '',
+        }
+    },
+    'third_fetch': {
+        'limit': 3,
+        'time': '2022-12-22T13:53:05.000000',
+        'found_incident_ids': {
+            'SOC-402': '',
+            'SOC-403': '',
+        }
+    },
+}
+
+EXPECTED_CALL_ARGS_FOR_LOOK_BACK = {
+    'queryMap': {
+        'status': ['new'],
+        'incidentType': [
+            'generic', 'abnormalAuth'
+        ],
+        'priority': [
+            'medium'
+        ],
+        'createdAt': [
+            '1671709745000', '1671709985000'
+        ]
+    },
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
+    'idOnly': False,
+    'offset': 0,
+    'length': 3
+}
+
 EXPECTED_CALL_ARGS = {
     'queryMap': {
         'status': ['new'],
