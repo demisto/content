@@ -4,7 +4,7 @@ commonfields:
 name: Netcraft
 display: Netcraft
 category: Utilities
-description: This is the Hello World integration for getting started.
+description: Netcraft takedown, submission and screenshot management.
 sectionOrder:
 - Connect
 - Collect
@@ -54,6 +54,7 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+  defaultvalue: Netcraft Attack
   required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
@@ -113,84 +114,83 @@ script:
       is only used for debugging purposes and will not update the current incident.
 
   - name: 'netcraft-attack-report'
+    description: |
+      Report a new attack or authorise an existing attack in the Takedown service.
+      If a takedown for the attack already exists in the system it will be authorised, otherwise, a new takedown will be added and authorised.
     arguments:
     - name: attack
       required: true
-      description: |
-        The location of the attack that you would like to take down, e.g.
-        a phishing URL, or a fraudulent email address.
+      description: The location of the attack to take down, e.g. a phishing URL, or a fraudulent email address.
     - name: comment
       required: true
-      description: |
-        ''
-    - description: |
-        ''
+      description: 	The reason for the report, such as a description of the attack.
+    - description: The brand to report the takedown under. If no brand is specified, the brand of the provided "region" will be used.
       name: brand
     - defaultValue: phishing_url
       description: |
-        Add description that the user can get the values by running the command "attack-type-list"
+        The type of attack being reported.
+        Run the command "netcraft-attack-type-list" to get a list of available types, use the "Name" field of the type for this argument.
       name: attack_type
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: |
-        Default value - false
+        Set to "true" if the attack is not currently active.
+        This will place the takedown directly into the "Inactive (Monitoring)" status, which can be used to monitor suspicious sites.
       name: inactive
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'true'
       description: |
-        ''
+        If set to true, Netcraft will be authorised to start the takedown as soon as the report has been processed.
+        If set to false, the takedown will only be authorised if you have automatic authorisation enabled for the given attack type, or if the takedown is manually authorised later through the web interface.
       name: force_auth
+      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       description: |
-        ''
+        Should be set to true if the reported content contains or is related to a computer virus.
+        This is used to determine the correct attack type in the case where the type parameter has not been provided.
+        This argument is required for all malware attacks where the type parameter has not been provided.
       name: malware
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: falseShould
+      defaultValue: 'false'
       description: |
-        Should be set to true if you believe that the
-        domain name has been registered as part of the fraud. This will ensure that
-        the registrar is contacted to seek suspension of the domain name.
+        Should be set to true if you believe that the domain name has been registered as part of the fraud. 
+        This will ensure that the registrar is contacted to seek suspension of the domain name.
       name: suspected_fraud_domain
       predefined:
       - 'true'
       - 'false'
+    # - description: |
+    #     "The password to extract any archived evidence provided via the evidence\_\
+    #     parameter, if necessary."
+    #   name: password
+    # AWAITING TPM RESPONSE 
     - description: |
-        "The password to extract any archived evidence provided via the evidence\_\
-        parameter, if necessary."
-      name: password
-    - description: |
-        The URL where the phishkit archive was found.This parameter is required
-        for phishkit_email attacks.
+        The URL where the phishkit archive was found.
+        This parameter is required for attacks of type "phishkit_email".
       name: phishkit_fetch_url
     - description: |
-        -
-        The URL of the phishing attack which uses the referenced phishkit.This 
-        parameter is required for phishkit_email and phishkit_archive attacks.
+        The URL of the phishing attack which uses the referenced phishkit.
+        This parameter is required for attacks of type "phishkit_email" and/or "phishkit_archive".
       name: phishkit_phish_url
-    - description: |
-        A free-text field which can be used to keep track of particular attacks.
+    - description: A free-text field which can be used to keep track of particular attacks.
       name: customer_label
-    - description: |
-        "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
-        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
-        \_\"google-ads\""
+    - description: A comma-separated list of tags to apply to the attack.
       isArray: true
       name: tags
-    - description: |
-        By default we will use the value of the config param
+    - description:
+        The name of the region to create a takedown under.
+        If not provided the Region specified in the instance configuration will be used
       name: region
     outputs: []
-    description: |
-      ''
+
   - name: 'netcraft-takedown-list'
     arguments:
     - name: statuses
@@ -688,5 +688,5 @@ script:
 fromversion: 6.9.0
 tests:
 - No tests (deprecated)
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
+defaultmapperin: Netcraft Incoming Mapper
+defaultmapperout: Netcraft Outgoing Mapper
