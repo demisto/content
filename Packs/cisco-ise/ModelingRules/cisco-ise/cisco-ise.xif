@@ -199,7 +199,7 @@ alter
     xdm.source.user.domain = arrayindex(regextract(_raw_log, "CN=([^\\,]+)"), 0),
     xdm.network.session_id = arrayindex(regextract(_raw_log, "UniqueConnectionIdentifier[\s+=]+(\S+)\,"),0),
     xdm.event.outcome_reason = arrayindex(regextract(_raw_log, "ShutdownReason[\s+=]+([^,]+)"),0),
-    xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+),"),0)),
+    xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+)"),0)),
     xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
     xdm.source.user.ou = arrayindex(regextract(_raw_log, "User-Fetch-Organizational-Unit=([^,\\;]+)"),0),
     xdm.source.user.username = arrayindex(regextract(_raw_log, "OriginalUserName=([^,\\;]+)"),0),
