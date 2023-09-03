@@ -16,6 +16,8 @@ from Tests.Marketplace.configure_and_install_packs import search_and_install_pac
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.common.tools import str2bool
+
 
 ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
 
