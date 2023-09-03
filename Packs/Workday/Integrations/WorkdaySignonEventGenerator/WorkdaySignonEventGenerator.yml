@@ -22,10 +22,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/teams:1.0.0.14902
+  dockerimage: demisto/teams:1.0.0.72377
   longRunning: true
   longRunningPort: true
-fromversion: 6.0.0
+fromversion: 6.8.0
 toversion: 7.9.9
 tests:
 - No tests (auto formatted)

@@ -1,5 +1,5 @@
 Use the Workday Sign On Event Collector integration to get sign on logs from Workday.
-This integration was integrated and tested with version xx of Workday Sign On Event Collector
+This integration was integrated and tested with version v37.0 of Workday Sign On Event Collector
 
 ## Configure Workday Sign On Event Collector on Cortex XSOAR
 

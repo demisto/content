@@ -1,5 +1,5 @@
 Generates mock signon events for Workday Signon Event Collector. Use these for testing and development.
-This integration was integrated and tested with version xx of WorkdaySignonEventGenerator
+This integration was integrated and tested with version 37.0 of WorkdaySignonEventGenerator
 
 ## Configure Workday Signon Event Generator (Beta) on Cortex XSOAR
 
