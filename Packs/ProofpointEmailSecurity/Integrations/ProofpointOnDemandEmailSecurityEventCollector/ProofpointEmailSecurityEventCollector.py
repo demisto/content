@@ -68,9 +68,11 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         event_ts = event.get("ts")
         if not event_ts:
             # if timestamp is not in the response, use the current time
+            demisto.debug(f"Event {event.get('id', event.get('guid'))} does not have a timestamp, using current time")
             event_ts = datetime.utcnow().isoformat()
         date = dateparser.parse(event_ts)
         if not date:
+            demisto.debug(f"Event {event.get('id', event.get('guid'))} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
             date = datetime.utcnow()
         # the `ts` parameter is not always in UTC, so we need to convert it
