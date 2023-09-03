@@ -47,21 +47,6 @@ HTTP_ERRORS = {
     500: '500 Internal Server Error - Internal error',
     503: '503 Service Unavailable'
 }
-DATETIME_FORMATS = {
-    'date_optional_time': 'yyyy-MM-ddTHH:mm:ss.SSSZ',
-    'strict_date_optional_time': 'yyyy-MM-ddTHH:mm:ss.SSSZ',
-    'strict_date_optional_time_nanos': 'yyyy-MM-ddTHH:mm:ss.SSSSSSZ',
-    'basic_date': 'yyyyMMdd',
-    'basic_date_time': 'yyyyMMddTHHmmss.SSSZ',
-    'basic_date_time_no_millis': 'yyyyMMddTHHmmssZ',
-    'basic_ordinal_date': 'yyyyDDD',
-    'basic_ordinal_date_time': 'yyyyDDDTHHmmss.SSSZ',
-    'basic_ordinal_date_time_no_millis': 'yyyyDDDTHHmmssZ',
-    'basic_t_time': 'THHmmss.SSSZ',
-    'basic_t_time_no_millis': 'THHmmssZ',
-    'basic_week_date': 'xxxxWwwe',
-    'strict_basic_week_date': 'xxxxWwwe',
-}
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 param = demisto.params()
