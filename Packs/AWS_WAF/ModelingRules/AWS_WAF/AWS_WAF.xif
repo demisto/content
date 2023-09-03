@@ -3,7 +3,7 @@ alter
   headers = json_extract(httpRequest, "$.headers") -> []
 | alter parameters = arraymap(headers ,concat("{","\"",json_extract_scalar("@element", "$.name"),"\"", ":", "\"",json_extract_scalar("@element", "$.value"),"\"", "}"))
 | alter parameters = replace(arraystring(parameters, ","),"},{", ",") -> {}
-| alter http_method=json_extract_scalar(httprequest, "$.httpdMethod")
+| alter http_method=json_extract_scalar(httprequest, "$.httpMethod")
 
 |alter xdm.observer.action=action,
 xdm.source.ipv4=json_extract_scalar(httprequest, "$.clientIp"),
