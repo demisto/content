@@ -111,7 +111,7 @@ class Client:
                                    aws_secret_access_key=self.secret_key, verify=self.verify,
                                    config=self.config)
 
-    def return_error_based_on_status_code(self, status_code: int, error_message: str) -> Optional[None]:
+    def return_error_based_on_status_code(self, status_code, error_message: str) -> Optional[None]:
         """
         Return error message based on status code.
         Throws a ValueError based on respected status code.
@@ -240,7 +240,7 @@ class Client:
         except botocore.exceptions.ClientError as exception:
             status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode', '')
             error_message = exception.response.get('Error', {}).get('Message', '')
-            self.return_error_based_on_status_code(status_code, error_message)  # type: ignore[type-arg]
+            self.return_error_based_on_status_code(status_code, error_message)
 
         except botocore.exceptions.ProxyConnectionError as exception:
             raise ValueError(MESSAGES['PROXY_ERROR'] + str(exception))
@@ -450,7 +450,7 @@ def test_module(client: Client, feed_type: str) -> Optional[str]:
     except botocore.exceptions.ClientError as exception:
         status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode', '')
         error_message = exception.response.get('Error', {}).get('Message', '')
-        client.return_error_based_on_status_code(status_code, error_message)  # type: ignore[type-arg]
+        client.return_error_based_on_status_code(status_code, error_message)
 
     except botocore.exceptions.ProxyConnectionError as exception:
         raise ValueError(MESSAGES['PROXY_ERROR'] + str(exception))
