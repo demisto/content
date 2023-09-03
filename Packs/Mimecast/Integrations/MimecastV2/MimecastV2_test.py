@@ -646,9 +646,10 @@ def test_empty_query(mocker):
              "code": "err_validation_blank",
              "message": "This field, if present, cannot be blank or empty",
              "retryable": False}
+
     def query_mocked_api(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
-                            page: int = None,
-                            page_size: int = None, use_headers: bool = False, is_file: bool = False):
+                         page: int = None,
+                         page_size: int = None, use_headers: bool = False, is_file: bool = False):
         if not data[0].get('query'):
             raise Exception(json.dumps(error))
         else:
