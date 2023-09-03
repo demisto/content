@@ -4,7 +4,7 @@ from ProofpointEmailSecurityEventCollector import fetch_events, json, demisto, E
 import ProofpointEmailSecurityEventCollector
 from freezegun import freeze_time
 
-CURRENT_TIME: datetime = None
+CURRENT_TIME: datetime | None = None
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
