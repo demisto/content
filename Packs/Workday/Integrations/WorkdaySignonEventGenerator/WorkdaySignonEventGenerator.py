@@ -120,7 +120,6 @@ def xml_generator(from_datetime, to_datetime, count):
 
 @APP.route('/', methods=['POST'])
 def mock_workday_endpoint():
-    # return Response("HI")
     request_text = request.get_data(as_text=True)
     demisto.info(f"{request_text}")
 

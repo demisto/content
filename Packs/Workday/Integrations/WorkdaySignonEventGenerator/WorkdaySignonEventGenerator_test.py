@@ -1,9 +1,14 @@
+from flask import Flask
+
 import unittest
+from unittest.mock import patch, MagicMock, ANY
 from WorkdaySignonEventGenerator import (
     random_datetime_in_range,
     random_string,
-    xml_generator,
+    xml_generator, mock_workday_endpoint, module_of_testing, main,
 )
+
+from WorkdaySignonEventGenerator import APP as app
 
 
 class TestWorkdaySignonEventGenerator(unittest.TestCase):
@@ -62,6 +67,55 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         """
         xml_response = xml_generator("2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z", 1)
         self.assertEqual(xml_response.count("<wd:Workday_Account_Signon>"), 1)
+
+
+class TestMockWorkdayEndpoint(unittest.TestCase):
+
+    def setUp(self):
+        self.app = app.test_client()
+        self.app.testing = True
+
+    @patch('WorkdaySignonEventGenerator.Response')
+    def test_mock_workday_endpoint(self, MockResponse):
+        mock_post_data = """<bsvc:From_DateTime>2023-08-21T11:46:02Z</bsvc:From_DateTime>
+            <bsvc:To_DateTime>2023-08-21T11:47:02Z</bsvc:To_DateTime>
+            <bsvc:Count>2</bsvc:Count>"""
+        with self.app as c:
+            with c.post('/', data=mock_post_data):
+                mock_workday_endpoint()
+
+        MockResponse.assert_called()
+
+
+class TestModuleOfTesting(unittest.TestCase):
+
+    @patch('WorkdaySignonEventGenerator.demisto.results')
+    @patch('WorkdaySignonEventGenerator.return_error')
+    @patch('WorkdaySignonEventGenerator.xml_generator')
+    def test_module_of_testing(self, MockXmlGenerator, MockReturnError, MockResults):
+        MockXmlGenerator.return_value = "<xml>some response</xml>"
+
+        # Test for valid input
+        module_of_testing(True, 5000)
+        MockResults.assert_called_with('ok')
+
+        # Test for invalid input
+        module_of_testing(False, None)
+        MockReturnError.assert_called_with(
+            'Please make sure the long running port is filled and the long running checkbox is marked.'
+        )
+
+
+class TestMainTestingFunction(unittest.TestCase):
+
+    @patch('WorkdaySignonEventGenerator.demisto')
+    def test_main_function_test_module(self, MockDemisto):
+        MockDemisto.params.return_value = {'longRunningPort': '5000', 'longRunning': True}
+        MockDemisto.command.return_value = 'test-module'
+
+        with patch('WorkdaySignonEventGenerator.module_of_testing') as MockModuleTesting:
+            main()
+            MockModuleTesting.assert_called_with(longrunning_port=5000, is_longrunning=True)
 
 
 if __name__ == "__main__":
