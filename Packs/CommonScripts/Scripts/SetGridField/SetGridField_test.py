@@ -3,10 +3,13 @@ import json
 import pytest
 from typing import List
 
+
 def util_load_json(path):
     path = f'./test_data/{path}'
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
 @pytest.mark.parametrize(argnames="phrase, norm_phrase",
                          argvalues=[("TestPhrase", "testphrase"),
                                     ("Test_phrase", "testphrase"),
@@ -86,7 +89,7 @@ def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, ex
 
     mocker.patch.object(SetGridField, 'demisto')
     SetGridField.demisto.dt.return_value = util_load_json(dt_response_json)
-    expected_grid = json.load(expected_json)
+    expected_grid = util_load_json(expected_json)
 
     assert pd.DataFrame(expected_grid).to_dict() == SetGridField.build_grid(
         context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested, keys_from_nested=["*"]
@@ -119,12 +122,11 @@ def test_build_grid_command(mocker, keys: List[str], columns: List[str], unpack_
     mocker.patch.object(SetGridField, 'demisto')
     SetGridField.demisto.dt.return_value = util_load_json(dt_response_path)
 
-
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=None,
                                               unpack_nested_elements=unpack_nested_elements, keys_from_nested=["*"])
 
-    expected_results = json.load(expected_results_path)
+    expected_results = util_load_json(expected_results_path)
     assert json.dumps(results) == json.dumps(expected_results)
 
 
