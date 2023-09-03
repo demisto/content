@@ -1134,14 +1134,17 @@ class Pack:
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+                pack_was_modified = any(
+                    self.RELEASE_NOTES not in path
+                    for path in modified_rn_files_paths
+                )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
             return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
+
+        return task_status, modified_rn_files_paths
 
     def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
@@ -2515,6 +2518,9 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
+
+            if 'xsoar' in self.marketplaces:
+                self.marketplaces.append('xsoar_saas')
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -3918,7 +3924,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     if images_data:
         # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
-        logging.debug(f"Images data {images_data}")
+        logging.info(f"Images data {images_data}")
 
     if packs_results:
         if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
