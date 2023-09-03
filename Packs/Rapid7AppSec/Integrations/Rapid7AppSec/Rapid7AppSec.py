@@ -24,24 +24,32 @@ CLEAN_HTML_TAGS = re.compile('<.*?>')
 API_LIMIT = 1000
 
 
+@dataclass
+class IndexPagination:
+    """
+    This class contains the arguments for pagination with page and page size.
+    """
+    index: int
+    size: int
+    page_token: str | None
+
+
 class Pagination():
     """
     This class contains the arguments for pagination.
     """
 
     def __init__(self, limit: str, page: str | None = None, page_size: str | None = None):
-        if any([page and not page_size, page_size and not page]):
+        if any([page is not None and page_size is None, page_size is not None and page is None]):
             raise ValueError("In order to use pagination, please insert both page and page_size or insert limit.")
 
         self.page = arg_to_number(page_size and page)
         self.page_size = arg_to_number(page and page_size)
-        self.limit = arg_to_number(limit) or 50
-
-        if self.limit and self.limit > API_LIMIT:
-            raise ValueError(f"Limit maximum value is {API_LIMIT}.")
 
         if self.page_size and self.page_size > API_LIMIT:
             raise ValueError(f"Page size maximum value is {API_LIMIT}.")
+
+        self.limit = arg_to_number(limit) or 50
 
 
 @dataclass
@@ -1318,7 +1326,6 @@ def list_handler(
     response = handle_list_request(pagination=pagination,
                                    obj_id=obj_id,
                                    request_command=request_command)
-
     raw_response = copy.deepcopy(response)
 
     parsed_response = parse_list_response(
@@ -1426,52 +1433,92 @@ def handle_list_request(request_command: Callable,
         dict[str, Any] | list[dict[str, Any]]: API response from AppSec API.
     """
     if obj_id:
-        request_command = partial(request_command,
-                                  obj_id=obj_id)
-    elif pagination:
-        request_command = request_with_pagination(
+        return request_command(obj_id=obj_id)
+
+    if pagination:
+        if pagination.page and pagination.page_size:
+            # Using pagination with page and page size.
+            pagination_params = get_pagination_params(
+                request_command=request_command,
+                index=pagination.page,
+                size=pagination.page_size,
+            )
+            return request_command(size=pagination_params.size,
+                                   index=pagination_params.index,
+                                   page_token=pagination_params.page_token)
+
+            # # Using pagination with limit.
+        return handle_request_with_limit(
             request_command=request_command,
-            pagination=pagination
+            limit=pagination.limit,
         )
 
     return request_command()
 
 
 @ logger
-def request_with_pagination(request_command: Callable,
-                            pagination: Pagination,
-                            page_token: str | None = None) -> Callable:
+def handle_request_with_limit(request_command: Callable,
+                              limit: int,
+                              page_token: str | None = None) -> dict:
     """
-    Handle request with pagination.
+    Handle list request with large limit (above the API limit).
 
     Args:
-        request_command (Callable | None, optional): List request command. Defaults to None.
-        pagination (Pagination | None, optional): Pagination arguments. Defaults to None.
+        request_command (Callable): List request command.
+        limit (int): Requested limit.
         page_token (str | None, optional): Page token for pagination. Defaults to None.
 
     Returns:
-        Callable: Request with the relevant pagination parameters.
+        dict: API response from AppSec API.
     """
-    if (pagination.page_size is not None and pagination.page is not None
-            and pagination.page * pagination.page_size <= API_LIMIT) or pagination.page_size is None:
-        return partial(request_command,
-                       index=pagination.page and pagination.page - 1,
-                       size=pagination.page_size or pagination.limit,
-                       page_token=page_token)
-    else:
-        size_to_get = int(API_LIMIT / pagination.page_size)
-        data = request_command(index=None,
-                               size=API_LIMIT,
-                               page_token=page_token)
+    if limit <= API_LIMIT:
+        return request_command(size=limit, page_token=page_token)
 
-        page_token = dict_safe_get(data, ["metadata", "page_token"])
+    response = request_command(size=API_LIMIT, page_token=page_token)
+    page_token = dict_safe_get(response, ["metadata", "page_token"])
 
-        if pagination.page:
-            pagination.page -= size_to_get
+    limit -= API_LIMIT
 
-        return request_with_pagination(request_command=request_command,
-                                       pagination=pagination,
-                                       page_token=page_token,)
+    next_response = handle_request_with_limit(request_command=request_command, limit=limit, page_token=page_token,)
+
+    return response | {"data": response.get("data", []) + next_response.get("data", [])}
+
+
+@ logger
+def get_pagination_params(request_command: Callable,
+                          index: int,
+                          size: int,
+                          page_token: str | None = None) -> IndexPagination:
+    """
+    Get the pagination params for list request while using page and page size.
+
+    Args:
+        request_command (Callable | None, optional): List request command. Defaults to None.
+        index (int | None, optional): Index for pagination.
+        size (int | None, optional): Size for pagination.
+        page_token (str | None, optional): Page token for pagination. Defaults to None.
+
+    Returns:
+        IndexPagination: Relevant pagination params for list request.
+    """
+    if index * size <= API_LIMIT:
+        return IndexPagination(page_token=page_token,
+                               index=index - 1,
+                               size=size,)
+
+    size_to_get = int(API_LIMIT / size)
+    data = request_command(index=None,
+                           size=API_LIMIT,
+                           page_token=page_token)
+
+    page_token = dict_safe_get(data, ["metadata", "page_token"])
+
+    index -= size_to_get
+
+    return get_pagination_params(request_command=request_command,
+                                 index=index,
+                                 size=size,
+                                 page_token=page_token,)
 
 
 @ logger

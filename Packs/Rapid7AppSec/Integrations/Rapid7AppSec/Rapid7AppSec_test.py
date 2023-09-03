@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from Rapid7AppSec import (ATTACK, DEFAULT_OUTPUT_KEY_FIELD,
+from Rapid7AppSec import (API_LIMIT, ATTACK, DEFAULT_OUTPUT_KEY_FIELD,
                           INTEGRATION_COMMAND_PREFIX,
                           INTEGRATION_OUTPUT_PREFIX, SCAN, SCAN_ACTION,
                           VULNERABILITY, VULNERABILITY_COMMENT, Client,
@@ -449,13 +449,13 @@ def test_list_commands(
         (
             {"page": "21", "page_size": "50", "limit": "50"},
             [("vulnerabilities?size=1000", "vulnerability/list.json"),
-             ("vulnerabilities?index=0&size=50&page-token=string", "vulnerability/list_2.json")],
+             ("vulnerabilities?size=50&page-token=string", "vulnerability/list_2.json")],
         ),
         (
             {"page": "41", "page_size": "50", "limit": "50"},
             [("vulnerabilities?size=1000", "vulnerability/list.json"),
              ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
-             ("vulnerabilities?index=0&size=50&page-token=string2", "vulnerability/list_3.json")
+             ("vulnerabilities?size=50&page-token=string2", "vulnerability/list_3.json")
              ],
         ),
         (
@@ -463,8 +463,16 @@ def test_list_commands(
             [("vulnerabilities?size=1000", "vulnerability/list.json"),
              ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
              ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
-             ("vulnerabilities?index=0&size=50&page-token=string2", "vulnerability/list_2.json")
+             ("vulnerabilities?size=50&page-token=string2", "vulnerability/list_2.json")
              ],
+        ),
+        (
+            {"page": None, "page_size": None, "limit": "3000"},
+            [
+                ("vulnerabilities?size=1000", "vulnerability/list.json"),
+                ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
+                ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
+            ],
         ),
     ),
 )
@@ -487,7 +495,7 @@ def test_pagination(
     """
 
     from Rapid7AppSec import list_vulnerability_command
-
+    all_data = []
     for endpoint, json_path in endpoints:
         json_response = load_mock_response(file_name=json_path)
         url = urljoin(
@@ -495,7 +503,8 @@ def test_pagination(
             endpoint
         )
         requests_mock.get(url=url, json=json_response)
+        all_data += json_response.get("data", [])
 
     result = list_vulnerability_command(mock_client, args)
     assert result.outputs_prefix == "Rapid7AppSec.Vulnerability"
-    assert result.raw_response == json_response
+    assert arg_to_number(args.get("limit")) >= API_LIMIT or result.raw_response == json_response

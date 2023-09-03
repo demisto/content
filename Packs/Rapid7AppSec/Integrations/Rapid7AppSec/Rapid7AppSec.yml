@@ -73,7 +73,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -386,7 +386,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -516,7 +516,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -562,7 +562,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -608,7 +608,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -648,7 +648,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -694,7 +694,7 @@ script:
       name: page_size
       required: false
     - defaultValue: '50'
-      description: The maximum number of records to retrieve. Maximum value is 1000.
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
