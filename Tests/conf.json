@@ -22,7 +22,8 @@
     "tests": [
         {
             "playbookID": "Test Playbook - WildFire Malware",
-            "timeout": 800
+            "timeout": 800,
+            "is_mockable": true
         },
         {
             "playbookID": "T1036 - Masquerading - Test",
