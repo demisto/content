@@ -25,3 +25,6 @@ ignore=BA124
 [file:WorkdayEventCollector.yml]
 ignore=MR108
 
+[known_words]
+Signon
+signon
