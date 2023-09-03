@@ -138,6 +138,10 @@
             "type": "string",
             "is_array": false
         },
+        "dmac": {
+            "type": "string",
+            "is_array": false
+        },
         "dpt": {
             "type": "int",
             "is_array": false
@@ -259,6 +263,14 @@
             "is_array": false
         },
         "TrendMicroDsProcess": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsMalwareTarget": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsMalwareTargetType": {
             "type": "string",
             "is_array": false
         },
