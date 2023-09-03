@@ -238,7 +238,7 @@ class Client:
                                          quoting=csv.QUOTE_NONE)
 
         except botocore.exceptions.ClientError as exception:
-            status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode')
+            status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode', '')  # type: ignore[type-arg]
             error_message = exception.response.get('Error', {}).get('Message', '')
             self.return_error_based_on_status_code(status_code, error_message)
 
@@ -448,7 +448,7 @@ def test_module(client: Client, feed_type: str) -> Optional[str]:
         client.set_s3_client(REGIONS[feed_type])
         client.request_list_objects(feed_type=feed_type, max_keys=1)
     except botocore.exceptions.ClientError as exception:
-        status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode')
+        status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode', '')  # type: ignore[type-arg]
         error_message = exception.response.get('Error', {}).get('Message', '')
         client.return_error_based_on_status_code(status_code, error_message)
 
