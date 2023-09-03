@@ -593,7 +593,7 @@ tasks:
       version: -1
       name: Search scan alerts from the attacker IP
       description: |-
-        Searches Demisto alerts.
+        Searches XSIAM alerts.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
