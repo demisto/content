@@ -40,7 +40,7 @@ alter
     xdm.auth.mfa.method = mfa_authentication_type_id, 
     xdm.auth.mfa.provider = if(MFA_Enrollment = 1, saml_identity_provider_id), 
     xdm.event_type = if(is_sign_on_successful, "Successful Signon", is_sign_on_successful = false, "Signon Failure", "Signon"),
-    xdm.event_description = arraystring(event_labels, " ")
+    xdm.event_description = arraystring(event_labels, " "),
     xdm.event.outcome = if(is_sign_on_successful, XDM_CONST.OUTCOME_SUCCESS, is_sign_on_successful = boolean_false, XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = Authentication_Failure_Message, 
     xdm.event.duration = timestamp_diff(Signoff_DateTime, Signon_DateTime, "MILLISECOND"), 
