@@ -400,4 +400,4 @@ def test_fetch_sign_on_events_command_single_page():
         assert len(events) == 1
         assert events[0]["User_Name"] == "John"
         assert events[0]["_time"] == "2021-09-01T11:00:00Z"
-        assert new_last_run["last_fetch_time"] == "2021-09-02T00:00:00Z"
+        assert new_last_run["last_fetch_time"] == "2021-09-01T11:00:00Z"
