@@ -1432,7 +1432,7 @@ def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0,
         Sets the next_request_time in the integration context.
         This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
     """
-    context = context if context else {}
+    context = context or {}
     next_counter = delay_request_counter + 1
 
     context['next_request_time'] = next_request_time
