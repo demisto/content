@@ -72,6 +72,11 @@ configuration:
   type: 0
   additionalinfo: Recipient filter value to fetch by message field.
   required: false
+- name: timeout
+  display: Timeout
+  type: 0
+  additionalinfo: Timeout for the integration HTTP requests in seconds.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
@@ -436,8 +441,8 @@ script:
     - name: page_size
       description: Number of results per page. Maximum value is 100.
     - name: limit
-      defaultValue: 50
       description: The maximum number of records to retrieve.
+      defaultValue: 50
     - name: sender_filter_operator
       description: Sender filter operator.
       auto: PREDEFINED
@@ -475,7 +480,8 @@ script:
     - name: attachment_name_value
       description: Attachment name value.
     - name: cisco_host
-      description: Cisco host.
+      description: |-
+        Cisco host.
       defaultValue: All_Hosts
     - name: file_sha_256
       description: |-

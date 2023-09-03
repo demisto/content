@@ -1287,7 +1287,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
         cisco_host=cisco_host,
         search_option=search_option,
         file_sha_256=file_sha_256,
-        custom_query=custom_query
+        custom_query=custom_query,
     )
 
     messages_lists = [
