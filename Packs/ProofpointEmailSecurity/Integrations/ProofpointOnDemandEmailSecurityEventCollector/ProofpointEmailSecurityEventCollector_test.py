@@ -16,7 +16,7 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 @pytest.fixture
 def connection():
-    # Set up a mock maillog connection
+    # Set up a mock connection
     return MockConnection()
 
 
@@ -36,6 +36,7 @@ class MockConnection:
     def recv(self, timeout):
         global CURRENT_TIME
         # pretend to sleep for 4 seconds
+        assert CURRENT_TIME
         CURRENT_TIME += timedelta(seconds=4)
 
         if self.index >= len(self.events):
