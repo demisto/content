@@ -63,7 +63,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         try:
             event = json.loads(connection.recv(timeout=TIMEOUT))
         except TimeoutError:
-            # if we didn't receive an event, try again
+            # if we didn't receive an event, try again (we will stop trying when the interval is passed)
             continue
         event_ts = event.get("ts")
         if not event_ts:
@@ -78,7 +78,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         event["event_type"] = event_type.value
         events.append(event)
     demisto.debug(f"Fetched {len(events)} events of type {event_type}")
-    demisto.debug("The events ids are: " + ", ".join([str(event.get("id", event.get("guid"))) for event in events]))
+    demisto.debug("The fetched events ids are: " + ", ".join([str(event.get("id", event.get("guid"))) for event in events]))
     return events
 
 
