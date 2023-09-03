@@ -1447,6 +1447,7 @@ def request_with_pagination(request_command: Callable,
     Args:
         request_command (Callable | None, optional): List request command. Defaults to None.
         pagination (Pagination | None, optional): Pagination arguments. Defaults to None.
+        page_token (str | None, optional): Page token for pagination. Defaults to None.
 
     Returns:
         Callable: Request with the relevant pagination parameters.
