@@ -522,6 +522,7 @@ def test_message_search_command(
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["mid"] == expected_message_id
     assert outputs[1]["recipient"] == expected_recipients
+    assert mock_request.last_request.timeout == 60
 
 
 @pytest.mark.parametrize(
@@ -872,3 +873,64 @@ def test_format_timestamp(timestamp, output_format, expected_result):
     result = format_timestamp(timestamp, output_format)
 
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len,expected_message_id,expected_recipients,requested_params",
+    [
+        (
+            "message_search.json",
+            {
+                "start_date": "2 weeks",
+                "end_date": "1 day",
+                "page": "2",
+                "page_size": "4",
+                "recipient_filter_operator": "is",
+                "recipient_filter_value": "test@test.com",
+                "timeout": "90"
+            },
+            4,
+            [315],
+            ["test@test.com"],
+            "test%40test.com",
+        ),
+    ],
+)
+def test_test_message_search_command_with_timout(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    expected_message_id,
+    expected_recipients,
+    requested_params,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Tracking message search.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may Provided filtering arguments.
+    When:
+     - cisco-sma-message-search command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from CiscoSMA import message_search_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/message-tracking/messages"
+    mock_request = requests_mock.get(url=url, json=mock_response)
+
+    result = message_search_command(mock_client, command_arguments)
+    outputs = result.outputs
+
+    assert requested_params in mock_request.last_request.query
+    assert result.outputs_prefix == "CiscoSMA.Message"
+    assert len(outputs) == expected_outputs_len
+    assert outputs[0]["mid"] == expected_message_id
+    assert outputs[1]["recipient"] == expected_recipients
+    assert mock_request.last_request.timeout == 90
