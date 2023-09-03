@@ -318,7 +318,8 @@ def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
     error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
     error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
-    assert not not_uploaded and not mistakenly_uploaded, error_str
+    assert not_uploaded, error_str
+    assert not mistakenly_uploaded, error_str
 
 
 def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,

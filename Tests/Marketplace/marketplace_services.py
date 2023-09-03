@@ -1134,14 +1134,17 @@ class Pack:
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+                pack_was_modified = any(
+                    self.RELEASE_NOTES not in path
+                    for path in modified_rn_files_paths
+                )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
             return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
+
+        return task_status, modified_rn_files_paths
 
     def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
