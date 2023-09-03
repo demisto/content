@@ -1,6 +1,10 @@
+from pathlib import Path
 import pytest
 from typing import List
 
+@pytest.fixture(scope="module")
+def datadir(request):
+    return Path("Packs/CommonScripts/Scripts/SetGridField/test_data")
 
 @pytest.mark.parametrize(argnames="phrase, norm_phrase",
                          argvalues=[("TestPhrase", "testphrase"),
