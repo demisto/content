@@ -1,6 +1,6 @@
 [MODEL: dataset = proofpoint_email_security_raw]
 // Modeling rule for Proofpoint email security "Message" events
-filter guid != null and guid != ""
+filter event_type = "message"
 // Parsing fiedls
 | alter
         header_from = arrayindex(msg -> normalizedHeader.from[], 0),
@@ -16,7 +16,7 @@ filter guid != null and guid != ""
         to = arrayfilter(arraymap(to, if("@element" contains "<", arrayindex(regextract("@element", "<([^>]+)>"),0), "@element")), "@element" contains "@")
 // Modeling fields
 | alter
-        xdm.event.type = "Message",
+        xdm.event.type = event_type,
         xdm.event.id = guid,
         xdm.network.session_id = connection -> sid,
         xdm.source.location.country = if(connection -> country !~= "[a-zA-Z]+", null, connection -> country),
@@ -40,8 +40,9 @@ filter guid != null and guid != ""
         xdm.observer.action = arraystring(arraymap(actions, if("@element" -> isFinal = "true", "@element" -> action, null)), ", "),
         xdm.alert.original_threat_name = arraystring(`filter` -> modules.av.virusNames[], ", ");
 // Modeling rule for Proofpoint email security "Mail" events
-filter guid = null or guid = ""
+filter event_type = "maillog"
 | alter
+        xdm.event.type = event_type,
         xdm.event.description = data,
         xdm.event.id = id,
         xdm.source.agent.identifier = pps -> agent,
