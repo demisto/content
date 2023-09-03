@@ -243,7 +243,7 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
     build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not os.path.exists(extract_destination_path):
-        Path(extract_destination_path).mkdir()
+        Path(extract_destination_path).mkdir(parents=True, exist_ok=False)
 
     if not build_index_blob.exists():
         logging.error(f"No build index was found in path: {build_index_storage_path}")
@@ -418,7 +418,7 @@ def main():
                   f"{pc_successful_uploaded_dependencies_zip_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
-    logging.info(f"Images from Prepare Content: {pc_uploaded_images}")
+    logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict,
