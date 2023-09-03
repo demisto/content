@@ -133,11 +133,13 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download configuration"
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
-    - section_end "Download configuration"
+    - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -207,11 +209,13 @@ install-packs-in-server-master:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download configuration"
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
-    - section_end "Download configuration"
+    - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
