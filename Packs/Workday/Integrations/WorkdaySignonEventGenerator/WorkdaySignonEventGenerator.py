@@ -92,10 +92,6 @@ def random_string(length=10):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
-def random_guid(length=6):
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
-
 def xml_generator(from_datetime, to_datetime, count):
     # Generate randomized Signon_DateTime
     random_signon_datetime = random_datetime_in_range(from_datetime, to_datetime)
@@ -112,7 +108,7 @@ def xml_generator(from_datetime, to_datetime, count):
         signon_item = SIGNON_ITEM_TEMPLATE.format(
             signon_datetime=random_signon_datetime,
             user_name=random_string(),
-            short_session_id=random_guid()
+            short_session_id=random_string(length=6)
         )
         signon_items.append(signon_item)
 
@@ -145,8 +141,8 @@ def mock_workday_endpoint():
     return Response(response_xml, mimetype='text/xml')
 
 
-def module_of_testing():
-    if int(demisto.params().get('longRunningPort', '')) and demisto.params().get("longRunning"):
+def module_of_testing(is_longrunning, longrunning_port):
+    if longrunning_port and is_longrunning:
         xml_response = xml_generator('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z', 2)
         if xml_response:
             demisto.results('ok')
@@ -160,13 +156,22 @@ def module_of_testing():
 
 
 def main():
-    if demisto.command() == 'test-module':
-        module_of_testing()
-    elif demisto.command() == 'long-running-execution':
-        while True:
-            port = int(demisto.params().get('longRunningPort', '5000'))
-            server = WSGIServer(('0.0.0.0', port), APP)
-            server.serve_forever()
+    params = demisto.params()
+    port = int(params.get('longRunningPort', '5000'))
+    is_longrunning = params.get("longRunning")
+    try:
+        if demisto.command() == 'test-module':
+            module_of_testing(longrunning_port=port, is_longrunning=is_longrunning)
+        elif demisto.command() == 'long-running-execution':
+            while True:
+                server = WSGIServer(('0.0.0.0', port), APP)
+                server.serve_forever()
+
+    # Log exceptions and return errors
+    except Exception as e:
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
 
 
 ''' ENTRY POINT '''

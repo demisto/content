@@ -316,13 +316,6 @@ class Client(BaseClient):
         :rtype: ``Tuple``
         """
 
-        def get_nested_keys(d: Dict[str, Any], keys: List[str]) -> Dict[str, Any]:
-            for key in keys:
-                if key not in d:
-                    return {}
-                d = d[key]
-            return d
-
         # Make the HTTP request.
         raw_response = self._http_request(
             method="POST",
@@ -334,8 +327,9 @@ class Client(BaseClient):
 
         raw_json_response, account_signon_data = convert_to_json(raw_response)
 
-        total_pages = int(get_nested_keys(
-            raw_json_response, ["Envelope", "Body", "Get_Workday_Account_Signons_Response", "Response_Results"]
+        total_pages = int(demisto.get(
+            obj=raw_json_response, field="Envelope.Body.Get_Workday_Account_Signons_Response.Response_Results",
+            defaultParam={}
         ).get("Total_Pages", "1"))
 
         return account_signon_data, total_pages
@@ -380,11 +374,7 @@ def convert_to_json(response: str | dict) -> Tuple[Dict[str, Any], Dict[str, Any
             raise ValueError(f"Error parsing XML to JSON: {e}")
 
     # Get the 'Get_Workday_Account_Signons_Response' dictionary safely
-    response_data = (
-        raw_json_response.get("Envelope", {})
-        .get("Body", {})
-        .get("Get_Workday_Account_Signons_Response", {})
-    )
+    response_data = demisto.get(raw_json_response, "Envelope.Body.Get_Workday_Account_Signons_Response")
 
     if not response_data:
         response_data = raw_json_response.get(
@@ -426,23 +416,30 @@ def fetch_sign_on_logs(
     """
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
+    total_fetched = 0  # Keep track of the total number of events fetched
     res, total_pages = client.retrieve_events(
         from_time=from_date, to_time=to_date, page=1, count=limit_to_fetch
     )
-    sign_on_logs.extend(res.get("Workday_Account_Signon", []))
+    sign_on_events_from_api = res.get("Workday_Account_Signon", [])
+    sign_on_logs.extend(sign_on_events_from_api)
     demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
     pages_remaining = total_pages - 1
 
-    while page <= total_pages and pages_remaining != 0:
+    while (page <= total_pages and pages_remaining != 0) and res:
         page += 1
+        # Calculate the remaining number of events to fetch
+        remaining_to_fetch = limit_to_fetch - total_fetched
+        if remaining_to_fetch <= 0:
+            break
         res, _ = client.retrieve_events(
             from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch
         )
         pages_remaining -= 1
-        demisto.debug(f"Fetched {len(res)} sign on logs.")
-        sign_on_logs.extend(res.get("Workday_Account_Signon"))
-        if not res:
-            break
+        fetched_count = len(sign_on_events_from_api)
+        total_fetched += fetched_count
+
+        demisto.debug(f"Fetched {len(sign_on_events_from_api)} sign on logs.")
+        sign_on_logs.extend(sign_on_events_from_api)
         demisto.debug(f"{pages_remaining} pages left to fetch.")
     return sign_on_logs
 
@@ -501,6 +498,8 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         from_date = last_run.get("last_fetch_time", first_fetch_str)
     else:
         from_date = last_run.get("last_fetch_time")
+    # Checksums in this context is used as an ID since none is provided directly from Workday.
+    # This is to prevent duplicates.
     previous_run_checksums = last_run.get("previous_run_checksums", set())
     to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
@@ -532,8 +531,9 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         }
 
         demisto.debug(f"Done processing {len(non_duplicates)} sign_on_events.")
+        last_event = non_duplicates[-1]
         last_run = {
-            "last_fetch_time": to_date,
+            "last_fetch_time": last_event.get('Signon_DateTime'),
             "previous_run_checksums": checksums_for_next_iteration,
         }
         demisto.debug(f"Saving last run as {last_run}")

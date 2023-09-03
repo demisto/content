@@ -1,5 +1,5 @@
 Use the Workday Sign On Event Collector integration to get sign on logs from Workday.
-This integration was integrated and tested with version v37.0 of Workday Sign On Event Collector
+This integration was integrated and tested with version xx of Workday Sign On Event Collector
 
 ## Configure Workday Sign On Event Collector on Cortex XSOAR
 
@@ -27,7 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### workday-get-sign-on-events
 
 ***
-Returns Sign On events extracted from Workday.
+Returns Sign On events extracted from Workday. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
 
 #### Base Command
 
@@ -35,12 +35,12 @@ Returns Sign On events extracted from Workday.
 
 #### Input
 
-| **Argument Name**  | **Description**                                                                                                                                                                                      | **Required** |
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False.                                               | Required     | 
-| limit              | The maximum number of events to return. Default is 1000.                                                                                                                                             | Optional     | 
-| from_date          | The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. | Required     | 
-| to_date            | The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.                                                                           | Required     | 
+| **Argument Name**  | **Description**                                                                                                                                                                                                             | **Required** |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False.                                                                      | Required     | 
+| limit              | The maximum number of events to return. Possible values are: . Default is 1000.                                                                                                                                             | Optional     | 
+| from_date          | The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: . | Required     | 
+| to_date            | The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: .                                                                           | Required     | 
 
 #### Context Output
 

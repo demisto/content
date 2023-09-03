@@ -25,6 +25,7 @@ script:
   dockerimage: demisto/teams:1.0.0.14902
   longRunning: true
   longRunningPort: true
-fromversion: 5.5.0
+fromversion: 6.0.0
+toversion: 7.9.9
 tests:
 - No tests (auto formatted)

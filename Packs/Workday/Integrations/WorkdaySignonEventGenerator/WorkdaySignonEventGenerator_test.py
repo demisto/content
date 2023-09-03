@@ -1,5 +1,5 @@
 import unittest
-from WorkdaySignonEventGenerator import random_datetime_in_range, random_string, random_guid, xml_generator
+from WorkdaySignonEventGenerator import random_datetime_in_range, random_string, xml_generator
 
 
 class TestWorkdaySignonEventGenerator(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the length of the generated string is 6
         """
-        self.assertEqual(len(random_guid()), 6)
+        self.assertEqual(len(random_string(length=6)), 6)
 
     def test_xml_generator(self) -> None:
         """

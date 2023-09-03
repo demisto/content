@@ -1,5 +1,5 @@
 Generates mock signon events for Workday Signon Event Collector. Use these for testing and development.
-This integration was integrated and tested with version 1 of WorkdaySignonEventGenerator
+This integration was integrated and tested with version xx of WorkdaySignonEventGenerator
 
 ## Configure Workday Signon Event Generator (Beta) on Cortex XSOAR
 
@@ -10,6 +10,6 @@ This integration was integrated and tested with version 1 of WorkdaySignonEventG
     | **Parameter** | **Required** |
     | --- | --- |
     | Long running instance | False |
-    | Port mapping (<port> or <host port>:<docker port>) | True |
+    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
