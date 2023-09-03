@@ -68,6 +68,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: fc3beac8-29a6-4c5e-860a-88da98d2f465
@@ -112,6 +113,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 6e60d2b5-da62-4e51-8288-fa36e88a3b43
@@ -139,6 +141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 81114969-0dc4-4f7c-846d-9463dee9fabf
@@ -169,6 +172,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: eb6213f6-9508-4f40-8b7b-57f4fd29a859
@@ -199,6 +203,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: b54cde0f-11ea-44c2-8b0f-68b2e5e77897
@@ -229,6 +234,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: cc50c64f-41c7-49cb-873b-88891bef19e6
@@ -272,6 +278,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 79f7f934-3b5f-4db6-8705-238fc63a2f1a
@@ -319,6 +326,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
@@ -371,12 +379,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 02267050-d8c6-44a3-81b6-e3108cc70c34
+    taskid: 93f61f2a-d50e-4916-8221-2d83b81f4331
     type: condition
     task:
-      id: 02267050-d8c6-44a3-81b6-e3108cc70c34
+      id: 93f61f2a-d50e-4916-8221-2d83b81f4331
       version: -1
       name: Was the IP Address identified as malicious?
       description: Checks if the IP address was identified as malicious.
@@ -401,7 +410,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.indicator
+                        simple: DBotScore.Indicator
                       iscontext: true
                     right:
                       value:
@@ -426,6 +435,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 37657fa8-531d-4142-8b8e-6bfe4b2b63ae
@@ -453,6 +463,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
@@ -509,6 +520,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "33":
     id: "33"
     taskid: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
@@ -571,6 +583,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
     taskid: 12c20106-b5a4-4d4e-8f08-c81cf9ce2feb
@@ -578,9 +591,9 @@ tasks:
     task:
       id: 12c20106-b5a4-4d4e-8f08-c81cf9ce2feb
       version: -1
-      name: Search scan incidents from the attacker IP
+      name: Search scan alerts from the attacker IP
       description: |-
-        Searches Demisto incidents.
+        Searches XSIAM alerts.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -616,6 +629,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 06dcc969-335b-4309-8e46-5979aeff8158
@@ -626,7 +640,7 @@ tasks:
       name: Containment Plan
       description: |-
         This playbook handles all the containment actions available with Cortex XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        The playbook allows to contain the alert with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
@@ -711,6 +725,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 7284fa76-6c8d-45f9-8edf-f32abd30d498
@@ -742,6 +757,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 9d36e4d2-085a-49ec-835a-c1cafe1e89d1
@@ -787,6 +803,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
     taskid: 603b1088-07d0-4656-8b8d-ce58e06cf7e6
@@ -832,6 +849,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: 0efdf166-59cc-4539-8732-ce0aa4c08d3e
@@ -839,7 +857,7 @@ tasks:
     task:
       id: 0efdf166-59cc-4539-8732-ce0aa4c08d3e
       version: -1
-      name: Continue with the incident investigation
+      name: Continue with the alert investigation
       description: Manual continuation of the investigation.
       type: regular
       iscommand: false
@@ -862,6 +880,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "45":
     id: "45"
     taskid: b84fcf1d-129f-4b82-822a-be68527e7710
@@ -872,7 +891,7 @@ tasks:
       name: Recovery Plan
       description: |-
         This playbook handles all the recovery actions available with Cortex XSIAM.
-        The playbook enables you to recover from the incident with one of the following tasks:
+        The playbook enables you to recover from the alert with one of the following tasks:
         * Unisolate endpoint
         * Restore quarantined file
 
@@ -909,6 +928,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "46":
     id: "46"
     taskid: c506b4fc-df2d-4f21-8414-d2a062e80aad
@@ -939,6 +959,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
     taskid: 6823d96c-3b1f-4738-855f-79eceff629d5
@@ -971,6 +992,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: c61bb207-387d-49a5-8083-409ca876e978
@@ -1019,6 +1041,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 510b6f41-c6c3-4a59-8e41-ab1562467fe4
@@ -1054,6 +1077,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
     taskid: edd23e16-504a-450d-857b-1c93cd09c0d2
@@ -1133,6 +1157,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 0caa2762-5a38-4642-8525-edd7f4924807
@@ -1170,6 +1195,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "55":
     id: "55"
     taskid: b0f3e23a-43a5-4394-806c-b097064ea017
@@ -1215,6 +1241,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "56":
     id: "56"
     taskid: 6958506f-7785-4f9c-87d1-e5c2a9a38cfd
@@ -1274,6 +1301,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "57":
     id: "57"
     taskid: 98a8bfdb-f55b-4948-8b31-0a11d8aef7c6
@@ -1281,8 +1309,8 @@ tasks:
     task:
       id: 98a8bfdb-f55b-4948-8b31-0a11d8aef7c6
       version: -1
-      name: Set Incident Severity to High
-      description: commands.local.cmd.set.parent.incident.field
+      name: Set Alert Severity to High
+      description: commands.local.cmd.set.parent.alert.field
       script: Builtin|||setParentIncidentFields
       type: regular
       iscommand: true
