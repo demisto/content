@@ -1,7 +1,17 @@
 import uuid
 import pytest
-from ProofpointEmailSecurityEventCollector import fetch_events, json, demisto
+from ProofpointEmailSecurityEventCollector import fetch_events, json, demisto, EventType, datetime, timedelta
 import ProofpointEmailSecurityEventCollector
+from freezegun import freeze_time
+
+CURRENT_TIME: datetime = None
+
+
+def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
+    global CURRENT_TIME
+    if not CURRENT_TIME:
+        CURRENT_TIME = fetch_start_time
+    return fetch_start_time + timedelta(seconds=fetch_interval) < CURRENT_TIME
 
 
 @pytest.fixture
@@ -11,16 +21,23 @@ def connection():
 
 
 class MockConnection:
-    def __init__(self):
+    def __init__(
+        self,
+    ):
+        global CURRENT_TIME
         self.id = uuid.uuid4()
         self.events = [
-            {"ts": "2023-08-16T13:24:12.147573+0100", "message": "Test message 1"},
-            {"ts": "2023-08-14T13:24:12.147573+0200", "message": "Test message 2"},
-            {"ts": "2023-08-12T13:24:11.147573+0000", "message": "Test message 3"}
+            {"ts": "2023-08-16T13:24:12.147573+0100", "message": "Test message 1", "id": 1},
+            {"ts": "2023-08-14T13:24:12.147573+0200", "message": "Test message 2", "id": 2},
+            {"ts": "2023-08-12T13:24:11.147573+0000", "message": "Test message 3", "guid": 3},
         ]
         self.index = 0
 
     def recv(self, timeout):
+        global CURRENT_TIME
+        # pretend to sleep for 4 seconds
+        CURRENT_TIME += timedelta(seconds=4)
+
         if self.index >= len(self.events):
             raise TimeoutError
         event = self.events[self.index]
@@ -39,18 +56,28 @@ def test_fetch_events(mocker, connection):
     Then:
         - Ensure that the function returns the events from the websocket connection
         - Ensure that the function converts the timestamp to UTC
-        - Ensure that the function skips and prints debug logs if TimeoutError is raised
+        - Ensure that the function returns the events collected in the interval until events finished
     """
-    mocker.patch.object(ProofpointEmailSecurityEventCollector, "EVENTS_TO_FETCH", 2)
-    events = fetch_events(connection)
+
+    # We set fetch_interval to 7 to get this first two events (as we "wait" 4 seconds between each event)
+    fetch_interval = 7
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
+    debug_logs = mocker.patch.object(demisto, "debug")
+    events = fetch_events(event_type=EventType.MESSAGE, connection=connection, fetch_interval=fetch_interval)
+
     assert len(events) == 2
     assert events[0]["message"] == "Test message 1"
     assert events[0]["_time"] == "2023-08-16T12:24:12.147573+00:00"
     assert events[1]["message"] == "Test message 2"
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
-    debug_logs = mocker.patch.object(demisto, "debug")
-    events = fetch_events(connection)
+    assert debug_logs.call_args_list[0][0][0] == "Fetched 2 events of type message"
+    assert debug_logs.call_args_list[1][0][0] == "The events ids are: 1, 2"
+    # Now we want to freeze the time, so we will get the next interval
+    with freeze_time(CURRENT_TIME):
+        debug_logs = mocker.patch.object(demisto, "debug")
+        events = fetch_events(event_type=EventType.MESSAGE, connection=connection, fetch_interval=fetch_interval)
     assert len(events) == 1
     assert events[0]["message"] == "Test message 3"
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
-    assert "Timeout reached when receiving" in debug_logs.call_args_list[1][0][0]
+    assert debug_logs.call_args_list[0][0][0] == "Fetched 2 events of type message"
+    assert debug_logs.call_args_list[1][0][0] == "The events ids are: 1, 2"

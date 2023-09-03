@@ -20,8 +20,14 @@ class EventType(str, Enum):
     MAILLOG = "maillog"
 
 
+def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
+    return datetime.utcnow() > fetch_start_time + timedelta(seconds=fetch_interval)
+
+
 @contextmanager
-def websocket_connections(host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None):
+def websocket_connections(
+    host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None
+):
     url = URL
     if not since_time:
         since_time = datetime.utcnow().isoformat()
@@ -40,9 +46,20 @@ def websocket_connections(host: str, cluster_id: str, api_key: str, since_time: 
 
 
 def fetch_events(event_type: EventType, connection: Connection, fetch_interval: int) -> list[dict]:
+    """
+    This function fetches events from the websocket connection for the given event type, for the given fetch interval
+
+    Args:
+        event_type (EventType): The event type to fetch (MAILLOG, MESSAGE)
+        connection (Connection): the websocket connection to the event type
+        fetch_interval (int): the interval of events to fetch, in seconds
+
+    Returns:
+        list[dict]: A list of events
+    """
     events: list[dict] = []
     fetch_start_time = datetime.utcnow()
-    while fetch_start_time + timedelta(seconds=fetch_interval) > datetime.utcnow():
+    while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
             event = json.loads(connection.recv(timeout=TIMEOUT))
         except TimeoutError:
@@ -61,17 +78,22 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         event["event_type"] = event_type.value
         events.append(event)
     demisto.debug(f"Fetched {len(events)} events of type {event_type}")
+    demisto.debug("The events ids are: " + ", ".join([str(event.get("id", event.get("guid"))) for event in events]))
     return events
 
 
 def get_events(host: str, cluster_id: str, api_key: str, since_time: str | None, to_time: str | None) -> CommandResults:
-    with websocket_connections(host, cluster_id, api_key, since_time, to_time) as (message_connection, maillog_connection):
+    with websocket_connections(host, cluster_id, api_key, since_time, to_time) as (
+        message_connection,
+        maillog_connection,
+    ):
         message_events = fetch_events(EventType.MESSAGE, message_connection, FETCH_INTERVAL_IN_SECONDS)
         maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, FETCH_INTERVAL_IN_SECONDS)
-        return CommandResults(outputs_prefix="ProopolintEmailSecurityEvents",
-                              outputs_key_field="id",
-                              outputs=message_events + maillog_events,
-                              )
+        return CommandResults(
+            outputs_prefix="ProopolintEmailSecurityEvents",
+            outputs_key_field="id",
+            outputs=message_events + maillog_events,
+        )
 
 
 def test_module(host: str, cluster_id: str, api_key: str):
@@ -100,15 +122,11 @@ def main():
     host = params.get("host", "")
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
-    fetch_interval = params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS)
-    since_time = params.get("since_time")
-    to_time = params.get("to_time")
+    fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     if command == "long-running-execution":
         return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
     elif command == "test-module":
         return_results(test_module(host, cluster_id, api_key))
-    elif command == "proofpoint-get-events":
-        return_results(get_events(host, cluster_id, api_key, since_time, to_time))
     else:
         raise NotImplementedError(f"Command {command} is not implemented.")
 

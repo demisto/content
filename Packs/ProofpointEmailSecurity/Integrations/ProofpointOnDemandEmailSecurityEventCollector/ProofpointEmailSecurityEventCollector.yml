@@ -23,6 +23,7 @@ configuration:
 - display: Fetch interval in seconds
   name: fetch_interval
   type: 0
+  defaultValue: 60
   required: true
 - display: Use system proxy settings
   name: proxy
@@ -32,16 +33,8 @@ script:
   script: ""
   type: python
   commands:
-    - description: Manual command to fetch events and display them.
+    - description: This command is not implemented. Enable long running to collect events.
       name: proofpoint-get-events
-      arguments:
-        - description: The start time to get events, expressed in isoformat.
-          name: since_time
-        - description: The end time to get events, expressed in isoformat.
-          name: to_time
-        - description: Should push events
-          name: should_push_events
-          defaultValue: 'false'
 
   dockerimage: devdemisto/websockets:11.0.3.69389
   longRunning: true
