@@ -26,4 +26,4 @@ echo "Setting up content dependencies"
 .hooks/bootstrap
 
 echo "Run demisto-sdk pre-commit to cache dependencies"
-poetry run demisto-sdk pre-commit 2>&1 >/dev/null || true
+poetry run demisto-sdk pre-commit >/dev/null 2>&1 || true
