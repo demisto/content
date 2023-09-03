@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
 from dateutil import tz
+import traceback
 
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
@@ -111,12 +112,18 @@ def main():
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    if command == "long-running-execution":
-        return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
-    elif command == "test-module":
-        return_results(test_module(host, cluster_id, api_key))
-    else:
-        raise NotImplementedError(f"Command {command} is not implemented.")
+
+    try:
+        if command == "long-running-execution":
+            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
+        elif command == "test-module":
+            return_results(test_module(host, cluster_id, api_key))
+        elif command == "proofpoint-get-events":
+            raise NotImplementedError("proofpoint-get-events is not implemented. Enable long running execution to get events.")
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
+    except Exception:
+        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
