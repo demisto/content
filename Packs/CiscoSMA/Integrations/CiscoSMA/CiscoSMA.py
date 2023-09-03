@@ -461,7 +461,7 @@ class Client(BaseClient):
         )
 
         return self._http_request("GET", "message-tracking/messages", params=params,
-                                  params_parser=urllib.parse.quote)
+    params_parser=urllib.parse.quote)
 
     def message_details_get_request(
         self,
