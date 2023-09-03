@@ -322,9 +322,6 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         table = pre_process_result_query(client=client, result=result, headers=headers)
         table = table[skip:skip + limit]
 
-        print(headers)
-        [print(row) for row in table]
-
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
