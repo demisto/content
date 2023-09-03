@@ -12,22 +12,25 @@ alter
     DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     get_description1 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
     get_description2 = arrayindex(regextract(_raw_log, "FailureReason=([^\,]+)"),0),
-    mac_address1 = arrayindex(regextract(_raw_log, "EndPointMACAddress=([^\,]+)"),0),
-    mac_address2 = arrayindex(regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),0),
+    get_description3 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0),
+    src_mac_address1 = arrayindex(regextract(_raw_log, "EndPointMACAddress=([^\,]+)"),0),
+    src_mac_address2 = arrayindex(regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),0),
+    tar_mac_address = regextract(_raw_log, "Called-Station-ID=([^\,]+)"),
     logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0))
 | alter 
     xdm.event.type = logType,
+    xdm.source.interface = arrayindex(regextract(_raw_log, "NAS-Port-Id=([^\,\;]+)"),0),
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
     xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
-    xdm.event.description = get_description1,
+    xdm.event.description = if(logSeverity != null, get_description1, get_description3),
     xdm.alert.name = get_description2,
     xdm.target.ipv4 = arrayindex(regextract(_raw_log, "DestinationIPAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
     xdm.target.ipv6 = arrayindex(regextract(_raw_log, "DestinationIPAddress=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     xdm.source.ipv4 = coalesce(framedIP_ipv4, DeviceIPAddress_ipv4),
     xdm.source.ipv6 = coalesce(framedIP_ipv6, DeviceIPAddress_ipv6 ),
     xdm.source.port = to_integer(arrayindex(regextract(_raw_log, "Device Port=(\d+),"),0)),
-    xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
+    xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+)"),0),
     xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log, "NAS-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
     xdm.intermediate.ipv6 = arrayindex(regextract(_raw_log, "NAS-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     xdm.target.port = to_integer(arrayindex(regextract(_raw_log, "DestinationPort=(\d+),"),0)),
@@ -40,7 +43,8 @@ alter
     xdm.auth.auth_method = arrayindex(regextract(_raw_log, "EapAuthentication=([^\,]+)"),0),
     xdm.source.user.identifier = arrayindex(regextract(_raw_log, "SSID=([^\,]+)"),0),
     xdm.network.session_id = arrayindex(regextract(_raw_log, "AcsSessionID=([^\,]+)"),0),
-    xdm.source.host.mac_addresses = arraycreate("EndPoint Ouput: " + mac_address1, "Calling StationID Output" + mac_address2);
+    xdm.source.host.mac_addresses = arraycreate(src_mac_address1, src_mac_address2),
+    xdm.target.host.mac_addresses = tar_mac_address;
 
 // CISE_Alarm Parsing
 alter 
@@ -59,42 +63,47 @@ alter
     get_target_resource_name2 = arrayindex(regextract(_raw_log, "Repository Name: \'([^\']+)\'"),0),
     get_tar_ip = arrayindex(regextract(_raw_log, "Calling Station Id=([^\,\;]+)"),0),
     get_cause = arrayindex(regextract(_raw_log, "Cause=([^\}]+\})"),0),
-    get_description = arrayindex(regextract(_raw_log, "(?:Details|Error\sMessage|Failure\sReason)=([^,;]+)"),0),
     src_hostname1 = arrayindex(regextract(_raw_log, "Network Device Name=([^\,\;]+)"),0),
     src_hostname2 = arrayindex(regextract(_raw_log, "From\s+(\S+)\s+To\s+\S+\;"),0),
-    tar_hostname = arrayindex(regextract(_raw_log, "From\s+\S+\s+To\s+(\S+)\;"),0)
+    tar_hostname = arrayindex(regextract(_raw_log, "From\s+\S+\s+To\s+(\S+)\;"),0),
+    get_description1 = arrayindex(regextract(_raw_log, "(?:Details|Error\sMessage|Failure\sReason)=([^,;]+)"),0),
+    get_description2 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
+    get_description3 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0)
 | alter
     check_src_ipv4_1 = if(get_src_ip1 ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_src_ip1, null),
-    check_src_ipv6_1 = if(get_src_ip1 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", get_src_ip1, null),
-    check_src_mac_1 = if(get_src_ip1 ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", get_src_ip1, null),
+    check_src_ipv6_1 = if(get_src_ip1 ~= ":", get_src_ip1, null),
+    check_src_mac_1 = if(get_src_ip1 ~= "\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}|[a-fA-F\d]{12}", get_src_ip1, null),
 
     check_src_ipv4_2 = if(get_src_ip2 ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_src_ip2, null),
-    check_src_ipv6_2 = if(get_src_ip2 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", get_src_ip2, null),
-    check_src_mac_2 = if(get_src_ip2 ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", get_src_ip2, null),
+    check_src_ipv6_2 = if(get_src_ip2 ~= ":", get_src_ip2, null),
+    check_src_mac_2 = if(get_src_ip2 ~= "\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}|[a-fA-F\d]{12}", get_src_ip2, null),
 
     check_src_ipv4_3 = if(get_src_ip3 ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_src_ip3, null),
-    check_src_ipv6_3 = if(get_src_ip3 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", get_src_ip3, null),
-    check_src_mac_3 = if(get_src_ip3 ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", get_src_ip3, null),
+    check_src_ipv6_3 = if(get_src_ip3 ~= ":", get_src_ip3, null),
+    check_src_mac_3 = if(get_src_ip3 ~= "\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}|[a-fA-F\d]{12}", get_src_ip3, null),
 
     check_src_ipv4_4 = if(get_src_ip4 !~= ":", get_src_ip4, null),
     check_src_ipv6_4 = if(get_src_ip4 ~= ":", get_src_ip4, null),
 
     check_tar_ipv4 = if(get_tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_tar_ip, null),
-    check_tar_ipv6 = if(get_tar_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", get_tar_ip, null),
-    check_tar_mac = if(get_tar_ip ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", get_tar_ip, null)      
+    check_tar_ipv6 = if(get_tar_ip ~= ":", get_tar_ip, null),
+    check_tar_mac = if(get_tar_ip ~= "\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}[:-]\S{2}|[a-fA-F\d]{12}", get_tar_ip, null)
+| alter
+    get_src_ipv6 = coalesce(check_src_ipv6_1, check_src_ipv6_2, check_src_ipv6_3)
 | alter 
+    xdm.event.description = if(logSeverity != null, get_description2, get_description3),
     xdm.event.type = logType,
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.alert.name = rtrim(arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\w+:\s([^:]+)"),0)),
     xdm.observer.name = coalesce(observerName1, observerName2),
-    xdm.alert.description = coalesce(get_cause, get_description),
+    xdm.alert.description = coalesce(get_cause, get_description1),
     xdm.source.ipv4 = coalesce(check_src_ipv4_1, check_src_ipv4_2, check_src_ipv4_3),
-    xdm.source.ipv6 = coalesce(check_src_ipv6_1, check_src_ipv6_2, check_src_ipv6_3),
+    xdm.source.ipv6 = if(get_src_ipv6 !~= "\S{2}:\S{2}:\S{2}:\S{2}:\S{2}:\S{2}", get_src_ipv6, null),
     xdm.source.host.ipv4_addresses = arraycreate(check_src_ipv4_4),
-    xdm.source.host.ipv6_addresses = arraycreate(check_src_ipv6_4),
+    xdm.source.host.ipv6_addresses = if(check_src_ipv6_4 !~= "\S{2}:\S{2}:\S{2}:\S{2}:\S{2}:\S{2}", arraycreate(check_src_ipv6_4), null),
     xdm.source.host.mac_addresses = arraycreate(coalesce(check_src_mac_1, check_src_mac_2, check_src_mac_3)),
     xdm.target.ipv4 = check_tar_ipv4,
-    xdm.target.ipv6 = check_tar_ipv6,
+    xdm.target.ipv6 = if(check_tar_ipv6 !~= "\S{2}:\S{2}:\S{2}:\S{2}:\S{2}:\S{2}", check_tar_ipv6, null),
     xdm.target.host.mac_addresses = arraycreate(check_tar_mac), 
     xdm.source.host.device_id = arrayindex(regextract(_raw_log, "NAS Identifier=([^\,\;]+)"),0),
     xdm.target.resource.type = arrayindex(regextract(_raw_log, "Object Type=([^\,,\;]+)"),0),
@@ -119,12 +128,14 @@ alter
     DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
     src_mac_address = regextract(_raw_log, "Calling-Station-ID=([^\,]+)"),
     tar_mac_address = regextract(_raw_log, "Called-Station-ID=([^\,]+)"),
-    src_port = arrayindex(regextract(_raw_log, "(?:NAS-Port|Device Port)=([^\,\;]+)"),0)
+    src_port = arrayindex(regextract(_raw_log, "(?:NAS-Port|Device Port)=([^\,\;]+)"),0),
+    get_description1 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
+    get_description2 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0)
 | alter 
     xdm.event.type = logType,
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
-    xdm.event.description = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
+    xdm.event.description = if(logSeverity != null, get_description1, get_description2),
     xdm.source.ipv4 = coalesce(framedIP_ipv4, DeviceIPAddress_ipv4),
     xdm.source.ipv6 = coalesce(framedIP_ipv6, DeviceIPAddress_ipv6 ),
     xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
@@ -151,6 +162,7 @@ alter
     logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
     get_description1 = arrayindex(regextract(_raw_log, "INFO\s+null:(.*)"),0),
     get_description2 = arrayindex(regextract(_raw_log, "(?:WARN\s+|DEBUG\s+|ERROR\s+|FATAL\s+|CRITICAL\s+|NOTICE\s+)(.*)"),0),
+    get_description3 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0),
     get_message = arrayindex(regextract(_raw_log, "MESSAGE=([^\,]+)"),0),
     get_ProfilerErrorMessage = arrayindex(regextract(_raw_log, "ProfilerErrorMessage=([^\,]+)"),0),
     get_FailureReason = arrayindex(regextract(_raw_log, "FailureReason=([^,\\;]+)"),0),
@@ -167,13 +179,13 @@ alter
     check_src_ipv6 = if(get_src_ip ~= ":", get_src_ip, null),
 
     check_tar_ipv4 = if(get_tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_tar_ip, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0), null),
-    check_tar_ipv6 = if(get_tar_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", arrayindex(regextract(get_tar_ip, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0), null),
+    check_tar_ipv6 = if(get_tar_ip ~= ":", arrayindex(regextract(get_tar_ip, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0), null),
     check_tar_mac = if(get_tar_ip ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", arrayindex(regextract(get_tar_ip, "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}"), 0), null)
 | alter
     xdm.observer.type = get_ProfilerServer,
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.source.host.device_category = to_string(regextract(_raw_log, "NetworkDeviceGroups=([^\,]+)")),
-    xdm.event.description = coalesce(get_description1, get_description2),
+    xdm.event.description = if(logSeverity != null, coalesce(get_description1, get_description2), get_description3),
     xdm.alert.description = coalesce(get_message, get_ProfilerErrorMessage, get_FailureReason),
     xdm.source.ipv4 = check_src_ipv4,
     xdm.source.ipv6 = check_src_ipv6,
@@ -182,7 +194,7 @@ alter
     xdm.auth.auth_method = arrayindex(regextract(_raw_log, "AuthenticationMethod=([^\\,]+)"),0),
     xdm.target.port = to_integer(arrayindex(regextract(_raw_log, "DestinationPort=([^\\,]+)"),0)),
     xdm.target.ipv4 = check_tar_ipv4,
-    xdm.target.ipv6 = check_tar_ipv6,
+    xdm.target.ipv6 = if(check_tar_ipv6 !~= "\S{2}:\S{2}:\S{2}:\S{2}:\S{2}:\S{2}", check_tar_ipv6, null),
     xdm.target.host.mac_addresses = arraycreate(check_tar_mac, get_mac_address),
     xdm.source.user.domain = arrayindex(regextract(_raw_log, "CN=([^\\,]+)"), 0),
     xdm.network.session_id = arrayindex(regextract(_raw_log, "UniqueConnectionIdentifier[\s+=]+(\S+)\,"),0),
