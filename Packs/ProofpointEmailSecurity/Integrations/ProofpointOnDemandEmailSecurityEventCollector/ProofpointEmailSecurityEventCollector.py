@@ -82,20 +82,6 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     return events
 
 
-def get_events(host: str, cluster_id: str, api_key: str, since_time: str | None, to_time: str | None) -> CommandResults:
-    with websocket_connections(host, cluster_id, api_key, since_time, to_time) as (
-        message_connection,
-        maillog_connection,
-    ):
-        message_events = fetch_events(EventType.MESSAGE, message_connection, FETCH_INTERVAL_IN_SECONDS)
-        maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, FETCH_INTERVAL_IN_SECONDS)
-        return CommandResults(
-            outputs_prefix="ProopolintEmailSecurityEvents",
-            outputs_key_field="id",
-            outputs=message_events + maillog_events,
-        )
-
-
 def test_module(host: str, cluster_id: str, api_key: str):
     # set the fetch interval to 10 seconds so we don't get timeout for the test module
     fetch_interval = 10
