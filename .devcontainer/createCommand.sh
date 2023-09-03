@@ -4,13 +4,8 @@ set -e
 
 echo "Fixing permissions"
 
-sudo chown demisto /workspaces
-sudo chown demisto /workspaces/content
-sudo chown -R demisto /workspaces/content/.vscode
-sudo chown -R demisto /workspaces/content/.git
-sudo chown -R demisto /workspaces/content/.venv
-sudo chown -R demisto /workspaces/content/node_modules
-sudo chown -R demisto /workspaces/content/package-lock.json
+sudo chown demisto /workspaces /workspaces/content
+sudo chown -R demisto /workspaces/content/.vscode /workspaces/content/.git /workspaces/content/.venv /workspaces/content/node_modules /workspaces/content/package-lock.json
 
 sudo chown -R demisto $HOME
 
