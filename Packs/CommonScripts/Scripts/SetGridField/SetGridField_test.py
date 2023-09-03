@@ -4,6 +4,7 @@ import pytest
 from typing import List
 
 def util_load_json(path):
+    path = f'Packs/CommonScripts/Scripts/SetGridField/test_data/{path}'
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 @pytest.mark.parametrize(argnames="phrase, norm_phrase",
