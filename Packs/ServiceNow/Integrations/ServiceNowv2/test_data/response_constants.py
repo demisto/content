@@ -1,6 +1,3 @@
-from CommonServerPython import timedelta
-from datetime import datetime
-
 RESPONSE_TICKET = {
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
     'sys_updated_on': '2020-04-02 14:03:31',
