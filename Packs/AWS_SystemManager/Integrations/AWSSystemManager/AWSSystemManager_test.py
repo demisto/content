@@ -1,33 +1,32 @@
-from datetime import datetime
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, NoReturn
 
 import pytest
 from AWSSystemManager import (
-    format_document_version,
     add_tags_to_resource_command,
-    remove_tags_from_resource_command,
     convert_datetime_to_iso,
+    format_document_version,
     get_association_command,
+    get_automation_execution_command,
+    get_automation_execution_status,
+    get_command_status,
+    get_document_command,
     get_inventory_command,
     list_associations_command,
+    list_automation_executions_command,
+    list_commands_command,
     list_documents_command,
     list_inventory_entry_command,
     list_versions_association_command,
     next_token_command_result,
-    validate_args,
-    get_document_command,
-    get_automation_execution_command,
-    list_automation_executions_command,
-    get_automation_execution_status,
+    remove_tags_from_resource_command,
     run_automation_execution_command,
-    list_commands_command,
-    get_command_status
-
-
+    validate_args,
 )
 from pytest_mock import MockerFixture
+
 from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
 
 
@@ -84,13 +83,13 @@ def util_load_json(path: str) -> dict:
 
 
 @pytest.mark.parametrize(
-    'document_version, expected_response',
+    ("document_version", "expected_response"),
     [
-        ('test_version', 'test_version'),
+        ("test_version", "test_version"),
         (None, "$DEFAULT"),
-        ('latest', "$LATEST")
+        ("latest", "$LATEST"),
     ],
-    ids=['custom version', 'default version when the arg equal None', 'latest version']
+    ids=["custom version", "default version when the arg equal None", "latest version"],
 )
 def test_format_document_version(document_version: str, expected_response: str) -> None:
     """
@@ -130,7 +129,7 @@ def test_validate_args(args: dict[str, str], expected_error_message: str) -> Non
 @pytest.mark.parametrize(
     ("next_token", "prefix"),
     [
-        ("test_token", "test_prefix")
+        ("test_token", "test_prefix"),
     ],
 )
 def test_next_token_command_result(next_token: str, prefix: str) -> None:
@@ -148,7 +147,7 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
     """
     response = next_token_command_result(next_token, prefix)
     to_context = response.to_context()
-    assert to_context.get('EntryContext') == {f'AWS.SSM.{prefix}(val.NextToken)': {'NextToken': next_token}}
+    assert to_context.get("EntryContext") == {f"AWS.SSM.{prefix}(val.NextToken)": {"NextToken": next_token}}
 
 
 @pytest.mark.parametrize(
@@ -361,7 +360,7 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     response: list[CommandResults] = get_inventory_command({}, MockClient())
 
     to_context = response[0].to_context()
-    assert to_context.get('EntryContext') == {'AWS.SSM.InventoryNextToken(val.NextToken)': {'NextToken': "test_token"}}
+    assert to_context.get("EntryContext") == {"AWS.SSM.InventoryNextToken(val.NextToken)": {"NextToken": "test_token"}}
 
 
 def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
@@ -418,12 +417,14 @@ def test_list_inventory_entry_command_raise_error() -> None:
     When:
         - The list_inventory_entry_command function is called with the provided arguments:
           - 'instance_id': "bla-0a00aaa000000000a"
-          - 'type_name': "test_type_name"
+          - 'type_name': "test_type_name".
 
     Then:
         - The function call is expected to raise a DemistoException with a message that matches
           "Invalid instance id: bla-0a00aaa000000000a".
+
     Note:
+    ----
         the instance_id is not valid because is not match the regex of the instance id.(should begin with i-.)
         Check `validate_args` function for more details.
     """
@@ -435,7 +436,7 @@ def test_list_inventory_entry_command_raise_error() -> None:
                 "instance_id": "bla-0a00aaa000000000a",
                 "type_name": "test_type_name",
             },
-            MockClient()
+            MockClient(),
         )
 
 
@@ -577,11 +578,11 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
 
     assert response[0].outputs == mock_response["DocumentIdentifiers"]
     assert response[0].readable_output == (
-        '### AWS SSM Documents\n'
-        '|Name|Owner|Document version|Document type|Platform types|Created date|\n'
-        '|---|---|---|---|---|---|\n'
-        '| AWS-AS | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:20.597000+02:00 |\n'
-        '| AWS-A | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:23.277000+02:00 |\n'
+        "### AWS SSM Documents\n"
+        "|Name|Owner|Document version|Document type|Platform types|Created date|\n"
+        "|---|---|---|---|---|---|\n"
+        "| AWS-AS | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:20.597000+02:00 |\n"
+        "| AWS-A | Amazon | 1 | Automation | Windows,<br>Linux,<br>MacOS | 2018-02-15T05:03:23.277000+02:00 |\n"
     )
 
 
@@ -592,10 +593,10 @@ def test_get_documents_command(mocker: MockerFixture) -> None:
 
     assert response.outputs == mock_response["Document"]
     assert response.readable_output == (
-        '### AWS SSM Document\n'
-        '|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|\n'
-        '|---|---|---|---|---|---|---|---|\n'
-        '| 2022-10-11T01:06:56.878000+03:00 | Change the test |  |  | AWS | Amazon | Windows,<br>Linux,<br>MacOS | Active |\n'
+        "### AWS SSM Document\n"
+        "|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|\n"
+        "|---|---|---|---|---|---|---|---|\n"
+        "| 2022-10-11T01:06:56.878000+03:00 | Change the test |  |  | AWS | Amazon | Windows,<br>Linux,<br>MacOS | Active |\n"
     )
 
 
@@ -612,13 +613,13 @@ def test_get_automation_execution_command(mocker: MockerFixture) -> None:
     mocker.patch.object(MockClient, "get_automation_execution", return_value=mock_response)
     response = get_automation_execution_command({"execution_id": "test_id"}, MockClient())
 
-    assert response.outputs == mock_response['AutomationExecution']
+    assert response.outputs == mock_response["AutomationExecution"]
     assert response.readable_output == (
-        '### AWS SSM Automation Execution\n'
-        '|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|'
-        'Executed By|\n|---|---|---|---|---|---|---|---|\n'
-        '| AutomationExecutionId | AWS | 1 | 2023-08-29T19:00:50.101000+03:00 | 2023-08-29T19:00:51.618000+03:00 | Success |'
-        ' Auto | arn |\n'
+        "### AWS SSM Automation Execution\n"
+        "|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|"
+        "Executed By|\n|---|---|---|---|---|---|---|---|\n"
+        "| AutomationExecutionId | AWS | 1 | 2023-08-29T19:00:50.101000+03:00 | 2023-08-29T19:00:51.618000+03:00 | Success |"
+        " Auto | arn |\n"
     )
 
 
@@ -635,13 +636,13 @@ def test_list_automation_executions_command(mocker: MockerFixture) -> None:
     mocker.patch.object(MockClient, "describe_automation_executions", return_value=mock_response)
     response = list_automation_executions_command({}, MockClient())
 
-    assert response[0].outputs == mock_response['AutomationExecutionMetadataList']
+    assert response[0].outputs == mock_response["AutomationExecutionMetadataList"]
     assert response[0].readable_output == (
-        '### AWS SSM Automation Executions\n'
-        '|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|'
-        'Executed By|\n|---|---|---|---|---|---|---|---|\n'
-        '|  |  | 1 | 2023-08-30T19:00:50.433000+03:00 | 2023-08-30T19:00:51.963000+03:00 | Success | Auto | arn |\n'
-        '|  | AWS | 1 | 2023-08-30T19:00:50.141000+03:00 | 2023-08-30T19:00:51.807000+03:00 | Success | Auto | arn |\n'
+        "### AWS SSM Automation Executions\n"
+        "|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|"
+        "Executed By|\n|---|---|---|---|---|---|---|---|\n"
+        "|  |  | 1 | 2023-08-30T19:00:50.433000+03:00 | 2023-08-30T19:00:51.963000+03:00 | Success | Auto | arn |\n"
+        "|  | AWS | 1 | 2023-08-30T19:00:50.141000+03:00 | 2023-08-30T19:00:51.807000+03:00 | Success | Auto | arn |\n"
     )
 
 
@@ -658,25 +659,25 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
     mocker.patch.object(MockClient, "list_commands", return_value=mock_response)
     response = list_commands_command({}, MockClient())
 
-    assert response[0].outputs == mock_response['Commands']
+    assert response[0].outputs == mock_response["Commands"]
     assert response[0].readable_output == (
-        '### AWS SSM Commands\n'
-        '|Command Id|Status|Requested date|Document name|Comment|Target Count|Error Count|Delivery Timed Out Count|'
-        'Completed Count|\n|---|---|---|---|---|---|---|---|---|\n'
-        '| CommandId | Success | 2023-08-31T13:34:00.596000+03:00 | AWS | test | 1 | 0 | 0 | 1 |\n'
-        '| CommandId | Success | 2023-08-31T12:06:45.879000+03:00 | AWS- |  | 0 | 0 | 0 | 0 |\n'
+        "### AWS SSM Commands\n"
+        "|Command Id|Status|Requested date|Document name|Comment|Target Count|Error Count|Delivery Timed Out Count|"
+        "Completed Count|\n|---|---|---|---|---|---|---|---|---|\n"
+        "| CommandId | Success | 2023-08-31T13:34:00.596000+03:00 | AWS | test | 1 | 0 | 0 | 1 |\n"
+        "| CommandId | Success | 2023-08-31T12:06:45.879000+03:00 | AWS- |  | 0 | 0 | 0 | 0 |\n"
     )
 
 
 @pytest.mark.parametrize(
-    'status, expected_message',
+    ("status", "expected_message"),
     [
         ("Success", "The automation completed successfully."),
         ("Failed", "The automation didn't complete successfully. This is a terminal state."),
         ("Cancelled", "The automation was stopped by a requester before it completed."),
-        ("TimedOut", "A step or approval wasn't completed before the specified timeout period.")
+        ("TimedOut", "A step or approval wasn't completed before the specified timeout period."),
     ],
-    ids=['status is Success', 'status is Failed', 'status is Cancelled', 'status is TimedOut']
+    ids=["status is Success", "status is Failed", "status is Cancelled", "status is TimedOut"],
 )
 def test_run_automation_execution_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
     args = {
@@ -684,7 +685,7 @@ def test_run_automation_execution_command(mocker: MockerFixture, status: str, ex
         "parameters": json.dumps({"InstanceId": ["i-1234567890abcdef0"]}),
         "polling": True,
     }
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
     mocker.patch.object(MockClient, "get_automation_execution", return_value={
         "AutomationExecution": {"AutomationExecutionStatus": status}})
     mocker.patch.object(MockClient, "start_automation_execution", return_value={
@@ -692,15 +693,15 @@ def test_run_automation_execution_command(mocker: MockerFixture, status: str, ex
 
     result: CommandResults = run_automation_execution_command(args, MockClient())
 
-    assert result.readable_output == 'Execution test_id is in progress'
+    assert result.readable_output == "Execution test_id is in progress"
 
     args_to_next_run = result.scheduled_command._args
     assert args_to_next_run == {
-        'document_name': 'AWS',
-        'parameters': '{"InstanceId": ["i-1234567890abcdef0"]}',
-        'polling': True,
-        'execution_id': 'test_id',
-        'hide_polling_output': True
+        "document_name": "AWS",
+        "parameters": '{"InstanceId": ["i-1234567890abcdef0"]}',
+        "polling": True,
+        "execution_id": "test_id",
+        "hide_polling_output": True,
     }
     result = run_automation_execution_command(args_to_next_run, MockClient())
     assert result.readable_output == expected_message
