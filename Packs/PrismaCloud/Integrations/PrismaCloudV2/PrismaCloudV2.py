@@ -40,6 +40,18 @@ MAX_INCIDENTS_TO_FETCH = 200
 FETCH_DEFAULT_TIME = '3 days'
 FETCH_LOOK_BACK_TIME = 20
 
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
+INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote', 'reason', 'policy.name']
+INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
+INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
+INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = 'Closed by XSOAR'
+
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
@@ -84,8 +96,12 @@ TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdat
 
 
 class Client(BaseClient):
-    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str):
+    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str,
+                 mirror_direction: str | None, close_incident: bool, close_alert: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
+        self.mirror_direction = mirror_direction
+        self.close_incident = close_incident
+        self.close_alert = close_alert
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
@@ -338,7 +354,7 @@ def convert_date_to_unix(date_str: str) -> int:
     """
     if not (date := dateparser.parse(date_str, settings={'TIMEZONE': 'UTC'})):
         raise DemistoException(f'The date "{date_str}" given is not valid.')
-    return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    return int(date.timestamp() * 1000)
 
 
 def handle_time_filter(base_case: Optional[Dict[str, Any]] = None, unit_value: Optional[str] = None,
@@ -480,7 +496,7 @@ def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
     return page_size, page_size * (page_number - 1)
 
 
-''' FETCH HELPER FUNCTIONS '''
+''' FETCH AND MIRRORING HELPER FUNCTIONS '''
 
 
 def translate_severity(alert: Dict[str, Any]) -> float:
@@ -545,11 +561,12 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            )
     response_items = response.get('items', [])
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
-    incidents = filter_alerts(fetched_ids, response_items, limit)
+    incidents = filter_alerts(client, fetched_ids, response_items, limit)
 
     # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
-        # only page_token is being used, also sending other arguments because it is not stated clearly in the API documentation
+        # only page_token is being used, also sending other arguments because it is not stated clearly in the
+        # API documentation
         response = client.alert_search_request(time_range=time_range,
                                                filters=filters,
                                                detailed='true',
@@ -558,14 +575,15 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                page_token=response.get('nextPageToken'),
                                                )
         response_items = response.get('items', [])
-        updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
-        incidents.extend(filter_alerts(fetched_ids, response_items, limit, len(incidents)))
+        updated_last_run_time_epoch = \
+            response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
+        incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
 
     return incidents, fetched_ids, updated_last_run_time_epoch
 
 
-def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int, num_of_prev_incidents: int = 0) \
-        -> List[Dict[str, Any]]:
+def filter_alerts(client: Client, fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int,
+                  num_of_prev_incidents: int = 0) -> List[Dict[str, Any]]:
     incidents = []
 
     for alert in response_items:
@@ -574,6 +592,7 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
             continue
 
         demisto.debug(f'Processing new fetched alert {alert.get("id")}.')
+        add_mirroring_fields(client, alert)
         incidents.append(alert_to_incident_context(alert))
         fetched_ids[str(alert['id'])] = int(alert['alertTime'])
 
@@ -581,6 +600,18 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
             break
 
     return incidents
+
+
+def add_mirroring_fields(client: Client, alert: Dict):
+    """
+    Updates the given Prisma Cloud fetched alert to hold the needed mirroring fields.
+
+    Args:
+        client: Demisto client.
+        alert: The Prisma Cloud fetched alert.
+    """
+    alert['mirror_direction'] = client.mirror_direction
+    alert['mirror_instance'] = demisto.integrationInstance()
 
 
 def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
@@ -593,6 +624,221 @@ def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
     demisto.debug(f'New PrismaCloud incident is: name: {incident_context["name"]}, occurred: '
                   f'{incident_context["occurred"]}, severity: {incident_context["severity"]}.')
     return incident_context
+
+
+def get_remote_alert_data(client: Client, remote_alert_id: str) -> tuple[Dict, Dict]:
+    """
+    Called every time get-remote-data command runs on an alert.
+    Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
+    Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
+    selected to mirror in.
+
+    Args:
+        client: Demisto client.
+        remote_alert_id: The id of the mirrored Prisma Cloud alert.
+
+    Returns: The raw alert's details, and a dictionary contains only the mirrored fields and their values.
+    """
+    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='true')
+
+    updated_object: Dict[str, Any] = {}
+    for field in INCIDENT_INCOMING_MIRROR_ARGS:
+        mirrored_field_value = demisto.get(alert_details, field, '')
+        if '.' in field:  # field is nested (currently it is only the policy.name field)
+            # policy.name field was added to the mirrored fields cause this is the field that is used in the default classifier to
+            # classify incident types. Without it, all mirrored alerts will be changed to the default incident type which is
+            # 'Prisma Cloud'.
+            split_field = field.split('.')
+            updated_object[split_field[0]] = {split_field[1]: mirrored_field_value}
+        else:
+            updated_object[field] = mirrored_field_value
+    return alert_details, updated_object
+
+
+def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored_dismissal_note: str) -> Dict:
+    """
+    Closes an XSOAR incident.
+
+    Args:
+        remote_alert_id: The id of the mirrored Prisma Cloud alert to be closed.
+        mirrored_status: The status of the mirrored Prisma alert.
+        mirrored_dismissal_note: The dismissal note of the mirrored Prisma alert.
+
+    Returns: An entry object with relevant data for closing an XSOAR incident.
+    """
+    demisto.debug(f'Prisma Alert {remote_alert_id} was closed. Closing the mirrored incident in XSOAR')
+    if mirrored_status == 'resolved' and mirrored_dismissal_note == '':
+        mirrored_dismissal_note = 'resolved'
+
+    closing_time = datetime.now()
+    parsed_closing_time = closing_time.strftime(DATE_FORMAT)
+
+    entry = {
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'rawCloseReason': mirrored_status,
+            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud.',
+            'closeNotes': mirrored_dismissal_note,
+            'closed': parsed_closing_time
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }
+    return entry
+
+
+def reopen_incident_in_xsoar(remote_alert_id: str):
+    """
+    Reopens an XSOAR incident.
+
+    Args:
+        remote_alert_id:  The id of the mirrored Prisma Cloud alert to be reopened.
+
+    Returns: An entry object with relevant data for reopening an XSOAR incident.
+    """
+    demisto.debug(f'Prisma Alert {remote_alert_id} was reopened. Reopening the incident on XSOAR.')
+    entry = {
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }
+    return entry
+
+
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: str) -> Dict | None:
+    """
+    Extracts the status of the mirrored Prisma alert, and close/reopen the matched XSOAR incident in accordance.
+    Args:
+        updated_object: A dictionary contains the mirrored relevant fields.
+        remote_alert_id: The id of the mirrored Prisma Cloud alert.
+
+    Returns: An entry object with relevant data for closing or reopening an XSOAR incident.
+    """
+    mirrored_status = updated_object.get('status')
+    if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):  # closing incident
+        mirrored_dismissal_note = updated_object.get('dismissalNote', '')
+        entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+        return entry
+    elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:  # re-opening incident
+        entry = reopen_incident_in_xsoar(remote_alert_id)
+        return entry
+    return None
+
+
+def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]):
+    """
+    Close (Dismiss) an alert in Prisma Cloud.
+
+    Args:
+        client: Demisto client.
+        ids: The IDs of the alerts to be dismissed.
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
+
+    Returns: None.
+
+    """
+    close_notes = delta.get('closeNotes')
+    close_reason = delta.get('closeReason')
+    dismissal_note = f'{INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE} - Closing Reason: {close_reason}, ' \
+                     f'Closing Notes: {close_notes}.'
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
+
+    client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
+
+
+def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]):
+    """
+    Re-open an alert in Prisma Cloud.
+
+    Args:
+        client: Demisto client.
+        ids: The IDs of the alerts to be re-opened.
+
+    Returns: None.
+
+    """
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
+    client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
+
+
+def whether_to_close_in_prisma_cloud(user_selection: bool, delta: Dict[str, Any]) -> bool:
+    """
+    Closing in the remote system should happen only when both:
+        1. The user asked for it.
+        2. One of the closing fields appears in the delta.
+
+    The second condition is mandatory so we will not send a closing request at all of the mirroring requests that happen
+    after closing an incident (in case where the incident is updated so there is a delta, but it is not the status
+    that was changed).
+
+    Args:
+        user_selection: True if the user wants to mirror out closing of an incident ('close_alert' integration parameter),
+                        otherwise - False.
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
+
+    Returns: True - if closing the prisma alert is needed, False - otherwise.
+
+    """
+    closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
+    return user_selection and any(field in delta for field in closing_fields)
+
+
+def whether_to_reopen_in_prisma_cloud(user_selection: bool, delta: Dict[str, Any]) -> bool:
+    """
+    Re-opening in the remote system should happen only when both:
+        1. The user asked for it.
+        2. The delta contains the 'closingUserId' field.
+
+    The second condition is mandatory so we will not send a re-opening request in case where the incident is updated so there is
+    a delta, but it is not the status that was changed.
+
+    Args:
+        user_selection: True if the user wants to mirror out re-opening of an incident ('close_alert' integration parameter),
+                        otherwise - False.
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
+
+    Returns: True - if re-opening the prisma alert is needed, False - otherwise.
+
+    """
+    return user_selection and 'closingUserId' in delta
+
+
+def update_remote_alert(client: Client, delta: Dict[str, Any],
+                        inc_status: IncidentStatus, incident_id: str):
+    """
+    Updates the remote prisma alert according to the changes of the mirrored xsaor incident.
+    The possible updates are closing or re-opening the alert.
+
+    When closing an incident in XSOAR the possible reasons are: False Positive, Duplicate, Other and Resolved.
+    As a result, the remote Prisma alert will be closed with a 'Dismissed' status, and the reason and close notes will be added to
+    the 'Reason' field of the remote alert.
+    * It is not possible to close an incident as 'Resolved' in XSOAR and mark it as 'Resolved' in Prisma,
+    it will be closed with a 'dismissed' status even if the selected reason is 'Resolved'.
+
+    Args:
+        client: Demisto client.
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
+        inc_status: The status of the incident.
+        incident_id: Contains the value of the dbotMirrorId field, which represents the ID of the alert in prisma.
+
+    Returns: None.
+    """
+    # XSOAR incident was closed - closing the mirrored prisma alert
+    if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(client.close_alert, delta):
+        demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+        close_alert_in_prisma_cloud(client, [incident_id], delta)
+        demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
+
+    # XSOAR incident was re-opened - re-opening the mirrored prisma alert
+    elif inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(client.close_alert, delta):
+        demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
+        reopen_alert_in_prisma_cloud(client, [incident_id])
+        demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
+
+    else:
+        demisto.debug(f"Skipping the update of remote incident {incident_id} as it has not closed or re-opened in XSOAR.")
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1119,7 +1365,7 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
                              for alert_id, cli_script in response.get('alertIdVsCliScript', {}).items()]
         total_response_amount = len(readable_response)
         if not all_results and limit and readable_response:
-            demisto.debug(f'Returning results only up to {limit=}, from {len(readable_response)} results returned.')
+            demisto.debug(f'Returning results only up to limit={limit}, from {len(readable_response)} results returned.')
             readable_response = readable_response[:limit]
 
     except DemistoException as de:
@@ -1560,6 +1806,146 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+''' MIRRORING COMMANDS '''
+
+
+def get_modified_remote_data_command(client: Client,
+                                     args: Dict[str, str],
+                                     params: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Gets the modified remote alerts IDs.
+
+    Args:
+        client: Demisto client.
+        args:
+            last_update: The last time we retrieved modified incidents.
+        params: Demisto params.
+
+    Returns: GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    if not parsed_date:
+        raise DemistoException(f'could not parse {last_update}')
+    last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
+
+    detailed = 'false'
+    sort_by = ['alertTime:asc']
+    time_filter = handle_time_filter(time_from=last_update,
+                                     time_to='now')
+    filters = argToList(params.get('filters'))
+
+    # According to the PM of prisma cloud the following filter provide us with all the alerts that their status has been changed.
+    # It is not yet documented in the Prisma Cloud API reference - for more info see this issue:
+    # https://jira-hq.paloaltonetworks.local/browse/CIAC-5504.
+    filters.append('timeRange.type=ALERT_STATUS_UPDATED')
+
+    # Removes any status-related filter to retrieve all the relevant statuses (open, resolved, dismissed and snoozed)
+    for status_filter in ['alert.status=open', 'alert.status=dismissed', 'alert.status=snoozed', 'alert.status=resolved']:
+        if status_filter in set(filters):
+            filters.remove(status_filter)
+
+    response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
+    response_items = response.get('items', [])
+    modified_records_ids = [str(item.get('id')) for item in response_items]
+    demisto.debug(f"Detected {len(modified_records_ids)} modified alerts in Prisma Cloud")
+
+    return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    Returns an updated remote alert.
+
+    Args:
+        client: Demisto client.
+        args:
+            id: alert id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns: GetRemoteDataResponse object, which contains the alert data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    remote_alert_id = remote_args.remote_incident_id
+    entries = []
+
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident id: {remote_alert_id} '
+                      f'and last_update: {remote_args.last_update}')
+        mirrored_data, updated_object = get_remote_alert_data(client, remote_alert_id)
+        if updated_object and client.close_incident:
+            demisto.debug(f'Update incident {remote_alert_id} with fields: {updated_object}')
+            entry = set_xsoar_incident_entries(updated_object, remote_alert_id)
+            if entry:
+                entries.append(entry)
+
+        if not updated_object:
+            demisto.debug(f'No delta was found for incident id: {remote_alert_id}.')
+
+        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_alert_id}\n"
+                      f"Error message: {str(e)}")
+
+        if not mirrored_data:
+            mirrored_data = {'id': remote_alert_id}
+        mirrored_data['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """
+    Mirrors out local changes (closing or reopening of an xsoar incident) to the remote system (Prisma Cloud).
+
+    To determine a closing of an XSOAR incident that should be mirrored to Prisma we check that:
+        1. parsed_args.incident_changed = True (meaning the incident has changed).
+        2. Incident status is Done (=2).
+        3. The delta contains at least one of the following fields: 'closeReason', 'closingUserId', 'closeNotes'.
+
+    To determine a re-opening of an XSOAR incident that should be mirrored to Prisma we check that:
+        1. parsed_args.incident_changed = True (meaning the incident has changed).
+        2. Incident status is Active (=1).
+        3. The delta contains the 'closingUserId'.
+
+    These conditions should be sufficient.
+
+    In any other case, the change in XSOAR won't be mirrored to the remote system.
+
+    Args:
+        client: Demisto client.
+        args: A dictionary containing the data regarding a modified incident, including: data, entries,
+              incident_changed, remote_incident_id, inc_status and delta.
+
+    Returns: The remote incident id that was modified.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+
+    try:
+        if parsed_args.incident_changed:
+            incident_status = parsed_args.inc_status
+            demisto.debug(f'Performing update_remote_system command with incident id {remote_incident_id}, incident status'
+                          f' {incident_status} and delta {delta}.')
+            update_remote_alert(client, delta, incident_status, remote_incident_id)
+
+        else:
+            demisto.debug(f"Skipping the update of remote incident {remote_incident_id} as it has not changed.")
+
+    except Exception as e:
+        demisto.error(f'Error in Prisma Cloud V2 outgoing mirror for incident {remote_incident_id}. '
+                      f'Error message: {str(e)}')
+
+    return remote_incident_id
+
+
+''' TEST MODULE '''
+
+
 def test_module(client: Client, params: Dict[str, Any]) -> str:
     if params.get('isFetch'):
         max_fetch = arg_to_number(params.get('max_fetch'), arg_name='Maximum number of incidents to fetch')
@@ -1603,8 +1989,12 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction', 'None'))
+    close_incident = argToBoolean(params.get('close_incident', False))
+    close_alert = argToBoolean(params.get('close_alert', False))
 
     return_v1_output = params.get('output_old_format', False)
 
@@ -1613,7 +2003,8 @@ def main() -> None:
 
     try:
         urllib3.disable_warnings()
-        client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password)
+        client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
+                                mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 
@@ -1640,6 +2031,8 @@ def main() -> None:
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
+            'get-remote-data': get_remote_data_command,
+            'update-remote-system': update_remote_system_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
@@ -1670,6 +2063,8 @@ def main() -> None:
                 'fetched_ids': fetched_ids,
                 'time': last_run_time
             })
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args, params))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

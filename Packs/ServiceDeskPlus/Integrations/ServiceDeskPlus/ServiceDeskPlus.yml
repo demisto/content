@@ -542,7 +542,7 @@ script:
       required: true
     description: Closes the specified request.
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.68714
   isfetch: true
   runonce: false
   script: '-'

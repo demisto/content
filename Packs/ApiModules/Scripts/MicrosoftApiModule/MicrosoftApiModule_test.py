@@ -179,7 +179,7 @@ def test_page_not_found_error(mocker):
 
 def test_epoch_seconds(mocker):
     mocker.patch.object(MicrosoftClient, '_get_utcnow', return_value=datetime.datetime(2019, 12, 24, 14, 12, 0, 586636))
-    mocker.patch.object(MicrosoftClient, '_get_utcfromtimestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
+    mocker.patch.object(MicrosoftClient, '_get_utc_from_timestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
     integer = MicrosoftClient.epoch_seconds()
     assert integer == 1577196720
 
@@ -522,8 +522,7 @@ def test_create_api_metrics(mocker, response, result):
     mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
-    client = retry_on_rate_limit_client(True)
-    client.create_api_metrics(response)
+    MicrosoftClient.create_api_metrics(response)
 
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get('Contents') == 'Metrics reported successfully.'
@@ -726,3 +725,34 @@ def test_generate_login_url():
                    f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
                    f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
     assert expected_url in result.readable_output, "Login URL is incorrect"
+
+
+@pytest.mark.parametrize('params, expected_resource_manager, expected_active_directory, expected_microsoft_graph_resource_id', [
+    ({'azure_cloud': 'Germany'}, 'https://management.microsoftazure.de',
+     'https://login.microsoftonline.de', 'https://graph.microsoft.de'),
+    ({'azure_cloud': 'Custom', 'server_url': 'mock_url'}, 'mock_url',
+     'https://login.microsoftonline.com', 'https://graph.microsoft.com/'),
+    ({'azure_ad_endpoint': 'mock_endpoint'}, 'https://management.azure.com/', 'mock_endpoint',
+     'https://graph.microsoft.com/'),
+    ({'url': 'mock_url'}, 'https://management.azure.com/', 'https://login.microsoftonline.com', 'mock_url'),
+    ({}, 'https://management.azure.com/', 'https://login.microsoftonline.com', 'https://graph.microsoft.com/')
+])
+def test_get_azure_cloud(params, expected_resource_manager, expected_active_directory, expected_microsoft_graph_resource_id):
+    """
+    Given:
+        - params with different azure_cloud values
+        case 1: azure_cloud = Germany
+        case 2: azure_cloud = Custom and server_url
+        case 3: azure_cloud = None. azure_ad_endpoint in params
+        case 4: azure_cloud = None. url in params
+        case 5 : params is empty
+    When:
+        - Calling function get_azure_cloud
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    from MicrosoftApiModule import get_azure_cloud
+    assert get_azure_cloud(params=params, integration_name='test').endpoints.resource_manager == expected_resource_manager
+    assert get_azure_cloud(params=params, integration_name='test').endpoints.active_directory == expected_active_directory
+    assert get_azure_cloud(
+        params=params, integration_name='test').endpoints.microsoft_graph_resource_id == expected_microsoft_graph_resource_id

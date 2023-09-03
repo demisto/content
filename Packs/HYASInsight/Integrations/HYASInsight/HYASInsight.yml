@@ -11,12 +11,10 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
-description: Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API calls in the War Room.
+description: Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Sample Malware Records, C2 Attribution, Passive Hash, SSL Certificate, Open Source Indicators, Device Geo, Sinkhole, Malware Sample Information – either as playbook tasks or through API calls in the War Room.
 display: HYAS Insight
 name: HYAS Insight
 script:
@@ -29,11 +27,21 @@ script:
       - ipv4
       - domain
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: Indicator value to query
       name: indicator_value
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: The maximum number of results to return.
       name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
     description: Returns PassiveDNS records for the provided indicator value.
     name: hyas-get-passive-dns-records-by-indicator
     outputs:
@@ -91,6 +99,8 @@ script:
     - contextPath: HYAS.PassiveDNS.sources
       description: A list of pDNS providers which the data came from
       type: Unknown
+    deprecated: false
+    execution: false
   - arguments:
     - auto: PREDEFINED
       description: Indicator Type.
@@ -100,11 +110,21 @@ script:
       - domain
       - email
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: Indicator value to query
       name: indicator_value
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: The maximum number of results to return.
       name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
     description: Returns DynamicDNS records for the provided indicator value.
     name: hyas-get-dynamic-dns-records-by-indicator
     outputs:
@@ -129,6 +149,8 @@ script:
     - contextPath: HYAS.DynamicDNS.email
       description: The email address connected to the domain
       type: String
+    deprecated: false
+    execution: false
   - arguments:
     - auto: PREDEFINED
       description: Indicator Type.
@@ -138,11 +160,21 @@ script:
       - email
       - phone
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: Indicator value to query
       name: indicator_value
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: The maximum number of results to return.
       name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
     description: Returns WHOIS records for the provided indicator value.
     name: hyas-get-whois-records-by-indicator
     outputs:
@@ -197,10 +229,15 @@ script:
     - contextPath: HYAS.WHOIS.registrar
       description: The domain registrar
       type: String
+    deprecated: false
+    execution: false
   - arguments:
     - description: Domain value to query
       name: domain
       required: true
+      default: false
+      isArray: false
+      secret: false
     description: Returns WHOIS Current records for the provided indicator value.
     name: hyas-get-whois-current-records-by-domain
     outputs:
@@ -252,6 +289,8 @@ script:
     - contextPath: HYAS.WHOISCurrent.state
       description: The state
       type: Unknown
+    deprecated: false
+    execution: false
   - arguments:
     - auto: PREDEFINED
       description: Indicator Type.
@@ -261,11 +300,21 @@ script:
       - ipv4
       - md5
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: Indicator value to query.
       name: indicator_value
       required: true
+      default: false
+      isArray: false
+      secret: false
     - description: The maximum number of results to return.
       name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
     description: Returns Malware Sample records for the provided indicator value.
     name: hyas-get-malware-samples-records-by-indicator
     outputs:
@@ -290,47 +339,33 @@ script:
     - contextPath: HYAS.MalwareSamples.sha256
       description: The sha256 of the sample
       type: String
+    deprecated: false
+    execution: false
   - arguments:
-    - description: The md5 value to query
-      name: md5
-      required: true
-    description: Returns associated IP's for the provided hash value.
-    name: hyas-get-associated-ips-by-hash
-    outputs:
-    - contextPath: HYAS.HASH-IP.md5
-      description: The provided MD5 value
-      type: String
-    - contextPath: HYAS.HASH-IP.ips
-      description: Associated IPS  for the provided MD5 value
-      type: Unknown
-  - arguments:
-    - description: The md5 value to query
-      name: md5
-      required: true
-    description: Returns associated Domain's for the provided hash value.
-    name: hyas-get-associated-domains-by-hash
-    outputs:
-    - contextPath: HYAS.HASH-DOMAIN.domains
-      description: Associated Domains for the provided MD5 value
-      type: Unknown
-    - contextPath: HYAS.HASH-DOMAIN.md5
-      description: The provided MD5 value
-      type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: Indicator Type.
+    - description: Indicator Type.
       name: indicator_type
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - ip
       - domain
       - sha256
       - email
-      required: true
-    - description: Indicator Value.
+    - default: false
+      description: Indicator Value.
+      isArray: false
       name: indicator_value
       required: true
-    - description: The maximum number of results to return.
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
       name: limit
+      required: false
+      secret: false
     description: Return C2 Attribution records for the provided indicator value.
     name: hyas-get-c2attribution-records-by-indicator
     outputs:
@@ -367,8 +402,393 @@ script:
     - contextPath: HYAS.C2_Attribution.sha256
       description: The sha256 malware hash
       type: String
-  dockerimage: demisto/python3:3.10.12.66339
+    deprecated: false
+    execution: false
+  - arguments:
+    - description: Indicator Type.
+      name: indicator_type
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - domain
+    - default: false
+      description: Indicator Value.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    description: Return passive hash records for the provided indicator value.
+    name: hyas-get-passive-hash-records-by-indicator
+    outputs:
+    - contextPath: HYAS.Passive_Hash.domain
+      description: The domain of the passive hash information requested
+      type: String
+    - contextPath: HYAS.Passive_Hash.md5_count
+      description: The passive dns count
+      type: String
+    deprecated: false
+    execution: false
+  - arguments:
+    - auto: PREDEFINED
+      description: Indicator Type.
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - sha1
+      required: true
+      default: false
+      isArray: false
+      secret: false
+    - description: Indicator Value.
+      name: indicator_value
+      required: true
+      default: false
+      isArray: false
+      secret: false
+    - description: The maximum number of results to return.
+      name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    description: Return SSL certificate records for the provided indicator value.
+    name: hyas-get-ssl-certificate-records-by-indicator
+    outputs:
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ip
+      description: The ip address associated with certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.cert_key
+      description: The certificate key (sha1)
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.expire_date
+      description: The expiry date of the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issue_date
+      description: The issue date of the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_commonName
+      description: The common name that the certificate was issued from
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_countryName
+      description: The country ISO the certificate was issued from
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_localityName
+      description: The city where the issuer company is legally located
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationName
+      description: The organization name that issued the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationalUnitName
+      description: The organization unit name that issued the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_stateOrProvinceName
+      description: The issuer state or province
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.md5
+      description: The certificate MD5
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.serial_number
+      description: The certificate serial number
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha1
+      description: The certificate sha1
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha_256
+      description: The certificate sha256
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sig_algo
+      description: The certificate signature algorithm
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.signature
+      description: The certificate signature. Signature split into multiple lines
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.ssl_version
+      description: The SSL version
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_commonName
+      description: The subject name that the certificate was issued to
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_countryName
+      description: The country the certificate was issued to
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_localityName
+      description: The city where the subject company is legally located
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationName
+      description: The organization name that recieved the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationalUnitName
+      description: The organization unit name that recieved the certificate
+      type: String
+    - contextPath: HYAS.SSL_Certificate.ssl_certs.ssl_cert.timestamp
+      description: The certificate date and time
+      type: String
+    deprecated: false
+    execution: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ipv4
+      - ipv6
+      - domain
+      - sha1
+      - sha256
+      - md5
+      required: true
+      secret: false
+    - default: false
+      description: Indicator Value.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return Open Source intel records for the provided indicator value.
+    execution: false
+    name: hyas-get-opensource-indicator-records-by-indicator
+    outputs:
+    - contextPath: HYAS.OS_Indicators.context
+      description: Additional information about source.
+      type: String
+    - contextPath: HYAS.OS_Indicators.data
+      description: A json blob with raw data.
+      type: Unknown
+    - contextPath: HYAS.OS_Indicators.datetime
+      description: A date-time string in RFC 3339 format.
+      type: String
+    - contextPath: HYAS.OS_Indicators.domain
+      description: A domain.
+      type: String
+    - contextPath: HYAS.OS_Indicators.domain_2tld
+      description: A domain_2tld.
+      type: String
+    - contextPath: HYAS.OS_Indicators.first_seen
+      description: A date-time string in RFC 3339 format.
+      type: String
+    - contextPath: HYAS.OS_Indicators.ipv4
+      description: The ipv4 address. Can be a cidr.
+      type: String
+    - contextPath: HYAS.OS_Indicators.ipv6
+      description: The ipv6 address. Can be a cidr.
+      type: String
+    - contextPath: HYAS.OS_Indicators.last_seen
+      description: A date-time string in RFC 3339 format.
+      type: String
+    - contextPath: HYAS.OS_Indicators.md5
+      description: The md5 value.
+      type: String
+    - contextPath: HYAS.OS_Indicators.sha1
+      description: The sha1 value.
+      type: String
+    - contextPath: HYAS.OS_Indicators.sha256
+      description: The sha256 value.
+      type: String
+    - contextPath: HYAS.OS_Indicators.source_name
+      description: The source name
+      type: String
+    - contextPath: HYAS.OS_Indicators.source_url
+      description: The source url
+      type: String
+    - contextPath: HYAS.OS_Indicators.uri
+      description: The source uri value.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ipv4
+      - ipv6
+      required: true
+      secret: false
+    - default: false
+      description: Indicator Value.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of mobile geolocation information
+    execution: false
+    name: hyas-get-device-geo-records-by-ip-address
+    outputs:
+    - contextPath: HYAS.Device_Geo.datetime
+      description: A date-time string in RFC 3339 format.
+      type: String
+    - contextPath: HYAS.Device_Geo.device_user_agent
+      description: The user agent string for the device.
+      type: String
+    - contextPath: HYAS.Device_Geo.geo_country_alpha_2
+      description: The ISO 3316 alpha-2 code for the country associated with the lat/long reported.
+      type: String
+    - contextPath: HYAS.Device_Geo.geo_horizontal_accuracy
+      description: The GPS horizontal accuracy.
+      type: String
+    - contextPath: HYAS.Device_Geo.ipv4
+      description: The ipv4 address assigned to the device. A device may have either or ipv4 and ipv6.
+      type: String
+    - contextPath: HYAS.Device_Geo.ipv6
+      description: The ipv6 address assigned to the device. A device may have either or ipv4 and ipv6.
+      type: String
+    - contextPath: HYAS.Device_Geo.latitude
+      description: Units are degrees on the WGS 84 spheroid.
+      type: Number
+    - contextPath: HYAS.Device_Geo.longitude
+      description: Units are degrees on the WGS 84 spheroid.
+      type: Number
+    - contextPath: HYAS.Device_Geo.wifi_bssid
+      description: The BSSID (MAC address) of the wifi router that the device communicated through.
+      type: String
+  - arguments:
+    - default: false
+      description: The ipv4 address value to query
+      isArray: false
+      name: ipv4
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sinkhole information.
+    execution: false
+    name: hyas-get-sinkhole-records-by-ipv4-address
+    outputs:
+    - contextPath: HYAS.Sinkhole.count
+      description: The sinkhole count
+      type: String
+    - contextPath: HYAS.Sinkhole.country_name
+      description: The country of the ip
+      type: String
+    - contextPath: HYAS.Sinkhole.data_port
+      description: The data port
+      type: String
+    - contextPath: HYAS.Sinkhole.datetime
+      description: The first seen date of the sinkhole
+      type: String
+    - contextPath: HYAS.Sinkhole.ipv4
+      description: The ipv4 of the sinkhole
+      type: String
+    - contextPath: HYAS.Sinkhole.last_seen
+      description: The last seen date of the sinkhole
+      type: String
+    - contextPath: HYAS.Sinkhole.organization_name
+      description: The isp organization for the ip
+      type: String
+    - contextPath: HYAS.Sinkhole.sink_source
+      description: The ipv4 of the sink source
+      type: String
+  - arguments:
+    - default: false
+      description: The hash value to query
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns malware information.
+    execution: false
+    name: hyas-get-malware-sample-information-by-hash
+    outputs:
+    - contextPath: HYAS.Malware_Information.avscan_score
+      description: AV scan score
+      type: String
+    - contextPath: HYAS.Malware_Information.md5
+      description: MD5 Hash
+      type: String
+    - contextPath: HYAS.Malware_Information.scan_results.av_name
+      description: The AV Name
+      type: String
+    - contextPath: HYAS.Malware_Information.scan_results.def_time
+      description: The AV datetime
+      type: String
+    - contextPath: HYAS.Malware_Information.scan_results.threat_found
+      description: The source
+      type: String
+    - contextPath: HYAS.Malware_Information.scan_time
+      description: The datetime of the scan
+      type: String
+    - contextPath: HYAS.Malware_Information.sha1
+      description: The sha1 hash
+      type: String
+    - contextPath: HYAS.Malware_Information.sha256
+      description: The sha256 hash
+      type: String
+    - contextPath: HYAS.Malware_Information.sha512
+      description: The sha512 hash
+      type: String
+  - arguments:
+    - default: false
+      description: The md5 value to query
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns associated IP's for the provided hash value.
+    execution: false
+    name: hyas-get-associated-ips-by-hash
+    outputs:
+    - contextPath: HYAS.HASH-IP.md5
+      description: The provided MD5 value
+      type: String
+    - contextPath: HYAS.HASH-IP.ips
+      description: Associated IPS  for the provided MD5 value
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The md5 value to query
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns associated Domain's for the provided hash value.
+    execution: false
+    name: hyas-get-associated-domains-by-hash
+    outputs:
+    - contextPath: HYAS.HASH-DOMAIN.domains
+      description: Associated Domains for the provided MD5 value
+      type: Unknown
+    - contextPath: HYAS.HASH-DOMAIN.md5
+      description: The provided MD5 value
+      type: String
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

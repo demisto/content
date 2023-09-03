@@ -451,9 +451,7 @@ def translate_severity(sev):
 
     if sev == 'Critical':
         return 4
-    elif sev == 'High':
-        return 3
-    elif sev == 'Important':
+    elif sev in ['High', 'Important']:
         return 3
     elif sev == 'Medium':
         return 2
@@ -514,6 +512,7 @@ def test_module(client):
     return 'ok'
 
 
+@logger
 def is_command_is_fetch():
     """
     Rules wether the executed command is fetch_incidents or classifier
@@ -541,10 +540,11 @@ def fetch_incidents(client):
     Returns:
         list of incidents
     """
-    incidents = []
     if is_command_is_fetch():
+        demisto.debug("is_command_is_fetch = true, calling list_incidents")
         alerts = client.list_incidents()
 
+        incidents = []
         if alerts:
             for a in alerts:
                 alert_type = a.get('kind')
@@ -578,7 +578,7 @@ def fetch_incidents(client):
                     # Set the severity to the highest vulnerability, take the first from the list
                     severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
-                elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
+                elif alert_type in (ALERT_TYPE_COMPLIANCE, ALERT_TYPE_AUDIT):
                     # E.g. "Prisma Cloud Compute Alert - Incident"
                     name += camel_case_transformer(a.get('type'))
                     # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
@@ -595,15 +595,24 @@ def fetch_incidents(client):
                     'severity': severity,
                     'rawJSON': json.dumps(a)
                 })
+
+        demisto.debug("Setting last run to 'id': 'a'")
         demisto.setLastRun({"id": "a"})
+
         ctx = demisto.getIntegrationContext()
+        demisto.debug(f"Integration Context before update = {ctx}")
+
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
         demisto.setIntegrationContext(ctx)
+        demisto.debug(f"Integration Context after update = {ctx}")
+
         return incidents
 
     else:
-        return demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        ctx = demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        demisto.debug(f"Integration Context (is_command_is_fetch = false) = {ctx}")
+        return ctx
 
 
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> tuple[int, int]:
