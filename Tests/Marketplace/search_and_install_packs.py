@@ -792,9 +792,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                 pool.submit(search_pack_and_its_dependencies, pack_id=pack_id, **kwargs)
         batch_packs_install_request_body = [installation_request_body]
 
-    for packs_to_install_body in batch_packs_install_request_body:
-        install_packs(client, host, packs_to_install_body)
-
     packs_to_install_together: list = []
     for packs_to_install_body in batch_packs_install_request_body:
         packs_to_install_together.extend(packs_to_install_body)
