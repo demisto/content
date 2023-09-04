@@ -559,6 +559,7 @@ def parse_filter_field(string_filters) -> dict:
             Will run with an empty filter.')
     return filters
 
+
 def severity_mapping(severity: str) -> int:
     """
     Maps AWS finding severity to demisto severity
