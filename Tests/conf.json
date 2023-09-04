@@ -1187,7 +1187,7 @@
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
-            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
             "has_api": false
         },
