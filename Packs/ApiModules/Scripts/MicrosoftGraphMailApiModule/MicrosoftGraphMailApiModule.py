@@ -857,11 +857,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
             body_as_text = text_email_data.get('body')
             if body_as_html := email_as_html.get('body'):
-                email_as_html['body'] = (body_as_html, body_as_text)
+                email_as_html['body'] = [body_as_html, body_as_text]
 
             unique_body_as_text = text_email_data.get('uniqueBody')
             if unique_body_as_html := email_as_html.get('uniqueBody'):
-                email_as_html['uniqueBody'] = (unique_body_as_html, unique_body_as_text)
+                email_as_html['uniqueBody'] = [unique_body_as_html, unique_body_as_text]
 
             emails_as_html_and_text.append(email_as_html)
 
