@@ -637,7 +637,7 @@ def test_empty_query(mocker):
     GIVEN:
         - a mocked HTTP request to Mimecast API with query data,
     WHEN:
-        - 'query' function is called with the no arguments,
+        - 'query' function is called with no queryXml argument,
     THEN:
         - Make sure no exception is raised.
 
