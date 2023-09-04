@@ -1,6 +1,6 @@
 {
     "name": "Netcraft (Deprecated)",
-    "description": "Deprecated. No available replacement.",
+    "description": "Deprecated. Use Netcraft_V2 (Display name: Netcraft) instead.",
     "support": "xsoar",
     "hidden": true,
     "currentVersion": "1.0.15",
