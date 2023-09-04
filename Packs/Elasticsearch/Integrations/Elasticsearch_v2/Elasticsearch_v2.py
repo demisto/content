@@ -376,7 +376,7 @@ def test_time_field_query(es):
 
     if total_results == 0:
         # failed in getting the TIME_FIELD
-        raise f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}]."
+        raise Exception(f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}].")
 
     else:
         return response
