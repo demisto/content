@@ -1,10 +1,9 @@
 
 import json
-import io
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -90,7 +89,7 @@ def test_fetch_by_ioc(requests_mock):
 
     cmd_results = get_command_results(results, table, 'IOC')
 
-    for key in cmd_results.__dict__.keys():
+    for key in cmd_results.__dict__:
         assert cmd_results.__dict__.get(key) == events.__dict__.get(key)
     assert events.raw_response == mock_response['results']
     assert isinstance(events, CommandResults)
@@ -141,7 +140,7 @@ def test_fetch_events(requests_mock):
 
     cmd_results = get_command_results(results, table, 'RelatedEvents')
 
-    for key in cmd_results.__dict__.keys():
+    for key in cmd_results.__dict__:
         assert cmd_results.__dict__.get(key) == events.__dict__.get(key)
     assert events.raw_response == mock_response['results']
     assert isinstance(events, CommandResults)
@@ -185,7 +184,7 @@ def test_fetch_host_id(requests_mock):
 
     cmd_results = get_command_results(results, table, 'HostInsights')
 
-    for key in cmd_results.__dict__.keys():
+    for key in cmd_results.__dict__:
         assert cmd_results.__dict__.get(key) == events.__dict__.get(key)
     assert cmd_results.readable_output == table
     assert cmd_results.outputs == results

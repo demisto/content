@@ -10,7 +10,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from datetime import datetime
-from typing import Iterable
+from collections.abc import Iterable
 from typing import Any
 
 # Disable insecure warnings
@@ -107,8 +107,7 @@ class Client(BaseClient):
             params=params,
             url_suffix='/rest/appliances/threat_history_incident/')
 
-        for item in response.get('results', []):
-            yield item
+        yield from response.get('results', [])
 
 
 ''' HELPER FUNCTIONS '''
@@ -228,10 +227,7 @@ def linearize_host_id(host: dict) -> list:
         item_data.pop('service')
     for key in ARRAY_ITEMS:
         if key in host_data:
-            if key in FIELDS_SUBSTITUTION_DICT:
-                item_data['type'] = FIELDS_SUBSTITUTION_DICT[key]
-            else:
-                item_data['type'] = key
+            item_data['type'] = FIELDS_SUBSTITUTION_DICT.get(key, key)
             for item in host_data[key]:
                 if key in FIELDS_SUBSTITUTION_DICT:
                     item_data[FIELDS_SUBSTITUTION_DICT[key]] = item
