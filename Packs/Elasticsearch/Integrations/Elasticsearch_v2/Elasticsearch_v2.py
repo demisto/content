@@ -27,7 +27,8 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
-DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
+PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -64,45 +65,45 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def prepare_datetime_format(datetime_format: str):
-    """Converting the format from ES to Python so that the Arrow format function will format it correctly.
-
-    Args:
-        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
-        https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
-
-    Returns:
-        A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
-    """
-    return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
-
-
-def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
-    """Returns the datetime format of a field in an index.
-    In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
-    for example {
-        'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
-        'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
-    } => 'yyyy-MM-dd HH:mm:ss'
-
-    Args:
-        es: An ES object.
-        index: The index from which to return the mapper.
-        field: The field from which to return the format.
-
-    Returns:
-        String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
-    """
-    mapping = es.indices.get_mapping(index=index)
-
-    for mapper in mapping.values():
-        if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
-            return datetime_format
-
-    return DEFAULT_DATETIME_FORMAT
+# def prepare_datetime_format(datetime_format: str):
+#     """Converting the format from ES to Python so that the Arrow format function will format it correctly.
+#
+#     Args:
+#         datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
+#         https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
+#
+#     Returns:
+#         A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
+#     """
+#     return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
 
 
-def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
+# def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
+#     """Returns the datetime format of a field in an index.
+#     In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
+#     for example {
+#         'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
+#         'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
+#     } => 'yyyy-MM-dd HH:mm:ss'
+#
+#     Args:
+#         es: An ES object.
+#         index: The index from which to return the mapper.
+#         field: The field from which to return the format.
+#
+#     Returns:
+#         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
+#     """
+#     mapping = es.indices.get_mapping(index=index)
+#
+#     for mapper in mapping.values():
+#         if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
+#             return datetime_format
+#
+#     return DEFAULT_DATETIME_FORMAT
+
+
+def convert_date_to_timestamp(date):
     """converts datetime to the relevant timestamp format.
 
     Args:
@@ -123,7 +124,7 @@ def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORM
         return int(date.timestamp() * 1000)
 
     # In case of 'Simple-Date'.
-    return arrow.get(date).format(prepare_datetime_format(datetime_format))
+    return datetime.strftime(date, PYTHON_DEFAULT_DATETIME_FORMAT)
 
 
 def timestamp_to_date(timestamp_string):
@@ -305,7 +306,6 @@ def search_command(proxies):
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
                                          time_field=timestamp_field,
-                                         datetime_format=get_datetime_field_format(es, index, timestamp_field),
                                          )
 
     if query_dsl:
@@ -681,7 +681,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = DEFAULT_DATETIME_FORMAT) -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
@@ -704,7 +704,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date, datetime_format)
+        start_time = convert_date_to_timestamp(start_date)
     else:
         start_time = last_fetch
 
@@ -713,8 +713,11 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date, datetime_format)
+        end_time = convert_date_to_timestamp(end_date)
         range_dict['lt'] = end_time
+
+    if TIME_METHOD == 'Simple-Date':
+        range_dict['format'] = ES_DEFAULT_DATETIME_FORMAT
 
     return {'range': {time_field: range_dict}}
 
@@ -740,7 +743,7 @@ def fetch_incidents(proxies):
     last_fetch = last_run.get('time') or FETCH_TIME
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch, datetime_format=get_datetime_field_format(es))
+    time_range_dict = get_time_range(time_range_start=last_fetch)
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
