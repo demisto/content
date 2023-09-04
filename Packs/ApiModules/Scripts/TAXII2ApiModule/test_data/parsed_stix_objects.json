@@ -267,13 +267,21 @@
                 "intrusion-set"
             ],
             "Report Object References": [
-                {"objectstixid": [
-                    "intrusion-set--75ac5bcc-3915-4815-b9a1-bf87277fc343",
-                    "report--2791a5e0-d65a-43c0-936e-c15a6b7ba9d1",
-                    "report--40aaefc2-3fe9-423b-a6eb-55abf11639b7",
-                    "report--2f5734bf-4127-4997-9288-e9c5530aa737",
-                    "report--ffe94621-b007-4115-ad49-fb7c8a26b66a"
-                ]}
+                {
+                    "objectstixid": "intrusion-set--75ac5bcc-3915-4815-b9a1-bf87277fc343"
+                },
+                {
+                    "objectstixid": "report--2791a5e0-d65a-43c0-936e-c15a6b7ba9d1"
+                },
+                {
+                    "objectstixid": "report--40aaefc2-3fe9-423b-a6eb-55abf11639b7"
+                },
+                {
+                    "objectstixid": "report--2f5734bf-4127-4997-9288-e9c5530aa737"
+                },
+                {
+                    "objectstixid": "report--ffe94621-b007-4115-ad49-fb7c8a26b66a"
+                }
             ]
         },
         "relationships": []
@@ -307,11 +315,13 @@
             "tags": [],
             "Report Object References": [
                 {
-                    "objectstixid": [
-                        "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
-                        "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5",
-                        "report--e536bd26-47e6-4ccb-a680-639fa11467f3"
-                    ]
+                    "objectstixid": "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b"
+                },
+                {
+                    "objectstixid": "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5"
+                },
+                {
+                    "objectstixid": "report--e536bd26-47e6-4ccb-a680-639fa11467f3"
                 }
             ]
         },
