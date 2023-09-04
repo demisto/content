@@ -26,7 +26,7 @@ configuration:
 - name: credentials_api_key
   display: API Key ID (for XSOAR 8.x only)
   displaypassword: API Key
-  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting. When the target server is XSOAR 8.X, the API Key ID is required as well (not relevant for XSOAR 6.X).
+  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting. When the target server is XSOAR 8.x, an API key ID is required as well (not relevant for XSOAR 6.x).
   type: 9
   required: false
 - display: Fetch incidents
