@@ -207,9 +207,7 @@ MOCKED_INCIDENT_ALERTS = {
                 "startTimeUtc": "2021-08-11T01:48:03.4349774Z",
                 "timeGenerated": "2021-08-12T01:53:07.3071703Z",
                 "additionalData": {
-                    "OriginalProductName": "Azure Advanced Threat Protection",
                     "MitreTechniques": "[\"T1110\",\"T1110.001\",\"T1110.003\"]",
-                    "OriginalProductComponentName": null
                 },
                 "friendlyName": "Test alert 1"
             }
@@ -246,9 +244,7 @@ MOCKED_INCIDENT_ALERTS = {
                 "startTimeUtc": "2021-08-11T01:48:03.4349774Z",
                 "timeGenerated": "2021-08-12T01:53:07.3071703Z",
                 "additionalData": {
-                    "OriginalProductName": "Azure Advanced Threat Protection",
                     "MitreTechniques": "[\"T1110\",\"T1110.001\",\"T1110.003\"]",
-                    "OriginalProductComponentName": null
                 },
                 "friendlyName": "Test alert 2"
             }
