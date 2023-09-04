@@ -1339,7 +1339,7 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
                 incidents.append(xsoar_incident)
             else:
                 demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                              "due to the {incident_severity=} is lower then {min_severity=}")
+                              f"due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
             if incident_created_time is None:

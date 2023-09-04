@@ -745,11 +745,11 @@ def test_create_entity_b_stix_objects_with_file_object(mocker, taxii2_server_v21
 def test_create_entity_b_stix_objects_with_revoked_relationship(mocker, taxii2_server_v21):
     """
         Given
-            Reports object with relationships
+            Reports object with revoked relationships
         When
             Calling handle_report_relationships.
         Then
-            Validate that each report contained its relationship in the object_refs.
+            Validate that the report not contained the revoked relationship in the object_refs.
 
     """
     from TAXII2Server import create_entity_b_stix_objects
