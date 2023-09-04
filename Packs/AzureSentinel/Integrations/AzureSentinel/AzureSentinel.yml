@@ -796,6 +796,9 @@ script:
     - contextPath: AzureSentinel.IncidentAlert.Tactic
       description: The tactics of the alert.
       type: Unknown
+    - contextPath: AzureSentinel.IncidentAlert.Tecniques
+      description: The tecniques of the alert.
+      type: Unknown
     - contextPath: AzureSentinel.IncidentAlert.DisplayName
       description: The display name of the alert.
       type: String
