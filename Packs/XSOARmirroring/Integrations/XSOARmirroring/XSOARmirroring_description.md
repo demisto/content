@@ -12,5 +12,5 @@ To gain the API key from Cortex XSOAR which you are connecting to:
   - XSOAR 8.X: Navigate to Setting > API Keys > +New Key.
 
 ### API Key ID
-This is required only when connecting to XSOAR 8.X tenants.
-After creating your API Key obtain its ID located in the ID column of the API Keys table.
+This parameter is required only when connecting to XSOAR 8.x tenants.
+After creating your API Key, obtain its ID from the **ID** column of the API Keys table.
