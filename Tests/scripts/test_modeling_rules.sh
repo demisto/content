@@ -41,8 +41,8 @@ if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
 fi
 
 MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
-if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk modeling-rules test --help 2>&1 | grep 'junit-path'; then
-  MODELING_RULES_RESULTS_ARG=(" --junit-path" "${MODELING_RULES_RESULTS_FILE_NAME}")
+if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk modeling-rules test --help 2>&1 | grep -q 'junit-path'; then
+  MODELING_RULES_RESULTS_ARG=(--junit-path="${MODELING_RULES_RESULTS_FILE_NAME}")
   echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS_FILE_NAME}"
 else
   echo "Testing Modeling Rules - demisto-sdk version is too old, creating empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
