@@ -117,7 +117,7 @@ class Client:
                      username=self.username,
                      password=self.password,
                      host=self.host,
-                     port=self.port,
+                     port=arg_to_number(self.port),
                      database=self.dbname,
                      query=self.connect_parameters)
         if self.ssl_connect:
@@ -141,7 +141,7 @@ class Client:
                                               poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[Dict, List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[List[dict], List]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
@@ -152,13 +152,14 @@ class Client:
             sql_query = text(sql_query)
 
         result = self.connection.execute(sql_query, bind_vars)
-        # For avoiding responses with lots of records
-        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+        results_as_dict = result.mappings().all()
+        converted_results = [dict(row) for row in results_as_dict]
         headers = []
-        if results:
+        if converted_results:
             # if the table isn't empty
-            headers = list(results[0].keys() if results[0].keys() else '')
-        return results, headers
+            headers = list(converted_results[0].keys() if converted_results[0].keys() else '')
+
+        return converted_results, headers
 
 
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
@@ -188,7 +189,7 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) ->
 
     if bind_variables_values and not bind_variables_names:
         return [var for var in argToList(bind_variables_values)]
-    elif len(bind_variables_names_list) is len(bind_variables_values_list):
+    elif len(bind_variables_names_list) == len(bind_variables_values_list):
         return dict(zip(bind_variables_names_list, bind_variables_values_list))
     else:
         raise Exception("The bind variables lists are not is the same length")
@@ -279,24 +280,21 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         skip = int(args.get('skip', 0))
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
-        bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
+        bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
-        # converting an sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
-        # converting b'' and datetime objects to readable ones
-        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
-        table = table[skip:skip + limit]
-        human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
-                                         removeNull=True)
+        result = result[skip:skip + limit]
+
+        human_readable = tableToMarkdown(name="Query result:", t=result, headers=headers, removeNull=True)
+
         context = {
-            "Result": table,
+            "Result": result,
             "Headers": headers,
             "Query": sql_query,
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: Dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
-        return human_readable, entry_context, table
+        return human_readable, entry_context, result
 
     except Exception as err:
         # In case there is no query executed and only an action e.g - insert, delete, update
