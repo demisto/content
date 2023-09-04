@@ -67,7 +67,6 @@ configuration:
   advanced: true
   required: false
 - display: Time field type
-  additionalinfo: When selecting Simple-Date with multiple indexes where each index has a different custom date format, it will take the format from the first index.
   defaultvalue: 'Simple-Date'
   name: time_method
   type: 15
