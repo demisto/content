@@ -980,8 +980,8 @@ def test_execute_raw_query(mocker):
 def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     """
     Given
-      - A python datetime object
-      - An ES datetime format
+      - A python datetime object.
+      - The time_method parameter ('Timestamp-Seconds', 'Timestamp-Milliseconds', 'Simple-Date').
 
     When
         - Executing convert_date_to_timestamp function.
@@ -998,6 +998,17 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     ('Simple-Date', {'range': {'@timestamp': {'format': 'yyyy-MM-dd HH:mm:ss.SSSSSS', 'gt': '2023-07-01 23:24:25.123456'}}}),
 ])
 def test_get_time_range(time_method, expected_query):
+    """
+    Given
+      - A last_fetch DateTime string.
+      - The time_method parameter ('Timestamp-Seconds', 'Timestamp-Milliseconds', 'Simple-Date').
+
+    When
+        - Executing get_time_range function.
+
+    Then
+        - Make sure that the returned query dict is as expected with/without the format field.
+    """
     Elasticsearch_v2.TIME_METHOD = time_method
     from Elasticsearch_v2 import get_time_range
 
