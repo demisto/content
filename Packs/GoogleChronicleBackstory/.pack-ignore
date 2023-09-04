@@ -70,6 +70,12 @@ ignore=BA101
 [file:ListDeviceEventsScript.yml]
 ignore=BA124
 
+[file:3_0_1.md]
+ignore=RN115
+
+[file:3_0_0.md]
+ignore=RN115
+
 [known_words]
 udm
 s

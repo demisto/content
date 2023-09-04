@@ -10,11 +10,11 @@ def test_canonicalize():
 
 
 @pytest.mark.parametrize('tags_raw,matches',
-                         [([{"Key": "ENV", "Value": "non-prd"}],
-                          [{"Key": "ENV", "Value": "non-prd"}]),
-                          ([{"Key": "ENV", "Value": "prd"}], []),
-                             ([{"Key": "ENV", "Value": "dv"}, {"Key": "stage", "Value": "sbx"}],
-                              [{"Key": "ENV", "Value": "dv"}, {"Key": "stage", "Value": "sbx"}])
+                         [([{"key": "ENV", "value": "non-prd"}],
+                          [{"key": "ENV", "value": "non-prd"}]),
+                          ([{"key": "ENV", "value": "prd"}], []),
+                             ([{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}],
+                              [{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}])
                           ])
 def test_get_indicators_from_key_value_pairs(tags_raw, matches):
     from InferWhetherServiceIsDev import get_indicators_from_key_value_pairs
@@ -62,12 +62,12 @@ def test_get_indicators_from_external_classification(classifications, matches):
 @pytest.mark.parametrize('external, internal, reason',
                          [(["DevelopmentEnvironment"], [],
                           "match on external classification of DevelopmentEnvironment"),
-                          (["DevelopmentEnvironment"], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}],
+                          (["DevelopmentEnvironment"], [{"key": "env", "value": "non-prod", "source": "AWS"}],
                           "match on external classification of DevelopmentEnvironment and tag {env: non-prod} from AWS"),
-                          ([], [{"Key": "env", "Value": "non-prod", "Source": "AWS"}],
+                          ([], [{"key": "env", "value": "non-prod", "source": "AWS"}],
                           "match on tag {env: non-prod} from AWS"),
-                          ([], [{"Key": "env", "Value": "non-prod", "Source": "AWS"},
-                                {"Key": "stage", "Value": "sbx", "Source": "GCP"}],
+                          ([], [{"key": "env", "value": "non-prod", "source": "AWS"},
+                                {"key": "stage", "value": "sbx", "source": "GCP"}],
                           "match on tag {env: non-prod} from AWS and tag {stage: sbx} from GCP")])
 def test_determine_reason(external, internal, reason):
     from InferWhetherServiceIsDev import determine_reason
@@ -76,8 +76,8 @@ def test_determine_reason(external, internal, reason):
 
 
 def test_full_truth_table():
-    sample_dev_tag = [{"Key": "stage", "Value": "non-prod", "Source": "AWS"}]
-    sample_prod_tag = [{"Key": "tier", "Value": "prod", "Source": "Tenable.io"}]
+    sample_dev_tag = [{"key": "stage", "value": "non-prod", "source": "AWS"}]
+    sample_prod_tag = [{"key": "tier", "value": "prod", "source": "Tenable.io"}]
     # Blank list means no external classification or tag matches.
     sample_no_match = []
     sample_dev_classification = ["DevelopmentEnvironment"]
@@ -112,7 +112,7 @@ def test_full_truth_table():
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',
-                         [([], [{"Key": "ENV", "Value": "non-prod", "Source": "AWS"}],
+                         [([], [{"key": "ENV", "value": "non-prod", "source": "AWS"}],
                            [{'result': True, 'result_readable': 'The service is development', 'confidence': 'Likely Development',
                              'reason': 'match on tag {ENV: non-prod} from AWS'}])])
 def test_main(mocker, in_classifications, in_tags, expected_out_boolean):
