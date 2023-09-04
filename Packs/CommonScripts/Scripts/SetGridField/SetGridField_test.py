@@ -1,12 +1,10 @@
-import io
 import json
 import pytest
-from typing import List
 
 
 def util_load_json(path):
     path = f'./test_data/{path}'
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -84,7 +82,6 @@ def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, ex
     - Validate that the grid was created with the correct column names
     """
     import SetGridField
-    import json
     import pandas as pd
 
     mocker.patch.object(SetGridField, 'demisto')
@@ -105,7 +102,7 @@ very_long_column_name = 11 * "column_name_OF_LEN_264__"
                               'context_entry_list_missing_key.json',
                               'expected_list_grid_none_value.json')
                          ])
-def test_build_grid_command(mocker, keys: List[str], columns: List[str], unpack_nested_elements: bool,
+def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_nested_elements: bool,
                             dt_response_path: str, expected_results_path: str):
     """Unit test
     Given
@@ -135,7 +132,7 @@ def test_build_grid_command(mocker, keys: List[str], columns: List[str], unpack_
                              (["firstname", "lastname", "email"], ["fname", "lname", "email"], False,
                               'context_entry_list_of_dicts_non_sorted.json', 'expected_entry_list_of_dicts_sorted.json')
                          ])
-def test_build_grid_command_with_sort_by(mocker, keys: List[str], columns: List[str],
+def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[str],
                                          unpack_nested_elements: bool, dt_response_path: str,
                                          expected_results_path: str):
     """Unit test
@@ -168,7 +165,7 @@ def test_build_grid_command_with_sort_by(mocker, keys: List[str], columns: List[
                               'context_entry_list_of_dicts_non_sorted_multi.json',
                               'expected_entry_list_of_dicts_sorted_multi.json')
                          ])
-def test_build_grid_command_with_multi_sort_by(mocker, keys: List[str], columns: List[str],
+def test_build_grid_command_with_multi_sort_by(mocker, keys: list[str], columns: list[str],
                                                unpack_nested_elements: bool, dt_response_path: str,
                                                expected_results_path: str):
     """Unit test
