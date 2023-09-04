@@ -243,6 +243,10 @@ def test__fetch_last_emails_with_full_body(
     ]
 )
 def test__parse_email_as_incident(client, email, mocker, parsed_incident):
+    """
+        Checks that the raw content returned from the MS Graph API correctly parsed
+        into the format expected by the fetch_incidents function. 
+    """
     mocker.patch.object(client, 'http_request', return_value={})
     incident = client._parse_email_as_incident(email)
 
