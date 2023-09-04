@@ -75,6 +75,11 @@ configuration:
   name: close_incident
   required: false
   type: 8
+- additionalinfo: This parameter represents the number of days the integration will mirror RSA incident. The default value is 3 days, the maximum 24 days.
+  display: Mirroring Days Limit
+  name: max_mirror_time
+  required: false
+  type: 0
 description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
 display: RSANetWitness v11.5
 name: RSANetWitnessv115

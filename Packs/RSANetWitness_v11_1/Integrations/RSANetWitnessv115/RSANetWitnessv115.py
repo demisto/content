@@ -18,7 +18,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
 DEFAULT_MAX_INCIDENT_ALERTS = 50
 
 # =========== Mirroring Mechanism Globals ===========
-MAX_TIME_MIRROR_INC = 24
 MAX_NB_MIRROR_PULL = 1500
 MIRROR_DIRECTION = {
     'None': None,
@@ -1324,6 +1323,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     remote_args = GetModifiedRemoteDataArgs(args)
     max_fetch_incidents = int(params.get("max_fetch"))
     max_fetch_alerts = int(params.get("max_alerts"))
+    max_time_mirror_inc = int(params.get("max_mirror_time", 4))
     fetch_alert = argToBoolean(params.get("import_alerts", False))
     last_update = remote_args.last_update
     last_update_format = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # converts to a UTC timestamp
@@ -1332,7 +1332,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
 
     # setting request
     datetime_now = datetime.now()
-    since = datetime_now - timedelta(days=MAX_TIME_MIRROR_INC)
+    since = datetime_now - timedelta(days=max_time_mirror_inc)
     since_format = since.strftime(DATE_FORMAT)
     until_format = datetime_now.strftime(DATE_FORMAT)
     response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request, until=until_format, since=since_format)
@@ -1340,7 +1340,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     demisto.debug(f"Total Retrieved Incidents : {len(items)} in {response.get('totalPages')} pages")
 
     # clean the integration context data of "old" incident
-    clean_old_inc_context()
+    clean_old_inc_context(max_time_mirror_inc)
     intCont = get_integration_context().get("IncidentsDataCount", {})
     for inc in items:
         if intCont.get(inc.get('id')):
@@ -1375,7 +1375,7 @@ def struct_inc_context(alert_count, event_count, created):
     return {"alertCount": alert_count, "eventCount": event_count, "Created": created}
 
 
-def clean_old_inc_context():
+def clean_old_inc_context(max_time_mirror_inc: int):
     """
     Clean the integration context of old incident
     """
@@ -1390,7 +1390,7 @@ def clean_old_inc_context():
         inc_created =  arg_to_datetime(inc.get("Created", ""))
         inc_created = inc_created.replace(tzinfo=timezone.utc)
         diff = current_time - inc_created
-        if diff.days <= MAX_TIME_MIRROR_INC: # maximum RSA aggregation time 24 days
+        if diff.days <= max_time_mirror_inc: # maximum RSA aggregation time 24 days
             res[inc_id] = inc
         else:
             demisto.debug(f"Incident {inc_id} has expired => {diff.days}")
