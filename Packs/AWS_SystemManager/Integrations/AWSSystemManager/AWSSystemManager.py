@@ -325,7 +325,7 @@ def add_tags_to_resource_command(args: dict[str, Any], ssm_client: "SSMClient") 
 
     ssm_client.add_tags_to_resource(**kwargs)
     return CommandResults(
-        readable_output=f"Tags added to resource {args['resource_id']} successfully.",
+        readable_output=f"Tags successfully added to resource {args['resource_id']}.",
     )
 
 
