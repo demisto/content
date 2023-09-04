@@ -15,7 +15,7 @@ touch CloudEnvVariables
 # Filter out not enabled and unnecessary machines
 echo "flow_type $1"
 CLOUD_SERVERS_FILE=$(cat $CLOUD_SERVERS_FILE)
-
+LOCK_MACHINE_NAME="qa2-test-9994183807894"
 TEST_MACHINES_LIST=$(jq --arg flow_type "$1" 'to_entries | map(select(.value.enabled == true and .value.flow_type == $flow_type)) | from_entries' "$CLOUD_SERVERS_FILE")
 
 # Get the number of existing machines
