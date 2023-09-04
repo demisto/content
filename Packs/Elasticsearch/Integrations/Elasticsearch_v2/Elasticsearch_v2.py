@@ -11,7 +11,6 @@ import requests
 import warnings
 from dateutil.parser import parse
 import urllib3
-import arrow
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -65,50 +64,11 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-# def prepare_datetime_format(datetime_format: str):
-#     """Converting the format from ES to Python so that the Arrow format function will format it correctly.
-#
-#     Args:
-#         datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
-#         https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
-#
-#     Returns:
-#         A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
-#     """
-#     return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
-
-
-# def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
-#     """Returns the datetime format of a field in an index.
-#     In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
-#     for example {
-#         'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
-#         'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
-#     } => 'yyyy-MM-dd HH:mm:ss'
-#
-#     Args:
-#         es: An ES object.
-#         index: The index from which to return the mapper.
-#         field: The field from which to return the format.
-#
-#     Returns:
-#         String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
-#     """
-#     mapping = es.indices.get_mapping(index=index)
-#
-#     for mapper in mapping.values():
-#         if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
-#             return datetime_format
-#
-#     return DEFAULT_DATETIME_FORMAT
-
-
 def convert_date_to_timestamp(date):
     """converts datetime to the relevant timestamp format.
 
     Args:
         date(datetime): A datetime object setting up the last fetch time
-        datetime_format(str): The datetime format
 
     Returns:
         (num).The formatted timestamp
@@ -694,7 +654,6 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
         time_range_start (str): start of time range
         time_range_end (str): end of time range
         time_field (str): The field on which the filter the results
-        datetime_format: (str) The datetime format
 
 
     Returns:
