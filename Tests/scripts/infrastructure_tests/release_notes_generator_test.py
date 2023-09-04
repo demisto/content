@@ -1,7 +1,7 @@
 import os
 import re
 import pytest
-from Utils.release_notes_generator import (get_release_notes_dict,
+from Utils.release_notes_handler import (get_release_notes_dict,
                                            generate_release_notes_summary,
                                            get_pack_entities,
                                            get_pack_version_from_path,
