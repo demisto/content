@@ -865,16 +865,19 @@ class TestIncidentLabelMaker(unittest.TestCase):
         assert labels == expected_labels
 
 
-@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
-                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+@pytest.mark.parametrize('time_method, last_fetch, time_range_start, time_range_end, result',
+                         [('Timestamp-Milliseconds', '', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
-                          (946728000000, '', '2.1.2000 12:00:00Z',
+                          ('Timestamp-Milliseconds', 946728000000, '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
-                          ('', '', '2.1.2000 12:00:00Z',
+                          ('Timestamp-Milliseconds', '', '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'lt': 949406400000}}}),
+                          ('Simple-Date', '2.1.2000 12:00:00.000000', '', '',
+                           {'range': {'time_field': {'gt': '2.1.2000 12:00:00.000000',
+                                                     'format': Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}}),
                           ])
-def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
-    Elasticsearch_v2.TIME_METHOD = 'Timestamp-Milliseconds'
+def test_get_time_range(time_method, last_fetch, time_range_start, time_range_end, result):
+    Elasticsearch_v2.TIME_METHOD = time_method
     from Elasticsearch_v2 import get_time_range
     assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
 
@@ -989,25 +992,3 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     """
     Elasticsearch_v2.TIME_METHOD = time_method
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
-
-
-@pytest.mark.parametrize('time_method, expected_query', [
-    ('Timestamp-Seconds', {'range': {'@timestamp': {'gt': '2023-07-01 23:24:25.123456'}}}),
-    ('Simple-Date', {'range': {'@timestamp': {'format': 'yyyy-MM-dd HH:mm:ss.SSSSSS', 'gt': '2023-07-01 23:24:25.123456'}}}),
-])
-def test_get_time_range(time_method, expected_query):
-    """
-    Given
-      - A last_fetch DateTime string.
-      - The time_method parameter ('Timestamp-Seconds', 'Timestamp-Milliseconds', 'Simple-Date').
-
-    When
-        - Executing get_time_range function.
-
-    Then
-        - Make sure that the returned query dict is as expected with/without the format field.
-    """
-    Elasticsearch_v2.TIME_METHOD = time_method
-    from Elasticsearch_v2 import get_time_range
-
-    assert get_time_range(last_fetch='2023-07-01 23:24:25.123456', time_field='@timestamp') == expected_query
