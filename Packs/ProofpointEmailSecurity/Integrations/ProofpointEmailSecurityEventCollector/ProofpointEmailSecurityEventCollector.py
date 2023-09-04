@@ -21,7 +21,16 @@ class EventType(str, Enum):
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
-    return datetime.utcnow() > fetch_start_time + timedelta(seconds=fetch_interval)
+    """This function checks if the given interval has passed since the given start time
+
+    Args:
+        fetch_start_time (datetime): The start time of the interval
+        fetch_interval (int): The interval in seconds
+
+    Returns:
+        bool: True if the interval has passed, False otherwise
+    """
+    return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.utcnow()
 
 
 @contextmanager
@@ -63,7 +72,9 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=fetch_interval))
+            # wait for events for the remaining time of the interval
+            timeout = fetch_interval - (datetime.utcnow() - fetch_start_time).total_seconds() + 1
+            event = json.loads(connection.recv(timeout=timeout))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             break
