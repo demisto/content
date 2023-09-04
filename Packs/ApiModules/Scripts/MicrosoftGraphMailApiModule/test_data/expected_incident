@@ -97,6 +97,7 @@
     ],
     "occurred": "2019-11-12T15:00:30Z",
     "attachment": [],
+    "ID": "dummy_id_1",
     "rawJSON": {
         "ID": "dummy_id_1",
         "CreatedTime": "2019-11-12T15:00:30Z",

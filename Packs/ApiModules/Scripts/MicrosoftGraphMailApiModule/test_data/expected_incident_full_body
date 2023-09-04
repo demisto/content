@@ -1,6 +1,6 @@
 {
     "name": "First email to fetch",
-    "details": "Body 1",
+    "details": "Only part of the email body, this is the full email body",
     "labels": [
         {
             "type": "Email/ID",
@@ -80,11 +80,11 @@
         },
         {
             "type": "Email/Body",
-            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
+            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Only part of the email body, this is the full email body</div>\r\n</body>\r\n</html>\r\n"
         },
         {
             "type": "Email/Text",
-            "value": "Body 1"
+            "value": "Only part of the email body, this is the full email body"
         },
         {
             "type": "Email/BodyType",
@@ -128,7 +128,7 @@
                 "value": "multipart/alternative"
             }
         ],
-        "Body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n",
+        "Body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Only part of the email body, this is the full email body</div>\r\n</body>\r\n</html>\r\n",
         "BodyType": "html",
         "Sender": "dummysender@works.com",
         "From": "dummysender@works.com",
@@ -138,6 +138,6 @@
         "Cc": [],
         "Bcc": [],
         "Categories": ["Green category"],
-        "Text": "Body 1"
+        "Text": "Only part of the email body, this is the full email body"
     }
 }
