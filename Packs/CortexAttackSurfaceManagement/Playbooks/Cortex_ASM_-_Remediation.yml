@@ -191,7 +191,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Azure-NSG
+                  simple: ASSET-SG
           accessor: id
       AzureVMPrivateIP:
         complex:
@@ -319,7 +319,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: AWS-EC2
+                  simple: ASSET-ID
           accessor: id
       Port:
         complex:
@@ -384,7 +384,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: GCP-VMNAME
+                  simple: ASSET-NAME
           accessor: id
       GcpNetwork:
         complex:
@@ -397,7 +397,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: GCP-VPC
+                  simple: ASSET-VIRTUAL-NET
           accessor: id
       GcpProject:
         complex:
@@ -416,7 +416,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: GCP-ZONE
+                  simple: ASSET-ZONE
           accessor: id
       RemotePort:
         complex:

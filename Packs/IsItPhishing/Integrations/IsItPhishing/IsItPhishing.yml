@@ -15,12 +15,16 @@ configuration:
   name: name
   defaultvalue: ""
   type: 0
-  required: true
+  hidden: true
 - display: Customer's License
   name: license
   defaultvalue: ""
-  type: 0
-  required: true
+  type: 4
+  hidden: true
+- display: Customer's name
+  name: credentials
+  type: 9
+  displaypassword: Customer's License
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -29,10 +33,9 @@ configuration:
   name: insecure
   type: 8
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
+- defaultvalue: B - Usually reliable
   name: integrationReliability
+  display: 'Source Reliability'
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -43,21 +46,22 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
-- defaultvalue: indicatorType
+  additionalinfo: Reliability of the source providing the intelligence data.
+- defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
+  type: 17
+  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
-  required: false
 - defaultvalue: '20160'
-  name: feedExpirationInterval
   display: ''
-  type: 1
+  name: feedExpirationInterval
   required: false
+  type: 1
 script:
   script: ''
   type: javascript
@@ -67,6 +71,7 @@ script:
     - name: url
       required: true
       description: URL to be checked if phishing
+      default: true
     - name: force
       description: Set true to analyze URL, or false to check whether URL may cause collateral damage to the end user
       defaultValue: "false"

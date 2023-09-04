@@ -138,12 +138,13 @@ def StatsInfoMarkdown(stats: dict) -> str:
 
 def main():
     try:
-        pb = demisto.args().get('playbook').strip()
-        spb = demisto.args().get('subplaybook').strip()
-        firstday = demisto.args().get('firstday').strip()
-        lastday = demisto.args().get('lastday').strip()
-        maxinc = arg_to_number(demisto.args().get('maxinc', '100').strip())
-        taskstats, count = GetTaskStats(pb, spb, firstday, lastday, maxinc)
+        pb = demisto.args()['playbook'].strip()
+        spb = demisto.args()['subplaybook'].strip()
+        firstday = demisto.args()['firstday'].strip()
+        lastday = demisto.args()['lastday'].strip()
+        maxinc = (demisto.args().get('maxinc') or "").strip() or 50
+        maxcount = arg_to_number(maxinc)
+        taskstats, count = GetTaskStats(pb, spb, firstday, lastday, maxcount)
         demisto.setContext("PlaybookStatistics", json.dumps(taskstats))
         smarkdown = SummaryMarkdown(pb, spb, firstday, lastday, count)
         imarkdown = StatsInfoMarkdown(taskstats)

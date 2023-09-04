@@ -490,6 +490,8 @@ def search_cases_command(client: Client, args: dict):
 def update_case_command(client: Client, args: dict):
     case_id = args.get('id')
     args['tags'] = argToList(args.get('tags', []))
+    if args.get('severity'):
+        args['severity'] = arg_to_number(args.get('severity'))
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
