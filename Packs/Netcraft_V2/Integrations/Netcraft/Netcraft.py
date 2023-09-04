@@ -1,12 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import json
-import urllib3
-import dateparser
-from typing import Iterable
+from collections.abc import Iterable
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -346,7 +341,65 @@ def netcraft_attack_report_command(client: Client, args: dict) -> CommandResults
 
 
 def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def args_to_params(args: dict) -> dict:
+        report_source = args.pop('report_source')
+        return args | {
+            'authgiven': args.pop('auth_given', '').lower().replace(' ', ':'),
+            'report_source':
+                'phish_feed'
+                if report_source == 'Phishing Feed'
+                else report_source.lower().replace(' ', '_'),
+            'sort': args.pop('sort').lower().replace(' ', '_'),
+            'dir': args.pop('sort_direction'),
+            'max_results':
+                arg_to_number(args.pop('limit'))
+                if not argToBoolean(args.pop('all_results'))
+                else API_MAX_FETCH
+        }
+
+    def response_to_readable(response: list[dict]) -> str:
+        return tableToMarkdown(
+            'Netcraft Takedowns',
+            [
+                # TODO get TPM input on ...
+                {
+                    'ID': d.get('id'),
+                    'Auth': {'0': 'No', '1': 'Yes'}.get(d.get('authgiven')),
+                    'Level': ...,
+                    'Customer': (..., 'TODO', {"customer_label": "", "customer_tag": ""}),
+                    'Brand': d.get('target_brand'),
+                    'Attack Type': d.get('attack_type'),
+                    'Status': d.get('status'),
+                    'Pageset': ...,
+                    'Attack URL': d.get('attack_url'),
+                    'Date Reported': d.get('date_submitted'),
+                    'Last Updated': d.get('last_updated'),
+                    'Date Authorised': d.get('date_authed') or 'N/A',
+                    'Date Escalated': d.get('date_escalated') or 'N/A',
+                    'First Response from Netcraft': (..., d.get('first_contact')),
+                    'First Inactive (Monitoring)': d.get('first_inactive') or 'N/A',
+                    'First Resolved': d.get('first_resolved') or 'N/A',
+                }
+                for d in response
+            ],
+            [
+                'ID', 'Auth', 'Level', 'Customer', 'Brand', 'Attack Type', 'Status', 'Pageset',
+                'Attack URL', 'Date Reported', 'Last Updated', 'Date Authorised', 'Date Escalated',
+                'First Response from Netcraft', 'First Inactive (Monitoring)', 'First Resolved',
+            ],
+            removeNull=True
+        )
+
+    response = client.get_takedowns(
+        args_to_params(args)
+    )
+    return CommandResults(
+        outputs_prefix='Netcraft.Takedown',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=response_to_readable(response)
+    )
 
 
 def netcraft_takedown_update_command(client: Client, args: dict) -> CommandResults:

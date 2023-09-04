@@ -129,7 +129,7 @@ script:
     - defaultValue: phishing_url
       description: |
         The type of attack being reported.
-        Run the command "netcraft-attack-type-list" to get a list of available types, use the "Name" field of the type for this argument.
+        Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.
       name: attack_type
     - auto: PREDEFINED
       description: |
@@ -161,7 +161,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: |
-        Should be set to true if you believe that the domain name has been registered as part of the fraud. 
+        Should be set to true if you believe that the domain name has been registered as part of the fraud.
         This will ensure that the registrar is contacted to seek suspension of the domain name.
       name: suspected_fraud_domain
       predefined:
@@ -171,7 +171,7 @@ script:
     #     "The password to extract any archived evidence provided via the evidence\_\
     #     parameter, if necessary."
     #   name: password
-    # AWAITING TPM RESPONSE 
+    # AWAITING TPM RESPONSE
     - description: |
         The URL where the phishkit archive was found.
         This parameter is required for attacks of type "phishkit_email".
@@ -187,15 +187,15 @@ script:
       name: tags
     - description:
         The name of the region to create a takedown under.
-        If not provided the Region specified in the instance configuration will be used
+        If not provided, the region specified in the instance configuration will be used.
       name: region
     outputs: []
-
   - name: 'netcraft-takedown-list'
     arguments:
+    - name: id
+      description: Filter to the takedown with the specified ID.
     - name: statuses
-      description: |
-        Multiple values may be provided as a comma-separated list.
+      description: Filter to takedowns that are currently in the given status. Multiple values may be provided as a comma-separated list.
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -210,86 +210,403 @@ script:
       - stale
       - invalid
     - name: url
-      description: |
-        ''
+      description: Filter by URL, email, hostname, domain or IP.
     - name: false_positive
-      description: |
-        ''
+      description: whether to filter to takedowns which have been incorrectly marked as malicious.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: ip
-      description: |
-        ''
-    - description: |
-        Filter to takedowns that were submitted before the specified takedown
-        ID.
+      description: Filter to attacks that are hosted on the given IPv4 address, or within the given IPv4 CIDR range. Please note that partial IP addresses will not be matched.
+    - description: Filter to takedowns that were submitted before the specified takedown ID.
       name: id_before
     - description: |
         Filter to takedowns that were submitted after the specified takedown
-        ID.When using this parameter we recommend that you also set the sort parameter
+        ID. When using this argument we recommend that you also set the "sort" argument
         to id to ensure that no results are missed.
       name: id_after
     - description: |
-        "Filter to takedowns that were submitted on or after the date/time\
-        \ provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time\
-        \ information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative\
-        \ date/time formats are also supported, for example\_5 days ago,\_and monday\
-        \ this week"
+        Filter to takedowns that were submitted on or after the date/time
+        provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time
+        information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative
+        date/time formats are also supported, for example\_5 days ago,\_and monday
+        this week"
       name: date_from
     - description: |
-        "Filter to takedowns that were submitted on or before the date/time\
-        \ provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time\
-        \ information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative\
-        \ date/time formats are also supported, for example\_5 days ago,\_and monday\
-        \ this week"
+        Filter to takedowns that were submitted on or before the date/time
+        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC. If no time
+        information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative
+        date/time formats are also supported, for example "5 days ago", and "monday this week"
       name: date_to
-    - description: |
-        Filter to takedowns that were reported by the given user.
+    - description: Filter to takedowns that were reported by the given user.
       name: reporter_email
-    - description: |
-        ''
+    - description: Filter to takedowns that were reported through the given mechanism.
       name: report_source
+      auto: PREDEFINED
+      predefined:
+      - Interface
+      - Phishing Feed
+      - Referer
+      - Forensic
+      - Api
+      - Email Feed
+      - Fraud Detection
     - description: |
-        "Add description that the user can get the values by running the\
-        \ command \u201Cattack-type-list\u201D"
-      isArray: true
+        Filter to takedowns of the given attack type. Multiple values may be provided as a comma-separated list.
+        Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.
       name: attack_types
-    - description: |
-        "yes\_- The takedown has been authorised.yes:customer\_- The takedown\
-        \ has been authorised by you.yes:netcraft\_- The takedown has been authorised\
-        \ by Netcraft.no\_- The takedown has not been authorised."
+      isArray: true
+    - description: Filter based on whether and by who the takedown has been authorised.
       name: auth_given
-    - description: |
-        "yes\_- The takedown has been escalated.yes:customer\_- The takedown\
-        \ has been escalated by you.yes:netcraft\_- The takedown has been escalated\
-        \ by Netcraft.no\_- The takedown has not been escalated."
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - Yes Customer
+      - Yes Netcraft
+      - 'No'
+    - description: Filter based on whether and by who the takedown has been escalated.
       name: escalated
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - Yes Customer
+      - Yes Netcraft
+      - 'No'
     - defaultValue: Status
-      description: |
-        Default value - Status
+      description: The key that the list of takedowns should be sorted by.
       name: sort
+      auto: PREDEFINED
+      predefined:
+      - Auth Given
+      - Customer Label
+      - Date Submitted
+      - Hoster
+      - Id
+      - Ip
+      - Language
+      - Last Updated
+      - Registrar
+      - Status
     - defaultValue: asc
-      description: |
-        Default value - asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: The direction to sort takedowns in with the key specified in the "sort" argument.
       name: sort_direction
-    - description: |
-        Default value 50, max value 100000
+    - defaultValue: '50'
+      description: The maximum number of takedowns to return. The max value is 100,000.
       name: limit
     - auto: PREDEFINED
+      defaultValue: 'false'
       description: |
-        Default value false.Add description that the max records = 100,000
-      name: all_result
+        Whether to retrieve all takedowns that match the filters.
+        If true, the "limit" argument will be ignored. The maximum takedowns returned in one call is 100,000.
+      name: all_results
       predefined:
-      - 'true'
       - 'false'
-    - description: |
-        ''
+      - 'true'
+    - description:
+        The name of the region of which to list takedowns.
+        If not provided, the region specified in the instance configuration will be used.
       name: region
-    outputs: []
     description: |
-      ''
+      Get a list of takedown objects.
+      There is a limit of 1,000,000 objects returned within a 24 hour period (moving time window) per email address.
+    outputs:
+    - contextPath: Netcraft.Takedown.id
+      description: 'Unique identifier for the takedown record.'
+      type: String
+    - contextPath: Netcraft.Takedown.group_id
+      description: 'Identifier for grouping related takedown incidents.'
+      type: String
+    - contextPath: Netcraft.Takedown.attack_url
+      description: 'URL of the target that is under attack.'
+      type: String
+    - contextPath: Netcraft.Takedown.reported_url
+      description: 'URL that was reported as part of the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.ip
+      description: 'IP address associated with the takedown incident.'
+      type: String
+    - contextPath: Netcraft.Takedown.country_code
+      description: Country code of the target's location.
+      type: String
+    - contextPath: Netcraft.Takedown.date_submitted
+      description: 'Date when the takedown report was submitted.'
+      type: Date
+    - contextPath: Netcraft.Takedown.last_updated
+      description: 'Date when the takedown information was last updated.'
+      type: Date
+    - contextPath: Netcraft.Takedown.region
+      description: 'Region or geographic area of the target.'
+      type: String
+    - contextPath: Netcraft.Takedown.target_brand
+      description: 'Brand associated with the target.'
+      type: String
+    - contextPath: Netcraft.Takedown.authgiven
+      description: 'Authorization status for the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.host
+      description: 'Host associated with the target.'
+      type: String
+    - contextPath: Netcraft.Takedown.registrar
+      description: 'Domain registrar of the target domain.'
+      type: String
+    - contextPath: Netcraft.Takedown.customer_label
+      description: 'Label or identifier for the customer.'
+      type: String
+    - contextPath: Netcraft.Takedown.customer_tag
+      description: 'Tag or category of the customer.'
+      type: String
+    - contextPath: Netcraft.Takedown.date_authed
+      description: 'Date when authorization was given.'
+      type: String
+    - contextPath: Netcraft.Takedown.stop_monitoring_date
+      description: 'Date when monitoring of the target was stopped.'
+      type: String
+    - contextPath: Netcraft.Takedown.domain
+      description: 'Domain associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.language
+      description: 'Language used for the takedown communication.'
+      type: String
+    - contextPath: Netcraft.Takedown.date_first_actioned
+      description: 'Date of the first action taken as part of the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.escalated
+      description: 'Indicator of whether the takedown escalated.'
+      type: String
+    - contextPath: Netcraft.Takedown.first_contact
+      description: 'Date of the first contact regarding the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.first_inactive
+      description: 'Date when the target first became inactive.'
+      type: Date
+    - contextPath: Netcraft.Takedown.is_redirect
+      description: 'Indicator of whether the URL is a redirect.'
+      type: String
+    - contextPath: Netcraft.Takedown.attack_type
+      description: 'Type of attack associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.name
+      description: 'Name associated with the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.subject.commonName
+      description: 'Common name in the SSL certificate subject.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.hash
+      description: 'Hash value of the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.issuer.countryName
+      description: 'Country name of the SSL certificate issuer.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.issuer.organizationName
+      description: 'Organization name of the SSL certificate issuer.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.issuer.commonName
+      description: 'Common name of the SSL certificate issuer.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.version
+      description: 'Version of the SSL certificate.'
+      type: Number
+    - contextPath: Netcraft.Takedown.certificate.serialNumber
+      description: 'Serial number of the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.serialNumberHex
+      description: 'Serial number of the SSL certificate in hexadecimal.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.validFrom
+      description: 'Start date of the SSL certificate validity.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.validTo
+      description: 'End date of the SSL certificate validity.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.validFrom_time_t
+      description: 'Start date of the SSL certificate validity in time_t format.'
+      type: Number
+    - contextPath: Netcraft.Takedown.certificate.validTo_time_t
+      description: 'End date of the SSL certificate validity in time_t format.'
+      type: Number
+    - contextPath: Netcraft.Takedown.certificate.signatureTypeSN
+      description: 'Signature type serial number in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.signatureTypeLN
+      description: 'Signature type long name in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.signatureTypeNID
+      description: 'Signature type numeric ID in the SSL certificate.'
+      type: Number
+    - contextPath: Netcraft.Takedown.certificate.purposes.1
+      description: 'Purpose of the SSL certificate (1st purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.2
+      description: 'Purpose of the SSL certificate (2nd purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.3
+      description: 'Purpose of the SSL certificate (3rd purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.4
+      description: 'Purpose of the SSL certificate (4th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.5
+      description: 'Purpose of the SSL certificate (5th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.6
+      description: 'Purpose of the SSL certificate (6th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.7
+      description: 'Purpose of the SSL certificate (7th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.8
+      description: 'Purpose of the SSL certificate (8th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.purposes.9
+      description: 'Purpose of the SSL certificate (9th purpose).'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.keyUsage
+      description: 'Key usage extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.extendedKeyUsage
+      description: 'Extended key usage extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.basicConstraints
+      description: 'Basic constraints extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.subjectKeyIdentifier
+      description: 'Subject key identifier extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.authorityKeyIdentifier
+      description: 'Authority key identifier extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.authorityInfoAccess
+      description: 'Authority information access extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.subjectAltName
+      description: 'Subject alternative name extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.certificatePolicies
+      description: 'Certificate policies extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.extensions.ct_precert_scts
+      description: 'Certificate transparency precertificate SCTs extension in the SSL certificate.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.spki_sha256
+      description: 'SHA-256 fingerprint of the certificate’s Subject Public Key Info.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate.spki_sha1
+      description: 'SHA-1 fingerprint of the certificate’s Subject Public Key Info.'
+      type: String
+    - contextPath: Netcraft.Takedown.deceptive_domain_score
+      description: 'Score indicating the potential for deception of the domain.'
+      type: String
+    - contextPath: Netcraft.Takedown.domain_risk_rating
+      description: 'Risk rating associated with the domain.'
+      type: String
+    - contextPath: Netcraft.Takedown.final_outage
+      description: 'Status indicating the final outage situation.'
+      type: String
+    - contextPath: Netcraft.Takedown.final_resolved
+      description: 'Status indicating the final resolution of the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.first_outage
+      description: 'Status indicating the first outage situation.'
+      type: String
+    - contextPath: Netcraft.Takedown.first_resolved
+      description: 'Status indicating the first resolution of the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.fwd_owner
+      description: 'Owner of the forwarded domain.'
+      type: String
+    - contextPath: Netcraft.Takedown.has_phishing_kit
+      description: 'Indicator of whether a phishing kit is associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.hostname
+      description: 'Hostname associated with the target.'
+      type: String
+    - contextPath: Netcraft.Takedown.hostname_ddss_score
+      description: 'Score indicating the potential for deceptive practices by the hostname.'
+      type: String
+    - contextPath: Netcraft.Takedown.evidence_url
+      description: 'URL providing evidence related to the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.domain_attack
+      description: 'Type of attack associated with the domain.'
+      type: String
+    - contextPath: Netcraft.Takedown.false_positive
+      description: 'Indicator of whether the takedown is a false positive.'
+      type: Boolean
+    - contextPath: Netcraft.Takedown.hostname_attack
+      description: 'Type of attack associated with the hostname.'
+      type: String
+    - contextPath: Netcraft.Takedown.malware_category
+      description: 'Category of malware associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.malware_family
+      description: 'Family of malware associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.phishing_kit_hash
+      description: 'Hash value associated with the phishing kit.'
+      type: Unknown
+    - contextPath: Netcraft.Takedown.report_source
+      description: 'Source of the takedown report.'
+      type: String
+    - contextPath: Netcraft.Takedown.reporter
+      description: 'Reporter or source of the takedown information.'
+      type: String
+    - contextPath: Netcraft.Takedown.rev_owner
+      description: 'Owner of the reverse DNS.'
+      type: String
+    - contextPath: Netcraft.Takedown.reverse_dns
+      description: 'Reverse DNS associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.certificate_revoked
+      description: 'Indicator of whether the SSL certificate is revoked.'
+      type: String
+    - contextPath: Netcraft.Takedown.screenshot_url
+      description: 'URL providing a screenshot related to the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.status_change_uptime
+      description: 'Uptime status change associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.status
+      description: 'Current status of the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.tags
+      description: 'Tags or labels associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.targeted_url
+      description: 'URL targeted by the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.site_risk_rating
+      description: 'Risk rating associated with the site.'
+      type: String
+    - contextPath: Netcraft.Takedown.whois_server
+      description: 'WHOIS server associated with the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.authorisation_source
+      description: 'Source of the authorization for the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.escalation_source
+      description: 'Source of the escalation for the takedown.'
+      type: String
+    - contextPath: Netcraft.Takedown.restart_date
+      description: 'Date when the takedown was restarted.'
+      type: String
+    - contextPath: Netcraft.Takedown.gsb_block_status
+      description: 'Status of Google Safe Browsing block associated with the takedown.'
+      type: Unknown
+    - contextPath: Netcraft.Takedown.gsb_first_blocked
+      description: 'Date when Google Safe Browsing first blocked the URL.'
+      type: Unknown
+    - contextPath: Netcraft.Takedown.managed
+      description: 'Indicator of whether the takedown is managed.'
+      type: Boolean
+    - contextPath: Netcraft.Takedown.date_escalated
+      description: 'Date when the takedown was escalated.'
+      type: String
+
   - name: 'netcraft-takedown-update'
     arguments:
     - name: takedown_id
@@ -538,10 +855,10 @@ script:
     arguments:
     - description: |
         "An optional argument to get a specific submission.In case that the\
-        \ user provided this value we will execute the \u201Cget submission details\u201D\
+        user provided this value we will execute the \u201Cget submission details\u201D\
         \_request, and ignore all the others arguments.Note: the response of the get\
-        \ request contains fields that do not exist in the list command, make sure to\
-        \ add them to the yaml file as well."
+        request contains fields that do not exist in the list command, make sure to\
+        add them to the yaml file as well."
       name: submission_uuid
     - description: |
         Filter submissions by start date
@@ -574,7 +891,7 @@ script:
     arguments:
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     - description: |
@@ -593,12 +910,12 @@ script:
     arguments:
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-file-list\u201D."
+        command \u201Csubmission-file-list\u201D."
       name: file_hash
       required: true
     description: |
@@ -611,7 +928,7 @@ script:
       name: Argument name
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     description: |
@@ -624,7 +941,7 @@ script:
       name: Argument name
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     description: |
@@ -637,7 +954,7 @@ script:
       name: Argument name
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     - description: |
@@ -659,17 +976,17 @@ script:
       name: Argument name
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-list\u201D."
+        command \u201Csubmission-list\u201D."
       name: submission_uuid
       required: true
     - description: |
         "Add description that the user can get this value by running the\
-        \ command \u201Csubmission-URL-list\u201D."
+        command \u201Csubmission-URL-list\u201D."
       name: url_uuid
       required: true
     - description: |
         "An MD5 hash of the screenshot in question.Add description that the\
-        \ user can get this value by running the command \u201Csubmission-URL-list\u201D\
+        user can get this value by running the command \u201Csubmission-URL-list\u201D\
         ."
       name: screenshot_hash
       required: true
