@@ -22,6 +22,7 @@ alter
     // define util constants
     boolean_true = to_boolean("TRUE"),
     boolean_false = to_boolean("FALSE"),
+    
     // add labels for enriching event description according to the boolean flags
     sigon_successful_label = if(Successful = 1, "Signon was successful.", Successful = 0, "Signon was unsuccessful."), 
     account_disabled_or_expired_label = if(Account_Disabled_or_Expired = 1, "Account is disabled or expired."),
@@ -61,7 +62,6 @@ alter
     xdm.event.description = arraystring(event_labels, " "),
     xdm.event.outcome = if(is_sign_on_successful, XDM_CONST.OUTCOME_SUCCESS, is_sign_on_successful = boolean_false, XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = Authentication_Failure_Message, 
-    xdm.event.duration = timestamp_diff(Signoff_DateTime, Signon_DateTime, "MILLISECOND"), 
     xdm.logon.type = Authentication_Channel, 
     xdm.network.session_id = Short_Session_ID,
     xdm.network.tls.protocol_version = TLS_Version, 
