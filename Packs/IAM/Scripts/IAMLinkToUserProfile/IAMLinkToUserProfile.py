@@ -21,9 +21,11 @@ try:
     )
     server_url = demisto.executeCommand("GetServerURL", {})[0]["Contents"]
     if display_name:
-        html = f"""<div style='text-align:center; padding: 8px; font-size:32px; {BLACK_COLOR};'><a href="{server_url}/#/indicator/{indicator_id}">{display_name}</a></div>"""
+        html = """<div style='text-align:center; padding: 8px; font-size:32px;""" + \
+               f"""{BLACK_COLOR};'><a href="{server_url}/#/indicator/{indicator_id}">{display_name}</a></div>"""
     else:
-        html = f"""<div style='text-align:center; padding: 8px; font-size:32px; {BLACK_COLOR};'><a href="{server_url}/#/indicator/{indicator_id}">{employee_email}</a></div>"""
+        html = """<div style='text-align:center; padding: 8px; font-size:32px;""" + \
+               f"""{BLACK_COLOR};'><a href="{server_url}/#/indicator/{indicator_id}">{employee_email}</a></div>"""
 
 except Exception:
     if display_name:

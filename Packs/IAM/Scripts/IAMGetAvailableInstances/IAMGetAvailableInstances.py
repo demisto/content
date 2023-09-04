@@ -18,11 +18,10 @@ for instance_name, details in all_instances.items():
     if (
         details.get("category") == "Identity and Access Management"
         and details.get("state") == "active"
+    ) and (
+        instance_name not in unavailable_instances
+        and details.get("brand") != "Workday IAM"
     ):
-        if (
-            instance_name not in unavailable_instances
-            and details.get("brand") != "Workday IAM"
-        ):
-            available_instances.append(instance_name)
+        available_instances.append(instance_name)
 
 demisto.results({"hidden": False, "options": sorted(available_instances)})

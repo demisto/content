@@ -82,7 +82,8 @@ if is_success is True:
         + ";'>"
         + action
         + "d  Successfully"
-        + "</div> <div style='text-align:center;'> <p style='font-size:12px; padding: 7px;'> in </p><div style='font-size:32px; padding: 16px;'>"
+        + "</div> <div style='text-align:center;'> <p style='font-size:12px;"
+        " padding: 7px;'> in </p><div style='font-size:32px; padding: 16px;'>"
         + brand_name
         + "</div><div style='font-size:17px;'> Instance: "
         + instance_name
@@ -96,7 +97,8 @@ elif is_success is False:
         + ";'>"
         + action
         + " Failed"
-        + "</div> <div style='text-align:center;'> <p style='font-size:12px; padding: 7px;'> in </p><div style='font-size:32px; padding: 16px;'>"
+        + "</div> <div style='text-align:center;'> <p style='font-size:12px;"
+        " padding: 7px;'> in </p><div style='font-size:32px; padding: 16px;'>"
         + brand_name
         + "</div><div style='font-size:17px;'> Instance: "
         + instance_name
@@ -118,13 +120,15 @@ elif is_success == "":  # Did not sync
         html = (
             "<div style='text-align:center; font-size:32px; padding: 6px; "
             + FAILURE_COLOR
-            + ";'> Error Before Sync </div> <div style='font-size:17px; text-align:center; padding: 12px;'> See 'Event Work Plan' section for details </div>"
+            + ";'> Error Before Sync </div> <div style='font-size:17px; text-align:center;"
+            " padding: 12px;'> See 'Event Work Plan' section for details </div>"
         )
     else:
         html = (
             "<div style='text-align:center; font-size:32px; padding: 6px; "
             + SKIPPED_COLOR
-            + ";'> Sync Skipped </div> <div style='font-size:17px; text-align:center; padding: 12px;'> No further action is needed </div>"
+            + ";'> Sync Skipped </div> <div style='font-size:17px; text-align:center;"
+            " padding: 12px;'> No further action is needed </div>"
         )
 
 # Return the data to the layout:

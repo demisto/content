@@ -7,7 +7,7 @@ current_date = date.today().isoformat()
 date_before = (date.today() - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 username = demisto.get(demisto.args()["indicator"], "CustomFields.username")
-searchString = 'actor.alternateId eq "{}"'.format(username)
+searchString = f'actor.alternateId eq "{username}"'
 searchQuery = {}
 searchQuery["filter"] = searchString
 

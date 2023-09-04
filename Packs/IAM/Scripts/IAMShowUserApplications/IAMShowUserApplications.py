@@ -25,5 +25,6 @@ if user_applications:
 
 else:
     return_results(
-        "The user doesn't seem to be synced into any application at the moment. This will update when IAM - App Add, IAM - App Remove or IAM - App Update incidents occur."
+        "The user doesn't seem to be synced into any application at the moment. This will update when IAM - App Add,"
+        " IAM - App Remove or IAM - App Update incidents occur."
     )

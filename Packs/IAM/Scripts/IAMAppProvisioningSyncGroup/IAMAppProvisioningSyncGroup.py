@@ -71,7 +71,7 @@ def main():
         start = datetime.now()
 
         if not (okta_group_id or okta_group_name):
-            return_error(f"'id' and 'displayName' is required in 'group_data'")
+            return_error("'id' and 'displayName' is required in 'group_data'")
 
         demisto.info(f"{log_prefix} Group sync started")
 
@@ -119,7 +119,7 @@ def main():
             f"{log_prefix} Group sync completed. Response Time: {(datetime.now() - start).total_seconds()} seconds"
         )
 
-    except Exception as e:
+    except Exception:
         return_error(traceback.format_exc())
         demisto.error(f"{log_prefix} Exception Caught: {traceback.format_exc()}")
 
@@ -156,7 +156,7 @@ def get_group(app_instance, scim, group_mappings=None):
             app_group_data = read_result_from_command_response(
                 get_group_response, app_instance
             )
-            members = app_group_data.get("members") or list()
+            members = app_group_data.get("members") or []
 
             if not app_group_data:
                 raise Exception(
@@ -181,7 +181,7 @@ def get_group(app_instance, scim, group_mappings=None):
 
         return app_group_data
 
-    except Exception as e:
+    except Exception:
         demisto.error(
             f"{okta_group_id}: Error Occurred while calling iam-get-group command for {app_instance}: {traceback.format_exc()}"
         )
@@ -298,7 +298,7 @@ def update_group(app_instance, app_group_data):
 
 
 def get_group_member_changes_full_comparision(app_group_data):
-    app_group_members = app_group_data.get("members") or list()
+    app_group_members = app_group_data.get("members") or []
     demisto.info(str(app_group_members))
     demisto.info(str(type(app_group_members)))
     app_group_member_ids = []
@@ -312,7 +312,7 @@ def get_group_member_changes_full_comparision(app_group_data):
     okta_group_data = get_group(
         app_instance=okta_instance, scim=scim, group_mappings={}
     )
-    okta_group_members = okta_group_data.get("members") or list()
+    okta_group_members = okta_group_data.get("members") or []
 
     okta_member_ids = []
     for member in okta_group_members:
@@ -340,14 +340,13 @@ def get_group_member_changes_full_comparision(app_group_data):
 def execute_command(command_name, command_arguments, fail_on_error=True):
     command_response = demisto.executeCommand(command_name, command_arguments)
 
-    if fail_on_error is True:
-        if isError(command_response[0]):
-            demisto.error(
-                f"{log_prefix} Command {command_name} failed. Raw Response: {command_response}"
-            )
-            raise Exception(
-                f"{log_prefix} Command {command_name} failed. Raw Response: {command_response}"
-            )
+    if fail_on_error is True and isError(command_response[0]):
+        demisto.error(
+            f"{log_prefix} Command {command_name} failed. Raw Response: {command_response}"
+        )
+        raise Exception(
+            f"{log_prefix} Command {command_name} failed. Raw Response: {command_response}"
+        )
 
     return command_response
 
@@ -373,8 +372,7 @@ def get_group_member_changes_since_last_sync(last_synced, to_date):
         if event_type == OKTA_IMPORTED_GROUP_MEMBER_CHANGE_EVENT_TYPE:
             target_user_type = OKTA_IMPORTED_USER_TYPE
         elif (
-            event_type == OKTA_LOCAL_GROUP_MEMBER_ADD_EVENT_TYPE
-            or event_type == OKTA_LOCAL_GROUP_MEMBER_REMOVE_EVENT_TYPE
+            event_type in (OKTA_LOCAL_GROUP_MEMBER_ADD_EVENT_TYPE, OKTA_LOCAL_GROUP_MEMBER_REMOVE_EVENT_TYPE)
         ):
             target_user_type = OKTA_LOCAL_USER_TYPE
         else:
@@ -463,12 +461,12 @@ def get_user_id_from_app_instance(app_instance, username):
 
     # If user profile not found locally or if it's an inactive user, the user wont be added to group or removed from group.
     if not user_profile:
-        return
+        return None
     elif user_profile.get(ACTIVE_INDICATOR_FIELD) == "false":
         demisto.info(
             f"{log_prefix} User '{username}' is inactive in XSOAR. Group sync skipped"
         )
-        return
+        return None
 
     # Read the appprofiles field
     app_profiles = user_profile.get(APP_PROFILES_USER_PROFILE_FIELD)
@@ -527,30 +525,28 @@ def get_app_provisioning_settings():
 
 def get_app_profile(app_instance, app_profiles):
     app_instance_profile = {}
-    if app_profiles:
-        if type(app_profiles) != dict:
-            try:
-                app_profiles = json.loads(app_profiles)
-                app_instance_profile = app_profiles.get(app_instance, {})
-            except:
-                demisto.error(
-                    "appprofiles field in User Profile Indicator is not valid JSON. Returning empty data"
-                )
+    if app_profiles and type(app_profiles) != dict:
+        try:
+            app_profiles = json.loads(app_profiles)
+            app_instance_profile = app_profiles.get(app_instance, {})
+        except Exception:
+            demisto.error(
+                "appprofiles field in User Profile Indicator is not valid JSON. Returning empty data"
+            )
     return app_instance_profile
 
 
 def get_group_mappings_for_app(app_instance, group_mappings):
     """Gets the group id, last synced time etc. for a given app instance"""
     app_group_mapping = {}
-    if group_mappings:
-        if type(group_mappings) != dict:
-            try:
-                group_mappings = json.loads(group_mappings)
-                app_group_mapping = group_mappings.get(app_instance, {})
-            except:
-                demisto.error(
-                    f"{log_prefix} 'groupmappings' field in Group Profile Indicator is not valid JSON: {group_mappings}"
-                )
+    if group_mappings and type(group_mappings) != dict:
+        try:
+            group_mappings = json.loads(group_mappings)
+            app_group_mapping = group_mappings.get(app_instance, {})
+        except Exception:
+            demisto.error(
+                f"{log_prefix} 'groupmappings' field in Group Profile Indicator is not valid JSON: {group_mappings}"
+            )
     return app_group_mapping
 
 
@@ -619,7 +615,7 @@ def update_demisto_group_profile(indicator_id, group_mappings, group_mappings_up
         if type(group_mappings) != dict:
             try:
                 group_mappings = json.loads(group_mappings)
-            except Exception as e:
+            except Exception:
                 group_mappings = {}
 
         for app_instance, group_data in group_mappings_updated.items():
@@ -627,7 +623,7 @@ def update_demisto_group_profile(indicator_id, group_mappings, group_mappings_up
             # Update if not empty
             group_mappings[app_instance] = group_data
 
-        set_indicator_response = execute_command(
+        execute_command(
             "setIndicator",
             {
                 "id": indicator_id,
@@ -640,7 +636,7 @@ def update_demisto_group_profile(indicator_id, group_mappings, group_mappings_up
             "Group Mappings Data Updated in Group Profile Indicator: ", group_mappings
         )
 
-    except Exception as e:
+    except Exception:
         return_error(
             f"{log_prefix} Error occurred while updating Group Profile Indicator {indicator_id} with the new group mappings: "
             f"Error: {traceback.format_exc()}"
@@ -668,7 +664,7 @@ def create_demisto_group_profile(okta_group_id, group_mappings):
 
         demisto.debug(f"{log_prefix} Group Profile indicator created: {group_mappings}")
 
-    except Exception as e:
+    except Exception:
         return_error(
             f"Error occurred while creating Group Profile Indicator: {okta_group_id}"
             f"Error: {traceback.format_exc()}"
@@ -689,7 +685,7 @@ def read_result_from_command_response(demisto_command_response, app_instance):
                 if content.get("instanceName") == app_instance:
                     command_generic_response = content
                     break
-            except JSONDecodeError as e:
+            except JSONDecodeError:
                 continue
 
     return command_generic_response
@@ -736,7 +732,7 @@ def send_email(send_to=None, subject=None, message=None, htmlbody=None):
                     "htmlBody": htmlbody,
                 },
             )
-    except Exception as e:
+    except Exception:
         # Absorb the exception. We can just log error if send email failed.
         demisto.error("Failed to send email. Exception: " + traceback.format_exc())
 
@@ -763,7 +759,7 @@ def get_iam_html_body(app_instance_responses):
                     )
 
             htmlResults += "</table><br/>"
-    except Exception as e:
+    except Exception:
         demisto.log(f"Error while creating HTML Email body. {traceback.format_exc()}")
 
     return htmlResults
