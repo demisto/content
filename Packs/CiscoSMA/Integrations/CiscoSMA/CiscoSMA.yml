@@ -75,6 +75,7 @@ configuration:
 - name: timeout
   display: Timeout
   type: 0
+  defaultvalue: '60'
   additionalinfo: Timeout for the integration HTTP requests in seconds.
   required: false
 - name: proxy
