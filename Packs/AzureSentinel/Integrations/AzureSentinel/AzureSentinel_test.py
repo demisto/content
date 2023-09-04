@@ -195,7 +195,6 @@ MOCKED_INCIDENT_ALERTS = {
                     "CommandAndControl",
                     "Impact"
                 ],
-                ""
                 "alertDisplayName": "Test alert 1",
                 "description": "Test description",
                 "severity": "Medium",
