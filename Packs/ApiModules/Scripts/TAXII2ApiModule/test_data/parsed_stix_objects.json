@@ -5,7 +5,9 @@
     "rawJSON": {
       "created": "2018-04-23T17:01:01.248Z",
       "id": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
-      "labels": ["malicious-activity"],
+      "labels": [
+        "malicious-activity"
+      ],
       "modified": "2018-04-23T17:01:01.248Z",
       "name": "windows-updates.com",
       "pattern": "[domain-name:value = 'windows-updates.com']",
@@ -14,8 +16,10 @@
       "value": "windows-updates.com"
     },
     "fields": {
-      "tags": ["malicious-activity"],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": null,
+      "tags": [
+        "malicious-activity"
+      ]
     }
   },
   {
@@ -56,28 +60,37 @@
       ],
       "type": "attack-pattern",
       "x_mitre_detection": "On both Android (6.0 and up) and iOS, the user can view which applications have permission to access contact list information through the device settings screen, and the user can choose to revoke the permissions.",
-      "x_mitre_platforms": ["Android", "iOS"],
+      "x_mitre_platforms": [
+        "Android",
+        "iOS"
+      ],
       "x_mitre_version": "1.0"
     },
     "fields": {
       "stixid": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
       "firstseenbysource": "2017-10-25T14:48:11.535Z",
       "modified": "2018-10-17T00:14:20.652Z",
-      "operatingsystemrefs": ["Android", "iOS"],
+      "operatingsystemrefs": [
+        "Android",
+        "iOS"
+      ],
       "publications": [
         {
           "link": "https://attack.mitre.org/techniques/T1432",
-          "source": "mitre-mobile-attack",
-          "title": ""
+          "title": "",
+          "source": "mitre-mobile-attack"
         },
         {
           "link": "https://pages.nist.gov/mobile-threat-catalogue/application-threats/APP-13.html",
-          "source": "NIST Mobile Threat Catalogue",
-          "title": ""
+          "title": "",
+          "source": "NIST Mobile Threat Catalogue"
         }
       ],
       "tags": [],
-      "stixkillchainphases": ["Actions on Objectives", "Collection"],
+      "stixkillchainphases": [
+        "Actions on Objectives",
+        "Collection"
+      ],
       "stixdescription": "An adversary could call standard operating system APIs from a malicious application to gather contact list (i.e., address book) data, or with escalated privileges could directly access files containing contact list data."
     }
   },
@@ -124,33 +137,50 @@
       ],
       "modified": "2020-02-05T20:05:41.548Z",
       "name": "T1027.002: Software Packing",
-      "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+      "object_marking_refs": [
+        "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+      ],
       "type": "attack-pattern",
-      "x_mitre_contributors": ["Filip Kafka, ESET"],
-      "x_mitre_data_sources": ["File: File Content", "File: File Metadata"],
-      "x_mitre_defense_bypassed": ["Anti-virus", "Heuristic detection", "Signature-based detection"],
+      "x_mitre_contributors": [
+        "Filip Kafka, ESET"
+      ],
+      "x_mitre_data_sources": [
+        "File: File Content",
+        "File: File Metadata"
+      ],
+      "x_mitre_defense_bypassed": [
+        "Anti-virus",
+        "Heuristic detection",
+        "Signature-based detection"
+      ],
       "x_mitre_detection": "Use file scanning to look for known software packers or artifacts of packing techniques. Packing is not a definitive indicator of malicious activity, because legitimate software may use packing techniques to reduce binary size or to protect proprietary code.",
       "x_mitre_is_subtechnique": true,
-      "x_mitre_platforms": ["macOS", "Windows"],
+      "x_mitre_platforms": [
+        "macOS",
+        "Windows"
+      ],
       "x_mitre_version": "1.0",
       "x_panw_parent_technique": "Obfuscated Files or Information",
-      "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"},
-    "fields":
-    {
+      "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"
+    },
+    "fields": {
       "stixid": "attack-pattern--deb98323-e13f-4b0c-8d94-175379069062",
       "firstseenbysource": "2020-02-05T14:17:46.686Z",
       "modified": "2020-02-05T20:05:41.548Z",
-      "operatingsystemrefs": ["macOS", "Windows"],
+      "operatingsystemrefs": [
+        "macOS",
+        "Windows"
+      ],
       "publications": [
         {
           "link": "https://attack.mitre.org/techniques/T1027/002",
-          "source": "mitre-attack",
-          "title": ""
+          "title": "",
+          "source": "mitre-attack"
         },
         {
           "link": "https://example.example.com/data/definitions/570.html",
-          "source": "capec",
-          "title": ""
+          "title": "",
+          "source": "capec"
         },
         {
           "link": "https://www.welivesecurity.com/wp-content/uploads/2018/01/WP-FinFisher.pdf",
@@ -164,7 +194,10 @@
         }
       ],
       "tags": [],
-      "stixkillchainphases": ["Installation", "Defense Evasion"],
+      "stixkillchainphases": [
+        "Installation",
+        "Defense Evasion"
+      ],
       "stixdescription": "Adversaries may perform software packing or virtual machine software protection to conceal their code. Software packing is a method of compressing or encrypting an executable. Packing an executable changes the file signature in an attempt to avoid signature-based detection. Most decompression techniques decompress the executable code in memory. Virtual machine software protection translates an executable's original code into a special format that only a special virtual machine can run. A virtual machine is then called to run this code.(Citation: ESET FinFisher Jan 2018) \n\nUtilities used to perform software packing are called packers. Example packers are MPRESS and UPX. A more comprehensive list of known packers is available, (Citation: Wikipedia Exe Compression) but adversaries may create their own packing techniques that do not leave the same artifacts as well-known packers to evade defenses.  "
     }
   },
@@ -172,17 +205,17 @@
     "value": "Freenki",
     "type": "Malware",
     "score": 3,
-    "rawJSON":
-    {
+    "rawJSON": {
       "created": "2019-10-10T14:43:27.256Z",
       "id": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
-      "labels": ["backdoor"],
+      "labels": [
+        "backdoor"
+      ],
       "modified": "2019-10-10T20:25:46.596Z",
       "name": "Freenki",
       "type": "malware"
     },
-    "fields":
-    {
+    "fields": {
       "stixid": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
       "firstseenbysource": "2019-10-10T14:43:27.256Z",
       "modified": "2019-10-10T20:25:46.596Z",
@@ -195,19 +228,22 @@
       "architecture_execution_envs": [],
       "capabilities": [],
       "sample_refs": [],
-      "tags": ["backdoor"]
+      "tags": [
+        "backdoor"
+      ]
     }
   },
   {
     "type": "Report",
     "value": "Sofacy",
     "score": 3,
-    "rawJSON":
-    {
+    "rawJSON": {
       "created": "2018-08-03T20:31:05.060Z",
       "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
       "id": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
-      "labels": ["intrusion-set"],
+      "labels": [
+        "intrusion-set"
+      ],
       "modified": "2020-07-30T16:55:21.569Z",
       "name": "Sofacy",
       "object_refs": [
@@ -220,16 +256,157 @@
       "published": "2020-07-30T16:55:21.569Z",
       "type": "report"
     },
-    "fields":
-    {
+    "fields": {
       "stixid": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
       "firstseenbysource": "2018-08-03T20:31:05.060Z",
       "modified": "2020-07-30T16:55:21.569Z",
-      "published": "2020-07-30T16:55:21.569Z",
       "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
+      "published": "2020-07-30T16:55:21.569Z",
       "report_types": [],
-      "tags": ["intrusion-set"]
-    }
+      "tags": [
+        "intrusion-set"
+      ]
+    },
+    "relationships": []
+  },
+  {
+    "type": "Report",
+    "value": "IcedID Malware",
+    "score": 3,
+    "rawJSON": {
+      "created": "2022-08-04T18:25:46.215Z",
+      "description": "Also known as Bokbot, IcedID is an information stealer and backdoor that first appeared as a banking Trojan in 2017 [1]. Since then, it has evolved. The criminal group behind IcedID also acts as an initial access broker for other criminal groups.\n\nIn an Active Directory (AD) environment, IcedID infections lead to network mapping, with criminals using tools like ADfind.exe, an AD enumeration utility [2]. Criminals use access from IcedID to collect information about AD users, systems, organizational units, subnets, groups, and trust objects.\n\nIn recent years, IcedID routinely has routinely led to Cobalt Strike and lateral movement within a targeted AD network. Cobalt strike is a known precursor to ransomware like Conti [3].\n\nIcedID is distributed through different campaigns run by different threat actors, but the end result is the same. Regardless of the distribution channel, IcedID causes remote access, data exfiltration, and follow-up activity like Cobalt Strike and ransomware.\n\n[1] https://securityintelligence.com/new-banking-trojan-icedid-discovered-by-ibm-x-force-research/\n[2] https://thedfirreport.com/2021/06/20/from-word-to-lateral-movement-in-1-hour/\n[3] https://thedfirreport.com/2022/04/04/stolen-images-campaign-ends-in-conti-ransomware/",
+      "id": "report--959e0017-c770-4387-b9d8-fb310ae0f251",
+      "modified": "2022-08-10T18:45:13.212Z",
+      "name": "IcedID Malware",
+      "object_refs": [
+        "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
+        "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5",
+        "report--e536bd26-47e6-4ccb-a680-639fa11467f3",
+        "relationship--017ee879-0b86-4263-8cbf-28675652245d"
+      ],
+      "published": "2022-08-04T18:25:46.215Z",
+      "type": "report"
+    },
+    "fields": {
+      "stixid": "report--959e0017-c770-4387-b9d8-fb310ae0f251",
+      "firstseenbysource": "2022-08-04T18:25:46.215Z",
+      "modified": "2022-08-10T18:45:13.212Z",
+      "description": "Also known as Bokbot, IcedID is an information stealer and backdoor that first appeared as a banking Trojan in 2017 [1]. Since then, it has evolved. The criminal group behind IcedID also acts as an initial access broker for other criminal groups.\n\nIn an Active Directory (AD) environment, IcedID infections lead to network mapping, with criminals using tools like ADfind.exe, an AD enumeration utility [2]. Criminals use access from IcedID to collect information about AD users, systems, organizational units, subnets, groups, and trust objects.\n\nIn recent years, IcedID routinely has routinely led to Cobalt Strike and lateral movement within a targeted AD network. Cobalt strike is a known precursor to ransomware like Conti [3].\n\nIcedID is distributed through different campaigns run by different threat actors, but the end result is the same. Regardless of the distribution channel, IcedID causes remote access, data exfiltration, and follow-up activity like Cobalt Strike and ransomware.\n\n[1] https://securityintelligence.com/new-banking-trojan-icedid-discovered-by-ibm-x-force-research/\n[2] https://thedfirreport.com/2021/06/20/from-word-to-lateral-movement-in-1-hour/\n[3] https://thedfirreport.com/2022/04/04/stolen-images-campaign-ends-in-conti-ransomware/",
+      "published": "2022-08-04T18:25:46.215Z",
+      "report_types": [],
+      "tags": []
+    },
+    "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "IcedID Malware",
+        "entityAFamily": "Indicator",
+        "entityAType": "Report",
+        "entityB": "ATOM Campaign Report 1",
+        "entityBFamily": "Indicator",
+        "entityBType": "Report",
+        "fields": {}
+      },
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "IcedID Malware",
+        "entityAFamily": "Indicator",
+        "entityAType": "Report",
+        "entityB": "ATOM Campaign Report 2",
+        "entityBFamily": "Indicator",
+        "entityBType": "Report",
+        "fields": {}
+      }
+    ]
+  },
+  {
+    "type": "Report",
+    "value": "ATOM Campaign Report 1",
+    "score": 3,
+    "rawJSON": {
+      "created": "2022-08-09T13:38:47.616Z",
+      "id": "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5",
+      "labels": [
+        "campaign"
+      ],
+      "modified": "2022-08-10T18:45:13.212Z",
+      "name": "ATOM Campaign Report 1",
+      "published": "2022-08-09T13:38:47.616Z",
+      "type": "report"
+    },
+    "fields": {
+      "stixid": "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5",
+      "firstseenbysource": "2022-08-09T13:38:47.616Z",
+      "modified": "2022-08-10T18:45:13.212Z",
+      "description": "",
+      "published": "2022-08-09T13:38:47.616Z",
+      "report_types": [],
+      "tags": [
+        "campaign"
+      ]
+    },
+    "relationships": []
+  },
+  {
+    "type": "Report",
+    "value": "ATOM Campaign Report 2",
+    "score": 3,
+    "rawJSON": {
+      "created": "2022-08-10T18:31:44.465Z",
+      "id": "report--e536bd26-47e6-4ccb-a680-639fa11467f3",
+      "labels": [
+        "campaign"
+      ],
+      "modified": "2022-08-10T18:45:13.212Z",
+      "name": "ATOM Campaign Report 2",
+      "published": "2022-08-09T13:38:47.616Z",
+      "type": "report"
+    },
+    "fields": {
+      "stixid": "report--e536bd26-47e6-4ccb-a680-639fa11467f3",
+      "firstseenbysource": "2022-08-10T18:31:44.465Z",
+      "modified": "2022-08-10T18:45:13.212Z",
+      "description": "",
+      "published": "2022-08-09T13:38:47.616Z",
+      "report_types": [],
+      "tags": [
+        "campaign"
+      ]
+    },
+    "relationships": []
+  },
+  {
+    "type": "Report",
+    "value": "ATOM Campaign Report 3",
+    "score": 3,
+    "rawJSON": {
+      "created": "2022-08-10T18:31:44.465Z",
+      "id": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+      "labels": [
+        "campaign"
+      ],
+      "modified": "2022-08-10T18:45:13.212Z",
+      "name": "ATOM Campaign Report 3",
+      "published": "2022-08-09T13:38:47.616Z",
+      "type": "report"
+    },
+    "fields": {
+      "stixid": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+      "firstseenbysource": "2022-08-10T18:31:44.465Z",
+      "modified": "2022-08-10T18:45:13.212Z",
+      "description": "",
+      "published": "2022-08-09T13:38:47.616Z",
+      "report_types": [],
+      "tags": [
+        "campaign"
+      ]
+    },
+    "relationships": []
   },
   {
     "value": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'",
@@ -257,15 +434,16 @@
       "x_panw_coa_bp_section_number": "6",
       "x_panw_coa_bp_status": "published",
       "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'"
-    }, "fields": {
-    "stixid": "course-of-action--645c6c45-116e-4265-98d2-e30f56325bc6",
-    "firstseenbysource": "2020-06-23T19:50:31.722Z",
-    "modified": "2020-06-26T13:02:55.803Z",
-    "description": "Configure antivirus profiles to a value of 'block' for all decoders except imap and pop3 under both Action and WildFire Action. If required by the organization's email implementation, configure imap and pop3 decoders to 'alert' under both Action and WildFire Action.",
-    "action_type": "",
-    "publications": [],
-    "tags": []
-  }
+    },
+    "fields": {
+      "stixid": "course-of-action--645c6c45-116e-4265-98d2-e30f56325bc6",
+      "firstseenbysource": "2020-06-23T19:50:31.722Z",
+      "modified": "2020-06-26T13:02:55.803Z",
+      "description": "Configure antivirus profiles to a value of 'block' for all decoders except imap and pop3 under both Action and WildFire Action. If required by the organization's email implementation, configure imap and pop3 decoders to 'alert' under both Action and WildFire Action.",
+      "action_type": "",
+      "publications": [],
+      "tags": []
+    }
   },
   {
     "value": "IQY Attachment E-mails",
@@ -327,16 +505,20 @@
       "created_by_ref": "identity--f431f809-377b-45e0-aa1c-6a4751cae5ff",
       "created": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
-      "tool_types": [ "remote-access"],
+      "tool_types": [
+        "remote-access"
+      ],
       "name": "VNC"
     },
     "fields": {
       "stixid": "tool--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
-      "killchainphases": [],
       "firstseenbysource": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
-      "tool_types": [ "remote-access"],
       "description": "",
+      "killchainphases": [],
+      "tool_types": [
+        "remote-access"
+      ],
       "aliases": [],
       "tool_version": "",
       "tags": []
@@ -353,26 +535,45 @@
       "created_by_ref": "identity--f431f809-377b-45e0-aa1c-6a4751cae5ff",
       "created": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
-      "threat_actor_types": [ "crime-syndicate"],
+      "threat_actor_types": [
+        "crime-syndicate"
+      ],
       "name": "Evil Org",
       "description": "The Evil Org threat actor group",
-      "aliases": ["Syndicate 1", "Evil Syndicate 99"],
-      "roles": ["director"],
-      "goals": ["Steal bank money", "Steal credit cards"],
+      "aliases": [
+        "Syndicate 1",
+        "Evil Syndicate 99"
+      ],
+      "roles": [
+        "director"
+      ],
+      "goals": [
+        "Steal bank money",
+        "Steal credit cards"
+      ],
       "sophistication": "advanced",
       "resource_level": "team",
       "primary_motivation": "organizational-gain"
     },
-    "fields":
-    {
+    "fields": {
       "stixid": "threat-actor--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
       "firstseenbysource": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
       "description": "The Evil Org threat actor group",
-      "aliases": ["Syndicate 1", "Evil Syndicate 99"],
-      "threat_actor_types":[ "crime-syndicate"],
-      "roles": ["director"],
-      "goals": ["Steal bank money", "Steal credit cards"],
+      "aliases": [
+        "Syndicate 1",
+        "Evil Syndicate 99"
+      ],
+      "threat_actor_types": [
+        "crime-syndicate"
+      ],
+      "roles": [
+        "director"
+      ],
+      "goals": [
+        "Steal bank money",
+        "Steal credit cards"
+      ],
       "sophistication": "advanced",
       "resource_level": "team",
       "primary_motivation": "organizational-gain",
@@ -385,28 +586,47 @@
     "type": "Infrastructure",
     "score": 2,
     "rawJSON": {
-      "type":"infrastructure",
+      "type": "infrastructure",
       "spec_version": "2.1",
-      "id":"infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
-      "created":"2016-05-07T11:22:30.000Z",
-      "modified":"2016-05-07T11:22:30.000Z",
-      "name":"Poison Ivy C2",
-      "infrastructure_types": ["command-and-control"]
+      "id": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+      "created": "2016-05-07T11:22:30.000Z",
+      "modified": "2016-05-07T11:22:30.000Z",
+      "name": "Poison Ivy C2",
+      "infrastructure_types": [
+        "command-and-control"
+      ]
     },
     "fields": {
       "stixid": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
-      "description": "",
-      "infrastructure_types": ["command-and-control"],
-      "aliases": [],
-      "kill_chain_phases": [],
       "firstseenbysource": "2016-05-07T11:22:30.000Z",
       "modified": "2016-05-07T11:22:30.000Z",
+      "description": "",
+      "infrastructure_types": [
+        "command-and-control"
+      ],
+      "aliases": [],
+      "kill_chain_phases": [],
       "tags": []
     }
   },
   {
     "value": "$$DummyIndicator$$",
     "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "IcedID Malware",
+        "entityAFamily": "Indicator",
+        "entityAType": "Report",
+        "entityB": "ATOM Campaign Report 3",
+        "entityBFamily": "Indicator",
+        "entityBType": "Report",
+        "fields": {
+          "lastseenbysource": "2022-08-10T18:45:13.212Z",
+          "firstseenbysource": "2022-08-04T18:25:46.215Z"
+        }
+      },
       {
         "name": "uses",
         "reverseName": "used-by",

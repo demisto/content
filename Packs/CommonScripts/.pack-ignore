@@ -1,9 +1,6 @@
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
 
-[file:playbook-Delete_Context_Subplaybook_Test.yml]
-ignore=auto-test
-
 [file:CompareIncidentsLabels.yml]
 ignore=SC105,BA124
 
@@ -254,12 +251,8 @@ GetDockerImageLatestTag
 GetDuplicatesMlv2
 DockerHardeningCheck
 
-[file:IPNetwork.yml]
-ignore=RM109
+[file:CloseInvestigationAsDuplicate.yml]
+ignore=BA124
 
-[file:IsInternalDomainName.yml]
-ignore=RM109
-
-[file:IsUrlPartOfDomain.yml]
-ignore=RM109
-
+[file:ContextContains.yml]
+ignore=BA124

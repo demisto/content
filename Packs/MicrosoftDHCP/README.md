@@ -10,12 +10,15 @@ This pack includes Cortex XSIAM content.
 4. Select the **Enable DHCP audit logging** checkbox.
 5. Click **OK**.
 
+Note:
+Time parsing is supported only when the below fields have the mentioned formats:
+- date - MM/dd/yy (01/10/21)
+- time - hh:mm:ss (10:00:00)
+- timezone - +|-nn:nn (+03:00)
 
 ## Collect Events from Vendor
 
 In order to use the collector, use the [XDRC (XDR Collector)](#xdrc-xdr-collector) option.
-
-
 
 
 ### XDRC (XDR Collector)

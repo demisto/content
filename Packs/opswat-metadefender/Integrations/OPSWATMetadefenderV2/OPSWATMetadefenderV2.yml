@@ -15,18 +15,18 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - name: api_key_creds
   type: 9
-  required: false
   displaypassword: API Key - Needed in cloud based solutions
   hiddenusername: true
+  required: false
 - display: Cloud based
   name: cloud
   type: 8
-  required: false
   defaultvalue: 'false'
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -43,9 +43,9 @@ configuration:
 - defaultvalue: '34'
   display: The low threshold
   name: lowPercnt
-  required: false
   type: 0
 
+  required: false
 script:
   script: ''
   type: python
@@ -78,9 +78,8 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
   subtype: python3
-  runonce: false
 tests:
 - No tests - no instance
 fromversion: 5.0.0

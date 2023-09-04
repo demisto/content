@@ -29,20 +29,20 @@ configuration:
 - display: Access Key
   name: credentials
   type: 9
-  required: false
   displaypassword: Secret Key
+  required: false
 - display: Access Key
   name: access_key
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
-  required: false
   defaultvalue: ""
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -130,7 +130,6 @@ script:
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Returns the results of a single query execution specified by QueryExecutionId if you have access to the workgroup in which the query ran.
   dockerimage: demisto/boto3py3:1.0.0.38849
-  runonce: false
   subtype: python3
 beta: true
 tests:

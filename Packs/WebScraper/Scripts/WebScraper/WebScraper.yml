@@ -1,45 +1,21 @@
 args:
-- default: false
-  description: Page url to scrap
-  isArray: false
+- description: Page url to scrap
   name: page_url
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  description: HTML page to scrap
-  isArray: false
+- description: HTML page to scrap
   name: page_html
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  description: Request headers
-  isArray: false
+- description: Request headers
   name: headers
-  required: false
-  secret: false
-- default: false
-  description: Request parameters
-  isArray: false
+- description: Request parameters
   name: params
-  required: false
-  secret: false
-- default: false
-  description: 'HTML tags navigation tree, example: "body.table"'
-  isArray: false
+- description: 'HTML tags navigation tree, example: "body.table"'
   name: navigator_tree
-  required: false
-  secret: false
-- default: false
-  defaultValue: 'False'
+- defaultValue: 'False'
   description: Ignore certificate validation errors
-  isArray: false
   name: insecure
-  required: false
-  secret: false
 comment: An Automation Script to Web Scrap a URL or HTML Page
 commonfields:
   id: WebScraper
@@ -51,7 +27,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - ''
 timeout: '0'

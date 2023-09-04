@@ -134,7 +134,7 @@ script:
       description: Request ID
       type: string
     description: This method allows a list of incidents / requests (service, change, investment) to be obtained.
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests
 fromversion: 5.0.0

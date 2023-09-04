@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from requests_ntlm import HttpNtlmAuth
 import tempfile
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings
@@ -54,6 +54,7 @@ class Client(BaseClient):
             kf.write(key_text_fixed.encode())
             kf.flush()
             return (cf.name, kf.name), cf, kf
+        return None
 
     def get_credentials(self, creds_object: str):
         url_suffix = '/AIMWebService/api/Accounts'
@@ -150,7 +151,9 @@ def main():
     credentials_object = params.get('credential_names') or ""
 
     cert_text = params.get('cert_text') or ""
-    key_text = params.get('key_text') or ""
+    key_text = (
+        params.get('key_text_creds', {}).get('password')
+        or params.get('key_text', ''))
 
     username = ""
     password = ""

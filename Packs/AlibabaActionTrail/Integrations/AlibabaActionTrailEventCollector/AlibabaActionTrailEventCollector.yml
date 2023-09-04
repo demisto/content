@@ -2,94 +2,90 @@ commonfields:
   id: Alibaba Action Trail Event Collector
   version: -1
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 name: Alibaba Action Trail Event Collector
 display: Alibaba Action Trail Event Collector
 category: Analytics & SIEM
 description: Alibaba logs event collector integration for XSIAM.
 configuration:
-  - display: Endpoint
-    name: endpoint
-    type: 0
-    required: true
-    section: Connect
-  - display: "Access key ID"
-    displaypassword: Access key
-    name: access_key
-    type: 9
-    required: true
-    section: Connect
-  - display: Project name
-    name: project_name
-    type: 0
-    required: true
-    section: Connect
-  - display: Logstore name
-    name: logstore_name
-    type: 0
-    required: true
-    section: Connect
-  - display: Query
-    name: query
-    type: 0
-    required: true
-    defaultvalue: "*| select * from actiontrail_pa_trail"
-    section: Collect
-  - display: Number of incidents to fetch per fetch.
-    name: limit
-    type: 0
-    defaultvalue: 1000
-    required: false
-    section: Collect
-  - display: First fetch time interval
-    name: from
-    type: 0
-    defaultvalue: 3 days
-    required: false
-    section: Collect
-  - display: Use system proxy settings
-    name: proxy
-    type: 8
-    required: false
-    section: Connect
-    advanced: true
-  - display: Trust any certificate (not secure)
-    name: verify
-    type: 8
-    required: false
-    section: Connect
-    advanced: true
+- display: Endpoint
+  name: endpoint
+  type: 0
+  required: true
+  section: Connect
+- display: "Access key ID"
+  displaypassword: Access key
+  name: access_key
+  type: 9
+  required: true
+  section: Connect
+- display: Project name
+  name: project_name
+  type: 0
+  required: true
+  section: Connect
+- display: Logstore name
+  name: logstore_name
+  type: 0
+  required: true
+  section: Connect
+- display: Query
+  name: query
+  type: 0
+  required: true
+  defaultvalue: "*| select * from actiontrail_pa_trail"
+  section: Collect
+- display: Number of incidents to fetch per fetch.
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  section: Collect
+  required: false
+- display: First fetch time interval
+  name: from
+  type: 0
+  defaultvalue: 3 days
+  section: Collect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: verify
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 script:
   script: ""
   type: python
   commands:
-    - description: Manual command to fetch events and display them.
-      name: alibaba-get-events
-      arguments:
-        - name: from
-          description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
-          required: false
-          isArray: false
-        - name: limit
-          required: true
-          description: Number of events to fetch
-          defaultValue: "1"
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Set this argument to True in order to create events, otherwise the command will only display them.
-          isArray: false
-          name: should_push_events
-          predefined:
-            - "True"
-            - "False"
-          required: true
+  - description: Manual command to fetch events and display them.
+    name: alibaba-get-events
+    arguments:
+    - name: from
+      description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
+    - name: limit
+      required: true
+      description: Number of events to fetch
+      defaultValue: "1"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
   dockerimage: demisto/fastapi:1.0.0.36992
-  runonce: false
   isfetchevents: true
   subtype: python3
 marketplaces:
-  - marketplacev2
+- marketplacev2
 fromversion: 6.8.0
 tests:
-  - No tests
+- No tests

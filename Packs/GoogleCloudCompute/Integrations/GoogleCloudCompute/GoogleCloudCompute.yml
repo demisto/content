@@ -5,23 +5,23 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service
-  required: false
   type: 4
   hidden: true
-- displaypassword: Service Account Private Key file contents (JSON)
-  name:  credentials_service_account_json
   required: false
+- displaypassword: Service Account Private Key file contents (JSON)
+  name: credentials_service_account_json
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: What is the top level object to search in (usually a project or organization in format of organization/XX).
   display: Default Search Scope
   name: default_search_scope
-  required: false
   type: 0
+  required: false
 description: Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
 display: Google Cloud Compute
 name: Google Cloud Compute
@@ -8418,8 +8418,7 @@ script:
     - contextPath: GoogleCloudCompute.Instances.kind
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.64077
-  runonce: false
+  dockerimage: demisto/googleapi-python3:1.0.0.65068
   script: ''
   subtype: python3
   type: python

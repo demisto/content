@@ -55,6 +55,8 @@ tasks:
     scriptarguments:
       uri:
         simple: /content/bundle
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -127,6 +129,8 @@ tasks:
         simple: ${inputs.dry_run}
       include_ids_dict:
         simple: ${GetIdsFromCustomContent.included_ids}
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -399,6 +403,11 @@ inputs:
     simple: "true"
   required: true
   description: If true, will not actually delete any content entities.
+  playbookInputQuery:
+- key: instance_name
+  value: {}
+  required: false
+  description: Core REST API instance name to use.
   playbookInputQuery:
 outputs: []
 tests:

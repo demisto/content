@@ -1,5 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
-from CommonServerPython import *
 import os
 import re
 import json
@@ -9,7 +10,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
-import demistomock as demisto
 from datetime import timedelta
 
 # disable insecure warnings
@@ -1103,7 +1103,7 @@ def build_query(args, table_name):
     query_start_time, query_end_time = query_timestamp(args)
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
-    limit = args.get('limit', '5')
+    limit = args.get('limit') or '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
     return fields, query

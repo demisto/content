@@ -4,8 +4,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: All
-  description: This argument allows the user to specify which of the following objects
-    in the registry to parse. Default is "All".
+  description: This argument allows the user to specify which of the following objects in the registry to parse. Default is "All".
   name: registryData
   predefined:
   - All
@@ -22,15 +21,12 @@ args:
   - Networks
   - USB
   - LastLoggedOnUser
-- description: A comma-separated list of registry paths to parse.
-    Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
-    NT\CurrentVersion\AeDebug\AutoExclusionList`. 
+- description: A comma-separated list of registry paths to parse. Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug\AutoExclusionList`.
   name: customRegistryPaths
 - description: defines the maximum number of records to return as table to the war-room.
   name: hrMaxResults
   defaultValue: "50"
-comment: "This command uses the Registry Parse automation to extract critical forensics data from\
-  \ a registry file. The essential values are specified by the argument. \n"
+comment: "This command uses the Registry Parse automation to extract critical forensics data from a registry file. The essential values are specified by the argument. \n"
 commonfields:
   id: RegistryParse
   version: -1
@@ -57,7 +53,6 @@ outputs:
 - contextPath: RegistryForensicData.Services.DisplayName
   description: Registry service name.
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

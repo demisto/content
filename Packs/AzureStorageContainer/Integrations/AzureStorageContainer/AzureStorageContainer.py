@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import hmac
 import shutil
@@ -6,8 +8,6 @@ from urllib import parse  # noqa: F401
 import defusedxml.ElementTree as defused_ET
 from requests import Response
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""

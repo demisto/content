@@ -118,7 +118,6 @@ script:
       required: true
       description: Entry Position in table
     description: Delete an entry from a list
-  runonce: false
 tests:
 - McAfeeWebGatewayTest
 fromversion: 5.0.0

@@ -19,29 +19,19 @@ configuration:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. Use Tanium v2 instead.
 display: Tanium (Deprecated)
 name: Tanium
 script:
   commands:
   - arguments:
-    - default: false
-      description: Name of package
-      isArray: false
+    - description: Name of package
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Tanium id of package (to be used instead of name)
-      isArray: false
+    - description: Tanium id of package (to be used instead of name)
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Get a package object based on name or ID.
-    execution: false
     name: tn-get-package
     outputs:
     - contextPath: Tanium.Packages.display_name
@@ -83,9 +73,7 @@ script:
     - contextPath: Tanium.Packages.sensor_variable
       description: The type of sensor that this package requires as a variable
       type: string
-  - deprecated: false
-    description: Get all Tanium package objects
-    execution: false
+  - description: Get all Tanium package objects
     name: tn-get-all-packages
     outputs:
     - contextPath: Tanium.Packages.verify_expire_seconds
@@ -128,22 +116,12 @@ script:
       description: Packge files
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of object
-      isArray: false
+    - description: Name of object
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Tanium id of object (to be used instead of name)
-      isArray: false
+    - description: Tanium id of object (to be used instead of name)
       name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of object to get
-      isArray: false
       name: object_type
       predefined:
       - user
@@ -153,14 +131,9 @@ script:
       - saved_action
       - action
       required: true
-      secret: false
-    deprecated: false
     description: Send a generic Get Object request
-    execution: false
     name: tn-get-object
-  - deprecated: false
-    description: Gets all saved questions
-    execution: false
+  - description: Gets all saved questions
     name: tn-get-all-saved-questions
     outputs:
     - contextPath: Tanium.SavedQuestions.query_text
@@ -190,59 +163,27 @@ script:
   - arguments:
     - default: true
       description: Name of package to deploy with this action
-      isArray: false
       name: package
       required: true
-      secret: false
-    - default: false
-      description: Comma separated list of arguments needed to execute the package command. Please run 'tn-get-package' for a detailed list of arguments
-      isArray: false
+    - description: Comma separated list of arguments needed to execute the package command. Please run 'tn-get-package' for a detailed list of arguments
       name: package_args
-      required: false
-      secret: false
-    - default: false
-      description: Semicolon separated list of strings. Each string must describe a sensor and a filter which limits which computers the action will deploy package to (e.g. Operating System, that contains:Windows; Computer Name, that contains:WIN)
-      isArray: false
+    - description: Semicolon separated list of strings. Each string must describe a sensor and a filter which limits which computers the action will deploy package to (e.g. Operating System, that contains:Windows; Computer Name, that contains:WIN)
       name: action_filters
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of options to apply to action_filters (e.g.  "max_data_age:3600,and"). Default is "or".
-      isArray: false
+    - description: Comma separated list of options to apply to action_filters (e.g.  "max_data_age:3600,and"). Default is "or".
       name: action_options
-      required: false
-      secret: false
-    - default: false
-      description: Semicolon separated list of sensor results that apply to the package. A separate action will be issued for each given variable .
-      isArray: false
+    - description: Semicolon separated list of sensor results that apply to the package. A separate action will be issued for each given variable .
       name: sensor_variables
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies whether to wait for result completion after deploying action
-      isArray: false
       name: get_results
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of computer group names to filter by
-      isArray: false
+    - description: Comma separated list of computer group names to filter by
       name: action_filters_groups
-      required: false
-      secret: false
-    - default: false
-      description: Name of action group
-      isArray: false
+    - description: Name of action group
       name: action_group
-      required: false
-      secret: false
-    deprecated: false
     description: Deploy a package and get the results back
-    execution: false
     name: tn-deploy-package
     outputs:
     - contextPath: Tanium.SavedActions.Id
@@ -275,20 +216,12 @@ script:
   - arguments:
     - default: true
       description: The question text
-      isArray: false
       name: question
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The index of the parsed question to be asked (as returned by tn-parse-query)
-      isArray: false
       name: index
-      required: false
-      secret: false
-    deprecated: false
     description: Ask the server to parse the question text and choose the first parsed result as the question to run
-    execution: false
     name: tn-ask-question
     outputs:
     - contextPath: Tanium.QuestionResults
@@ -297,34 +230,20 @@ script:
   - arguments:
     - default: true
       description: Name of host
-      isArray: false
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Ask a question about a specific endpoint
-    execution: false
     name: tn-ask-system
     outputs:
     - contextPath: Tanium.QuestionResults
       description: Results of requested computer name. May be a complex object
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of saved question
-      isArray: false
+    - description: Name of saved question
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Tanium unique id of saved question to be used instead of name
-      isArray: false
+    - description: Tanium unique id of saved question to be used instead of name
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Get a saved question by name or id
-    execution: false
     name: tn-get-saved-question
     outputs:
     - contextPath: Tanium.SavedQuestions.query_text
@@ -352,45 +271,21 @@ script:
       description: Issue time in seconds
       type: number
   - arguments:
-    - default: false
-      description: Name of package to create
-      isArray: false
+    - description: Name of package to create
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Command to execute
-      isArray: false
+    - description: Command to execute
       name: command
       required: true
-      secret: false
-    - default: false
-      description: Display name of package
-      isArray: false
+    - description: Display name of package
       name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of URLs of files to add to package
-      isArray: false
+    - description: Comma separated list of URLs of files to add to package
       name: file_urls
-      required: false
-      secret: false
-    - default: false
-      description: Timeout for command execution in seconds
-      isArray: false
+    - description: Timeout for command execution in seconds
       name: command_timeout_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Timeout for action expiry in seconds
-      isArray: false
+    - description: Timeout for action expiry in seconds
       name: expire_seconds
-      required: false
-      secret: false
-    deprecated: false
     description: Create a package object
-    execution: false
     name: tn-create-package
     outputs:
     - contextPath: Tanium.Packages.verify_expire_seconds
@@ -427,27 +322,14 @@ script:
       description: Timeout for action expiry in seconds
       type: number
   - arguments:
-    - default: false
-      description: Saved action ID to be approved
-      isArray: false
+    - description: Saved action ID to be approved
       name: saved_action_id
-      required: false
-      secret: false
     - default: true
       description: Action ID to be approved
-      isArray: false
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: (deprecated) Id of saved action to approve
-      isArray: false
+    - description: (deprecated) Id of saved action to approve
       name: action_id
-      required: false
-      secret: false
-    deprecated: false
     description: Approve saved actions
-    execution: false
     name: tn-approve-pending-action
     outputs:
     - contextPath: Tanium.ActionApproval.ApprovedFlag
@@ -463,7 +345,6 @@ script:
     - auto: PREDEFINED
       default: true
       description: Type of object to get
-      isArray: false
       name: object_type
       predefined:
       - user
@@ -473,14 +354,9 @@ script:
       - saved_action
       - group
       required: true
-      secret: false
-    deprecated: false
     description: Gets all objects of the specified type
-    execution: false
     name: tn-get-all-objects
-  - deprecated: false
-    description: Gets all saved actions
-    execution: false
+  - description: Gets all saved actions
     name: tn-get-all-saved-actions
     outputs:
     - contextPath: Tanium.SavedActions.distribute_seconds
@@ -525,9 +401,7 @@ script:
     - contextPath: Tanium.SavedActions.approved_flag
       description: Whether action was approved or not
       type: boolean
-  - deprecated: false
-    description: Gets all pending actions
-    execution: false
+  - description: Gets all pending actions
     name: tn-get-all-pending-actions
     outputs:
     - contextPath: Tanium.PendingActions.distribute_seconds
@@ -572,99 +446,53 @@ script:
     - contextPath: Tanium.PendingActions.approved_flag
       description: Whether action was approved or not
       type: boolean
-  - deprecated: false
-    description: Gets all sensors
-    execution: false
+  - description: Gets all sensors
     name: tn-get-all-sensors
   - arguments:
-    - default: false
-      description: The question text to be parsed
-      isArray: false
+    - description: The question text to be parsed
       name: question
-      required: false
-      secret: false
-    deprecated: false
     description: Ask the server to parse the question text and return all parsing options
-    execution: false
     name: tn-parse-query
   - arguments:
-    - default: false
-      description: A semicolon separated list of sensors (columns) to include in a question. For detailed information please use !tn-get-sensor
-      isArray: false
+    - description: A semicolon separated list of sensors (columns) to include in a question. For detailed information please use !tn-get-sensor
       name: sensors
-      required: false
-      secret: false
-    - default: false
-      description: A semicolon separated list of filters that apply to the whole question
-      isArray: false
+    - description: A semicolon separated list of filters that apply to the whole question
       name: question_filters
-      required: false
-      secret: false
-    - default: false
-      description: A semicolon separated list of options that apply to the whole question. Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age, value_type, and, or
-      isArray: false
+    - description: A semicolon separated list of options that apply to the whole question. Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age, value_type, and, or
       name: question_options
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Print the help string for filters and exit
-      isArray: false
       name: filters_help
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Print the help string for sensors and exit
-      isArray: false
       name: sensors_help
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Print the help string for options and exit
-      isArray: false
       name: options_help
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: Number of seconds to wait in between result fetching attempts
-      isArray: false
       name: polling_secs
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Percentage of mr_tested out of estimated_total to consider the question
-      isArray: false
       name: complete_pct
-      required: false
-      secret: false
-    - default: false
-      description: Print an extended command usage description to the War Room. Default is False.
-      isArray: false
+    - description: Print an extended command usage description to the War Room. Default is False.
       name: help
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Ask a manual question using human strings and get the results back
-    execution: false
     name: tn-ask-manual-question
     outputs:
     - contextPath: Tanium.QuestionResults
@@ -673,13 +501,9 @@ script:
   - arguments:
     - default: true
       description: Name of sensor
-      isArray: false
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Get detailed information about a given sensor.
-    execution: false
     name: tn-get-sensor
     outputs:
     - contextPath: Tanium.Sensors.max_age_seconds
@@ -710,15 +534,9 @@ script:
       description: Possible values of the sensor parameter
       type: string
   - arguments:
-    - default: false
-      description: ID of action of retrieve
-      isArray: false
+    - description: ID of action of retrieve
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Get detailed information about a given action.
-    execution: false
     name: tn-get-action
     outputs:
     - contextPath: Tanium.Actions.name
@@ -746,7 +564,6 @@ script:
       description: Name of the package that was deployed
       type: string
   dockerimage: demisto/pytan:1.0.0.38590
-  isfetch: false
   runonce: false
   script: '-'
   type: python

@@ -1,8 +1,7 @@
 args:
 - name: DocFileName
   required: true
-  description: Name of the output docx file. Please include extension as well. For
-    example, test-doc.docx
+  description: Name of the output docx file. Please include extension as well. For example, test-doc.docx
 - name: PlaybookName
   required: true
   description: Name of the playbook to be used for the document creation.
@@ -32,7 +31,6 @@ dockerimage: demisto/sane-doc-reports:1.0.0.27897
 enabled: true
 name: CreatePlbkDoc
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

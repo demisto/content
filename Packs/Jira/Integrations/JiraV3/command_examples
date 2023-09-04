@@ -7,7 +7,7 @@
 !jira-issue-upload-file upload=1@2 issue_key=COMPANYSA-31
 !jira-issue-add-comment issue_key=COMPANYSA-31 comment="New comment"
 !jira-get-id-by-attribute attribute=Example
-!jira-get-id-offset
+!jira-get-id-offset query="status!=done"
 !jira-get-specific-field issue_key=COMPANYSA-35 fields="watches,rank"
 !jira-issue-query query="status!=done" max_results=2 fields="watches,rank"
 !jira-issue-add-link title="Demo" url="https://demisto.com" issue_key=COMPANYSA-35

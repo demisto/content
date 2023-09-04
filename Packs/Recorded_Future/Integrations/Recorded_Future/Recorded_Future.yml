@@ -15,67 +15,60 @@ configuration:
 - defaultvalue: '5'
   display: Suspicious Threshold. Minimum risk score to consider an indicator suspicious.
   name: suspicious_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '65'
-  display: File Threshold. Minimum risk score from Recorded Future to consider the
-    file malicious.
+  display: File Threshold. Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '65'
   display: IP Threshold. Minimum risk score from RF to consider the IP malicious.
   name: ip_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '65'
-  display: Domain Threshold. Minimum risk score from Recorded Future to consider the
-    domain malicious.
+  display: Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '65'
-  display: URL Threshold. Minimum risk score from Recorded Future to consider the
-    URL malicious.
+  display: URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '65'
-  display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider
-    the vulnerability critical.
+  display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: cve_threshold
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
-  display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
-    will be fetched
+  display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched
   name: rule_names
-  required: false
   type: 12
-- defaultvalue: 24 hours
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
-  name: triggered
   required: false
+- defaultvalue: 24 hours
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: triggered
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-description: Deprecated. Use Recorded Future v2 from RecordedFuture pack instead. Unique threat intel technology that automatically serves up relevant
-  insights in real time.
+  required: false
+description: Deprecated. Use Recorded Future v2 from RecordedFuture pack instead. Unique threat intel technology that automatically serves up relevant insights in real time.
 display: Recorded Future (Deprecated)
 name: Recorded Future
 deprecated: true
@@ -84,26 +77,16 @@ script:
   - arguments:
     - default: true
       description: Domain to get the reputation of
-      isArray: false
       name: domain
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns threat intelligence information for a domain or DNS in Recorded
-      Future.
-    execution: false
+    description: Returns threat intelligence information for a domain or DNS in Recorded Future.
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -154,26 +137,16 @@ script:
   - arguments:
     - default: true
       description: IP address to get the reputation of
-      isArray: false
       name: ip
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns threat intelligence information for an IP address in Recorded
-      Future.
-    execution: false
+    description: Returns threat intelligence information for an IP address in Recorded Future.
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -192,8 +165,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision
+      description: For malicious IP addresses, the reason that the vendor made the decision
       type: string
     - contextPath: IP.Address
       description: IP address
@@ -230,27 +202,17 @@ script:
       type: Date
   - arguments:
     - default: true
-      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512,
-        CRC-32, CTPH)
-      isArray: false
+      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512, CRC-32, CTPH)
       name: file
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Returns threat intelligence information for a file in Recorded Future.
-    execution: false
     name: file
     outputs:
     - contextPath: File.SHA256
@@ -321,10 +283,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: The type of entity to fetch context for. (Should be provided with
-        its value in entityValue argument)
-      isArray: false
+      description: The type of entity to fetch context for. (Should be provided with its value in entityValue argument)
       name: entityType
       predefined:
       - domain
@@ -332,21 +291,12 @@ script:
       - file
       - url
       required: true
-      secret: false
-    - default: false
-      description: 'The value of the entity to fetch context for. (Should be provided
-        with its type in entityType argument, Hash types supported: MD5, SHA-1, SHA-256,
-        SHA-512, CRC-32, CTPH)'
-      isArray: false
+    - description: 'The value of the entity to fetch context for. (Should be provided with its type in entityType argument, Hash types supported: MD5, SHA-1, SHA-256, SHA-512, CRC-32, CTPH)'
       name: entityValue
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: All
-      description: CSV list of related entity types to return in the result (e.g.,
-        Hash,IP,Domain)
-      isArray: false
+      description: CSV list of related entity types to return in the result (e.g., Hash,IP,Domain)
       name: resultEntityType
       predefined:
       - All
@@ -356,12 +306,7 @@ script:
       - Attacker
       - Malware
       - URL
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns threat intelligence context for an indicator in Recorded
-      Future.
-    execution: false
+    description: Returns threat intelligence context for an indicator in Recorded Future.
     name: recorded-future-get-related-entities
     outputs:
     - contextPath: File.SHA256
@@ -610,25 +555,16 @@ script:
   - arguments:
     - default: true
       description: URL to get the reputation of
-      isArray: false
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Returns threat intelligence information for a URL in Recorded Future.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -678,43 +614,24 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of results to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
+    - defaultValue: '65'
       description: Minimum threshold score to return results for
-      isArray: false
       name: risk_lower
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Maximum threshold score to return results for
-      isArray: false
       name: risk_higher
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: sevendayshits
       description: Category to sort results by
-      isArray: false
       name: orderby
       predefined:
       - created
@@ -727,17 +644,9 @@ script:
       - sevendayshits
       - sixtydayshits
       - totalhits
-      required: false
-      secret: false
-    - default: false
-      description: Sort direction
-      isArray: false
+    - description: Sort direction
       name: direction
-      required: false
-      secret: false
-    deprecated: false
     description: Returns hash threats from Recorded Future
-    execution: false
     name: recorded-future-get-threats-hash
     outputs:
     - contextPath: File.SHA256
@@ -787,43 +696,24 @@ script:
       type: date
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of results to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
+    - defaultValue: '65'
       description: Minimum threshold score to return results for
-      isArray: false
       name: risk_lower
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Maximum threshold score to return results for
-      isArray: false
       name: risk_higher
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: sevendayshits
       description: Category to sort by
-      isArray: false
       name: orderby
       predefined:
       - created
@@ -836,21 +726,13 @@ script:
       - sevendayshits
       - sixtydayshits
       - totalhits
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort direction
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Returns IP threats from Recorded Future
-    execution: false
     name: recorded-future-get-threats-ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -869,8 +751,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision
+      description: For malicious IP addresses, the reason that the vendor made the decision
       type: string
     - contextPath: IP.Address
       description: IP address
@@ -886,43 +767,24 @@ script:
       type: date
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of results to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
+    - defaultValue: '65'
       description: Minimum threshold score to return results for
-      isArray: false
       name: risk_lower
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Maximum threshold score to return results for
-      isArray: false
       name: risk_higher
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: sevendayshits
       description: Category to sort by
-      isArray: false
       name: orderby
       predefined:
       - created
@@ -935,21 +797,13 @@ script:
       - sevendayshits
       - sixtydayshits
       - totalhits
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort direction
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Returns URL threats from Recorded Future
-    execution: false
     name: recorded-future-get-threats-url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -978,43 +832,24 @@ script:
       type: date
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Limit number of results returned
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
+    - defaultValue: '65'
       description: Minimum threshold score to return results for
-      isArray: false
       name: risk_lower
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Maximum threshold score to return results for
-      isArray: false
       name: risk_higher
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: sevendayshits
       description: Category to sort by
-      isArray: false
       name: orderby
       predefined:
       - created
@@ -1027,21 +862,13 @@ script:
       - sevendayshits
       - sixtydayshits
       - totalhits
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort direction
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Returns domain threats from Recorded Future
-    execution: false
     name: recorded-future-get-threats-domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1069,44 +896,25 @@ script:
       description: Risk last seen timestamp
       type: date
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of results to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
+    - defaultValue: '65'
       description: Minimum threshold score to return results for
-      isArray: false
       name: risk_lower
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '99'
+    - defaultValue: '99'
       description: Maximum threshold score to return results for
-      isArray: false
       name: risk_higher
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
-      isArray: false
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: sevendayshits
       description: Category to sort by
-      isArray: false
       name: orderby
       predefined:
       - created
@@ -1119,21 +927,13 @@ script:
       - sevendayshits
       - sixtydayshits
       - totalhits
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort direction
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Returns vulnerability threats from Recorded Future.
-    execution: false
     name: recorded-future-get-threats-vulnerabilities
     outputs:
     - contextPath: CVE.ID
@@ -1149,16 +949,9 @@ script:
       description: Risk last seen timestamp
       type: date
   - arguments:
-    - default: false
-      description: Specify a domain list by a risk rule name, which can be retrieved
-        by the get-domain-riskrules command.
-      isArray: false
+    - description: Specify a domain list by a risk rule name, which can be retrieved by the get-domain-riskrules command.
       name: list
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the domain risk list as a CSV file from Recorded Future.
-    execution: false
     name: recorded-future-get-domain-risklist
     outputs:
     - contextPath: InfoFile.Name
@@ -1180,16 +973,9 @@ script:
       description: File extension
       type: string
   - arguments:
-    - default: false
-      description: Specify a URL list by a risk rule name, which can be retrieved
-        from the get-url-riskrules command.
-      isArray: false
+    - description: Specify a URL list by a risk rule name, which can be retrieved from the get-url-riskrules command.
       name: list
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the URL risk list as a CSV file from Recorded Future.
-    execution: false
     name: recorded-future-get-url-risklist
     outputs:
     - contextPath: InfoFile.Name
@@ -1211,16 +997,9 @@ script:
       description: File extension
       type: string
   - arguments:
-    - default: false
-      description: Specify an IP list by a risk rule name, which can be retrieved
-        from the get-ip-riskrules command.
-      isArray: false
+    - description: Specify an IP list by a risk rule name, which can be retrieved from the get-ip-riskrules command.
       name: list
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the IP risk list as a CSV file from Recorded Future.
-    execution: false
     name: recorded-future-get-ip-risklist
     outputs:
     - contextPath: InfoFile.Name
@@ -1242,16 +1021,9 @@ script:
       description: File extension
       type: string
   - arguments:
-    - default: false
-      description: Specify a vulnerability list by a risk rule name, which can be
-        retrieved from the get-vulnerability-riskrules command.
-      isArray: false
+    - description: Specify a vulnerability list by a risk rule name, which can be retrieved from the get-vulnerability-riskrules command.
       name: list
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the vulnerability (CVE) risk list from Recorded Future.
-    execution: false
     name: recorded-future-get-vulnerability-risklist
     outputs:
     - contextPath: InfoFile.Name
@@ -1273,16 +1045,9 @@ script:
       description: File extension
       type: string
   - arguments:
-    - default: false
-      description: Specify a hash list by a riskrule name, which can be retrieved
-        from the get-hash-riskrules command.
-      isArray: false
+    - description: Specify a hash list by a riskrule name, which can be retrieved from the get-hash-riskrules command.
       name: list
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the hash risk list from Recorded Future.
-    execution: false
     name: recorded-future-get-hash-risklist
     outputs:
     - contextPath: InfoFile.Name
@@ -1303,9 +1068,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension
       type: string
-  - deprecated: false
-    description: Gets the risk rules for domain data.
-    execution: false
+  - description: Gets the risk rules for domain data.
     name: recorded-future-get-domain-riskrules
     outputs:
     - contextPath: RecordedFuture.RiskRule.Domain.Name
@@ -1320,9 +1083,7 @@ script:
     - contextPath: RecordedFuture.RiskRule.Domain.Criticality
       description: Risk rule criticality
       type: string
-  - deprecated: false
-    description: Gets the risk rules for hash data.
-    execution: false
+  - description: Gets the risk rules for hash data.
     name: recorded-future-get-hash-riskrules
     outputs:
     - contextPath: RecordedFuture.RiskRule.Hash.Name
@@ -1337,9 +1098,7 @@ script:
     - contextPath: RecordedFuture.RiskRule.Hash.Criticality
       description: Risk rule criticality
       type: string
-  - deprecated: false
-    description: Gets the risk rules for IP data.
-    execution: false
+  - description: Gets the risk rules for IP data.
     name: recorded-future-get-ip-riskrules
     outputs:
     - contextPath: RecordedFuture.RiskRule.IP.Name
@@ -1354,9 +1113,7 @@ script:
     - contextPath: RecordedFuture.RiskRule.IP.Criticality
       description: Risk rule criticality
       type: string
-  - deprecated: false
-    description: Gets the risk rules for URL data.
-    execution: false
+  - description: Gets the risk rules for URL data.
     name: recorded-future-get-url-riskrules
     outputs:
     - contextPath: RecordedFuture.RiskRule.URL.Name
@@ -1371,9 +1128,7 @@ script:
     - contextPath: RecordedFuture.RiskRule.URL.Criticality
       description: Risk rule criticality
       type: string
-  - deprecated: false
-    description: Gets the risk rules for vulnerability data.
-    execution: false
+  - description: Gets the risk rules for vulnerability data.
     name: recorded-future-get-vulnerability-riskrules
     outputs:
     - contextPath: RecordedFuture.RiskRule.Vulnerability.Name
@@ -1389,22 +1144,12 @@ script:
       description: Risk rule criticality
       type: string
   - arguments:
-    - default: false
-      description: Rule name to search, can be a partial name
-      isArray: false
+    - description: Rule name to search, can be a partial name
       name: rule_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Number of rules to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets Recorded Future alert rules.
-    execution: false
     name: recorded-future-get-alert-rules
     outputs:
     - contextPath: RecordedFuture.AlertRule.ID
@@ -1414,35 +1159,17 @@ script:
       description: Alert rule name
       type: string
   - arguments:
-    - default: false
-      description: Alert rule ID
-      isArray: false
+    - description: Alert rule ID
       name: rule_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Number of alerts to return
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Alert triggered time, e.g., "1 hour" or "2 days"
-      isArray: false
+    - description: Alert triggered time, e.g., "1 hour" or "2 days"
       name: triggered_time
-      required: false
-      secret: false
-    - default: false
-      description: Alert assignee's email address
-      isArray: false
+    - description: Alert assignee's email address
       name: assignee
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert review status
-      isArray: false
       name: status
       predefined:
       - unassigned
@@ -1450,42 +1177,22 @@ script:
       - actionable
       - no-action
       - tuning
-      required: false
-      secret: false
-    - default: false
-      description: Free text search
-      isArray: false
+    - description: Free text search
       name: freetext
-      required: false
-      secret: false
-    - default: false
-      description: Alerts from offset
-      isArray: false
+    - description: Alerts from offset
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alerts sort order
-      isArray: false
       name: orderby
       predefined:
       - triggered
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alerts sort direction
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Gets alerts from Recorded Future.
-    execution: false
     name: recorded-future-get-alerts
     outputs:
     - contextPath: RecordedFuture.Alert.ID
@@ -1509,10 +1216,7 @@ script:
     - contextPath: RecordedFuture.Alert.Rule
       description: Alert rule name
       type: string
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2

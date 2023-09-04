@@ -5,10 +5,10 @@ commonfields:
 configuration:
 - display: Client ID
   name: client_id
-  required: false
   type: 9
   hiddenusername: true
   displaypassword: Client ID
+  required: false
 - additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Code Flow.
   defaultvalue: Device Code
   display: Authentication Type
@@ -21,52 +21,43 @@ configuration:
   type: 15
 - display: Tenant ID (for Client Credentials mode)
   name: tenant_id
-  required: false
   type: 0
+  required: false
 - display: Client Secret (for Client Credentials mode)
   name: client_secret
-  required: false
   type: 9
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Azure Risky Users provides access to all at-risk users and risk detections in the Azure AD environment.
 display: Azure Risky Users
 name: AzureRiskyUsers
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-risky-users-auth-test
-  - deprecated: false
-    description: Starts the authorization process. Follow the instructions in the command results.
-    execution: false
+  - description: Starts the authorization process. Follow the instructions in the command results.
     name: azure-risky-users-auth-start
-  - deprecated: false
-    description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
-    execution: false
+  - description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
     name: azure-risky-users-auth-complete
-  - deprecated: false
-    description: Reruns the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-risky-users-auth-reset
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Sets the Risk State to retrieve.
       name: risk_state
       predefined:
@@ -74,36 +65,20 @@ script:
       - confirmedCompromised
       - remediated
       - dismissed
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit of results to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number.
-      isArray: false
       name: page
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sets the Risk Level to retrieve.
-      isArray: false
       name: risk_level
       predefined:
       - low
       - medium
       - high
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a comma-separated list of all risky users and their properties.
-    execution: false
     name: azure-risky-users-list
     outputs:
     - contextPath: AzureRiskyUsers.RiskyUser.id
@@ -134,15 +109,10 @@ script:
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
       type: String
   - arguments:
-    - default: false
-      description: Risky user ID to retrieve.
-      isArray: false
+    - description: Risky user ID to retrieve.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves properties and relationships of a Risky User.
-    execution: false
     name: azure-risky-user-get
     outputs:
     - contextPath: AzureRiskyUsers.RiskyUser.id
@@ -173,26 +143,16 @@ script:
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Limit of results to retrieve.
-      isArray: false
       name: limit
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number.
-      isArray: false
       name: page
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sets the Risk State to retrieve.
-      isArray: false
       name: risk_state
       predefined:
       - atRisk
@@ -200,36 +160,25 @@ script:
       - remediated
       - dismissed
       - confirmedSafe
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sets the Risk Level to retrieve.
-      isArray: false
       name: risk_level
       predefined:
       - low
       - medium
       - high
-      required: false
-      secret: false
     - description: Filter events that created before specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
-      isArray: false
       name: detected_date_time_before
     - description: Filter events that created after specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
-      isArray: false
       name: detected_date_time_after
     - description: The method used to order the retrieved results.
-      isArray: false
       name: order_by
       defaultValue: 'detectedDateTime desc'
       auto: PREDEFINED
       predefined:
       - 'detectedDateTime desc'
       - 'detectedDateTime asc'
-    deprecated: false
     description: Returns a comma-separated list of the Risk Detection objects and their properties.
-    execution: false
     name: azure-risky-users-risk-detections-list
     outputs:
     - contextPath: AzureRiskyUsers.RiskDetection.id
@@ -293,15 +242,10 @@ script:
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
   - arguments:
-    - default: false
-      description: The risk detection ID to retrieve.
-      isArray: false
+    - description: The risk detection ID to retrieve.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Reads the properties and relationships of a riskDetection object.
-    execution: false
     name: azure-risky-users-risk-detection-get
     outputs:
     - contextPath: AzureRiskyUsers.RiskDetection.id
@@ -364,11 +308,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.49599
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

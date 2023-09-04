@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import concurrent.futures
 import json
 import time
@@ -10,8 +12,6 @@ import requests
 import urllib3
 from requests.exceptions import HTTPError
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings

@@ -13,7 +13,8 @@ def main():
         res = search_indicators.search_indicators_by_version(query=query, from_date=from_date, to_date=to_date)
 
         indicators = []
-        for ind in res.get('iocs', []):
+        iocs = res.get('iocs') if res.get('iocs') is not None else []
+        for ind in iocs:
             indicators.append({
                 'Value': dict_safe_get(ind, ['value']),
                 'Name': dict_safe_get(ind, ['CustomFields', 'mitreid']),

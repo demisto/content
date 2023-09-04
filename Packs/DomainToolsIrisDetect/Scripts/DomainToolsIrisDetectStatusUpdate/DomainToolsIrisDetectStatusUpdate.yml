@@ -1,0 +1,23 @@
+comment: Updates the DomainTools Iris Detect Domain state.
+commonfields:
+  id: DomainToolsIrisDetectStatusUpdate
+  version: -1
+enabled: true
+name: DomainToolsIrisDetectStatusUpdate
+script: '-'
+subtype: python3
+tags:
+- field-change-triggered
+timeout: 180ns
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+dependson:
+  must:
+  - DomainToolsIrisDetect|||domaintools-iris-detect-blocklist-domains
+  should:
+  - DomainToolsIrisDetect|||domaintools-iris-detect-blocklist-domains
+fromversion: 6.8.0

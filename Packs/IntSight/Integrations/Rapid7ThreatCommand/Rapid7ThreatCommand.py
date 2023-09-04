@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-import demistomock as demisto
-from CommonServerPython import *
 from enum import Enum
 from typing import Any, Callable, cast
 import copy

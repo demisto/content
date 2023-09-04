@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from itertools import zip_longest
 from typing import Callable, Dict
 
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport

@@ -1,6 +1,6 @@
-import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import boto3
 
 import urllib3.util
 from datetime import timezone
@@ -679,6 +679,8 @@ def enable_security_hub_command(client, args):
 def get_master_account_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.get_master_account(**kwargs)
+    if 'Master' in response:
+        response['Master'] = convert_members_date_type([response.get('Master')])
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
     table_header = 'AWS SecurityHub GetMasterAccount'
@@ -866,7 +868,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
                         'next_token': next_token})
     demisto.incidents(incidents)
 
-    if archive_findings:
+    if archive_findings and findings:
         kwargs = {
             'FindingIdentifiers': [
                 {'Id': finding['Id'], 'ProductArn': finding['ProductArn']} for finding in findings
@@ -883,7 +885,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:  # type: ignore
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -910,7 +912,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
             }
         ]
     }
-    response = client.get_findings(Filters=filters)
+    response = client.get_findings(Filters=filters)  # type: ignore
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     incident_last_update = finding.get('UpdatedAt', '')
@@ -941,7 +943,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:  # type: ignore
     """
     Mirrors out local changes to the remote system.
     Args:
@@ -995,7 +997,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
 
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
-        response = client.batch_update_findings(**kwargs)
+        response = client.batch_update_findings(**kwargs)   # type: ignore
         demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
@@ -1006,6 +1008,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
+    return 'Failed to execute test-module command', {}, {}
 
 
 def main():  # pragma: no cover

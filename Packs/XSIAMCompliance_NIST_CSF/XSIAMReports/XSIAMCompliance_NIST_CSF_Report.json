@@ -1,0 +1,363 @@
+{
+  "fromVersion": "8.3.0",
+  "templates_data": [
+    {
+      "report_name": "NIST CSF Compliance Report",
+      "report_description": "Monitor NIST CSF controls and produce evidence for audits.",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "NIST CSF Compliance Report",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "1004205575214",
+                "description": "Monitor NIST CSF controls and produce evidence for audits."
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-615",
+          "data": [
+            {
+              "key": "xql_1683768603646",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel | filter xdm.target.location.region contains \"*\"\n| fields xdm.target.agent.identifier, xdm.target.asn.as_name, xdm.target.asn.as_number, xdm.target.host.fqdn, xdm.target.ipv4, xdm.target.location.city, xdm.target.location.continent, xdm.target.location.country, xdm.target.location.latitude, xdm.target.location.longitude , xdm.target.location.region\n| comp count() as counter by xdm.target.location.country\n| view graph type = map xaxis = xdm.target.location.country yaxis = counter default_limit = `false` seriestitle(\"counter\",\"Volume\") ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "map",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.target.location.country"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "default_limit",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "counter",
+                          "Volume"
+                        ],
+                        "name": "seriestitle"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-472",
+          "data": [
+            {
+              "key": "xql_1682653050486",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier \n\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9337",
+          "data": [
+            {
+              "key": "xql_1682653226454",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9990",
+          "data": [
+            {
+              "key": "xql_1682654144497",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type contains \"*\"\n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-5505",
+          "data": [
+            {
+              "key": "xql_1682654338154",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 2592000000
+      },
+      "global_id": "a58f43381b7b4c07994d0dca69931a4e",
+      "time_offset": -18000
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1682653050486",
+      "title": "NIST CSF: Protect",
+      "creation_time": 1687927605002,
+      "description": "Implement policies and procedures to protect against cybersecurity risks. Use this widget to query agent and content information.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.observer.content_version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682653226454",
+      "title": "NIST CSF: Detect",
+      "creation_time": 1687927605226,
+      "description": "Implement policies and procedures to detect cybersecurity risks. Use this widget to query network detection rules.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id \n| filter xdm.network.rule contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682654144497",
+      "title": "NIST CSF: Respond",
+      "creation_time": 1687927605445,
+      "description": "Implement policies and procedures to respond to cybersecurity threats. Use this widget to query observer information.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682654338154",
+      "title": "NIST CSF: Recover",
+      "creation_time": 1687927605664,
+      "description": "Implement policies and procedures to recover from cybersecurity threats. Use this widget to query event information.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel\n| fields xdm.source.host.hostname, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683768603646",
+      "title": "NIST CSF: Identify",
+      "creation_time": 1687927605879,
+      "description": "Implement policies and procedures to identify cybersecurity risks. Use this widget to query systems and display them on a map.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.target.location.region, xdm.target.location.country\n| filter xdm.target.location.region contains \"*\"\n| comp count() as counter by xdm.target.location.country\n| view graph type = map xaxis = xdm.target.location.country yaxis = counter default_limit = `false` seriestitle(\"counter\",\"Volume\") ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "map",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.target.location.country"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "default_limit",
+                "value": "false"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "counter",
+                  "Volume"
+                ],
+                "name": "seriestitle"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import time
 import urllib.parse
@@ -7,8 +9,6 @@ import googleapiclient
 from oauth2client import service_account
 from googleapiclient import discovery
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 

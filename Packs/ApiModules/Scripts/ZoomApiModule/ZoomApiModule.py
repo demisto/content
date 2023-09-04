@@ -103,8 +103,8 @@ class Zoom_Client(BaseClient):
         return oauth_token
 
     def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
-                                   auth=None, json_data=None, params=None,
-                                   return_empty_response: bool = False, resp_type: str = 'json', stream: bool = False):
+                                   auth=None, json_data=None, params=None, files=None, data=None,
+                                   return_empty_response: bool = False, resp_type: str = 'json', stream: bool = False, ):
 
         # all future functions should call this function instead of the original _http_request.
         # This is needed because the OAuth token may not behave consistently,
@@ -112,7 +112,7 @@ class Zoom_Client(BaseClient):
         # and if it turns out to be invalid, the func will retry again with a new token.
         try:
             return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                         auth=auth, json_data=json_data, params=params,
+                                         auth=auth, json_data=json_data, params=params, files=files, data=data,
                                          return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
         except DemistoException as e:
             if ('Invalid access token' in e.message
@@ -120,7 +120,7 @@ class Zoom_Client(BaseClient):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
                 return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                             auth=auth, json_data=json_data, params=params,
+                                             auth=auth, json_data=json_data, params=params, files=files, data=data,
                                              return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
             else:
                 raise DemistoException(e.message)

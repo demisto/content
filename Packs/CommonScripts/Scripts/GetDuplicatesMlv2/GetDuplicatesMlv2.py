@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from sklearn import impute
 
-import demistomock as demisto
-from CommonServerPython import *
 import collections
 import re
 import dateutil.parser  # type: ignore[import]

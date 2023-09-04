@@ -26,38 +26,38 @@ configuration:
   name: limit
   type: 0
   defaultvalue: 1000
-  required: false
   section: Collect
+  required: false
 - display: First fetch time interval
   name: after
   type: 0
   defaultvalue: 3 days
-  required: false
   section: Collect
+  required: false
 - display: The event types to include.
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
   defaultvalue: all
   type: 15
-  required: false
   options:
   - all
   - web
   - git
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 script:
   script: ""
   type: python
@@ -66,18 +66,14 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in orfer to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
       - 'False'
       required: true
-    deprecated: false
     description: Manual command to fetch events and display them.
-    execution: false
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.45601
-  runonce: false
+  dockerimage: demisto/fastapi:1.0.0.64474
   isfetchevents: true
   subtype: python3
 marketplaces:

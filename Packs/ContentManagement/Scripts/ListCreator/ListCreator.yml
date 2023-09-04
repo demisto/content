@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: The name of the list to be configured.
-  isArray: false
+- description: The name of the list to be configured.
   name: list_name
   required: true
-  secret: false
-- default: false
-  description: The data of the list to be configured.
-  isArray: false
+- description: The data of the list to be configured.
   name: list_data
   required: true
-  secret: false
 commonfields:
   id: ListCreator
   version: -1
@@ -22,7 +16,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management

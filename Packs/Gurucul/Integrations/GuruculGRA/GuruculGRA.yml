@@ -978,9 +978,8 @@ script:
       description: Current status of anomaly
       type: String
     description: Retrieve anomalies for specified case id.
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

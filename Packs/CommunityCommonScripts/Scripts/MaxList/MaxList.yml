@@ -4,16 +4,14 @@ args:
   isArray: true
   name: value
   required: true
-comment: "Gets the maximum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"25\"\
-  \n "
+comment: "Gets the maximum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"25\"\n "
 commonfields:
   id: MaxList
   version: -1
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: MaxList
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

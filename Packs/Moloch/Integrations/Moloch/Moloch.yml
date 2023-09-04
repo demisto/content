@@ -222,7 +222,6 @@ script:
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
-  runonce: false
 fromversion: 5.0.0
 tests:
 - no test

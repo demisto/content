@@ -6,30 +6,30 @@ from taxii2client import v20, v21
 import pytest
 import json
 
-with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
+with open('test_data/stix_envelope_no_indicators.json') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
 
-with open('test_data/stix_envelope_17-19.json', 'r') as f:
+with open('test_data/stix_envelope_17-19.json') as f:
     STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/stix_envelope_complex_20-19.json', 'r') as f:
+with open('test_data/stix_envelope_complex_20-19.json') as f:
     STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_17-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_17-19.json') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_20-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_20-19.json') as f:
     CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
-with open('test_data/id_to_object_test.json', 'r') as f:
+with open('test_data/id_to_object_test.json') as f:
     id_to_object = json.load(f)
-with open('test_data/parsed_stix_objects.json', 'r') as f:
+with open('test_data/parsed_stix_objects.json') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes_v21.json', 'r') as f:
+with open('test_data/objects_envelopes_v21.json') as f:
     envelopes_v21 = json.load(f)
-with open('test_data/objects_envelopes_v20.json', 'r') as f:
+with open('test_data/objects_envelopes_v20.json') as f:
     envelopes_v20 = json.load(f)
 
 
@@ -260,8 +260,8 @@ class TestInitServer:
         )
         mock_client.init_server()
         assert isinstance(mock_client.server, v20.Server)
-        assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
-        assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
+        assert mock_auth_header_key in mock_client.server._conn.session.headers
+        assert mock_client.server._conn.session.headers.get(mock_auth_header_key) == mock_password
 
 
 class TestInitRoots:
@@ -420,15 +420,15 @@ class TestInitRoots:
         assert mock_client.api_root.url == self.default_api_root_url
 
     has_none = "Unexpected Response."
-    has_version_error = "Unexpected Response. Got Content-Type: ‘application/taxii+json; charset=utf-8; version=2.1' " \
-                        "for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                        "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                        "Server use ‘from taxii2client.v21 import X'"
+    has_version_error = "Unexpected Response. Got Content-Type: 'application/taxii+json; charset=utf-8; version=2.1' " \
+                        "for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                        "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                        "Server use 'from taxii2client.v21 import X'"
     has_client_error = "Unexpected Response. 406 Client Error."
-    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: ‘application/taxii+json; charset=utf-8; " \
-                      "version=2.1' for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                      "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                      "Server use ‘from taxii2client.v21 import X'"
+    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: 'application/taxii+json; charset=utf-8; " \
+                      "version=2.1' for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                      "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                      "Server use 'from taxii2client.v21 import X'"
 
     @pytest.mark.parametrize('error_msg, should_raise_error',
                              [(has_none, True),
@@ -634,6 +634,44 @@ class TestFetchingStixObjects:
 
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
 
+    @pytest.mark.parametrize(
+        'objects_to_fetch_param', ([], ['example_type'], ['example_type1', 'example_type2'])
+    )
+    def test_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
+        """
+               Scenario: Test handling for objects_to_fetch parameter.
+
+               Given:
+                - A : objects_to_fetch parameter is not set and therefor default to an empty list.
+                - B : objects_to_fetch parameter is set to a list of one object type.
+                - C : objects_to_fetch parameter is set to a list of two object type.
+
+
+               When:
+               - Fetching stix objects from a collection.
+
+               Then:
+               - A : the poll_collection method sends the HTTP request without the match[type] parameter,
+                     therefor fetching all available object types in the collection.
+               - B : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object type in the collection.
+               - C : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object types in the collection.
+        """
+
+        class mock_collection_to_fetch:
+            get_objects = []
+
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=mock_collection_to_fetch,
+                                       proxies=[], verify=False, objects_to_fetch=objects_to_fetch_param)
+        mock_as_pages = mocker.patch.object(v21, 'as_pages', return_value=[])
+        mock_client.poll_collection(page_size=1)
+
+        if objects_to_fetch_param:
+            mock_as_pages.assert_called_with([], per_request=1, type=objects_to_fetch_param)
+        else:
+            mock_as_pages.assert_called_with([], per_request=1)
+
 
 class TestParsingIndicators:
 
@@ -721,7 +759,8 @@ class TestParsingIndicators:
                     "type": "ipv4-addr",
                     "value": "1.1.1.1",
                     "extensions": {
-                        "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
+                        "extension-definition--1234": {"tags": ["test"],
+                                                       "description": "test"}}
                 },
                 [
                     {
@@ -1149,17 +1188,18 @@ class TestParsingIndicators:
         Then:
          - Make sure all the fields are being parsed correctly.
         """
-        indicator_obj = {"id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85,
-                         "lang": "en", "type": "indicator", "created": "2020-05-14T00:14:05.401Z",
-                         "modified": "2020-05-14T00:14:05.401Z", "name": "suspicious_domain: test.org",
-                         "description": "TS ID: 55475482483; iType: suspicious_domain; ",
-                         "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
-                         "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
-                         "labels": ["medium"],
-                         "indicator_types": ["anomalous-activity"],
-                         "extensions": {
-                             "extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
-                         "pattern_version": "2.1", "spec_version": "2.1"}
+        indicator_obj = {
+            "id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85, "lang": "en",
+            "type": "indicator", "created": "2020-05-14T00:14:05.401Z", "modified": "2020-05-14T00:14:05.401Z",
+            "name": "suspicious_domain: test.org", "description": "TS ID: 55475482483; iType: suspicious_domain; ",
+            "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+            "labels": ["medium"],
+            "indicator_types": ["anomalous-activity"],
+            "extensions":
+            {"extension-definition--1234": {"CustomFields": {"tags": ["medium"],
+                                                             "description": "test"}}},
+            "pattern_version": "2.1", "spec_version": "2.1"}
 
         indicator_obj['value'] = 'test.org'
         indicator_obj['type'] = 'Domain'
@@ -1363,6 +1403,31 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
+
+
+class TestParsingObjects:
+
+    def test_parsing_report_with_relationships(self):
+        """
+        Scenario: Test parsing report envelope for v2.0
+
+        Given:
+        - Envelope with reports.
+
+        When:
+        - load_stix_objects_from_envelope is called.
+
+        Then: - validate the result contained the report with relationships as expected.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+
+        result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
+        reports = [obj for obj in result if obj.get('type') == 'Report']
+        report_with_relationship = [report for report in reports if report.get('relationships')]
+
+        assert len(report_with_relationship) == 1
+        assert len(report_with_relationship[0].get('relationships')) == 2
 
 
 @pytest.mark.parametrize('limit, element_count, return_value',

@@ -31,7 +31,7 @@ DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0))
+SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0)) or 0
 MALICIOUS_THRESHOLD = arg_to_number(PARAMS.get('dboscore_threshold', -100))
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
@@ -193,17 +193,31 @@ def timestamp_to_date(ts):
     return ts
 
 
-def securerank_to_dbotscore(sr):
-    # converts cisco umbrella score to dbotscore
-    DBotScore = 0
-    if sr is not None:
-        if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
-            DBotScore = 1
-        elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD:
-            DBotScore = 2
-        elif sr <= MALICIOUS_THRESHOLD:
-            DBotScore = 3
-    return DBotScore
+def calculate_domain_dbot_score(status: int | None, securerank2: int | None) -> int:
+    match status:
+        case -1:
+            return Common.DBotScore.BAD
+        case 1:
+            return Common.DBotScore.GOOD
+        case 0 | None:
+            # in these cases, security_rank2 is used
+            if securerank2 is None:
+                return Common.DBotScore.NONE
+
+            if (threshold := demisto.args().get('threshold', MALICIOUS_THRESHOLD)) is None  \
+                    or (malicious_threshold := arg_to_number(threshold)) is None:
+                raise RuntimeError(f"Cannot convert {threshold=} to number")
+
+            if securerank2 < malicious_threshold:
+                return Common.DBotScore.BAD
+
+            if securerank2 < SUSPICIOUS_THRESHOLD:
+                return Common.DBotScore.SUSPICIOUS
+
+            return Common.DBotScore.GOOD
+
+        case _:
+            raise ValueError(f"unexpected {status=}, expected 0,1 or -1")
 
 
 ''' INTERNAL FUNCTIONS '''
@@ -486,7 +500,6 @@ def get_domain_security_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_security(domain)
     if res:
@@ -509,27 +522,22 @@ def get_domain_security_command():
             domain_security_context[context_key] = res[key]
 
         if domain_security_context:
-            secure_rank = res.get('securerank2', False)
-            DBotScore = 0
-            if secure_rank:
-                if secure_rank < threshold:
-                    DBotScore = 3
-                else:
-                    DBotScore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
-                    'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': DBotScore,
-                    'Reliability': reliability
-                }
+            dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
+                                                     securerank2=(get_domain_details(domain) or {}).get('securerank2'))
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
 
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Security': domain_security_context
             }
 
-            if DBotScore == 3:
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found via umbrella-domain-security'
@@ -539,7 +547,7 @@ def get_domain_security_command():
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
-            'Score': 0,
+            'Score': Common.DBotScore.NONE,
             'Reliability': reliability
 
         }
@@ -809,12 +817,11 @@ def get_domain_command():
                 'Malware Categories': malware_categories
             }
 
-            domain_details = []  # type: ignore
-            domain_details = get_domain_details(domain)
+            domain_details = get_domain_details(domain) or {}
             popularity = domain_details.get('popularity')  # type: ignore
             secure_rank = domain_details.get('securerank2')  # type: ignore
-            dbotscore = securerank_to_dbotscore(secure_rank)
-
+            dbot_score = calculate_domain_dbot_score(status=risk_score,
+                                                     securerank2=secure_rank)
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Admin': admin,
@@ -834,18 +841,17 @@ def get_domain_command():
             }
 
             # Add malicious if needed
-            if risk_score == -1 or (secure_rank and secure_rank < MALICIOUS_THRESHOLD):
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found with risk score -1'
                 }
-                dbotscore = 3
 
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Score': dbotscore,
+                'Score': dbot_score,
                 'Reliability': reliability
             }
 
@@ -853,7 +859,7 @@ def get_domain_command():
                 'Risk Score': risk_score,
                 'Secure Rank': secure_rank,
                 'Populairty': popularity,
-                'Demisto Reputation': scoreToReputation(dbotscore),
+                'Demisto Reputation': scoreToReputation(dbot_score),
                 'First Queried time': first_queried,
             })
 
@@ -1132,7 +1138,6 @@ def get_domain_details_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_details(domain)
     if res:
@@ -1159,25 +1164,21 @@ def get_domain_details_command():
                 'Domain': domain,
                 'Data': domain_security_context
             }
-            secure_rank = res.get('securerank2', False)
-            if secure_rank:
-                if secure_rank < threshold:
-                    dbotscore = 3
-                else:
-                    dbotscore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
+            dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
+                                                     securerank2=res.get('securerank2'))
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
+            if dbot_score == Common.DBotScore.BAD:
+                context[outputPaths['domain']] = {}
+                context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': dbotscore,
-                    'Reliability': reliability
+                    'Description': 'Malicious domain found via get-domain-details'
                 }
-                if dbotscore == 3:
-                    context[outputPaths['domain']] = {}
-                    context[outputPaths['domain']]['Malicious'] = {
-                        'Vendor': 'Cisco Umbrella Investigate',
-                        'Description': 'Malicious domain found via get-domain-details'
-                    }
 
     results.append({
         'Type': entryTypes['note'],

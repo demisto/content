@@ -3,17 +3,20 @@ commonfields:
   version: -1
 name: DBotAverageScore
 script: ''
-type: javascript
-comment: Calculates average score for each indicator from context
+type: python
+comment: The script calculates the average DBot score for each indicator in the context.
 tags:
 - Utility
 outputs:
 - contextPath: DBotAvgScore.Indicator
-  description: The indicator we calculate average score for
+  description: The indicator the average score is for.
+  type: string
 - contextPath: DBotAvgScore.Score
-  description: The average score per indicator
+  description: The average score for the indicator.
+  type: number
 enabled: true
-scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - DbotAverageScore-Test

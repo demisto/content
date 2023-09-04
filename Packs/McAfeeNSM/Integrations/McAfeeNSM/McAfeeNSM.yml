@@ -73,11 +73,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: state
       auto: PREDEFINED
       predefined:
@@ -148,11 +146,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: new_state
       auto: PREDEFINED
       predefined:
@@ -324,5 +320,4 @@ script:
       description: Attack Category
       type: string
     description: Get all available attack definitions in NSM
-  runonce: false
 fromversion: 5.0.0

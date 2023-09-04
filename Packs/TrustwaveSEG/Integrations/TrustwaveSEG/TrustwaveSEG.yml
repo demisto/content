@@ -27,23 +27,18 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Trustwave SEG is a secure messaging solution that protects businesses
-  and users from email-borne threats, including phishing, blended threats, and spam. Trustwave
-  Secure Email Gateway also delivers improved policy enforcement and data leakage
-  prevention.
+  required: false
+description: Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam. Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.
 display: Trustwave Secure Email Gateway
 name: trustwave secure email gateway
 script:
   commands:
-  - deprecated: false
-    description: Gets Trustwave version information.
-    execution: false
+  - description: Gets Trustwave version information.
     name: trustwave-seg-get-version
     outputs:
     - contextPath: TrustwaveSEG.Version.configVersion
@@ -55,9 +50,7 @@ script:
     - contextPath: TrustwaveSEG.Version.rpcInterfaceVersion
       description: The RPC interface version.
       type: Number
-  - deprecated: false
-    description: Returns a list of automatic configuration backups.
-    execution: false
+  - description: Returns a list of automatic configuration backups.
     name: trustwave-seg-automatic-config-backup-list
     outputs:
     - contextPath: TrustwaveSEG.AutomaticBackupConfig.fileSize
@@ -100,41 +93,23 @@ script:
       description: The date the automatic backup configuration was last modified.
       type: Number
   - arguments:
-    - default: false
-      description: 'The name of the backup to restore (e.g., MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10).'
-      isArray: false
+    - description: 'The name of the backup to restore (e.g., MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10).'
       name: name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: The timeout for the request in seconds. This request might take
-        a while. If the request fails due to a connectivity error, try to add more
-        time to this argument.
-      isArray: false
+    - defaultValue: '30'
+      description: The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more time to this argument.
       name: timeout
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether DKIM (DomainKeys Identified Mail) should be used.
-      isArray: false
       name: include_dkim
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: If include_dkim is true, the DKIM password for the action.
-      isArray: false
+    - description: If include_dkim is true, the DKIM password for the action.
       name: dkim_password
-      required: false
       secret: true
-    deprecated: false
     description: Restores a specific automatic configuration backup.
-    execution: false
     name: trustwave-seg-automatic-config-backup-restore
     outputs:
     - contextPath: TrustwaveSEG.AutomaticBackupRestore.errors
@@ -147,36 +122,20 @@ script:
       description: The warnings of the AutomaticBackupRestore.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '30'
-      description: The timeout for the request in seconds. This request might take
-        a while. If the request fails due to a connectivity error, try to add more
-        seconds to the timeout.
-      isArray: false
+    - defaultValue: '30'
+      description: The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout.
       name: timeout
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Choose if DKIM (DomainKeys Identified Mail) should be used.
-      isArray: false
       name: include_dkim
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: If include_dkim equals true - Please specify the DKIM password
-        (defaults to configured password).
-      isArray: false
+    - description: If include_dkim equals true - Please specify the DKIM password (defaults to configured password).
       name: dkim_password
-      required: false
       secret: true
-    deprecated: false
     description: Run automatic backup now.
-    execution: false
     name: trustwave-seg-automatic-config-backup-run
     outputs:
     - contextPath: TrustwaveSEG.AutomaticBackupRun.backupName
@@ -190,16 +149,11 @@ script:
       default: true
       defaultValue: 'false'
       description: Whether to return only active alarms.
-      isArray: false
       name: active_only
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of current alerts.
-    execution: false
     name: trustwave-seg-list-alerts
     outputs:
     - contextPath: TrustwaveSEG.Alert.active
@@ -221,30 +175,13 @@ script:
       description: The type of the alert.
       type: Number
   - arguments:
-    - default: false
-      description: 'An optional time range, i.e., 3 months, 1 week, 1 day ago, etc.'
-      isArray: false
+    - description: 'An optional time range, i.e., 3 months, 1 week, 1 day ago, etc.'
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: 'Start time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week,
-        1 day ago, etc. Given only the start_time, end_time will be set to the current
-        time.'
-      isArray: false
+    - description: 'Start time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'End time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week,
-        1 day ago, etc.'
-      isArray: false
+    - description: 'End time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc.'
       name: end_time
-      required: false
-      secret: false
-    deprecated: false
     description: Gets Trustwave SEG statistics. Must provide a start time or time range.
-    execution: false
     name: trustwave-seg-statistics
     outputs:
     - contextPath: TrustwaveSEG.Statistics.maliciousUrls
@@ -301,9 +238,7 @@ script:
     - contextPath: TrustwaveSEG.Statistics.virusScanned
       description: The number of virus-scanned statistics.
       type: Number
-  - deprecated: false
-    description: Gets a list of servers.
-    execution: false
+  - description: Gets a list of servers.
     name: trustwave-seg-list-servers
     outputs:
     - contextPath: TrustwaveSEG.Server.configCommitSetId
@@ -364,15 +299,10 @@ script:
       description: Timezone offset of the server.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the server from which to retrieve information.
-      isArray: false
+    - description: The ID of the server from which to retrieve information.
       name: server_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets server details.
-    execution: false
     name: trustwave-seg-get-server
     outputs:
     - contextPath: TrustwaveSEG.Server.configCommitSetId
@@ -432,9 +362,7 @@ script:
     - contextPath: TrustwaveSEG.Server.timeZoneOffset
       description: Timezone offset of the server.
       type: Number
-  - deprecated: false
-    description: Gets a list of classifications.
-    execution: false
+  - description: Gets a list of classifications.
     name: trustwave-seg-list-classifications
     outputs:
     - contextPath: TrustwaveSEG.Classification.code
@@ -449,9 +377,7 @@ script:
     - contextPath: TrustwaveSEG.Classification.type
       description: The type of the classification.
       type: Number
-  - deprecated: false
-    description: Gets a list of folders.
-    execution: false
+  - description: Gets a list of folders.
     name: trustwave-seg-list-quarantine-folders
     outputs:
     - contextPath: TrustwaveSEG.Folder.description
@@ -502,9 +428,7 @@ script:
     - contextPath: TrustwaveSEG.Folder.securityDescription
       description: The security description of the folder.
       type: String
-  - deprecated: false
-    description: Gets a list of folders with current day information.
-    execution: false
+  - description: Gets a list of folders with current day information.
     name: trustwave-seg-list-quarantine-folders-with-day-info
     outputs:
     - contextPath: TrustwaveSEG.Folder.dayItems
@@ -559,15 +483,10 @@ script:
       description: The security description of the folder.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the folder with quarantine day information.
-      isArray: false
+    - description: The ID of the folder with quarantine day information.
       name: folder_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the current day information for a folder.
-    execution: false
     name: trustwave-seg-list-day-info-by-quarantine-folder
     outputs:
     - contextPath: TrustwaveSEG.DayInfo.endTime
@@ -580,129 +499,55 @@ script:
       description: The start time of the day information.
       type: Number
   - arguments:
-    - default: false
-      description: 'An optional time range of the search, i.e., 3 months, 1 week, 1
-        day ago, etc.'
-      isArray: false
+    - description: 'An optional time range of the search, i.e., 3 months, 1 week, 1 day ago, etc.'
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: 'Start time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months,
-        1 week, 1 day ago, etc. Given only the start_time, end_time will be set to
-        the current time.'
-      isArray: false
+    - description: 'Start time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time.'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'End time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3
-        months, 1 week, 1 day ago, etc.'
-      isArray: false
+    - description: 'End time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc.'
       name: end_time
-      required: false
-      secret: false
     - default: true
       defaultValue: '10'
       description: The number of rows to return from the API. Default to 10.
-      isArray: false
       name: max_rows
-      required: false
-      secret: false
-    - default: false
-      description: 'The ID of the folder in which to search for information (e.g., 1006).'
-      isArray: false
+    - description: 'The ID of the folder in which to search for information (e.g., 1006).'
       name: folder_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the message to search for.
-      isArray: false
+    - description: The name of the message to search for.
       name: message_name
-      required: false
-      secret: false
-    - default: false
-      description: 'The classification ID. Can be found by using the classification command
-        (e.g., 37).'
-      isArray: false
+    - description: 'The classification ID. Can be found by using the classification command (e.g., 37).'
       name: classification
-      required: false
-      secret: false
-    - default: false
-      description: The email address from which the message was sent.
-      isArray: false
+    - description: The email address from which the message was sent.
       name: from_user
-      required: false
-      secret: false
-    - default: false
-      description: The email address to which the message was sent.
-      isArray: false
+    - description: The email address to which the message was sent.
       name: to_user
-      required: false
-      secret: false
-    - default: false
-      description: The domain to which the message was sent.
-      isArray: false
+    - description: The domain to which the message was sent.
       name: to_domain
-      required: false
-      secret: false
-    - default: false
-      description: 'The minimum size in bytes of the message (e.g., 0).'
-      isArray: false
+    - description: 'The minimum size in bytes of the message (e.g., 0).'
       name: min_size
-      required: false
-      secret: false
-    - default: false
-      description: 'The maximum size in bytes of the message (e.g., 1024).'
-      isArray: false
+    - description: 'The maximum size in bytes of the message (e.g., 1024).'
       name: max_size
-      required: false
-      secret: false
-    - default: false
-      description: 'The subject of the message.  (e.g., "some subject").'
-      isArray: false
+    - description: 'The subject of the message.  (e.g., "some subject").'
       name: subject
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the search should include the history.
-      isArray: false
       name: search_history
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the search should include forwarded messages.
-      isArray: false
       name: forwards
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'The block number of the message (e.g., 106098471075840).'
-      isArray: false
+    - description: 'The block number of the message (e.g., 106098471075840).'
       name: block_number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the search should include messages with a blank subject.
-      isArray: false
       name: search_blank_subject
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Find message by specified parameters.
-    execution: false
     name: trustwave-seg-find-quarantine-message
     outputs:
     - contextPath: TrustwaveSEG.Message.actionType
@@ -766,85 +611,44 @@ script:
       description: The unicode subject of the message.
       type: String
   - arguments:
-    - default: false
-      description: 'The block number of the message to search for (e.g., 106098471075840). Can be retrieved
-        from the find message endpoint.'
-      isArray: false
+    - description: 'The block number of the message to search for (e.g., 106098471075840). Can be retrieved from the find message endpoint.'
       name: block_number
       required: true
-      secret: false
-    - default: false
-      description: 'Edition of the message (e.g., "607ef9ae0000"). Can be retrieved from the find message
-        endpoint.'
-      isArray: false
+    - description: 'Edition of the message (e.g., "607ef9ae0000"). Can be retrieved from the find message endpoint.'
       name: edition
       required: true
-      secret: false
-    - default: false
-      description: 'Folder ID of the message (e.g., 1006). Can be retrieved from the find message
-        endpoint.'
-      isArray: false
+    - description: 'Folder ID of the message (e.g., 1006). Can be retrieved from the find message endpoint.'
       name: folder_id
       required: true
-      secret: false
-    - default: false
-      description: 'The name of the message (e.g., "B607ef9ac0000"). Can be retrieved from the find message
-        endpoint.'
-      isArray: false
+    - description: 'The name of the message (e.g., "B607ef9ac0000"). Can be retrieved from the find message endpoint.'
       name: message_name
       required: true
-      secret: false
-    - default: false
-      description: 'The recipient of the message (e.g., email@example.com). Can be retrieved from the find
-        message endpoint.'
-      isArray: false
+    - description: 'The recipient of the message (e.g., email@example.com). Can be retrieved from the find message endpoint.'
       name: recipient
       required: true
-      secret: false
-    - default: false
-      description: 'The server ID of the message (e.g., 1). Can be retrieved from the find
-        message endpoint. '
-      isArray: false
+    - description: 'The server ID of the message (e.g., 1). Can be retrieved from the find message endpoint. '
       name: server_id
       required: true
-      secret: false
-    - default: false
-      description: 'The time the message was logged (e.g., 1618934189). Can be retrieved from the find
-        message endpoint. '
-      isArray: false
+    - description: 'The time the message was logged (e.g., 1618934189). Can be retrieved from the find message endpoint. '
       name: time_logged
       required: true
-      secret: false
-    - default: false
-      description: 'The message that should be shown with the message on Spiderlabs.
-        (e.g., "This message is spam...")'
-      isArray: false
+    - description: 'The message that should be shown with the message on Spiderlabs. (e.g., "This message is spam...")'
       name: spam_report_message
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the message is spam.
-      isArray: false
       name: is_spam
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    deprecated: false
     description: Forwards a message to Spiderlabs as spam.
-    execution: false
     name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-tests: 
+tests:
 - TrustwaveSEG-Test
 fromversion: 5.0.0

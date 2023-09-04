@@ -29,8 +29,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -39,14 +39,14 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   additionalinfo: the segment of PolySwarm's marketplace to query on.
+  required: false
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
 display: PolySwarm
 name: PolySwarmV2
@@ -55,13 +55,9 @@ script:
   - arguments:
     - default: true
       description: UUID string.
-      isArray: false
       name: scan_uuid
       required: true
-      secret: false
-    deprecated: false
     description: Returns a report using the UUID.
-    execution: false
     name: polyswarm-get-report
     outputs:
     - contextPath: PolySwarm.Total
@@ -80,21 +76,13 @@ script:
       description: The artifact queried.
       type: String
   - arguments:
-    - default: false
-      description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
-      isArray: false
+    - description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       name: hash
-      required: false
-      secret: false
     - default: true
       description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: true
       name: file
-      required: false
-      secret: false
-    deprecated: false
     description: Queries PolySwarm for file reputation information.
-    execution: false
     name: file
     outputs:
     - contextPath: PolySwarm.Total
@@ -142,10 +130,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Queries PolySwarm for IP reputation information.
-    execution: false
     name: ip
     outputs:
     - contextPath: PolySwarm.Total
@@ -190,13 +175,9 @@ script:
   - arguments:
     - default: true
       description: The URL for which to retrieve the reputation information.
-      isArray: false
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Queries PolySwarm for URL reputation information.
-    execution: false
     name: url
     outputs:
     - contextPath: PolySwarm.Total
@@ -244,10 +225,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Queries PolySwarm to retrieve domain reputation information.
-    execution: false
     name: domain
     outputs:
     - contextPath: PolySwarm.Total
@@ -295,10 +273,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Uploads a URL to PolySwarm and retrieves the analysis results.
-    execution: false
     name: url-scan
     outputs:
     - contextPath: PolySwarm.Total
@@ -317,15 +292,10 @@ script:
       description: The artifact queried.
       type: String
   - arguments:
-    - default: false
-      description: 'The type of the file hash to rescan. The hash type can be: "SHA256", "SHA1", or "MD5".'
-      isArray: false
+    - description: 'The type of the file hash to rescan. The hash type can be: "SHA256", "SHA1", or "MD5".'
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Rescans the uploaded artifact by hash.
-    execution: false
     name: file-rescan
     outputs:
     - contextPath: PolySwarm.Total
@@ -346,13 +316,9 @@ script:
   - arguments:
     - default: true
       description: 'The file hash type to download. The hash type can be: "SHA256", "SHA1", or "MD5".'
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a file hash from PolySwarm.
-    execution: false
     name: get-file
     outputs:
     - contextPath: File.Size
@@ -415,13 +381,9 @@ script:
   - arguments:
     - default: true
       description: The War Room entry ID of the file.
-      isArray: false
       name: entryID
       required: true
-      secret: false
-    deprecated: false
     description: Uploads a file to PolySwarm and retrieves the analysis results.
-    execution: false
     name: file-scan
     outputs:
     - contextPath: PolySwarm.Total
@@ -439,10 +401,6 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

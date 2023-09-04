@@ -1,6 +1,3 @@
-[file:MyToDoTasksWidget.yml]
-ignore=RM109
-
 [known_words]
 GetLargestInvestigations
 GetLargestInputsAndOutputsInIncidents
