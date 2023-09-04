@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -9,7 +8,6 @@ import requests
 import unittest
 from unittest import mock
 import dateparser
-import arrow
 
 """MOCKED RESPONSES"""
 

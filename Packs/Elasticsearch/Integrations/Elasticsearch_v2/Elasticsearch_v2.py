@@ -265,8 +265,7 @@ def search_command(proxies):
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
-                                         time_field=timestamp_field,
-                                         )
+                                         time_field=timestamp_field)
 
     if query_dsl:
         response = execute_raw_query(es, query_dsl, index, size, base_page)
