@@ -1,5 +1,5 @@
 Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
-This integration was integrated and tested with version 6.0 of XSOAR Mirroring
+This integration is compatible with versions 6.x and 8.x of Cortex XSOAR.
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 
