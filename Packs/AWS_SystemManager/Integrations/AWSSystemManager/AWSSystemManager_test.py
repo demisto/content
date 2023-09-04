@@ -271,7 +271,7 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
     response = add_tags_to_resource_command(args, MockClient())
-    assert response.readable_output == "Tags added to resource test_id successfully."
+    assert response.readable_output == "Tags successfully added to resource test_id."
 
 
 def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
