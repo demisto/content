@@ -24,7 +24,7 @@
             "recipientAddress": "jane.doe@some-other-domain.com",
             "subject": "Important Notice",
             "markedAs": "Malicious",
-            "threatId": "1234"
+            "threatId": 1234
         },
         {
             "eventTimestamp": "2022-04-04T21:12:14Z",
@@ -32,7 +32,7 @@
             "recipientAddress": "john@some-other-domain.com",
             "subject": "Important Notice",
             "markedAs": "Malicious",
-            "threatId": "12345"
+            "threatId": 12345
         }
     ]
 }
