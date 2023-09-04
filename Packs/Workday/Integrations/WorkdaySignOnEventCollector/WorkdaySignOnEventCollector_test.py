@@ -52,7 +52,7 @@ def test_generate_checksum():
     """
     # Using known values to calculate checksum
     short_session_id = "12345"
-    user_name = 6789
+    user_name = 'ABC123'
     successful = 1
     signon_datetime = "2021-09-01T12:00:00Z"
 
@@ -67,8 +67,8 @@ def test_check_events_against_checksums():
     """
     # Define test data
     events = [
-        ("12345", 6789, 1, "2021-09-01T12:00:00Z"),
-        ("12346", 6790, 1, "2021-09-01T12:01:00Z"),
+        ("12345", "ABC6789", 1, "2021-09-01T12:00:00Z"),
+        ("12346", "ABC6790", 1, "2021-09-01T12:01:00Z"),
     ]
     checksums = {51917}  # The checksum for the first event
     result = check_events_against_checksums(events, checksums)
@@ -84,13 +84,13 @@ def test_filter_and_check_events():
     events = [
         {
             "Short_Session_ID": "12345",
-            "User_Name": 6789,
+            "User_Name": "ABC6789",
             "Successful": 1,
             "Signon_DateTime": "2021-09-01T12:00:00Z",
         },
         {
             "Short_Session_ID": "12346",
-            "User_Name": 6790,
+            "User_Name": "ABC6790",
             "Successful": 1,
             "Signon_DateTime": "2021-09-01T12:01:00Z",
         },
@@ -110,13 +110,13 @@ def test_get_future_duplicates_within_timeframe():
     events = [
         {
             "Short_Session_ID": "12345",
-            "User_Name": 6789,
+            "User_Name": "ABC6789",
             "Successful": 1,
             "Signon_DateTime": "2021-09-01T12:00:00Z",
         },
         {
             "Short_Session_ID": "12346",
-            "User_Name": 6790,
+            "User_Name": "ABC6790",
             "Successful": 1,
             "Signon_DateTime": "2021-09-01T12:00:01Z",
         },

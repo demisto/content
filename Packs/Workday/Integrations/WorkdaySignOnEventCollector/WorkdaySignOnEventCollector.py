@@ -42,7 +42,7 @@ def fletcher16(data: bytes) -> int:
 
 
 def generate_checksum(
-    short_session_id: str, user_name: int, successful: int, signon_datetime: str
+    short_session_id: str, user_name: str, successful: int, signon_datetime: str
 ) -> int:
     """
     Compute a checksum for the given inputs using the Fletcher-16 algorithm.
@@ -53,7 +53,7 @@ def generate_checksum(
 
     Parameters:
     - short_session_id (str): A GUID not longer than 6 characters.
-    - user_name (int): An integer representing the user's name.
+    - user_name (str): A string representing the user's name.
     - successful (int): A boolean represented as 0 (False) or 1 (True).
     - signon_datetime (str): A string representing the sign-on date and time in ISO 8601 format.
 
@@ -61,15 +61,14 @@ def generate_checksum(
     - int: The computed Fletcher-16 checksum value.
     """
     data = (
-        (short_session_id + signon_datetime).encode()
-        + user_name.to_bytes(4, "little")
+        (short_session_id + signon_datetime + user_name).encode()
         + bytes([successful])
     )
     checksum = fletcher16(data)
     return checksum
 
 
-def check_events_against_checksums(events: list, checksums: set) -> list:
+def check_events_against_checksums(events: list[dict], checksums: set) -> list:
     """
     Check if events exist in the list of checksums.
 
@@ -84,7 +83,10 @@ def check_events_against_checksums(events: list, checksums: set) -> list:
     new_events = []
 
     for event in events:
-        short_session_id, user_name, successful, signon_datetime = event
+        short_session_id: str = event["Short_Session_ID"]
+        user_name: str = event["User_Name"]
+        successful: int = int(event["Successful"])
+        signon_datetime: str = event["Signon_DateTime"]
         event_checksum = generate_checksum(
             short_session_id, user_name, successful, signon_datetime
         )
@@ -119,13 +121,7 @@ def filter_and_check_events(
         for event in events
     ]
     potential_duplicates = [
-        (
-            event["Short_Session_ID"],
-            event["User_Name"],
-            event["Successful"],
-            event["Signon_DateTime"],
-        )
-        for event, event_datetime in events_with_datetime
+        event for event, event_datetime in events_with_datetime
         if start_time <= event_datetime <= end_time
     ]
 
@@ -499,7 +495,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         from_date = last_run.get("last_fetch_time")
     # Checksums in this context is used as an ID since none is provided directly from Workday.
     # This is to prevent duplicates.
-    previous_run_checksums = last_run.get("previous_run_checksums", set())
+    previous_run_checksums = last_run.get("previous_run_checksums", {})
     to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
     sign_on_events = fetch_sign_on_logs(
@@ -523,7 +519,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
             generate_checksum(
                 event["Short_Session_ID"],
                 event["User_Name"],
-                event["Successful"],
+                int(event["Successful"]),
                 event["Signon_DateTime"],
             )
             for event in future_potential_duplicates
@@ -594,10 +590,21 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(module_of_testing(client))
         elif command == "workday-get-sign-on-events":
+            if args.get("relative_from_date", None):
+                from_time: str = arg_to_datetime(  # type:ignore
+                    arg=args.get('relative_from_date'),
+                    arg_name='Relative datetime',
+                    required=False
+                ).strftime(DATE_FORMAT)
+                to_time: str = datetime.utcnow().strftime(DATE_FORMAT)
+            else:
+                from_time: str = args.get("from_date")
+                to_time: str = args.get("to_date")
+
             sign_on_events, results = get_sign_on_events_command(
                 client=client,
-                from_date=args.get("from_date"),
-                to_date=args.get("to_date"),
+                from_date=from_time,
+                to_date=to_time,
                 limit=arg_to_number(args.get("limit", "100"), required=True),  # type: ignore
             )
             return_results(results)
@@ -615,6 +622,8 @@ def main() -> None:  # pragma: no cover
                 # saves next_run for the time fetch-events is invoked
                 demisto.info(f"Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
+            else:
+                demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
