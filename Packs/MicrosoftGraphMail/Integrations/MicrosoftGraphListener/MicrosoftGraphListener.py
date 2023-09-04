@@ -76,20 +76,26 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
 
-
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
 
         next_run = {
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': exclude_ids,
-            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
         }
 
+
         demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(next_run)}')
         demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
+        for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
+            incident.pop('ID', None)
+
+        demisto.info(f"fetched {len(incidents)} incidents")
+        demisto.debug(f"{next_run=}")
+
         demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
         for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
             incident.pop('ID', None)
