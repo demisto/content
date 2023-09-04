@@ -856,9 +856,11 @@ def get_organizations_command(project_key=None, start="0", limit="50", account_i
     if account_id:
         body['accountId'] = account_id
 
-    res = jira_req('GET', url, params=body, resp_type='json').get('values')
-    [org.pop('_links') for org in res]
-    return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
+    if response := jira_req('GET', url, params=body, resp_type='json').get('values'):
+        [org.pop('_links') for org in response]
+        return CommandResults(outputs=response, outputs_prefix='Jira.Organizations')
+
+    return CommandResults(readable_output='No results found.')
 
 
 def get_field_command(issue_id, field):
