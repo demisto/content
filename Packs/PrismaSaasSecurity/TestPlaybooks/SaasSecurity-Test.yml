@@ -334,6 +334,14 @@ tasks:
           right:
             value:
               simple: closed
+        - operator: isEqualString
+          left:
+            value:
+              simple: SaasSecurity.Incident.state
+            iscontext: true
+          right:
+            value:
+              simple: Closed
     view: |-
       {
         "position": {
