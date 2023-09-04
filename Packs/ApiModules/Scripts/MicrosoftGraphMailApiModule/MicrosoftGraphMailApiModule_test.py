@@ -37,9 +37,11 @@ def oproxy_client():
     ok_codes = OK_CODES
     tenant_id = TENANT_ID
 
-    return MsGraphMailBaseClient(mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
-                                 emails_fetch_limit=emails_fetch_limit, self_deployed=False, tenant_id=tenant_id, auth_id=auth_and_token_url,
-                                 enc_key=enc_key, app_name=app_name, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes
+    return MsGraphMailBaseClient(mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
+                                 first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit,
+                                 self_deployed=False, tenant_id=tenant_id, auth_id=auth_and_token_url,
+                                 enc_key=enc_key, app_name=app_name, base_url=base_url, verify=True,
+                                 proxy=False, ok_codes=ok_codes
                                  )
 
 
@@ -54,9 +56,10 @@ def self_deployed_client():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MsGraphMailBaseClient(mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
-                                 emails_fetch_limit=emails_fetch_limit, self_deployed=True, tenant_id=tenant_id, auth_id=client_id,
-                                 enc_key=client_secret, base_url=base_url, app_name='', verify=True, proxy=False, ok_codes=ok_codes
+    return MsGraphMailBaseClient(mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
+                                 first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit,
+                                 self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                                 base_url=base_url, app_name='', verify=True, proxy=False, ok_codes=ok_codes
                                  )
 
 
