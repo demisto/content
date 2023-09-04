@@ -34,7 +34,7 @@ script:
   type: python
   commands:
     []
-  dockerimage: devdemisto/websockets:11.0.3.69389
+  dockerimage: demisto/websockets:11.0.3.71670
   longRunning: true
   subtype: python3
 marketplaces:
