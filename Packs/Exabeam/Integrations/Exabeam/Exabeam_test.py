@@ -481,7 +481,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
         Then:
             - Ensure that the last run time is set correctly.
             - Check that the query with look-back is set correctly.
-            - Ensure that incidents are correctly filtered.            
+            - Ensure that incidents are correctly filtered.
     """
     mocker.patch.object(Client, '_login', return_value=None)
     client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
