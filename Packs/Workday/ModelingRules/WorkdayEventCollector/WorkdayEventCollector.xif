@@ -38,7 +38,7 @@ alter
     password_change_required_label = if(Required_Password_Change = 1, "Password change required."),
     password_reset_label = if(Forgotten_Password_Reset_Request = 1, "A request was made to reset the password in the Signon attempt."),
     password_changed_label = if(Password_Changed = 1, "The password was changed after the signon."),
-    read_only_label = if(Tenant_Access_Read_Only = 1, "Read only Access is enabled for a signon.")
+    read_only_label = if(Tenant_Access_Read_Only = 1, "Read only Access is enabled for the signon.")
 | alter
     // init useful flags & extract nested json properties 
     device_type_reference_id = Device_Type_Reference -> ID, 
@@ -66,7 +66,6 @@ alter
     xdm.network.session_id = Short_Session_ID,
     xdm.network.tls.protocol_version = TLS_Version, 
     xdm.observer.unique_identifier = API_Client_ID,
-    xdm.source.application.name = Authentication_Channel,
     xdm.source.host.device_id = device_type_reference_id, 
     xdm.source.host.os = Operating_System, 
     xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, Operating_System),
