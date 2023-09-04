@@ -1222,7 +1222,7 @@ script:
       name: output_s3_bucket_name
     - description: The directory structure within the S3 bucket where the responses should be stored.
       name: output_s3_key_prefix
-    - description: If this time is reached and the command hasn’t already started running, it won’t run.
+    - description: If this time is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000.
       name: timeout_seconds
     - description: The interval in seconds between each poll.
       name: interval_in_seconds

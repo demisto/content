@@ -6,7 +6,9 @@ from typing import Any, NoReturn
 import pytest
 from AWSSystemManager import (
     add_tags_to_resource_command,
+    cancel_automation_execution_command,
     convert_datetime_to_iso,
+    cancel_command_command,
     format_document_version,
     get_association_command,
     get_automation_execution_command,
@@ -23,6 +25,7 @@ from AWSSystemManager import (
     next_token_command_result,
     remove_tags_from_resource_command,
     run_automation_execution_command,
+    run_command_command,
     validate_args,
 )
 from pytest_mock import MockerFixture
@@ -71,6 +74,15 @@ class MockClient:
         pass
 
     def list_commands(self, **kwargs) -> NoReturn:
+        pass
+    
+    def stop_automation_execution(self, **kwargs) -> NoReturn:
+        pass
+    
+    def send_command(self, **kwargs) -> NoReturn:
+        pass
+    
+    def cancel_command(self, **kwargs) -> NoReturn:
         pass
 
 
@@ -705,3 +717,131 @@ def test_run_automation_execution_command(mocker: MockerFixture, status: str, ex
     }
     result = run_automation_execution_command(args_to_next_run, MockClient())
     assert result.readable_output == expected_message
+
+
+@pytest.mark.parametrize(
+    ("status", "expected_message"),
+    [
+        ("Success", "The automation completed successfully."),
+        ("Failed", "The automation didn't complete successfully. This is a terminal state."),
+        ("Cancelled", "The automation was stopped by a requester before it completed."),
+        ("TimedOut", "A step or approval wasn't completed before the specified timeout period."),
+    ],
+    ids=["status is Success", "status is Failed", "status is Cancelled", "status is TimedOut"],
+)
+def test_cancel_automation_execution_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+    """
+    Given:
+        a mocker with a patched `cancel_automation_execution` method that returns a mock response,
+    When:
+        the `cancel_automation_execution_command` function is called with a test execution_id and a MockClient,
+    Then:
+        it should return the expected CommandResults object with the specified outputs and readable_output.
+    """
+    args = {
+        "automation_execution_id": "test_id",
+        "first_run": True,
+        "include_polling": True,
+    }
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(MockClient, "stop_automation_execution")  
+    mocker.patch.object(MockClient,
+                        "get_automation_execution",
+                        return_value={"AutomationExecution": {"AutomationExecutionStatus": status}}
+                    )
+    response: CommandResults = cancel_automation_execution_command(args, MockClient())
+
+    assert response.readable_output == "Cancellation command was sent successful."
+
+    args_to_next_run = response.scheduled_command._args
+    assert args_to_next_run == {
+        'automation_execution_id': 'test_id',
+        'first_run': False,
+        'include_polling': True,
+        'hide_polling_output': True
+    }
+    response: CommandResults = cancel_automation_execution_command(args_to_next_run, MockClient())
+    assert response.readable_output == expected_message
+
+
+@pytest.mark.parametrize(
+    "status, expected_message",
+    [
+        ("Failed", "The command wasn't successful on the managed node."),
+        ("Cancelled", "The command was canceled before it was completed."),
+        ("Delivery Timed Out", "The command wasn't delivered to the managed node before the total timeout expired."),
+    ],
+    ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
+)
+def test_run_command_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+    args = {
+        "document_name": "AWS",
+        "instance_ids": "i-1234567890abcdef0,i-1234567890abcdef1",
+        "polling": True,
+    }
+    mock_response: dict = util_load_json("test_data/run_command_response.json")
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(MockClient, "send_command", return_value=mock_response)
+    mocker.patch.object(MockClient,
+                        "list_commands",
+                        return_value={"Commands": [{"Status": status}]})
+
+    result: CommandResults = run_command_command(args, MockClient())
+
+    assert result.readable_output == "Command command_id_test was sent successful."
+    assert result.outputs == mock_response["Command"]
+
+    args_to_next_run = result.scheduled_command._args
+    assert args_to_next_run == {
+        'document_name': 'AWS',
+        'instance_ids': 'i-1234567890abcdef0,i-1234567890abcdef1',
+        'polling': True,
+        'command_id': 'command_id_test',
+        'hide_polling_output': True
+    }
+
+    result = run_command_command(args_to_next_run, MockClient())
+    assert result.readable_output == expected_message
+
+
+@pytest.mark.parametrize(
+    "status, expected_message",
+    [
+        ("Failed", "The command wasn't successful on the managed node."),
+        ("Cancelled", "The command was canceled before it was completed."),
+        ("Delivery Timed Out", "The command wasn't delivered to the managed node before the total timeout expired."),
+    ],
+    ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
+)
+def test_cancel_command_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+    """
+    Given:
+        a mocker with a patched `cancel_automation_execution` method that returns a mock response,
+    When:
+        the `cancel_automation_execution_command` function is called with a test execution_id and a MockClient,
+    Then:
+        it should return the expected CommandResults object with the specified outputs and readable_output.
+    """
+    args = {
+        "command_id": "test_id",
+        "first_run": True,
+        "include_polling": True,
+    }
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(MockClient, "cancel_command")  
+    mocker.patch.object(MockClient,
+                            "list_commands",
+                            return_value={"Commands": [{"Status": status}]})
+    response: CommandResults = cancel_command_command(args, MockClient())
+
+    assert response.readable_output == "Cancellation command was sent successful."
+
+    args_to_next_run = response.scheduled_command._args
+    assert args_to_next_run == {
+        'command_id': 'test_id',
+        'first_run': False,
+        'include_polling': True,
+        'hide_polling_output': True
+    }
+    response: CommandResults = cancel_command_command(args_to_next_run, MockClient())
+    assert response.readable_output == expected_message

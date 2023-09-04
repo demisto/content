@@ -30,9 +30,9 @@ FINAL_STATUSES_AUTOMATION = {
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
 FINAL_STATUSES_COMMAND = {
-    "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned \
+    "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned\
         an exit code of zero.\
-        All command invocations have reached a terminal state, and the value of max-errors wasn't reached. \
+        All command invocations have reached a terminal state, and the value of max-errors wasn't reached.\
         This status doesn't mean the command was successfully processed on all specified or targeted managed nodes.",
     "Failed": "The command wasn't successful on the managed node.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
@@ -1018,15 +1018,10 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
         AutomationExecutionId=automation_execution_id, Type=type_,
     )
     args["first_run"] = False
-    status = get_automation_execution_status(automation_execution_id, ssm_client)
-
+    # if the polling is stop after first run, this will be the final result in the war room otherwise this will be the partial result
     return PollResult(
-        response=CommandResults(
-            readable_output="Cancellation command was sent successful.",
-        ),  # if the polling is stop after first run, this will be the final result in the war room
-        partial_result=CommandResults(
-            readable_output="Cancellation command was sent successful.",
-        ),  # if the polling is not stop after first run, this will be the partial result
+        response=CommandResults(readable_output="Cancellation command was sent successful."),
+        partial_result=CommandResults(readable_output="Cancellation command was sent successful."),
         continue_to_poll=include_polling,
     )
 
@@ -1130,6 +1125,8 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
     if output_s3_key_prefix := args.get("output_s3_key_prefix"):
         kwargs["OutputS3KeyPrefix"] = output_s3_key_prefix
     if timeout_seconds := arg_to_number(args.get("timeout_seconds")):
+        if 2592000 < timeout_seconds < 30:
+            raise DemistoException("The timeout_seconds argument must be between 30 seconds and 2592000 seconds.")
         kwargs["TimeoutSeconds"] = timeout_seconds
     if max_concurrency := args.get("max_concurrency"):
         kwargs["MaxConcurrency"] = max_concurrency
@@ -1144,7 +1141,9 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
                 msg,
             ) from e
 
-    command = ssm_client.send_command(**kwargs)["Command"]
+    command = ssm_client.send_command(**kwargs)
+    command = convert_datetime_to_iso(command)["Command"]
+
     command_id = command["CommandId"]
     args["command_id"] = command_id
     return PollResult(
@@ -1152,8 +1151,10 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
         continue_to_poll=True,
         args_for_next_run=args,
         partial_result=CommandResults(
-            readable_output=f"Command {command_id}was sent successful.",
+            readable_output=f"Command {command_id} was sent successful.",
             outputs=command,
+            outputs_prefix="AWS.SSM.Command",
+            outputs_key_field="CommandId"
         ),
     )
 
