@@ -26,8 +26,14 @@ RUN VERSION="lts" bash /features/src/node/install.sh
 RUN bash /features/src/sshd/install.sh
 RUN bash /features/src/github-cli/install.sh
 
+# install zbar library
+RUN apt-get update && apt-get install -y \
+    libzbar0
+
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN python -m pip install --user pipx \
+    && python -m pip install pyzbar \
+    && python -m pip install pillow \
     && python -m pipx ensurepath \
     && pipx install poetry \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \

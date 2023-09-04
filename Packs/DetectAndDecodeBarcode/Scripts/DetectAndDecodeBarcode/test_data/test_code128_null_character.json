@@ -1,0 +1,14 @@
+{
+  "File": [
+    {
+      "Name": "test_code128_null_character.png",
+      "Barcode": [
+        {
+          "Type": "CODE128",
+          "Data": "Hello\u0000Goodbye"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

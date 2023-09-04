@@ -1,0 +1,18 @@
+{
+  "File": [
+    {
+      "Name": "test_rotated_qrcode.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "Thalassiodracon"
+        },
+        {
+          "Type": "QRCODE",
+          "Data": "Thalassiodracon"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

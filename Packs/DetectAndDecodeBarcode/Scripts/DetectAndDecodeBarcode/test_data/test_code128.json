@@ -1,0 +1,18 @@
+{
+  "File": [
+    {
+      "Name": "test_code128.png",
+      "Barcode": [
+        {
+          "Type": "CODE128",
+          "Data": "Foramenifera"
+        },
+        {
+          "Type": "CODE128",
+          "Data": "Rana temporaria"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

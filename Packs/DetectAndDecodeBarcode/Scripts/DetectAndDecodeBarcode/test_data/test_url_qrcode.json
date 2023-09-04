@@ -1,0 +1,14 @@
+{
+  "File": [
+    {
+      "Name": "test_url_qrcode.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "http://meetheed.com"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+    "name": "DetectAndDecodeBarcode",
+    "description": "Pack provides a script to detect and decode 2D barcodes (including QR codes) in a file.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "limbernie",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Email",
+        "Utilities"
+    ],
+    "tags": [
+        "2D",
+        "barcode",
+        "email",
+        "phishing",
+        "QR",
+        "QR code"
+    ],
+    "useCases": ["Phishing"],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "limbernie@protonmail.com"
+    ],
+    "githubUser": [
+        "limbernie"
+    ]
+}

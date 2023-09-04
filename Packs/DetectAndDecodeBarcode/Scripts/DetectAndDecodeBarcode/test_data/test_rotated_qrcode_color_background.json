@@ -1,0 +1,14 @@
+{
+  "File": [
+    {
+      "Name": "test_rotated_qrcode_color_background.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "Rotation 0, Error correction H\r\nThe PDF File Writer C# class library PdfFileWriter allows you to create PDF files directly from your .net application. The library shields you from the details of the PDF file structure. To use the library, you need to add a reference to the attached PdfFileWriter.dll class library file, add a using PdfFileWriter statement in every source file that uses the library and include the PdfFileWriter.dll with your distribution. For more details go to 2.23 Installation. Alternatively, you can include the source code of the library with your application and avoid the need to distribute a separate data link library file. The minimum development requirement is .NET Framework 4.0 (Visual Studio 2013)."
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

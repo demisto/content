@@ -1,0 +1,9 @@
+{
+  "File": [
+    {
+      "Name": "test_not_image_file.png",
+      "Barcode": [],
+      "Image": false
+    }
+  ]
+}

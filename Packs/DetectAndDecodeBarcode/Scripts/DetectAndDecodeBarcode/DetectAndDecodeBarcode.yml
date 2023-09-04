@@ -1,0 +1,33 @@
+args:
+  - description: "The ID for locating a file in War Room"
+    name: entry_id
+    required: true
+comment: "Detect and decode 2D barcodes (including QR codes) in a file."
+commonfields:
+  id: DetectAndDecodeBarcode
+  version: -1
+name: DetectAndDecodeBarcode
+outputs:
+  - contextPath: DetectAndDecodeBarcode.File.EntryID
+    description: "The Entry ID of the file"
+    type: String
+  - contextPath: DetectAndDecodeBarcode.File.Name
+    description: "The name of the file including extension"
+    type: String
+  - contextPath: DetectAndDecodeBarcode.File.Barcode.Type
+    description: "The type of barcode"
+    type: String
+  - contextPath: DetectAndDecodeBarcode.File.Barcode.Data
+    description: "The data in the barcode"
+    type: Unknown
+  - contextPath: DetectAndDecodeBarcode.File.Image
+    description: "Whether file is an image"
+    type: Boolean
+script: "-"
+tags:
+  - basescript
+timeout: "0"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.5.0

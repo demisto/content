@@ -1,0 +1,14 @@
+{
+  "File": [
+    {
+      "Name": "test_standard_qrcode.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "QRCodeEncoderDemo - Ver 3.0.0 - 2022-03-01 \u7a62 2018-2022 Uzi Granot. All rights reserved.\r\nThe QR Code libraries allows your program to create (encode) QR Code image or, read (decode) an\r\nimage containing one or more QR Codes. The attached source code is made of two solutions, a\r\nQR Code encoder solution and a QR Code decoder solution. The software was upgraded to VS 2022\r\n.NET 6.0 The source code is written in C#. It is an open-source code."
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

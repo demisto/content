@@ -1,0 +1,14 @@
+{
+  "File": [
+    {
+      "Name": "test_video_capture.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "QR Code video decode example\r\nQRCodeDecoder - Ver 3.0.0 - 2022-03-01"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}

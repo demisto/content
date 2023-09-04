@@ -1,0 +1,22 @@
+{
+  "File": [
+    {
+      "Name": "test_triple_qrcode.png",
+      "Barcode": [
+        {
+          "Type": "QRCODE",
+          "Data": "Bottom left corner"
+        },
+        {
+          "Type": "QRCODE",
+          "Data": "Top left corner"
+        },
+        {
+          "Type": "QRCODE",
+          "Data": "Top right corner"
+        }
+      ],
+      "Image": true
+    }
+  ]
+}
