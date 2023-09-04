@@ -535,7 +535,6 @@ def main():
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
-        demisto.info(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
