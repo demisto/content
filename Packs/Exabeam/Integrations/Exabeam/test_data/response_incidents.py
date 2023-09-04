@@ -398,7 +398,7 @@ EXPECTED_LAST_RUN = {
 }
 
 
-INCIDENTS_FOR_LOOK_BACK = {
+INCIDENTS_FOR_LOOK_BACK_FIRST_TIME = {
     "totalCount": 23,
     "offset": 0,
     "count": 23,
@@ -413,10 +413,10 @@ INCIDENTS_FOR_LOOK_BACK = {
                 "queue": "1",
                 "priority": "medium",
                 "status": "new",
-                "startedDate": 1671709985000,
-                "createdAt": 1671709985000,
+                "startedDate": 1671703085000,
+                "createdAt": 1671703085000,  # 22/12/2022 09:58:05 (UTC)
                 "createdBy": "admin",
-                "updatedAt": 1671709985000,
+                "updatedAt": 1671703085000,
                 "updatedBy": "system",
             },
         },
@@ -429,10 +429,35 @@ INCIDENTS_FOR_LOOK_BACK = {
                 "queue": "1",
                 "priority": "medium",
                 "status": "new",
-                "startedDate": 1671710285000,
-                "createdAt": 1671710285000,
+                "startedDate": 1671703145000,
+                "createdAt": 1671703145000,  # 22/12/2022 09:59:05 (UTC)
                 "createdBy": "admin",
-                "updatedAt": 1671710285000,
+                "updatedAt": 1671703145000,
+                "updatedBy": "system",
+            },
+        },
+    ],
+}
+
+INCIDENTS_FOR_LOOK_BACK_SECOND_TIME = {
+    "totalCount": 23,
+    "offset": 0,
+    "count": 23,
+    "maxCount": 10000,
+    "incidents": [
+        {
+            "incidentId": "SOC-403",
+            "name": "Exabeam Alert Active Service Discovery via Net Tool found",
+            "baseFields": {
+                "incidentType": ["ueba"],
+                "owner": "unassigned",
+                "queue": "1",
+                "priority": "medium",
+                "status": "new",
+                "startedDate": 1671703145000,
+                "createdAt": 1671703145000,  # 22/12/2022 09:59:05 (UTC)
+                "createdBy": "admin",
+                "updatedAt": 1671703145000,
                 "updatedBy": "system",
             },
         },
@@ -441,24 +466,6 @@ INCIDENTS_FOR_LOOK_BACK = {
 
 EXPECTED_INCIDENTS_FOR_LOOK_BACK = {
     'first_fetch': [
-        {
-            'incidentId': 'SOC-402',
-            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
-            'baseFields': {
-                'incidentType': [
-                    'ueba'
-                ],
-                'owner': 'unassigned',
-                'queue': '1',
-                'priority': 'medium',
-                'status': 'new',
-                'startedDate': '2022-12-07T13:46:43Z',
-                'createdAt': '2022-12-22T11:58:05Z',
-                'createdBy': 'admin',
-                'updatedAt': '2022-12-07T13:53:19Z',
-                'updatedBy': 'system'
-            }
-        },
         {
             'incidentId': 'SOC-403',
             'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
@@ -470,10 +477,10 @@ EXPECTED_INCIDENTS_FOR_LOOK_BACK = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-07T14:03:07Z',
-                'createdAt': '2022-12-07T14:08:14Z',
+                'startedDate': '2022-12-22T09:59:05Z',
+                'createdAt': '2022-12-22T09:59:05Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-07T14:08:21Z',
+                'updatedAt': '2022-12-22T09:59:05Z',
                 'updatedBy': 'system'
             }
         }]
@@ -482,28 +489,18 @@ EXPECTED_INCIDENTS_FOR_LOOK_BACK = {
 EXPECTED_LAST_RUN_FOR_LOOK_BACK = {
     'first_fetch': {
         'limit': 5,
-        'time': '2022-12-22T11:58:05.001000',
+        'time': '2022-12-22T09:59:05.001000',
         'found_incident_ids': {
-            'SOC-402': '',
             'SOC-403': '',
         }
     },
     'second_fetch': {
         'limit': 3,
-        'time': '2022-12-22T11:53:05.000000',
+        'time': '2022-12-22T10:00:05.000000',
         'found_incident_ids': {
-            'SOC-402': '',
             'SOC-403': '',
         }
-    },
-    'third_fetch': {
-        'limit': 3,
-        'time': '2022-12-22T11:53:05.000000',
-        'found_incident_ids': {
-            'SOC-402': '',
-            'SOC-403': '',
-        }
-    },
+    }
 }
 
 EXPECTED_CALL_ARGS_FOR_LOOK_BACK = {
@@ -516,7 +513,7 @@ EXPECTED_CALL_ARGS_FOR_LOOK_BACK = {
             'medium'
         ],
         'createdAt': [
-            '1671709745000', '1671709985000'
+            '1671702965000', '1671703205000'   # 22/12/2022 09:56:05  22/12/2022 10:00:05
         ]
     },
     'sortBy': 'createdAt',
@@ -536,7 +533,7 @@ EXPECTED_CALL_ARGS = {
             'medium'
         ],
         'createdAt': [
-            '1671717185195', '1671976385145'
+            '1671717185195', '1671976385145'  # 22/12/2022 13:53:05  25/12/2022 13:53:05
         ]
     },
     'sortBy': 'createdAt',

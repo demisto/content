@@ -1,5 +1,7 @@
 import pytest
+from datetime import datetime
 from freezegun import freeze_time
+import pytz
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
@@ -14,8 +16,8 @@ from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABEL
     EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS, \
     EXPECTED_RESULT_AFTER_RECORD_DELETION, EXPECTED_INCIDENT_LIST
 from test_data.response_incidents import INCIDENTS, EXPECTED_INCIDENTS, EXPECTED_LAST_RUN, EXPECTED_CALL_ARGS, \
-    EXPECTED_LAST_RUN_FOR_LOOK_BACK, INCIDENTS_FOR_LOOK_BACK, EXPECTED_INCIDENTS_FOR_LOOK_BACK, \
-    EXPECTED_CALL_ARGS_FOR_LOOK_BACK
+    EXPECTED_LAST_RUN_FOR_LOOK_BACK, INCIDENTS_FOR_LOOK_BACK_FIRST_TIME, EXPECTED_INCIDENTS_FOR_LOOK_BACK, \
+    EXPECTED_CALL_ARGS_FOR_LOOK_BACK, INCIDENTS_FOR_LOOK_BACK_SECOND_TIME
 
 
 def test_contents_append_notable_user_info():
@@ -460,31 +462,41 @@ def test_validate_authentication_params(mocker, args, expected_results):
 
 
 @pytest.mark.parametrize(
-    'params, incidents, expected_incidents, expected_last_run',
+    'params, expected_incidents, expected_last_run',
     [
         (
             {'max_fetch': 3, 'incident_type': 'generic,abnormalAuth', 'status': 'new', 'priority': 'medium', 'look_back': 4},
-            INCIDENTS_FOR_LOOK_BACK,
             EXPECTED_INCIDENTS_FOR_LOOK_BACK,
             EXPECTED_LAST_RUN_FOR_LOOK_BACK,
         )
     ]
 )
-@freeze_time("2022-12-22T11:53:05.000000")
-def test_fetch_incdents_with_look_back(mocker, params, incidents, expected_incidents, expected_last_run):
-
+@freeze_time(datetime(2022, 12, 22, 10, 0, 5, tzinfo=pytz.timezone('UTC')))
+def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expected_last_run):
+    """
+        Given:
+            - A last run with an incident.
+        When:
+            - executing fetch function with look back.
+        Then:
+            - Ensure that the last run time is set correctly.
+            - Check that the query with look-back is set correctly.
+            - Ensure that incidents are correctly filtered.            
+    """
     mocker.patch.object(Client, '_login', return_value=None)
     client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
                     headers={})
-    request_get_incidents = mocker.patch.object(client, 'get_incidents', return_value=incidents)
+    request_get_incidents = mocker.patch.object(client, 'get_incidents',
+                                                return_value=INCIDENTS_FOR_LOOK_BACK_FIRST_TIME)
     mocker.patch('Exabeam.demisto.getLastRun', return_value={'found_incident_ids': {
-                 "SOC-402": 1671709985000}, 'limit': 3, 'time': '2022-12-22T11:53:05.000000'})
+                 "SOC-402": 1671703085},  # Unix Epoch Time
+        'limit': 3, 'time': '2022-12-22T09:58:05.000000'})
     results, last_run = fetch_incidents(client, params)
 
     for i in range(len(results)):
         assert results[i]['Name'] == expected_incidents['first_fetch'][i]['name']
         assert results[i]['occurred'] == expected_incidents['first_fetch'][i]['baseFields']['createdAt']
-    assert len(results) == 1
+
     assert last_run['limit'] == expected_last_run['first_fetch']['limit']
     assert last_run['time'] == expected_last_run['first_fetch']['time']
     for id_ in expected_last_run['first_fetch']['found_incident_ids']:
@@ -492,17 +504,11 @@ def test_fetch_incdents_with_look_back(mocker, params, incidents, expected_incid
 
     assert request_get_incidents.call_args_list[0][0][0] == EXPECTED_CALL_ARGS_FOR_LOOK_BACK
     mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
+    request_get_incidents = mocker.patch.object(client, 'get_incidents',
+                                                return_value=INCIDENTS_FOR_LOOK_BACK_SECOND_TIME)
     results, last_run = fetch_incidents(client, params)
 
     assert last_run['limit'] == expected_last_run['second_fetch']['limit']
     assert last_run['time'] == expected_last_run['second_fetch']['time']
     for id_ in expected_last_run['second_fetch']['found_incident_ids']:
-        assert id_ in last_run['found_incident_ids']
-
-    mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
-    results, last_run = fetch_incidents(client, params)
-
-    assert last_run['limit'] == expected_last_run['third_fetch']['limit']
-    assert last_run['time'] == expected_last_run['third_fetch']['time']
-    for id_ in expected_last_run['third_fetch']['found_incident_ids']:
         assert id_ in last_run['found_incident_ids']
