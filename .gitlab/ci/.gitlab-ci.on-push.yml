@@ -130,10 +130,10 @@ validate-content-conf:
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - |
-      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "xsoar" || $MARKETPLACE_VERSION == "xsoar_saas" ]];  # later the non xsoar will be edited to remove xsoar naming.
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
@@ -146,7 +146,7 @@ validate-content-conf:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
@@ -189,6 +189,14 @@ xsoar-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xsoar-saas-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -346,7 +354,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
   tags:
     - gke
   rules:
@@ -369,6 +377,8 @@ jobs-done-check-on-push:
     - job: xpanse-prepare-testing-bucket
       optional: true
     - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsoar-saas-prepare-testing-bucket
       optional: true
     - job: xsiam_server_ga
       optional: true
@@ -553,12 +563,12 @@ xsoar_ng_server_ga:
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
-    MARKETPLACE_NAME: "xsoar"
+    MARKETPLACE_NAME: "xsoar-saas"
     UNREMOVABLE_PACKS: "Base"
   needs:
     - job: xsoar-prepare-testing-bucket

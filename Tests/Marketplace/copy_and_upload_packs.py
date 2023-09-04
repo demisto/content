@@ -4,6 +4,7 @@ import sys
 import argparse
 import shutil
 import re
+from pathlib import Path
 from zipfile import ZipFile
 from google.cloud.storage import Blob, Bucket
 
@@ -15,7 +16,7 @@ from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, GCPCon
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.Marketplace.pack_readme_handler import copy_readme_images
+from Tests.Marketplace.pack_readme_handler import copy_markdown_images
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_.]+\.zip$)')
@@ -88,15 +89,6 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
                                     index_name=index_json_name)
 
-            # copy index_v2.zip from build to prod
-            index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
-            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
-                                                             production_bucket=production_bucket,
-                                                             index_name=index_v2_name)
-            build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
-            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
-                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
-                                    index_name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
@@ -251,7 +243,7 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
     build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not os.path.exists(extract_destination_path):
-        os.mkdir(extract_destination_path)
+        Path(extract_destination_path).mkdir(parents=True, exist_ok=False)
 
     if not build_index_blob.exists():
         logging.error(f"No build index was found in path: {build_index_storage_path}")
@@ -512,7 +504,7 @@ def main():
         elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
             pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name  # type: ignore[misc]
 
-    copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+    copy_markdown_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
