@@ -316,295 +316,261 @@ script:
       There is a limit of 1,000,000 objects returned within a 24 hour period (moving time window) per email address.
     outputs:
     - contextPath: Netcraft.Takedown.id
-      description: 'Unique identifier for the takedown record.'
+      description: The ID of the takedown.
       type: String
     - contextPath: Netcraft.Takedown.group_id
-      description: 'Identifier for grouping related takedown incidents.'
+      description: The ID of the group that the takedown belongs to. can potentially be the same a ID, or empty if there is no group.
       type: String
     - contextPath: Netcraft.Takedown.attack_url
-      description: 'URL of the target that is under attack.'
+      description: The location of the attack being taken down. This field contains a canonicalised value. see the reported_url field for the exact location that was reported to takedown.
       type: String
     - contextPath: Netcraft.Takedown.reported_url
-      description: 'URL that was reported as part of the takedown.'
+      description: The location of the attack as reported to takedown. See the attack_url field for the formatted location of the attack being taken down.
       type: String
     - contextPath: Netcraft.Takedown.ip
-      description: 'IP address associated with the takedown incident.'
+      description: The IPv4 address of the attack.
       type: String
     - contextPath: Netcraft.Takedown.country_code
-      description: Country code of the target's location.
+      description: ISO country code of the advertised hosting location.
       type: String
     - contextPath: Netcraft.Takedown.date_submitted
-      description: 'Date when the takedown report was submitted.'
+      description: The date and time that the takedown was reported, in UTC.
       type: Date
     - contextPath: Netcraft.Takedown.last_updated
-      description: 'Date when the takedown information was last updated.'
+      description: The date and time of the last action taken on the takedown, in UTC.
       type: Date
     - contextPath: Netcraft.Takedown.region
-      description: 'Region or geographic area of the target.'
+      description: The name of the area that the takedown resides in.
       type: String
     - contextPath: Netcraft.Takedown.target_brand
-      description: 'Brand associated with the target.'
+      description: The name of the brand being targeted by the attack.
       type: String
     - contextPath: Netcraft.Takedown.authgiven
-      description: 'Authorization status for the takedown.'
+      description: Indicates whether the takedown has been authorised.
       type: String
     - contextPath: Netcraft.Takedown.host
-      description: 'Host associated with the target.'
+      description: The name of the company responsible for the IP address.
       type: String
     - contextPath: Netcraft.Takedown.registrar
-      description: 'Domain registrar of the target domain.'
+      description: The name of the registrar responsible for the domain name used in the attack.
       type: String
     - contextPath: Netcraft.Takedown.customer_label
-      description: 'Label or identifier for the customer.'
-      type: String
-    - contextPath: Netcraft.Takedown.customer_tag
-      description: 'Tag or category of the customer.'
+      description: A custom field which may be provided along with the takedown report.
       type: String
     - contextPath: Netcraft.Takedown.date_authed
-      description: 'Date when authorization was given.'
-      type: String
+      description: The date and time that the takedown was authorised, in UTC.
+      type: Date
     - contextPath: Netcraft.Takedown.stop_monitoring_date
-      description: 'Date when monitoring of the target was stopped.'
-      type: String
+      description: |
+        The date and time that the takedown system stopped monitoring the attack, in UTC. 
+        If the attack is still being monitored, an empty string is given.
+      type: Date
     - contextPath: Netcraft.Takedown.domain
-      description: 'Domain associated with the takedown.'
+      description: |
+        The domain of the url or email address being taken down.
+        This will be blank for an attack with no domain name.
       type: String
     - contextPath: Netcraft.Takedown.language
-      description: 'Language used for the takedown communication.'
+      description: The language used in the attack (if it can be determined).
       type: String
     - contextPath: Netcraft.Takedown.date_first_actioned
-      description: 'Date of the first action taken as part of the takedown.'
-      type: String
+      description: |
+        The date and time of the first action taken by netcraft
+        after the takedown was reported, in UTC. This is calculated as the first time
+        that the takedown was moved out of the "unverified" status.
+      type: Date
     - contextPath: Netcraft.Takedown.escalated
-      description: 'Indicator of whether the takedown escalated.'
+      description: Indicates whether the takedown has been escalated.
       type: String
     - contextPath: Netcraft.Takedown.first_contact
-      description: 'Date of the first contact regarding the takedown.'
-      type: String
+      description: The date and time that the takedown first entered a contacted state, in UTC.
+      type: Date
     - contextPath: Netcraft.Takedown.first_inactive
-      description: 'Date when the target first became inactive.'
+      description: The date and time that the takedown first entered the inactive (monitoring) state.
       type: Date
     - contextPath: Netcraft.Takedown.is_redirect
-      description: 'Indicator of whether the URL is a redirect.'
+      description: |
+        Whether or not the attack redirects to another location.
+        Possible values:
+          "final" - the attack is the final destination of another redirect.
+          "redirect" - the attack redirects to another location.
+          "no_redirect" - the attack does not redirect.
       type: String
     - contextPath: Netcraft.Takedown.attack_type
-      description: 'Type of attack associated with the takedown.'
+      description: The type of attack being taken down.
       type: String
-    - contextPath: Netcraft.Takedown.certificate.name
-      description: 'Name associated with the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.subject.commonName
-      description: 'Common name in the SSL certificate subject.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.hash
-      description: 'Hash value of the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.issuer.countryName
-      description: 'Country name of the SSL certificate issuer.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.issuer.organizationName
-      description: 'Organization name of the SSL certificate issuer.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.issuer.commonName
-      description: 'Common name of the SSL certificate issuer.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.version
-      description: 'Version of the SSL certificate.'
-      type: Number
-    - contextPath: Netcraft.Takedown.certificate.serialNumber
-      description: 'Serial number of the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.serialNumberHex
-      description: 'Serial number of the SSL certificate in hexadecimal.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.validFrom
-      description: 'Start date of the SSL certificate validity.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.validTo
-      description: 'End date of the SSL certificate validity.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.validFrom_time_t
-      description: 'Start date of the SSL certificate validity in time_t format.'
-      type: Number
-    - contextPath: Netcraft.Takedown.certificate.validTo_time_t
-      description: 'End date of the SSL certificate validity in time_t format.'
-      type: Number
-    - contextPath: Netcraft.Takedown.certificate.signatureTypeSN
-      description: 'Signature type serial number in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.signatureTypeLN
-      description: 'Signature type long name in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.signatureTypeNID
-      description: 'Signature type numeric ID in the SSL certificate.'
-      type: Number
-    - contextPath: Netcraft.Takedown.certificate.purposes.1
-      description: 'Purpose of the SSL certificate (1st purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.2
-      description: 'Purpose of the SSL certificate (2nd purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.3
-      description: 'Purpose of the SSL certificate (3rd purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.4
-      description: 'Purpose of the SSL certificate (4th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.5
-      description: 'Purpose of the SSL certificate (5th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.6
-      description: 'Purpose of the SSL certificate (6th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.7
-      description: 'Purpose of the SSL certificate (7th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.8
-      description: 'Purpose of the SSL certificate (8th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.purposes.9
-      description: 'Purpose of the SSL certificate (9th purpose).'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.keyUsage
-      description: 'Key usage extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.extendedKeyUsage
-      description: 'Extended key usage extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.basicConstraints
-      description: 'Basic constraints extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.subjectKeyIdentifier
-      description: 'Subject key identifier extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.authorityKeyIdentifier
-      description: 'Authority key identifier extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.authorityInfoAccess
-      description: 'Authority information access extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.subjectAltName
-      description: 'Subject alternative name extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.certificatePolicies
-      description: 'Certificate policies extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.extensions.ct_precert_scts
-      description: 'Certificate transparency precertificate SCTs extension in the SSL certificate.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.spki_sha256
-      description: 'SHA-256 fingerprint of the certificate’s Subject Public Key Info.'
-      type: String
-    - contextPath: Netcraft.Takedown.certificate.spki_sha1
-      description: 'SHA-1 fingerprint of the certificate’s Subject Public Key Info.'
-      type: String
+    - contextPath: Netcraft.Takedown.certificate
+      description: |
+        HTTPS certificate details for the hostname.
+        The value returned is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
+      type: Unknown
     - contextPath: Netcraft.Takedown.deceptive_domain_score
-      description: 'Score indicating the potential for deception of the domain.'
+      description: |
+        The deceptive domain score of the domain. 
+        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the deceptive domain score for examp1eb4nk.com.
       type: String
     - contextPath: Netcraft.Takedown.domain_risk_rating
-      description: 'Risk rating associated with the domain.'
+      description: |
+        A score from 0 to 10 which represents the risk that the domain is hosting a malicious website.
+        e.g. for the url https://l0gin.examp1eb4nk.com/, this value wil contain the risk rating for "examp1eb4nk.com".
+        This score is distinct from the "deceptive domain score", and takes a range of factors into account,
+        such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.
       type: String
     - contextPath: Netcraft.Takedown.final_outage
-      description: 'Status indicating the final outage situation.'
+      description: |
+        The duration (hh:mm:ss) between when the takedown was
+        authorised, and the final time that the attack went offline (final_resolved - date_authed).
       type: String
     - contextPath: Netcraft.Takedown.final_resolved
-      description: 'Status indicating the final resolution of the takedown.'
-      type: String
+      description: The date and time that the attack went offline for the
+        final time, in UTC.
+      type: Date
     - contextPath: Netcraft.Takedown.first_outage
-      description: 'Status indicating the first outage situation.'
-      type: String
+      description: The duration (hh:mm:ss) between when the takedown was authorised, and the first time that the attack went offline (first_resolved - date_authed).
+      type: Date
     - contextPath: Netcraft.Takedown.first_resolved
-      description: 'Status indicating the first resolution of the takedown.'
-      type: String
+      description: The date and time that the attack first went offline, in UTC.
+      type: Date
     - contextPath: Netcraft.Takedown.fwd_owner
-      description: 'Owner of the forwarded domain.'
+      description: The owner of the forward DNS infrastructure.
       type: String
     - contextPath: Netcraft.Takedown.has_phishing_kit
-      description: 'Indicator of whether a phishing kit is associated with the takedown.'
+      description: Indicating whether the takedown has an associated phishing kit.
       type: String
     - contextPath: Netcraft.Takedown.hostname
-      description: 'Hostname associated with the target.'
+      description: The full hostname of the URL or email address being taken down. this will be blank for attacks with no hostname.
       type: String
     - contextPath: Netcraft.Takedown.hostname_ddss_score
-      description: 'Score indicating the potential for deceptive practices by the hostname.'
+      description: |
+        The deceptive domain score of the hostname.
+        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the deceptive domain score for l0gin.examp1eb4nk.com.
       type: String
     - contextPath: Netcraft.Takedown.evidence_url
-      description: 'URL providing evidence related to the takedown.'
+      description: A url to the public incident report for this attack.
       type: String
     - contextPath: Netcraft.Takedown.domain_attack
-      description: 'Type of attack associated with the domain.'
+      description: |
+        Whether or not the domain name used in the attack is believed to be fraudulent.
+        Possible values (non exhaustive):
+          "all" - All attacks.
+          "yes" - There is a high confidence that the domain name is fraudulent.
+                  the domain registrar will be contacted, and the webmaster will not be contacted.
+          "yes_low_confidence" - The domain is likely fraudulent. The domain registrar
+                                will be contacted, and the webmaster will still be contacted.
+          "no" - The domain name is not believed to be fraudulent, this is likely compromised site.
       type: String
     - contextPath: Netcraft.Takedown.false_positive
-      description: 'Indicator of whether the takedown is a false positive.'
+      description: Indicates whether the reported content was incorrectly flagged as malicious.
       type: Boolean
     - contextPath: Netcraft.Takedown.hostname_attack
-      description: 'Type of attack associated with the hostname.'
+      description: |
+        Whether or not the hostname used in the attack is believed to be fraudulent.
+        Possible values (non exhaustive):
+          "all" - All attacks.
+          "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted. 
+          "yes_low_confidence" - The hostname is likely fraudulent. 
+          "no" - The hostname is not believed to be fraudulent, this is likely compromised site.
       type: String
     - contextPath: Netcraft.Takedown.malware_category
-      description: 'Category of malware associated with the takedown.'
+      description: The category of malware detected. Only set for malware attack types. May be empty if category cannot be determined.
       type: String
     - contextPath: Netcraft.Takedown.malware_family
-      description: 'Family of malware associated with the takedown.'
+      description: The family of malware detected. only set for malware attack types. may be empty if family cannot be determined.
       type: String
     - contextPath: Netcraft.Takedown.phishing_kit_hash
-      description: 'Hash value associated with the phishing kit.'
+      description: The sha1 hashes of all phishing kits available for download which are related to this takedown. 
       type: Unknown
     - contextPath: Netcraft.Takedown.report_source
-      description: 'Source of the takedown report.'
+      description: The method through which the takedown was submitted.
       type: String
     - contextPath: Netcraft.Takedown.reporter
-      description: 'Reporter or source of the takedown information.'
+      description: Person/account that submitted the takedown. This will be the email address of the user, or "netcraft" for any reports made by Netcraft.
       type: String
     - contextPath: Netcraft.Takedown.rev_owner
-      description: 'Owner of the reverse DNS.'
+      description: The owner of the reverse DNS infrastructure.
       type: String
     - contextPath: Netcraft.Takedown.reverse_dns
-      description: 'Reverse DNS associated with the takedown.'
+      description: The output of a reverse DNS lookup on the IP of the attack.
       type: String
     - contextPath: Netcraft.Takedown.certificate_revoked
-      description: 'Indicator of whether the SSL certificate is revoked.'
+      description: Not revoked if the SSL certificate has been revoked, then the date this was detected (in UTC) is returned, else "not revoked" is returned.'
       type: String
     - contextPath: Netcraft.Takedown.screenshot_url
-      description: 'URL providing a screenshot related to the takedown.'
+      description: |
+        The URL(s) at which a screenshot of the attack can be found.
+        When returning a single URL as a string (the default behaviour) the returned URL will be the best guess of the screenshot which displays the live attack.
+        When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
       type: String
     - contextPath: Netcraft.Takedown.status_change_uptime
-      description: 'Uptime status change associated with the takedown.'
+      description: |
+        The total duration (hh:mm:ss) that the attack was available for after authorisation, as determined by the takedown status changes.
+        i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved (monitoring)  state.'
       type: String
     - contextPath: Netcraft.Takedown.status
-      description: 'Current status of the takedown.'
+      description: |
+        The status of the takedown.
+        Possible values:
+          "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
+          "Inactive (Monitoring)" - The attack went offline before Netcraft was authorised to start the takedown process, and is being monitored in case it returns.
+          "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent.
+          "Contacted Hosting" - Takedown notices have been sent to the hosting provider
+          "Contacted Police" - The takedown has been escalated to local law enforcement.
+          "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.
+          "Monitoring" - The attack is offline, as is being monitored in case it returns.
+          "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.
+          "Stale" - The attack went offline before Netcraft was authorised to start the takedown process, and is no longer being monitored.
+          "Invalid" - The report is not a valid takedown target.
       type: String
     - contextPath: Netcraft.Takedown.tags
-      description: 'Tags or labels associated with the takedown.'
+      description: List of tags applied to the group.
       type: String
     - contextPath: Netcraft.Takedown.targeted_url
-      description: 'URL targeted by the takedown.'
+      description: The URL which this attack is masquerading as, e.g. the URL of the legitimate login form that a phishing attack is targeting.
       type: String
     - contextPath: Netcraft.Takedown.site_risk_rating
-      description: 'Risk rating associated with the site.'
+      description: |
+        A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website.
+        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the risk rating for l0gin.examp1eb4nk.com.
       type: String
     - contextPath: Netcraft.Takedown.whois_server
-      description: 'WHOIS server associated with the takedown.'
+      description: The WHOIS data for the takedown.
       type: String
     - contextPath: Netcraft.Takedown.authorisation_source
-      description: 'Source of the authorization for the takedown.'
+      description: |
+        The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
+        Possible values: "customer" "netcraft" 
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
-      description: 'Source of the escalation for the takedown.'
+      description: |
+        The source of escalation for the takedown. will be blank if the takedown has not been escalated.
+        Possible values: "customer" "netcraft"
       type: String
     - contextPath: Netcraft.Takedown.restart_date
-      description: 'Date when the takedown was restarted.'
+      description: |
+        The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved (monitoring)" status to a contacted status.
+        Will be empty if the takedown ha never been restarted.'
       type: String
     - contextPath: Netcraft.Takedown.gsb_block_status
-      description: 'Status of Google Safe Browsing block associated with the takedown.'
+      description: |
+        An array of objects containing the Google Safe Browsing block status on all platforms (iOS, Android and Desktop).
+        Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.
       type: Unknown
     - contextPath: Netcraft.Takedown.gsb_first_blocked
-      description: 'Date when Google Safe Browsing first blocked the URL.'
+      description: |
+        An array of objects containing the first time that the URL was seen blocked in Google Safe Browsing (GSB) by Netcraft.
+        Will be an empty array if the URL was not seen blocked by GSB on any platform.
       type: Unknown
     - contextPath: Netcraft.Takedown.managed
-      description: 'Indicator of whether the takedown is managed.'
+      description: Indicates whether the takedown is being performed under the managed service.
       type: Boolean
     - contextPath: Netcraft.Takedown.date_escalated
-      description: 'Date when the takedown was escalated.'
+      description: The date and time that the takedown entered the managed state, in UTC.
+      type: Date
+    - contextPath: Netcraft.Takedown.logged_credential_injections
+      description: An array of objects containing the type and value of each marked account injection associated with the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.whois_data
+      description: The WHOIS data for the takedown.
       type: String
 
   - name: 'netcraft-takedown-update'
