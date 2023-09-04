@@ -14,6 +14,6 @@ xdm.target.resource.id=httpsourceid,
 xdm.target.resource.name=httpsourcename,
 xdm.network.rule=terminatingruleid,
 xdm.network.http.url=json_extract_scalar(httprequest, "$.uri"),
-xdm.source.host.hostname=json_extract_scalar(parameters, "$.Host"),
+xdm.target.host.hostname=json_extract_scalar(parameters, "$.Host"),
 xdm.source.user_agent=json_extract_scalar(parameters, "$.User-Agent"),
 xdm.network.http.referrer=json_extract_scalar(parameters, "$.Referer");
