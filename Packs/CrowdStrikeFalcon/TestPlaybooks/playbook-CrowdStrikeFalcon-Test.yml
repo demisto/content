@@ -319,12 +319,11 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "2"
       - "63"
       - "68"
-      - "91"
-      - "96"
       - "127"
+      - "96"
+      - "72"
     scriptarguments:
       all:
         simple: "yes"
@@ -334,7 +333,7 @@ tasks:
       {
         "position": {
           "x": 1575,
-          "y": 195
+          "y": 190
         }
       }
     note: false
@@ -614,7 +613,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "72"
+      - "73"
     scriptarguments:
       key:
         simple: CrowdStrike.IOC
@@ -2804,12 +2803,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+      - "2"
+      - "91"
     scriptarguments:
       Digits:
         simple: "False"
       Length:
-        simple: "5"
+        simple: "9"
       Lowercase:
         simple: "True"
       Punctuation:
@@ -2821,8 +2821,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2470
+          "x": 960,
+          "y": 370
         }
       }
     note: false
@@ -2966,7 +2966,7 @@ tasks:
       groups:
         simple: 7471ba0636b34cbb8c65fae7979a6a9b
       value:
-        simple: test
+        simple: ${RandomString}-test
     separatecontext: false
     continueonerrortype: ""
     view: |-
