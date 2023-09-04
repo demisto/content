@@ -15,7 +15,7 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 if [[ -z "$3" ]]; then
-  MARKETPLACE_TYPE="xsoar"
+  MARKETPLACE_TYPE="xsoar"  # The defult is "marketplace-dist"
 else
   MARKETPLACE_TYPE=$3
 
@@ -24,8 +24,12 @@ else
 
   elif [[ "$MARKETPLACE_TYPE" == "xpanse" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
+
+  elif [[ "$MARKETPLACE_TYPE" == "xsoar_saas" ]]; then
+    GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XSOAR_SAAS_BUCKET
   fi
 fi
+# We can freely use these buckets since its only reading the prod to the circle-ci bucket.
 
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
