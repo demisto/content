@@ -78,7 +78,14 @@ def jira_req(
             if rj.get('errorMessages'):
                 raise DemistoException(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
             elif rj.get('errors'):
-                raise DemistoException(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                errors = rj["errors"]
+                error_messages = []
+                if isinstance(errors, list):
+                    for error in errors:
+                        error_messages.append(",".join(error.values()))
+                else:
+                    error_messages.append(",".join(errors.values()))
+                raise DemistoException(f'Status code: {result.status_code}\nMessages: {error_messages}')
             else:
                 raise DemistoException(f'Status code: {result.status_code}\nError text: {result.text}')
         except ValueError as ve:
@@ -835,9 +842,20 @@ def _update_fields(issue_id, new_data):
         jira_req('PUT', url, json.dumps({'fields': new_data}))
 
 
-def get_organizations_command():
-    url = '/rest/servicedeskapi/organization'
-    res = jira_req('GET', url, resp_type='json').get('values')
+def get_organizations_command(project_key=None, start="0", limit="50", account_id=None):
+    if project_key:
+        url = f'/rest/servicedeskapi/servicedesk/{project_key}/organization'
+    else:
+        url = '/rest/servicedeskapi/organization'
+    body = {
+        'start': arg_to_number(start),
+        'limit': arg_to_number(limit),
+    }
+
+    if account_id:
+        body['accountId'] = account_id
+
+    res = jira_req('GET', url, params=body, resp_type='json').get('values')
     [org.pop('_links') for org in res]
     return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
 
@@ -1567,7 +1585,7 @@ def main():
             return_results(get_account_id_from_attribute(**demisto.args()))
 
         elif demisto.command() == 'jira-get-organizations':
-            return_results(get_organizations_command())
+            return_results(get_organizations_command(**snakify(demisto.args())))
 
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
