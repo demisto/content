@@ -1196,9 +1196,12 @@ def option_handler():
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
-    parser.add_argument('-p', '--pack_names',
+    parser.add_argument('-pn', '--pack_names',
                         help=("Target packs to upload to gcs."),
                         required=True)
+    parser.add_argument('-p', '--upload_specific_pack',
+                        type=str2bool, help=("Indication if the -p flag is used and only specific packs are uploded"),
+                        default=False)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
@@ -1235,6 +1238,7 @@ def main():
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     modified_packs_to_upload = option.pack_names or ""
+    packs_flag = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1278,9 +1282,9 @@ def main():
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES, all_content_packs)) if is_bucket_upload_flow else \
+    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES,
+                             all_content_packs)) if (is_bucket_upload_flow and not packs_flag) else \
         list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
-
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
@@ -1339,8 +1343,7 @@ def main():
             continue
 
         # upload author integration images and readme images
-        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs):
+        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
