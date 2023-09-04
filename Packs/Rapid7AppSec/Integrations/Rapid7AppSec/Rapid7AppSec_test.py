@@ -448,23 +448,15 @@ def test_list_commands(
     (
         (
             {"page": "21", "page_size": "50", "limit": "50"},
-            [("vulnerabilities?size=1000", "vulnerability/list.json"),
-             ("vulnerabilities?size=50&page-token=string", "vulnerability/list_2.json")],
+            [("vulnerabilities?index=20&size=50", "vulnerability/list.json")],
         ),
         (
             {"page": "41", "page_size": "50", "limit": "50"},
-            [("vulnerabilities?size=1000", "vulnerability/list.json"),
-             ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
-             ("vulnerabilities?size=50&page-token=string2", "vulnerability/list_3.json")
-             ],
+            [("vulnerabilities?index=40&size=50", "vulnerability/list.json")],
         ),
         (
             {"page": "61", "page_size": "50", "limit": "50"},
-            [("vulnerabilities?size=1000", "vulnerability/list.json"),
-             ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
-             ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
-             ("vulnerabilities?size=50&page-token=string2", "vulnerability/list_2.json")
-             ],
+            [("vulnerabilities?index=60&size=50", "vulnerability/list.json")],
         ),
         (
             {"page": None, "page_size": None, "limit": "3000"},

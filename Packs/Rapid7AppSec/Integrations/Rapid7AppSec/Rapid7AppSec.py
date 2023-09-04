@@ -1438,14 +1438,8 @@ def handle_list_request(request_command: Callable,
     if pagination:
         if pagination.page and pagination.page_size:
             # Using pagination with page and page size.
-            pagination_params = get_pagination_params(
-                request_command=request_command,
-                index=pagination.page,
-                size=pagination.page_size,
-            )
-            return request_command(size=pagination_params.size,
-                                   index=pagination_params.index,
-                                   page_token=pagination_params.page_token)
+            return request_command(size=pagination.page_size,
+                                   index=pagination.page - 1)
 
             # # Using pagination with limit.
         return handle_request_with_limit(
@@ -1482,43 +1476,6 @@ def handle_request_with_limit(request_command: Callable,
     next_response = handle_request_with_limit(request_command=request_command, limit=limit, page_token=page_token,)
 
     return response | {"data": response.get("data", []) + next_response.get("data", [])}
-
-
-@ logger
-def get_pagination_params(request_command: Callable,
-                          index: int,
-                          size: int,
-                          page_token: str | None = None) -> IndexPagination:
-    """
-    Get the pagination params for list request while using page and page size.
-
-    Args:
-        request_command (Callable | None, optional): List request command. Defaults to None.
-        index (int | None, optional): Index for pagination.
-        size (int | None, optional): Size for pagination.
-        page_token (str | None, optional): Page token for pagination. Defaults to None.
-
-    Returns:
-        IndexPagination: Relevant pagination params for list request.
-    """
-    if index * size <= API_LIMIT:
-        return IndexPagination(page_token=page_token,
-                               index=index - 1,
-                               size=size,)
-
-    size_to_get = int(API_LIMIT / size)
-    data = request_command(index=None,
-                           size=API_LIMIT,
-                           page_token=page_token)
-
-    page_token = dict_safe_get(data, ["metadata", "page_token"])
-
-    index -= size_to_get
-
-    return get_pagination_params(request_command=request_command,
-                                 index=index,
-                                 size=size,
-                                 page_token=page_token,)
 
 
 @ logger
