@@ -10,12 +10,13 @@ import urllib3
 urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BASE_URL = demisto.params().get('url')
-APIKEY = demisto.params().get('apikey')
-ACCOUNT_ID = demisto.params().get('account')
-MODE = demisto.params().get('mode')
-USE_SSL = not demisto.params().get('insecure', False)
-PROXY = demisto.params().get('proxy')
+PARAMS = demisto.params()
+BASE_URL = PARAMS.get('url')
+APIKEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('apikey')
+ACCOUNT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('account')
+MODE = PARAMS.get('mode')
+USE_SSL = not PARAMS.get('insecure', False)
+PROXY = PARAMS.get('proxy')
 API_VERSION = 'geoip/v2.1'
 
 HR_HEADERS = [
@@ -56,7 +57,7 @@ def http_request(query):
     )
     if r.status_code != 200:
         return_error(
-            'Error in API call to MaxMind, got status code - {} and a reason: {}'.format(r.status_code, r.reason))
+            f'Error in API call to MaxMind, got status code - {r.status_code} and a reason: {r.reason}')
     return r
 
 
@@ -141,7 +142,7 @@ def format_results(res_json):
         'Type': 'ip',
         'Vendor': 'MaxMind_GeoIP2',
         'Score': 0,
-        'Reliability': demisto.params().get('integrationReliability')
+        'Reliability': PARAMS.get('integrationReliability')
     }
     return hr, ip_ec, maxmind_ec, dbot_score
 
@@ -168,13 +169,13 @@ def geo_ip_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': res_json,
-        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(ip_query), hr, HR_HEADERS, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'{ip_query} - Scan Results', hr, HR_HEADERS, removeNull=True),
         'EntryContext': ec
     })
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 try:
     handle_proxy()
     if demisto.command() == 'ip':

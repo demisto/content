@@ -101,7 +101,7 @@ tasks:
             args:
               field:
                 value:
-                  simple: Name
+                  simple: name
       val2:
         complex:
           root: alert
@@ -111,7 +111,7 @@ tasks:
             args:
               field:
                 value:
-                  simple: Email
+                  simple: email
       val3:
         complex:
           root: alert
@@ -121,7 +121,7 @@ tasks:
             args:
               field:
                 value:
-                  simple: Source
+                  simple: source
       val4:
         complex:
           root: alert
@@ -131,7 +131,7 @@ tasks:
             args:
               field:
                 value:
-                  simple: Timestamp
+                  simple: timestamp
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -183,21 +183,21 @@ tasks:
             value:
               complex:
                 root: alert.asmserviceowner
-                accessor: Email
+                accessor: email
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: alert.asmserviceowner
-                accessor: Name
+                accessor: name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: alert.asmserviceowner
-                accessor: Source
+                accessor: source
             iscontext: true
     continueonerrortype: ""
     view: |-

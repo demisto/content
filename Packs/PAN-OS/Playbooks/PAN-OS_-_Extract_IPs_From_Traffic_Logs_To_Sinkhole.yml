@@ -1,0 +1,922 @@
+id: PAN-OS - Extract IPs From Traffic Logs To Sinkhole
+version: -1
+name: PAN-OS - Extract IPs From Traffic Logs To Sinkhole
+description: This playbook searches for outgoing traffic to the sinkhole address in PAN-OS. It should be used after a DNS sinkhole was created using the "PAN-OS - Configure DNS Sinkhole" playbook. If a DNS sinkhole was created manually, you should verify in your PAN-OS firewall that there is an address object for the sinkhole FQDN "sinkhole.paloaltonetworks.com", and that there is a rule denying traffic to it from any source. You may specify the name of the deny rule if you know it, or you can let the playbook find the rule automatically.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f5e8c7ff-cfec-4e23-8a73-354b6c1dd7d5
+    type: start
+    task:
+      id: f5e8c7ff-cfec-4e23-8a73-354b6c1dd7d5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1165898b-be5e-4426-8f67-c05d78318e7b
+    type: title
+    task:
+      id: 1165898b-be5e-4426-8f67-c05d78318e7b
+      version: -1
+      name: Query Traffic Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 884b2741-4e9b-4656-8ed8-268539ed8bae
+    type: regular
+    task:
+      id: 884b2741-4e9b-4656-8ed8-268539ed8bae
+      version: -1
+      name: Retrieve full traffic logs for denied requests to sinkhole
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      action:
+        simple: deny
+      log-type:
+        simple: traffic
+      number_of_logs:
+        simple: "5000"
+      polling:
+        simple: "true"
+      rule:
+        complex:
+          root: inputs.RuleNameToDenyToSinkhole
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: RuleNameToDenyToSinkhole
+                iscontext: true
+      timeout:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: ca732608-62bd-4a8a-836e-ed0a9e50d2a8
+    type: condition
+    task:
+      id: ca732608-62bd-4a8a-836e-ed0a9e50d2a8
+      version: -1
+      name: Output extended logs?
+      description: Checks if full traffic logs should be outputted, or only the source IP addresses which are the IPs of the infected systems.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "74"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.OutputLogsForDetectedIPs
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 2f7174d6-9755-468e-8a48-3a6c840cc4d4
+    type: regular
+    task:
+      id: 2f7174d6-9755-468e-8a48-3a6c840cc4d4
+      version: -1
+      name: Wait for traffic to be made to the sinkhole
+      description: Waits for the hosts to attempt to connect to the sinkholed domains, thus creating traffic logs and revealing their IP addresses.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      seconds:
+        complex:
+          root: inputs.TimeToWaitForTraffic
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 0acacc94-1156-48a2-861b-6435fb7249de
+    type: title
+    task:
+      id: 0acacc94-1156-48a2-861b-6435fb7249de
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 2688899c-a918-480c-8e2c-bdea84e79512
+    type: regular
+    task:
+      id: 2688899c-a918-480c-8e2c-bdea84e79512
+      version: -1
+      name: Retrieve only IPs from denied requests to sinkhole
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      action:
+        simple: deny
+      extend-context:
+        simple: DetectedIPsFromSinkhole=response.result.log.logs.entry.src
+      ignore-outputs:
+        simple: "true"
+      log-type:
+        simple: traffic
+      number_of_logs:
+        simple: "5000"
+      polling:
+        simple: "true"
+      rule:
+        complex:
+          root: inputs.RuleNameToDenyToSinkhole
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: RuleNameToDenyToSinkhole
+                iscontext: true
+      timeout:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 2faf5424-b910-4eb7-8539-d46f8dffa8d4
+    type: condition
+    task:
+      id: 2faf5424-b910-4eb7-8539-d46f8dffa8d4
+      version: -1
+      name: Is PAN-OS enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "85"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: b65e1e67-a89b-4e0f-8e2f-3cc18739d279
+    type: regular
+    task:
+      id: b65e1e67-a89b-4e0f-8e2f-3cc18739d279
+      version: -1
+      name: Search for existing rule denying traffic to sinkhole
+      description: Searches for rules that apply to traffic to the sinkhole address. Although it's recommended to deny traffic to the sinkhole address, because packets are dropped anyway, the search also looks for allow rules too. This is done because the goal is to log traffic to it, so the action is irrelevant.
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      query:
+        complex:
+          root: SinkholeAddressObjectName
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (destination/member eq '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ''')'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: e7a491a7-8cb1-4033-888d-6f0bc92a7cc1
+    type: condition
+    task:
+      id: e7a491a7-8cb1-4033-888d-6f0bc92a7cc1
+      version: -1
+      name: Was a rule name specified?
+      description: Checks whether the name of the rule that denies traffic to the sinkhole address was specified.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RuleNameToDenyToSinkhole
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: bc85e87e-286e-4a3f-8127-97d823ce2195
+    type: condition
+    task:
+      id: bc85e87e-286e-4a3f-8127-97d823ce2195
+      version: -1
+      name: Was a rule found?
+      description: Checks whether a rule for traffic to the sinkhole address was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityRule
+                accessor: Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 35626ba8-4575-4525-8483-c52ac8ce24ee
+    type: regular
+    task:
+      id: 35626ba8-4575-4525-8483-c52ac8ce24ee
+      version: -1
+      name: Get all the address objects
+      description: Returns a list of addresses.
+      script: '|||pan-os-list-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: a32b5b94-d235-4b88-87ce-d645530aa8e2
+    type: condition
+    task:
+      id: a32b5b94-d235-4b88-87ce-d645530aa8e2
+      version: -1
+      name: Is there an address object for the sinkhole address?
+      description: Checks whether there is an existing address object with the FQDN of sinkhole.paloaltonetworks.com.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama.Addresses
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Addresses.FQDN
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sinkhole.paloaltonetworks.com
+                    ignorecase: true
+                accessor: Name
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: b29c24e3-4d69-4342-8391-425983e53ab3
+    type: regular
+    task:
+      id: b29c24e3-4d69-4342-8391-425983e53ab3
+      version: -1
+      name: Save the name of the address object
+      description: Saves the name of the sinkhole address object.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      key:
+        simple: SinkholeAddressObjectName
+      value:
+        complex:
+          root: Panorama.Addresses
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.Addresses.FQDN
+                iscontext: true
+              right:
+                value:
+                  simple: sinkhole.paloaltonetworks.com
+              ignorecase: true
+          accessor: Name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 0936621d-001a-47e0-8bc0-4b362153de27
+    type: title
+    task:
+      id: 0936621d-001a-47e0-8bc0-4b362153de27
+      version: -1
+      name: Missing Configuration
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 219cfe7c-35fa-47b4-830f-dbff1ce846c7
+    type: title
+    task:
+      id: 219cfe7c-35fa-47b4-830f-dbff1ce846c7
+      version: -1
+      name: Find Sinkhole Address Object
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: c57a5a51-f502-4670-806a-a6c55e8cd29b
+    type: condition
+    task:
+      id: c57a5a51-f502-4670-806a-a6c55e8cd29b
+      version: -1
+      name: Return error for missing configuration?
+      description: Checks whether to return an error if the configuration needed before querying the logs is incomplete
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ReturnErrorForIncompleteConfig
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 6859e227-3e67-4992-82be-c930b0b5b934
+    type: regular
+    task:
+      id: 6859e227-3e67-4992-82be-c930b0b5b934
+      version: -1
+      name: Error - missing configuration
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      message:
+        simple: |-
+          Please make sure you run the "PAN-OS - Configure DNS Sinkhole" playbook, or configure a DNS sinkhole in PAN-OS manually, before executing this playbook.
+          This playbook failed either because an address object for the sinkhole address was not found (you should create an address object with FQDN "sinkhole.paloaltonetworks.com"), or there is no security rule that denies traffic to that address object.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "77_73_#default#": 0.13,
+      "79_64_yes": 0.24,
+      "80_64_yes": 0.27,
+      "80_84_#default#": 0.15,
+      "82_84_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2715,
+        "width": 1930,
+        "x": -1090,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: OutputLogsForDetectedIPs
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Whether to output full traffic logs for the infected IPs.
+
+    If set to True, this will output the logs containing the traffic from the compromised IPs to the sinkhole address. It includes data that can be used for remediation or for deeper investigation by examining what traffic the hosts are creating.
+
+    If set to False, data from the logs will not be outputted.
+
+    Note: The IP addresses of the systems creating traffic to the sinkhole address will be outputted regardless of playbook input configurations.
+  playbookInputQuery:
+- key: RuleNameToDenyToSinkhole
+  value: {}
+  required: false
+  description: |-
+    The name of the rule that will be created  to deny traffic to the sinkhole address. This is required so that traffic logs will reveal the endpoints attempting to connect to their C&C (which by the end of this playbook will be sinkholed).
+    If a rule with the specified name does not exist, one will be created. The new rule will be placed before rules that allow DNS traffic, as recommended by the PAN-OS best practices.
+  playbookInputQuery:
+- key: TimeToWaitForTraffic
+  value:
+    simple: "300"
+  required: true
+  description: |-
+    The time in seconds that the playbook will wait for hosts to generate traffic to the sinkhole address.
+    Waiting for long periods of time will increase your chances of finding additional infected systems. However, if enough time passed since your DNS sinkhole was first configure, it may not be needed to wait at all, as systems are already generating traffic to the sinkhole address.
+    By default, the playbook will wait for 5 minutes (300 seconds).
+    If you do not wish to wait at all, do not delete the value of this input. Instead, you can set the value to 0.
+  playbookInputQuery:
+- key: ReturnErrorForIncompleteConfig
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Whether to return errors if the configuration for the sinkhole is incomplete.
+    Incomplete configuration will result in no logs being returned from this playbook.
+  playbookInputQuery:
+outputs:
+- contextPath: DetectedIPsFromSinkhole
+  description: The IP addresses of the hosts that attempted to connect to the sinkhole address. If your EDL contained C2C domains, then this would be a list of IP addresses of compromised hosts.
+  type: unknown
+- contextPath: Panorama.Monitor.Logs
+  description: The Traffic logs generated by the rule that denies traffic to the sinkhole address. After the sinkhole is created - these logs should be generated by the infected systems.
+  type: unknown
+- contextPath: Panorama.Monitor.Logs.Action
+  description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+- contextPath: Panorama.Monitor.Logs.Application
+  description: The application associated with the session.
+- contextPath: Panorama.Monitor.Logs.Category
+  description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any".
+- contextPath: Panorama.Monitor.Logs.DeviceName
+  description: The hostname of the firewall on which the session was logged.
+- contextPath: Panorama.Monitor.Logs.DestinationAddress
+  description: The original session destination IP address.
+- contextPath: Panorama.Monitor.Logs.DestinationUser
+  description: The username of the user to which the session was destined.
+- contextPath: Panorama.Monitor.Logs.DestinationCountry
+  description: The destination country or internal region for private addresses. Maximum length is 32 bytes.
+- contextPath: Panorama.Monitor.Logs.DestinationPort
+  description: The destination port utilized by the session.
+- contextPath: Panorama.Monitor.Logs.FileDigest
+  description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+- contextPath: Panorama.Monitor.Logs.FileName
+  description: |-
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+- contextPath: Panorama.Monitor.Logs.FileType
+  description: |-
+    Only for the WildFire subtype, all other types do not use this field.
+    Specifies the type of file that the firewall forwarded for WildFire analysis.
+- contextPath: Panorama.Monitor.Logs.FromZone
+  description: The zone from which the session was sourced.
+- contextPath: Panorama.Monitor.Logs.URLOrFilename
+  description: |-
+    The actual URL when the subtype is url.
+    The file name or file type when the subtype is file.
+    The file name when the subtype is virus.
+    The file name when the subtype is wildfire-virus.
+    The file name when the subtype is wildfire.
+    The URL or file name when the subtype is vulnerability (if applicable).
+- contextPath: Panorama.Monitor.Logs.NATDestinationIP
+  description: The post-NAT destination IP address if destination NAT was performed.
+- contextPath: Panorama.Monitor.Logs.NATDestinationPort
+  description: The post-NAT destination port.
+- contextPath: Panorama.Monitor.Logs.NATSourceIP
+  description: The post-NAT source IP address if source NAT was performed.
+- contextPath: Panorama.Monitor.Logs.NATSourcePort
+  description: The post-NAT source port.
+- contextPath: Panorama.Monitor.Logs.PCAPid
+  description: |-
+    The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of
+    that flow. All threat logs will contain either a pcap_id of 0 (no associated
+    pcap), or an ID referencing the extended pcap file.
+- contextPath: Panorama.Monitor.Logs.IPProtocol
+  description: The IP protocol associated with the session.
+- contextPath: Panorama.Monitor.Logs.Recipient
+  description: |-
+    Only for the WildFire subtype, all other types do not use this field.
+    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+- contextPath: Panorama.Monitor.Logs.Rule
+  description: The name of the rule that the session matched.
+- contextPath: Panorama.Monitor.Logs.RuleID
+  description: The ID of the rule that the session matched.
+- contextPath: Panorama.Monitor.Logs.ReceiveTime
+  description: The time the log was received at the management plane.
+- contextPath: Panorama.Monitor.Logs.Sender
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+- contextPath: Panorama.Monitor.Logs.SessionID
+  description: An internal numerical identifier applied to each session.
+- contextPath: Panorama.Monitor.Logs.DeviceSN
+  description: The serial number of the firewall on which the session was logged.
+- contextPath: Panorama.Monitor.Logs.Severity
+  description: |-
+    The severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
+- contextPath: Panorama.Monitor.Logs.SourceAddress
+  description: The original session source IP address.
+- contextPath: Panorama.Monitor.Logs.SourceCountry
+  description: |-
+    The source country or internal region for private addresses. Maximum
+    length is 32 bytes.
+- contextPath: Panorama.Monitor.Logs.SourceUser
+  description: The username of the user who initiated the session.
+- contextPath: Panorama.Monitor.Logs.SourcePort
+  description: The source port utilized by the session.
+- contextPath: Panorama.Monitor.Logs.ThreatCategory
+  description: |-
+    The threat categories used to classify different types of
+    threat signatures.
+- contextPath: Panorama.Monitor.Logs.Name
+  description: |-
+    The Palo Alto Networks identifier for the threat. A description
+    string followed by a 64-bit numerical identifier.
+- contextPath: Panorama.Monitor.Logs.ID
+  description: The Palo Alto Networks ID for the threat.
+- contextPath: Panorama.Monitor.Logs.ToZone
+  description: The zone to which the session was destined.
+- contextPath: Panorama.Monitor.Logs.TimeGenerated
+  description: The time the log was generated on the data plane.
+- contextPath: Panorama.Monitor.Logs.URLCategoryList
+  description: |-
+    A list of the URL filtering categories the firewall used to
+    enforce the policy.
+- contextPath: Panorama.Monitor.Logs.Bytes
+  description: The total log bytes.
+- contextPath: Panorama.Monitor.Logs.BytesReceived
+  description: The log bytes received.
+- contextPath: Panorama.Monitor.Logs.BytesSent
+  description: The log bytes sent.
+- contextPath: Panorama.Monitor.Logs.Vsys
+  description: The VSYS on the firewall that generated the log.
+tests:
+- No tests
+fromversion: 6.9.0

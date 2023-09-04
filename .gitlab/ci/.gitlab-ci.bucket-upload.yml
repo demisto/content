@@ -17,7 +17,7 @@
   - |
     if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
-      echo "recieved content leaders"
+      echo "received content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
       LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc -xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
@@ -133,11 +133,13 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download configuration"
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
-    - section_end "Download configuration"
+    - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -207,11 +209,13 @@ install-packs-in-server-master:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download configuration"
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
-    - section_end "Download configuration"
+    - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
@@ -320,7 +324,10 @@ upload-packs-to-marketplace:
          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
         fi
 
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+        if [[ -z $PACKS_TO_UPLOAD ]]; then
+          PACKS_TO_UPLOAD="All"
+        fi
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -397,7 +404,10 @@ upload-packs-to-marketplace-v2:
           fi
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+        if [[ -z $PACKS_TO_UPLOAD ]]; then
+          PACKS_TO_UPLOAD="All"
+        fi
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -457,7 +467,10 @@ upload-packs-to-xpanse-marketplace:
           fi
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
+        if [[ -z $PACKS_TO_UPLOAD ]]; then
+          PACKS_TO_UPLOAD="All"
+        fi
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
       fi
     - section_end "Upload Packs To Marketplace Storage"
 

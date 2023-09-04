@@ -1220,7 +1220,7 @@ def main():
 
     raw_json_encoding = params.get('raw_json_encoding')
 
-    fetch_limit = min(params.get('limit', DEFAULT_LIMIT), DEFAULT_LIMIT)
+    fetch_limit = min(int(params.get('limit', DEFAULT_LIMIT)), DEFAULT_LIMIT)
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
