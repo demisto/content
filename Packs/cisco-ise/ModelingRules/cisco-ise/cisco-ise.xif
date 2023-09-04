@@ -132,6 +132,7 @@ alter
     get_description1 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
     get_description2 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0)
 | alter 
+    xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
     xdm.event.type = logType,
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
@@ -182,9 +183,10 @@ alter
     check_tar_ipv6 = if(get_tar_ip ~= ":", arrayindex(regextract(get_tar_ip, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0), null),
     check_tar_mac = if(get_tar_ip ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", arrayindex(regextract(get_tar_ip, "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}"), 0), null)
 | alter
+    xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
     xdm.observer.type = get_ProfilerServer,
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
-    xdm.source.host.device_category = to_string(regextract(_raw_log, "NetworkDeviceGroups=([^\,]+)")),
+    xdm.source.host.device_category = to_string(regextract(_raw_log, "NetworkDeviceGroups=([^\,\\]+)")),
     xdm.event.description = if(logSeverity != null, coalesce(get_description1, get_description2), get_description3),
     xdm.alert.description = coalesce(get_message, get_ProfilerErrorMessage, get_FailureReason),
     xdm.source.ipv4 = check_src_ipv4,
