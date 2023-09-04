@@ -657,7 +657,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
 
     Returns:
-        dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
+        dictionary (Ex. {"range":{'gt': 1000 'lt': 1001}})
     """
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
