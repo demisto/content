@@ -18,6 +18,7 @@ The integration was integrated and tested with version v3 API of VirusTotal.
     | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
     | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
     | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
@@ -182,8 +183,8 @@ Checks the file reputation of the specified hash.
 | File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. |
-| DBotScore.Score | Number | The actual score. |
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | VirusTotal.File.attributes.type_description | String | Description of the type of the file. |
 | VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. |
@@ -403,6 +404,7 @@ Checks the reputation of an IP address.
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
 | extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
+| override_private_lookup | When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -421,8 +423,8 @@ Checks the reputation of an IP address.
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
 | DBotScore.Indicator | unknown | The indicator that was tested. | 
 | DBotScore.Type | unknown | The indicator type. | 
-| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
-| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |  
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). | 
 | VirusTotal.IP.attributes.jarm | String | JARM data. | 
@@ -651,8 +653,8 @@ Checks the reputation of a URL.
 | URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. |
-| DBotScore.Score | unknown | The actual score. |
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | VirusTotal.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. |
 | VirusTotal.URL.attributes.favicon.dhash | String | Difference hash. |
@@ -809,7 +811,7 @@ Checks the reputation of a domain.
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
-| DBotScore.Score | unknown | The actual DBot score. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | VirusTotal.Domain.attributes.last_dns_records.type | String | The type of the last DNS records. |
 | VirusTotal.Domain.attributes.last_dns_records.value | String | The value of the last DNS records. |
