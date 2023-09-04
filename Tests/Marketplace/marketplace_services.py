@@ -1107,7 +1107,7 @@ class Pack:
             with open(pack_index_metadata_path) as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
             logging.info(f"downloaded_metadata = {downloaded_metadata}")
-            previous_commit_hash = current_commit_hash #  downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
+            previous_commit_hash = current_commit_hash  # downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
             logging.info(f"previous_commit_hash = {previous_commit_hash}")
             logging.info(f"current_commit_hash = {current_commit_hash}")
             # set 2 commits by hash value in order to check the modified files of the diff
