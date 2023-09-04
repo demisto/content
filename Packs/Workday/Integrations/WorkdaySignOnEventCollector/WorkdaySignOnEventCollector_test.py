@@ -315,8 +315,8 @@ class TestFetchSignOnLogs(unittest.TestCase):
         )
 
         # Assertions
-        self.assertEqual(len(events), 1)
-        self.assertEqual(events[0]["User_Name"], "John")
+        assert len(events) == 1
+        assert events[0]["User_Name"] == "John"
 
 
 class TestGetSignOnEventsCommand(unittest.TestCase):
@@ -350,12 +350,10 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
             )
 
             # Assertions
-            self.assertEqual(len(events), 1)
-            self.assertEqual(events[0]["User_Name"], "John")
-            self.assertEqual(events[0]["_time"], "2021-09-01T11:00:00Z")
-            self.assertTrue(
-                results.readable_output.startswith("### Sign On Events List:")
-            )
+            assert len(events) == 1
+            assert events[0]["User_Name"] == "John"
+            assert events[0]["_time"] == "2021-09-01T11:00:00Z"
+            assert results.readable_output.startswith("### Sign On Events List:")
 
 
 @freeze_time("2021-09-02T00:00:00Z")

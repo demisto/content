@@ -1,7 +1,5 @@
-from flask import Flask
-
 import unittest
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import patch
 from WorkdaySignonEventGenerator import (
     random_datetime_in_range,
     random_string,
@@ -26,7 +24,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         random_date = random_datetime_in_range(
             "2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z"
         )
-        self.assertTrue("2023-08-21T11:46:02Z" <= random_date <= "2023-08-21T11:47:02Z")
+        assert "2023-08-21T11:46:02Z" <= random_date <= "2023-08-21T11:47:02Z"
 
     def test_random_string(self) -> None:
         """
@@ -39,7 +37,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the length of the generated string is 10
         """
-        self.assertEqual(len(random_string()), 10)
+        assert len(random_string()) == 10
 
     def test_random_guid(self) -> None:
         """
@@ -52,7 +50,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the length of the generated string is 6
         """
-        self.assertEqual(len(random_string(length=6)), 6)
+        assert len(random_string(length=6)) == 6
 
     def test_xml_generator(self) -> None:
         """
@@ -66,7 +64,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
             - Ensure that the XML response contains exactly one Workday sign-on event
         """
         xml_response = xml_generator("2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z", 1)
-        self.assertEqual(xml_response.count("<wd:Workday_Account_Signon>"), 1)
+        assert xml_response.count("<wd:Workday_Account_Signon>") == 1
 
 
 class TestMockWorkdayEndpoint(unittest.TestCase):
@@ -80,9 +78,8 @@ class TestMockWorkdayEndpoint(unittest.TestCase):
         mock_post_data = """<bsvc:From_DateTime>2023-08-21T11:46:02Z</bsvc:From_DateTime>
             <bsvc:To_DateTime>2023-08-21T11:47:02Z</bsvc:To_DateTime>
             <bsvc:Count>2</bsvc:Count>"""
-        with self.app as c:
-            with c.post('/', data=mock_post_data):
-                mock_workday_endpoint()
+        with self.app as c, c.post('/', data=mock_post_data):
+            mock_workday_endpoint()
 
         MockResponse.assert_called()
 

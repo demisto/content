@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import urllib3
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -296,7 +295,7 @@ class Client(BaseClient):
             count: int,
             to_time: Optional[str] = None,
             from_time: Optional[str] = None,
-    ) -> Tuple:
+    ) -> tuple:
         """
         Retrieves events from Workday.
 
@@ -357,7 +356,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def convert_to_json(response: str | dict) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def convert_to_json(response: str | dict) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """
     Convert an XML response to a JSON object and extract the 'Workday_Account_Signons' data.
 
@@ -449,7 +448,7 @@ def fetch_sign_on_logs(
 
 def get_sign_on_events_command(
     client: Client, from_date: str, to_date: str, limit: int
-) -> Tuple[list, CommandResults]:
+) -> tuple[list, CommandResults]:
     """
 
     Args:

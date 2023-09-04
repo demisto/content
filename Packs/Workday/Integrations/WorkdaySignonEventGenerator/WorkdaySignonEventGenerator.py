@@ -51,7 +51,7 @@ SIGNON_ITEM_TEMPLATE = """
     """
 
 
-def generate_xml_template(from_date, to_date, count, total_responses):
+def generate_xml_template(from_date: str, to_date: str, count: int, total_responses: int):
     return f"""
 <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
     <env:Body>
@@ -80,7 +80,7 @@ def generate_xml_template(from_date, to_date, count, total_responses):
 """
 
 
-def random_datetime_in_range(start_str, end_str):
+def random_datetime_in_range(start_str: str, end_str: str):
     start_datetime = datetime.strptime(start_str, DATE_FORMAT)
     end_datetime = datetime.strptime(end_str, DATE_FORMAT)
 
@@ -88,11 +88,11 @@ def random_datetime_in_range(start_str, end_str):
     return (start_datetime + timedelta(seconds=random_seconds)).strftime(DATE_FORMAT)
 
 
-def random_string(length=10):
+def random_string(length: int = 10):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
-def xml_generator(from_datetime, to_datetime, count):
+def xml_generator(from_datetime: str, to_datetime: str, count: int):
     # Generate randomized Signon_DateTime
     random_signon_datetime = random_datetime_in_range(from_datetime, to_datetime)
 
@@ -145,31 +145,36 @@ def mock_workday_endpoint():
     return Response(response_xml, mimetype='text/xml')
 
 
-def module_of_testing(is_longrunning, longrunning_port):
+def module_of_testing(is_longrunning: bool, longrunning_port: int):
     if longrunning_port and is_longrunning:
         xml_response = xml_generator('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z', 2)
         if xml_response:
-            demisto.results('ok')
+            return_results('ok')
         else:
-            return_error('Could not connect to the long running server. Please make sure everything is configured.')
+            raise DemistoException('Could not connect to the long running server. Please make sure everything is '
+                                   'configured.')
     else:
-        return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
+        raise DemistoException('Please make sure the long running port is filled and the long running checkbox is '
+                               'marked.')
 
 
 ''' MAIN FUNCTION '''
 
 
 def main():
+    command = demisto.command()
     params = demisto.params()
     port = int(params.get('longRunningPort', '5000'))
     is_longrunning = params.get("longRunning")
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             module_of_testing(longrunning_port=port, is_longrunning=is_longrunning)
-        elif demisto.command() == 'long-running-execution':
+        elif command == 'long-running-execution':
             while True:
                 server = WSGIServer(('0.0.0.0', port), APP)
                 server.serve_forever()
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
