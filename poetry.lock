@@ -1511,7 +1511,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "fix_pack_ignore_still_fail"
-resolved_reference = "d63f0eab5d6c93152188f6729040f3363c1338bb"
+resolved_reference = "589964b9dd921ff55ad2c29d97f82ca45e0d8c53"
 
 [[package]]
 name = "deprecated"
