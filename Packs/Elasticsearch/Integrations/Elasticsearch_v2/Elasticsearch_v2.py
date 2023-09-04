@@ -71,7 +71,7 @@ def convert_date_to_timestamp(date):
         date(datetime): A datetime object setting up the last fetch time
 
     Returns:
-        (num).The formatted timestamp
+        (num | str): The formatted timestamp
     """
     # this theoretically shouldn't happen but just in case
     if str(date).isdigit():
