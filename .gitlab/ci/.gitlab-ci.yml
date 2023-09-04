@@ -19,10 +19,12 @@ stages:
 
 
 variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
+  GCS_MARKET_XSOAR_SAAS_BUCKET: "marketplace-saas-dist"
   GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
   GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
   STORAGE_BASE_PATH: ""
@@ -33,6 +35,7 @@ variables:
   ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
   ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
   ARTIFACTS_FOLDER_XPANSE: "/builds/xsoar/content/artifacts/xpanse"
+  ARTIFACTS_FOLDER_XSOAR_SAAS: "/builds/xsoar/content/artifacts/xsoar_saas"
   BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
   PYTHONPATH: "/builds/xsoar/content"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -44,6 +47,7 @@ variables:
   GCS_PRODUCTION_BUCKET: "marketplace-dist"
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
+  GCS_PRODUCTION_XSOAR_SAAS_BUCKET: "marketplace-saas-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
@@ -53,6 +57,8 @@ variables:
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
   OVERRIDE_SDK_REF: ""
   CONTENT_GITLAB_CI: "true"
+  POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
+  FF_USE_FASTZIP: "true"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
