@@ -647,6 +647,8 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
         start date (gt) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
                           if this is not the fetch: use the last fetch provided
         end date (lt) - use the given time range end param.
+        When the `time_method` parameter is set to `Simple-Date` in order to avoid being related to the field datetime format,
+            we add the format key to the query dict.
     Args:
 
         last_fetch (str): last fetch time stamp
