@@ -21,6 +21,39 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "T1036 - Masquerading - Test",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 800
+        },
+	    {
+            "playbookID": "T1059 - Command and Scripting Interpreter - Test",
+            "integrations": "LOLBAS Feed",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Eradication plan - Test",
+            "timeout": 600
+        },
+		{
+            "playbookID": "Containment Plan - Test",
+            "timeout": 800,
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k"
+        },
+		{
+            "playbookID": "Enrichment for Verdict - Test",
+            "timeout": 500,
+			"integrations": [
+				"Active Directory Query v2",
+				"VirusTotal (API v3)"
+			],
+			"instance_names": [
+				"active_directory_80k",
+				"virus_total_v3"
+			]
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
@@ -3957,9 +3990,9 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "Fetch Incidents Test",
+            "playbookID": "ServiceNow Fetch Incidents Test",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0",
+            "fromversion": "6.8.0",
             "is_mockable": false,
             "timeout": 2400
         },
