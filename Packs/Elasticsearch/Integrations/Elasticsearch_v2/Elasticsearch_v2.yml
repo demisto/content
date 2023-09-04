@@ -67,7 +67,6 @@ configuration:
   advanced: true
   required: false
 - display: Time field type
-  additionalinfo: When selecting Simple-Date with multiple indexes where each index has a different custom date format, it will take the format from the first index.
   defaultvalue: 'Simple-Date'
   name: time_method
   type: 15
@@ -356,7 +355,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.72311
+  dockerimage: demisto/py3-tools:1.0.0.72621
   isfetch: true
   runonce: false
   script: '-'
