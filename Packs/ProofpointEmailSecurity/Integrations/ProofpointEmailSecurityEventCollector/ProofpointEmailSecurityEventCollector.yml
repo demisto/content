@@ -33,9 +33,7 @@ script:
   script: ""
   type: python
   commands:
-    - description: This command is not implemented. Enable long running to collect events.
-      name: proofpoint-get-events
-
+    []
   dockerimage: devdemisto/websockets:11.0.3.69389
   longRunning: true
   subtype: python3
