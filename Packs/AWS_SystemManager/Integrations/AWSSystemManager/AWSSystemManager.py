@@ -330,12 +330,11 @@ def add_tags_to_resource_command(args: dict[str, Any], ssm_client: "SSMClient") 
 
 
 def remove_tags_from_resource_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
-    kwargs = {
-        "ResourceType": args["resource_type"],
-        "ResourceId": args["resource_id"],
-        "TagKeys": [args["tag_key"]],
-    }
-    ssm_client.remove_tags_from_resource(**kwargs)
+    ssm_client.remove_tags_from_resource(
+        ResourceType=args["resource_type"],
+        ResourceId=args["resource_id"],
+        TagKeys=[args["tag_key"]],
+    )
     return CommandResults(
         readable_output=f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully.",
     )
