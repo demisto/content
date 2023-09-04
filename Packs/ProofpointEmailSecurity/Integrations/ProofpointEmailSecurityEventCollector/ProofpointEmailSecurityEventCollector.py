@@ -13,7 +13,6 @@ URL = "wss://{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 
 FETCH_INTERVAL_IN_SECONDS = 60
-TIMEOUT = 10
 
 
 class EventType(str, Enum):
@@ -29,12 +28,13 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 def websocket_connections(
     host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None
 ):
+    demisto.info(
+        f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}")
     url = URL
     if not since_time:
         since_time = datetime.utcnow().isoformat()
     if to_time:
         url += f"&toTime={to_time}"
-    demisto.info("Starting websocket connection")
     extra_headers = {"Authorization": f"Bearer {api_key}"}
     with connect(
         url.format(host=host, cluster_id=cluster_id, type=EventType.MESSAGE.value, time=since_time),
