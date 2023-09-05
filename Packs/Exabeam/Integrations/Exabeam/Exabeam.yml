@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Analytics & SIEMa
 commonfields:
   id: Exabeam
   version: -1
@@ -84,12 +84,6 @@ configuration:
   name: first_fetch
   type: 0
   required: false
-- display: 'Advanced: Minutes to look back when fetching'
-  name: look_back
-  type: 0
-  required: false
-  defaultvalue: 1
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 - display: Incident type
   name: incidentType
   type: 13
@@ -1692,7 +1686,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.12.68714
   isfetch: true
   runonce: false
   script: '-'
