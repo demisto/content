@@ -4026,11 +4026,8 @@ tasks:
             value:
               simple: CrowdStrike.ODSScan.id
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CrowdStrike.ODSScan.metadata.filecount.malicious
-            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
