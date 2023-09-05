@@ -1,4 +1,4 @@
-Deprecated. Use Block URL - Generic v2 instead.
+Deprecated. Use 'Block URL - Generic v2' instead.
 
 ## Dependencies
 
