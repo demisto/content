@@ -23,6 +23,4 @@ auto secure cicd:
     strategy: depend
   extends:
     .auto-secure-cicd-rule
-
-stages:
-  - security
+  
