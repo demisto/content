@@ -313,6 +313,9 @@
       fi
     - section_end "Run Unit Testing and Lint"
     - job-done
+  parallel:
+    matrix:
+      - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
 .run-validations:
   stage: unittests-and-validations
