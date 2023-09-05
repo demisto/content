@@ -25,7 +25,7 @@ trigger-private-build:
   script:
     - echo "====Trigger Private Build===="
     - |
-      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t $GITHUB_TOKEN --repo demisto/content-private -b $CI_COMMIT_BRANCH) ]; then
+      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t "${GITHUB_TOKEN}" --repo "demisto/content-private" -b "${CI_COMMIT_BRANCH}") ]; then
         PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
       else
         PRIVATE_BRANCH_NAME='master'
@@ -97,25 +97,7 @@ validate-content-conf:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
   script:
-    - section_start "Validate content-test-conf Branch Merged"
-    - |
-      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
-        echo "Skipping, Should not run on master branch."
-      else
-        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
-        EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
-        if [ -n "$EXIST" ]; then
-            RED='\033[0;31m'
-            NC='\033[0m'
-            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
-            job-done
-            exit 1
-        fi
-            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
-      fi
-    - section_end "Validate content-test-conf Branch Merged"
+    - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
 
 .generic-prepare-testing-bucket:
@@ -148,10 +130,10 @@ validate-content-conf:
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - |
-      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "xsoar" || $MARKETPLACE_VERSION == "xsoar_saas" ]];  # later the non xsoar will be edited to remove xsoar naming.
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
@@ -164,7 +146,7 @@ validate-content-conf:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
@@ -207,6 +189,14 @@ xsoar-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xsoar-saas-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -364,7 +354,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
   tags:
     - gke
   rules:
@@ -387,6 +377,8 @@ jobs-done-check-on-push:
     - job: xpanse-prepare-testing-bucket
       optional: true
     - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsoar-saas-prepare-testing-bucket
       optional: true
     - job: xsiam_server_ga
       optional: true
@@ -654,8 +646,12 @@ merge-dev-secrets:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Merging and deleting dev secrets" --collapsed
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+    - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
 xsoar_server_master-test_playbooks_results:
