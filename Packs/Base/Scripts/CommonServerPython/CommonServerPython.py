@@ -6919,7 +6919,10 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                human_readable = tableToMarkdown('Results', self.outputs)
+                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                    human_readable = tableToMarkdown('Results', self.outputs)
+                else:
+                    human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
