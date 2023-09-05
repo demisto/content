@@ -45,12 +45,13 @@ class Client(BaseClient):
     def __init__(self, verify, proxy, ok_codes, headers, **kwargs):
         super().__init__(None, verify, proxy, ok_codes, headers, **kwargs)
 
-    def _http_request(self, method, service, url_suffix='', params=None, json_data=None, resp_type='json', **kwargs) -> Any:
+    def _http_request(self, method, service, url_suffix='', params=None,
+                      json_data=None, resp_type='json', files=None, **kwargs) -> Any:
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
         return super()._http_request(
             method, full_url=urljoin(SERVICE_TO_URL_MAP[service], url_suffix),
-            params=params, json_data=json_data, resp_type=resp_type, **kwargs)
+            params=params, json_data=json_data, resp_type=resp_type, files=files, **kwargs)
 
     def client_error_handler(self, res: requests.Response):
         '''Error handler for Netcraft API call error'''
@@ -59,7 +60,7 @@ class Client(BaseClient):
             # Try to parse json error response
             error_entry: dict[str, Any] = res.json()
             err_msg += '\n'.join(
-                f'{k.replace("_", " ").title()}: {v}'
+                f'{string_to_table_header(k)}: {v}'
                 for k, v in error_entry.items()
             )
         except ValueError:
@@ -75,10 +76,10 @@ class Client(BaseClient):
             'GET', 'takedown', 'attacks/', params
         )
 
-    def attack_report(self, body: dict) -> str:
+    def attack_report(self, body: dict, file: dict | None) -> str:
         return self._http_request(
             'POST', 'takedown', 'report/',
-            json_data=body, resp_type='text'
+            json_data=body, resp_type='text', files=file
         )
 
     def takedown_update(self, body: dict) -> dict:
@@ -96,11 +97,15 @@ class Client(BaseClient):
             'POST', 'takedown', 'notes/', json_data=body,
         )
 
-    def takedown_note_list(self, params: dict) -> None:
-        ...
+    def takedown_note_list(self, params: dict) -> list[dict]:
+        return self._http_request(
+            'GET', 'takedown', 'notes/', params=params,
+        )
 
-    def attack_type_list(self, params: dict) -> None:
-        ...
+    def attack_type_list(self, params: dict) -> list[dict]:
+        return self._http_request(
+            'GET', 'takedown', 'attack-types/', params=params,
+        )
 
     def file_report_submit(self, params: dict) -> None:
         ...
@@ -149,6 +154,11 @@ def sub_dict(d: dict, keys: Iterable, change_keys: dict = None) -> dict:
         for k, v in change_keys or {}
     }
     return res
+
+
+def int_to_bool(val: str | int) -> str | None:
+    '''Converts the 1 or 0 values returned by netcraft to a human readable string'''
+    return {'0': 'No', '1': 'Yes'}.get(str(val))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -242,16 +252,27 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
 
 
 def netcraft_attack_report_command(client: Client, args: dict) -> CommandResults:
-    args |= {
-        'type': args.pop('attack_type'),
-        'suspected_fraudulent_domain': argToBoolean(args.pop('suspected_fraud_domain')),
-        'region': args.get('region') or PARAMS['region'],
-        'malware': json.loads(args.get('malware', 'null')),
-        'force_auth': json.loads(args.get('force_auth', 'null')),
-        'inactive': json.loads(args.get('inactive', 'null')),
-        'tags': ','.join(argToList(args.get('tags'))),
-    }
-    response = client.attack_report(args)
+
+    def args_to_params(args: dict) -> tuple[dict, dict | None]:
+        if entry_id := args.get('entryId'):
+            file_contents = demisto.getFilePath(entry_id)
+            file = {'evidence': open(file_contents['path'], 'rb')}
+        else:
+            file = None
+
+        return args | {
+            'type': args.pop('attack_type'),
+            'suspected_fraudulent_domain': argToBoolean(args.pop('suspected_fraud_domain')),
+            'region': args.get('region') or PARAMS['region'],
+            'malware': json.loads(args.get('malware', 'null')),
+            'force_auth': json.loads(args.get('force_auth', 'null')),
+            'inactive': json.loads(args.get('inactive', 'null')),
+            'tags': ','.join(argToList(args.get('tags'))),
+        }, file
+
+    response = client.attack_report(
+        *args_to_params(args)
+    )
     code, takedown_id, *_ = response.splitlines() + ['', '']
     return CommandResults(
         outputs_prefix='Netcraft.Takedown',
@@ -291,7 +312,7 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
             [
                 {
                     'ID': d.get('id'),
-                    'Auth': {'0': 'No', '1': 'Yes'}.get(d.get('authgiven')),
+                    'Auth': int_to_bool(d.get('authgiven')),
                     'Brand': d.get('target_brand'),
                     'Attack Type': d.get('attack_type'),
                     'Status': d.get('status'),
@@ -376,23 +397,67 @@ def netcraft_takedown_note_create_command(client: Client, args: dict) -> Command
 
 
 def netcraft_takedown_note_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def response_to_readable(response: list[dict]) -> str:
+        return tableToMarkdown(
+            'Takedown Notes', response,
+            ['Note', 'Note ID', 'Takedown ID', 'Group ID', 'Author', 'Time'],
+            headerTransform={
+                'note_id': 'Note ID',
+                'takedown_id': 'Takedown ID',
+                'group_id': 'Group ID',
+                'time': 'Time',
+                'author': 'Author',
+                'note': 'Note'
+            }.get,
+            removeNull=True
+        )
+
+    response = client.takedown_note_list(
+        args | {'author': args.pop('author_mail')}
+    )
+    return CommandResults(
+        outputs_prefix='Netcraft.TakedownNote',
+        outputs=response,
+        outputs_key_field='note_id',
+        readable_output=response_to_readable(response)
+    )
 
 
 def netcraft_attack_type_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def response_to_readable(response: list[dict]) -> str:
+        return tableToMarkdown(
+            'Takedown Notes', response,
+            [
+                'name', 'display_name', 'base_type', 'description',
+                'automated', 'auto_escalation', 'auto_authorise',
+            ],
+            headerTransform=string_to_table_header,
+            removeNull=True
+        )
+
+    response = client.attack_type_list(
+        args | {'region': args.get('region') or PARAMS['region']}
+    )
+    return CommandResults(
+        outputs_prefix='Netcraft.AttackType',
+        outputs=response,
+        readable_output=response_to_readable(response)
+    )
+
+# TODO POLLING FUNCTIONS:
+
+# def netcraft_file_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
 
 
-def netcraft_file_report_submit_command(client: Client, args: dict) -> CommandResults:
-    ...
+# def netcraft_url_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
 
 
-def netcraft_url_report_submit_command(client: Client, args: dict) -> CommandResults:
-    ...
-
-
-def netcraft_email_report_submit_command(client: Client, args: dict) -> CommandResults:
-    ...
+# def netcraft_email_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
 
 
 def netcraft_submission_list_command(client: Client, args: dict) -> CommandResults:

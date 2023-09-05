@@ -130,11 +130,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    # - description: |
-    #     "The password to extract any archived evidence provided via the evidence\_\
-    #     parameter, if necessary."
-    #   name: password
-    # AWAITING TPM RESPONSE
+    - description: The password to extract any archived evidence provided via the evidence argument, if necessary.
+      name: password
+    - description: Entry ID of the evidence file uploaded to Cortex XSOAR. If a password is needed for the file, it can be provided with the "password" argument.
+      name: entry_id
     - description: |
         The URL where the phishkit archive was found.
         This parameter is required for attacks of type "phishkit_email".
@@ -312,7 +311,7 @@ script:
       description: The name of the brand being targeted by the attack.
       type: String
     - contextPath: Netcraft.Takedown.authgiven
-      description: Indicates whether the takedown has been authorised.
+      description: Indicates whether the takedown has been authorised. "1" means "yes", and "0" means "no".
       type: String
     - contextPath: Netcraft.Takedown.host
       description: The name of the company responsible for the IP address.
@@ -346,7 +345,7 @@ script:
         that the takedown was moved out of the "unverified" status.
       type: Date
     - contextPath: Netcraft.Takedown.escalated
-      description: Indicates whether the takedown has been escalated.
+      description: Indicates whether the takedown has been escalated. "1" means "yes", and "0" means "no".
       type: String
     - contextPath: Netcraft.Takedown.first_contact
       description: The date and time that the takedown first entered a contacted state, in UTC.
@@ -388,8 +387,7 @@ script:
         authorised, and the final time that the attack went offline (final_resolved - date_authed).
       type: String
     - contextPath: Netcraft.Takedown.final_resolved
-      description: The date and time that the attack went offline for the
-        final time, in UTC.
+      description: The date and time that the attack went offline for the final time, in UTC.
       type: Date
     - contextPath: Netcraft.Takedown.first_outage
       description: The duration (hh:mm:ss) between when the takedown was authorised, and the first time that the attack went offline (first_resolved - date_authed).
@@ -401,7 +399,7 @@ script:
       description: The owner of the forward DNS infrastructure.
       type: String
     - contextPath: Netcraft.Takedown.has_phishing_kit
-      description: Indicating whether the takedown has an associated phishing kit.
+      description: Indicates whether the takedown has an associated phishing kit. "1" means "yes", and "0" means "no".
       type: String
     - contextPath: Netcraft.Takedown.hostname
       description: The full hostname of the URL or email address being taken down. this will be blank for attacks with no hostname.
@@ -459,7 +457,7 @@ script:
       description: The output of a reverse DNS lookup on the IP of the attack.
       type: String
     - contextPath: Netcraft.Takedown.certificate_revoked
-      description: Not revoked if the SSL certificate has been revoked, then the date this was detected (in UTC) is returned, else "not revoked" is returned.'
+      description: If the SSL certificate has been revoked, then the date this was detected (in UTC) is returned, else "Not revoked" is returned.
       type: String
     - contextPath: Netcraft.Takedown.screenshot_url
       description: |
@@ -570,11 +568,8 @@ script:
         However, including the same tag in both "add_tags" and "remove_tags" will return an error.
       isArray: true
       name: remove_tags
-    # TODO: what to do with this arg.
-    # - description:
-    #     The name of the region of which to list takedowns.
-    #     If not provided, the region specified in the instance configuration will be used.
-    #   name: region
+    - description: The name of the region to move the takedown under.
+      name: region
     description: Update one or more fields related to a takedown.
     outputs: []
   - name: 'netcraft-takedown-escalate'
@@ -606,75 +601,114 @@ script:
     - contextPath: Netcraft.TakedownNote.note_id
       description: The ID of the note added to the takedown.
       type: Number
-
   - name: 'netcraft-takedown-note-list'
     arguments:
-    - description: |
-        ''
+    - description: Filter to notes that have been added to the takedown with the given ID.
       name: takedown_id
     - description: |
-        ''
+        Filter to notes that were created by the user with the given username.
+        Notes that were created by Netcraft can be found by filtering to "Netcraft".
       name: author_mail
-    - defaultValue: '50'
+    # AWAIT TPM RESPONSE ON NO LIMIT ARG IN API
+    # - defaultValue: '50'
+    #   description: The maximum number of notes to return. The max value is 100,000.
+    #   name: limit
+    # - auto: PREDEFINED
+    #   defaultValue: 'false'
+    #   description: |
+    #     Whether to retrieve all notes that match the filters.
+    #     If true, the "limit" argument will be ignored. The maximum notes returned in one call is 100,000.
+    #   name: all_results
+    #   predefined:
+    #   - 'false'
+    #   - 'true'
+    description: Retrieve details of notes that have been added to your takedowns.
+    outputs:
+    - contextPath: Netcraft.TakedownNote.note_id
+      description: The unique identifier for the note.
+      type: Number
+    - contextPath: Netcraft.TakedownNote.takedown_id
+      description: The ID of the takedown that the note belongs to.
+      type: String
+    - contextPath: Netcraft.TakedownNote.group_id
       description: |
-        Default value - 50
-      name: limit
-    - auto: PREDEFINED
-      description: |
-        Default - false
-      name: all_results
-      predefined:
-      - 'true'
-      - 'false'
-    description: |
-      ''
-    outputs: []
+        The ID of the takedown group that this note belongs to.
+        This will only be set if the note has been attached to all takedowns in the group, otherwise this field will have a value of "0".
+      type: String
+    - contextPath: Netcraft.TakedownNote.time
+      description: The date and time that the note was created.
+      type: Date
+    - contextPath: Netcraft.TakedownNote.author
+      description: The username of the account that created the note. Notes added by Netcraft will show as "Netcraft".
+      type: String
+    - contextPath: Netcraft.TakedownNote.note
+      description: The contents of the note.
+      type: String
   - name: 'netcraft-attack-type-list'
     arguments:
     - auto: PREDEFINED
-      description: |
-        Filter to attack types where automated takedowns are available.
+      description: Filter to attack types where automated takedowns are available.
       name: automated
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: |
-        Filter to attack types which you have chosen to escalate to managed
-        takedowns after the configured escalation period.
+      description: Filter to attack types which you have chosen to escalate to managed takedowns after the configured escalation period.
       name: auto_escalation
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: |
-        Filter to attack types which you have chosen to automatically authorize
-        takedowns against.
+      description: Filter to attack types which you have chosen to automatically authorize takedowns against.
       name: auto_authorise
       predefined:
       - 'true'
       - 'false'
-    - description: |
-        ''
+    - description:
+        The name of the region to create a takedown under.
+        If not provided, the region specified in the instance configuration will be used.
       name: region
-    - description: |
-        Default value 50
-      name: limit
-    - auto: PREDEFINED
-      description: |
-        Default value false.
-      name: all_result
-      predefined:
-      - 'true'
-      - 'false'
-    description: |
-      ''
-    outputs: []
+    # AWAIT TPM RESPONSE ON NO LIMIT ARG IN API
+    # - defaultValue: '50'
+    #   description: The maximum number of notes to return. The max value is 100,000.
+    #   name: limit
+    # - auto: PREDEFINED
+    #   defaultValue: 'false'
+    #   description: |
+    #     Whether to retrieve all notes that match the filters.
+    #     If true, the "limit" argument will be ignored. The maximum notes returned in one call is 100,000.
+    #   name: all_results
+    #   predefined:
+    #   - 'false'
+    #   - 'true'
+    description: Get information on the attack types that are available under a given region.
+    outputs:
+    - contextPath: Netcraft.AttackType.name
+      description: The unique string identifier for the attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.display_name
+      description: The human-readable name of the attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.base_type
+      description: The unique string identifier for the top-level parent type of this attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.description
+      description: A short description of the attack type
+      type: String
+    - contextPath: Netcraft.AttackType.automated
+      description: Indicates whether or not automated takedowns are available for this attack type.
+      type: Boolean
+    - contextPath: Netcraft.AttackType.auto_escalation
+      description: Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period.
+      type: Boolean
+    - contextPath: Netcraft.AttackType.auto_authorise
+      description: Indicates whether or not you have chosen to automatically authorise takedowns under this type.
+      type: Boolean
+
   - name: 'netcraft-file-report-submit'
     polling: true
     arguments:
-    - description: |
-        ''
+    - description: ''
       name: reporter_email
       required: true
     - description: |
@@ -682,15 +716,12 @@ script:
         [{"content": "file_content","filename": "file_name"}]The purpose of this argument
         is to support reporting of multiple files with entry_id OR single file by file_content&file_name'
       name: file_content
-    - description: |
-        ''
+    - description: ''
       name: file_name
-    - description: |
-        ''
+    - description: ''
       isArray: true
       name: entry_id
-    - description: |
-        ''
+    - description: ''
       name: reason
     - auto: PREDEFINED
       description: |
@@ -710,18 +741,16 @@ script:
       ''
     outputs: []
   - name: 'netcraft-url-report-submit'
+    polling: true
     arguments:
-    - description: |
-        ''
+    - description: ''
       name: reporter_email
       required: true
-    - description: |
-        ''
+    - description: ''
       isArray: true
       name: urls
       required: true
-    - description: |
-        ''
+    - description: ''
       name: reason
     - auto: PREDEFINED
       description: |
@@ -741,9 +770,9 @@ script:
       ''
     outputs: []
   - name: 'netcraft-email-report-submit'
+    polling: true
     arguments:
-    - description: |
-        ''
+    - description: ''
       name: reporter_email
       required: true
     - description: |
@@ -773,42 +802,32 @@ script:
     description: |
       ''
     outputs: []
+
   - name: 'netcraft-submission-list'
     arguments:
-    - description: |
-        "An optional argument to get a specific submission.In case that the\
-        user provided this value we will execute the \u201Cget submission details\u201D\
-        \_request, and ignore all the others arguments.Note: the response of the get\
-        request contains fields that do not exist in the list command, make sure to\
-        add them to the yaml file as well."
+    - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
       name: submission_uuid
-    - description: |
-        Filter submissions by start date
+    - description: Filter submissions by start date.
       name: date_start
-    - description: |
-        Filter submissions by end date
+    - description: Filter submissions by end date.
       name: date_end
-    - description: |
-        ''
+    - description: Filter the submissions by source.
       name: source_name
-    - description: |
-        ''
+    - description: The state of the submissions. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
       name: state
-    - description: |
-        ''
+    - description: Filter the submissions by words contained in the submission reason
       name: submission_reason
-    - description: |
-        ''
+    - description: Filter the submissions by submitter email.
       name: submitter_email
-    - description: |
-        Default 50API argument - page_size
+    - description: The number of submissions to return.
       name: limit
+      defaultValue: '50'
     - description: |
-        API argument - marker
+        The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
       name: next_token
-    - description: |
-        ''
+    - description: ''
     outputs: []
+
   - name: 'netcraft-submission-file-list'
     arguments:
     - description: |
@@ -819,8 +838,7 @@ script:
     - description: |
         Default 50API argument - count
       name: limit
-    - description: |
-        ''
+    - description: ''
       name: page
     - description: |
         Default 50API argument - count
@@ -882,8 +900,7 @@ script:
     - description: |
         Default 50API argument - count
       name: limit
-    - description: |
-        ''
+    - description: ''
       name: page
     - description: |
         Default 50API argument - count
