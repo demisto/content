@@ -1051,8 +1051,9 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
         incident['events'] = events
         if not incident.get('incidentTitle') or not incident.get('incidentId'):
             demisto.debug(f'Get incident: {str(incident)} from the server.')
+
         incidents.append({
-            'name': incident.get('incidentTitle', incident.get("incidentId")),
+            'name': incident.get('incidentTitle', f"FortiSIEM incident: {incident.get('incidentId')}"),
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
     if incidents:
@@ -1550,7 +1551,6 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
             if incident.get('incidentId') not in last_fetch_incidents and \
                     len(filtered_incidents) < max_fetch and \
                     incident.get('incidentFirstSeen') >= last_incident_create_time:
-                demisto.debug(f'Add: {str(incident.get("incidentId"))} to the filtered incidents')
                 filtered_incidents.append(incident)
         if len(incidents) < page_size:  # last page
             break
@@ -1558,7 +1558,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
         start_index += page_size
         response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
         incidents = response.get('data')
-    demisto.debug(f'Got: {len(filtered_incidents)} incidents after filter.')
+    demisto.debug(f'Got: {len(filtered_incidents)} incidents after filtering.')
     return filtered_incidents
 
 
