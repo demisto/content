@@ -1,12 +1,12 @@
 .auto-secure-cicd-rule:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ master'
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: 'SECURITY_SCANS == "true"'
 
 .auto-secure-cicd-rule-always:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ master'
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: 'SECURITY_SCANS == "true"'
       when: always
