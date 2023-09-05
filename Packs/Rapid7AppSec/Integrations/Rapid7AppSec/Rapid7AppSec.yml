@@ -64,7 +64,7 @@ script:
       isArray: false
       name: vulnerability_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -237,10 +237,10 @@ script:
       description: The ID of the comment.
       type: String
     - contextPath: Rapid7AppSec.VulnerabilityComment.author_id
-      description: 'The ID of the author that created the comment. '
+      description: The ID of the author that created the comment.
       type: String
     - contextPath: Rapid7AppSec.VulnerabilityComment.last_update_author_id
-      description: 'The ID of the last updated author of the comment. '
+      description: The ID of the last updated author of the comment.
       type: String
     - contextPath: Rapid7AppSec.VulnerabilityComment.content
       description: The comment content attached to the vulnerability.
@@ -343,7 +343,7 @@ script:
       description: The ID of the scan.
       type: String
     - contextPath: Rapid7AppSec.Scan.action
-      description: 'The scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL"'
+      description: 'The scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL".'
       type: String
   - arguments:
     - description: The scan ID to submit the action (dependencies - use app-sec-scan-list to get all scan IDs).
@@ -377,7 +377,7 @@ script:
       isArray: false
       name: scan_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -507,7 +507,7 @@ script:
       isArray: false
       name: scan_config_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -534,7 +534,7 @@ script:
       description: The ID of the app that related to the scan config (dependencies - use app-sec-app-list to get all app IDs).
       type: String
     - contextPath: Rapid7AppSec.ScanConfig.attack_template_id
-      description: 'The ID of the attack template that related to the scan config (dependencies - use app-sec-attack-template-list to get more information about the attack template). '
+      description: 'The ID of the attack template that related to the scan config (dependencies - use app-sec-attack-template-list to get more information about the attack template).'
       type: String
     - contextPath: Rapid7AppSec.ScanConfig.incremental
       description: Whether incremental scanning is enabled.
@@ -543,7 +543,7 @@ script:
       description: 'The type of the assignment. For example: ENGINE_GROUP.'
       type: String
     - contextPath: Rapid7AppSec.ScanConfig.assignment_id
-      description: 'The ID of the assignment (Supported for On-Premise engines) (dependencies - use app-sec-engine-group-list to get more information about the assignment ID). '
+      description: 'The ID of the assignment (Supported for On-Premise engines) (dependencies - use app-sec-engine-group-list to get more information about the assignment ID).'
       type: String
     - contextPath: Rapid7AppSec.ScanConfig.assignment_environment
       description: The environment of the assignment. Values can be CLOUD and ON_PREMISE.
@@ -553,7 +553,7 @@ script:
       isArray: false
       name: app_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -599,7 +599,7 @@ script:
       isArray: false
       name: attack_template_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -629,7 +629,7 @@ script:
       description: A flag that is used to enforce browser encoding on all attacks.
       type: String
     - contextPath: Rapid7AppSec.AttackTemplate.attack_prioritization
-      description: 'The Attack Prioritization type. The values are: SEQUENTIAL, SMART, and RANDOMIZED"'
+      description: 'The Attack Prioritization type. The values are: SEQUENTIAL, SMART, and RANDOMIZED".'
       type: String
     - contextPath: Rapid7AppSec.AttackTemplate.advanced_attacks_enabled
       description: A flag to enable advanced Attacks.
@@ -639,7 +639,7 @@ script:
       isArray: false
       name: engine_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -685,7 +685,7 @@ script:
       isArray: false
       name: engine_group_id
       required: false
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
