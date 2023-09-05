@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2960
+          "y": -3180
         }
       }
     note: false
@@ -436,7 +436,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2820
+          "y": -3040
         }
       }
     note: false
@@ -467,7 +467,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2370
+          "y": -2590
         }
       }
     note: false
@@ -523,7 +523,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2530
+          "y": -2750
         }
       }
     note: false
@@ -672,7 +672,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2060
+          "y": -2280
         }
       }
     note: false
@@ -712,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2690
+          "y": -2910
         }
       }
     note: false
@@ -752,7 +752,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2240
+          "y": -2460
         }
       }
     note: false
@@ -778,7 +778,7 @@ tasks:
       '#default#':
       - "176"
       "yes":
-      - "162"
+      - "177"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -805,7 +805,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1880
+          "y": -2100
         }
       }
     note: false
@@ -830,7 +830,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "162"
+      - "177"
     scriptarguments:
       message:
         simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
@@ -840,7 +840,49 @@ tasks:
       {
         "position": {
           "x": 320,
-          "y": -1710
+          "y": -1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: 6f4a3263-a211-4ff7-86eb-a849c9954b37
+    type: regular
+    task:
+      id: 6f4a3263-a211-4ff7-86eb-a849c9954b37
+      version: -1
+      name: Delete file
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
+      timeout_in_seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1720
         }
       }
     note: false
@@ -853,15 +895,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "157_54_yes": 0.47,
-      "175_162_yes": 0.43
+      "157_54_yes": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 3415,
+        "height": 3635,
         "width": 640,
         "x": 60,
-        "y": -2960
+        "y": -3180
       }
     }
   }
