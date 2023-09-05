@@ -65,3 +65,4 @@ include:
   - local: .gitlab/ci/.gitlab-ci.sdk-nightly.yml
   - local: .gitlab/ci/.gitlab-ci.miscellaneous.yml
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
+  - local: .gitlab/ci/.gitlab-ci.security-scans.yml
