@@ -12,7 +12,7 @@ import threading
 import pytest
 from selenium import webdriver
 from pyvirtualdisplay import Display
-from unittest.mock import mock_open
+from unittest.mock import mock_open, Mock
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -273,7 +273,7 @@ class TestRasterizeIncludeUrl:
 
     class MockChrome:
 
-        def __init__(self, options, service_args) -> None:
+        def __init__(self, options, service) -> None:
             self.options = options.options
             self.page_source = ''
             self.session_id = 'session_id'
@@ -315,7 +315,7 @@ class TestRasterizeIncludeUrl:
 
         driver = init_driver(include_url=include_url)
 
-        assert not ('--headless' in driver.options) == include_url
+        assert ("--headless" in driver.options) != include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
     def test_sanity_rasterize_with_include_url(self, mocker, include_url):
@@ -340,3 +340,22 @@ class TestRasterizeIncludeUrl:
                           r_mode=RasterizeMode.WEBDRIVER_ONLY,
                           include_url=include_url)
         assert image
+
+
+def test_rasterize_html_no_internet_access(mocker):
+    """
+    Validates that when calling the command rasterize_html_command
+    No http requests are executed. - CIAC-8142
+    """
+    import requests
+    mock = Mock()
+    requests.get = mock
+    path = os.path.realpath('test_data/file.html')
+    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+    mocker.patch.object(os, 'rename')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+    mocker_output = mocker.patch('rasterize.return_results')
+    rasterize_html_command()
+    assert mocker_output.call_args.args[0]['File'] == 'email.png'
+    assert not mock.called

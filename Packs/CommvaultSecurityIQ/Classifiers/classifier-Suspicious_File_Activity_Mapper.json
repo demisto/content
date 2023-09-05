@@ -1,0 +1,115 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Commvault Suspicious File Activity Mapper",
+    "mapping": {
+        "Commvault Suspicious File Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Commvault Affected Files Count": {
+                    "simple": "affected_files_count"
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Commvault Created Files Count": {
+                    "simple": "created_files_count"
+                },
+                "Commvault Deleted Files Count": {
+                    "simple": "deleted_files_count"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "End Time": {
+                    "simple": "job_end_time"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Commvault Event Time": {
+                    "simple": "event_time"
+                },
+                "External Link": {
+                    "simple": "external_link"
+                },
+                "Commvault Files List": {
+                    "simple": "files_list"
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Commvault Job Id": {
+                    "simple": "job_id"
+                },
+                "Commvault Modified Files Count": {
+                    "simple": "modified_files_count"
+                },
+                "Commvault Originating Client": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_client",
+                        "transformers": []
+                    }
+                },
+                "Commvault Originating Program": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_program",
+                        "transformers": []
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Commvault Renamed Files Count": {
+                    "simple": "renamed_files_count"
+                },
+                "Commvault Scanned Folder List": {
+                    "simple": "scanned_folder_list"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "job_start_time",
+                        "transformers": []
+                    }
+                },
+                "Subtype": {
+                    "simple": "anomaly_sub_type"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Commvault Suspicious File Activity Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

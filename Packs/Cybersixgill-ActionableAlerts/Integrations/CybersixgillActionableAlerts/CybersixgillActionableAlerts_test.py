@@ -14,7 +14,7 @@ incidents_list = [
         "status": {"name": "in_treatment", "user": "60b604a048ce2cb294629a2d"},
         "threat_level": "imminent",
         "threats": ["Brand Protection", "Data Leak"],
-        "title": "Your organization was potentially targeted " "by a ransomware group",
+        "title": "Your organization was potentially targeted by a ransomware group",
         "user_id": "5d233575f8db38787dbe24b6",
     },
     {
@@ -219,7 +219,23 @@ expected_alert_output_with_custom_fields = {
         "cybersixgillcvss31": -1,
         "cybersixgilldvescore": None,
     },
-    "alert_name": "Your organization was potentially targeted by a ransomware " "group",
+    "alert_name": "Your organization was potentially targeted by a ransomware group",
+    "content": "text",
+    "date": "2021-11-08 06:01:05",
+    "id": "6188bd21017198385e228437",
+    "read": True,
+    "severity": 1,
+    "site": "rw_everest",
+    "status": {"name": "in_treatment", "user": "60b604a048ce2cb294629a2d"},
+    "threat_level": "imminent",
+    "threats": ["Brand Protection", "Data Leak"],
+    "title": "Your organization was potentially targeted by a ransomware group",
+    "user_id": "5d233575f8db38787dbe24b6",
+}
+
+expected_alert_output_es_id_na = {
+    "CustomFields": {},
+    "alert_name": "Your organization was potentially targeted by a ransomware group",
     "content": "text",
     "date": "2021-11-08 06:01:05",
     "id": "6188bd21017198385e228437",
@@ -234,10 +250,10 @@ expected_alert_output_with_custom_fields = {
 }
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code):
         self.status_code = status_code
-        self.ok = True if self.status_code == 200 else False
+        self.ok = self.status_code == 200
 
 
 def get_incidents_list():
@@ -291,6 +307,23 @@ def get_content_with_cve_id():
     content_info_item = copy.deepcopy(info_item)
     content_info_item["additional_info"]["cve_id"] = "Sample ID"
     return content_info_item
+
+
+def get_content_es_id_na():
+    content_info_item = copy.deepcopy(info_item)
+    content_info_item["es_id"] = "Not Applicable"
+
+    return content_info_item
+
+
+def get_content_item_es_id_na():
+    cloned_content_item = copy.deepcopy(content_item)
+    cloned_content_item["content"]["items"][1]["Additional Keywords"] = "Items"
+    cloned_content_item["content"]["items"][1]['Repository name'] = "Repository name"
+    cloned_content_item["content"]["items"][1]['Customer Keywords'] = "Customer Keywords"
+    cloned_content_item["content"]["items"][1]['GitURL'] = "GitURL"
+
+    return cloned_content_item["content"]
 
 
 def test_test_module_raise_exception(mocker):
@@ -348,6 +381,29 @@ def test_fetch_incidents(mocker):
     assert incidents == expected_alert_output
 
 
+def test_fetch_incidents_no_last_run(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={}
+    )
+    mocker.patch.object(demisto, "incidents")
+
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alerts_bulk",
+        return_value=[],
+    )
+
+    from CybersixgillActionableAlerts import fetch_incidents
+    fetch_incidents()
+    assert demisto.incidents.call_count == 1
+    incidents = demisto.incidents.call_args[0][0]
+
+    assert len(incidents) == 0
+
+
 def test_update_alert_status(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch.object(demisto, "args", return_value=init_args())
@@ -387,3 +443,27 @@ def test_get_alert_content(mocker):
     )
     assert alert_content is None
     assert incident == expected_alert_output_with_custom_fields
+
+
+def test_get_alert_content_es_id_na(mocker):
+
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert_content",
+        return_value=get_content_item_es_id_na(),
+    )
+
+    from CybersixgillActionableAlerts import get_alert_content
+
+    content = get_content()
+    incident = get_incident()
+    alert_content = get_alert_content(
+        content,
+        get_content_es_id_na(),
+        incident,
+        SixgillActionableAlertClient,
+    )
+    assert alert_content is None
+    assert incident == expected_alert_output_es_id_na

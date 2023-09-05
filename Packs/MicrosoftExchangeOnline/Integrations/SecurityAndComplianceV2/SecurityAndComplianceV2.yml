@@ -28,6 +28,7 @@ configuration:
   required: true
   type: 9
   displaypassword: Password
+  hiddenpassword: true
   section: Connect
 - display: The organization used in app-only authentication.
   name: organization
@@ -77,6 +78,12 @@ display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
 script:
   commands:
+  - description: OAuth2.0 - Start authorization.
+    name: o365-sc-auth-start
+  - description: OAuth2.0 - Complete authorization.
+    name: o365-sc-auth-complete
+  - description: OAuth2.0 - Test authorization.
+    name: o365-sc-auth-test
   - description: Create compliance search in the Security & Compliance Center.
     name: o365-sc-new-search
     arguments:
@@ -1090,7 +1097,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.67595
   runonce: true
   script: '-'
   type: powershell
