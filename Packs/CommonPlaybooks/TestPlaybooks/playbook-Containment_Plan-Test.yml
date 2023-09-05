@@ -876,6 +876,7 @@ tasks:
       timeout_in_seconds:
         simple: "60"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
