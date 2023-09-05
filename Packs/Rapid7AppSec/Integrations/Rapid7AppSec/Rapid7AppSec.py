@@ -1468,14 +1468,22 @@ def handle_request_with_limit(request_command: Callable,
     if limit <= API_LIMIT:
         return request_command(size=limit, page_token=page_token)
 
-    response = request_command(size=API_LIMIT, page_token=page_token)
-    page_token = dict_safe_get(response, ["metadata", "page_token"])
+    full_response = []
+    total_data = None
 
-    limit -= API_LIMIT
+    while limit > 0 and \
+            any([total_data is not None and total_data >= limit + len(full_response), total_data is None]):
 
-    next_response = handle_request_with_limit(request_command=request_command, limit=limit, page_token=page_token,)
+        response = request_command(size=API_LIMIT, page_token=page_token)
 
-    return response | {"data": response.get("data", []) + next_response.get("data", [])}
+        page_token = dict_safe_get(response, ["metadata", "page_token"])
+        obj_number = dict_safe_get(response, ["metadata", "size"])
+        total_data = dict_safe_get(response, ["metadata", "total_data"])
+
+        limit -= obj_number
+        full_response += response.get("data", [])
+
+    return response | {"data": full_response}
 
 
 @ logger

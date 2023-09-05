@@ -1,5 +1,5 @@
 id: playbook-Rapid7AppSec_Test
-version: 27
+version: -1
 fromversion: 6.9.0
 vcShouldKeepItemLegacyProdMachine: false
 name: playbook-Rapid7AppSec_Test
@@ -76,7 +76,7 @@ tasks:
       id: 0d69537f-e854-46fa-80e7-c5577f6910cc
       version: -1
       name: app-sec-app-list
-      script: rapid7appsec|||app-sec-app-list
+      script: app-sec-app-list
       type: regular
       iscommand: true
       brand: ""
@@ -153,7 +153,7 @@ tasks:
       id: 5ed01d19-0c80-4287-854f-0c9e67b9d9e8
       version: -1
       name: app-sec-module-list
-      script: rapid7appsec|||app-sec-module-list
+      script: app-sec-module-list
       type: regular
       iscommand: true
       brand: ""
@@ -235,7 +235,7 @@ tasks:
       id: e3ddad7e-2997-4b95-8122-e9b7fe9484be
       version: -1
       name: app-sec-attack-template-list
-      script: rapid7appsec|||app-sec-attack-template-list
+      script: app-sec-attack-template-list
       type: regular
       iscommand: true
       brand: ""
@@ -332,7 +332,7 @@ tasks:
       id: 8eff1a84-7e45-433b-81e7-a88958d23cc9
       version: -1
       name: app-sec-engine-list
-      script: rapid7appsec|||app-sec-engine-list
+      script: app-sec-engine-list
       type: regular
       iscommand: true
       brand: ""
@@ -424,7 +424,7 @@ tasks:
       id: a8ff0194-2f0f-4a3a-8823-e29ce068eb61
       version: -1
       name: app-sec-engine-group-list
-      script: rapid7appsec|||app-sec-engine-group-list
+      script: app-sec-engine-group-list
       type: regular
       iscommand: true
       brand: ""
@@ -506,7 +506,7 @@ tasks:
       id: a89e5a4d-6778-4a2b-8a1b-793f220ab7e8
       version: -1
       name: app-sec-scan-config-list
-      script: rapid7appsec|||app-sec-scan-config-list
+      script: app-sec-scan-config-list
       type: regular
       iscommand: true
       brand: ""
@@ -608,7 +608,7 @@ tasks:
       id: 552ed6c1-6de8-4269-84a9-b608581f38f7
       version: -1
       name: app-sec-vulnerability-list
-      script: rapid7appsec|||app-sec-vulnerability-list
+      script: app-sec-vulnerability-list
       type: regular
       iscommand: true
       brand: ""
@@ -677,11 +677,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Rapid7AppSec.Vulnerability.root_cause_parameter
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Rapid7AppSec.Vulnerability.severity
             iscontext: true
       - - operator: isNotEmpty
@@ -742,7 +737,7 @@ tasks:
       id: 0bfd797c-952b-4a55-8c3d-5ecf79414ce7
       version: -1
       name: app-sec-vulnerability-update
-      script: rapid7appsec|||app-sec-vulnerability-update
+      script: app-sec-vulnerability-update
       type: regular
       iscommand: true
       brand: rapid7appsec
@@ -778,7 +773,7 @@ tasks:
       id: bbe9c02b-b8c3-4ec3-8b0a-e1ff2d591397
       version: -1
       name: app-sec-vulnerability-history-list
-      script: rapid7appsec|||app-sec-vulnerability-history-list
+      script: app-sec-vulnerability-history-list
       type: regular
       iscommand: true
       brand: ""
@@ -885,7 +880,7 @@ tasks:
       id: b16d015e-2a70-45fb-8874-ce476731e481
       version: -1
       name: app-sec-vulnerability-comment-create
-      script: rapid7appsec|||app-sec-vulnerability-comment-create
+      script: app-sec-vulnerability-comment-create
       type: regular
       iscommand: true
       brand: ""
@@ -921,7 +916,7 @@ tasks:
       id: de4a4488-fd4b-47cf-8303-bd75e676eaf7
       version: -1
       name: app-sec-vulnerability-comment-list
-      script: rapid7appsec|||app-sec-vulnerability-comment-list
+      script: app-sec-vulnerability-comment-list
       type: regular
       iscommand: true
       brand: ""
@@ -1023,7 +1018,7 @@ tasks:
       id: 00b3c99b-bdb8-46e3-8fc9-8f728034d164
       version: -1
       name: app-sec-vulnerability-comment-update
-      script: rapid7appsec|||app-sec-vulnerability-comment-update
+      script: app-sec-vulnerability-comment-update
       type: regular
       iscommand: true
       brand: ""
@@ -1061,7 +1056,7 @@ tasks:
       id: 431a13a3-6ec6-42dc-8db9-b07459133e78
       version: -1
       name: app-sec-vulnerability-comment-delete
-      script: rapid7appsec|||app-sec-vulnerability-comment-delete
+      script: app-sec-vulnerability-comment-delete
       type: regular
       iscommand: true
       brand: ""
@@ -1097,7 +1092,7 @@ tasks:
       id: 2fc4e674-0877-46bd-8fca-19feacfca6e1
       version: -1
       name: app-sec-attack-get
-      script: rapid7appsec|||app-sec-attack-get
+      script: app-sec-attack-get
       type: regular
       iscommand: true
       brand: ""
@@ -1191,7 +1186,7 @@ tasks:
       id: 3a650c30-1fdf-43a5-8c9a-94414cd3372a
       version: -1
       name: app-sec-attack-documentation-get
-      script: rapid7appsec|||app-sec-attack-documentation-get
+      script: app-sec-attack-documentation-get
       type: regular
       iscommand: true
       brand: ""
@@ -1285,7 +1280,7 @@ tasks:
       id: 95be7ded-e3dd-4cbe-8f7a-346d76d3e804
       version: -1
       name: app-sec-scan-list
-      script: rapid7appsec|||app-sec-scan-list
+      script: app-sec-scan-list
       type: regular
       iscommand: true
       brand: ""
@@ -1392,7 +1387,7 @@ tasks:
       id: 73340ae5-e645-4ea8-8637-72e4f182af4d
       version: -1
       name: app-sec-scan-submit
-      script: rapid7appsec|||app-sec-scan-submit
+      script: app-sec-scan-submit
       type: regular
       iscommand: true
       brand: ""
@@ -1426,7 +1421,7 @@ tasks:
       id: a112dd7d-7647-416c-8935-ae6b65de9332
       version: -1
       name: app-sec-scan-delete
-      script: rapid7appsec|||app-sec-scan-delete
+      script: app-sec-scan-delete
       type: regular
       iscommand: true
       brand: rapid7appsec
@@ -1461,7 +1456,7 @@ tasks:
       id: 635a393a-0ce4-4a1f-84df-788eef0544ad
       version: -1
       name: app-sec-scan-engine-event-list
-      script: rapid7appsec|||app-sec-scan-engine-event-list
+      script: app-sec-scan-engine-event-list
       type: regular
       iscommand: true
       brand: ""
@@ -1543,7 +1538,7 @@ tasks:
       id: 0cee7c6a-1aeb-4a72-8051-e987e96264c0
       version: -1
       name: app-sec-scan-platform-event-list
-      script: rapid7appsec|||app-sec-scan-platform-event-list
+      script: app-sec-scan-platform-event-list
       type: regular
       iscommand: true
       brand: ""
@@ -1625,7 +1620,7 @@ tasks:
       id: fb4d8089-1dca-4c61-87d3-7e577a07ac22
       version: -1
       name: app-sec-scan-execution-details-get
-      script: rapid7appsec|||app-sec-scan-execution-details-get
+      script: app-sec-scan-execution-details-get
       type: regular
       iscommand: true
       brand: ""
@@ -1747,7 +1742,7 @@ tasks:
       id: 1bd3fcd2-b6ac-4aea-8d4b-e6a2a523fdaa
       version: -1
       name: app-sec-scan-action-get
-      script: rapid7appsec|||app-sec-scan-action-get
+      script: app-sec-scan-action-get
       type: regular
       iscommand: true
       brand: rapid7appsec
@@ -1782,7 +1777,7 @@ tasks:
       id: b1e08748-3b43-4f6f-81f5-cbad02ffbf11
       version: -1
       name: app-sec-scan-action-submit
-      script: rapid7appsec|||app-sec-scan-action-submit
+      script: app-sec-scan-action-submit
       type: regular
       iscommand: true
       brand: ""

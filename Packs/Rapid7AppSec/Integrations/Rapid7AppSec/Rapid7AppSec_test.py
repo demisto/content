@@ -466,6 +466,14 @@ def test_list_commands(
                 ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
             ],
         ),
+        (
+            {"page": None, "page_size": None, "limit": "4000"},
+            [
+                ("vulnerabilities?size=1000", "vulnerability/list.json"),
+                ("vulnerabilities?size=1000&page-token=string", "vulnerability/list_2.json"),
+                ("vulnerabilities?size=1000&page-token=string2", "vulnerability/list_3.json"),
+            ],
+        ),
     ),
 )
 def test_pagination(
