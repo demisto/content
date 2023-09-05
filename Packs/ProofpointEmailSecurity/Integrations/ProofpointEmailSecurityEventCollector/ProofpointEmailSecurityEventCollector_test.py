@@ -129,9 +129,9 @@ def test_connects_to_websocket(mocker):
     assert connect_mock.call_count == 2
     assert (
         connect_mock.call_args_list[0][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"
+        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"  # noqa: E501
     )
     assert (
         connect_mock.call_args_list[1][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"
+        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"  # noqa: E501
     )
