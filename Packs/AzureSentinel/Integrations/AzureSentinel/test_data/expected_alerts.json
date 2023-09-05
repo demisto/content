@@ -21,9 +21,7 @@
     "Description": "Test description",
     "ConfidenceLevel": "Unknown",
     "Severity": "Medium",
-    "additionalData": {
-        "MitreTechniques": "Unknown",
-    },
+    "Technique": "Unknown",
     "VendorName": "Microsoft",
     "ProductName": "Azure Sentinel",
     "ProductComponentName": "Scheduled Alerts"
@@ -50,9 +48,7 @@
     "Description": "Test description",
     "ConfidenceLevel": "Unknown",
     "Severity": "Medium",
-    "additionalData": {
-        "MitreTechniques": "Unknown",
-    },
+    "Technique": "Unknown",
     "VendorName": "Microsoft",
     "ProductName": "Azure Sentinel",
     "ProductComponentName": "Scheduled Alerts"
