@@ -159,6 +159,31 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def validate_and_prepare_basic_params(params: dict):
+    """
+    Validated and then prepares the API Key, API ID, and URL.
+
+    Args:
+        params (dict): The params dictionary.
+
+    Return:
+        str: the API key ID
+        str: the API key secret
+        str: the URL to the server with `xsoar` suffix if one is needed
+    """
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('apikey')
+    api_key_id = params.get('credentials_api_key', {}).get('identifier')
+    base_url = params.get('url', '')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
+
+    # For cloud environments an 'xsoar' suffix must be added
+    if api_key_id:
+        base_url = base_url if base_url.endswith('/xsoar') else base_url + '/xsoar'
+
+    return api_key_id, api_key, base_url
+
+
 def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
@@ -776,10 +801,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
 
 def main() -> None:  # pragma: no cover
-    api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apikey')
-    if not api_key:
-        raise DemistoException('API Key must be provided.')
-    base_url = demisto.params().get('url')
+    params = demisto.params()
+
+    api_key_id, api_key, base_url = validate_and_prepare_basic_params(params)
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
@@ -804,7 +828,9 @@ def main() -> None:  # pragma: no cover
 
     try:
         headers = {
-            'Authorization': api_key
+            'Authorization': api_key,
+            'x-xdr-auth-id': api_key_id,
+            'Content-Type': 'application/json',
         }
         client = Client(
             base_url=base_url,
