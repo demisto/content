@@ -1,5 +1,7 @@
 id: block_url_-_generic
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Block URL - Generic
 description: |-
   This playbook blocks malicious URLs using all integrations that are enabled.
@@ -25,11 +27,12 @@ tasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 40
+          "x": 257.5,
+          "y": 30
         }
       }
     note: false
@@ -37,6 +40,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 5ba81cb8-30c1-4d31-8af6-45f937d1d58b
@@ -50,11 +55,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1150
+          "x": 257.5,
+          "y": 980
         }
       }
     note: false
@@ -62,6 +68,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 21e74ef4-5adb-44a4-874b-2bedbd59a051
@@ -76,15 +84,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
       - "17"
       - "18"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 425
+          "x": 1140,
+          "y": 350
         }
       }
     note: false
@@ -92,6 +100,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 6685a431-51a7-4bf8-8679-5d079a8dca85
@@ -118,11 +128,12 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 175
+          "x": 257.5,
+          "y": 165
         }
       }
     note: false
@@ -130,40 +141,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 4576e191-0508-4140-8ed3-0503e6232d9b
-    type: playbook
-    task:
-      id: 4576e191-0508-4140-8ed3-0503e6232d9b
-      version: -1
-      name: Add Indicator to Miner - Palo Alto MineMeld
-      playbookName: Add Indicator to Miner - Palo Alto MineMeld
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 4270c78b-8b35-44c8-832a-11b82fbbd9c4
@@ -212,11 +191,12 @@ tasks:
                 accessor: brand
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 730
+          "x": 1500,
+          "y": 630
         }
       }
     note: false
@@ -224,6 +204,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 6c17067d-ac81-454b-8c4b-77e38811443e
@@ -245,11 +227,12 @@ tasks:
         complex:
           root: inputs.URL
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 980
+          "x": 1500,
+          "y": 805
         }
       }
     note: false
@@ -257,6 +240,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: fa3391b8-020e-4f53-8576-7445bf741452
@@ -274,6 +259,7 @@ tasks:
       '#none#':
       - "2"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -282,8 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 980
+          "x": 530,
+          "y": 790
         }
       }
     note: false
@@ -291,68 +277,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 7cc51964-5d19-48ce-8bc3-7403438e6dfe
-    type: playbook
-    task:
-      id: 7cc51964-5d19-48ce-8bc3-7403438e6dfe
-      version: -1
-      name: PAN-OS - Block IP and URL - External Dynamic List
-      playbookName: PAN-OS - Block IP and URL - External Dynamic List
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -310,
-          "y": 980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 258ee49c-7ea8-4d92-8054-dd0844396174
-    type: title
-    task:
-      id: 258ee49c-7ea8-4d92-8054-dd0844396174
-      version: -1
-      name: MineMeld
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: e92be57f-773d-496a-80f0-b1bc292b5355
@@ -370,11 +296,12 @@ tasks:
       - "19"
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 570
+          "x": 770,
+          "y": 490
         }
       }
     note: false
@@ -382,6 +309,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 18d080a9-f73c-4394-8f59-8cb602fd1604
@@ -398,11 +327,12 @@ tasks:
       '#none#':
       - "12"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 570
+          "x": 1500,
+          "y": 490
         }
       }
     note: false
@@ -410,6 +340,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 663d099d-dde1-4521-8ff2-18fabf06d99e
@@ -418,15 +350,15 @@ tasks:
       id: 663d099d-dde1-4521-8ff2-18fabf06d99e
       version: -1
       name: Use EDL?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
       "yes":
-      - "15"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -436,11 +368,12 @@ tasks:
             value:
               simple: inputs.EDLServerIP
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 710
+          "x": 1020,
+          "y": 630
         }
       }
     note: false
@@ -448,6 +381,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 61ddf243-2502-4c31-8ae3-9333c488d492
@@ -456,10 +391,10 @@ tasks:
       id: 61ddf243-2502-4c31-8ae3-9333c488d492
       version: -1
       name: Use Custom URL Category?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -474,11 +409,53 @@ tasks:
             value:
               simple: inputs.type
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 710
+          "x": 530,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 64804b25-6237-4461-886c-dac1e9a1905d
+    type: regular
+    task:
+      id: 64804b25-6237-4461-886c-dac1e9a1905d
+      version: -1
+      name: ADD EDL Tag To URL Indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        complex:
+          root: inputs.EDLTag
+      indicatorsValues:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 805
         }
       }
     note: false
@@ -495,29 +472,18 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1175,
-        "width": 1990,
-        "x": -800,
-        "y": 40
+        "height": 1015,
+        "width": 1622.5,
+        "x": 257.5,
+        "y": 30
       }
     }
   }
 inputs:
-- key: URLBlacklistMiner
-  value: {}
-  required: false
-  description: The name of the URL block list Miner in  Minemeld.
-  playbookInputQuery:
 - key: URL
   value: {}
   required: false
   description: Array of malicious URLs to block.
-  playbookInputQuery:
-- key: URLListName
-  value:
-    simple: Demisto Remediation - URL EDL
-  required: false
-  description: URL list from the instance context with which to override the remote file.
   playbookInputQuery:
 - key: LogForwarding
   value: {}
@@ -558,6 +524,11 @@ inputs:
   value: {}
   required: false
   description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
+- key: EDLTag
+  value: {}
+  required: false
+  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0

@@ -1,4 +1,4 @@
-Blocks malicious URLs using all integrations that are enabled.
+This playbook blocks malicious URLs using all integrations that are enabled.
 
 Supported integrations for this playbook:
 * Palo Alto Networks Minemeld
@@ -6,34 +6,49 @@ Supported integrations for this playbook:
 * Zscaler
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
-* PAN-OS - Block URL - Custom URL Category
-* Add Indicator to Miner - Minemeld
-* PAN-OS - Block IP and URL - External Dynamic List
+### Sub-playbooks
 
-## Integrations
+* PAN-OS - Block URL - Custom URL Category
+
+### Integrations
+
 This playbook does not use any integrations.
 
-## Scripts
+### Scripts
+
 This playbook does not use any scripts.
 
-## Commands
+### Commands
+
+* appendIndicatorField
 * zscaler-blacklist-url
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Required** |
-| --- | --- | --- |
-| URLBlacklistMiner | The name of the URL block list Miner in Minemeld. | Optional |
-| URL | The array of malicious URLs to block. | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| URL | Array of malicious URLs to block. |  | Optional |
+| LogForwarding | Log Forwarding object name. |  | Optional |
+| EDLServerIP | EDL server IP address. |  | Optional |
+| AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
+| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
+| type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
+| device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
+| categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
+| EDLTag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Block_URL_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_URL_Generic.png)
+
+![Block URL - Generic](../doc_files/Block_URL_-_Generic.png)
