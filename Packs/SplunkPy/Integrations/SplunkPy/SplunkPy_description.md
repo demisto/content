@@ -10,20 +10,20 @@ For example:
 TestUser@_basic
 
 There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
-- [Splunk Enterprise Security Users](#splunk-enterprise-security-users)
-  - [Fetching notable events](#fetching-notable-events)
-    - [How to configure](#how-to-configure)
-    - [Enriching Notable Events](#enriching-notable-events)
-      - [Enrichment types](#enrichment-types)
-      - [How to configure](#how-to-configure-1)
-      - [Troubleshooting enrichment status](#troubleshooting-enrichment-status)
-      - [Resetting the enriching fetch mechanism](#resetting-the-enriching-fetch-mechanism)
-      - [Limitations](#limitations)
-    - [Incident Mirroring](#incident-mirroring)
-    - [Existing users](#existing-users)
-- [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users)
-    - [Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users](#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
-    - [Constraints](#constraints)
+- Splunk Enterprise Security Users
+  - Fetching notable events
+    - How to configure
+    - Enriching Notable Events
+      - Enrichment types
+      - How to configure
+      - Troubleshooting enrichment status
+      - Resetting the enriching fetch mechanism
+      - Limitations
+    - Incident Mirroring
+    - Existing users
+- Splunk non-Enterprise Security Users
+    - Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
+    - Constraints
 
 ***
 # Splunk Enterprise Security Users
