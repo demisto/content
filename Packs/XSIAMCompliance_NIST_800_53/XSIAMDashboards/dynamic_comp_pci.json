@@ -1,0 +1,593 @@
+{
+    "dashboards_data": [
+        {
+            "name": "dynamic_comp_pci",
+            "description": "example",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-2392",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "PCI DSS Overview",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 55
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1691",
+                    "data": [
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 1: Network Security",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Install and Maintain Network Security Controls\n\ndatamodel \n| filter xdm.network.session_id contains \"*\"\n| filter xdm.network.rule contains \"*\" \n| comp count() as counter by xdm.network.rule \n| fields xdm.network.*, counter\n| limit 10000\n| view graph type = column subtype = grouped header = \"XDM Network Rule\" xaxis = xdm.network.rule yaxis = counter ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"XDM Network Rule\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.network.rule"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counter"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1682657058554",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "params": [
+                                    {
+                                        "name": "agent_version",
+                                        "value": "7.8.0.64267"
+                                    }
+                                ],
+                                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version in ($agent_version)\n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier",
+                                "entityType": "xql-widget-table-b88263b9-a860-4df3-b0f5-b57458d0eb9e",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 3: Protect Data",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Protect Stored Account Data\n\ndatamodel \n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.source.host.hostname \n| fields xdm.source.host.hostname, xdm.source.agent.identifier, xdm.observer.content_version \n| comp count () by xdm.observer.content_version\n| view graph type = column subtype = grouped xaxis = xdm.observer.content_version yaxis = count_1 ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.observer.content_version"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count_1"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-243",
+                    "data": [
+                        {
+                            "key": "xql_1682657133653",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "params": [
+                                    {
+                                        "name": "encryption_type",
+                                        "value": "AES256_CTS_HMAC_SHA1_96"
+                                    }
+                                ],
+                                "phrase": "datamodel \n| filter xdm.auth.kerberos_tgt.encryption_type in ($encryption_type)\n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username \n| limit 500",
+                                "entityType": "xql-widget-table-a2675008-a5fb-4291-b171-bf8977b4c32e",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 5: Defend Systems",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Protect All Systems and Networks from Malicious Software\n\ndatamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| sort desc _time\n| dedup xdm.source.host.hostname \n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier \n| comp count () as version_counter by xdm.source.agent.version\n| view graph type = column subtype = grouped layout = horizontal xaxis = xdm.source.agent.version yaxis = version_counter \n",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.agent.version"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "version_counter"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1682656991662",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "params": [
+                                    {
+                                        "name": "host_os",
+                                        "value": "Windows Server 2016 [10.0 (Build 17763)]"
+                                    }
+                                ],
+                                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os in ($host_os)\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family ",
+                                "entityType": "xql-widget-table-36552fbc-3fe2-400e-a642-33ed878407c8",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9194",
+                    "data": [
+                        {
+                            "key": "xql_1682657245117",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "params": [
+                                    {
+                                        "name": "network_rule",
+                                        "value": "To_External"
+                                    }
+                                ],
+                                "phrase": "datamodel\n| filter xdm.network.rule in ($network_rule)\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id",
+                                "entityType": "xql-widget-table-1769b38d-e28f-408c-9521-13cd29e81018",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 8: Identify Systems",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Identify Users and Authenticate Access to System Components\n\ndatamodel \n| filter xdm.target.location.region contains \"*\" \n| fields xdm.target.agent.identifier, xdm.target.asn.as_name, xdm.target.asn.as_number, xdm.target.host.fqdn, xdm.target.ipv4, xdm.target.location.city, xdm.target.location.continent, xdm.target.location.country, xdm.target.location.latitude, xdm.target.location.longitude , xdm.target.location.region\n| comp count(xdm.target.location.country) as counter by xdm.target.location.country \n| view graph type = map xaxis = xdm.target.location.country yaxis = counter default_limit = `false` seriestitle(\"counter\",\"Volume\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "map",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.target.location.country"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counter"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "`false`"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"counter\"",
+                                                    "\"Volume\""
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 9: Physical Security",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Restrict Physical Access to Cardholder Data\n\ndatamodel\n| filter xdm.source.user.badge_id = \"*\"\n| fields xdm.source.user.first_name, xdm.source.user.last_name, xdm.source.user.middle_name, xdm.source.user.employee_id, xdm.source.user.badge_id",
+                                "entityType": "xql-widget-table-dffa19b1-06c5-4516-813e-82f8240fd59e",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-83",
+                    "data": [
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 10: Monitor Access",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Log and Monitor All Access to System Components and Cardholder Data\n\ndatamodel \n| filter xdm.network.rule contains \"*\" \n| filter xdm.source.host.hostname contains \"*\" \n| comp count() as counter by xdm.source.host.hostname\n| fields xdm.source.host.hostname, counter\n| limit 10000\n| sort desc counter\n| view graph type = wordcloud xaxis = xdm.source.host.hostname yaxis = counter \n",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.host.hostname"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counter"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql",
+                            "data": {
+                                "time": "",
+                                "type": "Custom XQL",
+                                "title": "PCI Section 11: Evaluate Systems",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "phrase": "//Test Security of Systems and Networks Regularly\n\ndatamodel \n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n\n\n\n",
+                                "entityType": "xql-widget-table-e9767643-6869-401c-b417-1f0eecd35682",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1682657452795",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 581,
+                                "params": [
+                                    {
+                                        "name": "content_version",
+                                        "value": "910-49625"
+                                    }
+                                ],
+                                "phrase": "datamodel \n| filter xdm.observer.content_version in ($content_version)\n| sort desc xdm.observer.content_version\n| dedup xdm.source.host.hostname \n| fields xdm.source.host.hostname, xdm.source.agent.identifier, xdm.observer.content_version ",
+                                "entityType": "xql-widget-table-d6f7a682-5a7b-4f23-aa4f-c2401eb2ed1d",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "05f33a6c239a463ab50f03cad6fed92d"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1682656991662",
+            "title": "PCI Section 6: Maintain Software",
+            "creation_time": 1691470034656,
+            "description": "Implement policies and procedures to develop and maintain secure systems and applications. Use this widget to query host information.",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.host.os contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            },
+            "creator_mail": "N/A"
+        },
+        {
+            "widget_key": "xql_1682657058554",
+            "title": "PCI Section 2: Config Management",
+            "creation_time": 1691470034715,
+            "description": "Implement policies and procedures to secure cardholder data at rest, in transimission, and at compute. Use this widget to query source host data.",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.observer.content_version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier\n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            },
+            "creator_mail": "N/A"
+        },
+        {
+            "widget_key": "xql_1682657133653",
+            "title": "PCI Section 4: Encrypt Transmission",
+            "creation_time": 1691470034771,
+            "description": "Implement policies and procedures to encrypt cardholder data and protect cryptographic keys. Use this widget to query the kerberos authentication encryption type and return other source host data.",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username \n| filter xdm.auth.kerberos_tgt.encryption_type contains \"*\"\n| limit 500",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            },
+            "creator_mail": "N/A"
+        },
+        {
+            "widget_key": "xql_1682657245117",
+            "title": "PCI Section 7: Access Control",
+            "creation_time": 1691470034870,
+            "description": "Implement policies and procedures to restrict access to cardholder data based on business need-to-know. Use this widget to query triggered network rules and associated data.",
+            "data": {
+                "params": [],
+                "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| filter xdm.network.rule contains \"*\"",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            },
+            "creator_mail": "N/A"
+        },
+        {
+            "widget_key": "xql_1682657452795",
+            "title": "PCI Section 12: Policy Management",
+            "creation_time": 1691470034951,
+            "description": "Implement policies and procedures to manage systems. Use this widget to query to monitor content version.",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.agent.identifier, xdm.observer.content_version \n| filter xdm.observer.content_version contains \"*\"\n| sort desc xdm.observer.content_version\n| dedup xdm.source.host.hostname ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            },
+            "creator_mail": "N/A"
+        }
+    ], "fromVersion": "6.10.0"
+}
