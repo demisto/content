@@ -5,7 +5,7 @@ name: ShowCPScanInfo
 script: '-'
 type: python
 tags: []
-comment: Get scan info from Check Point Smart API
+comment: Get scan info from Check Point Smart API.
 enabled: true
 scripttarget: 0
 subtype: python3

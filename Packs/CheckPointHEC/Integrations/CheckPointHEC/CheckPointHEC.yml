@@ -69,9 +69,9 @@ script:
   - name: checkpointhec-get-entity
     arguments:
     - name: entity
-      description: Entity id to retrieve
+      description: Entity id to retrieve.
       required: true
-    description: Retrieve specific entity
+    description: Retrieve specific entity.
     outputs:
     - contextPath: CheckPointHEC.Entity.internetMessageId
       description: Email message id in internet.
@@ -171,9 +171,9 @@ script:
   - name: checkpointhec-get-email-info
     arguments:
     - name: entity
-      description: Email entity id
+      description: Email entity id.
       required: true
-    description: Retrieve specific email entity
+    description: Retrieve specific email entity.
     outputs:
     - contextPath: CheckPointHEC.Email.fromEmail
       description: Email sender.
@@ -214,126 +214,126 @@ script:
       description: Email message id in internet.
       type: String
     - contextPath: CheckPointHEC.Email.isUserExposed
-      description: Email reached user inbox
+      description: Email reached user inbox.
       type: Boolean
   - name: checkpointhec-get-scan-info
     arguments:
     - name: entity
       description: Scanned entity id
       required: true
-    description: Retrieve specific email scan with positive threats
+    description: Retrieve specific email scan with positive threats.
     outputs:
     - contextPath: CheckPointHEC.ScanResult.ap
-      description: Anti-phishing scan results
+      description: Anti-phishing scan results.
     - contextPath: CheckPointHEC.ScanResult.dlp
-      description: Data Loss Prevention scan results
+      description: Data Loss Prevention scan results.
     - contextPath: CheckPointHEC.ScanResult.clicktimeProtection
-      description: Click Time Protection scan results
+      description: Click Time Protection scan results.
     - contextPath: CheckPointHEC.ScanResult.shadowIt
-      description: Shadow IT scan results
+      description: Shadow IT scan results.
     - contextPath: CheckPointHEC.ScanResult.av
-      description: Antivirus scan results
+      description: Antivirus scan results.
   - name: checkpointhec-search-emails
-    description: Get email ids with same sender and/or subject
+    description: Get email ids with same sender and/or subject.
     arguments:
     - name: date_range
-      description: Range to search for emails (1 day, 2 weeks, etc.)
+      description: Range to search for emails (1 day, 2 weeks, etc.).
       required: true
     - name: sender
-      description: Search emails with this sender
+      description: Search emails with this sender.
     - name: subject
-      description: Search emails with this subject
+      description: Search emails with this subject.
     outputs:
     - contextPath: CheckPointHEC.SearchResult.ids
-      description: List of email ids returned by the search
+      description: List of email ids returned by the search.
   - name: checkpointhec-send-action
     arguments:
     - name: farm
-      description: Customer farm
+      description: Customer farm.
       required: true
     - name: customer
-      description: Customer portal name
+      description: Customer portal name.
       required: true
     - name: entity
-      description: One or multiple Email ids to apply action over
+      description: One or multiple Email ids to apply action over.
       isArray: true
       required: true
     - name: action
-      description: Action to perform (quarantine or restore)
+      description: Action to perform (quarantine or restore).
       required: true
       auto: PREDEFINED
       predefined:
       - quarantine
       - restore
-    description: Quarantine or restore an email
+    description: Quarantine or restore an email.
     outputs:
     - contextPath: CheckPointHEC.Task.task
-      description: Task id of the sent action
+      description: Task id of the sent action.
       type: String
   - name: checkpointhec-get-action-result
     arguments:
     - name: farm
-      description: Customer farm
+      description: Customer farm.
       required: true
     - name: customer
-      description: Customer portal name
+      description: Customer portal name.
       required: true
     - name: task
-      description: Task id to retrieve
+      description: Task id to retrieve.
       required: true
-    description: Get task info related to a sent action
+    description: Get task info related to a sent action.
     outputs:
     - contextPath: CheckPointHEC.ActionResult.actions
-      description: Action information for each sent entity
+      description: Action information for each sent entity.
     - contextPath: CheckPointHEC.ActionResult.created
-      description: Date when action was created in iso 8601 format
+      description: Date when action was created in iso 8601 format.
       type: String
     - contextPath: CheckPointHEC.ActionResult.customer
-      description: Customer portal name
+      description: Customer portal name.
       type: String
     - contextPath: CheckPointHEC.ActionResult.failed
-      description: Number of failed actions
+      description: Number of failed actions.
       type: Number
     - contextPath: CheckPointHEC.ActionResult.id
-      description: Action task id
+      description: Action task id.
       type: Number
     - contextPath: CheckPointHEC.ActionResult.name
-      description: Action name
+      description: Action name.
       type: String
     - contextPath: CheckPointHEC.ActionResult.owner
-      description: Action owner
+      description: Action owner.
       type: String
     - contextPath: CheckPointHEC.ActionResult.progress
-      description: Number of actions in progress
+      description: Number of actions in progress.
       type: Number
     - contextPath: CheckPointHEC.ActionResult.sequential
-      description: Actions are in sequence
+      description: Actions are in sequence.
       type: Boolean
     - contextPath: CheckPointHEC.ActionResult.status
-      description: Action status
+      description: Action status.
       type: String
     - contextPath: CheckPointHEC.ActionResult.succeed
-      description: Number of succeed actions
+      description: Number of succeed actions.
       type: Number
     - contextPath: CheckPointHEC.ActionResult.total
-      description: Total of actions
+      description: Total of actions.
       type: Number
     - contextPath: CheckPointHEC.ActionResult.type
-      description: Action internal name
+      description: Action internal name.
       type: String
     - contextPath: CheckPointHEC.ActionResult.updated
-      description: Date when action last updated in iso 8601 format
+      description: Date when action last updated in iso 8601 format.
       type: String
   - name: checkpointhec-send-notification
     arguments:
     - name: entity
-      description: Email entity id
+      description: Email entity id.
       required: true
     - name: emails
-      description: List of emails to send notification
+      description: List of emails to send notification.
       isArray: true
       required: true
-    description: Send notification about user exposition for the specific entity to the list of emails
+    description: Send notification about user exposition for the specific entity to the list of emails.
     outputs:
     - contextPath: CheckPointHEC.Notification.ok
       description: Result of the operation.
