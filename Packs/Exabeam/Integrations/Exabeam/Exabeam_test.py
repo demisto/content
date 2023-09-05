@@ -477,14 +477,18 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
         Given:
             - A last run with an incident.
         When:
-            - executing fetch function with look back.
+            - executing fetch_incidents with look back.
         Then:
             - Ensure that the last run time is set correctly.
             - Check that the query with look-back is set correctly.
             - Ensure that incidents are correctly filtered.
     """
     mocker.patch.object(Client, '_login', return_value=None)
-    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
+    client = Client(base_url='https://example.com',
+                    username='test_user',
+                    password='1234',
+                    verify=False,
+                    proxy=False,
                     headers={})
     request_get_incidents = mocker.patch.object(client, 'get_incidents',
                                                 return_value=INCIDENTS_FOR_LOOK_BACK_FIRST_TIME)
@@ -504,8 +508,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
 
     assert request_get_incidents.call_args_list[0][0][0] == EXPECTED_CALL_ARGS_FOR_LOOK_BACK
     mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
-    request_get_incidents = mocker.patch.object(client, 'get_incidents',
-                                                return_value=INCIDENTS_FOR_LOOK_BACK_SECOND_TIME)
+    request_get_incidents = mocker.patch.object(client, 'get_incidents', return_value=INCIDENTS_FOR_LOOK_BACK_SECOND_TIME)
     results, last_run = fetch_incidents(client, params)
 
     assert last_run['limit'] == expected_last_run['second_fetch']['limit']
