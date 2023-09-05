@@ -41,130 +41,35 @@ def fletcher16(data: bytes) -> int:
     return (sum2 << 8) | sum1
 
 
-def generate_checksum(
-    short_session_id: str, user_name: str, successful: int, signon_datetime: str
-) -> int:
+def generate_checksum(event: dict) -> str:
     """
-    Compute a checksum for the given inputs using the Fletcher-16 algorithm.
+    Compute a checksum for the given event using the Fletcher-16 algorithm.
 
-    This function takes in several parameters, converts them to bytes, and then computes
-    a Fletcher-16 checksum for the concatenated byte data. The checksum provides a way to
-    verify the integrity of the data, ensuring that it has not been altered.
+    This function takes the entire event, serializes it to a JSON string,
+    converts that string to bytes, and then computes a Fletcher-16 checksum
+    for the byte data.
 
     Parameters:
-    - short_session_id (str): A GUID not longer than 6 characters.
-    - user_name (str): A string representing the user's name.
-    - successful (int): A boolean represented as 0 (False) or 1 (True).
-    - signon_datetime (str): A string representing the sign-on date and time in ISO 8601 format.
+    - event (dict): The entire event dictionary.
 
     Returns:
-    - int: The computed Fletcher-16 checksum value.
+    - str: The unique ID, which is the computed Fletcher-16 checksum value concatenated with the event's Signon_DateTime.
     """
-    data = (
-        (short_session_id + signon_datetime + user_name).encode()
-        + bytes([successful])
-    )
+    # Serialize the entire event to a JSON string and encode that to bytes
+    event_str = json.dumps(event, sort_keys=True)
+    data = event_str.encode()
+
+    # Calculate the checksum
     checksum = fletcher16(data)
-    return checksum
 
+    # Create a unique ID by concatenating the checksum with the Signon_DateTime
+    try:
+        unique_id = f"{checksum}_{event['Signon_DateTime']}"
+    except KeyError as e:
+        raise DemistoException(f"While calculating the checksum for an event, an event without a Signon_DateTime was "
+                               f"found.\nError: {e}")
 
-def check_events_against_checksums(events: list[dict], checksums: set) -> list:
-    """
-    Check if events exist in the list of checksums.
-
-    Parameters:
-    - events (list): A list of events, where each event is a tuple containing the arguments for the generate_checksum function.
-    - checksums (list): A list of checksums.
-
-    Returns:
-    - list: A list of events that do not exist in the list of checksums.
-    """
-
-    new_events = []
-
-    for event in events:
-        short_session_id: str = event["Short_Session_ID"]
-        user_name: str = event["User_Name"]
-        successful: int = int(event["Successful"])
-        signon_datetime: str = event["Signon_DateTime"]
-        event_checksum = generate_checksum(
-            short_session_id, user_name, successful, signon_datetime
-        )
-
-        if event_checksum not in checksums:
-            new_events.append(event)
-
-    return new_events
-
-
-def filter_and_check_events(
-    events: list, target_datetime_str: str, checksums: set
-) -> list:
-    """
-    Filter events based on the proximity of their Signon_DateTime to a target datetime and then check against checksums.
-
-    Parameters:
-    - events (list): A list of events, where each event is a dictionary containing keys used for checksum generation.
-    - target_datetime_str (str): A datetime string in the format 'YYYY-MM-DDTHH:MM:SS'.
-    - checksums (set): A set of checksums to check against.
-
-    Returns:
-    - list: A refined list of non-duplicate events.
-    """
-    target_datetime = datetime.strptime(target_datetime_str, "%Y-%m-%dT%H:%M:%SZ")
-    start_time = target_datetime - timedelta(seconds=1)
-    end_time = target_datetime + timedelta(seconds=1)
-
-    refined_events = []
-    events_with_datetime = [
-        (event, datetime.strptime(event["Signon_DateTime"], "%Y-%m-%dT%H:%M:%SZ"))
-        for event in events
-    ]
-    potential_duplicates = [
-        event for event, event_datetime in events_with_datetime
-        if start_time <= event_datetime <= end_time
-    ]
-
-    checked_events = check_events_against_checksums(potential_duplicates, checksums)
-
-    refined_events.extend(checked_events)
-    refined_events.extend(
-        event
-        for event, event_datetime in events_with_datetime
-        if start_time > event_datetime or event_datetime > end_time
-    )
-
-    return refined_events
-
-
-def get_future_duplicates_within_timeframe(events: list, to_time: str) -> list:
-    """
-    Filter events based on a timeframe of one second before and up to the given to_time.
-
-    Parameters:
-    - events (list): A list of events, where each event is a dictionary containing keys used for checksum generation.
-    - to_time (str): A datetime string in the format 'YYYY-MM-DDTHH:MM:SS' which represents the end of the timeframe.
-
-    Returns:
-    - list: A list of events within the specified timeframe which could be a duplicate for the next fetch.
-    """
-    # Convert the to_time string to a datetime object
-    target_datetime_str = to_time.replace("Z", "+00:00")
-    end_time = datetime.fromisoformat(target_datetime_str)
-
-    # Define the start time for the timeframe
-    start_time = end_time - timedelta(seconds=1)
-
-    # Filter events based on the timeframe
-    future_duplicates = [
-        event
-        for event in events
-        if start_time
-        <= datetime.fromisoformat(event["Signon_DateTime"].replace("Z", "+00:00"))
-        <= end_time
-    ]
-
-    return future_duplicates
+    return unique_id
 
 
 """ CLIENT CLASS """
@@ -386,13 +291,43 @@ def convert_to_json(response: str | dict) -> tuple[Dict[str, Any], Dict[str, Any
     return raw_json_response, account_signon_data
 
 
-def process_events(events: List[Dict[str, Any]]) -> None:
-    """
-    Update each event in the provided list with a '_time' key set to the value of 'Signon_DateTime'.
+def process_and_filter_events(events: list, from_time: str, previous_run_checksums: set) -> tuple:
+    non_duplicates = []
+    future_potential_duplicates = []
+    checksums_for_next_iteration = set()
 
-    :param events: List of event dictionaries.
-    """
-    [_event.update({"_time": _event.get("Signon_DateTime")}) for _event in events]
+    from_datetime = datetime.strptime(from_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    most_recent_event_time = datetime.min.replace(tzinfo=timezone.utc)
+
+    for event in events:
+        event_datetime = datetime.strptime(event["Signon_DateTime"], DATE_FORMAT).replace(tzinfo=timezone.utc)
+
+        # Add '_time' key to each event
+        event["_time"] = event.get("Signon_DateTime")
+
+        # Update the most recent event time
+        if event_datetime > most_recent_event_time:
+            most_recent_event_time = event_datetime
+
+        # Check for duplicates within ±1 second of from_time
+        if abs((event_datetime - from_datetime).total_seconds()) <= 1:
+            event_checksum = generate_checksum(event)
+            if event_checksum not in previous_run_checksums:
+                non_duplicates.append(event)
+        else:
+            non_duplicates.append(event)
+    # Generate checksums for events within the last second of the most recent event
+    last_second_start_time = most_recent_event_time - timedelta(seconds=1)
+
+    for event in non_duplicates:
+        event_datetime = datetime.strptime(event["_time"], DATE_FORMAT).replace(tzinfo=timezone.utc)
+
+        if event_datetime >= last_second_start_time:
+            event_checksum = generate_checksum(event)
+            checksums_for_next_iteration.add(event_checksum)
+            future_potential_duplicates.append(event)
+
+    return non_duplicates, checksums_for_next_iteration
 
 
 def fetch_sign_on_logs(
@@ -460,7 +395,9 @@ def get_sign_on_events_command(
     sign_on_events = fetch_sign_on_logs(
         client=client, limit_to_fetch=limit, from_date=from_date, to_date=to_date
     )
-    process_events(sign_on_events)
+
+    [_event.update({"_time": _event.get("Signon_DateTime")}) for _event in sign_on_events]
+
     demisto.info(
         f"Got a total of {len(sign_on_events)} events between the time {from_date} to {to_date}"
     )
@@ -504,26 +441,11 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
 
     if sign_on_events:
         demisto.debug("Got sign_on_events. Begin processing.")
-        non_duplicates = filter_and_check_events(
+        non_duplicates, checksums_for_next_iteration = process_and_filter_events(
             events=sign_on_events,
-            target_datetime_str=from_date,
-            checksums=previous_run_checksums,
+            previous_run_checksums=previous_run_checksums,
+            from_time=from_date
         )
-
-        process_events(non_duplicates)
-
-        future_potential_duplicates = get_future_duplicates_within_timeframe(
-            events=non_duplicates, to_time=to_date
-        )
-        checksums_for_next_iteration = {
-            generate_checksum(
-                event["Short_Session_ID"],
-                event["User_Name"],
-                int(event["Successful"]),
-                event["Signon_DateTime"],
-            )
-            for event in future_potential_duplicates
-        }
 
         demisto.debug(f"Done processing {len(non_duplicates)} sign_on_events.")
         last_event = non_duplicates[-1]
@@ -566,14 +488,19 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
 
     tenant_name = params.get("tenant_name")
-    url = params.get("base_url")
+    base_url = params.get("base_url")
+
+    if not base_url.startswith("https://"):
+        raise ValueError("Invalid base URL. Should begin with https://")
+    url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{API_VERSION}"
+
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
     token = params.get("token", {}).get("password")
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(params.get("max_fetch")) or 1000
+    max_fetch = arg_to_number(params.get("max_fetch")) or 10000
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -591,15 +518,15 @@ def main() -> None:  # pragma: no cover
             return_results(module_of_testing(client))
         elif command == "workday-get-sign-on-events":
             if args.get("relative_from_date", None):
-                from_time: str = arg_to_datetime(  # type:ignore
+                from_time = arg_to_datetime(  # type:ignore
                     arg=args.get('relative_from_date'),
                     arg_name='Relative datetime',
                     required=False
                 ).strftime(DATE_FORMAT)
-                to_time: str = datetime.utcnow().strftime(DATE_FORMAT)
+                to_time = datetime.utcnow().strftime(DATE_FORMAT)
             else:
-                from_time: str = args.get("from_date")
-                to_time: str = args.get("to_date")
+                from_time = args.get("from_date")
+                to_time = args.get("to_date")
 
             sign_on_events, results = get_sign_on_events_command(
                 client=client,
@@ -616,14 +543,12 @@ def main() -> None:  # pragma: no cover
             sign_on_events, new_last_run = fetch_sign_on_events_command(
                 client=client, max_fetch=max_fetch, last_run=last_run
             )
-            demisto.debug("Done fetching events, sending to XSIAM.")
+            demisto.debug(f"Done fetching events, sending to XSIAM. - {sign_on_events}")
             send_events_to_xsiam(sign_on_events, vendor=VENDOR, product=PRODUCT)
             if new_last_run:
                 # saves next_run for the time fetch-events is invoked
                 demisto.info(f"Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
-            else:
-                demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 

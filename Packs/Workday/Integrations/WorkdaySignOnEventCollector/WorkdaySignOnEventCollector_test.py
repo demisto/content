@@ -1,20 +1,18 @@
+import json
 import unittest
 from unittest.mock import patch
 from freezegun import freeze_time
 
+from CommonServerPython import DemistoException
 from WorkdaySignOnEventCollector import (
     get_from_time,
     fletcher16,
     generate_checksum,
-    check_events_against_checksums,
-    filter_and_check_events,
-    get_future_duplicates_within_timeframe,
     convert_to_json,
-    process_events,
     Client,
     fetch_sign_on_logs,
     get_sign_on_events_command,
-    fetch_sign_on_events_command,
+    fetch_sign_on_events_command, process_and_filter_events, main, VENDOR, PRODUCT,
 )
 
 
@@ -46,65 +44,58 @@ def test_fletcher16():
     assert result == expected
 
 
-def test_generate_checksum():
+def test_generate_checksum() -> None:
     """
-    Test the 'generate_checksum' function
+    Given: Various event dictionaries, some with missing or incorrect data.
+    When: Calling the generate_checksum function on these dictionaries.
+    Then: The function should return the correct checksums or raise appropriate errors.
     """
-    # Using known values to calculate checksum
-    short_session_id = "12345"
-    user_name = 'ABC123'
-    successful = 1
-    signon_datetime = "2021-09-01T12:00:00Z"
 
-    result = generate_checksum(short_session_id, user_name, successful, signon_datetime)
-    expected = 51917  # This is an expected known value
-    assert result == expected
+    # Test case 1: Normal operation with known values to calculate checksum
+    event1 = {
+        "Short_Session_ID": "12345",
+        "User_Name": 'ABC123',
+        "Successful": 1,
+        "Signon_DateTime": "2021-09-01T12:00:00Z",
+    }
+    event1_str = json.dumps(event1, sort_keys=True)
+    expected_checksum1 = fletcher16(event1_str.encode())
+    expected_unique_id1 = f"{expected_checksum1}_{event1['Signon_DateTime']}"
+    result1 = generate_checksum(event1)
+    assert result1 == expected_unique_id1
 
+    # Test case 2: Empty event dictionary
+    event2 = {}
+    try:
+        generate_checksum(event2)
+    except DemistoException as e:
+        assert str(e) == "While calculating the checksum for an event, an event without a Signon_DateTime was " \
+                         "found.\nError: 'Signon_DateTime'"
+    else:
+        assert False, "Expected ValueError but did not get one"
 
-def test_check_events_against_checksums():
-    """
-    Test the 'check_events_against_checksums' function
-    """
-    # Define test data
-    events = [
-        ("12345", "ABC6789", 1, "2021-09-01T12:00:00Z"),
-        ("12346", "ABC6790", 1, "2021-09-01T12:01:00Z"),
-    ]
-    checksums = {51917}  # The checksum for the first event
-    result = check_events_against_checksums(events, checksums)
-    # Only the second event should be returned
-    assert result == [events[1]]
+    # Test case 3: Missing key in event dictionary
+    event3 = {
+        "Short_Session_ID": "12345",
+        "User_Name": 'ABC123',
+        "Successful": 1,
+    }
+    try:
+        generate_checksum(event3)
+    except DemistoException:
+        pass
+    else:
+        assert False, "Expected Exception but did not get one"
 
-
-def test_filter_and_check_events():
-    """
-    Test the 'filter_and_check_events' function
-    """
-    # Define test data
-    events = [
-        {
-            "Short_Session_ID": "12345",
-            "User_Name": "ABC6789",
-            "Successful": 1,
-            "Signon_DateTime": "2021-09-01T12:00:00Z",
-        },
-        {
-            "Short_Session_ID": "12346",
-            "User_Name": "ABC6790",
-            "Successful": 1,
-            "Signon_DateTime": "2021-09-01T12:01:00Z",
-        },
-    ]
-    target_datetime_str = "2021-09-01T12:00:00Z"
-    checksums = {51917}  # The checksum for the first event
-    result = filter_and_check_events(events, target_datetime_str, checksums)
-    # Only the second event should be returned
-    assert result == [events[1]]
+    # Test case 4: Large event dictionary
+    event4 = {str(i): i for i in range(10000)}  # Create a large dictionary
+    event4["Signon_DateTime"] = "2021-09-01T12:00:00Z"  # Add a Signon_DateTime key
+    assert generate_checksum(event4)  # Just check if the function can handle it
 
 
-def test_get_future_duplicates_within_timeframe():
+def test_process_and_filter_events():
     """
-    Test the 'get_future_duplicates_within_timeframe' function
+    Test the 'process_and_filter_events' function
     """
     # Define test data
     events = [
@@ -121,10 +112,23 @@ def test_get_future_duplicates_within_timeframe():
             "Signon_DateTime": "2021-09-01T12:00:01Z",
         },
     ]
-    to_time = "2021-09-01T12:00:01Z"
-    result = get_future_duplicates_within_timeframe(events, to_time)
-    # Both events are within the timeframe of 1 second before and up to the given to_time.
-    assert result == events
+
+    from_time = "2021-09-01T12:00:00Z"
+    previous_run_checksums = set()  # Assume no previous checksums for simplicity
+
+    # Call the function to test
+    non_duplicates, checksums_for_next_iteration = process_and_filter_events(events, from_time, previous_run_checksums)
+
+    # Check if the list of non-duplicates is as expected
+    assert non_duplicates == events
+
+    # Check if the set of checksums for next iteration is updated
+    assert len(checksums_for_next_iteration) == 2
+
+    # Check if '_time' key is added to each event
+    for event in non_duplicates:
+        assert "_time" in event
+        assert event["_time"] == event["Signon_DateTime"]
 
 
 def test_convert_to_json():
@@ -264,21 +268,6 @@ def test_convert_to_json_valid_input():
     )
 
 
-def test_process_events():
-    """
-    Test the 'process_events' function
-    """
-    events = [
-        {"Signon_DateTime": "2021-09-01T11:00:00Z", "User_Name": "John"},
-        {"Signon_DateTime": "2021-09-01T12:00:00Z", "User_Name": "Jane"},
-    ]
-
-    process_events(events)
-
-    assert events[0].get("_time") == "2021-09-01T11:00:00Z"
-    assert events[1].get("_time") == "2021-09-01T12:00:00Z"
-
-
 class TestFetchSignOnLogs(unittest.TestCase):
     def setUp(self):
         self.client = Client(
@@ -399,3 +388,47 @@ def test_fetch_sign_on_events_command_single_page():
         assert events[0]["User_Name"] == "John"
         assert events[0]["_time"] == "2021-09-01T11:00:00Z"
         assert new_last_run["last_fetch_time"] == "2021-09-01T11:00:00Z"
+
+
+def test_main_fetch_events() -> None:
+    """
+    Given: Initialized client and last run data.
+    When: main function is called with 'fetch-events' command.
+    Then: Ensure fetch_sign_on_events_command and send_events_to_xsiam are called, and the last run is updated.
+    """
+    mock_params = {
+        'tenant_name': 'TestTenant',
+        'max_fetch': '10000',
+        'base_url': 'https://testurl.com',
+        'credentials': {
+            'identifier': 'TestUser',
+            'password': 'testpass'
+        },
+        'insecure': True
+    }
+
+    # Mocking demisto.command to return 'fetch-events'
+    with patch('demistomock.command', return_value='fetch-events'):
+        # Mocking other demisto functions
+        with patch('demistomock.getLastRun', return_value={'some': 'data'}), \
+                patch('demistomock.setLastRun') as _, \
+                patch('demistomock.params', return_value=mock_params), \
+                patch('WorkdaySignOnEventCollector.Client') as mock_client, \
+                patch('WorkdaySignOnEventCollector.fetch_sign_on_events_command') as mock_fetch_sign_on_events_command, \
+                patch('WorkdaySignOnEventCollector.send_events_to_xsiam') as mock_send_events_to_xsiam:
+            # Mocking the output of fetch_sign_on_events_command
+            mock_events = [{"event": "data"}]
+            mock_new_last_run = {'new': 'data'}
+            mock_fetch_sign_on_events_command.return_value = (mock_events, mock_new_last_run)
+
+            # Call the main function
+            main()
+
+            # Verify fetch_sign_on_events_command was called with the initialized client, max_fetch, and last_run
+            mock_fetch_sign_on_events_command.assert_called_with(
+                client=mock_client.return_value, max_fetch=10000, last_run={'some': 'data'}
+            )
+
+            # Verify send_events_to_xsiam was called with the fetched events
+            mock_send_events_to_xsiam.assert_called_with(mock_events, vendor=VENDOR,
+                                                         product=PRODUCT)

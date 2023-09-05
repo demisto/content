@@ -7,11 +7,18 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
+  display: Server URL (e.g. https://services1.myworkday.com)
+  required: true
+  defaultvalue: 'https://services1.myworkday.com'
+  type: 0
+  additionalinfo: 'API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  section: Connect
+- name: tenant_name
+  display: Tenant Name
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: credentials
   display: Username
@@ -36,7 +43,7 @@ configuration:
   section: Connect
   advanced: true
 - additionalinfo: The maximum number of sign on events to retrieve. Large amount of events can cause performance issues.
-  defaultvalue: '1000'
+  defaultvalue: '10000'
   display: Max events per fetch
   name: max_fetch
   required: false
