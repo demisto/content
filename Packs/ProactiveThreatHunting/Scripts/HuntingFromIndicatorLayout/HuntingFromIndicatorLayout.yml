@@ -10,7 +10,7 @@ comment: |-
   This automation creates an incident from the indicator layout with the following parameters:
   - Name: Threat Hunting Session - <Indicator Value>
   - Type: Proactive Threat Hunting
-  - sdoname: <Indicator Value>
+  - sdoname: <Indicator Value>.
 enabled: true
 scripttarget: 0
 subtype: python3
