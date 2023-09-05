@@ -337,7 +337,6 @@ var uploadFile= function(incident_id, file_content, file_name) {
                 contentType: 'multipart/form-data'
             }
         },
-        entry_category: "chat",
     };
     var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
     if (isError(res[0])) {
@@ -489,13 +488,9 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`Files not found.`);
         
     }
-    var edit_content_data_files = []
     var not_found = true
     for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
-        if (files[i]['EntryID'] != EntryID) {
-            edit_content_data_files.push(files[i]);
-        }
-        else{
+        if (files[i]['EntryID'] == EntryID) {
             not_found= false 
         }
         
