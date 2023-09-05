@@ -9,13 +9,13 @@ default:
     when: always
 
 stages:
+  - security
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
   - test_playbooks_report
   - upload-to-marketplace
   - are-jobs-really-done
-  - security
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
