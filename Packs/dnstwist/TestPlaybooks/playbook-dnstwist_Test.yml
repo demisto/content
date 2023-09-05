@@ -228,7 +228,7 @@ tasks:
       - "7"
     scriptarguments:
       domain:
-        simple: wikipediao.org
+        simple: wikipedia1.org
       limit: {}
       whois: {}
     separatecontext: false
