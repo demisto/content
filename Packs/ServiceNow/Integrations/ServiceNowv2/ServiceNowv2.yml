@@ -254,7 +254,7 @@ script:
       name: number
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If "true" will retrieve ticket attachments. Default is "false".
+      description: If "true" will retrieve ticket attachments.Note this option will always use the v1 API version, as it is not supported in v2. Default is "false".
       name: get_attachments
       predefined:
       - 'true'
