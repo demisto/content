@@ -345,27 +345,6 @@ var uploadFile= function(incident_id, file_content, file_name) {
     return res;
 };
 
-/**
- * deletes an entry  by entryID by the key_to_delete
-Arguments:
-    @param {String} key_to_delete  -- the name of the key to delete
-    @param {String} incident_id  -- the incident id
-Returns:
-    CommandResults
-"""
- */
-var deleteContextRequest = function (incident_id, key_to_delete) {
-    var body = JSON.stringify({
-        "args": null,
-        "id": "",
-        "investigationId": `${incident_id}`,
-        "data": `!DeleteContext key=${key_to_delete}\n`,
-        "markdown": false,
-        "version": 0
-    });
-   return sendRequest('POST', '/entry', body);
-};
-
 
 /**
  * deletes a file  by entryID
