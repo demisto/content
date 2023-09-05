@@ -2258,11 +2258,16 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low'}]})
+                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'},
+                                               {'detection_id': 'ldt:2',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'}
+                                               ]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
+                                                                                'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
