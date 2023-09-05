@@ -21,7 +21,7 @@ SERVICE_TO_URL_MAP = {
     'takedown': PARAMS['takedown_url'],
     'submission': PARAMS['submission_url'],
 }
-MIRROR_DIRECTION_DICT = {
+MIRROR_DIRECTION_MAP = {
     'None': None,
     'Incoming': 'In',
     'Outgoing': 'Out',
@@ -33,7 +33,8 @@ RES_CODE_TO_MESSAGE = {
     'TD_WILDCARD': 'The attack was not submitted because it is a wildcard sub-domain variation of an existing takedown.',
     'TD_VERIFY':
         'The submitted content is undergoing additional verification to ensure that it is a valid takedown target.'
-        ' If verification is successful, a new takedown will be submitted. If not, no takedown will be created.',
+        ' If verification is successful, a new takedown will be submitted. If not, no takedown will be created.\n'
+        'To get a list of all takedowns, run the command: "netcraft-takedown-list"',
 }
 
 ''' CLIENT CLASS '''
@@ -44,79 +45,91 @@ class Client(BaseClient):
     def __init__(self, verify, proxy, ok_codes, headers, **kwargs):
         super().__init__(None, verify, proxy, ok_codes, headers, **kwargs)
 
-    def _http_request(self, method, service, url_suffix='', params=None, json_data=None, resp_type='json', **kwargs):
+    def _http_request(self, method, service, url_suffix='', params=None, json_data=None, resp_type='json', **kwargs) -> Any:
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
         return super()._http_request(
             method, full_url=urljoin(SERVICE_TO_URL_MAP[service], url_suffix),
             params=params, json_data=json_data, resp_type=resp_type, **kwargs)
 
+    def client_error_handler(self, res: requests.Response):
+        '''Error handler for Netcraft API call error'''
+        err_msg = f'Error in Netcraft API call [{res.status_code}] - {res.reason}\n'
+        try:
+            # Try to parse json error response
+            error_entry: dict[str, Any] = res.json()
+            err_msg += '\n'.join(
+                f'{k.replace("_", " ").title()}: {v}'
+                for k, v in error_entry.items()
+            )
+        except ValueError:
+            err_msg += res.text
+        raise DemistoException(err_msg, res=res)
+
     def test_module(self):
         ...
 
     def get_takedowns(self, params: dict) -> list[dict]:
-        '''Used by fetch-incidents and incoming mirroring commands'''
-        return self._http_request(
-            'GET', 'takedown', 'attacks/', params
-        )
-
-    def update_remote_system(self, params: dict) -> Any:
+        '''Used by fetch-incidents and netcraft-takedown-list'''
         return self._http_request(
             'GET', 'takedown', 'attacks/', params
         )
 
     def attack_report(self, body: dict) -> str:
         return self._http_request(
-            'POST', 'takedown',
+            'POST', 'takedown', 'report/',
             json_data=body, resp_type='text'
         )
 
-    def takedown_list(self, params: dict) -> Any:
+    def takedown_update(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'takedown', 'update-attack/', json_data=body,
+        )
+
+    def takedown_escalate(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'takedown', 'escalate/', json_data=body,
+        )
+
+    def takedown_note_create(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'takedown', 'notes/', json_data=body,
+        )
+
+    def takedown_note_list(self, params: dict) -> None:
         ...
 
-    def takedown_update(self, params: dict) -> Any:
+    def attack_type_list(self, params: dict) -> None:
         ...
 
-    def takedown_escalate(self, params: dict) -> Any:
+    def file_report_submit(self, params: dict) -> None:
         ...
 
-    def takedown_note_create(self, params: dict) -> Any:
+    def url_report_submit(self, params: dict) -> None:
         ...
 
-    def takedown_note_list(self, params: dict) -> Any:
+    def email_report_submit(self, params: dict) -> None:
         ...
 
-    def attack_type_list(self, params: dict) -> Any:
+    def submission_list(self, params: dict) -> None:
         ...
 
-    def file_report_submit(self, params: dict) -> Any:
+    def submission_file_list(self, params: dict) -> None:
         ...
 
-    def url_report_submit(self, params: dict) -> Any:
+    def file_screenshot_get(self, params: dict) -> None:
         ...
 
-    def email_report_submit(self, params: dict) -> Any:
+    def submission_mail_list(self, params: dict) -> None:
         ...
 
-    def submission_list(self, params: dict) -> Any:
+    def mail_screenshot_get(self, params: dict) -> None:
         ...
 
-    def submission_file_list(self, params: dict) -> Any:
+    def submission_url_list(self, params: dict) -> None:
         ...
 
-    def file_screenshot_get(self, params: dict) -> Any:
-        ...
-
-    def submission_mail_list(self, params: dict) -> Any:
-        ...
-
-    def mail_screenshot_get(self, params: dict) -> Any:
-        ...
-
-    def submission_url_list(self, params: dict) -> Any:
-        ...
-
-    def url_screenshot_get(self, params: dict) -> Any:
+    def url_screenshot_get(self, params: dict) -> None:
         ...
 
 
@@ -141,6 +154,7 @@ def sub_dict(d: dict, keys: Iterable, change_keys: dict = None) -> dict:
 ''' COMMAND FUNCTIONS '''
 
 
+# TODO test_module
 def test_module(client: Client) -> str:
     '''
     Tests API connectivity and authentication'
@@ -182,7 +196,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client) -> list[dict[str, str]]:  # LIVE TESTS NEEDED
+def fetch_incidents(client: Client) -> list[dict[str, str]]:
     # demisto.getLastRun and demisto.setLastRun hold takedown IDs
     def to_xsoar_incident(incident: dict) -> dict:
         demisto.debug(inc_id := incident['id'])
@@ -192,7 +206,7 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:  # LIVE TESTS NEEDE
             'dbotMirrorId': inc_id,
             'rawJSON': json.dumps(
                 incident | {
-                    'mirror_direction': MIRROR_DIRECTION_DICT[PARAMS['mirror_direction']],
+                    'mirror_direction': MIRROR_DIRECTION_MAP[PARAMS['mirror_direction']],
                     'mirror_instance': demisto.integrationInstance()
                 }),
         }
@@ -227,115 +241,27 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:  # LIVE TESTS NEEDE
     return list(map(to_xsoar_incident, incidents))
 
 
-def get_modified_remote_data(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
-    demisto.debug(f'\n{"#"*50}\nEntering get_modified_remote_data({client=}, {args=})\n')
-    remote_args = GetModifiedRemoteDataArgs(args)
-    demisto.debug(f'{remote_args.last_update=}')
-    last_update = dateparser.parse(remote_args.last_update)
-    incidents = client.get_takedowns({
-        'updated_since': last_update,
-        'region': PARAMS['region']
-    })
-    demisto.debug(f'{incidents=}'.replace('\n', '\n\t\t'))
-    demisto.debug(f'\nExiting get_modified_remote_data()\n{"#"*50}\n')
-    return GetModifiedRemoteDataResponse(incidents)
-
-
-# def get_modified_remote_data(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
-#     remote_args = GetModifiedRemoteDataArgs(args)
-#     last_update = dateparser.parse(remote_args.last_update)
-#     raw_incidents = client.get_takedowns({
-#         'updated_since': last_update,
-#         'response_include': 'id',
-#         'region': PARAMS['region']
-#     })
-#     ids = [inc['id'] for inc in raw_incidents]
-#     return GetModifiedRemoteDataResponse(ids)
-
-
-# def get_remote_data(client: Client, args: dict) -> GetRemoteDataResponse:
-#     remote_args = GetRemoteDataArgs(args)
-#     incident = client.get_takedowns({
-#         'id': remote_args.remote_incident_id,
-#         'region': PARAMS['region']
-#     })[0]
-#     return GetRemoteDataResponse(incident, {})
-
-
-def update_remote_system(client: Client, args: dict) -> Any:
-    """update-remote-system command: pushes local changes to the remote system
-
-    :type client: ``Client``
-    :param client: XSOAR client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['data']`` the data to send to the remote system
-        ``args['entries']`` the entries to send to the remote system
-        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
-        ``args['remoteId']`` the remote incident id
-
-    :return:
-        ``str`` containing the remote incident id - really important if the incident is newly created remotely
-
-    :rtype: ``str``
-    """
-    parsed_args = UpdateRemoteSystemArgs(args)
-    if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}')
-
-    demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
-    new_incident_id: str = parsed_args.remote_incident_id
-    updated_incident = {}
-    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
-        if parsed_args.remote_incident_id:
-            # First, get the incident as we need the version
-            old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
-            for changed_key in parsed_args.delta:
-                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-
-            parsed_args.data = old_incident
-
-        else:
-            parsed_args.data['createInvestigation'] = True
-
-        updated_incident = client.update_incident(incident=parsed_args.data)
-        new_incident_id = updated_incident['id']
-        demisto.debug(f'Got back ID [{new_incident_id}]')
-
-    else:
-        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
-                      f'not new nor changed.')
-
-    if parsed_args.entries:
-        for entry in parsed_args.entries:
-            demisto.debug(f'Sending entry {entry.get("id")}')
-            client.add_incident_entry(incident_id=new_incident_id, entry=entry)
-
-    return new_incident_id
-
-
 def netcraft_attack_report_command(client: Client, args: dict) -> CommandResults:
     args |= {
         'type': args.pop('attack_type'),
-        'suspected_fraudulent_domain': args.pop('suspected_fraud_domain'),
-        'region': args.get('region') or PARAMS['region']
+        'suspected_fraudulent_domain': argToBoolean(args.pop('suspected_fraud_domain')),
+        'region': args.get('region') or PARAMS['region'],
+        'malware': json.loads(args.get('malware', 'null')),
+        'force_auth': json.loads(args.get('force_auth', 'null')),
+        'inactive': json.loads(args.get('inactive', 'null')),
+        'tags': ','.join(argToList(args.get('tags'))),
     }
     response = client.attack_report(args)
-    lines = response.splitlines() + ['', '']
+    code, takedown_id, *_ = response.splitlines() + ['', '']
     return CommandResults(
         outputs_prefix='Netcraft.Takedown',
         outputs_key_field='id',
-        outputs={  # TODO finalize with TPM and add to yml
-            'responseCode': lines[0],
-            'id': lines[1]
-        },
+        outputs={'id': takedown_id} if code == 'TD_OK' else None,
         raw_response=response,
         readable_output=(
-            f'##### {RES_CODE_TO_MESSAGE.get(lines[0], "Unrecognized response from Netcraft.")}\n'
-            f'Response code: {lines[0]}\n'
-            f'Takedown ID: {lines[1]}\n'
+            f'##### {RES_CODE_TO_MESSAGE.get(code, "Unrecognized response from Netcraft.")}\n'
+            f'Response code: {code}\n'
+            f'Takedown ID: {takedown_id}\n'
         )
     )
 
@@ -349,44 +275,41 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
             'report_source':
                 'phish_feed'
                 if report_source == 'Phishing Feed'
-                else report_source.lower().replace(' ', '_'),
+                else (report_source or '').lower().replace(' ', '_'),
             'sort': args.pop('sort').lower().replace(' ', '_'),
             'dir': args.pop('sort_direction'),
             'max_results':
                 arg_to_number(args.pop('limit'))
                 if not argToBoolean(args.pop('all_results'))
-                else API_MAX_FETCH
+                else API_MAX_FETCH,
+            'region': args.get('region') or PARAMS['region']
         }
 
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
             'Netcraft Takedowns',
             [
-                # TODO get TPM input on ...
                 {
                     'ID': d.get('id'),
                     'Auth': {'0': 'No', '1': 'Yes'}.get(d.get('authgiven')),
-                    'Level': ...,
-                    'Customer': (..., 'TODO', {"customer_label": "", "customer_tag": ""}),
                     'Brand': d.get('target_brand'),
                     'Attack Type': d.get('attack_type'),
                     'Status': d.get('status'),
-                    'Pageset': ...,
                     'Attack URL': d.get('attack_url'),
                     'Date Reported': d.get('date_submitted'),
                     'Last Updated': d.get('last_updated'),
                     'Date Authorised': d.get('date_authed') or 'N/A',
                     'Date Escalated': d.get('date_escalated') or 'N/A',
-                    'First Response from Netcraft': (..., d.get('first_contact')),
+                    'First Contact': d.get('first_contact'),
                     'First Inactive (Monitoring)': d.get('first_inactive') or 'N/A',
                     'First Resolved': d.get('first_resolved') or 'N/A',
                 }
                 for d in response
             ],
             [
-                'ID', 'Auth', 'Level', 'Customer', 'Brand', 'Attack Type', 'Status', 'Pageset',
-                'Attack URL', 'Date Reported', 'Last Updated', 'Date Authorised', 'Date Escalated',
-                'First Response from Netcraft', 'First Inactive (Monitoring)', 'First Resolved',
+                'ID', 'Auth', 'Brand', 'Attack Type', 'Status', 'Attack URL',
+                'Date Reported', 'Last Updated', 'Date Authorised', 'Date Escalated',
+                'First Contact', 'First Inactive (Monitoring)', 'First Resolved',
             ],
             removeNull=True
         )
@@ -403,15 +326,53 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
 
 
 def netcraft_takedown_update_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def args_to_params(args: dict) -> dict:
+        return args | {
+            key: args.get(value)
+            for key, value in
+            (
+                ('set_customer_label', 'customer_label'),
+                ('set_description', 'description'),
+                ('set_region', 'region'),
+                ('set_brand', 'brand'),
+                ('set_suspected_fraudulent_domain', 'suspected_fraud_domain'),
+                ('set_suspected_fraudulent_hostname', 'suspected_fraud_hostname'),
+            )
+        } | {
+            'add_tags': ','.join(argToList(args.get('add_tags'))),
+            'remove_tags': ','.join(argToList(args.get('remove_tags'))),
+        }
+
+    response = client.takedown_update(
+        args_to_params(args)
+    )
+    return CommandResults(
+        readable_output=f'##### Takedown successfully updated.\nID: {response["id"]}'
+    )
 
 
 def netcraft_takedown_escalate_command(client: Client, args: dict) -> CommandResults:
-    ...
+    return CommandResults(
+        raw_response=client.takedown_escalate(args),
+        readable_output=f'##### Takedown successfully escalated.\nTakedown ID: {args["takedown_id"]}',
+    )
 
 
 def netcraft_takedown_note_create_command(client: Client, args: dict) -> CommandResults:
-    ...
+    response = client.takedown_note_create(
+        args | {'text': args.pop('note_text')}
+    )
+    return CommandResults(
+        outputs_prefix='Netcraft.TakedownNote',
+        outputs=response,
+        outputs_key_field='note_id',
+        readable_output=(
+            '##### Note successfully added to takedown.\n'
+            f'Note ID: {response["note_id"]}'
+            f'Takedown ID: {args["takedown_id"]}'
+        )
+    )
 
 
 def netcraft_takedown_note_list_command(client: Client, args: dict) -> CommandResults:

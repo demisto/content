@@ -44,7 +44,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -68,16 +67,6 @@ configuration:
   type: 0
   section: Collect
   required: true
-- defaultvalue: None
-  display: Mirroring Direction
-  name: mirror_direction
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-  required: false
-  type: 15
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -85,34 +74,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-
 script:
   commands:
-  - name: get-modified-remote-data
-    arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-      isArray: false
-      name: lastUpdate
-      required: false
-      secret: false
-    description: |
-      Get the list of incidents (takedowns) that were modified since the last update time.
-      This method is used for debugging purposes. The get-modified-remote-data command
-      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-  - name: get-remote-data
-    arguments:
-    - description: The remote incident (takedown) ID.
-      name: id
-      required: true
-    - defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident (takedown) is only updated if it was modified after the last update time.
-      name: lastUpdate
-    description: Gets remote incident (takedown) data. This method does not update the current incidents, and should be used for debugging purposes only.
-  - name: update-remote-system
-    description: Updates the remote incident with local incident changes. This method
-      is only used for debugging purposes and will not update the current incident.
-
   - name: 'netcraft-attack-report'
     description: |
       Report a new attack or authorise an existing attack in the Takedown service.
@@ -189,7 +152,10 @@ script:
         The name of the region to create a takedown under.
         If not provided, the region specified in the instance configuration will be used.
       name: region
-    outputs: []
+    outputs:
+    - contextPath: Netcraft.Takedown.id
+      description: The ID of the takedown. (this key will only appear if the takedown has been created and verified).
+      type: String
   - name: 'netcraft-takedown-list'
     arguments:
     - name: id
@@ -572,85 +538,75 @@ script:
     - contextPath: Netcraft.Takedown.whois_data
       description: The WHOIS data for the takedown.
       type: String
-
   - name: 'netcraft-takedown-update'
     arguments:
     - name: takedown_id
-      description: |
-        ''
+      description: The ID of the takedown to update.
       required: true
     - name: customer_label
-      description: |
-        ''
+      description: A free-text field which can be used to keep track of particular attacks.
     - name: description
-      description: |
-        ''
+      description: The reason for the report, such as a description of the attack.
     - name: brand
-      description: |
-        ''
+      description: The brand to move the takedown under.
     - auto: PREDEFINED
-      description: |
-        ''
+      description: Should be set to true if it is believed that the domain name has been registered as part of the fraud. This will ensure that the registrar is contacted to seek suspension of the domain name.
       name: suspected_fraud_domain
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: |
-        ''
+      description: 
       name: suspected_fraud_hostname
       predefined:
       - 'true'
       - 'false'
-    - description: |
-        "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
-        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
-        \_\"google-ads\""
+    - description: A comma separated list tags to add to the takedown group.
       isArray: true
       name: add_tags
     - description: |
-        "Items Enum:\_\"coronavirus\"\_\"smishing\"\_\"fake-shop-logo\"\_\
-        \"ukraine\"\_\"traffic_distribution_system\"\_\"prometheus_tds\"\_\"generic-fake-shop\"\
-        \_\"google-ads\""
+        A comma separated list tags to remove from the takedown group.
+        Removing a tag from a group which already doesn't have that tag is permitted.
+        However, including the same tag in both "add_tags" and "remove_tags" will return an error.
       isArray: true
       name: remove_tags
-    - description: |
-        ''
-      name: region
+    # TODO: what to do with this arg.
+    # - description:
+    #     The name of the region of which to list takedowns.
+    #     If not provided, the region specified in the instance configuration will be used.
+    #   name: region
+    description: Update one or more fields related to a takedown.
     outputs: []
-    description: |
-      ''
   - name: 'netcraft-takedown-escalate'
     arguments:
     - name: takedown_id
       required: true
-      description: |
-        ''
-    description: |
-      ''
+      description: The ID of the automated takedown to escalate.
+    description: Escalate an automated takedown to a managed takedown.
     outputs: []
   - name: 'netcraft-takedown-note-create'
     arguments:
-    - description: |
-        ''
+    - description: The ID of the takedown to add the note to.
       name: takedown_id
       required: true
-    - description: |
-        ''
+    - description: The contents of the new note.
       name: note_text
       required: true
     - auto: PREDEFINED
+      defaultValue: 'true'
       description: |
-        'Default: trueWhen set to true, the note will also be raised to our
-        operations team for further investigation. This should be set if you require
-        a Netcraft staff member to read and respond to your note.'
+        When set to true, the note will also be raised to Netcraft's operations team for further investigation.
+        This should be set if you require a Netcraft staff member to read and respond to your note.
       name: notify
       predefined:
       - 'true'
       - 'false'
-    description: |
-      ''
-    outputs: []
+    description: Add a new note to an existing takedown.
+    outputs:
+    - contextPath: Netcraft.TakedownNote.note_id
+      description: The ID of the note added to the takedown.
+      type: Number
+
   - name: 'netcraft-takedown-note-list'
     arguments:
     - description: |
