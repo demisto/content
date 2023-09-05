@@ -5,6 +5,16 @@ from functools import reduce, partial
 import ast
 
 
+def catch_error(func: Callable) -> Callable:
+    '''Makes a function return None if an error is raised.'''
+    def error_catcher(*args):
+        try:
+            return func(*args)
+        except Exception:
+            return None
+    return error_catcher
+
+
 class ConditionParser:
     variables: dict[str, Any] = {
         'true': True,
@@ -15,12 +25,12 @@ class ConditionParser:
     comparison_operators: dict[type, Callable] = {
         ast.Eq: lambda x, y: x == y,
         ast.NotEq: lambda x, y: x != y,
-        ast.Lt: lambda x, y: x < y,
-        ast.LtE: lambda x, y: x <= y,
-        ast.Gt: lambda x, y: x > y,
-        ast.GtE: lambda x, y: x >= y,
-        ast.In: lambda x, y: x in y,
-        ast.NotIn: lambda x, y: x not in y,
+        ast.Lt: catch_error(lambda x, y: x < y),
+        ast.LtE: catch_error(lambda x, y: x <= y),
+        ast.Gt: catch_error(lambda x, y: x > y),
+        ast.GtE: catch_error(lambda x, y: x >= y),
+        ast.In: catch_error(lambda x, y: x in y),
+        ast.NotIn: catch_error(lambda x, y: x not in y),
     }
 
     boolean_operators: dict[type, Callable] = {
@@ -34,7 +44,7 @@ class ConditionParser:
     }
 
     binary_operators: dict[type, Callable] = {
-        ast.Add: lambda x, y: x + y,
+        ast.Add: catch_error(lambda x, y: x + y),
     }
 
     def __init__(self, context, conditions, flags=None):
@@ -62,11 +72,11 @@ class ConditionParser:
             flags=self.regex_flags
         )
         if 'case_insensitive' in flags:
-            def eq(x, y):
-                return repr(x).lower() == repr(y).lower()
+            def to_case_insensitive(func):
+                return lambda x, y: func(repr(x).lower(), repr(y).lower())
             self.comparison_operators |= {
-                ast.Eq: eq,
-                ast.NotEq: lambda x, y: not eq(x, y),
+                ast.Eq: to_case_insensitive(self.comparison_operators[ast.Eq]),
+                ast.NotEq: to_case_insensitive(self.comparison_operators[ast.NotEq]),
             }
         if 'list_compare' in flags:
             def to_deep_search(func):
