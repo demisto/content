@@ -320,6 +320,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         bind_variables, sql_query = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query, client.dialect)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
+        result = convert_sqlalchemy_to_readable_table(result)
         result = result[skip:skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=result, headers=headers, removeNull=True)
