@@ -728,7 +728,7 @@ def test_create_entity_b_stix_objects_with_file_object(mocker, taxii2_server_v21
         When
             Calling handle_report_relationships.
         Then
-            Validate that each report contained its relationship in the object_refs.
+            Validate that there is not a None ioc key in the ioc_value_to_id dict.
 
     """
     from TAXII2Server import create_entity_b_stix_objects
