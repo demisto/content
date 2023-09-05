@@ -155,7 +155,10 @@
         }
       ],
       "default_dashboard_id": 1,
-      "global_id": "0eb767082c774d0d820b96c3b7f67f69"
+      "global_id": "0eb767082c774d0d820b96c3b7f67f69",
+      "metadata": {
+        "lazy_load": true
+      }
     }
   ],
   "widgets_data": [
