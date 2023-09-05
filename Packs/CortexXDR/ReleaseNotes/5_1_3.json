@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**Important Note**: Non associated XDR fields were removed from the XDR Incoming Mapper. This change affects *only* Malware Investigation And Response Incident types and should reduce incident context size, and avoid duplicated data. Make sure that you didn't use any of those mapped incident fields in your custom content items."
+}
