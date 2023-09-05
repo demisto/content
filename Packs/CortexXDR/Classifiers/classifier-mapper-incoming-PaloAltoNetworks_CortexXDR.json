@@ -772,12 +772,6 @@
 					"simple": "owner"
 				}
 			}
-		},
-        "CortextXDRIncident": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-
-            }
-        }
+		}
     }
 }
