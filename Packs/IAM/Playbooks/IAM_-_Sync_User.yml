@@ -503,7 +503,7 @@ tasks:
       context_path:
         simple: FailedVendors
       grid_id:
-        simple: failedprovisioning
+        simple: identitylifecyclemanagement-corefailedprovisioning
       keys:
         simple: action,brand,errorCode,errorMessage,instanceName
       overwrite:

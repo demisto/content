@@ -111,7 +111,7 @@ def main():
             )
 
         if war_room_warning_logs:
-            return_results(
+            _return_results(
                 f"{log_prefix}: Group synced with below warnings/errors:",
                 {"Warn Logs": war_room_warning_logs},
             )
@@ -195,7 +195,7 @@ def create_group(app_instance, group_name):
 
     create_group_scim = {"displayName": group_name}
     create_group_args = {"scim": create_group_scim, "using": app_instance}
-    create_group_response = execute_command("iam-create-group", create_group_args)
+    create_group_response = _execute_command("iam-create-group", create_group_args)
 
     create_group_data = read_result_from_command_response(
         create_group_response, app_instance
@@ -264,7 +264,7 @@ def update_group(app_instance, app_group_data):
         if group_member_ids_to_remove:
             update_group_args["memberIdsToDelete"] = group_member_ids_to_remove
 
-        update_group_response = execute_command("iam-update-group", update_group_args)
+        update_group_response = _execute_command("iam-update-group", update_group_args)
         update_group_data = read_result_from_command_response(
             update_group_response, app_instance
         )
@@ -284,7 +284,7 @@ def update_group(app_instance, app_group_data):
             )
             update_group_mapping(app_instance, app_group_data, current_date)
 
-        return_results(
+        _return_results(
             f"{log_prefix}: {app_group_data.get(ID_FIELD)} Members Updated",
             {
                 "Members Added": group_member_ids_to_add,
@@ -337,7 +337,7 @@ def get_group_member_changes_full_comparision(app_group_data):
     return group_member_ids_to_add, group_member_ids_to_remove
 
 
-def execute_command(command_name, command_arguments, fail_on_error=True):
+def _execute_command(command_name, command_arguments, fail_on_error=True):
     command_response = demisto.executeCommand(command_name, command_arguments)
 
     if fail_on_error is True and isError(command_response[0]):
@@ -436,7 +436,7 @@ def get_okta_logs_for_group_changes(okta_group_id, from_date, to_date):
     )
 
     # Query Okta to get event logs for the group
-    get_logs_response = execute_command(
+    get_logs_response = _execute_command(
         "okta-get-logs",
         {
             "filter": okta_log_filter,
@@ -488,7 +488,7 @@ def get_user_id_from_app_instance(app_instance, username):
         # Some apps has full username as username and some have samaccountname as username
         get_user_scim = {"email": user_profile.get("email")}
 
-        get_user_response = execute_command(
+        get_user_response = _execute_command(
             "iam-get-user", {"user-profile": get_user_scim, "using": app_instance}
         )
         user_data = read_result_from_command_response(get_user_response, app_instance)
@@ -623,7 +623,7 @@ def update_demisto_group_profile(indicator_id, group_mappings, group_mappings_up
             # Update if not empty
             group_mappings[app_instance] = group_data
 
-        execute_command(
+        _execute_command(
             "setIndicator",
             {
                 "id": indicator_id,
@@ -697,21 +697,10 @@ def get_list(list_name):
     if isError(get_list_response[0]):
         demisto.error(f"Could not read the list: {get_list_response[0]}")
         raise Exception(f"Error: Could not read the list: {list_name}")
-        list_data = None
     else:
         list_data = demisto.get(get_list_response[0], "Contents")
 
     return list_data
-
-
-def parse_json(json_path, json_data):
-    matched_values = []
-    json_path_expression = parse(json_path)
-    results = json_path_expression.find(json_data)
-    if len(results) >= 1:
-        for result in results:
-            matched_values.append(result.value)
-    return matched_values
 
 
 def send_email(send_to=None, subject=None, message=None, htmlbody=None):
@@ -773,7 +762,7 @@ dt: Entry Context key
 """
 
 
-def return_results(table_name, data, table_headers=None):
+def _return_results(table_name, data, table_headers=None):
     if type(data) != list:
         data = [data]
 

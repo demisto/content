@@ -31,9 +31,3 @@ There are no inputs for this playbook.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![IAM - App Group Sync](../doc_files/IAM_-_App_Group_Sync.png)
