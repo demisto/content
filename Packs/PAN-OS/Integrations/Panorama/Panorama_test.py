@@ -717,7 +717,7 @@ def test_build_logs_query():
     from Panorama import build_logs_query
 
     urls_as_string = "demisto.com, paloaltonetworks.com"
-    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None)
+    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None, None)
     expected = "((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))"
     assert response == expected
 
@@ -1962,7 +1962,7 @@ class TestPanoramaCommitCommand:
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         'action': 'partial',
         'cmd': '<commit><device-group><entry '
-               'name="some_device"/></device-group><partial><admin>'
+               'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
                '<member>some_admin_name</member></admin></partial></commit>',
         'key': 'APIKEY',
         'type': 'commit'
@@ -2007,7 +2007,8 @@ class TestPanoramaCommitCommand:
                                             'description': 'a simple commit', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry '
-                                                   'name="some_device"/></device-group><partial><admin>'
+                                                   'name="some_device"/></device-group><description>a simple commit</description>'
+                                                   '<partial><admin>'
                                                    '<member>some_admin_name</member></admin></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},

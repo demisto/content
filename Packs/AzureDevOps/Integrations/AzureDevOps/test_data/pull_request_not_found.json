@@ -1,0 +1,10 @@
+{
+    "$id": "1",
+    "innerException": "",
+    "message": "TF401180: The requested pull request was not found.",
+    "typeName": "Microsoft.TeamFoundation.Git.Server.GitPullRequestNotFoundException, Microsoft.TeamFoundation.Git.Server",
+    "typeKey": "GitPullRequestNotFoundException",
+    "errorCode": 0,
+    "eventId": 3000,
+    "value": ""
+}
