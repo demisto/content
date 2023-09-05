@@ -44,11 +44,11 @@ def get_indicators_from_key_value_pairs(observed_key_value_pairs: list, is_indic
         if not isinstance(kv_pair, Mapping):
             demisto.info(f"Ignoring item because it is not a mapping: {kv_pair}")
         else:
-            if "Key" not in kv_pair or "Value" not in kv_pair:
-                demisto.info(f"Ignoring item because it lacks the keys 'Key' and/or 'Value': {sorted(kv_pair.keys())}")
+            if "key" not in kv_pair or "value" not in kv_pair:
+                demisto.info(f"Ignoring item because it lacks the keys 'key' and/or 'value': {sorted(kv_pair.keys())}")
             else:
-                key = _canonicalize_string(kv_pair.get("Key", ""))
-                value = _canonicalize_string(kv_pair.get("Value", ""))
+                key = _canonicalize_string(kv_pair.get("key", ""))
+                value = _canonicalize_string(kv_pair.get("value", ""))
 
                 if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and is_indicator_match(value):
                     indicators.append(kv_pair)
@@ -128,7 +128,7 @@ def determine_reason(external_indicators: list, matches: list) -> str:
     if len(external_indicators) == 1:
         reason_parts.append("external classification of " + DEV_ENV_CLASSIFICATION)
     for match in matches:
-        reason_parts.append("tag {" + f"{match.get('Key')}: {match.get('Value')}" + "} from " + match.get('Source'))
+        reason_parts.append("tag {" + f"{match.get('key')}: {match.get('value')}" + "} from " + match.get('source'))
     reason_final = "match on "
     for reason in reason_parts:
         reason_final += reason + ", "
@@ -195,11 +195,11 @@ def main():
 
     Args:
         asm_tags (List[Dict[str, Any]]): list of key-value dictionaries;
-            each dictionary within the list must contain the keys "Key" and "Value";
+            each dictionary within the list must contain the keys "key" and "value";
             the values are arbitrary
             Example value for `observed_key_value_pairs`:
-                [{"Key": "env", "Source": "AWS", "Value": "dev"},
-                 {"Key": "Name", "Source": "AWS", "Value": "ssh-ec2-machine-name"}]
+                [{"key": "env", "source": "AWS", "value": "dev"},
+                 {"key": "Name", "source": "AWS", "value": "ssh-ec2-machine-name"}]
         active_classifications (List[str]): list of Xpanse ASM classification terms
             (a defined vocabulary)
             Example value for `classifications`:
