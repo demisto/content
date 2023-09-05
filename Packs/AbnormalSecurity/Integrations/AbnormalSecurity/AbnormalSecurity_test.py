@@ -136,6 +136,7 @@ def test_get_a_list_of_threats_command(mocker):
     assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
     assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
 
+
 def test_get_a_list_of_vendors_command(mocker):
     """
         When:
@@ -151,6 +152,7 @@ def test_get_a_list_of_vendors_command(mocker):
     assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
     assert results.outputs_prefix == 'AbnormalSecurity.VendorsList'
 
+
 def test_get_the_details_of_a_specific_vendor_command(mocker):
     """
         When:
@@ -165,6 +167,7 @@ def test_get_the_details_of_a_specific_vendor_command(mocker):
     assert results.outputs.get('vendorContacts')[0] == 'john.doe@test-domain-1.com'
     assert results.outputs_prefix == 'AbnormalSecurity.VendorDetails'
 
+
 def test_get_the_activity_of_a_specific_vendor_command(mocker):
     """
         When:
@@ -177,6 +180,7 @@ def test_get_the_activity_of_a_specific_vendor_command(mocker):
     results = get_the_activity_of_a_specific_vendor_command(client, {})
     assert results.outputs.get('eventTimeline')[0].get('suspiciousDomain') == 'test@test-domain.com'
     assert results.outputs_prefix == 'AbnormalSecurity.VendorActivity'
+
 
 def test_get_a_list_of_vendor_cases_command(mocker):
     """
@@ -192,6 +196,7 @@ def test_get_a_list_of_vendor_cases_command(mocker):
     assert results.outputs.get('pageNumber', 0) > 0
     assert results.outputs_prefix == 'AbnormalSecurity.VendorCases'
 
+
 def test_get_the_details_of_a_vendor_case_command(mocker):
     """
         When:
@@ -205,6 +210,7 @@ def test_get_the_details_of_a_vendor_case_command(mocker):
     assert results.outputs.get('vendorCaseId') == 123
     assert results.outputs.get('timeline')[0].get('threatId') == 1234
     assert results.outputs_prefix == 'AbnormalSecurity.VendorCaseDetails'
+
 
 def test_get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(mocker):
     """
