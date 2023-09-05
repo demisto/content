@@ -333,7 +333,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: closed
+              simple: Closed
     view: |-
       {
         "position": {
