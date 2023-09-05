@@ -410,7 +410,7 @@ Note:
 """ 
  */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
-    incident_id = (incident_id === 'undefined')? investigation.id: incident_id;
+    incident_id = (typeof incident_id === 'undefined')? investigation.id: incident_id;
     if (incident_id!=investigation.id){
         log(`Note that the file would be uploaded to ${incident_id} from incident ${investigation.id}`);
     }
@@ -463,7 +463,7 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`Files not found.`);
     }
     files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
-    if (files[0]=='undefined'){
+    if (typeof files[0] == 'undefined'){
         throw new Error(`Files not found.`);
         
     }
@@ -530,7 +530,7 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
+    incident_id = (typeof incident_id == 'undefined')? investigation.id: incident_id;    
     deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };
