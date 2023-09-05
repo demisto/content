@@ -1,6 +1,14 @@
 import uuid
 import pytest
-from ProofpointEmailSecurityEventCollector import fetch_events, json, demisto, EventType, datetime, timedelta, websocket_connections
+from ProofpointEmailSecurityEventCollector import (
+    fetch_events,
+    json,
+    demisto,
+    EventType,
+    datetime,
+    timedelta,
+    websocket_connections,
+)
 import ProofpointEmailSecurityEventCollector
 from freezegun import freeze_time
 
@@ -95,21 +103,35 @@ def test_connects_to_websocket(mocker):
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
     # Call the websocket_connections function without since_time and to_time
-    with websocket_connections('host', 'cluster_id', 'api_key') as (message_connection, maillog_connection):
+    with websocket_connections("host", "cluster_id", "api_key") as (message_connection, maillog_connection):
         pass
 
     assert connect_mock.call_count == 2
-    assert connect_mock.call_args_list[0][0][0] == 'wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-16T12:24:12.147573'
-    assert connect_mock.call_args_list[1][0][0] == 'wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-16T12:24:12.147573'
-    assert connect_mock.call_args_list[0][1]['additional_headers']['Authorization'] == 'Bearer api_key'
-    assert connect_mock.call_args_list[1][1]['additional_headers']['Authorization'] == 'Bearer api_key'
+    assert (
+        connect_mock.call_args_list[0][0][0]
+        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-16T12:24:12.147573"
+    )
+    assert (
+        connect_mock.call_args_list[1][0][0]
+        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-16T12:24:12.147573"
+    )
+    assert connect_mock.call_args_list[0][1]["additional_headers"]["Authorization"] == "Bearer api_key"
+    assert connect_mock.call_args_list[1][1]["additional_headers"]["Authorization"] == "Bearer api_key"
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
     # Call the websocket_connections function with since_time and to_time
-    with websocket_connections('host', 'cluster_id', 'api_key', since_time='2023-08-14T12:24:12.147573', to_time='2023-08-16T12:24:12.147573') as (message_connection, maillog_connection):
+    with websocket_connections(
+        "host", "cluster_id", "api_key", since_time="2023-08-14T12:24:12.147573", to_time="2023-08-16T12:24:12.147573"
+    ) as (message_connection, maillog_connection):
         pass
 
     assert connect_mock.call_count == 2
-    assert connect_mock.call_args_list[0][0][0] == 'wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573'
-    assert connect_mock.call_args_list[1][0][0] == 'wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573'
+    assert (
+        connect_mock.call_args_list[0][0][0]
+        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"
+    )
+    assert (
+        connect_mock.call_args_list[1][0][0]
+        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"
+    )

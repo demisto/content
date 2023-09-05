@@ -1,5 +1,5 @@
 Collects events for Proofpoint using the streaming API.
-This integration was integrated and tested with version xx of Proofpoint Email Security Event Collector
+This integration was integrated and tested Proofpoint Email Security.
 
 ## Configure Proofpoint Email Security Event Collector on Cortex XSOAR
 
