@@ -1187,7 +1187,7 @@
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
-            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -3990,9 +3990,9 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "Fetch Incidents Test",
+            "playbookID": "ServiceNow Fetch Incidents Test",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0",
+            "fromversion": "6.8.0",
             "is_mockable": false,
             "timeout": 2400
         },
