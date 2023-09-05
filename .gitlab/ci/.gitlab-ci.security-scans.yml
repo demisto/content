@@ -5,16 +5,15 @@
 stages:
   - security
 
-security:
-  auto secure cicd:
-    stage: security
-    variables:
-      PYTHONPATH: "/root/prodsec_tools/"
-    trigger:
-      include:
-        - file: "/.gitlab/test-ref.yml"
-          ref: test_refs
-          project: "xsoar/content-test-conf"
-      strategy: depend
-    extends:
-      .auto-secure-cicd-rule
+auto secure cicd:
+  stage: security
+  variables:
+    PYTHONPATH: "/root/prodsec_tools/"
+  trigger:
+    include:
+      - file: "/.gitlab/test-ref.yml"
+        ref: test_refs
+        project: "xsoar/content-test-conf"
+    strategy: depend
+  extends:
+    .auto-secure-cicd-rule
