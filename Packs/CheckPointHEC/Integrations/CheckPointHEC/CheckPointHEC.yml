@@ -219,7 +219,7 @@ script:
   - name: checkpointhec-get-scan-info
     arguments:
     - name: entity
-      description: Scanned entity id
+      description: Scanned entity id.
       required: true
     description: Retrieve specific email scan with positive threats.
     outputs:
