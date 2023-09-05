@@ -3838,18 +3838,19 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
 def validate_auth_params(
     username: str, api_key: str, client_id: str, client_secret: str
 ) -> None:
-    basic_oauth, oauth2 = username or api_key, client_id or client_secret
+    is_basic_auth = bool(username or api_key)
+    is_oauth2 = bool(client_id or client_secret)
 
-    if (not basic_oauth) and (not oauth2):
+    if (not is_basic_auth) and (not is_oauth2):
         raise DemistoException("The required parameters were not provided. See the help window for more information.")
-    if basic_oauth and oauth2:
+    if is_basic_auth and is_oauth2:
         raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
                                " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
-    if basic_oauth and not (username and api_key):
+    if is_basic_auth and not (username and api_key):
         raise DemistoException(
             "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
         )
-    if oauth2 and not (client_id and client_secret):
+    if is_oauth2 and not (client_id and client_secret):
         raise DemistoException(
             "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory."
         )
