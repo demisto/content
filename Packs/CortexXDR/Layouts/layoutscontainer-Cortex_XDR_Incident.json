@@ -434,15 +434,15 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "xdrnotes",
                                 "height": 22,
                                 "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
                                 "index": 7,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             },
                             {
                                 "endCol": 4,
@@ -454,15 +454,24 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "commandline",
+                                "height": 22,
+                                "id": "486f44c0-4bcb-11ee-8f29-116427640ec6",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 4,
                                 "fieldId": "xdralertcount",
                                 "height": 22,
                                 "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
                                 "index": 1,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 2,
+                                "dropEffect": "move",
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             },
                             {
                                 "endCol": 4,
@@ -674,11 +683,11 @@
                                     "simple": "xdralertname"
                                 }
                             },
-                            "operator": "notContainsGeneral",
+                            "operator": "notContainsString",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "token"
+                                    "simple": "Suspicious usage of AWS Lambda’s token"
                                 }
                             },
                             "type": "multiSelect"
@@ -690,14 +699,109 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "mitretacticname"
+                                    "simple": "xdralertname"
                                 }
                             },
-                            "operator": "notContainsGeneral",
+                            "operator": "notContainsString",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "Credential Access"
+                                    "simple": "Suspicious usage of AWS Lambda’s role"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of EC2 token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS service token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS ECS token"
                                 }
                             },
                             "type": "multiSelect"
@@ -876,7 +980,228 @@
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "token"
+                                    "simple": "Suspicious usage of AWS Lambda’s token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of AWS Lambda’s role"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of EC2 token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS service token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS ECS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS ECS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of AWS service token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an App engine Service Account token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of App engine Service Account token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of VM Service Account token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of VM Service Account token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": ""
                                 }
                             },
                             "type": "multiSelect"
@@ -906,6 +1231,15 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "useragent",
+                                "height": 22,
+                                "id": "3e2d8e60-3fef-11ed-8b45-b1684b1bfc04",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "sourceip",
                                 "height": 22,
                                 "id": "6c27dc10-1507-11ee-afe1-4bea2a14f94c",
@@ -915,19 +1249,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "useragent",
-                                "height": 22,
-                                "id": "cbf13710-18e3-11ee-a005-5968c8362785",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "asnname",
                                 "height": 22,
                                 "id": "7bbf2660-ffbd-11ed-91cb-b704c053731a",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -936,7 +1261,7 @@
                                 "fieldId": "asn",
                                 "height": 22,
                                 "id": "74d9fc50-3fef-11ed-bd56-1f5a2b2d17b4",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -945,7 +1270,7 @@
                                 "fieldId": "country",
                                 "height": 22,
                                 "id": "4c8d5610-0f52-11ee-81b3-5b1a51073e91",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1098,7 +1423,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Cloud Info",
+                        "name": "Cloud Extra Data",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -1506,21 +1831,10 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "relatedreport",
-                                "height": 22,
-                                "id": "f782bd20-8c31-11ed-a026-b1d5b381234f",
-                                "index": 0,
-                                "listId": "1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
                                 "fieldId": "partofcampaign",
                                 "height": 22,
                                 "id": "0c60e1d0-8c33-11ed-a026-b1d5b381234f",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "1vduzkpmlh-e1c742c0-8b6a-11ed-8534-dd7eadd1d5dd",
                                 "sectionItemType": "field",
                                 "startCol": 0
