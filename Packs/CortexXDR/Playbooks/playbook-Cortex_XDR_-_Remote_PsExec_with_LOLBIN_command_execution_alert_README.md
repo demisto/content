@@ -17,11 +17,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
-* Command-Line Analysis
 * Entity Enrichment - Generic v4
-* TIM - Indicator Relationships Analysis
+* Command-Line Analysis
 * Cortex XDR - Endpoint Investigation
+* Block Indicators - Generic v3
 * Threat Hunting - Generic
 
 ### Integrations
@@ -35,8 +34,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* xdr-get-alerts
 * xdr-script-commands-execute
+* xdr-get-alerts
+* setIncident
 
 ## Playbook Inputs
 
@@ -44,10 +44,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IPAddress | The remote IP address which executed the process | incident.xdralerts.actionremoteip | Optional |
+| SrcIPAddress | The remote IP address which executed the process | incident.xdralerts.actionremoteip | Optional |
 | alerts_ids | The ID's of the relevant alerts | incident.xdralerts.alert_id | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | false | Optional |
-| rule_id | The ID of the \`Remote PsExec-like LOLBIN command execution from an unsigned non-standard\` XDR analytics alert | f2282012-53aa-44f0-bda2-e45cd6b8b61a | Optional |
 | LOLBASFeedLimit | LOLBAS Feed results limit | 100 | Optional |
 | EndpointIDs | The IDs of the victim endpoint | incident.xdralerts.endpoint_id | Optional |
 
