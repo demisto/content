@@ -2267,7 +2267,7 @@ class TestFetch:
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
             'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                                'Detection ID: ldt:2': 1599210970}}
+                                                                               'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
