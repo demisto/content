@@ -1,0 +1,28 @@
+.auto-secure-cicd-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ master'
+      when: never
+    - if: 'SECURITY_SCANS == "true"'
+
+.auto-secure-cicd-rule-always:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ master'
+      when: never
+    - if: 'SECURITY_SCANS == "true"'
+      when: always
+
+auto secure cicd:
+  stage: security
+  variables:
+    PYTHONPATH: "/root/prodsec_tools/"
+  trigger:
+    include:
+      - file: "/.gitlab/test-ref.yml"
+        ref: test_refs
+        project: "xsoar/content-test-conf"
+    strategy: depend
+  extends:
+    .auto-secure-cicd-rule
+
+stages:
+  - security
