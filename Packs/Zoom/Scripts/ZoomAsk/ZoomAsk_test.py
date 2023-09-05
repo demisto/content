@@ -1,136 +1,93 @@
-import unittest
-from unittest.mock import patch, MagicMock
 import demistomock as demisto
+from ZoomAsk import generate_json, main
+import dateparser
+import datetime
+import json
 
-# Import the functions from the script you want to test
-from ZoomAsk import parse_option_text, generate_json
+
+def test_zoomask_user(mocker):
+    # Set
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
+    mocker.patch.object(demisto, 'args', return_value={
+        'user': 'alexios',
+        'message': 'wat up',
+        'option1': 'yes#red',
+        'option2': 'no#red',
+        'reply': 'Thank you brother.',
+        'lifetime': '24 hours',
+        'defaultResponse': 'NoResponse',
+        'using-brand': 'ZoomAsk',
+        'zoomInstance': 'TestingInstance1'
+    })
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+
+    # Arrange
+    main()
+    call_args = demisto.executeCommand.call_args[0]
+
+    # Assert
+    assert call_args[1] == {
+        'ignoreAddURL': 'true',
+        'using-brand': 'ZoomAsk',
+        'using': 'TestingInstance1',
+        # Update the expected 'blocks' value to match your script's logic
+        'blocks': json.dumps({
+            # Update with your script's block structure
+        }),
+        'message': 'wat up',
+        'to': 'alexios'
+    }
 
 
-class ZoomAsk_test(unittest.TestCase):
-
-    @patch('demistomock.executeCommand')
-    @patch('demistomock.get')
-    def test_parse_option_text_with_color(self, mock_get, mock_executeCommand):
-        # Test parsing an option text with color information
-        option_text = 'Option1#blue'
-        text, style = parse_option_text(option_text)
-
-        # Verify parsing results
-        assert text == 'Option1'
-        assert style == 'Primary'
-
-    @patch('demistomock.executeCommand')
-    @patch('demistomock.get')
-    def test_parse_option_text_without_color(self, mock_get, mock_executeCommand):
-        # Test parsing an option text without color information
-        option_text = 'Option2'
-        text, style = parse_option_text(option_text)
-
-        # Verify parsing results
-        assert text == 'Option2'
-        assert style == 'Default'
-
-    @patch('demistomock.executeCommand')
-    @patch('demistomock.get')
-    def test_generate_json_button(self, mock_get, mock_executeCommand):
-        # Mock inputs for generating JSON with button response type
-        demisto.args.return_value = {
-            'message': 'Test Message',
-            'option1': 'Option1#blue',
-            'option2': 'Option2#red',
-            'responseType': 'button',
-            # Other necessary inputs
-        }
-
-        # Mock executeCommand response
-        mock_executeCommand.return_value = [{'Contents': 'Entitlement123'}]
-
-        # Mock datetime
-        datetime_mock = MagicMock()
-        datetime_mock.strftime.return_value = '2023-08-29 12:00:00'
-        with patch('your_script_file.datetime', datetime_mock):
-            # Call the function to generate JSON
-            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'],
-                                      demisto.args()['option2']], demisto.args()['responseType'])
-
-        # Verify the generated JSON
-        expected_json = {
-            "head": {
-                "type": "message",
-                "text": "Test Message"
-            },
-            "body": [
-                {
-                    "type": "actions",
-                    "items": [
-                        {
-                            "value": "Option1",
-                            "style": "Primary",
-                            "text": "Option1"
-                        },
-                        {
-                            "value": "Option2",
-                            "style": "Danger",
-                            "text": "Option2"
-                        }
-                    ]
-                }
-            ]
-        }
-        assert json_data == expected_json
-
-    @patch('demistomock.executeCommand')
-    @patch('demistomock.get')
-    def test_generate_json_dropdown(self, mock_get, mock_executeCommand):
-        # Mock inputs for generating JSON with dropdown response type
-        demisto.args.return_value = {
-            'message': 'Test Message',
-            'option1': 'Option1',
-            'option2': 'Option2#red',
-            'responseType': 'dropdown',
-            # Other necessary inputs
-        }
-
-        # Mock executeCommand response
-        mock_executeCommand.return_value = [{'Contents': 'Entitlement123'}]
-
-        # Mock datetime
-        datetime_mock = MagicMock()
-        datetime_mock.strftime.return_value = '2023-08-29 12:00:00'
-        with patch('your_script_file.datetime', datetime_mock):
-            # Call the function to generate JSON
-            json_data = generate_json(demisto.args()['message'], [demisto.args()['option1'],
-                                      demisto.args()['option2']], demisto.args()['responseType'])
-
-        # Verify the generated JSON
-        expected_json = {
-            "body": [
-                {
-                    "select_items": [
-                        {
-                            "value": "Option1",
-                            "text": "Option1"
-                        },
-                        {
-                            "value": "Option2",
-                            "text": "Option2"
-                        }
-                    ],
-                    "text": "Test Message",
-                    "selected_item": {
-                        "value": "Option1"
+def test_generate_json_buttons():
+    # Test generate_json function for 'buttons' responseType
+    text = 'Test Message'
+    options = ['Option 1#blue', 'Option 2#red']
+    response_type = 'buttons'
+    expected_json = {
+        "head": {
+            "type": "message",
+            "text": text
+        },
+        "body": [
+            {
+                "type": "actions",
+                "items": [
+                    {
+                        "value": "Option 1",
+                        "style": "Primary",
+                        "text": "Option 1"
                     },
-                    "type": "select"
-                }
-            ]
-        }
-        assert json_data == expected_json
+                    {
+                        "value": "Option 2",
+                        "style": "Danger",
+                        "text": "Option 2"
+                    }
+                ]
+            }
+        ]
+    }
+    assert generate_json(text, options, response_type) == expected_json
 
-        # Add assertions to check the expected behavior of the main function
-        # For example, check if certain executeCommand calls were made, etc.
 
-    # Add more test cases for other functions and scenarios
-
-
-if __name__ == '__main__':
-    unittest.main()
+def test_generate_json_dropdown():
+    # Test generate_json function for 'dropdown' responseType
+    text = 'Test Message'
+    options = ['Option 1#blue', 'Option 2#red']
+    response_type = 'dropdown'
+    expected_json = {
+        "body": [
+            {
+                "select_items": [
+                    {"value": "Option 1", "text": "Option 1"},
+                    {"value": "Option 2", "text": "Option 2"}
+                ],
+                "text": text,
+                "selected_item": {"value": "Option 1"},
+                "type": "select"
+            }
+        ]
+    }
+    assert generate_json(text, options, response_type) == expected_json
