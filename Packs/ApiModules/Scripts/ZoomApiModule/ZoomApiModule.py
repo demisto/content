@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-# import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
 import dateparser
@@ -51,19 +50,10 @@ class Zoom_Client(BaseClient):
         self.bot_client_id = bot_client_id
         self.bot_client_secret = bot_client_secret
         self.botJid = botJid
-        # (api_key and api_secret) and not (client_id and client_secret and account_id)
-
-        # if is_jwt:
-        #     self.access_token = None
-        #     self.bot_access_token = None
-        # the user has chosen to use the JWT authentication method (deprecated)
-        #  self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
-        # the user has chosen to use the OAUTH authentication method.
         try:
             self.access_token, self.bot_access_token = self.get_oauth_token()
-            demisto.debug(f"self.access_token= {self.access_token},self.access_token= {self.bot_access_token}")
         except Exception as e:
-            demisto.debug(f"Cannot get access token. Error: {e}")
+            demisto.info(f"Cannot get access token. Error: {e}")
             self.access_token = None
             self.bot_access_token = None
 
@@ -121,7 +111,7 @@ class Zoom_Client(BaseClient):
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('token_info').get('oauth_token'), ctx.get('token_info').get('client_oauth_token')
+                return ctx.get('token_info', {}).get('oauth_token'), ctx.get('token_info', {}).get('client_oauth_token')
             else:
                 # token expired
                 # new token is needed
@@ -151,7 +141,6 @@ class Zoom_Client(BaseClient):
             if ('Invalid access token' in e.message
                     or "Access token is expired." in e.message
                     or "Invalid authorization token." in e.message):
-                demisto.debug(url_suffix)
                 if url_suffix == '/im/chat/messages':
                     demisto.debug('generate new bot client token')
                     self.bot_access_token = self.generate_oauth_client_token()
@@ -168,17 +157,3 @@ class Zoom_Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-
-# def get_jwt_token(apiKey: str, apiSecret: str) -> str:
-#     """
-#     Encode the JWT token given the api ket and secret
-#     """
-#     now = datetime.now()
-#     expire_time = int(now.strftime('%s')) + JWT_LIFETIME
-#     payload = {
-#         'iss': apiKey,
-
-#         'exp': expire_time
-#     }
-#     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-#     return encoded

@@ -31,7 +31,6 @@ def generate_json(text, options, response_type):
         # Generate JSON for button type response
         button_items = []
         for _i, option in enumerate(options):
-            demisto.debug(f"option= {option}")
             option_text, option_style = parse_option_text(option)
             button_item = {
                 "value": option_text,
@@ -57,7 +56,6 @@ def generate_json(text, options, response_type):
         # Generate JSON for dropdown type response
         select_items = []
         for _i, option in enumerate(options):
-            demisto.debug(f"option= {option}")
             option_text, _ = parse_option_text(option)
             select_item = {
                 "value": option_text,
@@ -80,7 +78,6 @@ def generate_json(text, options, response_type):
 
     else:
         raise ValueError("Invalid responseType. It should be 'button' or 'dropdown'.")
-    demisto.debug(json_data)
     return json_data
 
 
@@ -141,7 +138,6 @@ def main():
         return_error('Either a user or a channel must be provided.')
 
     args['zoom_ask'] = 'true'
-    demisto.debug(f"zoom ask: {args}")
     try:
         return_results(demisto.executeCommand('send-notification', args))
     except ValueError as e:
