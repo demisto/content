@@ -2588,9 +2588,9 @@ def main():     # pragma: no cover
             p = Process(target=process_main)
             p.start()
             p.join()
-            demisto.debug("subprocess finished")
+            demisto.debug("subprocess finishedd")
         except Exception as ex:
-            demisto.error(f"Failed starting Process: {ex}")
+            demisto.error(f"Failed starting Processs: {ex}")
     else:
         sub_main()
 
