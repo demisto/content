@@ -14,7 +14,6 @@ import random
 from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
