@@ -69,7 +69,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ 8 or Cortex XSIAM server.
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ 8 or Cortex XSIAM server.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
