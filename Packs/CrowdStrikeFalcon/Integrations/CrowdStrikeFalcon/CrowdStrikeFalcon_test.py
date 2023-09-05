@@ -5483,3 +5483,22 @@ def test_run_batch_write_cmd_timeout_argument(mocker, timeout, expected_timeout)
     request_mock = mocker.patch('CrowdStrikeFalcon.http_request', return_value={})
     run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
     assert request_mock.call_args[1].get('params').get('timeout') == expected_timeout
+
+
+def test_list_detection_summaries_command_no_results(mocker):
+    """
+    Test cs-falcon-list-detection-summaries when no detections found
+
+    Given:
+     - There is no detection in the system
+    When:
+     - Searching for detections using cs-falcon-list-detection-summaries command
+     - The server returns empty list
+    Then:
+     - The command not fails
+    """
+    from CrowdStrikeFalcon import list_detection_summaries_command
+    response = {'meta': {'query_time': 0.028057688, }, 'resources': [], 'errors': []}
+    mocker.patch('CrowdStrikeFalcon.http_request', return_value=response)
+    res = list_detection_summaries_command()
+    assert res.readable_output == '### CrowdStrike Detections\n**No entries.**\n'
