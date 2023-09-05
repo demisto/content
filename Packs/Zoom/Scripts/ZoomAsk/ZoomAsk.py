@@ -127,13 +127,16 @@ def main():
         'expiry': expiry,
         'default_response': default_response
     })
-    to = args.get('user')
-    channel = args.get('channel_id')
+    to = demisto_args.get('user')
+    channel_name = demisto_args.get('channel')
+    channel = demisto_args.get('channel_id')
 
     if to:
         args['to'] = to
     elif channel:
         args['channel_id'] = channel
+    elif channel_name:
+        args['channel'] = channel_name
     else:
         return_error('Either a user or a channel must be provided.')
 

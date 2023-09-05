@@ -9,31 +9,27 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | `Server URL` (e.g. '<https://api.zoom.us/v2/>') |  | False |
-    | `Account ID (OAuth)` |  | False |
-    | `Client ID (OAuth)` |  | False |
-    | `Client Secret (OAuth)` |  | False |
-    | `API Key (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | `API Secret (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | `API Key (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | `API Secret (JWT-Deprecated.)` | This authentication method will be deprecated by Zoom in June 2023. | False |
+    | `Server URL` (e.g. '<https://api.zoom.us/v2/>') |  | True |
+    | `Account ID (OAuth)` |  | True |
+    | `Client ID (OAuth)` |  | True |
+    | `Client Secret (OAuth)` |  | True |
     | `Use system proxy settings` |  | False |
     | `Trust any certificate (not secure)` |  | False |
     | `Long running instance`| Enable in order to use zoom-ask and for mirroring |False |
-    | `Listen Port`| |False|
-    | `Bot JID`| | False|
-    | `Bot Client ID (OAuth)`| | False|
-    | `Bot Client Secret (OAuth)`| | False|
+    | `Listen Port`|Listener port number  |False|
+    | `Bot JID`| Zoom Bot app JID| False|
+    | `Bot Client ID (OAuth)`| Zoom Bot app client ID| | False|
+    | `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID| False|
     | `Secret Token`| For mirroring [Configuring Secret Token](#secret-token)|False|
     | `Mirroring` | Enable Incident Mirroring. [See how to configure the app](#secret-token) | False |
 
 
 
-1. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 
 
 ####server configuration
-In the Server Configuration section, verify that the value for the instance.execute.external.I`NTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.`INTEGRATION-INSTANCE-NAME` and set the value to true. See the following reference article for further information.
+In the Server Configuration section, verify that the value for the instance.execute.external.`INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.`INTEGRATION-INSTANCE-NAME` and set the value to true. See the following reference article for further information.
 You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`. For example, https://my.demisto.live/instance/execute/webhook. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
 ## Create Zoom ChatBOT app
@@ -53,7 +49,10 @@ You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGR
     - View all user information /user:read:admin
 ![enter image description here](doc_files/scope-premissions.png)
 
-1. If Mirroring is Enable in the integration configuration
+1. In the Local Test section, click on the "Add" button to test your app and authorize your XSOAR app.
+ ![enter image description here](doc_files/test-zoom-app.gif)
+
+ 1. **If Mirroring is Enable in the integration configuration**
     <a name="secret-token"></a>
    - Get the **secret token** from the "Features" page under the "Token" section and add it
     to the system configuration
@@ -67,9 +66,6 @@ You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGR
        **Just after setting up/configuration of XSOAR side you can validate the URL**
       - Event types: Click on the "Select events" button, and from the list of events, select "send message sent."
 ![enter image description here](doc_files/add-event.gif)
-  
-1. In the Local Test section, click on the "Add" button to test your app and authorize your XSOAR app.
- ![enter image description here](doc_files/test-zoom-app.gif)
 
 
 ## Commands
@@ -1942,7 +1938,6 @@ Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
 | autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". | Optional | 
 | direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". | Optional | 
 | channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
-| kickAdmin | Whether to remove the Zoom administrator (channel creator) from the mirrored channel. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 

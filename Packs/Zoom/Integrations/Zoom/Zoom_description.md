@@ -1,6 +1,8 @@
 ## Zoom Integration
 In order to use this integration, you need to enter your Zoom credentials in the relevant integration instance parameters.
-There are two authentication methods available: **OAuth** and **JWT**(deprecated).
+authentication methods available: **OAuth** 
+
+**Note: JWT authentication method was deprecated by Zoom from June 2023 and not available anymore**
 
 Log in to your Zoom admin user account, and follow these steps:
 Click [here](https://marketplace.zoom.us/develop/create) to create an app.
@@ -15,11 +17,7 @@ Click [here](https://marketplace.zoom.us/develop/create) to create an app.
 
 For more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
 
-### For the JWT method (deprecated)
-- Create an JWT app.
-- Use the following account credentials to get an access token:
-    API Key
-    API Secret
+### For Mirroring -
 
-Note: This authentication method will be deprecated by Zoom in June 2023.
-For more information about creating an JWT app click [here](https://marketplace.zoom.us/docs/guides/build/jwt-app/).
+to enable the integration to communicate directly with zoom for mirroring 
+This requires a dedicated zoom Team Chat app to be created for the XSOAR integration. For instructions on how to create and configure your custom Slack app, please review the documentation found [here](https://xsoar.pan.dev/docs/reference/integrations/zoom).

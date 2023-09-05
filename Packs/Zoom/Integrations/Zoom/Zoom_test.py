@@ -1,3 +1,4 @@
+from fastapi import Request, status
 import json
 from Zoom import Client
 import Zoom
@@ -1782,31 +1783,30 @@ def test_zoom_send_notification_command(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient",
                     bot_client_secret="mocksecret")
+    client.botJid = 'mock_bot'
 
     expected_request_payload = {
-        'message': 'Hello from @dima!',
-        'to': 'channel1',
-        'file_ids': []
+        'robot_jid': 'mock_bot',
+        'to_jid': 'channel1',
+        'account_id': 'mockaccount',
+        'content': {'head': {'type': 'message', 'text': 'Hello'}}
     }
 
     expected_response = {
-        'id': 'message_id',
-        'contact': "user2@example.com",
-        'channel_name': 'channel_name'
+        'message_id': 'message_id',
     }
 
-    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_message')
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_notification')
     mock_send_chat_message.return_value = expected_response
-    from Zoom import zoom_send_message_command
+    from Zoom import send_notification
 
-    result = zoom_send_message_command(client,
-                                       user_id='user1',
-                                       message='Hello from @dima!',
-                                       to_channel='channel1',
+    result = send_notification(client,
+                               user_id='user1',
+                               message='Hello',
+                               to='channel1',
+                               )
 
-                                       )
-
-    assert result.outputs == expected_response
+    assert result.readable_output == 'Message sent to Zoom successfully. Message ID is: message_id'
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
@@ -2063,8 +2063,123 @@ async def test_process_entitlement_reply(mocker):
     )
 
 
-# handle_zoom_response
-# event_url_validation
+# Test cases
+@pytest.mark.asyncio
+async def test_close_channel(mocker):
+    """
+    Test the close_channel function 
+    Given:
+    - Mocked input parameters.
+    When:
+    - Calling the close_channel function.
+    Then:
+    - Ensure that the function successfully closes the channel.
+    """
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'channel_jid': 'JID1', 'channel_id': 'ID1',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+            {'channel_name': 'Channel2', 'channel_jid': 'JID2', 'channel_id': 'ID2',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+        ])
+    }
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    mocker.patch.object(Zoom, 'zoom_delete_channel_command')
+    mocker.patch.object(demisto, 'mirrorInvestigation')
+    mocker.patch.object(Zoom, 'get_integration_context', return_value=mock_integration_context)
+    mocker.patch.object(Zoom, 'set_to_integration_context_with_retries')
+    mocker.patch.object(Zoom, 'get_user_id_from_token', return_value='mock_user_id')
+    mocker.patch.object(Zoom, 'find_mirror_by_investigation', return_value={'channel_id': 'ID1'})
+
+    from Zoom import close_channel
+    result = close_channel(client)
+
+    assert result == 'Channel successfully delete.'
+
+
+@pytest.mark.parametrize("event_type, expected_status", [
+    ('endpoint.url_validation', status.HTTP_200_OK),
+    ('interactive_message_actions', status.HTTP_200_OK),
+    ('invalid_event_type', status.HTTP_200_OK)
+])
+@pytest.mark.asyncio
+async def test_handle_zoom_response(event_type, expected_status,
+                                    mocker):
+    """ 
+    Test the handle_zoom_response function with different event types and payload conditions.
+
+    Given:
+    - Mocked request object.
+    - Mocked event_url_validation, check_and_handle_entitlement, process_entitlement_reply, and handle_mirroring functions.
+    - Parameters for event types and payload conditions.
+
+    When:
+    - Calling the handle_zoom_response function with different event types and payload conditions.
+
+    Then:
+    - Ensure that the function returns the expected response status code.
+    """
+    mock_request = mocker.Mock(spec=Request)
+    json_res = {
+        "plainToken": 123,
+        "encryptedToken": 123
+    }
+    mocker.patch('Zoom.event_url_validation', return_value=json_res)
+    mocker.patch('Zoom.check_and_handle_entitlement')
+    mocker.patch('Zoom.process_entitlement_reply')
+    mocker.patch('Zoom.handle_mirroring')
+    Zoom.SECRET_TOKEN = 'token'
+
+    from Zoom import handle_zoom_response
+
+    mock_request.json.return_value = {
+        "event": event_type,
+        "payload": {
+            "accountId": "mock_accountid",
+            "actionItem": {
+                "text": "no",
+                "value": "no",
+                "action": "command"
+            },
+            "messageId": "message_id",
+            "robotJid": "robot_jid",
+            "toJid": "mock_jid",
+            "userName": "admin zoom"
+        }
+    }
+
+    response = await handle_zoom_response(mock_request)
+
+    assert response.status_code == expected_status
+
+
+@pytest.mark.asyncio
+async def test_event_url_validation():
+    Zoom.SECRET_TOKEN = "secret_token"
+
+    # Define the payload for testing
+    payload = {
+        "plainToken": "plain_token"
+    }
+
+    # Calculate the expected signature
+    import hashlib
+    import hmac
+    hash_object = hmac.new(Zoom.SECRET_TOKEN.encode('utf-8'), msg=payload['plainToken'].encode('utf-8'), digestmod=hashlib.sha256)
+    expected_signature = hash_object.hexdigest()
+
+    from Zoom import event_url_validation
+    response = await event_url_validation(payload)
+
+    # Verify that the response matches the expected signature
+    assert response == {
+        "plainToken": payload["plainToken"],
+        "encryptedToken": expected_signature
+    }
+
+
 # handle_mirroring
 # handle_text
 # run_log_running

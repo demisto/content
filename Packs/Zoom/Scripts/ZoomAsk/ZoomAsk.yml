@@ -3,6 +3,10 @@ args:
   name: user
 - description: The Zoom channel to which to send the message.
   name: channel_id
+- name: channel
+  description: >
+    Only If the channel is part of mirroring incident you can provide the name of the channel instead of JID
+  type: string  
 - description: The message to send to the user or channel.
   name: message
   required: true
@@ -51,7 +55,7 @@ tags:
 - zoom
 timeout: '0'
 type: python
-dockerimage: devtesting/fastapi:1.0.0.1692011874
+dockerimage: devdemisto/fastapi:1.0.0.72945
 tests:
 - no test - Untestable
 dependson:
