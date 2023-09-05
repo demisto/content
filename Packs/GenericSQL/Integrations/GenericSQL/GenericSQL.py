@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Tuple, Dict, List, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 import sqlalchemy
 import pymysql
 import hashlib
@@ -64,7 +65,7 @@ class Client:
             A dict with the keys and values.
         """
         connect_parameters_tuple_list = parse_qsl(connect_parameters, keep_blank_values=True)
-        connect_parameters_dict = dict()
+        connect_parameters_dict = {}
         for key, value in connect_parameters_tuple_list:
             connect_parameters_dict[key] = value
         if dialect == "Microsoft SQL Server":
@@ -141,7 +142,7 @@ class Client:
                                               poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[List[dict], List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> tuple[list[dict], list]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
@@ -169,7 +170,7 @@ class Client:
         return results, headers
 
 
-def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
+def generate_default_port_by_dialect(dialect: str) -> str | None:
     """
     In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
     Microsoft SQL Server and ODBC Driver 18 for SQL Server where it seems to be required.
@@ -183,7 +184,7 @@ def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
 
 
 def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
-                                                                                                tuple[dict[str, Any], str | Any]:
+        tuple[dict[str, Any], str | Any]:
     """
     In case of passing just bind_variables_values, since it's not already supported from SQL Alchemy 2.x.x versions,
     this function generates names for those variables and return an edited query with a mapping.
@@ -210,7 +211,7 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
     return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
 
 
-def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, query: str, dialect: str) -> Tuple[dict, str]:
+def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, query: str, dialect: str) -> tuple[dict, str]:
     """
     The bind variables can be given in 2 legal ways: as 2 lists - names and values, or only values
     any way defines a different executing way, therefore there are 2 legal return types
@@ -232,7 +233,7 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
         raise Exception("The bind variables lists are not is the same length")
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     """
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
@@ -251,10 +252,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             if limit < 1 or limit > 50:
                 msg += 'Fetch Limit value should be between 1 and 50. '
 
-        if params.get('fetch_parameters') == 'ID and timestamp':
-            if not (params.get('column_name') and params.get('id_column')):
-                msg += 'Missing Fetch Column or ID Column name (when ID and timestamp are chosen,' \
-                       ' fill in both). '
+        if params.get('fetch_parameters') == 'ID and timestamp' and not (params.get('column_name') and params.get('id_column')):
+            msg += 'Missing Fetch Column or ID Column name (when ID and timestamp are chosen,' \
+                ' fill in both). '
 
         if params.get('fetch_parameters') in ['Unique ascending', 'Unique timestamp']:
             if not params.get('column_name'):
@@ -304,7 +304,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, Any], list[dict[str, Any]]]:
     """
     Executes the sql query with the connection that was configured in the client
     :param client: the client object with the db connection
@@ -330,7 +330,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             "Query": sql_query,
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
-        entry_context: Dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
+        entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
         return human_readable, entry_context, result
 
     except Exception as err:
@@ -363,7 +363,7 @@ def initialize_last_run(fetch_parameters: str, first_fetch: str):
         last_run = {'last_timestamp': False, 'last_id': first_fetch}
 
     # for the case when we get timestamp and id - need to maintain an id's list
-    last_run['ids'] = list()
+    last_run['ids'] = []
 
     return last_run
 
@@ -404,7 +404,7 @@ def create_sql_query(last_run: dict, query: str, column_name: str, max_fetch: st
     return sql_query
 
 
-def convert_sqlalchemy_to_readable_table(result: dict):
+def convert_sqlalchemy_to_readable_table(result: list[dict]):
     """
 
     Args:
@@ -413,22 +413,20 @@ def convert_sqlalchemy_to_readable_table(result: dict):
     Returns:
 
     """
-    # converting a sqlalchemy object to a table
-    converted_table = [dict(row) for row in result]
     # converting b'' and datetime objects to readable ones
-    incidents = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+    incidents = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in result]
     return incidents
 
 
-def update_last_run_after_fetch(table: List[dict], last_run: dict, fetch_parameters: str, column_name: str,
+def update_last_run_after_fetch(table: list[dict], last_run: dict, fetch_parameters: str, column_name: str,
                                 id_column: str):
-    is_timestamp_and_id = True if fetch_parameters == 'ID and timestamp' else False
+    is_timestamp_and_id = fetch_parameters == 'ID and timestamp'
     if last_run.get('last_timestamp'):
         last_record_timestamp = table[-1].get(column_name, '')
 
         # keep the id's for the next fetch cycle for avoiding duplicates
         if is_timestamp_and_id:
-            new_ids_list = list()
+            new_ids_list = []
             for record in table:
                 if record.get(column_name) == last_record_timestamp:
                     new_ids_list.append(record.get(id_column))
@@ -450,10 +448,10 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, fetch_paramet
     return last_run
 
 
-def table_to_incidents(table: List[dict], last_run: dict, fetch_parameters: str, column_name: str, id_column: str,
-                       incident_name: str) -> List[Dict[str, Any]]:
+def table_to_incidents(table: list[dict], last_run: dict, fetch_parameters: str, column_name: str, id_column: str,
+                       incident_name: str) -> list[dict[str, Any]]:
     incidents = []
-    is_timestamp_and_id = True if fetch_parameters == 'ID and timestamp' else False
+    is_timestamp_and_id = fetch_parameters == 'ID and timestamp'
     for record in table:
 
         timestamp = record.get(column_name) if last_run.get('last_timestamp') else None
@@ -509,7 +507,7 @@ def fetch_incidents(client: Client, params: dict):
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]
 
-    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params.get('fetch_parameters', ''),
+    incidents: list[dict[str, Any]] = table_to_incidents(table, last_run, params.get('fetch_parameters', ''),
                                                          params.get('column_name', ''), params.get('id_column', ''),
                                                          params.get('incident_name', ''))
 
@@ -570,7 +568,7 @@ def main():
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
                         pool_ttl=pool_ttl)
-        commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
             'pgsql-query': sql_query_execute,
