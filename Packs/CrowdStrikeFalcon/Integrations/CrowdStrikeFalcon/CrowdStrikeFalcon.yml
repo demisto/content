@@ -392,7 +392,7 @@ script:
       - 'false'
     - description: Username to assign the detections to. (This is usually the user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
       name: username
-    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
     name: cs-falcon-resolve-detection
   - arguments:
     - description: The host agent ID (AID) of the host to contain. Get an agent ID from a detection.
@@ -2421,6 +2421,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2452,6 +2454,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2468,6 +2472,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2481,6 +2487,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2499,6 +2507,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2509,6 +2519,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2532,6 +2544,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2820,12 +2834,10 @@ script:
     - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: false
       deprecated: true
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve
       isArray: true
-      required: false
       default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
@@ -4276,7 +4288,6 @@ script:
       auto: PREDEFINED
     - description: The key to sort by.
       name: sort_key
-      required: false
       predefined:
       - RISK_SCORE
       - PRIMARY_DISPLAY_NAME
@@ -4286,7 +4297,6 @@ script:
       auto: PREDEFINED
     - description: The sort order.
       name: sort_order
-      required: false
       predefined:
       - 'DESCENDING'
       - 'ASCENDING'
@@ -4294,19 +4304,15 @@ script:
       defaultValue: ASCENDING
     - description: Comma separated list of entity IDs to look for.
       name: entity_id
-      required: false
       isArray: true
     - description: Primary display name to filter by.
       name: primary_display_name
-      required: false
       isArray: true
     - description: Secondary display name to filter by.
       name: secondary_display_name
-      required: false
       isArray: true
     - description: The maximum risk score severity to filter by.
       name: max_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4314,7 +4320,6 @@ script:
       auto: PREDEFINED
     - description: The minimum risk score severity to filter by.
       name: min_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4322,61 +4327,55 @@ script:
       auto: PREDEFINED
     - description: Whether to get only enabled or disabled identity entities.
       name: enabled
-      required: false
       predefined:
       - 'true'
       - 'false'
       auto: PREDEFINED
     - description: Filter by email.
       name: email
-      required: false
     - description: The hash for the next page.
       name: next_token
-      required: false
-    - description:  The maximum number of items to fetch per page. The maximum value allowed is 1000.
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
-      required: false
       defaultValue: 50
-    - description: The page number. Default is 1. 
+    - description: The page number. Default is 1.
       name: page
-      required: false
     - description: The maximum number of identity entities to list.
       name: limit
-      required: false
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-      - contextPath: CrowdStrike.IDPEntity.IsHuman
-        description: Whether the identity entity is human made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
-        description: Whether the identity entity is programmatic made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsAdmin
-        description: Whether the identity entity is admin made.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
-        description: The identity entity primary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
-        description: The identity entity risk factor type.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
-        description: The identity entity risk factor severity.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskScore
-        description: The identity entity risk score.
-        type: Number
-      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
-        description: The identity entity risk score severity.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
-        description: The identity entity secondary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
-        description: The identity entity email address.
-        type: String
-  dockerimage: demisto/py3-tools:1.0.0.64927
+    - contextPath: CrowdStrike.IDPEntity.IsHuman
+      description: Whether the identity entity is human made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+      description: Whether the identity entity is programmatic made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+      description: Whether the identity entity is admin made.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+      description: The identity entity primary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+      description: The identity entity risk factor type.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+      description: The identity entity risk factor severity.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskScore
+      description: The identity entity risk score.
+      type: Number
+    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+      description: The identity entity risk score severity.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+      description: The identity entity secondary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+      description: The identity entity email address.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.72003
   isfetch: true
   ismappable: true
   isremotesyncin: true

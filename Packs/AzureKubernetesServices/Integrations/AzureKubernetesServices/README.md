@@ -1,5 +1,5 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
-This integration was integrated and tested with API version 2021-09-01 of AKS.
+This integration was integrated and tested with API version 2023-02-01 of AKS.
 
 # Self-Deployed Application
 
@@ -51,8 +51,8 @@ At end of the process you'll see a message that you've logged in successfully.
     |------------------------------------|----------------------------------------------------------------------------------------------------------------|--------------|
     | Azure Cloud                        | Azure Cloud the K8S cluster resides in. See table below.                                                       | False        |
     | app_id                             | Application ID                                                                                                 | False        |
-    | subscription_id                    | Subscription ID                                                                                                | True         |
-    | resource_group_name                | Resource Group Name                                                                                            | True         |
+    | Default subscription_id                    | Subscription ID. There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.                                                                                               | True         |
+    | Default resource_group_name                | Resource Group Name. There are two options to insert the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.                                                                                  | True         |
     | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                     | False        |
     | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
     | proxy                              | Use system proxy settings                                                                                      | False        |
@@ -89,7 +89,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Tests the connectivity to Azure.
 
-
 #### Base Command
 
 `azure-ks-auth-test`
@@ -107,7 +106,6 @@ There are no input arguments for this command.
 
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
-
 
 #### Base Command
 
@@ -170,14 +168,15 @@ There are no input arguments for this command.
 ***
 Gets a list of managed clusters in the specified subscription.
 
-
 #### Base Command
 
 `azure-ks-clusters-list`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 #### Context Output
 
@@ -199,12 +198,12 @@ There are no input arguments for this command.
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.maxPods | Number | Maximum number of pods that can run on a node. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.osType | String | The operating system type, either Linux or Windows. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.provisioningState | String | The current deployment or provisioning state. | 
-| AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion | String | Version of orchestrator specified when creating the managed cluster. | 
+| AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion | String | Version of the orchestrator specified when creating the managed cluster. | 
 | AzureKS.ManagedCluster.properties.linuxProfile.adminUsername | String | The name of the administrator account. | 
 | AzureKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData | String | Certificate public key used to authenticate with VMs through SSH. | 
 | AzureKS.ManagedCluster.properties.servicePrincipalProfile.clientId | String | The ID for the service principal. | 
 | AzureKS.ManagedCluster.properties.nodeResourceGroup | String | Name of the resource group containing agent pool nodes. | 
-| AzureKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control. | 
+| AzureKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control \(RBAC\). | 
 | AzureKS.ManagedCluster.properties.diskEncryptionSetID | String | Resource ID of the disk encryption set to use for enabling encryption at rest. | 
 | AzureKS.ManagedCluster.properties.networkProfile.networkPlugin | String | Network plugin used for building Kubernetes network. | 
 | AzureKS.ManagedCluster.properties.networkProfile.podCidr | String | A CIDR notation IP range from which to assign pod IPs when kubenet is used. | 
@@ -227,69 +226,134 @@ There are no input arguments for this command.
 {
     "AzureKS": {
         "ManagedCluster": {
-          "id": "/subscriptions/subid1/providers/Microsoft.ContainerService/managedClusters",
-          "location": "location1",
-          "name": "clustername1",
-          "tags": {
-            "archv2": "",
-            "tier": "production"
-          },
-          "type": "Microsoft.ContainerService/ManagedClusters",
-          "properties": {
-            "provisioningState": "Succeeded",
-            "kubernetesVersion": "1.9.6",
-            "maxAgentPools": 1,
-            "dnsPrefix": "dnsprefix1",
-            "fqdn": "dnsprefix1-abcd1234.hcp.eastus.azmk8s.io",
-            "agentPoolProfiles": [
-              {
-                "name": "nodepool1",
-                "count": 3,
-                "vmSize": "Standard_DS1_v2",
-                "maxPods": 110,
-                "osType": "Linux",
+            "id": "/subscriptions/00000000/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+            "identity": {
+                "principalId": "000000000000000000",
+                "tenantId": "000000000000000",
+                "type": "SystemAssigned"
+            },
+            "location": "westus",
+            "name": "aks-integration",
+            "properties": {
+                "addonProfiles": {
+                    "azurepolicy": {
+                        "config": null,
+                        "enabled": false
+                    },
+                    "httpApplicationRouting": {
+                        "config": {
+                            "HTTPApplicationRoutingZoneName": "a6ec8d.westus.aksapp.io"
+                        },
+                        "enabled": true,
+                        "identity": {
+                            "clientId": "0000000",
+                            "objectId": "000000",
+                            "resourceId": "/subscriptions/00000000/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/httpapplicationrouting-aks-integration"
+                        }
+                    },
+                    "omsagent": {
+                        "config": {
+                            "logAnalyticsWorkspaceResourceID": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces/tesrt"
+                        },
+                        "enabled": false
+                    }
+                },
+                "agentPoolProfiles": [
+                    {
+                        "count": 1,
+                        "currentOrchestratorVersion": "1.21.7",
+                        "enableAutoScaling": true,
+                        "enableFIPS": false,
+                        "enableNodePublicIP": false,
+                        "kubeletDiskType": "OS",
+                        "maxCount": 5,
+                        "maxPods": 110,
+                        "minCount": 1,
+                        "mode": "System",
+                        "name": "agentpool",
+                        "nodeImageVersion": "AKSUbuntu-1804gen2containerd-2021.12.07",
+                        "orchestratorVersion": "1.21.7",
+                        "osDiskSizeGB": 128,
+                        "osDiskType": "Managed",
+                        "osSKU": "Ubuntu",
+                        "osType": "Linux",
+                        "powerState": {
+                            "code": "Running"
+                        },
+                        "provisioningState": "Succeeded",
+                        "tags": {
+                            "type": "aks-slb-managed-outbound-ip"
+                        },
+                        "type": "VirtualMachineScaleSets",
+                        "vmSize": "Standard_DS2_v2"
+                    }
+                ],
+                "azurePortalFQDN": "aks-integration-dns.portal.hcp.westus.azmk8s.io",
+                "currentKubernetesVersion": "1.21.7",
+                "dnsPrefix": "aks-integration-dns",
+                "enableRBAC": true,
+                "fqdn": "aks-integration-dns.hcp.westus.azmk8s.io",
+                "identityProfile": {
+                    "kubeletidentity": {
+                        "clientId": "000000000000",
+                        "objectId": "0000000000",
+                        "resourceId": "/subscriptions/00000000/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-integration-agentpool"
+                    }
+                },
+                "kubernetesVersion": "1.21.7",
+                "maxAgentPools": 100,
+                "networkProfile": {
+                    "dnsServiceIP": "8.8.8.8",
+                    "dockerBridgeCidr": "8.8.8.8/8",
+                    "loadBalancerProfile": {
+                        "effectiveOutboundIPs": [
+                            {
+                                "id": "/subscriptions/00000000/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b"
+                            }
+                        ],
+                        "managedOutboundIPs": {
+                            "count": 1
+                        }
+                    },
+                    "loadBalancerSku": "Standard",
+                    "networkPlugin": "kubenet",
+                    "outboundType": "loadBalancer",
+                    "podCidr": "8.8.8.8",
+                    "serviceCidr": "8.8.8./8"
+                },
+                "nodeResourceGroup": "MC_aks-integration_aks-integration_westus",
+                "oidcIssuerProfile": {
+                    "enabled": false
+                },
+                "powerState": {
+                    "code": "Running"
+                },
                 "provisioningState": "Succeeded",
-                "orchestratorVersion": "1.9.6"
-              }
-            ],
-            "linuxProfile": {
-              "adminUsername": "azureuser",
-              "ssh": {
-                "publicKeys": [
-                  {
-                    "keyData": "keydata"
-                  }
-                ]
-              }
+                "securityProfile": {},
+                "servicePrincipalProfile": {
+                    "clientId": "msi"
+                },
+                "storageProfile": {
+                    "diskCSIDriver": {
+                        "enabled": true
+                    },
+                    "fileCSIDriver": {
+                        "enabled": true
+                    },
+                    "snapshotController": {
+                        "enabled": true
+                    }
+                },
+                "workloadAutoScalerProfile": {}
             },
-            "servicePrincipalProfile": {
-              "clientId": "clientid"
+            "sku": {
+                "name": "Base",
+                "tier": "Free"
             },
-            "nodeResourceGroup": "MC_rg1_clustername1_location1",
-            "enableRBAC": false,
-            "diskEncryptionSetID": "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
-            "networkProfile": {
-              "networkPlugin": "kubenet",
-              "podCidr": "10.244.0.0/16",
-              "serviceCidr": "10.0.0.0/16",
-              "dnsServiceIP": "10.0.0.10",
-              "dockerBridgeCidr": "172.17.0.1/16"
+            "tags": {
+                "type": "aks-slb-managed-outbound-ip"
             },
-            "addonProfiles": {
-              "omsagent": {
-                "enabled": false,
-                "config": {
-                  "logAnalyticsWorkspaceResourceID": "workspace"
-                }
-              },
-              "httpApplicationRouting": {
-                "enabled": true,
-                "config": {
-                  "HTTPApplicationRoutingZoneName": "zone"
-                }
-              }
-            }
-          }
+            "type": "Microsoft.ContainerService/ManagedClusters"
         }
     }
 }
@@ -301,14 +365,13 @@ There are no input arguments for this command.
 >
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
->| clustername1 | Succeeded | location1 | tier: production | 1.9.6 | dnsprefix1-abcd1234.hcp.eastus.azmk8s.io | kubenet |
+>| aks-integration | Succeeded | westus | type: aks-slb-managed-outbound-ip | 1.21.7 | aks-integration-dns.hcp.westus.azmk8s.io | kubenet |
 
 
 ### azure-ks-cluster-addon-update
 
 ***
 Updates a managed cluster with the specified configuration.
-
 
 #### Base Command
 
@@ -318,12 +381,13 @@ Updates a managed cluster with the specified configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | The name of the managed cluster resource. Can be retrieved using the ***azure-ks-clusters-list*** command. | Required | 
-| location | Resource location. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
-| http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional | 
-| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and *monitoring_resource_id* is not specified, will use the current configured workspace resource ID. Possible values are: true, false. | Optional | 
-| monitoring_resource_name | The name of an existing Log Analytics Workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional | 
-
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command. | Required | 
+| location | Resource location. Can be retrieved using the azure-ks-clusters-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
+| http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation.  Possible values are: true, false. | Optional | 
+| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
+| monitoring_resource_name | The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional | 
 
 #### Context Output
 
@@ -336,7 +400,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The request to update the managed cluster was sent successfully.
-
 
 ### azure-ks-generate-login-url
 
@@ -369,4 +432,157 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
+
+### azure-ks-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-ks-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID, optional. Note: This argument will override the instance parameter ‘Defalut Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKS.ResourceGroup.id | String | The unique identifier of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.name | String | The name of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.type | String | The type of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.location | String | The location of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.Owner | String | The owner tag of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags | Unknown | The tags associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.Name | String | The name tag of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.managedBy | String | The entity that manages the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.aks-managed-cluster-name | String | The AKS managed cluster name tag associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.aks-managed-cluster-rg | String | The AKS managed cluster resource group tag associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.type | String | The type tag associated with the Azure Kubernetes resource group. | 
+
+#### Command example
+```!azure-ks-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureKS": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/00000000/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/00000000/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demi | centralus | Owner: Demi |
+>| compute-integration | eastus |  |
+### azure-ks-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-ks-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKS.Subscription.id | String | The unique identifier of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.authorizationSource | String | The source of authorization for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionId | String | The ID of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.tenantId | String | The ID of the tenant associated with the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.displayName | String | The display name of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.state | String | The current state of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.count.type | String | The type of the Azure Kubernetes subscription count. | 
+| AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
+
+#### Command example
+```!azure-ks-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureKS": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd7",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4-",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Kubernetes Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4ca3- | ebac1a16-81bf-449b- | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4c11- | ebac1a16-81bf-449b- | Pay-As-You-Go | Enabled |
 

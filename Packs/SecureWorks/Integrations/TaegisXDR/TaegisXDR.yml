@@ -2,9 +2,10 @@ commonfields:
   id: TaegisXDR
   version: -1
 name: TaegisXDR
-display: TaegisXDR
+display: TaegisXDR (Deprecated)
+deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: For integration with the Secureworks Taegis XDR platform
+description: Deprecated. Use TaegisXDR v2 instead.
 configuration:
 - display: Taegis Environment
   name: environment
@@ -353,7 +354,7 @@ script:
     - contextPath: TaegisXDR.Endpoint
       description: Results from fetching the endpoint information
     description: Fetch endpoint information
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   subtype: python3
   isfetch: true
   isFetchSamples: true

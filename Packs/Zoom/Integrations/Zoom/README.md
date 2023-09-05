@@ -1780,7 +1780,18 @@ Searches chat messages or shared files between a user and an individual contact 
 | Zoom.ChatMessage.at_items.at_type | integer | The type of mention. Allowed values 1 \(Contact\), 2 \(Channel\). | 
 | Zoom.ChatMessage.at_items.end_position | integer | The end position of the mention. | 
 | Zoom.ChatMessage.at_items.start_position | integer | The start position of the mention. | 
-| Zoom.ChatMessage.next_page_token | string | The next page token for pagination. | 
+| Zoom.ChatMessageNextToken.user_id|	string	|The user ID associated with the next page token.|
+| Zoom.ChatMessageNextToken.to_channel|	string	|The channel ID associated with the next page token.|
+| Zoom.ChatMessageNextToken.include_deleted_and_edited_message| boolean	|Indicates whether deleted and edited messages are included in the next page token request.|
+| Zoom.ChatMessageNextToken.search_type|	string|	The search type associated with the next page token.|
+| Zoom.ChatMessageNextToken.to|	string|	The recipient associated with the next page token.|
+| Zoom.ChatMessageNextToken.date|	string|	The date associated with the next page token.|
+| Zoom.ChatMessageNextToken.page_size|	integer|	The page size associated with the next page token.|
+| Zoom.ChatMessageNextToken.next_page_token|	string|	The next page token for pagination.|
+| Zoom.ChatMessageNextToken.from|	string|	The sender associated with the next page token.|
+| Zoom.ChatMessageNextToken.search_key|	string	|The search key associated with the next page token.|
+| Zoom.ChatMessageNextToken.exclude_child_message|	boolean	|Indicates whether child messages are excluded in the next page token request.|
+| Zoom.ChatMessageNextToken.to_contact|	string	|The contact ID associated with the next page token.|
 
 #### Command example
 

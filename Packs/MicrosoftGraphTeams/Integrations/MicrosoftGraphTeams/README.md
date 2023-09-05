@@ -1,4 +1,5 @@
 Microsoft Graph lets your app get authorized access to a user's Teams app in a personal or organization account.
+
 ## Configure O365 Teams (Using Graph API) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -25,6 +26,7 @@ Microsoft Graph lets your app get authorized access to a user's Teams app in a p
 
 
 #### Required Permissions
+
 Chat.Create - Delegated
 Chat.Read - Delegated 
 Chat.ReadBasic - Delegated 
@@ -35,9 +37,12 @@ ChatMessage.Read - Delegated
 ChatMessage.Send - Delegated
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-teams-list-chats
+
 ***
 Retrieve the list of chats that the user is part of.
 
@@ -45,6 +50,7 @@ Retrieve the list of chats that the user is part of.
 #### Base Command
 
 `msgraph-teams-list-chats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,6 +72,7 @@ Retrieve the list of chats that the user is part of.
 | MSGraphTeamsChat.Type | String | The type of chat. | 
 
 ### msgraph-teams-create-chat
+
 ***
 Create a new chat.
 
@@ -73,6 +80,7 @@ Create a new chat.
 #### Base Command
 
 `msgraph-teams-create-chat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,6 +103,7 @@ Create a new chat.
 | MSGraphTeamsChat.Type | String | The type of chat. | 
 
 ### msgraph-teams-get-chat
+
 ***
 Retrieve a single chat (without its messages).
 
@@ -102,6 +111,7 @@ Retrieve a single chat (without its messages).
 #### Base Command
 
 `msgraph-teams-get-chat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,6 +132,7 @@ Retrieve a single chat (without its messages).
 | MSGraphTeamsChat.Type | String | The type of chat. | 
 
 ### msgraph-teams-update-chat
+
 ***
 Update the properties of a chat object.
 
@@ -129,6 +140,7 @@ Update the properties of a chat object.
 #### Base Command
 
 `msgraph-teams-update-chat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,6 +161,7 @@ Update the properties of a chat object.
 | MSGraphTeamsChat.Type | String | The type of chat. | 
 
 ### msgraph-teams-list-members
+
 ***
 List all conversation members in a chat.
 
@@ -156,6 +169,7 @@ List all conversation members in a chat.
 #### Base Command
 
 `msgraph-teams-list-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -174,6 +188,7 @@ List all conversation members in a chat.
 | MSGraphTeamsChatMember.ChatID | unknown | The ID of the chat. | 
 
 ### msgraph-teams-add-member
+
 ***
 Add a conversationMember to a chat.
 
@@ -181,6 +196,7 @@ Add a conversationMember to a chat.
 #### Base Command
 
 `msgraph-teams-add-member`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,7 +209,9 @@ Add a conversationMember to a chat.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-teams-list-messages
+
 ***
 Retrieve the list of messages in a chat.
 
@@ -201,6 +219,7 @@ Retrieve the list of messages in a chat.
 #### Base Command
 
 `msgraph-teams-list-messages`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,6 +241,7 @@ Retrieve the list of messages in a chat.
 | MSGraphTeamsChatMessage.Body | htmlBody | HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
 
 ### msgraph-teams-send-message
+
 ***
 Send a new message in a chat.
 
@@ -229,6 +249,7 @@ Send a new message in a chat.
 #### Base Command
 
 `msgraph-teams-send-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +270,7 @@ Send a new message in a chat.
 | MSGraphTeamsChatMessage.Body | htmlBody | HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
 
 ### msgraph-teams-test
+
 ***
 Tests connectivity to Microsoft Graph Teams.
 
@@ -256,11 +278,48 @@ Tests connectivity to Microsoft Graph Teams.
 #### Base Command
 
 `msgraph-teams-test`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-teams-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-teams-auth-reset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-teams-generate-login-url
+
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-teams-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 

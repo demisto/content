@@ -300,7 +300,7 @@ Create a new enrollment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | Country. Default is US. | Required | 
+| country | The country code (two letter format) for the country where your organization is located.. Default is US. | Required | 
 | company | Company. | Required | 
 | organizational_unit | Organizational unit. | Required | 
 | city | The city of the admin contact. | Required | 
@@ -317,7 +317,7 @@ Create a new enrollment.
 | tech_contact_email | The email address of the tech contact. | Required | 
 | tech_contact_phone | The phone number  of the tech contact. | Required | 
 | org_name | The organization name. | Required | 
-| org_country | The organization country. | Required | 
+| org_country | The organization country name. | Required | 
 | org_city | The organization city. | Required | 
 | org_region | The organization region. | Required | 
 | org_postal_code | The organization postal code. | Required | 

@@ -38,6 +38,7 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | Fetch incidents |  | False |
     | Max incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. Default is 1. | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |

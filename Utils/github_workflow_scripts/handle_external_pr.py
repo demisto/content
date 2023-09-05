@@ -1,34 +1,40 @@
 #!/usr/bin/env python3
 import json
 import os
-
 from pathlib import Path
-
 import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
 
-from utils import get_env_var, timestamped_print, Checkout
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+
+from utils import (
+    get_env_var,
+    timestamped_print,
+    Checkout,
+    load_json,
+    get_content_reviewers,
+    CONTENT_ROLES_PATH,
+    get_support_level
+)
+from demisto_sdk.commands.common.tools import get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-
-# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
-SECURITY_REVIEWER = "efelmandar"
-REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
+              'wizard @{selected_reviewer} will very shortly look over your proposed changes.\n' \
+              'For your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) to the contributions ' \
+              'SLAs document.'
 
 WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
                          'register your contribution by filling the [Contribution Registration]' \
                          '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
                          'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
-                         'reviewed.'
+                         'reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) ' \
+                         'to the contributions SLAs document.'
 
 XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
@@ -43,7 +49,8 @@ SECURITY_CONTENT_ITEMS = [
     "IndicatorTypes",
     "IndicatorFields",
     "Layouts",
-    "Classifiers"
+    "Classifiers",
+    "Wizards"
 ]
 
 
@@ -78,25 +85,6 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
                                key=assigned_prs_per_potential_reviewer.get)[0]  # type: ignore
     print(f'{selected_reviewer=}')
     return selected_reviewer
-
-
-def get_packs_support_levels(pack_dirs: set[str]) -> set[str]:
-    """
-    Get the pack support levels from the pack metadata.
-
-    Args:
-        pack_dirs (set): paths to the packs that were changed
-    """
-    packs_support_levels = set()
-
-    for pack_dir in pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
-        else:
-            print(f'Could not find pack support level for pack {pack_dir}')
-
-    return packs_support_levels
 
 
 def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
@@ -144,13 +132,13 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             # in marketplace contributions the name of the owner should be xsoar-contrib
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
         ):
-            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+            packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
         # in case we were not able to checkout correctly, fallback to the files in the master branch to retrieve support labels
         # in case those files exist.
         print(f'Received error when trying to checkout to {external_pr_branch} \n{error=}')
         print('Trying to retrieve support levels from the master branch')
-        packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+        packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
 
     print(f'{packs_support_levels=}')
     return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
@@ -258,15 +246,22 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    # assign reviewers / request review from
-    content_reviewer = determine_reviewer(REVIEWERS, content_repo)
+    # Parse PR reviewers from JSON and assign them
+    # Exit if JSON doesn't exist or not parsable
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+
+    print(f"Content Reviewers: {','.join(content_reviewers)}")
+    print(f"Security Reviewer: {security_reviewer}")
+
+    content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
-        reviewers.append(SECURITY_REVIEWER)
-        pr.add_to_assignees(SECURITY_REVIEWER)
+        reviewers.append(security_reviewer)
+        pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
