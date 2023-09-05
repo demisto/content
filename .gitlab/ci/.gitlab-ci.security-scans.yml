@@ -2,6 +2,9 @@
   rules:
     - if: '$SECURITY_SCANS == "true"'
 
+stages:
+  - security
+
 security:
   auto secure cicd:
     stage: security
