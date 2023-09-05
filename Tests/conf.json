@@ -1852,6 +1852,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth",
+            "is_mockable": false
+        },
+        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
@@ -5433,7 +5439,8 @@
         {
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1"
+            "instance_names": "palo_alto_firewall_9.1",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5555,6 +5562,8 @@
         }
     ],
     "skipped_tests": {
+        "generic-sql-mssql-encrypted-connection": "Instance issues",
+        "generic-sql-oracle": "Instance issues",
         "MSG-ediscovery-tpb" : "CIAC-8021",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
