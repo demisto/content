@@ -503,7 +503,6 @@ var fileDeleteCommand = function(EntryID) {
     if(not_found){
         throw new Error(`File already deleted or not found.`);
     }
-    // deleteContextRequest(investigation.id, 'File');
     deleteFileRequest(EntryID);
     let context = {
         'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
