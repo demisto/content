@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
 
-url = 'https://portal.roksit.com/api/integration/blacklist'
-yourkey = "<api-key>"
+url = demisto.params().get('url')
+yourkey = demisto.params().get("token")
 
 headers = {'Content-Type': 'application/json',
            'ApiKey': yourkey}
