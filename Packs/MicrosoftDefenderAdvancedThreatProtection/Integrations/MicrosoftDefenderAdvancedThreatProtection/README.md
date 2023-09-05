@@ -7183,10 +7183,11 @@ Upload file to live response library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | EntryID of the file to upload. | Required |
+| entry_id | EntryID of the file to upload (can be a comma-separated list of entryID). | Required |
 | description | Description to be added when upload a file. | Required |
 | has_parameters  | Whether the file as parameter. (Default is False) |Optional |
-| override_if_exists  | Whether to override the file if it already exists. Default is True) | Optional |
+| override_if_exists  | Whether to override the file if it already exists. (Default is True) | Optional |
+| parameters_description  | Parameters required for the script to run. (Default is an empty string) | Optional |
 
 
 #### Context Example

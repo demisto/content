@@ -5512,8 +5512,9 @@ script:
   - name: microsoft-atp-library-upload-file
     arguments:
     - name: entry_id
-      description: EntryID for file to be upload
+      description: EntryID for file to be upload (can be a comma-separated list of entryID)
       required: true
+      isArray: true
     - name: description
       description: Description to be added when upload a file
       required: true
@@ -5531,6 +5532,9 @@ script:
       - "False"
       - "True"
       defaultValue: "True"
+    - name: parameters_description
+      description: Parameters required for the script to run. Default value is an
+        empty string
     description: Upload file to live response library
   - name: microsoft-atp-library-list-file
     arguments: []

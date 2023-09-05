@@ -5489,6 +5489,7 @@ def put_file_get_successful_action_results(client, res):
 def upload_library_file(client, args):
     entry_ids = argToList(args['entry_id'])
     description = args['description']
+    parameters_description = args.get("parameters_description", "")
     HasParameters = args.get("has_parameters", "false")
     OverrideIfExists = args.get("override_if_exists", "true")
     outputs = []
@@ -5496,22 +5497,23 @@ def upload_library_file(client, args):
         info_file = demisto.getFilePath(entry_id)
         file_path = info_file['path']
         file_name = info_file['name']
-
-        f = open(file_path, 'rb')
         file_name = urllib.parse.quote(file_name)
-        files = {
-            "file": (file_name, f)
-        }
-        data = {
-            "fileName": file_name,
-            "HasParameters": HasParameters.lower(),
-            "OverrideIfExists": OverrideIfExists.lower(),
-            "Description": description
-        }
 
-        res = client.upload_to_library(data, files)
-        res.pop('@odata.context', None)
-        outputs.append(res)
+        with open(file_path, 'rb') as f:
+            files = {
+                "file": (file_name, f)
+            }
+            data = {
+                "fileName": file_name,
+                "HasParameters": HasParameters.lower(),
+                "OverrideIfExists": OverrideIfExists.lower(),
+                "ParametersDescription": parameters_description,
+                "Description": description
+            }
+
+            res = client.upload_to_library(data, files)
+            res.pop('@odata.context', None)
+            outputs.append(res)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.Library',
