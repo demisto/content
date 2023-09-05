@@ -1,0 +1,288 @@
+{
+    "symantec_swg_beta_raw": {
+        "x_bluecoat_placeholder": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_security_posture_details": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cloud_rs": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_connection_negotiated_cipher_size": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_data_leak_detected": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_icap_reqmod_header_x_icap_metadata_": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_icap_respmod_header_x_icap_metadata_": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_connection_negotiated_cipher_size": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_sc_connection_issuer_keyring_alias": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_exception_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_virus_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_threat_risk": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_security_posture_risk_score": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_certificate_hostname_threat_risk": {
+            "type": "string",
+            "is_array": false
+        },
+        "time_taken": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_transaction_uuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_icap_status": {
+            "type": "string",
+            "is_array": false
+        },
+        "rs_icap_status": {
+            "type": "string",
+            "is_array": false
+        },
+        "sc_filter_result": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_certificate_validate_status": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_icap_error_details": {
+            "type": "string",
+            "is_array": false
+        },
+        "rs_icap_error_details": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_ocsp_error": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_certificate_observed_errors": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_ocsp_error": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_access_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_location_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_location_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_appliance_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "s_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "s_supplier_country": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_uri_scheme": {
+            "type": "string",
+            "is_array": false
+        },
+        "rs_content_type_": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_x_requested_with_": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_referer_": {
+            "type": "string",
+            "is_array": false
+        },
+        "sc_status": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_uri_path": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_categories": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_certificate_hostname_categories": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_reference_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_connection_negotiated_cipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_connection_negotiated_cipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_certificate_subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_connection_negotiated_ssl_version": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_connection_negotiated_ssl_version": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_sc_connection_issuer_keyring": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_rs_certificate_hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "s_action": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_request_tenant_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_agent_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_agent_sw": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_device_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_device_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_device_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_client_os": {
+            "type": "string",
+            "is_array": false
+        },
+        "c_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_cs_client_ip_country": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_bytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_user_agent_": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_auth_groups": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_userdn": {
+            "type": "string",
+            "is_array": false
+        },
+        "x_bluecoat_application_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_uri_extension": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_host": {
+            "type": "string",
+            "is_array": false
+        },
+        "s_supplier_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "r_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "r_supplier_country": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_uri_port": {
+            "type": "string",
+            "is_array": false
+        },
+        "sc_bytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs_uri_query": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
