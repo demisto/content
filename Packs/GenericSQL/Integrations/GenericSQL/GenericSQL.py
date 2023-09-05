@@ -151,9 +151,13 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
-        result = self.connection.execute(sql_query, bind_vars)
-        # For avoiding responses with lots of records
-        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+        with self.connection as connection:
+            # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
+            connection.execution_options(isolation_level="AUTOCOMMIT")
+            result = self.connection.execute(sql_query, bind_vars)
+            # For avoiding responses with lots of records
+            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+
         headers = []
         if results:
             # if the table isn't empty
@@ -531,7 +535,6 @@ def main():
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
-        LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
