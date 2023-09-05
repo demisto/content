@@ -25,7 +25,7 @@ t = Terminal()
 class UpdateType(str, Enum):
     """Pack version update type"""
 
-    REVISION = "revision"
+    REVISION = ""
     MINOR = "minor"
     MAJOR = "major"
 

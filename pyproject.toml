@@ -5,7 +5,6 @@ description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
 
-
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
