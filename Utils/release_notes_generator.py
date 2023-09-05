@@ -349,10 +349,10 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
                     exists_comment = entities_data[entity_type][entity_name]
                     if entity_comment and entity_name != '[special_msg]':
                         if not exists_comment.startswith('- '):
-                            logging.info(f'Adding missing "-" to entity comment: {exists_comment}')
+                            logging.debug(f'Adding missing "-" to entity comment: {exists_comment}')
                             entities_data[entity_type][entity_name] = f'- {exists_comment}'
                         if not entity_comment.strip().startswith('- '):
-                            logging.info(f'Adding missing "-" to entity comment: {entity_comment}')
+                            logging.debug(f'Adding missing "-" to entity comment: {entity_comment}')
                             entity_comment = f'- {entity_comment.strip()}'
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
