@@ -3301,11 +3301,14 @@ def fetch_threats(client: Client, args):
 
     incidents_threats = []
     current_fetch = args.get('current_fetch')
+    incident_statuses = args.get('fetch_threat_incident_statuses')
+    resolved = 'true' if incident_statuses and 'RESOLVED' in incident_statuses else 'false'
 
     threats = client.get_threats_request(limit=args.get('fetch_limit'),
                                          created_after=args.get('last_fetch_date_string'),
                                          site_ids=args.get('fetch_site_ids'),
-                                         incident_statuses=','.join(args.get('fetch_threat_incident_statuses')).lower())
+                                         incident_statuses=','.join(incident_statuses).lower(),
+                                         resolved=resolved)
     for threat in threats:
         rank = threat.get('rank')
         threat.update(get_mirroring_fields(args))
