@@ -1852,6 +1852,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth",
+            "is_mockable": false
+        },
+        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
