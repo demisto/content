@@ -159,14 +159,14 @@ class Client:
                 results_as_dict = result.mappings().fetchmany(fetch_limit)
             else:
                 results_as_dict = result.mappings().fetchall()
-            converted_results = [dict(row) for row in results_as_dict]
+            results = [dict(row) for row in results_as_dict]
 
         headers = []
-        if converted_results:
+        if results:
             # if the table isn't empty
-            headers = list(converted_results[0].keys() if converted_results[0].keys() else '')
+            headers = list(results[0].keys() or '')
 
-        return converted_results, headers
+        return results, headers
 
 
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
