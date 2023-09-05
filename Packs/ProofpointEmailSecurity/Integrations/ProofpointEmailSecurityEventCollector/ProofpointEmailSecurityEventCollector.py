@@ -118,7 +118,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     host = params.get("host", "")
