@@ -69,7 +69,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetchevents: true
   runonce: false
   script: '-'
