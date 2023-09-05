@@ -9,7 +9,7 @@ this will set the integration to use basic authentication when connecting to the
 For example:
 TestUser@_basic
 
-There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
+There are two main use cases for the SplunkPy integration. 
 - Splunk Enterprise Security Users
   - Fetching notable events
     - How to configure
