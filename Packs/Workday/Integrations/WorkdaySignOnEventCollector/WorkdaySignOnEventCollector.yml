@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://services1.myworkday.com)
+  display: Server URL (e.g., https://services1.myworkday.com)
   required: true
   defaultvalue: 'https://services1.myworkday.com'
   type: 0
@@ -80,29 +80,21 @@ script:
       required: false
       isArray: false
       defaultValue: 1000
-      predefined:
-      - ""
     - name: from_date
       description: 'The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
       defaultValue: ""
-      predefined:
-      - ""
     - name: to_date
       description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
       defaultValue: ""
-      predefined:
-      - ""
     - name: relative_from_date
       description: 'The query from date, for example, "5 minutes". Be advised, it is strongly suggested to keep this parameter limited in time.'
       required: false
       isArray: false
       defaultValue: ""
-      predefined:
-        - ""
     outputs: []
   runonce: false
   script: "-"

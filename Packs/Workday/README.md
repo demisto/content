@@ -5,8 +5,8 @@ This pack supports collection and modeling of the following event types:
 - *Sign-on* events. 
 
 Note: regarding the *user activity* audit log entries, 
-In order to parse the timestamp correctly, 
+in order to parse the timestamp correctly, 
 make sure that the "requestTime" field is in UTC time zone (timestamp ends with "Z").
-The supported time format is *YYYY-MM-DDTHH:MM:SS.E3Z%z* (e.g. *2023-09-05T14:00:00.123Z*).
+The supported time format is *YYYY-MM-DDTHH:MM:SS.E3Z%z* (e.g, *2023-09-05T14:00:00.123Z*).
 
 </~XSIAM>
