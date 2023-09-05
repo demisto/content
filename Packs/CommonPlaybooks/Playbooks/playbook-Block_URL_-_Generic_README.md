@@ -7,8 +7,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * PAN-OS - Block URL - Custom URL Category
-* Add Indicator to Miner - Palo Alto MineMeld
 * PAN-OS - Block IP and URL - External Dynamic List
+* Add Indicator to Miner - Palo Alto MineMeld
 
 ### Integrations
 
