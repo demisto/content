@@ -175,22 +175,52 @@ def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
     return None
 
 
-def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:
+def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
+                                                                                                tuple[dict[str, Any], str | Any]:
+    """
+    In case of passing just bind_variables_values, since it's not already supported from SQL Alchemy 2.x.x versions,
+    this function generates names for those variables and return an edited query with a mapping.
+    Args:
+        bind_variables_values_list: Values to put in the bind variables
+        query: The given query which contains chars to replace
+        dialect: The DB dialect
+
+    Returns: A mapping (dict) and an edited query.
+
+    """
+    # for MSSQL the syntax of bind variables is with ?, unlike Postgres and My SQL with %s
+    if dialect in {"Microsoft SQL Server", 'Microsoft SQL Server - MS ODBC Driver'}:
+        count = len(re.findall("\\?", query))
+        char_to_replace = "?"
+    else:
+        count = len(re.findall("%s", query))
+        char_to_replace = "%s"
+
+    bind_variables_names_list = []
+    for i in range(count):
+        query = query.replace(char_to_replace, f":bind_variable_{i+1}", 1)
+        bind_variables_names_list.append(f"bind_variable_{i+1}")
+    return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
+
+
+def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, query: str, dialect: str) -> Tuple[dict, str]:
     """
     The bind variables can be given in 2 legal ways: as 2 lists - names and values, or only values
     any way defines a different executing way, therefore there are 2 legal return types
     :param bind_variables_names: the names of the bind variables, must be in the length of the values list
     :param bind_variables_values: the values of the bind variables, can be in the length of the names list
             or in case there is no name lists - at any length
-    :return: a dict or lists of the bind variables
+    :param query: the given sql query
+    :param dialect: the given dialect
+    :return: a dict or lists of the bind variables and the edited query
     """
     bind_variables_names_list = argToList(bind_variables_names)
     bind_variables_values_list = argToList(bind_variables_values)
 
     if bind_variables_values and not bind_variables_names:
-        return [var for var in argToList(bind_variables_values)]
+        return generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     elif len(bind_variables_names_list) == len(bind_variables_values_list):
-        return dict(zip(bind_variables_names_list, bind_variables_values_list))
+        return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
     else:
         raise Exception("The bind variables lists are not is the same length")
 
@@ -280,7 +310,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         skip = int(args.get('skip', 0))
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
-        bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query)
+        bind_variables, sql_query = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query, client.dialect)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
         result = result[skip:skip + limit]
