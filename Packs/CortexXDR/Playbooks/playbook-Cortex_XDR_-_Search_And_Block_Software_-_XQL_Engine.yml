@@ -17,14 +17,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+      - "29"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 440,
-          "y": 20
+          "y": -160
         }
       }
     note: false
@@ -227,7 +228,7 @@ tasks:
       - "3"
     scriptarguments:
       query:
-        simple: "config case_sensitive = false \n| dataset = xdr_data \n| filter (event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE) or (event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START)\n| filter action_process_image_name contains \"${inputs.Filename}\" or action_file_name contains \"${inputs.Filename}\"\n| fields action_process_image_name as procname, action_process_image_sha256 as procsha256, action_process_image_path as procpath, action_file_name as filename, action_file_sha256 as filesha256, action_file_path as filepath, event_type as eventtype, event_sub_type as event_sub_type, action_process_image_sha1 as procsha1, action_file_sha1 as filesha1, action_process_image_md5 as procmd5, action_file_md5 as filemd5"
+        simple: "config case_sensitive = false \n| dataset = xdr_data \n| filter (event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE) or (event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START)\n| filter action_process_image_name contains \"${inputs.Filename}\" or action_file_name contains \"${inputs.Filename}\"\n| fields action_process_image_name as procname, action_process_image_sha256 as procsha256, action_process_image_path as procpath, action_file_name as filename, action_file_sha256 as filesha256, action_file_path as filepath, event_type as eventtype, event_sub_type as event_sub_type, action_process_image_md5 as procmd5, action_file_md5 as filemd5"
       query_name:
         simple: hunt
       time_frame:
@@ -808,11 +809,20 @@ tasks:
       - "16"
     scriptarguments:
       extend-context:
-        simple: =customquerymarkdown
+        simple: customquerymarkdown=
       value:
         complex:
           root: PaloAltoNetworksXQL.GenericQuery
           accessor: results
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: FALSE,null,UNKNOWN,NO
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -914,6 +924,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 64e27d12-e594-4939-8eeb-d32ba9a031eb
+    type: regular
+    task:
+      id: 64e27d12-e594-4939-8eeb-d32ba9a031eb
+      version: -1
+      name: Delete context to avoid duplications - customquerymarkdown
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: fefa53d3-b2cb-4858-802d-503b88a8fbad
+    type: regular
+    task:
+      id: fefa53d3-b2cb-4858-802d-503b88a8fbad
+      version: -1
+      name: Delete context to avoid duplications - PaloAltoNetworksXQL
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -927,10 +1018,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2415,
-        "width": 1760,
-        "x": 440,
-        "y": 20
+        "height": 2595,
+        "width": 1960,
+        "x": 240,
+        "y": -160
       }
     }
   }

@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -120
         }
       }
     note: false
@@ -221,6 +221,35 @@ tasks:
                 value:
                   simple: Please provide a software name to block and a timeframe.Answers.0
                 iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
       TimeFrame:
         complex:
           root: inputs.TimeFrame
@@ -231,6 +260,35 @@ tasks:
                 value:
                   simple: Please provide a software name to block and a timeframe.Answers.1
                 iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -299,6 +357,84 @@ tasks:
     scriptarguments:
       Defender Indicator Title:
         simple: XSOAR Software Block
+      Filename:
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.0
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
+      TimeFrame:
+        complex:
+          root: inputs.TimeFrame
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.1
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -320,15 +456,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 11d21beb-8d7b-44c3-8b16-22a685bd134d
+    type: regular
+    task:
+      id: 11d21beb-8d7b-44c3-8b16-22a685bd134d
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Please provide a software name to block and a timeframe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 845,
+        "height": 1015,
         "width": 1020,
         "x": 60,
-        "y": 50
+        "y": -120
       }
     }
   }

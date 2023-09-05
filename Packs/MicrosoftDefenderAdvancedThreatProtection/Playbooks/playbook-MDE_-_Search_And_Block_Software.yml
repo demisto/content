@@ -17,14 +17,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - "31"
+      - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 440,
-          "y": -130
+          "y": -330
         }
       }
     note: false
@@ -637,7 +638,7 @@ tasks:
       - "16"
     scriptarguments:
       extend-context:
-        simple: =customquerymarkdown
+        simple: customquerymarkdown=
       value:
         complex:
           root: MicrosoftATP.Hunt
@@ -812,6 +813,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: d56940ed-4d06-417b-8025-ad1efff4c0ad
+    type: regular
+    task:
+      id: d56940ed-4d06-417b-8025-ad1efff4c0ad
+      version: -1
+      name: Delete context to avoid duplications - customquerymarkdown
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 66aa84a3-2c01-473f-8346-29a174cdae15
+    type: regular
+    task:
+      id: 66aa84a3-2c01-473f-8346-29a174cdae15
+      version: -1
+      name: Delete context to avoid duplications - MicrosoftATP
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: MicrosoftATP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -824,10 +906,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2585,
-        "width": 1590,
-        "x": 440,
-        "y": -130
+        "height": 2785,
+        "width": 1780,
+        "x": 250,
+        "y": -330
       }
     }
   }
