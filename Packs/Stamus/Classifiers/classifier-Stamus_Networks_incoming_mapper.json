@@ -4,7 +4,7 @@
     "id": "Stamus Networks incoming mapper",
     "mapping": {
         "Stamus Networks DoC": {
-            "dontMapEventToLabels": true,
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "Threat Family Name": {
                     "simple": "family"
@@ -52,11 +52,7 @@
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
-            "internalMapping": {
-                "StamusThreat": {
-                    "simple": "threat"
-                }
-            }
+            "internalMapping": {}
         }
     },
     "name": "Stamus Networks incoming mapper",
