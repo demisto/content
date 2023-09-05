@@ -9334,7 +9334,7 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.68955
+  dockerimage: demisto/pan-os-python:1.0.0.72295
   isfetch: true
   runonce: false
   script: ''
