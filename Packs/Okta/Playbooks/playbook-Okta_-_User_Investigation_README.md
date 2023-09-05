@@ -1,32 +1,39 @@
 This playbook performs an investigation on a specific user, using queries and logs from Okta.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Okta v2
 
 ### Scripts
-* GetTime
+
 * CountArraySize
 * Set
+* GetTime
 
 ### Commands
+
 * okta-get-logs
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | UserEmail | The user email to search Okta logs. |  | Optional |
-| LoginCountry | The Country from which the user logged in. |  | Optional |
+| LoginCountry | The Country code from which the user logged in.<br/>Country Code Alpha 2 \(Example: US\) |  | Optional |
 | ASN | The ASN from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -40,7 +47,10 @@ This playbook does not use any sub-playbooks.
 | UserApplication |  Applications used by the user. | unknown |
 | NumOfOktaFailedLogon | Number of failed login. | unknown |
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
+| LogonCountries | The countries from which the user logged in. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Okta - User Investigation](../doc_files/Okta_-_User_Investigation.png)

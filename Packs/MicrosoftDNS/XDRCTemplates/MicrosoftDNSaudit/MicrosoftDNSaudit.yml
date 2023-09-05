@@ -1,0 +1,8 @@
+winlogbeat.event_logs: 
+  - name: Microsoft-Windows-DNSServer/Audit
+    processors: 
+      - add_fields: 
+          fields: 
+            vendor: microsoft
+            product: dns
+    id: dns-audit-logs

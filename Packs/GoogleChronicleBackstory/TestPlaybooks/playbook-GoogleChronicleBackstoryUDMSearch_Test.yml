@@ -1,0 +1,150 @@
+id: Google Chronicle Backstory UDM Search - Test
+name: Google Chronicle Backstory UDM Search - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios for the "gcb-udm-search" command.
+version: -1
+fromversion: 6.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0913ca5f-72ef-41d2-9b30-d2a1434bf7cb'
+    type: start
+    task:
+      id: '0913ca5f-72ef-41d2-9b30-d2a1434bf7cb'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'c21bfca1-fe3a-4c2b-a8a8-ac2848852e6a'
+    type: regular
+    task:
+      id: 'c21bfca1-fe3a-4c2b-a8a8-ac2848852e6a'
+      version: -1
+      name: DeleteContext
+      description: 'Deletes context.'
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '3972d826-2644-49e8-8522-560e05681eb5'
+    type: regular
+    task:
+      id: '3972d826-2644-49e8-8522-560e05681eb5'
+      version: -1
+      name: gcb-udm-search
+      description: 'UDM search query.'
+      script: Google Chronicle Backstory|||gcb-udm-search
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      query:
+        simple: 'ip!="9.9.9.9"'
+      limit:
+        simple: "10"
+      start_time:
+        simple: 89 days
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '5a62bb71-f7b7-4ced-917f-026380c9d8d2'
+    type: condition
+    task:
+      id: '5a62bb71-f7b7-4ced-917f-026380c9d8d2'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: 'Verify outputs for "gcb-udm-search" command.'
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events.eventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events.eventTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events.ingestedTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events.vendorName
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: '485b6084-e14e-4597-b8ee-1333f111d30b'
+    type: title
+    task:
+      id: '485b6084-e14e-4597-b8ee-1333f111d30b'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

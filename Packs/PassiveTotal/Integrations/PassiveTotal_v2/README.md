@@ -882,6 +882,8 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 ***
 Provides data enrichment for domains.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
