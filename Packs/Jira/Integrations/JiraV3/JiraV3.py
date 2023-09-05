@@ -102,7 +102,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     AGILE_API_ENDPOINT = 'rest/agile/1.0'
 
     def __init__(self, base_url: str, proxy: bool, verify: bool,
-                 callback_url: str, api_version: str):
+                 callback_url: str, api_version: str, username: str, api_key: str):
+        self.username = username
+        self.api_key = api_key
+        self.is_basic_auth = bool(self.username and self.api_key)
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
         self.api_version = api_version
@@ -114,24 +117,40 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         their own connectivity test
         """
 
-    def http_request_with_access_token(self, method: str, headers: Dict[str, str] | None = None, url_suffix='', params=None,
-                                       data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
-                                       files: Dict[str, Any] | None = None) -> Any:
-        """This method wraps the _http_request that comes from the BaseClient class, and adds the access_token
-        of the client to the headers request, by calling the get_access_token method, which is an abstract method,
-        and every child class must implement it.
+    def http_request(self, method: str, headers: dict[str, str] | None = None, url_suffix='', params=None,
+                     data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
+                     files: Dict[str, Any] | None = None) -> Any:
+        """This method wraps the _http_request that comes from the BaseClient class,
+        and adds the headers request, by calling one of both method `get_headers_with_access_token` or
+        `get_headers_with_basic_auth` depends on the type of authentication the customer has chosen.
         Returns:
             Depends on the resp_type parameter: The response of the API endpoint.
         """
-        if headers is None:
-            headers = {}
-        access_token = self.get_access_token()
-        # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
-        # to work, and this way, we have the option to receive the extra headers and send them in the API request.
-        request_headers = self._headers | headers | {'Authorization': f'Bearer {access_token}'}
+        if self.is_basic_auth:
+            request_headers = self.get_headers_with_basic_auth(headers=headers)
+        else:
+            request_headers = self.get_headers_with_access_token(headers=headers)
         return self._http_request(method, url_suffix=url_suffix, full_url=full_url, params=params, data=data,
                                   json_data=json_data, resp_type=resp_type, ok_codes=ok_codes, files=files,
                                   headers=request_headers)
+
+    def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
+        """This method inserts the access_token of the client to the headers request,
+        by calling the get_access_token method, which is an abstract method,
+        and every child class must implement it.
+        """
+        access_token = self.get_access_token()
+        # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
+        # to work, and this way, we have the option to receive the extra headers and send them in the API request.
+        return self._headers | (headers or {}) | {'Authorization': f'Bearer {access_token}'}
+
+    def get_headers_with_basic_auth(self, headers: Dict[str, str] | None = None) -> dict[str, str]:
+        """
+        This method inserts the encoded key into the request headers.
+        """
+        basic_auth_bytes = f"{self.username}:{self.api_key}".encode()
+        encoded_key = base64.b64encode(basic_auth_bytes).decode("utf-8")
+        return self._headers | (headers or {}) | {"Authorization": f"Basic {encoded_key}"}
 
     # Authorization methods
     def get_access_token(self) -> str:
@@ -217,7 +236,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
         query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/search', params=query_params
         )
 
@@ -240,7 +259,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results,
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/backlog',
             params=query_params
@@ -264,7 +283,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
             params=query_params
@@ -286,7 +305,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint',
             params=query_params
@@ -310,7 +329,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             maxResults=max_results,
             done=done
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/epic',
             params=query_params
@@ -326,7 +345,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/issue',
             json_data=json_data,
@@ -356,7 +375,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board',
             params=query_params
@@ -371,7 +390,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant board.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}',
         )
@@ -394,7 +413,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
             params=query_params
@@ -419,7 +438,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint/{sprint_id}/issue',
             params=query_params
@@ -435,7 +454,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
             json_data=json_data,
@@ -449,7 +468,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             List[Dict[str, Any]]: The result of the API, which will hold the issue fields.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/field'
         )
 
@@ -464,7 +483,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
             json_data=json_data,
@@ -481,7 +500,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold data about the added web link.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/remotelink',
             json_data=json_data,
@@ -498,7 +517,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the comments of the issue.
         """
         query_params = {'expand': 'renderedBody', 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
             params=query_params,
@@ -514,7 +533,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='DELETE',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
             resp_type='response',
@@ -531,7 +550,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the newly added comment.
         """
         query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
             json_data=json_data,
@@ -550,7 +569,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the edited comment.
         """
         query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='PUT',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
             json_data=json_data,
@@ -569,7 +588,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold issue.
         """
         query_params = {'expand': 'renderedFields,transitions,names'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             params=query_params,
@@ -587,7 +606,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='PUT',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             json_data=json_data,
@@ -604,7 +623,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             requests.Response: The raw response of the endpoint.
         """
         query_params = {'deleteSubtasks': 'true'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='DELETE',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             params=query_params,
@@ -620,7 +639,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold available transitions.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
         )
@@ -634,7 +653,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the newly created issue.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST', url_suffix=f'rest/api/{self.api_version}/issue', json_data=json_data
         )
 
@@ -656,7 +675,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/epic/{epic_id_or_key}/issue',
             params=query_params
@@ -668,7 +687,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the issue link types.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issueLinkType',
         )
@@ -682,7 +701,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issueLink',
             json_data=json_data,
@@ -703,7 +722,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         headers = {
             'X-Atlassian-Token': 'no-check',
         }
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/attachments',
             files=files,
@@ -719,7 +738,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the metadata of the attachment.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
         )
 
@@ -756,7 +775,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the current user info.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/myself'
         )
@@ -770,7 +789,7 @@ class JiraCloudClient(JiraBaseClient):
     ATLASSIAN_AUTH_URL = 'https://auth.atlassian.com'
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, cloud_id: str, server_url: str):
+                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
@@ -788,8 +807,8 @@ class JiraCloudClient(JiraBaseClient):
             # For refresh token
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=urljoin(server_url, cloud_id),
-                         api_version='3')
+                         base_url=urljoin(server_url, cloud_id), api_version='3',
+                         username=username, api_key=api_key)
 
     def test_instance_connection(self) -> None:
         self.get_user_info()
@@ -877,7 +896,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             Dict[str, Any]: The results of the queried projects.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix='rest/api/3/project/search', params=query_params
         )
 
@@ -891,7 +910,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/{board_id}/issue',
             json_data=json_data,
@@ -909,7 +928,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
             json_data=json_data,
@@ -917,7 +936,7 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/3/attachment/content/{attachment_id}',
             resp_type='content',
@@ -926,7 +945,7 @@ class JiraCloudClient(JiraBaseClient):
     # User Requests
     def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'query': attribute, 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
@@ -938,13 +957,13 @@ class JiraOnPremClient(JiraBaseClient):
     """
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, server_url: str):
+                 callback_url: str, server_url: str, username: str, api_key: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.scopes = 'WRITE'
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=f'{server_url}',
-                         api_version='2')
+                         base_url=f'{server_url}', api_version='2',
+                         username=username, api_key=api_key)
 
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
@@ -1044,7 +1063,7 @@ class JiraOnPremClient(JiraBaseClient):
         self.get_user_info()
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             full_url=attachment_content_url,
             resp_type='content',
@@ -1054,7 +1073,7 @@ class JiraOnPremClient(JiraBaseClient):
 
     def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'username': attribute, 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
@@ -1064,7 +1083,7 @@ class JiraOnPremClient(JiraBaseClient):
         Returns:
             List[Dict[str, Any]]: A list of all the projects found in the Jira instance.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix='rest/api/2/project'
         )
@@ -2954,16 +2973,22 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
     return CommandResults(readable_output='Successful connection.')
 
 
-def test_module() -> str:
+def test_module(client: JiraBaseClient) -> str:
     """This method will return an error since in order for the user to test the connectivity of the instance,
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    raise DemistoException('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                           ' and complete the process in the URL that is returned. You will then be redirected'
-                           ' to the callback URL . Copy the authorization code found in the query parameter'
-                           ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                           ' the process.')
+    if client.is_basic_auth:
+        client.test_instance_connection()  # raises on failure
+        return "ok"
+    else:
+        raise DemistoException(
+            'In order to authorize the instance, first run the command `!jira-oauth-start`,'
+            ' and complete the process in the URL that is returned. You will then be redirected'
+            ' to the callback URL. Copy the authorization code found in the query parameter'
+            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
+            ' the process.'
+        )
 
 
 def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tuple[Dict[str, Any], int | None]:
@@ -3810,17 +3835,44 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
     return issue_id or issue_key
 
 
+def validate_auth_params(
+    username: str, api_key: str, client_id: str, client_secret: str
+) -> None:
+    is_basic_auth = bool(username or api_key)
+    is_oauth2 = bool(client_id or client_secret)
+
+    if (not is_basic_auth) and (not is_oauth2):
+        raise DemistoException("The required parameters were not provided. See the help window for more information.")
+    if is_basic_auth and is_oauth2:
+        raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
+                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
+    if is_basic_auth and not (username and api_key):
+        raise DemistoException(
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
+        )
+    if is_oauth2 and not (client_id and client_secret):
+        raise DemistoException(
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory."
+        )
+
+
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    # Basic authentication configuration params
+    username = params.get("basic_credentials", {}).get('identifier', '')
+    api_key = params.get("basic_credentials", {}).get('password', '')
+
     # Cloud + on-prem configuration params
     server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
+
+    validate_auth_params(username, api_key, client_id, client_secret)
 
     # Cloud configuration params
     cloud_id = params.get('cloud_id', '')
@@ -3897,7 +3949,9 @@ def main():  # pragma: no cover
                 client_id=client_id,
                 client_secret=client_secret,
                 callback_url=callback_url,
-                server_url=server_url)
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
         else:
             # Configure JiraOnPremClient
             client = JiraOnPremClient(
@@ -3906,11 +3960,13 @@ def main():  # pragma: no cover
                 client_id=client_id,
                 client_secret=client_secret,
                 callback_url=callback_url,
-                server_url=server_url)
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
         demisto.debug(f'The configured Jira client is: {type(client)}')
 
         if command == 'test-module':
-            return_results(test_module())
+            return_results(test_module(client=client))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == 'fetch-incidents':
