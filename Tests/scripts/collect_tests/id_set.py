@@ -109,6 +109,7 @@ class IdSet(DictFileBased):
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
+        self.api_modules_to_integrations = {}
 
         for test in self.test_playbooks:
             for script in test.implementing_scripts:
@@ -176,7 +177,7 @@ class Graph:
             integrations = content_graph_interface.search(marketplace=marketplace,
                                                           content_type=ContentType.INTEGRATION)
             scripts = content_graph_interface.search(marketplace=marketplace,
-                                                     content_type=ContentType.SCRIPT)
+                                                     content_type=ContentType.SCRIPT, all_level_imports=True)
             test_playbooks = content_graph_interface.search(marketplace=marketplace,
                                                             content_type=ContentType.TEST_PLAYBOOK)
             playbooks = content_graph_interface.search(marketplace=marketplace,
@@ -199,6 +200,7 @@ class Graph:
 
             self.test_playbooks = self.id_to_test_playbook.values()
             self.modeling_rules = self.path_to_modeling_rule.values()
+            self.api_modules_to_integrations = {script.object_id: script.imported_by for script in scripts if "ApiModule" in script.object_id}
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:

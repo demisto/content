@@ -153,7 +153,7 @@ TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
 # Moderate Retry Mechanism
 MAX_DELAY_REQUEST_COUNTER = 6
 
-
+### TEST
 class CloudEndpointNotSetException(Exception):
     pass
 
