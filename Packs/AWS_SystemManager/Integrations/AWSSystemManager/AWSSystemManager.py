@@ -57,7 +57,7 @@ class RegexValidator(NamedTuple):
 ASSOCIATION_ID_VALIDATOR = RegexValidator(
     name="association_id",
     regex=re.compile(
-        r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+        r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
     ),
     error_template="Invalid association id: {association_id}",
 )
@@ -78,7 +78,9 @@ INSTANCE_ID_VALIDATOR = RegexValidator(
 
 
 def update_if_value(
-    input_dictionary: dict, output_dictionary: Any, input_to_output_keys: dict[str, str]
+    input_dictionary: dict,
+    output_dictionary: Any,
+    input_to_output_keys: dict[str, str],
 ) -> Any:
     for input_key, output_key in input_to_output_keys.items():
         if value := input_dictionary.get(input_key):
@@ -102,14 +104,17 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
     """Formats the 'parameters' string into a dictionary.
 
     Args:
+    ----
         parameters (str): A string containing key-value pairs separated by colons and
             values separated by commas.
 
     Returns:
+    -------
         dict[str, Any]: A dictionary where keys are extracted from the input string,
             and values are lists of values associated with each key.
 
     Example:
+    -------
         Use this function to format a parameters string:
 
         >>> parameters = "key1:value1,value2,key2:value3"
@@ -118,12 +123,12 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
         {'key1': ['value1', 'value2'], 'key2': ['value3']}
 
     Note:
+    ----
         - The input string should follow the format 'key:value1,value2,...'.
         - The function will return an empty dictionary if no valid key-value pairs
           are found in the input string.
 
     """
-
     items = parameters.split(",")
     formatted_parameters = {}
     current_key = None
@@ -207,10 +212,11 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
         INSTANCE_ID_VALIDATOR,
     ]:
         if (arg_value := args.get(validate.name)) and not re.search(
-            validate.regex, arg_value
+            validate.regex,
+            arg_value,
         ):
             raise DemistoException(
-                validate.error_template.format(**{validate.name: arg_value})
+                validate.error_template.format(**{validate.name: arg_value}),
             )
     return None
 
@@ -306,7 +312,7 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
         }
     """
     return CommandResults(
-        outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {"NextToken": next_token}}
+        outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {"NextToken": next_token}},
     )
 
 
@@ -394,7 +400,8 @@ def parse_automation_execution(automation: dict[str, Any]) -> dict[str, Any]:
 
 
 def add_tags_to_resource_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> CommandResults:
     """Adds tags to a specified resource.
     The response from the API call when success is empty dict.
@@ -425,7 +432,8 @@ def add_tags_to_resource_command(
 
 
 def remove_tags_from_resource_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> CommandResults:
     ssm_client.remove_tags_from_resource(
         ResourceType=args["resource_type"],
@@ -438,7 +446,8 @@ def remove_tags_from_resource_command(
 
 
 def get_inventory_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Fetches inventory information from AWS SSM using the provided SSM client and arguments.
 
@@ -511,7 +520,8 @@ def get_inventory_command(
 
 
 def list_inventory_entry_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists inventory entries for a specific instance and type name using the provided SSM client and arguments.
 
@@ -567,7 +577,8 @@ def list_inventory_entry_command(
 
 
 def list_associations_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists associations in AWS SSM using the provided SSM client and arguments.
 
@@ -632,7 +643,8 @@ def list_associations_command(
 
 
 def get_association_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> CommandResults:
     """Retrieves information about an SSM association based on provided parameters.
 
@@ -700,7 +712,8 @@ def get_association_command(
 
 
 def list_versions_association_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists the versions of an SSM association based on provided parameters.
 
@@ -751,7 +764,8 @@ def list_versions_association_command(
     if response_next_token := response.get("NextToken"):
         command_results.append(
             next_token_command_result(
-                response_next_token, "AssociationVersionNextToken"
+                response_next_token,
+                "AssociationVersionNextToken",
             ),
         )
     command_results.append(
@@ -777,7 +791,8 @@ def list_versions_association_command(
 
 
 def list_documents_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
@@ -845,7 +860,8 @@ def list_documents_command(
 
 
 def get_document_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> CommandResults:
     """Retrieves information about an AWS Systems Manager (SSM) document.
 
@@ -896,7 +912,8 @@ def get_document_command(
 
 
 def get_automation_execution_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> CommandResults:
     """Retrieves information about an AWS Systems Manager (SSM) automation execution.
 
@@ -912,7 +929,7 @@ def get_automation_execution_command(
         CommandResults: An object containing the results of the command.
     """
     automation_execution = ssm_client.get_automation_execution(
-        AutomationExecutionId=args["execution_id"]
+        AutomationExecutionId=args["execution_id"],
     )["AutomationExecution"]
     automation_execution = convert_datetime_to_iso(automation_execution)
     return CommandResults(
@@ -937,7 +954,8 @@ def get_automation_execution_command(
 
 
 def list_automation_executions_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists AWS Systems Manager (SSM) automation executions.
 
@@ -998,13 +1016,14 @@ def list_automation_executions_command(
 @polling_function(
     name="aws-ssm-automation-execution-run",
     interval=arg_to_number(
-        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)
+        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
     ),
     timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,  # means it will always default to poll
 )
 def run_automation_execution_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> PollResult:
     """Initiates or polls the status of an AWS Systems Manager (SSM) automation execution.
     Note: The argument "execution_id" is hidden in the yml file, and is used to pass the execution id between polling
@@ -1060,7 +1079,7 @@ def run_automation_execution_command(
         ] = execution_id  # needed for the polling and is `hidden: true` in the yml file.
         return PollResult(
             partial_result=CommandResults(
-                readable_output=f"Execution {args['execution_id']} is in progress"
+                readable_output=f"Execution {args['execution_id']} is in progress",
             ),
             response=None,
             continue_to_poll=True,
@@ -1076,7 +1095,7 @@ def run_automation_execution_command(
         )
     return PollResult(
         partial_result=CommandResults(
-            readable_output=f"Execution {execution_id} is in progress"
+            readable_output=f"Execution {execution_id} is in progress",
         ),
         response=None,
         continue_to_poll=True,
@@ -1087,14 +1106,15 @@ def run_automation_execution_command(
 @polling_function(
     name="aws-ssm-automation-execution-cancel",
     interval=arg_to_number(
-        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)
+        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
     ),
     timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=True,
     polling_arg_name="include_polling",
 )
 def cancel_automation_execution_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> PollResult:
     """Cancels an AWS Systems Manager (SSM) automation execution or monitors its cancellation status.
         Note: the argument `first_run` is hidden: true in the yml file,
@@ -1143,17 +1163,18 @@ def cancel_automation_execution_command(
     # if polling stops after the first run, this will be the final result in the war room otherwise this will be the partial result
     return PollResult(
         response=CommandResults(
-            readable_output="Cancellation command was sent successful."
+            readable_output="Cancellation command was sent successful.",
         ),
         partial_result=CommandResults(
-            readable_output="Cancellation command was sent successful."
+            readable_output="Cancellation command was sent successful.",
         ),
         continue_to_poll=include_polling,
     )
 
 
 def list_commands_command(
-    args: dict[str, Any], ssm_client: "SSMClient"
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
 ) -> list[CommandResults]:
     """Lists AWS Systems Manager (SSM) commands.
 
@@ -1225,7 +1246,7 @@ def list_commands_command(
                     "Completed Count",
                 ],
             ),
-        )
+        ),
     )
     return command_result
 
@@ -1233,7 +1254,7 @@ def list_commands_command(
 @polling_function(
     name="aws-ssm-command-run",
     interval=arg_to_number(
-        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)
+        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
     ),
     timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,  # means it will always be default to poll, poll=true,
@@ -1251,7 +1272,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
         else:
             return PollResult(
                 partial_result=CommandResults(
-                    readable_output=f"Command {command_id} is {status}"
+                    readable_output=f"Command {command_id} is {status}",
                 ),
                 continue_to_poll=True,
                 args_for_next_run=args,
@@ -1296,7 +1317,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
 @polling_function(
     name="aws-ssm-command-cancel",
     interval=arg_to_number(
-        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)
+        demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
     ),
     timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=True,
