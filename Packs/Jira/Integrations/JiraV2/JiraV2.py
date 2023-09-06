@@ -863,7 +863,7 @@ def get_organizations_command(project_key=None, start="0", limit="50", account_i
         hr = tableToMarkdown(name='Organizations', t=values, headers=['name', 'id', 'created'],
                              json_transform_mapping={'created': JsonTransformer(func=lambda x: x.get('friendly'))})
 
-        return CommandResults(outputs=values, outputs_prefix='Jira.Organizations', 
+        return CommandResults(outputs=values, outputs_prefix='Jira.Organizations',
                               outputs_key_field='id', readable_output=hr, raw_response=response)
 
     return CommandResults(readable_output='No results found.')
