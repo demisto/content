@@ -7,7 +7,6 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestPBATaskAvg
-comment: ''
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
