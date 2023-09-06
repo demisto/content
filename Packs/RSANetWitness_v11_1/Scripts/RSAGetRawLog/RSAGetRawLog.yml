@@ -4,7 +4,7 @@ commonfields:
 dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: RSA_GetRawLog
-comment: Use this script to get RAW log
+comment: Use this script to get RAW log.
 runas: DBotWeakRole
 runonce: false
 script: ''

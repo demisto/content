@@ -1,4 +1,4 @@
-Use this script to display Meta Events inside the layout
+Use this script to display meta events inside the layout.
 
 ## Script Data
 

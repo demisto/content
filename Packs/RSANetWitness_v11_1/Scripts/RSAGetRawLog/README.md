@@ -1,5 +1,5 @@
 Use this script to get RAW log.
-Each RSA Netwitness log contains the eventsource meta that contain an ip address that can be requested using RSA NetWitness Packets and Logs.
+Each RSA NetWitness log contains the eventsource meta that contains an IP address that can be requested using RSA NetWitness Packets and Logs.
 This log is after set in the field rsarawlogslist.
 
 ## Script Data
