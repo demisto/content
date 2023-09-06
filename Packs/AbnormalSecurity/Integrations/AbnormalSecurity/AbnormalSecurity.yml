@@ -600,6 +600,7 @@ script:
         type: Unknown
       - contextPath: AbnormalSecurity.VendorCaseDetails.timeline
         description: Timeline of events related to the vendor case.
+        type: Unknown
 
 
   - arguments:
@@ -613,7 +614,7 @@ script:
     name: abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
     outputs:
       - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id
-        description: The identifier of the message.
+        description: An id which maps to an abuse campaign.
         type: Number
       - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name
         description: The name of the recipient.
