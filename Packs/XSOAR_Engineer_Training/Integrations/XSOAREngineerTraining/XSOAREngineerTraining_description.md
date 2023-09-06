@@ -1,1 +1,0 @@
-Did you know that 68% of all statistics are made up? But only 13% of people know that?

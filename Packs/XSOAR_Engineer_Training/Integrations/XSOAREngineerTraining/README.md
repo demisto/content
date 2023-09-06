@@ -1,7 +1,6 @@
 This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.
 
 Use for training purposes only. 
-This integration was integrated and tested with version 1.0 of XSOAR Engineer Training
 
 ## Configure XSOAR Engineer Training on Cortex XSOAR
 
@@ -11,10 +10,8 @@ This integration was integrated and tested with version 1.0 of XSOAR Engineer Tr
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Events to fetch | False |
     | Fetch incidents | False |
     | Incident type | False |
-    | Number of events per fetch | False |
     | Incidents Fetch Interval | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -41,6 +38,7 @@ Fetches events for all clicks and messages relating to known threats within the 
 #### Context Output
 
 There is no context output for this command.
+
 ### ad-get-user
 
 ***
@@ -95,6 +93,7 @@ Expires the password of an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
+
 ### ad-set-new-password
 
 ***
@@ -114,6 +113,7 @@ Sets a new password for an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
+
 ### siem-search
 
 ***

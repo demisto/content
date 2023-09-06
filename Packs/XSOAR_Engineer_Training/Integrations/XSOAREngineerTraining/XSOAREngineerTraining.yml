@@ -3,14 +3,6 @@ commonfields:
   id: XSOAR Engineer Training
   version: -1
 configuration:
-- display: Events to fetch
-  name: events_type
-  options:
-  - All
-  - Blocked URLs
-  - Allowed URLs
-  required: false
-  type: 15
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -19,17 +11,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: "20"
-  display: Number of events per fetch
-  name: number_to_fetch
-  required: false
-  type: 0
 - defaultvalue: "5"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
-description: "This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.\n\nUse for training purposes only. "
+description: "This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.\n\nUse for training purposes only. ."
 display: XSOAR Engineer Training
 name: XSOAR Engineer Training
 script:
@@ -110,14 +97,14 @@ script:
     - description: Who to send the fake email to.
       name: to
       required: true
-    description: Send an email (doesn't actually send an email)
+    description: Send an email (doesn't actually send an email).
     name: send-mail
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.8.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

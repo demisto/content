@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from datetime import datetime, timedelta
 from random import randrange, choice, randint
 from copy import deepcopy
@@ -19,18 +21,12 @@ SAMPLE_EVENT = {
                 "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
 }
 
-ALL_EVENTS = "All"
-BLOCKED_URLS = "Blocked URLs"
-ALLOWED_URLS = "Allowed URLs"
-
 TYPES = ["url allowed", "url blocked"]
-USERS = ["james.bond@xsoar.local", "eve.moneypenny@xsoar.local", "m@xsoar.local", "q@xsoar.local"]
 ALLOWED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
 BLOCKED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
 
 SOURCEIPS = ["10.8.8.8", "10.8.8.9", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10",
              "10.8.8.10", "88.8.8.8", "88.8.8.9", "88.8.8.10", "88.8.8.11", "88.8.8.12", "88.8.8.13"]
-DEFAULT_LIMIT = 20
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 ''' ACTIVE DIRECTORY QUERY V2 INTEGRATION '''
@@ -90,7 +86,7 @@ def get_now():
 
 def mock_data(total):
     """
-    Changes mocks the data to randomize the alerts a bit. Pass in the total number of events to create for some fun.
+    Changes mocks the data to randomize the alerts a bit.
     """
     now = get_now()
     data = []
@@ -100,7 +96,7 @@ def mock_data(total):
     while count < total:
         item = deepcopy(SAMPLE_EVENT)
         item['occurred'] = (now - timedelta(minutes=randrange(6, 60))).strftime('%Y-%m-%dT%H:%M:%SZ')
-        item['eventID'] = randrange(100, 10000)
+        item['eventID'] = str(randrange(100, 10000))
         item['type'] = choice(TYPES)
         if item['type'] == 'url blocked':
             item['urlCategory'] = choice(BLOCKED_CATEGORIES)
@@ -134,6 +130,7 @@ def lookup_ad_user(lookup, attribute):
 
     if not found_user:
         return []
+    return None
 
 
 def create_ad_user_output(user):
@@ -196,7 +193,7 @@ def get_events_command(args):
     """
     returns the events, in this case the mock data
     """
-    event_type_filter = args.get("eventTypes")
+    args.get("eventTypes")
     total = randrange(10, 20)
     events = mock_data(total)
     readable = tableToMarkdown("Training Events", events)
@@ -259,6 +256,9 @@ def ad_get_user_command(args):
 
 
 def siem_search_command(args):
+    """
+    Returns the results from the siem-search command
+    """
     query = args.get('query')
     result_type = args.get('result_type')
     number = randint(1, 10)
@@ -275,7 +275,7 @@ def siem_search_command(args):
                 "Email": "m@xsoar.local"
             }
         ]
-    # return some data if the number is right. Demonstrate Built-in looping in a sub-playbook.
+    # return some data if the number is right.
     elif number >= 7 or result_type == "hosts" or query.startswith("username"):
         result = [
             {
@@ -287,7 +287,7 @@ def siem_search_command(args):
                 "Online": "No"
             }
         ]
-    # return some data if the number is right. Demonstrate Built-in looping in a sub-playbook.
+    # return some data if the number is right.
     elif query.startswith("ip"):
         result = [
             {
@@ -306,19 +306,11 @@ def siem_search_command(args):
     return results
 
 
-def fetch_incidents(limit=DEFAULT_LIMIT):
+def fetch_incidents(limit):
     """
-    fetch!
+    fetch Incidents
     """
     incidents = []
-
-    # get last run, can be used to store the last fetch time.
-    last_run_object = demisto.getLastRun()
-    if 'time' in last_run_object.keys():
-        last_run = last_run_object.get('time')
-        demisto.info(f"XET - We have a last run object, previous last_run: {last_run}")
-    else:
-        last_run = get_now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
     count = randrange(10, limit)
     events = mock_data(count)
@@ -336,11 +328,6 @@ def fetch_incidents(limit=DEFAULT_LIMIT):
         }
         incidents.append(incident)
 
-    # set last run
-    next_run = {"time": get_now().strftime('%Y-%m-%dT%H:%M:%SZ')}
-    demisto.setLastRun(next_run)
-    demisto.info(f"XET - Setting LastRun: {next_run}")
-
     # return our list of Incidents
     return incidents[:limit]
 
@@ -352,7 +339,6 @@ def main():
     """
     main function to run things
     """
-    params = demisto.params()
     fetch_limit = 20
 
     command = demisto.command()
@@ -362,6 +348,7 @@ def main():
         commands = {
             'xsoar-engineer-get-events': get_events_command,
             'ad-expire-password': simple_response_command,
+            'ad-set-new-password': simple_response_command,
             'send-mail': simple_response_command
         }
         if command == 'test-module':
