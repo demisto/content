@@ -1187,7 +1187,7 @@
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
-            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -1849,6 +1849,12 @@
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500,
+            "is_mockable": false
+        },
+        {
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth",
             "is_mockable": false
         },
         {
@@ -3990,9 +3996,9 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "Fetch Incidents Test",
+            "playbookID": "ServiceNow Fetch Incidents Test",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0",
+            "fromversion": "6.8.0",
             "is_mockable": false,
             "timeout": 2400
         },
@@ -5433,7 +5439,8 @@
         {
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1"
+            "instance_names": "palo_alto_firewall_9.1",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5555,6 +5562,8 @@
         }
     ],
     "skipped_tests": {
+        "generic-sql-mssql-encrypted-connection": "Instance issues",
+        "generic-sql-oracle": "Instance issues",
         "MSG-ediscovery-tpb" : "CIAC-8021",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
