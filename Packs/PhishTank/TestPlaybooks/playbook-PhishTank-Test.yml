@@ -226,7 +226,7 @@ tasks:
       key:
         simple: badURL
       value:
-        simple: hxxp://login.rakuten.co.jp.reise
+        simple: hxxp://example.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
