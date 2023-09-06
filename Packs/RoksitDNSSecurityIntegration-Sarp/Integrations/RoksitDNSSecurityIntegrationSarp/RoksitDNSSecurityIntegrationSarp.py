@@ -3,8 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import requests
 
 
-def send_to_roksit_blacklist(url, yourkey, args):
-    domain = args.get('Domain')
+def send_to_roksit_blacklist(url, yourkey, domain):
     headers = {'Content-Type': 'application/json',
                'ApiKey': yourkey}
 
@@ -21,15 +20,17 @@ def send_to_roksit_blacklist(url, yourkey, args):
 def main():
     try:
         params = demisto.params()
-        args = demisto.args()
         command = demisto.command()
         url = params.get('url', 'https://portal.roksit.com/api/integration/blacklist')
         yourkey = params.get('credentials', {}).get('password')
+        domain = demisto.args().get('Domain')
 
         if command == 'test-module':
-            pass
+            # send a period as a dummy domain to check connectivity
+            send_to_roksit_blacklist(url, yourkey, '.')
+            return_results('ok')
         elif command == 'Roksit-add-to-blacklist':
-            return_results(send_to_roksit_blacklist(url, yourkey, args))
+            return_results(send_to_roksit_blacklist(url, yourkey, domain))
     except DemistoException as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
