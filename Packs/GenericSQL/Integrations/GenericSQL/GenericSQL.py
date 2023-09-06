@@ -459,9 +459,14 @@ def table_to_incidents(table: list[dict], last_run: dict, fetch_parameters: str,
         date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
 
         # for avoiding duplicate incidents
-        if is_timestamp_and_id and record.get(column_name, '').startswith(last_run.get('last_timestamp')):
-            if record.get(id_column, '') in last_run.get('ids', []):
-                continue
+        if (
+            is_timestamp_and_id
+            and record.get(column_name, '').startswith(
+                last_run.get('last_timestamp')
+            )
+            and record.get(id_column, '') in last_run.get('ids', [])
+        ):
+            continue
 
         record['type'] = 'GenericSQL Record'
         incident_context = {
