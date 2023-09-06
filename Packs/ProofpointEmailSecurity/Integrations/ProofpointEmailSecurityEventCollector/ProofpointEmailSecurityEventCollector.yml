@@ -16,6 +16,7 @@ configuration:
   name: cluster_id
   type: 0
   required: true
+  additionalinfo: The user group ID.
   section: Connect
 - displaypassword: API key
   name: api_key
