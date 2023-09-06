@@ -11,7 +11,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "On Demand",
+        "PoD"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
