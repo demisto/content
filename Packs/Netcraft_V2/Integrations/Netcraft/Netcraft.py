@@ -6,7 +6,8 @@ from collections.abc import Iterable
 ''' CONSTANTS '''
 
 PARAMS: dict = demisto.params()
-API_MAX_FETCH = 100_000
+TAKEDOWN_API_LIMIT = 100_000
+SUBMISSION_API_LIMIT = 1000
 DEFAULT_REGION_ARG = {
     'region': PARAMS['region']
 }
@@ -126,41 +127,56 @@ class Client(BaseClient):
             'GET', 'submission', f'submission/{uuid}'
         )
 
-    def submission_file_list(self, params: dict) -> None:
-        ...
+    def submission_file_list(self, uuid: str, params: dict) -> dict:
+        return self._http_request(
+            'GET', 'submission', f'submission/{uuid}/files', params=params
+        )
 
-    def file_screenshot_get(self, params: dict) -> None:
-        ...
+    def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> dict:
+        return fileResult(
+            f'file_screenshot_{submission_uuid}_{file_hash}.png',
+            self._http_request(
+                'GET', 'submission',
+                f'submission/{submission_uuid}/files/{file_hash}/screenshot',
+                resp_type='content'
+            ),
+            EntryType.ENTRY_INFO_FILE
+        )
 
-    def submission_mail_list(self, params: dict) -> None:
-        ...
+    def submission_mail_list(self, uuid: str) -> dict:
+        return self._http_request(
+            'GET', 'submission', f'submission/{uuid}/mail',
+        )
 
-    def mail_screenshot_get(self, params: dict) -> None:
-        ...
+    def mail_screenshot_get(self, submission_uuid: str) -> dict:
+        return fileResult(
+            f'mail_screenshot_{submission_uuid}.png',
+            self._http_request(
+                'GET', 'submission',
+                f'submission/{submission_uuid}/mail/screenshot',
+                resp_type='content'
+            ),
+            EntryType.ENTRY_INFO_FILE
+        )
 
-    def submission_url_list(self, params: dict) -> None:
-        ...
+    def submission_url_list(self, uuid: str, params: dict) -> dict:
+        return self._http_request(
+            'GET', 'submission', f'submission/{uuid}/urls', params=params
+        )
 
-    def url_screenshot_get(self, params: dict) -> None:
-        ...
+    def url_screenshot_get(self, submission_uuid: str, url_uuid: str, screenshot_hash: str) -> dict:
+        return fileResult(
+            f'url_screenshot_{screenshot_hash}.',  # TODO determine file type
+            self._http_request(
+                'GET', 'submission',
+                f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
+                resp_type='content'
+            ),
+            EntryType.ENTRY_INFO_FILE
+        )
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def sub_dict(d: dict, keys: Iterable, change_keys: dict = None) -> dict:
-    '''Returns a sub-dict of "d" with the given keys.
-    change_keys maps the key names in "d" to the
-    corresponding key name needed in the output'''
-    res = {
-        k: d[k]
-        for k in keys
-    }
-    res |= {
-        v: res.pop(k, None)
-        for k, v in change_keys or {}
-    }
-    return res
 
 
 def int_to_readable_bool(val: str | int | None) -> str | None:
@@ -181,13 +197,101 @@ def int_to_bool(val: str | int | None) -> bool | None:
 
 def convert_keys_to_bool(d: dict, *keys):
     '''
-    Applies int_to_bool() on the given keys of d, in place.
+    Applies int_to_bool() on the given 'keys' of 'd', in place.
     '''
     d |= {
         key: int_to_bool(d.get(key))
         for key in keys
     }
 
+
+# def paginate1(
+#         api_limit=None,
+#         key_to_pages=None,
+#         page_start_index=1):
+#     """
+#     Decorator for paginating an API in a request function.
+
+#     :param api_limit: The maximum limit supported by the API for a single request. Used only with "limit" when "page" and
+#                       "page_size" are not defined. Use None if there is no API limit. Default is None.
+#     :type api_limit: int | None
+
+#     :param keys_to_pages: Key(s) to access the paginated data within the response dictionary. When the data is nested in multiple
+#                           dictionaries, use a list of keys as a path to the data. The function will return the combined pages
+#                           without surrounding dictionaries. Default is None.
+#     :type keys_to_pages: Iterable | str | None
+
+#     :param page_start_index: The starting page index. Default is 1.
+#     :type page_start_index: int
+#     """
+#     def dec(func):
+#         def inner(*args, limit=50, page=0, page_size=None, **kwargs):
+
+#             def get_page(**page_args):
+#                 return dict_safe_get(
+#                     func(*args, **page_args, **kwargs),
+#                     [key_to_pages], return_type=list
+#                 )
+
+#             pages: list = []
+
+#             page = arg_to_number(page)
+#             page_size = arg_to_number(page_size)
+#             if isinstance(page, int) and isinstance(page_size, int):
+#                 limit = page_size
+#                 offset = (page - page_start_index) * page_size
+
+#             else:
+#                 limit = int(limit)
+#                 offset = 0
+
+#                 if api_limit:
+#                     for offset in range(0, limit - api_limit, api_limit):
+#                         pages += get_page(
+#                             limit=api_limit,
+#                             offset=offset)
+
+#                     # the remaining call can be less than OR equal the api_limit but not empty
+#                     limit = limit % api_limit or api_limit
+#                     offset += api_limit
+
+#             pages += get_page(
+#                 limit=limit,
+#                 offset=offset)
+
+#             return pages
+
+#         return inner
+
+#     return dec
+
+# def paginate(func, key_to_pages: str, api_limit: int, limit=50, page=0, page_size=None, *args, **kwargs) -> list[dict]:
+#     def get_page(**page_args):
+#         return dict_safe_get(
+#             func(*args, **page_args, **kwargs),
+#             [key_to_pages], return_type=list
+#         )
+#     pages: list = []
+
+#     page = arg_to_number(page)
+#     count = arg_to_number(page_size)
+#     if not (isinstance(page, int) and isinstance(page_size, int)):
+#         limit = int(limit)
+
+#         for offset in range(0, limit - api_limit, api_limit):
+#             pages += get_page(
+#                 limit=api_limit,
+#                 offset=offset)
+
+#             # the remaining call can be less than OR equal the api_limit but not empty
+#             limit = limit % api_limit or api_limit
+#             offset += api_limit
+
+#     pages += get_page(
+#         limit=limit,
+#         offset=offset)
+
+#     return pages
 
 ''' COMMAND FUNCTIONS '''
 
@@ -252,7 +356,7 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
     params = {
         'max_results': min(
             arg_to_number(PARAMS['max_fetch']) or 10,
-            API_MAX_FETCH
+            TAKEDOWN_API_LIMIT
         ),
         'sort': 'id',
         'region': PARAMS['region']
@@ -330,7 +434,7 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
             'max_results':
                 arg_to_number(args.pop('limit'))
                 if not argToBoolean(args.pop('all_results'))
-                else API_MAX_FETCH,
+                else TAKEDOWN_API_LIMIT,
             'region': args.get('region') or PARAMS['region']
         }
 
@@ -479,23 +583,10 @@ def netcraft_attack_type_list_command(client: Client, args: dict) -> CommandResu
         readable_output=response_to_readable(response)
     )
 
-# TODO POLLING FUNCTIONS:
-
-# def netcraft_file_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
-
-
-# def netcraft_url_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
-
-
-# def netcraft_email_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
-
 
 def netcraft_submission_list_command(client: Client, args: dict) -> CommandResults:
 
-    def response_to_readable(response: dict) -> str:
+    def response_to_readable(submissions: list[dict]) -> str:
         return ''  # TODO get UI layout
 
     def uuid_response_to_context(response: dict, uuid) -> dict:
@@ -530,38 +621,87 @@ def netcraft_submission_list_command(client: Client, args: dict) -> CommandResul
             'marker': (marker := args.pop('next_token')),
             'page_size': args.pop('limit')
         })
+        submissions = response.get('submissions', [])
         return CommandResults(
-            readable_output=response_to_readable(response),
+            readable_output=response_to_readable(submissions),
             raw_response=response,
             outputs={
-                'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': response.get('submissions', []),
+                'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': submissions,
                 'Netcraft.SubmissionNextToken(val.NextPageToken)': {'NextPageToken': response.get('marker', marker)}
             },
         )
 
 
 def netcraft_submission_file_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def response_to_readable(files: list[dict]) -> str:
+        return ''  # TODO get UI layout
+
+    def response_to_context(files: list[dict]) -> list[dict]:
+        for file in files:
+            convert_keys_to_bool(file, 'has_screenshot')
+        return files
+
+    response = client.submission_file_list(args['submission_uuid'], args)  # TODO pagination
+    files = response.get('files', [])
+    return CommandResults(
+        readable_output=response_to_readable(files),
+        outputs=response_to_context(files),
+        outputs_prefix='Netcraft.SubmissionFile',
+        outputs_key_field='hash',
+        raw_response=response
+    )
 
 
-def netcraft_file_screenshot_get_command(client: Client, args: dict) -> CommandResults:
-    ...
+def netcraft_file_screenshot_get_command(client: Client, args: dict) -> dict:
+    return client.file_screenshot_get(**args)
 
 
 def netcraft_submission_mail_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+    response = client.submission_mail_list(**args)
+    return CommandResults(
+        outputs=response,
+        outputs_prefix='Netcraft.SubmissionMail',
+        outputs_key_field='hash',
+        readable_output='',  # TODO get UI layout
+    )
 
 
-def netcraft_mail_screenshot_get_command(client: Client, args: dict) -> CommandResults:
-    ...
+def netcraft_mail_screenshot_get_command(client: Client, args: dict) -> dict:
+    return client.mail_screenshot_get(**args)
 
 
 def netcraft_submission_url_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    # TODO int_to_bool(tags.submitter_tag)
+    response = client.submission_url_list(**args)  # TODO pagination
+    urls = response.get('urls', [])
+    return CommandResults(
+        outputs=urls,
+        outputs_key_field='uuid',
+        outputs_prefix='Netcraft.SubmissionURL',
+        readable_output='',  # TODO get UI layout
+        raw_response=response
+    )
 
 
-def netcraft_url_screenshot_get_command(client: Client, args: dict) -> CommandResults:
-    ...
+def netcraft_url_screenshot_get_command(client: Client, args: dict) -> dict:
+    # TODO type of screenshot can be gif or png
+    return client.url_screenshot_get(**args)
+
+
+# TODO POLLING FUNCTIONS:
+
+# def netcraft_file_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
+
+
+# def netcraft_url_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
+
+
+# def netcraft_email_report_submit_command(client: Client, args: dict) -> CommandResults:
+#     ...
 
 
 ''' MAIN FUNCTION '''
