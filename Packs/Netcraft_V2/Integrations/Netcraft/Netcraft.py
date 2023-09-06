@@ -108,15 +108,6 @@ class Client(BaseClient):
             'GET', 'takedown', 'attack-types/', params=params,
         )
 
-    # def file_report_submit(self, params: dict) -> None:
-    #     ...
-
-    # def url_report_submit(self, params: dict) -> None:
-    #     ...
-
-    # def email_report_submit(self, params: dict) -> None:
-    #     ...
-
     def submission_list(self, params: dict) -> dict:
         return self._http_request(
             'GET', 'submission', 'submission/', params=params
@@ -174,6 +165,15 @@ class Client(BaseClient):
             ),
             EntryType.ENTRY_INFO_FILE
         )
+
+    # def file_report_submit(self, params: dict) -> None:
+    #     ...
+
+    # def url_report_submit(self, params: dict) -> None:
+    #     ...
+
+    # def email_report_submit(self, params: dict) -> None:
+    #     ...
 
 
 ''' HELPER FUNCTIONS '''

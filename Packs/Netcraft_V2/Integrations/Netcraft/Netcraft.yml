@@ -704,105 +704,6 @@ script:
     - contextPath: Netcraft.AttackType.auto_authorise
       description: Indicates whether or not you have chosen to automatically authorise takedowns under this type.
       type: Boolean
-
-  - name: 'netcraft-file-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: |
-        'The format of content_file is A base64 encoded string of the file"files":
-        [{"content": "file_content","filename": "file_name"}]The purpose of this argument
-        is to support reporting of multiple files with entry_id OR single file by file_content&file_name'
-      name: file_content
-    - description: ''
-      name: file_name
-    - description: ''
-      isArray: true
-      name: entry_id
-    - description: ''
-      name: reason
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-  - name: 'netcraft-url-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: ''
-      isArray: true
-      name: urls
-      required: true
-    - description: ''
-      name: reason
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-  - name: 'netcraft-email-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: |
-        Either a plain text string of the malicious mail in MIME format or
-        if the password paramater is provided, a base64 encoded AES-256-CBC encrypted
-        mail in MIME format. Max message size is 20MiB.
-      name: message
-      required: true
-    - description: |
-        The password used to encrypt/decrypt the MIME mail. Should not be
-        provided if the mail is not encrypted.
-      name: password
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-
   - name: 'netcraft-submission-list'
     description: Get basic information about a submissions.
     arguments:
@@ -1168,6 +1069,105 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+
+  - name: 'netcraft-file-report-submit'
+    polling: true
+    arguments:
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: |
+        'The format of content_file is A base64 encoded string of the file"files":
+        [{"content": "file_content","filename": "file_name"}]The purpose of this argument
+        is to support reporting of multiple files with entry_id OR single file by file_content&file_name'
+      name: file_content
+    - description: ''
+      name: file_name
+    - description: ''
+      isArray: true
+      name: entry_id
+    - description: ''
+      name: reason
+    - auto: PREDEFINED
+      description: |
+        "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: |
+        Default 30
+      name: interval_in_seconds
+    - description: |
+        Default 600
+      name: timeout
+    description: |
+      ''
+    outputs: []
+  - name: 'netcraft-url-report-submit'
+    polling: true
+    arguments:
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: ''
+      isArray: true
+      name: urls
+      required: true
+    - description: ''
+      name: reason
+    - auto: PREDEFINED
+      description: |
+        "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: |
+        Default 30
+      name: interval_in_seconds
+    - description: |
+        Default 600
+      name: timeout
+    description: |
+      ''
+    outputs: []
+  - name: 'netcraft-email-report-submit'
+    polling: true
+    arguments:
+    - description: ''
+      name: reporter_email
+      required: true
+    - description: |
+        Either a plain text string of the malicious mail in MIME format or
+        if the password paramater is provided, a base64 encoded AES-256-CBC encrypted
+        mail in MIME format. Max message size is 20MiB.
+      name: message
+      required: true
+    - description: |
+        The password used to encrypt/decrypt the MIME mail. Should not be
+        provided if the mail is not encrypted.
+      name: password
+    - auto: PREDEFINED
+      description: |
+        "Default value = trueIf the user changed to false we will not \_\
+        execute the polling mechanism."
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: |
+        Default 30
+      name: interval_in_seconds
+    - description: |
+        Default 600
+      name: timeout
+    description: |
+      ''
+    outputs: []
+
   script: '-'
   type: python
   dockerimage: demisto/python3:3.10.12.63474
