@@ -229,6 +229,7 @@ class Client(BaseClient):
         self.token_expiry_utc: datetime | None = None
 
         self._login()  # sets request_token and token_expiry_utc
+        self._set_context_credentials()
 
     def _login(self):
         # should only be called from __init__
@@ -241,34 +242,57 @@ class Client(BaseClient):
                 headers={"Content-Type": "multipart/form-data"},
             )
 
-        def refresh_request_token(refresh_token: str) -> dict:
+        def generate_request_token(refresh_token: str) -> dict:
             return self.http_request(
                 method="POST",
                 url_suffix="Authentication/RefreshToken",
                 params={"token": refresh_token},
-                attempted_action="renewing request token",
+                attempted_action="generating request token using refresh token",
                 headers={"Content-Type": "multipart/form-data"},
             )
 
         # Check integration context
         integration_context = demisto.getIntegrationContext()
         refresh_token = integration_context.get("refresh_token")
-        token_expiry_utc: datetime | None = integration_context.get("token_expiry_utc")
+        raw_token_expiry_utc: str | None = integration_context.get("token_expiry_utc")
 
         # Do we need to log in again, or can we just refresh?
-        if token_expiry_utc and token_expiry_utc > (
-            datetime.utcnow() + timedelta(seconds=5)
-        ):  # refresh token is still valid
-            response = refresh_request_token(refresh_token)
-        else:  # must log in again using username and password
+        if (
+            raw_token_expiry_utc
+            and (token_expiry_utc := dateparser.parse(raw_token_expiry_utc))
+            and token_expiry_utc > (datetime.utcnow() + timedelta(seconds=5))
+        ):
+            try:
+                demisto.debug(
+                    "refresh token is valid, using it to generate a request token"
+                )
+                response = generate_request_token(refresh_token)
+
+            except RequestNotSuccessfulError:
+                demisto.debug(
+                    "failed using refresh token, getting a new one using username and password"
+                )
+                response = generate_new_token()
+
+        else:
+            demisto.debug(
+                "refresh token expired, logging in with username and password"
+            )
             response = generate_new_token()
 
-        # Set self attributes
         self.request_token = response["requestToken"]
         self.refresh_token = response["refreshToken"]
-        self.token_expiry_utc = datetime.utcnow() + timedelta(  # TODO is always there?
+        self.token_expiry_utc = datetime.utcnow() + timedelta(
             seconds=response["expiresIn"]
         )
+        demisto.setIntegrationContext(
+            {
+                "refresh_token": self.refresh_token,
+                "request_token": self.request_token,  # TODO is it used?
+                "token_expiry_utc": str(self.token_expiry_utc),
+            }
+        )
+        demisto.debug(f"login complete. {self.token_expiry_utc=}")
 
     def create_ticket(self, **kwargs) -> dict:
         required_fields = (
