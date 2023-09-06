@@ -156,11 +156,12 @@ class Client:
             # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
             connection.execution_options(isolation_level="AUTOCOMMIT")
             result = self.connection.execute(sql_query, bind_vars)
+            # extracting the table from the response
             if fetch_limit:
-                results_as_dict = result.mappings().fetchmany(fetch_limit)
+                table = result.mappings().fetchmany(fetch_limit)
             else:
-                results_as_dict = result.mappings().fetchall()
-            results = [dict(row) for row in results_as_dict]
+                table = result.mappings().fetchall()
+            results = [dict(row) for row in table]
 
         headers = []
         if results:
