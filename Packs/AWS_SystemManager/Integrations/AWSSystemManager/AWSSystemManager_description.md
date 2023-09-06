@@ -1,8 +1,14 @@
-## BaseIntegration Help
+Before you can use AWS System Manager, you need to perform several configuration steps in your AWS environment.
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Prerequisites
+- Attach an instance profile with the required permissions to the Cortex XSOAR server or engine that is running 
+on your AWS environment.
+- Instance profile requires minimum permission: sts:AssumeRole.
+- Instance profile requires permission to assume the roles needed by the AWS integrations.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Configure AWS Settings
+- Create an IAM Role for the Instance Profile.
+- Attach a Role to the Instance Profile.
+- Configure the Necessary IAM Roles that the AWS Integration Can Assume.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
