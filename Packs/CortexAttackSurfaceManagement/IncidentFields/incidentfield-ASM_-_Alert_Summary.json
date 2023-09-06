@@ -39,7 +39,7 @@
         {},
         {}
     ],
-    "description": "Summary report of alert",
+    "description": "Summary report of alert.",
     "editForm": true,
     "group": 0,
     "hidden": false,

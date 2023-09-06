@@ -67,7 +67,7 @@
         {},
         {}
     ],
-    "description": "Collect information on remediation action(s)",
+    "description": "Collect information on remediation action(s).",
     "editForm": true,
     "group": 0,
     "hidden": false,
