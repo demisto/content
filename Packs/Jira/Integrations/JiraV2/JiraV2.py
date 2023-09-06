@@ -856,13 +856,14 @@ def get_organizations_command(project_key=None, start="0", limit="50", account_i
     if account_id:
         body['accountId'] = account_id
 
-    if response := jira_req('GET', url, params=body, resp_type='json').get('values'):
-        [org.pop('_links') for org in response]
+    if response := jira_req('GET', url, params=body, resp_type='json'):
+        values = response.get('values')
+        [org.pop('_links') for org in values]
 
-        hr = tableToMarkdown(name='Organizations', t=response, headers=['name', 'id', 'created'],
+        hr = tableToMarkdown(name='Organizations', t=values, headers=['name', 'id', 'created'],
                              json_transform_mapping={'created': JsonTransformer(func=lambda x: x.get('friendly'))})
 
-        return CommandResults(outputs=response, outputs_prefix='Jira.Organizations', outputs_key_field='id', readable_output=hr)
+        return CommandResults(outputs=values, outputs_prefix='Jira.Organizations', outputs_key_field='id', readable_output=hr, raw_response=response)
 
     return CommandResults(readable_output='No results found.')
 
