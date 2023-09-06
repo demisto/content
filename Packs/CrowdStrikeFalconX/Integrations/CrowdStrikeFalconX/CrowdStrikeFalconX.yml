@@ -1369,7 +1369,7 @@ script:
   - arguments:
     - default: true
       description: |-
-        The file hash(es) to search for
+        The file hash(es) to search for.
       isArray: true
       name: file
       required: true
