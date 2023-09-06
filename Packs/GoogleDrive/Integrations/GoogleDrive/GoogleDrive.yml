@@ -1812,10 +1812,10 @@ script:
       name: corpora
       defaultValue: "User"
       predefined:
-        - "User"
-        - "Domain"
-        - "Drive"
-        - "All Drivers"
+      - "User"
+      - "Domain"
+      - "Drive"
+      - "All Drivers"
     - name: drive_id
       description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command.
     outputs:
@@ -1853,8 +1853,8 @@ script:
       name: supports_all_drives
       defaultValue: "False"
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
     outputs:
     - contextPath: GoogleDrive.File.File.capabilities.canAddChildren
       description: Whether the current user can add children to this folder. This is always false when the item is not a folder.
