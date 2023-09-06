@@ -64,7 +64,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: entryId
       required: true
     description: Upload sample to TitaniumScale and retrieve analysis report.
@@ -107,22 +107,22 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.tc_report
-      description: Full report
+      description: Full report.
       type: String
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: entryId
       required: true
     description: Upload sample to TitaniumScale for analysis.
     name: reversinglabs-titaniumscale-upload-sample
     outputs:
     - contextPath: ReversingLabs.task_Url
-      description: url to get report from
+      description: url to get report from.
       type: Unknown
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: taskUrl
       required: true
     description: Retrieve report of a previously uploaded file from TitaniumScale.
@@ -165,7 +165,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.tc_report
-      description: Full report
+      description: Full report.
       type: String
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
   runonce: false
