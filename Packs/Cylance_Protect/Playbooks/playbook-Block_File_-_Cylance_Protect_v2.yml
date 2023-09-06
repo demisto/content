@@ -178,10 +178,9 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      category: {}
       listType:
-        simple: GlobalQuarantine
-      reason: {}
+        complex:
+          root: inputs.ListType
       sha256:
         complex:
           root: inputs.SHA256
@@ -230,6 +229,12 @@ inputs:
       - operator: uniq
   required: false
   description: The SHA256 hash of the file to block.
+  playbookInputQuery:
+- key: ListType
+  value:
+    simple: GlobalQuarantine
+  required: false
+  description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
