@@ -107,17 +107,24 @@ class Client(BaseClient):
             'GET', 'takedown', 'attack-types/', params=params,
         )
 
-    def file_report_submit(self, params: dict) -> None:
-        ...
+    # def file_report_submit(self, params: dict) -> None:
+    #     ...
 
-    def url_report_submit(self, params: dict) -> None:
-        ...
+    # def url_report_submit(self, params: dict) -> None:
+    #     ...
 
-    def email_report_submit(self, params: dict) -> None:
-        ...
+    # def email_report_submit(self, params: dict) -> None:
+    #     ...
 
-    def submission_list(self, params: dict) -> None:
-        ...
+    def submission_list(self, params: dict) -> dict:
+        return self._http_request(
+            'GET', 'submission', 'submission/', params=params
+        )
+
+    def get_submission(self, uuid: str) -> dict:
+        return self._http_request(
+            'GET', 'submission', f'submission/{uuid}'
+        )
 
     def submission_file_list(self, params: dict) -> None:
         ...
@@ -156,9 +163,30 @@ def sub_dict(d: dict, keys: Iterable, change_keys: dict = None) -> dict:
     return res
 
 
-def int_to_bool(val: str | int) -> str | None:
-    '''Converts the 1 or 0 values returned by netcraft to a human readable string'''
+def int_to_readable_bool(val: str | int | None) -> str | None:
+    '''
+    Converts the 1 or 0 values returned by netcraft to a human readable string.
+    The val provided can be an int, str or None (in which case None should be returned).
+    '''
     return {'0': 'No', '1': 'Yes'}.get(str(val))
+
+
+def int_to_bool(val: str | int | None) -> bool | None:
+    '''
+    Converts the 1 or 0 values returned by netcraft to a boolean for the context, if possible.
+    The val provided can be an int, str or None (in which case None should be returned).
+    '''
+    return {'0': False, '1': True}.get(str(val))
+
+
+def convert_keys_to_bool(d: dict, *keys):
+    '''
+    Applies int_to_bool() on the given keys of d, in place.
+    '''
+    d |= {
+        key: int_to_bool(d.get(key))
+        for key in keys
+    }
 
 
 ''' COMMAND FUNCTIONS '''
@@ -312,7 +340,7 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
             [
                 {
                     'ID': d.get('id'),
-                    'Auth': int_to_bool(d.get('authgiven')),
+                    'Auth': int_to_readable_bool(d.get('authgiven')),
                     'Brand': d.get('target_brand'),
                     'Attack Type': d.get('attack_type'),
                     'Status': d.get('status'),
@@ -335,14 +363,19 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
             removeNull=True
         )
 
+    def response_to_context(response: list[dict]) -> list[dict]:
+        for takedown in response:
+            convert_keys_to_bool(takedown, 'authgiven', 'has_phishing_kit', 'escalated')
+        return response
+
     response = client.get_takedowns(
         args_to_params(args)
     )
     return CommandResults(
+        readable_output=response_to_readable(response),
         outputs_prefix='Netcraft.Takedown',
         outputs_key_field='id',
-        outputs=response,
-        readable_output=response_to_readable(response)
+        outputs=response_to_context(response),
     )
 
 
@@ -461,7 +494,50 @@ def netcraft_attack_type_list_command(client: Client, args: dict) -> CommandResu
 
 
 def netcraft_submission_list_command(client: Client, args: dict) -> CommandResults:
-    ...
+
+    def response_to_readable(response: dict) -> str:
+        return ''  # TODO get UI layout
+
+    def uuid_response_to_context(response: dict, uuid) -> dict:
+        '''
+        Called only when the "submission_uuid" is provided and does the following:
+        1. adds the uuid the output so that there is a uuid for every submission under 'Netcraft.Submission'.
+        2. keeps the context output somewhat similar to the output of the non uuid call by aligning keys that differ in name only.
+        3. converts 1 or 0 values into their corresponding boolean values.
+        '''
+        response |= {
+            'uuid': uuid,
+            'source_name': response.get('source', {}).pop('name', None),
+            'submitter_email': response.pop('submitter', {}).get('email'),
+        }
+        convert_keys_to_bool(
+            response,
+            'has_cryptocurrency_addresses', 'has_files', 'has_issues', 'has_mail',
+            'has_phone_numbers', 'has_urls', 'is_archived', 'pending'
+        )
+        return response
+
+    if uuid := args.pop('submission_uuid', None):
+        response = client.get_submission(uuid)
+        return CommandResults(
+            readable_output=response_to_readable(response),
+            outputs_prefix='Netcraft.Submission',
+            outputs_key_field='uuid',
+            outputs=uuid_response_to_context(response, uuid),
+        )
+    else:
+        response = client.submission_list(args | {
+            'marker': (marker := args.pop('next_token')),
+            'page_size': args.pop('limit')
+        })
+        return CommandResults(
+            readable_output=response_to_readable(response),
+            raw_response=response,
+            outputs={
+                'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': response.get('submissions', []),
+                'Netcraft.SubmissionNextToken(val.NextPageToken)': {'NextPageToken': response.get('marker', marker)}
+            },
+        )
 
 
 def netcraft_submission_file_list_command(client: Client, args: dict) -> CommandResults:

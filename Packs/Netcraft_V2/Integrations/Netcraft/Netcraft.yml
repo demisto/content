@@ -311,8 +311,8 @@ script:
       description: The name of the brand being targeted by the attack.
       type: String
     - contextPath: Netcraft.Takedown.authgiven
-      description: Indicates whether the takedown has been authorised. "1" means "yes", and "0" means "no".
-      type: String
+      description: Indicates whether the takedown has been authorised.
+      type: Boolean
     - contextPath: Netcraft.Takedown.host
       description: The name of the company responsible for the IP address.
       type: String
@@ -345,8 +345,8 @@ script:
         that the takedown was moved out of the "unverified" status.
       type: Date
     - contextPath: Netcraft.Takedown.escalated
-      description: Indicates whether the takedown has been escalated. "1" means "yes", and "0" means "no".
-      type: String
+      description: Indicates whether the takedown has been escalated.
+      type: Boolean
     - contextPath: Netcraft.Takedown.first_contact
       description: The date and time that the takedown first entered a contacted state, in UTC.
       type: Date
@@ -364,7 +364,7 @@ script:
     - contextPath: Netcraft.Takedown.attack_type
       description: The type of attack being taken down.
       type: String
-    - contextPath: Netcraft.Takedown.certificate
+    - contextPath: Netcraft.Takedown.certificate  # TODO add descriptions for all keys
       description: |
         HTTPS certificate details for the hostname.
         The value returned is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
@@ -399,8 +399,8 @@ script:
       description: The owner of the forward DNS infrastructure.
       type: String
     - contextPath: Netcraft.Takedown.has_phishing_kit
-      description: Indicates whether the takedown has an associated phishing kit. "1" means "yes", and "0" means "no".
-      type: String
+      description: Indicates whether the takedown has an associated phishing kit.
+      type: Boolean
     - contextPath: Netcraft.Takedown.hostname
       description: The full hostname of the URL or email address being taken down. this will be blank for attacks with no hostname.
       type: String
@@ -736,7 +736,7 @@ script:
       name: interval_in_seconds
     - description: |
         Default 600
-      name: timeout_in_seconds
+      name: timeout
     description: |
       ''
     outputs: []
@@ -765,7 +765,7 @@ script:
       name: interval_in_seconds
     - description: |
         Default 600
-      name: timeout_in_seconds
+      name: timeout
     description: |
       ''
     outputs: []
@@ -798,12 +798,13 @@ script:
       name: interval_in_seconds
     - description: |
         Default 600
-      name: timeout_in_seconds
+      name: timeout
     description: |
       ''
     outputs: []
 
   - name: 'netcraft-submission-list'
+    description: Get basic information about a submissions.
     arguments:
     - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
       name: submission_uuid
@@ -815,37 +816,135 @@ script:
       name: source_name
     - description: The state of the submissions. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
       name: state
-    - description: Filter the submissions by words contained in the submission reason
+    - description: Filter the submissions by words contained in the submission reason.
       name: submission_reason
     - description: Filter the submissions by submitter email.
       name: submitter_email
-    - description: The number of submissions to return.
+    - description: The number of submissions to return. The maximum is 1000.  # TODO remove 1000 limit if pagination is implemented
       name: limit
       defaultValue: '50'
     - description: |
         The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
       name: next_token
-    - description: ''
-    outputs: []
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The unix timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_uuid
+      description: The unique identifier of the submitter. This key appears only if the "submission_uuid" argument is *not* provided.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A unix timestamp of when this state change occurred. This key appears only if the "submission_uuid" argument is provided.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has a mail. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A unix timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the mail associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the mail in the submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount. This key appears only if the "submission_uuid" argument is provided.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount. This key appears only if the "submission_uuid" argument is provided.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.SubmissionNextToken
+      description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is *not* provided.
+      type: String
 
   - name: 'netcraft-submission-file-list'
+    description: Get basic information about a submission's files. When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
-    - description: |
-        "Add description that the user can get this value by running the\
-        command \u201Csubmission-list\u201D."
+    - description: The submission's unique identifier. UUIDs can be obtained by running the command "netcraft-submission-list".        
       name: submission_uuid
       required: true
-    - description: |
-        Default 50API argument - count
-      name: limit
-    - description: ''
-      name: page
-    - description: |
-        Default 50API argument - count
-      name: page_size
-    description: |
-      ''
+    - name: page
+      description: The page number of scan records to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument.
+    - name: page_size
+      description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of records to retrieve. If "page_size" is defined, this argument is ignored.
+      defaultValue: '50'
     outputs: []
+
   - name: 'netcraft-file-screenshot-get'
     arguments:
     - description: |
