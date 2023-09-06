@@ -1457,7 +1457,7 @@ script:
         default_maxantievasion
         default_randomfiles
         default_randomtheme
-        default_openie
+        default_openie.
       name: action_script
     - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       name: command_line
