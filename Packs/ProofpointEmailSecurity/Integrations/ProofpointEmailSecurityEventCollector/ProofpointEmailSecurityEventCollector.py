@@ -101,7 +101,9 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
 
 
 def test_module(host: str, cluster_id: str, api_key: str):
-    # set the fetch interval to 10 seconds so we don't get timeout for the test module
+    # set the fetch interval to 2 seconds so we don't get timeout for the test module
+    global RECV_TIMEOUT
+    RECV_TIMEOUT = 2
     fetch_interval = 2
     try:
         with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
@@ -114,7 +116,7 @@ def test_module(host: str, cluster_id: str, api_key: str):
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
-    fetch_interval //= len(EventType)
+    fetch_interval = max(1, fetch_interval // len(EventType))
     with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
         demisto.info("Connected to websocket")
         while True:
