@@ -1,0 +1,36 @@
+{
+  "responseEnvelope": {
+    "requestId": "53ed36c3-f7bc-420d-b78b-2598333b0fd1",
+    "responseCode": 200,
+    "responseText": "",
+    "recordsNumber": 1,
+    "scrollId": ""
+  },
+  "responseData": {
+    "actions": [
+      {
+        "action_created": "2023-08-08 21:16:16.947618",
+        "action_id": "Restore_a2c6f91ef3dd7215d44e6840d33b7c19",
+        "action_message": "Message is not quarantined.. log record id: 1843d814-0afd-404e-82f8-c348fa4d291b",
+        "action_name": "Restore a2c6f91ef3dd7215d44e6840d33b7c19",
+        "action_status": "completed",
+        "action_type": "Restore_a2c6f91ef3dd7215d44e6840d33b7c19",
+        "action_updated": "2023-08-08 21:16:17.945549",
+        "hash_key": "mt-prod-3##prod-3-con-lab44##1691529376887109"
+      }
+    ],
+    "created": "2023-08-08 21:16:16.887115",
+    "customer": "prod-3-con-lab44",
+    "failed": 0,
+    "id": 1691529376887109,
+    "name": "Office365 Emails Manual Action",
+    "owner": "service@avanan.com",
+    "progress": 1,
+    "sequential": false,
+    "status": "completed",
+    "succeed": 1,
+    "total": 1,
+    "type": "office365_emails_manual_action",
+    "updated": "2023-08-08 21:16:17.761625"
+  }
+}
