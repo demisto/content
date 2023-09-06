@@ -41,4 +41,3 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-runonce: false
