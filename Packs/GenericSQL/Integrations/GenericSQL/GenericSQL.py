@@ -187,7 +187,7 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
 def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
         tuple[dict[str, Any], str | Any]:
     """
-    In case of passing just bind_variables_values, since it's not already supported from SQL Alchemy 2.x.x versions,
+    In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
     this function generates names for those variables and return an edited query with a mapping.
     Args:
         bind_variables_values_list: Values to put in the bind variables
@@ -324,7 +324,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         result = convert_sqlalchemy_to_readable_table(result)
         result = result[skip:skip + limit]
 
-        human_readable = tableToMarkdown(name="Query result:", t=result, headers=headers, removeNull=True)
+        human_readable = tableToMarkdown(name="Query result", t=result, headers=headers, removeNull=True)
 
         context = {
             "Result": result,
@@ -416,8 +416,7 @@ def convert_sqlalchemy_to_readable_table(result: list[dict]):
 
     """
     # converting b'' and datetime objects to readable ones
-    incidents = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in result]
-    return incidents
+    return [{str(key): str(value) for key, value in dictionary.items()} for dictionary in result]
 
 
 def update_last_run_after_fetch(table: list[dict], last_run: dict, fetch_parameters: str, column_name: str,
