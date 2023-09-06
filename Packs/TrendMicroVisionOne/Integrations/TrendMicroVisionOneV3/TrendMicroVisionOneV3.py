@@ -11,13 +11,26 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, TypeVar, Union
 import pytmv1
 from pytmv1 import (
+    AccountTask,
+    AccountTaskResp,
+    BlockListTaskResp,
+    CollectFileTaskResp,
+    EmailMessageIdTask,
+    EmailMessageTaskResp,
+    EmailMessageUIdTask,
+    EndpointTask,
+    EndpointTaskResp,
     ExceptionObject,
+    FileTask,
     InvestigationStatus,
-    MsData,
+    ObjectTask,
     ObjectType,
+    ProcessTask,
     ResultCode,
     SaeAlert,
     SuspiciousObject,
+    SuspiciousObjectTask,
+    TerminateProcessTaskResp,
     TiAlert,
 )
 
@@ -26,12 +39,14 @@ USER_AGENT = "TMV1CortexXSOARApp/1.1"
 VENDOR_NAME = "TrendMicroVisionOneV3"
 BLOCK = "block"
 MEDIUM = "medium"
+NAME = "name"
+PATH = "path"
 URL = "url"
 POST = "post"
 GET = "get"
 PATCH = "patch"
 IF_MATCH = "if_match"
-FALSE = False
+FALSE = "false"
 TRUE = "true"
 POLL = "poll"
 POLL_TIME_SEC = "poll_time_sec"
@@ -42,13 +57,15 @@ AUTHORIZATION = "Authorization"
 BEARER = "Bearer "
 CONTENT_TYPE_JSON = "application/json"
 EMPTY_STRING = ""
+EMPTY_BYTE = b""
 ASCII = "ascii"
 API_TOKEN = "apikey"
+AGENT_GUID = "agent_guid"
 VALUE_TYPE = "value_type"
 TARGET_VALUE = "target_value"
 DESCRIPTION = "description"
 MESSAGE_ID = "message_id"
-MAILBOX = "mail_box"
+MAILBOX = "mailbox"
 APP_NAME = "Trend Micro Vision One V3"
 FIELD = "field"
 ENDPOINT = "endpoint"
@@ -76,6 +93,10 @@ QUEUED = "queued"
 RUNNING = "running"
 WAITFORAPPROVAL = "waitForApproval"
 OS_TYPE = "os"
+ADD_SUSPICIOUS = "Add to Suspicious List."
+DELETE_SUSPICIOUS = "Delete from Suspicious List."
+QUARANTINE_EMAIL = "Quarantine Email Message."
+DELETE_EMAIL = "Delete Email Message."
 FILEPATH = "filepath"
 FILE_PATH = "file_path"
 FILE_NAME = "filename"
@@ -105,9 +126,11 @@ SUCCESS_TEST = "Successfully connected to the vision one API."
 POLLING_MESSAGE = "The task has not completed, will check status again in 30 seconds"
 # Workbench Statuses
 NEW = "New"
+CLOSED = "Closed"
 IN_PROGRESS = "In Progress"
-RESOLVED_TRUE_POSITIVE = "True Positive"
-RESOLVED_FALSE_POSITIVE = "False Positive"
+TRUE_POSITIVE = "False Positive"
+FALSE_POSITIVE = "False Positive"
+BENIGN_TRUE_POSITIVE = "True Positive"
 # Table Heading
 TABLE_ENABLE_USER_ACCOUNT = "Enable user account "
 TABLE_DISABLE_USER_ACCOUNT = "Disable user account "
@@ -269,7 +292,7 @@ class Client(BaseClient):
         :rtype: ``Any``
         """
         task_id = data.get(TASKID, EMPTY_STRING)
-        poll = data.get(POLL, FALSE)
+        poll = data.get(POLL, TRUE)
         poll_time_sec = data.get(POLL_TIME_SEC, 0)
         message: dict[str, Any] = {}
 
@@ -279,14 +302,14 @@ class Client(BaseClient):
         # Make rest call
         resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)
         # Check if error response is returned
-        if (err := _is_pytmv1_error(resp)) is not None:
+        if _is_pytmv1_error(resp.result_code):
             return CommandResults(
                 readable_output=tableToMarkdown(
-                    table_name[CHECK_TASK_STATUS_COMMAND], err, removeNull=True
+                    table_name[CHECK_TASK_STATUS_COMMAND], resp.error, removeNull=True
                 ),
                 outputs_prefix="VisionOne.Task_Status",
                 outputs_key_field="error",
-                outputs=err,
+                outputs=resp.error,
             )
         # Assign values on a successful call
         else:
@@ -322,14 +345,16 @@ class Client(BaseClient):
 
         resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
         # Check if error response is returned
-        if (err := _is_pytmv1_error(resp)) is not None:
+        if _is_pytmv1_error(resp.result_code):
             return CommandResults(
                 readable_output=tableToMarkdown(
-                    table_name[SANDBOX_SUBMISSION_POLLING_COMMAND], err, removeNull=True
+                    table_name[SANDBOX_SUBMISSION_POLLING_COMMAND],
+                    resp.error,
+                    removeNull=True,
                 ),
                 outputs_prefix="VisionOne.Sandbox_Submission_Polling",
                 outputs_key_field="error",
-                outputs=err,
+                outputs=resp.error,
             )
         # Get the task status of rest call
         else:
@@ -338,16 +363,16 @@ class Client(BaseClient):
         file_entry = None
         if task_status.lower() == "succeeded":
             resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
-            if (err := _is_pytmv1_error(resp)) is not None:
+            if _is_pytmv1_error(resp.result_code):
                 return CommandResults(
                     readable_output=tableToMarkdown(
                         table_name[SANDBOX_SUBMISSION_POLLING_COMMAND],
-                        err,
+                        resp.error,
                         removeNull=True,
                     ),
                     outputs_prefix="VisionOne.Sandbox_Submission_Polling",
                     outputs_key_field="error",
-                    outputs=err,
+                    outputs=resp.error,
                 )
             else:
                 risk = unwrap(resp.response).risk_level
@@ -459,7 +484,7 @@ class Client(BaseClient):
         formatted_start = str(start[: (start.index("."))]) + str(start[-1])
         formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
-        new_alerts: List[Union[SaeAlert, TiAlert]] = []
+        new_alerts: List[SaeAlert | TiAlert] = []
         try:
             v1_client.consume_alert_list(
                 lambda alert: new_alerts.append(alert),
@@ -502,18 +527,8 @@ def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
 
 
 @staticmethod
-def _is_pytmv1_error(resp) -> Dict[str, Any] | None:
-    message: Dict[str, Any] = {}
-    if resp.result_code == ResultCode.ERROR:
-        message = {
-            "result_code": resp.result_code,
-            "error": resp.errors if resp.errors else resp.error,
-        }
-        return message
-    elif resp.response is None:
-        message = {"result_code": 400, "error": "The action could not be completed."}
-        return message
-    return None
+def _is_pytmv1_error(result_code: ResultCode) -> bool:
+    return result_code == ResultCode.ERROR
 
 
 @staticmethod
@@ -521,6 +536,26 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
     if not obj_type.upper() in ObjectType.__members__:
         raise RuntimeError(f"Please check object type: {obj_type}")
     return ObjectType[obj_type.upper()]
+
+
+@staticmethod
+def get_task_type(action: str) -> Any:
+    task_dict: Dict[Any, List[str]] = {
+        AccountTaskResp: [
+            "enableAccount",
+            "disableAccount",
+            "forceSignOut",
+            "resetPassword",
+        ],
+        BlockListTaskResp: ["block", "restoreBlock"],
+        EmailMessageTaskResp: ["quarantineMessage", "restoreMessage", "deleteMessage"],
+        EndpointTaskResp: ["isolate", "restoreIsolate"],
+        TerminateProcessTaskResp: ["terminateProcess"],
+    }
+
+    for key, values in task_dict.items():
+        if action in values:
+            return key
 
 
 def run_polling_command(
@@ -607,9 +642,9 @@ def test_module(client: Client) -> Any:
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.check_connectivity()
-    if _is_pytmv1_error(resp) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return "Connectivity failed!"
-    return "ok"
+    return "Connectivity Passed!"
 
 
 def enable_or_disable_user_account(
@@ -639,58 +674,62 @@ def enable_or_disable_user_account(
     account_identifiers: List[Dict[str, str]] = json.loads(
         args.get("account_identifiers", [{}])
     )
-    multi_resp: List[MsData] = []
+    account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
-        # Make rest call
+        # Create account task list
         for account in account_identifiers:
-            resp = v1_client.enable_account(
-                pytmv1.AccountTask(
-                    account_name=account[ACCOUNT_NAME],
-                    description=account.get(DESCRIPTION, "Enable User Account."),
+            account_tasks.append(
+                AccountTask(
+                    account_name=account["account_name"],
+                    description=account.get("description", "Enable User Account."),
                 )
             )
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.User_Account",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Make rest call
+        resp = v1_client.enable_account(*account_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.User_Account",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     if command == DISABLE_USER_ACCOUNT_COMMAND:
-        # Make rest call
+        # Create account task list
         for account in account_identifiers:
-            resp = v1_client.disable_account(
-                pytmv1.AccountTask(
-                    account_name=account[ACCOUNT_NAME],
-                    description=account.get(DESCRIPTION, "Enable User Account."),
+            account_tasks.append(
+                AccountTask(
+                    account_name=account["account_name"],
+                    description=account.get("description", "Disable User Account."),
                 )
             )
-            # Check if error response is returned
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.User_Account",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Make rest call
+        resp = v1_client.disable_account(*account_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.User_Account",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     return CommandResults(
         readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
@@ -718,33 +757,32 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     account_identifiers: List[Dict[str, str]] = json.loads(
         args.get("account_identifiers", [{}])
     )
-    multi_resp: List[MsData] = []
+    account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # Make rest call
+    # Create account task list
     for account in account_identifiers:
-        resp = v1_client.sign_out_account(
-            pytmv1.AccountTask(
-                account_name=account[ACCOUNT_NAME],
-                description=account.get(DESCRIPTION, "Sign Out Account."),
+        account_tasks.append(
+            AccountTask(
+                account_name=account["account_name"],
+                description=account.get("description", "Sign Out Account."),
             )
         )
-        # Check if an error occurred for each call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[FORCE_SIGN_OUT_COMMAND], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Force_Sign_Out",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Append values to multi_status on successful call
-        else:
-            multi_resp.append(unwrap(resp.response).items[0])
-    # Aggregate of all results to be sent to the War Room
-    message = {"multi_response": [item.dict() for item in multi_resp]}
+    # Make rest call
+    resp = v1_client.sign_out_account(*account_tasks)
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[FORCE_SIGN_OUT_COMMAND], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Force_Sign_Out",
+            outputs_key_field="error",
+            outputs=resp.errors,
+        )
+    # Add results to message to be sent to the War Room
+    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -777,33 +815,32 @@ def force_password_reset(
     account_identifiers: List[Dict[str, str]] = json.loads(
         args.get("account_identifiers", [{}])
     )
-    multi_resp: List[MsData] = []
+    account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # Make rest call
+    # Create account task list
     for account in account_identifiers:
-        resp = v1_client.reset_password_account(
-            pytmv1.AccountTask(
-                account_name=account[ACCOUNT_NAME],
-                description=account.get(DESCRIPTION, "Force Password Reset."),
+        account_tasks.append(
+            AccountTask(
+                account_name=account["account_name"],
+                description=account.get("description", "Force Password Reset."),
             )
         )
-        # Check if an error occurred for each call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[FORCE_PASSWORD_RESET_COMMAND], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Force_Password_Reset",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Append values to multi_status on successful call
-        else:
-            multi_resp.append(unwrap(resp.response).items[0])
-    # Aggregate of all results to be sent to the War Room
-    message = {"multi_response": [item.dict() for item in multi_resp]}
+    # Make rest call
+    resp = v1_client.reset_password_account(*account_tasks)
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[FORCE_PASSWORD_RESET_COMMAND], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Force_Password_Reset",
+            outputs_key_field="error",
+            outputs=resp.errors,
+        )
+    # Add results to message to be sent to the War Room
+    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -833,7 +870,11 @@ def get_endpoint_info(
     """
     # Required Params
     endpoint = args.get(ENDPOINT, EMPTY_STRING)
+    listify_endpoints = endpoint.split(",")
+    endpoint_list = [value.strip() for value in listify_endpoints]
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    new_endpoint_data: List[Any] = []
+    endpoint_data: Dict[str, Any] = {}
 
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
@@ -841,16 +882,14 @@ def get_endpoint_info(
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
 
-    new_endpoint_data: List[Any] = []
-    endpoint_data: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     try:
         v1_client.consume_endpoint_data(
             lambda endpoint_data: new_endpoint_data.append(endpoint_data),
-            pytmv1.QueryOp(query_op),
-            endpoint,
+            query_op,
+            *endpoint_list,
         )
     except Exception as e:
         raise RuntimeError(f"Something went wrong while fetching endpoint data: {e}")
@@ -858,6 +897,7 @@ def get_endpoint_info(
     endpoint_data_resp: List[Dict[str, Any]] = []
     for endpoint in new_endpoint_data:
         endpoint_data_resp.append(endpoint.dict())
+    # Check if endpoint(s) returned
     if len(endpoint_data_resp) == 0:
         message = {"error": f"No endpoint found. Please check endpoint {endpoint}."}
         return CommandResults(
@@ -871,31 +911,15 @@ def get_endpoint_info(
             outputs=message,
         )
     else:
-        endpoint_data = {
-            "status": "success",
-            "logonAccount": endpoint_data_resp[0]
-            .get("login_account", {})
-            .get("value", ""),
-            "hostname": endpoint_data_resp[0].get("endpoint_name", {}).get("value", ""),
-            "macAddr": endpoint_data_resp[0].get("mac_address", {}).get("value", ""),
-            "ip": endpoint_data_resp[0].get("ip", {}).get("value", [])[0],
-            "osName": endpoint_data_resp[0].get("os_name", ""),
-            "osVersion": endpoint_data_resp[0].get("os_version", ""),
-            "osDescription": endpoint_data_resp[0].get("os_description"),
-            "productCode": endpoint_data_resp[0].get("product_code"),
-            "agentGuid": endpoint_data_resp[0].get("agent_guid"),
-            "installedProductCodes": endpoint_data_resp[0].get(
-                "installed_product_codes", []
-            )[0],
-        }
+        message = {"multi_response": endpoint_data_resp}
 
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[GET_ENDPOINT_INFO_COMMAND], endpoint_data, removeNull=True
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
-        outputs_key_field="hostname",
-        outputs=endpoint_data,
+        outputs_key_field="multi_response",
+        outputs=message,
     )
 
 
@@ -922,61 +946,63 @@ def add_or_remove_from_block_list(
     """
     # Required Params
     block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
-    multi_resp: List[MsData] = []
+    block_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     if command == ADD_BLOCKLIST_COMMAND:
-        # Make rest call
-        for block in block_objects:
-            resp = v1_client.add_to_block_list(
-                pytmv1.ObjectTask(
-                    object_type=_get_ot_enum(block[OBJECT_TYPE]),
-                    object_value=block[OBJECT_VALUE],
-                    description=block.get(DESCRIPTION, "Add To Blocklist."),
+        # Create block task list
+        for obj in block_objects:
+            block_tasks.append(
+                ObjectTask(
+                    object_type=_get_ot_enum(obj["object_type"]),
+                    object_value=obj["object_value"],
+                    description=obj.get("description", "Add To Blocklist"),
                 )
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.BlockList",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Make rest call
+        resp = v1_client.add_to_block_list(*block_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.BlockList",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     if command == REMOVE_BLOCKLIST_COMMAND:
-        # Make rest call
-        for block in block_objects:
-            resp = v1_client.remove_from_block_list(
-                pytmv1.ObjectTask(
-                    object_type=_get_ot_enum(block[OBJECT_TYPE]),
-                    object_value=block[OBJECT_VALUE],
-                    description=block.get(DESCRIPTION, "Add To Blocklist."),
+        # Create unblock task list
+        for obj in block_objects:
+            block_tasks.append(
+                ObjectTask(
+                    object_type=_get_ot_enum(obj["object_type"]),
+                    object_value=obj["object_value"],
+                    description=obj.get("description", "Remove from Blocklist"),
                 )
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.BlockList",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Make rest call
+        resp = v1_client.remove_from_block_list(*block_tasks)
+        # Check if an error occurred for each call
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.BlockList",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     return CommandResults(
         readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
@@ -1054,77 +1080,80 @@ def quarantine_or_delete_email_message(
         args.get("email_identifiers", [{}])
     )
     message: Dict[str, Any] = {}
-    multi_resp: List[MsData] = []
+    email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == QUARANTINE_EMAIL_COMMAND:
+        # Create email task list
+        for email in email_identifiers:
+            if email.get(MESSAGE_ID, EMPTY_STRING):
+                email_tasks.append(
+                    EmailMessageIdTask(
+                        message_id=email[MESSAGE_ID],
+                        description=email.get(DESCRIPTION, QUARANTINE_EMAIL),
+                        mail_box=email.get(MAILBOX, EMPTY_STRING),
+                    )
+                )
+            elif email.get(UNIQUE_ID, EMPTY_STRING):
+                email_tasks.append(
+                    EmailMessageUIdTask(
+                        unique_id=email[UNIQUE_ID],
+                        description=email.get(DESCRIPTION, QUARANTINE_EMAIL),
+                    )
+                )
         # Make rest call
-        for msg in email_identifiers:
-            if msg[MESSAGE_ID].startswith("<") and msg[MESSAGE_ID].endswith(">"):
-                resp = v1_client.quarantine_email_message(
-                    pytmv1.EmailMessageIdTask(
-                        message_id=msg[MESSAGE_ID],
-                        description=msg.get(DESCRIPTION, "Quarantine Email Message."),
-                        mail_box=msg.get(MAILBOX, EMPTY_STRING),
-                    )
-                )
-            else:
-                resp = v1_client.quarantine_email_message(
-                    pytmv1.EmailMessageUIdTask(
-                        unique_id=msg[MESSAGE_ID],
-                        description=msg.get(DESCRIPTION, "Quarantine Email Message."),
-                    )
-                )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Email",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        resp = v1_client.quarantine_email_message(*email_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Email",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     if command == DELETE_EMAIL_COMMAND:
+        # Create email task list
+        for email in email_identifiers:
+            if email.get(MESSAGE_ID, EMPTY_STRING):
+                email_tasks.append(
+                    EmailMessageIdTask(
+                        message_id=email[MESSAGE_ID],
+                        description=email.get(DESCRIPTION, DELETE_EMAIL),
+                        mail_box=email.get(MAILBOX, EMPTY_STRING),
+                    )
+                )
+            elif email.get(UNIQUE_ID, EMPTY_STRING):
+                email_tasks.append(
+                    EmailMessageUIdTask(
+                        unique_id=email[UNIQUE_ID],
+                        description=email.get(DESCRIPTION, DELETE_EMAIL),
+                    )
+                )
         # Make rest call
-        for msg in email_identifiers:
-            if msg[MESSAGE_ID].startswith("<") and msg[MESSAGE_ID].endswith(">"):
-                resp = v1_client.delete_email_message(
-                    pytmv1.EmailMessageIdTask(
-                        message_id=msg[MESSAGE_ID],
-                        description=msg.get(DESCRIPTION, "Delete Email Message."),
-                        mail_box=msg.get(MAILBOX, EMPTY_STRING),
-                    )
-                )
-            else:
-                resp = v1_client.delete_email_message(
-                    pytmv1.EmailMessageUIdTask(
-                        unique_id=msg[MESSAGE_ID],
-                        description=msg.get(DESCRIPTION, "Delete Email Message."),
-                    )
-                )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Email",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        resp = v1_client.delete_email_message(*email_tasks)
+        # Check if an error occurred for each call
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Email",
+                outputs_key_field="error",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     return CommandResults(
         readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
@@ -1160,57 +1189,77 @@ def isolate_or_restore_connection(
         args.get("endpoint_identifiers", [{}])
     )
     message: Dict[str, Any] = {}
-    multi_resp: List[MsData] = []
+    endpt_tasks: List[EndpointTask] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ISOLATE_ENDPOINT_COMMAND:
-        for endpnt in endpoint_identifiers:
-            resp = v1_client.isolate_endpoint(
-                pytmv1.EndpointTask(
-                    endpoint_name=endpnt[ENDPOINT],
-                    description=endpnt.get(DESCRIPTION, "Isolate Endpoint connection."),
+        # Create endpoint task list
+        for endpt in endpoint_identifiers:
+            if endpt.get(ENDPOINT, EMPTY_STRING):
+                endpt_tasks.append(
+                    EndpointTask(
+                        endpoint_name=endpt[ENDPOINT],
+                        description=endpt.get(DESCRIPTION, "Isolate Endpoint."),
+                    )
                 )
+            elif endpt.get(AGENT_GUID, EMPTY_STRING):
+                endpt_tasks.append(
+                    EndpointTask(
+                        agent_guid=endpt[AGENT_GUID],
+                        description=endpt.get(DESCRIPTION, "Isolate Endpoint"),
+                    )  # type: ignore
+                )
+        # Make rest call
+        resp = v1_client.isolate_endpoint(*endpt_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Endpoint_Connection",
+                outputs_key_field="message",
+                outputs=resp.errors,
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Endpoint_Connection",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     if command == RESTORE_ENDPOINT_COMMAND:
-        for endpnt in endpoint_identifiers:
-            resp = v1_client.restore_endpoint(
-                pytmv1.EndpointTask(
-                    endpoint_name=endpnt[ENDPOINT],
-                    description=endpnt.get(DESCRIPTION, "Restore Endpoint connection."),
+        # Create endpoint task list
+        for endpt in endpoint_identifiers:
+            if endpt.get(ENDPOINT, EMPTY_STRING):
+                endpt_tasks.append(
+                    EndpointTask(
+                        endpoint_name=endpt[ENDPOINT],
+                        description=endpt.get(DESCRIPTION, "Restore Endpoint."),
+                    )
                 )
+            elif endpt.get(AGENT_GUID, EMPTY_STRING):
+                endpt_tasks.append(
+                    EndpointTask(
+                        agent_guid=endpt[AGENT_GUID],
+                        description=endpt.get(DESCRIPTION, "Restore Endpoint."),
+                    )  # type: ignore
+                )
+        # Make rest call
+        resp = v1_client.restore_endpoint(*endpt_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Endpoint_Connection",
+                outputs_key_field="message",
+                outputs=resp.errors,
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Endpoint_Connection",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
 
     return CommandResults(
         readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
@@ -1240,36 +1289,44 @@ def terminate_process(
     process_identifiers: List[Dict[str, str]] = json.loads(
         args.get("process_identifiers", [{}])
     )
-    multi_resp: List[MsData] = []
+    process_tasks: List[ProcessTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
-    # Make rest call
+    # Create process task list
     for process in process_identifiers:
-        resp = v1_client.terminate_process(
-            pytmv1.ProcessTask(
-                endpoint_name=process[ENDPOINT],
-                file_sha1=process[FILE_SHA],
-                description=process.get(DESCRIPTION, "Terminate Process."),
-                file_name=process.get(FILE_NAME, EMPTY_STRING),
+        if process.get("endpoint"):
+            process_tasks.append(
+                ProcessTask(
+                    endpoint_name=process["endpoint"],
+                    file_sha1=process["file_sha1"],
+                    description=process.get("description", "Terminate Process."),
+                    file_name=process.get("filename", ""),
+                )
             )
+        elif process.get(AGENT_GUID):
+            process_tasks.append(
+                ProcessTask(
+                    agent_guid=process[AGENT_GUID],
+                    file_sha1=process["file_sha1"],
+                    description=process.get("description", "Terminate Process."),
+                    file_name=process.get("filename", ""),
+                )  # type: ignore
+            )
+    # Make rest call
+    resp = v1_client.terminate_process(*process_tasks)
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[TABLE_TERMINATE_PROCESS], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Terminate_Process",
+            outputs_key_field="message",
+            outputs=resp.errors,
         )
-        # Check if an error occurred for each call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[TABLE_TERMINATE_PROCESS], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Terminate_Process",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Append values to multi_status on successful call
-        else:
-            multi_resp.append(unwrap(resp.response).items[0])
-        # Aggregate of all results to be sent to the War Room
-        message = {"multi_response": [item.dict() for item in multi_resp]}
+    # Add results to message to be sent to the War Room
+    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1305,66 +1362,68 @@ def add_or_delete_from_exception_list(
     # Required Params
     block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
 
-    multi_resp: List[MsData] = []
+    excp_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
-        # Make rest call
-        for block in block_objects:
-            resp = v1_client.add_to_exception_list(
-                pytmv1.ObjectTask(
-                    object_type=_get_ot_enum(block[OBJECT_TYPE]),
-                    object_value=block[OBJECT_VALUE],
-                    description=block.get(DESCRIPTION, "Add To Exception List."),
+        # Create exception task list
+        for obj in block_objects:
+            excp_tasks.append(
+                ObjectTask(
+                    object_type=_get_ot_enum(obj[OBJECT_TYPE]),
+                    object_value=obj[OBJECT_VALUE],
+                    description=obj.get(DESCRIPTION, "Add To Exception List."),
                 )
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Exception_List",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
+        # Make rest call
+        resp = v1_client.add_to_exception_list(*excp_tasks)
+        # Check if an error occurred
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Exception_List",
+                outputs_key_field="message",
+                outputs=resp.errors,
+            )
+        message = {
+            "message": "success",
+            "multi_response": [item.dict() for item in unwrap(resp.response).items],
+        }
 
     if command == DELETE_EXCEPTION_LIST_COMMAND:
-        # Make rest call
-        for block in block_objects:
-            resp = v1_client.remove_from_exception_list(
-                pytmv1.ObjectTask(
-                    object_type=_get_ot_enum(block[OBJECT_TYPE]),
-                    object_value=block[OBJECT_VALUE],
-                    description=block.get(DESCRIPTION, "Delete From Exception List."),
+        # Create exception task list
+        for obj in block_objects:
+            excp_tasks.append(
+                ObjectTask(
+                    object_type=_get_ot_enum(obj[OBJECT_TYPE]),
+                    object_value=obj[OBJECT_VALUE],
+                    description=obj.get(DESCRIPTION, "Delete from Exception List."),
                 )
             )
-            # Check if an error occurred for each call
-            if (err := _is_pytmv1_error(resp)) is not None:
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        table_name[command], err, removeNull=True
-                    ),
-                    outputs_prefix="VisionOne.Exception_List",
-                    outputs_key_field="error",
-                    outputs=err,
-                )
-            # Append values to multi_status on successful call
-            else:
-                multi_resp.append(unwrap(resp.response).items[0])
-
+        # Make rest call
+        resp = v1_client.remove_from_exception_list(*excp_tasks)
+        # Check if an error occurred for each call
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Exception_List",
+                outputs_key_field="message",
+                outputs=resp.errors,
+            )
+        message = {
+            "message": "success",
+            "multi_response": [item.dict() for item in unwrap(resp.response).items],
+        }
+    # Get the total count of items in exception list
     exception_list_count = client.exception_list_count()
-    # Aggregate of all results to be sent to the War Room
-    message = {
-        "message": "success",
-        "multi_response": [item.dict() for item in multi_resp],
-        "total_items": exception_list_count,
-    }
+    # Add count of total exception items to message
+    message["total_items"] = exception_list_count
     return CommandResults(
         readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
         outputs_prefix="VisionOne.Exception_List",
@@ -1392,39 +1451,40 @@ def add_to_suspicious_list(
     # Required Params
     block_objects: List[Dict[str, Any]] = json.loads(args.get("block_objects", [{}]))
 
-    multi_resp: List[MsData] = []
+    suspicious_tasks: List[SuspiciousObjectTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+    # Create suspicious task list
     for block in block_objects:
-        resp = v1_client.add_to_suspicious_list(
-            pytmv1.SuspiciousObjectTask(
+        suspicious_tasks.append(
+            SuspiciousObjectTask(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
                 object_value=block[OBJECT_VALUE],
                 scan_action=block.get(SCAN_ACTION, BLOCK),
                 risk_level=block.get(RISK_LEVEL, MEDIUM),
                 days_to_expiration=block.get(EXPIRY_DAYS, 30),
+                description=block.get(DESCRIPTION, ADD_SUSPICIOUS),
             )
         )
-        # Check if an error occurred for each call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[ADD_SUSPICIOUS_LIST_COMMAND], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Suspicious_List",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Append values to multi_status on successful call
-        else:
-            multi_resp.append(unwrap(resp.response).items[0])
-
+    # Make rest call
+    resp = v1_client.add_to_suspicious_list(*suspicious_tasks)
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[ADD_SUSPICIOUS_LIST_COMMAND], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Suspicious_List",
+            outputs_key_field="message",
+            outputs=resp.errors,
+        )
+    # Get the total count of items in suspicious list
     suspicious_list_count = client.suspicious_list_count()
-
+    # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in multi_resp],
+        "multi_response": [item.dict() for item in unwrap(resp.response).items],
         "total_items": suspicious_list_count,
     }
     return CommandResults(
@@ -1456,38 +1516,37 @@ def delete_from_suspicious_list(
     # Required Params
     block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
 
-    multi_resp: List[MsData] = []
+    suspicious_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
 
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # Make rest call
+    # Create suspicious task list
     for block in block_objects:
-        resp = v1_client.remove_from_suspicious_list(
-            pytmv1.ObjectTask(
+        suspicious_tasks.append(
+            ObjectTask(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
                 object_value=block[OBJECT_VALUE],
+                description=block.get(DESCRIPTION, DELETE_SUSPICIOUS),
             )
         )
-        # Check if an error occurred for each call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[DELETE_SUSPICIOUS_LIST_COMMAND], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Suspicious_List",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Append values to multi_status on successful call
-        else:
-            multi_resp.append(unwrap(resp.response).items[0])
-    # Fetch suspicious list count
+    # Make rest call
+    resp = v1_client.remove_from_suspicious_list(*suspicious_tasks)
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[DELETE_SUSPICIOUS_LIST_COMMAND], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Suspicious_List",
+            outputs_key_field="message",
+            outputs=resp.errors,
+        )
+    # Get the total count of items in suspicious list
     suspicious_list_count = client.suspicious_list_count()
-
+    # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in multi_resp],
+        "multi_response": [item.dict() for item in unwrap(resp.response).items],
         "total_items": suspicious_list_count,
     }
     return CommandResults(
@@ -1524,30 +1583,30 @@ def get_file_analysis_status(
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
-
-    # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[GET_FILE_ANALYSIS_STATUS_COMMAND], err, removeNull=True
+                table_name[GET_FILE_ANALYSIS_STATUS_COMMAND],
+                resp.error,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.File_Analysis_Status",
             outputs_key_field="error",
-            outputs=err,
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "status": unwrap(resp.response).status,
-            "id": unwrap(resp.response).id,
-            "action": unwrap(resp.response).action,
-            "createdDateTime": unwrap(resp.response).created_date_time,
-            "lastActionDateTime": unwrap(resp.response).last_action_date_time,
-            "resourceLocation": unwrap(resp.response).resource_location,
-            "isCached": unwrap(resp.response).is_cached,
-            "digest": unwrap(resp.response).digest,
-            "arguments": unwrap(resp.response).arguments,
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "id": unwrap(resp.response).id,
+        "status": unwrap(resp.response).status,
+        "action": unwrap(resp.response).action,
+        "digest": unwrap(resp.response).digest,
+        "isCached": unwrap(resp.response).is_cached,
+        "arguments": unwrap(resp.response).arguments,
+        "createdDateTime": unwrap(resp.response).created_date_time,
+        "resourceLocation": unwrap(resp.response).resource_location,
+        "lastActionDateTime": unwrap(resp.response).last_action_date_time,
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1574,7 +1633,7 @@ def get_file_analysis_result(
     # Required Params
     report_id = args.get(REPORT_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, FALSE)
+    poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
@@ -1586,65 +1645,65 @@ def get_file_analysis_result(
         poll_time_sec=poll_time_sec,  # type: ignore
     )
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], err, removeNull=True
+                table_name[GET_FILE_ANALYSIS_RESULT_COMMAND],
+                resp.error,
+                removeNull=True,
             ),
-            outputs_prefix="VisionOne.File_Analysis_Report",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_prefix="VisionOne.File_Analysis_Result",
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        reliability = demisto.params().get("integrationReliability")
-        risk = unwrap(resp.response).risk_level
-        risk_score = incident_severity_to_dbot_score(risk)
-        digest = unwrap(resp.response).digest
-        sha256 = unwrap(digest).sha256
-        md5 = unwrap(digest).md5
-        sha1 = unwrap(digest).sha1
-        # Create DBot Score
-        dbot_score = Common.DBotScore(
-            indicator=sha256,
-            indicator_type=DBotScoreType.FILE,
-            integration_name=VENDOR_NAME,
-            score=risk_score,
-            reliability=reliability,
-        )
-        # Create file
-        file_entry = Common.File(
-            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
-        )
-        message = {
-            "status_code": resp.result_code,
-            "message": "success",
-            "report_id": unwrap(resp.response).id,
-            "type": unwrap(resp.response).type,
-            "digest": unwrap(resp.response).digest,
-            "arguments": unwrap(resp.response).arguments,
-            "analysisCompletionDateTime": unwrap(
-                resp.response
-            ).analysis_completion_date_time,
-            "riskLevel": unwrap(resp.response).risk_level,
-            "detectionNames": unwrap(resp.response).detection_names,
-            "threatTypes": unwrap(resp.response).threat_types,
-            "trueFileType": unwrap(resp.response).true_file_type,
-            "DBotScore": {
-                "Score": dbot_score.score,
-                "Vendor": dbot_score.integration_name,
-                "Reliability": dbot_score.reliability,
-            },
-        }
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True
-            ),
-            outputs_prefix="VisionOne.File_Analysis_Report",
-            outputs_key_field="report_id",
-            outputs=message,
-            indicator=file_entry,
-        )
+    # Extract values on successful call
+    reliability = demisto.params().get("integrationReliability")
+    risk = unwrap(resp.response).risk_level
+    risk_score = incident_severity_to_dbot_score(risk)
+    digest = unwrap(resp.response).digest
+    sha256 = unwrap(digest).sha256
+    md5 = unwrap(digest).md5
+    sha1 = unwrap(digest).sha1
+    # Create DBot Score
+    dbot_score = Common.DBotScore(
+        indicator=sha256,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=VENDOR_NAME,
+        score=risk_score,
+        reliability=reliability,
+    )
+    # Create file
+    file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
+    # Add results to message to be sent to the War Room
+    message = {
+        "status_code": resp.result_code,
+        "message": "success",
+        "report_id": unwrap(resp.response).id,
+        "type": unwrap(resp.response).type,
+        "digest": unwrap(resp.response).digest,
+        "arguments": unwrap(resp.response).arguments,
+        "analysisCompletionDateTime": unwrap(
+            resp.response
+        ).analysis_completion_date_time,
+        "riskLevel": unwrap(resp.response).risk_level,
+        "detectionNames": unwrap(resp.response).detection_names,
+        "threatTypes": unwrap(resp.response).threat_types,
+        "trueFileType": unwrap(resp.response).true_file_type,
+        "DBotScore": {
+            "Score": dbot_score.score,
+            "Vendor": dbot_score.integration_name,
+            "Reliability": dbot_score.reliability,
+        },
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.File_Analysis_Result",
+        outputs_key_field="report_id",
+        outputs=message,
+        indicator=file_entry,
+    )
 
 
 def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
@@ -1660,34 +1719,43 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     # Required Params
     collect_files: List[Dict[str, str]] = json.loads(args.get("collect_files", [{}]))
 
-    multi_resp: List[MsData] = []
+    # Create file task list
+    file_tasks: List[FileTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # Make rest call
-    for data in collect_files:
-        resp = v1_client.collect_file(
-            pytmv1.FileTask(
-                endpoint_name=data[ENDPOINT],
-                file_path=data[FILE_PATH],
-                description=data.get(DESCRIPTION, "Collect File."),
+    # Create file task list
+    for file in collect_files:
+        if file.get(ENDPOINT, EMPTY_STRING):
+            file_tasks.append(
+                FileTask(
+                    endpoint_name=file[ENDPOINT],
+                    file_path=file[FILE_PATH],
+                    description=file.get(DESCRIPTION, "Collect File."),
+                )
             )
-        )
-        # Check if an error occurred during rest call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[TABLE_COLLECT_FILE], err, removeNull=True
-                ),
-                outputs_prefix="VisionOne.Collect_Forensic_File",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Assign values on a successful call
         else:
-            multi_resp.append(unwrap(resp.response).items[0])
+            file_tasks.append(
+                FileTask(
+                    agent_guid=file[AGENT_GUID],
+                    file_path=file[FILE_PATH],
+                    description=file.get(DESCRIPTION, "Collect File."),
+                )  # type: ignore
+            )
+    # Make rest call
+    resp = v1_client.collect_file(*file_tasks)
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[COLLECT_FILE_COMMAND], resp.errors, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Collect_Forensic_File",
+            outputs_key_field="message",
+            outputs=resp.errors,
+        )
 
-    message = {"multi_response": [item.dict() for item in multi_resp]}
+    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
 
     return CommandResults(
         readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message, removeNull=True),
@@ -1713,43 +1781,52 @@ def download_information_collected_file(
     # Required Params
     task_id = args.get(TASKID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, FALSE)
+    poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
-    resp = v1_client.get_base_task_result(
+    resp = v1_client.get_task_result(
         task_id=task_id,
+        class_=CollectFileTaskResp,
         poll=poll,
         poll_time_sec=poll_time_sec,
     )
-    # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[DOWNLOAD_COLLECTED_FILE_COMMAND], err, removeNull=True
+                table_name[DOWNLOAD_COLLECTED_FILE_COMMAND], resp.error, removeNull=True
             ),
             outputs_prefix="VisionOne.Download_Information_For_Collected_Forensic_File",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "taskId": unwrap(resp.response).id,
-            "status": unwrap(resp.response).status,
-            "createdDateTime": unwrap(resp.response).created_date_time,
-            "lastActionDateTime": unwrap(resp.response).last_action_date_time,
-            "action": unwrap(resp.response).action,
-            "description": unwrap(resp.response).description,
-            "account": unwrap(resp.response).account,
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "taskId": unwrap(resp.response).id,
+        "status": unwrap(resp.response).status,
+        "createdDateTime": unwrap(resp.response).created_date_time,
+        "lastActionDateTime": unwrap(resp.response).last_action_date_time,
+        "action": unwrap(resp.response).action,
+        "description": unwrap(resp.response).description,
+        "account": unwrap(resp.response).account,
+        "agentGuid": unwrap(resp.response).agent_guid,
+        "endpointName": unwrap(resp.response).endpoint_name,
+        "filePath": unwrap(resp.response).file_path,
+        "fileSha1": unwrap(resp.response).file_sha1,
+        "fileSha256": unwrap(resp.response).file_sha256,
+        "fileSize": unwrap(resp.response).file_size,
+        "resourceLocation": unwrap(resp.response).resource_location,
+        "password": unwrap(resp.response).password,
+        "expiredDateTime": unwrap(resp.response).expired_date_time,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DOWNLOAD_COLLECTED_FILE_COMMAND], message, removeNull=True
         ),
         outputs_prefix=("VisionOne.Download_Information_For_Collected_Forensic_File"),
-        outputs_key_field="taskId",
+        outputs_key_field="resourceLocation",
         outputs=message,
     )
 
@@ -1770,9 +1847,9 @@ def download_analysis_report(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, FALSE)
+    poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
-    file_name = args.get(FILE_NAME)
+    file_name = args.get(FILE_NAME, EMPTY_STRING)
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -1786,19 +1863,20 @@ def download_analysis_report(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
     )
 
-    # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[DOWNLOAD_ANALYSIS_REPORT_COMMAND], err, removeNull=True
+                table_name[DOWNLOAD_ANALYSIS_REPORT_COMMAND],
+                resp.error,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.Download_Analysis_Report",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        data = unwrap(resp.response).content
+    # Extract content value on successful call
+    data = unwrap(resp.response).content
 
     resp_msg = "Please click download to download PDF Report."
     # fileResult takes response data and creates a file with
@@ -1838,35 +1916,35 @@ def download_investigation_package(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, FALSE)
+    poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
-    file_name = args.get(FILE_NAME)
+    file_name = args.get(FILE_NAME, EMPTY_STRING)
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # If a file name is not provided, default value of
-    # Sandbox_Investigation_Package is set for the package.
+    # If a file name is not provided, default value of Sandbox_Investigation_Package is set.
     if not file_name:
         name = "Sandbox_Investigation_Package"
-        file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
+        file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
 
     # Make rest call
     resp = v1_client.download_sandbox_investigation_package(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
     )
 
-    # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND], err, removeNull=True
+                table_name[DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND],
+                resp.error,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.Download_Investigation_Package",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        data = unwrap(resp.response).content
+    # Extract content value on successful call
+    data = unwrap(resp.response).content
 
     resp_msg = "Please click download to download .zip file."
     # fileResult takes response data and creates a file with
@@ -1910,38 +1988,32 @@ def download_suspicious_object_list(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, FALSE)
+    poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    suspicious_objects: List[Dict[str, str]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_suspicious_list(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
     )
-    # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Download_Suspicious_Object_list",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "code": resp.result_code,
-            "riskLevel": unwrap(resp.response).items[0].risk_level,
-            "analysisCompletionDateTime": unwrap(resp.response)
-            .items[0]
-            .analysis_completion_date_time,
-            "expiredDateTime": unwrap(resp.response).items[0].expired_date_time,
-            "rootSha1": unwrap(resp.response).items[0].root_sha1,
-            "ip": unwrap(resp.response).items[0].value,
-        }
+    # Extract suspicious objects from response
+    for item in unwrap(resp.response).items:
+        suspicious_objects.append(item.dict())
+    # Add results to message to be sent to the War Room
+    message = {"multi_response": suspicious_objects}
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND],
@@ -1949,7 +2021,7 @@ def download_suspicious_object_list(
             removeNull=True,
         ),
         outputs_prefix="VisionOne.Download_Suspicious_Object_list",
-        outputs_key_field="riskLevel",
+        outputs_key_field="multi_response",
         outputs=message,
     )
 
@@ -1967,7 +2039,7 @@ def submit_file_to_sandbox(
     :rtype: ``dict`
     """
     # Required Params
-    file_path = args.get(FILE_PATH, b"")
+    file_path = args.get(FILE_PATH, EMPTY_BYTE)
     file_name = args.get(FILE_NAME, EMPTY_STRING)
     # Optional Params
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
@@ -1984,26 +2056,25 @@ def submit_file_to_sandbox(
         arguments=arguments,
     )
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[FILE_TO_SANDBOX_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Submit_File_to_Sandbox",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "message": resp.result_code,
-            "code": 202,
-            "task_id": unwrap(resp.response).id,
-            "digest": unwrap(resp.response).digest,
-            "arguments": unwrap(resp.response).arguments,
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "code": 202,
+        "message": resp.result_code,
+        "task_id": unwrap(resp.response).id,
+        "digest": unwrap(resp.response).digest,
+        "arguments": unwrap(resp.response).arguments,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[FILE_TO_SANDBOX_COMMAND], message, removeNull=True
@@ -2036,8 +2107,8 @@ def submit_file_entry_to_sandbox(
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Use entry ID to get file details from demisto
     file_ = demisto.getFilePath(entry)
-    file_name = file_.get("name", EMPTY_STRING)
-    file_path = file_.get("path", b"")
+    file_name = file_.get(NAME, EMPTY_STRING)
+    file_path = file_.get(PATH, EMPTY_BYTE)
     with open(file_path, "rb") as f:
         contents = f.read()
     # Make rest call
@@ -2049,29 +2120,28 @@ def submit_file_entry_to_sandbox(
         arguments=arguments,
     )
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[FILE_ENTRY_TO_SANDBOX_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Submit_File_Entry_to_Sandbox",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "code": 202,
-            "message": resp.result_code,
-            "filename": file_name,
-            "entryId": entry,
-            "file_path": file_.get("path", EMPTY_STRING),
-            "task_id": unwrap(resp.response).id,
-            "digest": unwrap(resp.response).digest,
-            "arguments": unwrap(resp.response).arguments,
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "code": 202,
+        "message": resp.result_code,
+        "filename": file_name,
+        "entryId": entry,
+        "file_path": file_path,
+        "task_id": unwrap(resp.response).id,
+        "digest": unwrap(resp.response).digest,
+        "arguments": unwrap(resp.response).arguments,
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2099,37 +2169,36 @@ def submit_urls_to_sandbox(
     urls: List[str] = json.loads(args.get("urls", []))
 
     message: Dict[str, Any] = {}
-    submit_urls_resp: List[MsData] = []
+    submit_urls_resp: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Make rest call
-    for url in urls:
-        resp = v1_client.submit_urls_to_sandbox(url)
-        # Check if an error occurred during rest call
-        if (err := _is_pytmv1_error(resp)) is not None:
-            return CommandResults(
-                readable_output=tableToMarkdown(
-                    table_name[URLS_TO_SANDBOX_COMMAND],
-                    err,
-                    removeNull=True,
-                ),
-                outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
-                outputs_key_field="error",
-                outputs=err,
-            )
-        # Add values to message on successful call
-        else:
-            submit_urls_resp.append(unwrap(resp.response).items[0])
+    resp = v1_client.submit_urls_to_sandbox(*urls)
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[URLS_TO_SANDBOX_COMMAND],
+                resp.errors,
+                removeNull=True,
+            ),
+            outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
+            outputs_key_field="message",
+            outputs=resp.errors,
+        )
+    for item in unwrap(resp.response).items:
+        submit_urls_resp.append(item.dict())
 
-    message = {"submit_urls_resp": [item.dict() for item in submit_urls_resp]}
+    # Add results to message to be sent to the War Room
+    message = {"multi_response": submit_urls_resp}
 
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[URLS_TO_SANDBOX_COMMAND], message, removeNull=True
         ),
         outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
-        outputs_key_field="submit_urls_resp",
+        outputs_key_field="multi_response",
         outputs=message,
     )
 
@@ -2155,22 +2224,22 @@ def get_alert_details(
     # Make rest call
     resp = v1_client.get_alert_details(alert_id=workbench_id)
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[GET_ALERT_DETAILS_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Alert_Details",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        etag = unwrap(resp.response).etag
-        alert = unwrap(resp.response).alert.json()
-        message = {"etag": etag, "alert": alert}
+    # Extract values from response
+    etag = unwrap(resp.response).etag
+    alert = unwrap(resp.response).alert.json()
+    # Add results to message to be sent to the War Room
+    message = {"etag": etag, "alert": alert}
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2202,24 +2271,23 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     # Make rest call
     resp = v1_client.add_alert_note(alert_id=workbench_id, note=content)
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[ADD_NOTE_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Add_Note",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "code": 201,
-            "message": resp.result_code,
-            "note_id": unwrap(resp.response).note_id,
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "code": 201,
+        "message": f"Note has been successfully added to {workbench_id}",
+        "note_id": unwrap(resp.response).note_id(),
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[ADD_NOTE_COMMAND], message, removeNull=True
@@ -2267,24 +2335,23 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
         alert_id=workbench_id, status=status, if_match=if_match
     )
     # Check if an error occurred during rest call
-    if (err := _is_pytmv1_error(resp)) is not None:
+    if _is_pytmv1_error(resp.result_code):
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[UPDATE_STATUS_COMMAND],
-                err,
+                resp.error,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Update_Status",
-            outputs_key_field="error",
-            outputs=err,
+            outputs_key_field="message",
+            outputs=resp.error,
         )
-    # Add values to message on successful call
-    else:
-        message = {
-            "Workbench_Id": workbench_id,
-            "code": 204,
-            "message": f"Workbench status has been updated to {status}",
-        }
+    # Add results to message to be sent to the War Room
+    message = {
+        "code": 204,
+        "Workbench_Id": workbench_id,
+        "message": f"Successfully updated status for {workbench_id} to {status}.",
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[UPDATE_STATUS_COMMAND], message, removeNull=True
