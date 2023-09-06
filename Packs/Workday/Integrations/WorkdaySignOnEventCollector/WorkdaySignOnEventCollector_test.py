@@ -1,6 +1,6 @@
 import json
 import unittest
-from typing import Any, Set
+from typing import Any
 from unittest.mock import patch
 from freezegun import freeze_time
 
@@ -122,7 +122,7 @@ def test_generate_pseudo_id() -> None:
             "found.\nError: 'Signon_DateTime'"
         )
     else:
-        assert False, "Expected DemistoException but did not get one"
+        raise AssertionError("Expected DemistoException but did not get one")
 
     # Given: An event dictionary missing the "Signon_DateTime" key.
     event3 = {
@@ -136,7 +136,7 @@ def test_generate_pseudo_id() -> None:
     except DemistoException:
         pass
     else:
-        assert False, "Expected DemistoException but did not get one"
+        raise AssertionError("Expected DemistoException but did not get one")
 
     # Given: A large event dictionary.
     event4 = {str(i): i for i in range(10000)}  # Create a large dictionary
@@ -179,7 +179,7 @@ def test_process_and_filter_events() -> None:
         },
     ]
     from_time: str = "2021-09-01T12:00:00Z"
-    previous_run_pseudo_ids: Set[
+    previous_run_pseudo_ids: set[
         Any
     ] = set()  # Assume no previous checksums for simplicity
 

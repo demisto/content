@@ -108,7 +108,7 @@ class TestModuleOfTesting(unittest.TestCase):
                 == "Please make sure the long running port is filled and the long running checkbox is marked."
             )
         else:
-            assert False, "Expected DemistoException but did not get one"
+            raise AssertionError("Expected DemistoException but did not get one")
 
 
 class TestMainTestingFunction(unittest.TestCase):
