@@ -56,7 +56,7 @@ args:
   - Undetermined
   - Pass
 - auto: PREDEFINED
-  description: 'Override value for SPF=permerror. '
+  description: 'Override value for SPF=permerror.'
   name: SPF_override_permerror
   predefined:
   - Fail
@@ -167,10 +167,10 @@ enabled: true
 name: CheckEmailAuthenticity
 outputs:
 - contextPath: Email.SPF.MessageID
-  description: SPF ID
+  description: SPF ID.
   type: String
 - contextPath: Email.SPF.Validation-Result
-  description: 'Validation Result. Possible values are "None", "Neutral", "Pass", "Fail", "SoftFail", "TempError", and "PermError". '
+  description: 'Validation Result. Possible values are "None", "Neutral", "Pass", "Fail", "SoftFail", "TempError", and "PermError".'
   type: String
 - contextPath: Email.SPF.Reason
   description: Reason for the SPF result, which is located in the headers of the email.
@@ -191,16 +191,16 @@ outputs:
   description: DMARC reason. Possible values are "None", "Pass", "Fail", "Temperror", and "Permerror".
   type: String
 - contextPath: Email.DMARC.Tags
-  description: DMARC Tags (if found)
+  description: DMARC Tags (if found).
   type: String
 - contextPath: Email.DMARC.From-Domain
-  description: Sender's Domain
+  description: Sender's Domain.
   type: String
 - contextPath: Email.DKIM.Signing-Domain
-  description: Sender's Domain
+  description: Sender's Domain.
   type: String
 - contextPath: Email.AuthenticityCheck
-  description: 'Possible values are be: Fail / Suspicious / Undetermined / Pass'
+  description: 'Possible values are be: Fail / Suspicious / Undetermined / Pass.'
   type: Unknown
 - contextPath: Email.DKIM
   description: DKIM information extracted from the email.
