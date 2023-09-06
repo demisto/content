@@ -1,0 +1,36 @@
+commonfields:
+  id: RunCPPhishingCampaign
+  version: -1
+name: RunCPPhishingCampaign
+script: ""
+type: python
+tags: []
+comment: Search other emails by sender and/or subject and quarantine.
+enabled: true
+args:
+- name: date_range
+  required: true
+  type: String
+  description: Range to cover from the past.
+- name: by_sender
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Get emails from the same sender.
+- name: by_subject
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Get emails with the same subject.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.13.72123
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
