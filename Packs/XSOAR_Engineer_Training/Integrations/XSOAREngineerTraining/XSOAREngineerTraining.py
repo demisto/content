@@ -208,7 +208,7 @@ def simple_response_command(command):
     command_map = {
         'ad-expire-password': 'Expired password successfully',
         'ad-set-new-password': 'User password successfully set',
-        'send-mail': 'notification sent'
+        'send-mail': 'XSOAR Engineer Training: fake email notification not sent'
     }
     return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
 
