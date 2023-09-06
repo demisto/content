@@ -297,9 +297,10 @@ def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_
     pseudo_ids_for_next_iteration = set()
 
     try:
-        from_datetime = datetime.strptime(from_time, REQUEST_DATE_FORMAT).replace(tzinfo=timezone.utc)
-    except ValueError:
         from_datetime = datetime.strptime(from_time, EVENT_DATE_FORMAT).replace(tzinfo=timezone.utc)
+    except ValueError:
+        # On first run, the from_time is in UTC since that is what's sent in the request, this covers this scenario
+        from_datetime = datetime.strptime(from_time, REQUEST_DATE_FORMAT).replace(tzinfo=timezone.utc)
     most_recent_event_time = datetime.min.replace(tzinfo=timezone.utc)
 
     for event in events:
