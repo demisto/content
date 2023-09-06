@@ -673,6 +673,8 @@ Lists the user's shared drives.
 | user_id | The user's primary email address. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
+| corpora | Bodies of items (files/documents) to which the query applies. Prefer 'user' or 'drive' to 'allDrives' for efficiency. By default, corpora is set to 'user'. However, this can change depending on the filter set through the 'query' argument. Possible values are: User, Domain, Drive, All Drivers. Default is User. | Optional | 
+| drive_id | ID of the shared drive to search. | Optional | 
 
 #### Context Output
 
@@ -700,6 +702,7 @@ Get a single file.
 | user_id | The user's primary email address. | Optional | 
 | include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
