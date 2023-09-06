@@ -1358,8 +1358,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                 else:
                     demisto.debug(f"Skipping this step, max number of pull alerts already reached"
                                   f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
-        if inc.get("lastUpdated"):
-            inc_last_update = arg_to_datetime(inc["lastUpdated"])
+        inc_last_update = arg_to_datetime(inc["lastUpdated"])
+        if inc_last_update:
             demisto.debug(f"Incident {inc.get('id')} - "
                           f"Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "
                           f"Need update => {last_update_format.timestamp() < inc_last_update.timestamp()}")
