@@ -947,12 +947,21 @@ def prepare_single_drive_human_readable(outputs_context: dict[str, Any], args: d
 
 
 def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> dict[str, Any]:
+    corpora_values = {
+        'User': 'user',
+        'Domain': 'domain',
+        'Drive': 'drive',
+        'All Drivers': 'allDrives'
+    }
+
     http_request_params: dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
-        supportsAllDrives=args.get('supports_all_drives'),
-        includeItemsFromAllDrives=args.get('include_items_from_all_drives')
+        supportsAllDrives=argToBoolean(args.get('supports_all_drives', False)),
+        includeItemsFromAllDrives=args.get('include_items_from_all_drives'),
+        driveId=args.get('drive_id'),
+        corpora=corpora_values[args.get('corpora', 'User')]
     )
 
     # user_id can be overridden in the args
