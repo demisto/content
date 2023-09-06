@@ -251,7 +251,7 @@ def test_sql_queries_with_empty_table(mocker):
     mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = sql_query_execute(client, ARGS3)
-    assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
+    assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
 
 
 def test_mysql_integration():
@@ -551,6 +551,8 @@ GENERATE_VARS_NAMES_MYSQL = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s and EM
 GENERATE_VARS_NAMES_POSTGRES = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s", "MySQL",
                                 ({"bind_variable_1": 1}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"))
 GENERATE_VARS_NAMES_DO_NOTHING = ([1, 123], "SELECT * FROM TABLE", "MySQL", ({}, "SELECT * FROM TABLE"))
+
+
 @pytest.mark.parametrize('bind_variables_values_list, query, dialect, expected_result',
                          [GENERATE_VARS_NAMES_MSSQL, GENERATE_VARS_NAMES_MYSQL, GENERATE_VARS_NAMES_POSTGRES,
                           GENERATE_VARS_NAMES_DO_NOTHING])

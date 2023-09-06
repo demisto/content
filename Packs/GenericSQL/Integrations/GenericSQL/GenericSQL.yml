@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL - new docker
+  id: Generic SQL
   version: -1
 configuration:
 - defaultvalue: MySQL
@@ -99,8 +99,8 @@ configuration:
   type: 13
   required: false
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
-display: Generic SQL - new docker
-name: Generic SQL - new docker
+display: Generic SQL
+name: Generic SQL
 script:
   commands:
   - arguments:
@@ -159,7 +159,7 @@ script:
       name: bind_variables_values
     description: Running a sql query
     name: sql-command
-  dockerimage: devdemisto/genericsql:1.1.0.72808
+  dockerimage: demisto/genericsql:1.1.0.72505
   isfetch: true
   runonce: false
   script: '-'
