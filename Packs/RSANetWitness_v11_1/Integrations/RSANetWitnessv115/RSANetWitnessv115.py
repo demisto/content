@@ -1335,7 +1335,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     since = datetime_now - timedelta(days=max_time_mirror_inc)
     since_format = since.strftime(DATE_FORMAT)
     until_format = datetime_now.strftime(DATE_FORMAT)
-    response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request, until=until_format, since=since_format)
+    response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request,\
+                                    until=until_format, since=since_format)
 
     demisto.debug(f"Total Retrieved Incidents : {len(items)} in {response.get('totalPages')} pages")
 
@@ -1359,7 +1360,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                                   f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
         if inc.get("lastUpdated"):
             inc_last_update = arg_to_datetime(inc.get("lastUpdated"))
-            demisto.debug(f"Incident {inc.get('id')} - Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "
+            demisto.debug(f"Incident {inc.get('id')} - "
+                          f"Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "
                           f"Need update => {last_update_format.timestamp() < inc_last_update.timestamp()}")
             if last_update_format.timestamp() < inc_last_update.timestamp():
                 modified_incidents_ids.append(inc.get("id"))
