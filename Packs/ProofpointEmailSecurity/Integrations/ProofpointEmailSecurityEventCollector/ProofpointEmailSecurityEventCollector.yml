@@ -11,24 +11,29 @@ configuration:
   type: 0
   defaultvalue: wss://logstream.proofpoint.com:443
   required: true
+  section: Connect
 - display: Cluster ID
   name: cluster_id
   type: 0
   required: true
+  section: Connect
 - displaypassword: API key
   name: api_key
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
 - display: Fetch interval in seconds
   name: fetch_interval
   type: 0
   defaultvalue: 60
   required: true
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Collect
 script:
   script: ""
   type: python
