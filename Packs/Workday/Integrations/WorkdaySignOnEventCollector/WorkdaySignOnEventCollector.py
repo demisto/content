@@ -11,6 +11,7 @@ VENDOR = "workday"
 PRODUCT = "sign_on"
 API_VERSION = "v40.0"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+TIMEDELTA = 1
 
 
 def get_from_time(seconds_ago: int) -> str:
@@ -41,7 +42,7 @@ def fletcher16(data: bytes) -> int:
     return (sum2 << 8) | sum1
 
 
-def generate_checksum(event: dict) -> str:
+def generate_pseudo_id(event: dict) -> str:
     """
     Compute a checksum for the given event using the Fletcher-16 algorithm.
 
@@ -66,7 +67,7 @@ def generate_checksum(event: dict) -> str:
     try:
         unique_id = f"{checksum}_{event['Signon_DateTime']}"
     except KeyError as e:
-        raise DemistoException(f"While calculating the checksum for an event, an event without a Signon_DateTime was "
+        raise DemistoException(f"While calculating the pseudo ID for an event, an event without a Signon_DateTime was "
                                f"found.\nError: {e}")
 
     return unique_id
@@ -87,7 +88,6 @@ class Client(BaseClient):
         verify_certificate: bool,
         proxy: bool,
         tenant_name: str,
-        token: str,
         username: str,
         password: str,
     ):
@@ -97,7 +97,6 @@ class Client(BaseClient):
             base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers
         )
         self.tenant_name = tenant_name
-        self.token = token
         self.username = username
         self.password = password
 
@@ -291,10 +290,10 @@ def convert_to_json(response: str | dict) -> tuple[Dict[str, Any], Dict[str, Any
     return raw_json_response, account_signon_data
 
 
-def process_and_filter_events(events: list, from_time: str, previous_run_checksums: set) -> tuple:
+def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_ids: set) -> tuple:
     non_duplicates = []
-    future_potential_duplicates = []
-    checksums_for_next_iteration = set()
+    duplicates = []
+    pseudo_ids_for_next_iteration = set()
 
     from_datetime = datetime.strptime(from_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     most_recent_event_time = datetime.min.replace(tzinfo=timezone.utc)
@@ -311,23 +310,27 @@ def process_and_filter_events(events: list, from_time: str, previous_run_checksu
 
         # Check for duplicates within ±1 second of from_time
         if abs((event_datetime - from_datetime).total_seconds()) <= 1:
-            event_checksum = generate_checksum(event)
-            if event_checksum not in previous_run_checksums:
+            event_pseudo_id = generate_pseudo_id(event)
+            if event_pseudo_id not in previous_run_pseudo_ids:
                 non_duplicates.append(event)
+            else:
+                duplicates.append(event_pseudo_id)
         else:
             non_duplicates.append(event)
-    # Generate checksums for events within the last second of the most recent event
-    last_second_start_time = most_recent_event_time - timedelta(seconds=1)
+    # Generate pseudo IDs for events within the last second of the most recent event
+    last_second_start_time = most_recent_event_time - timedelta(seconds=TIMEDELTA)
+
+    if duplicates:
+        demisto.debug(f"Found {len(duplicates)} duplicate events: {duplicates}")
 
     for event in non_duplicates:
         event_datetime = datetime.strptime(event["_time"], DATE_FORMAT).replace(tzinfo=timezone.utc)
 
         if event_datetime >= last_second_start_time:
-            event_checksum = generate_checksum(event)
-            checksums_for_next_iteration.add(event_checksum)
-            future_potential_duplicates.append(event)
+            event_pseudo_id = generate_pseudo_id(event)
+            pseudo_ids_for_next_iteration.add(event_pseudo_id)
 
-    return non_duplicates, checksums_for_next_iteration
+    return non_duplicates, pseudo_ids_for_next_iteration
 
 
 def fetch_sign_on_logs(
@@ -432,7 +435,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         from_date = last_run.get("last_fetch_time")
     # Checksums in this context is used as an ID since none is provided directly from Workday.
     # This is to prevent duplicates.
-    previous_run_checksums = last_run.get("previous_run_checksums", {})
+    previous_run_pseudo_ids = last_run.get("previous_run_pseudo_ids", {})
     to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
     sign_on_events = fetch_sign_on_logs(
@@ -440,10 +443,10 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
     )
 
     if sign_on_events:
-        demisto.debug("Got sign_on_events. Begin processing.")
-        non_duplicates, checksums_for_next_iteration = process_and_filter_events(
+        demisto.debug(f"Got {len(sign_on_events)} sign_on_events. Begin processing.")
+        non_duplicates, pseudo_ids_for_next_iteration = process_and_filter_events(
             events=sign_on_events,
-            previous_run_checksums=previous_run_checksums,
+            previous_run_pseudo_ids=previous_run_pseudo_ids,
             from_time=from_date
         )
 
@@ -451,7 +454,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         last_event = non_duplicates[-1]
         last_run = {
             "last_fetch_time": last_event.get('Signon_DateTime'),
-            "previous_run_checksums": checksums_for_next_iteration,
+            "previous_run_pseudo_ids": pseudo_ids_for_next_iteration,
         }
         demisto.debug(f"Saving last run as {last_run}")
     else:
@@ -496,7 +499,6 @@ def main() -> None:  # pragma: no cover
 
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
-    token = params.get("token", {}).get("password")
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -507,7 +509,6 @@ def main() -> None:  # pragma: no cover
         client = Client(
             base_url=url,
             tenant_name=tenant_name,
-            token=token,
             username=username,
             password=password,
             verify_certificate=verify_certificate,
