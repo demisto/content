@@ -872,7 +872,7 @@ def fetch_incidents(client: Client, params: dict) -> list:
             item['alerts'] = fetch_alerts_related_incident(client, inc_id, max_alerts)
 
         item['mirror_instance'] = demisto.integrationInstance()
-        item['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction'))
+        item['mirror_direction'] = MIRROR_DIRECTION.get(str(params.get('mirror_direction')))
 
         incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
@@ -1191,7 +1191,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def xsoar_status_to_rsa_status(xsoar_status: int, xsoar_close_reason: str) -> str:
+def xsoar_status_to_rsa_status(xsoar_status: int, xsoar_close_reason: str) -> str|None:
     """
     xsoar_status_to_rsa_status: Convert XSOAR status to RSA status
     Args:
@@ -1279,7 +1279,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     if fetch_alert:
         grid_alerts = []
         demisto.debug(f'Pulling alerts from incident {inc_id} !')
-        inc_alert_count = response.get('alertCount')
+        inc_alert_count = int(response['alertCount'])
         if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f'{len(alerts)} alerts pulled !')
@@ -1321,8 +1321,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     """
     modified_incidents_ids = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    max_fetch_incidents = int(params.get("max_fetch"))
-    max_fetch_alerts = int(params.get("max_alerts"))
+    max_fetch_incidents = int(params.get("max_fetch", 100))
+    max_fetch_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
     max_time_mirror_inc = min(arg_to_number(params.get("max_mirror_time")) or 3, 24)
     fetch_alert = argToBoolean(params.get("import_alerts", False))
     last_update = remote_args.last_update
@@ -1359,7 +1359,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                     demisto.debug(f"Skipping this step, max number of pull alerts already reached"
                                   f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
         if inc.get("lastUpdated"):
-            inc_last_update = arg_to_datetime(inc.get("lastUpdated"))
+            inc_last_update = arg_to_datetime(inc["lastUpdated"])
             demisto.debug(f"Incident {inc.get('id')} - "
                           f"Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "
                           f"Need update => {last_update_format.timestamp() < inc_last_update.timestamp()}")
@@ -1389,7 +1389,7 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     total_know = 0
     res = {}
     for inc_id, inc in inc_data.items():
-        inc_created =  arg_to_datetime(inc.get("Created", ""))
+        inc_created =  arg_to_datetime(inc["Created"])
         inc_created = inc_created.replace(tzinfo=timezone.utc)
         diff = current_time - inc_created
         if diff.days <= max_time_mirror_inc: # maximum RSA aggregation time 24 days

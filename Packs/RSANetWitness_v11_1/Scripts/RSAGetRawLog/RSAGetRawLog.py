@@ -40,9 +40,9 @@ def merge_dict(first_dict: dict, second_dict: dict):
     return res
 
 
-def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> CommandResults:
+def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> list:
     if isCommandAvailable("netwitness-packets") == False:
-        return "Please add RSA Netwitness Packet & Logs to see more details"
+        return [{"log": "Please add RSA Netwitness Packet & Logs to see more details"}]
 
     params = {
         "sessions": event_source_id,
@@ -59,9 +59,9 @@ def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: s
     return res[0]["Contents"].get("logs")
 
 
-def get_metas_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> CommandResults:
+def get_metas_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> list:
     if isCommandAvailable("netwitness-packets") == False:
-        return "Please add/configure RSA Netwitness Packet & Logs to see more details"
+        return ["Please add/configure RSA Netwitness Packet & Logs to see more details"]
 
     params = {
         "query": f"select * where sessionid={event_source_id}",
