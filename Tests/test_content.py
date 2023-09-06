@@ -348,7 +348,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 def extract_server_numeric_version(instances_ami_name, default_version):
     try:
         server_numeric_version = re.search(
-            r'server-image-(?:ga-)?(?P<version>[a-z0-9\-]+)',
+            r'family/xsoar-(?:ga-)?(?P<version>[a-z0-9\-]+)',
             instances_ami_name
         ).group('version')
     except (AttributeError, IndexError) as e:
