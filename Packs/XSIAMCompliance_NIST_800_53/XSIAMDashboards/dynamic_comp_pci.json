@@ -470,8 +470,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "N/A"
+            }
         },
         {
             "widget_key": "xql_1682657058554",
@@ -499,8 +498,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "N/A"
+            }
         },
         {
             "widget_key": "xql_1682657133653",
@@ -528,8 +526,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "N/A"
+            }
         },
         {
             "widget_key": "xql_1682657245117",
@@ -557,8 +554,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "N/A"
+            }
         },
         {
             "widget_key": "xql_1682657452795",
@@ -586,8 +582,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "N/A"
+            }
         }
     ], "fromVersion": "6.10.0"
 }
