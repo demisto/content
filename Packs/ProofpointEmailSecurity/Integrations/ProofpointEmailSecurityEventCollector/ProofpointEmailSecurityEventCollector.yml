@@ -29,6 +29,13 @@ configuration:
   defaultvalue: 60
   required: true
   section: Collect
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+
 - display: Use system proxy settings
   name: proxy
   type: 8
