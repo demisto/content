@@ -290,43 +290,7 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_8:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.8"
-
-xsoar_server_6_9:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.9"
-
-xsoar_server_6_10:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.10"
-
-xsoar_server_6_11:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.11"
-
-xsoar_server_master:
+tests_xsoar_server:
   extends:
     - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -337,9 +301,21 @@ xsoar_server_master:
       when: always
       variables:
         KUBERNETES_CPU_REQUEST: 2000m
-  variables:
-    INSTANCE_ROLE: "Server Master"
-
+  parallel:
+    - if: '$NIGHTLY'
+      when: always
+      matrix:
+        - INSTANCE_ROLE:
+            - "Server Master"
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
+      matrix:
+        - INSTANCE_ROLE:
+            - "Server 6.8"
+            - "Server 6.9"
+            - "Server 6.10"
+            - "Server 6.11"
+            - "Server Master"
 
 fan-in-nightly:
   tags:
@@ -382,15 +358,7 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_8
-      optional: true
-    - job: xsoar_server_6_9
-      optional: true
-    - job: xsoar_server_6_10
-      optional: true
-    - job: xsoar_server_6_11
-      optional: true
-    - job: xsoar_server_master
+    - job: tests_xsoar_server
       optional: true
   tags:
     - gke
