@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"The ***Connection Arguments*** parameter now specifies 'autocommit=True' by default."}
