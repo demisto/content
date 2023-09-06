@@ -1441,6 +1441,7 @@ script:
       defaultValue: 50
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
+    description: Lists the commands requested by users of the Amazon Web Services account.
     name: aws-ssm-command-list
     outputs:
     - contextPath: AWS.SSM.CommandNextToken
@@ -1569,7 +1570,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    - description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). 
+    - description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
       name: document_name
       required: true
     - description: The IDs of the managed nodes where the command should run. Can get from aws-ssm-inventory-get command. (Can specify up to 50 IDs.)
@@ -1601,7 +1602,8 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
-    polling: true 
+    polling: true
+    description: Runs commands on one or more managed nodes.
     name: aws-ssm-command-run
     outputs:
     - contextPath: AWS.SSM.Command.CommandId
@@ -1749,7 +1751,7 @@ script:
       hidden: true
     - description: The timeout in seconds until polling ends.
       name: timeout
-      defaultValue: '600'    
+      defaultValue: '600'
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel
@@ -1758,7 +1760,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.72785
+  dockerimage: demisto/boto3py3:1.0.0.73097
 fromversion: 6.9.0
 marketplaces:
 - xsoar

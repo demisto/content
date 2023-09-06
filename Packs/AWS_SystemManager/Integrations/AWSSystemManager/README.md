@@ -59,8 +59,11 @@ For example, Key=Owner,Value=SysAdmin.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-ssm-tag-add resource_id=test resource_type=Document tag_key=test_key tag_value=test_value```
+
 #### Human Readable Output
 
 >Tags successfully added to resource test.
@@ -89,8 +92,11 @@ Removes tag keys from the specified resource.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-ssm-tag-remove resource_id=test resource_type=Document tag_key=test_key```
+
 #### Human Readable Output
 
 >Tag test_key removed from resource test successfully.
@@ -136,8 +142,11 @@ Query inventory information. This includes managed node status, such as Stopped 
 | AWS.SSM.Inventory.Entities.Data.Content.InstanceId | String | The managed node ID. | 
 
 #### Command example
+
 ```!aws-ssm-inventory-get limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -183,6 +192,7 @@ Query inventory information. This includes managed node status, such as Stopped 
 #### Human Readable Output
 
 >### AWS SSM Inventory
+
 >|Agent version|Computer Name|IP address|Id|Instance Id|Platform Name|Platform Type|Resource Type|
 >|---|---|---|---|---|---|---|---|
 >|  |  |  | i-test |  |  |  |  |
@@ -267,6 +277,7 @@ A list of inventory items returned by the request.
 #### Human Readable Output
 
 >### AWS SSM Inventory Entry
+
 >|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|
 >|---|---|---|---|---|---|---|
 >| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |
@@ -312,8 +323,11 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 | AWS.SSM.Association.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
 
 #### Command example
+
 ```!aws-ssm-association-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -395,6 +409,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 #### Human Readable Output
 
 >### AWS SSM Associations
+
 >|Association id|Association version|Document name|Last execution date|Resource status count|Status|
 >|---|---|---|---|---|---|
 >| AssociationId_test | 1 | AWS | 2023-07-25 18:51:28.607000+03:00 |  | Pending |
@@ -482,6 +497,7 @@ Describes the association for the specified target or managed node. if the assoc
 ```!aws-ssm-association-get association_id=association_id```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -531,6 +547,7 @@ Describes the association for the specified target or managed node. if the assoc
 #### Human Readable Output
 
 >### AWS SSM Association
+
 >|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|Resource status count|Schedule expression|Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >| association_id | AWS-QuickSetup | 1 | 2023-02-14T11:48:24.511000+00:00 | AWSQuickSetup | $DEFAULT | 2023-08-13T11:49:38+00:00 | Failed: 1 | rate(30 days) | Failed |
@@ -596,6 +613,7 @@ Retrieves all versions of an association for a specific association ID.
 ```!aws-ssm-association-version-list association_id=association_id```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -634,6 +652,7 @@ Retrieves all versions of an association for a specific association ID.
 #### Human Readable Output
 
 >### Association Versions
+
 >|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule expression|Targets|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| association_id | 2023-02-14T11:48:24.511000+00:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br/>	***values***: arn/AWS-QuickSetup<br/>**IsPolicyAttachAllowed**:<br/>	***values***: false | rate(30 days) | **-**	***Key***: ParameterValues<br/>	**Values**:<br/>		***values***: instance_id | 1 |
@@ -684,8 +703,11 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 | AWS.SSM.Document.DocumentIdentifiers.Author | String | The user in the organization who created the document. | 
 
 #### Command example
+
 ```!aws-ssm-document-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -735,6 +757,7 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 #### Human Readable Output
 
 >### AWS SSM Documents
+
 >|Name|Owner|Document version|Document type|Platform types|Created date|
 >|---|---|---|---|---|---|
 >| AWS | Amazon | 1 | Automation | Windows,<br/>Linux,<br/>MacOS | 2018-02-15T03:03:20.597000+00:00 |
@@ -807,8 +830,11 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 | AWS.SSM.Document.Document.CategoryEnum | String | The value that identifies a document’s category. | 
 
 #### Command example
+
 ```!aws-ssm-document-get document_name=AWS```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -868,6 +894,7 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 #### Human Readable Output
 
 >### AWS SSM Document
+
 >|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|
 >|---|---|---|---|---|---|---|---|
 >| 2022-10-10T22:06:56.878000+00:00 | Change the test |  |  | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | Active |
@@ -910,7 +937,9 @@ Initiates execution of an Automation runbook.
 | AWS.SSM.AutomationExecution.AutomationExecutionId | String | The unique ID of a newly scheduled automation execution. | 
 
 #### Command example
+
 ```!aws-ssm-automation-execution-run document_name=AWS parameters=RoleName:ssm,InstanceId:i-```
+
 #### Human Readable Output
 
 >Execution <execution_id>  is in progress
@@ -942,6 +971,7 @@ Stop an Automation execution.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ssm-automation-execution-list
 
 ***
@@ -1064,8 +1094,11 @@ If the argument execution_id is provide the command return detailed information 
 | AWS.SSM.AutomationExecution.ChangeRequestName | String | The name of the Change Manager change request. | 
 
 #### Command example
+
 ```!aws-ssm-automation-execution-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1139,6 +1172,7 @@ If the argument execution_id is provide the command return detailed information 
 #### Human Readable Output
 
 >### AWS SSM Automation Executions
+
 >|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|Executed By|
 >|---|---|---|---|---|---|---|---|
 >| Automation | AWS | 1 | 2023-09-06T16:34:01.681000+00:00 | 2023-09-06T16:34:03.693000+00:00 | Failed | Auto | arn|
@@ -1148,6 +1182,7 @@ If the argument execution_id is provide the command return detailed information 
 ### aws-ssm-command-list
 
 ***
+Lists the commands requested by users of the Amazon Web Services account.
 
 #### Base Command
 
@@ -1204,8 +1239,11 @@ If the argument execution_id is provide the command return detailed information 
 | AWS.SSM.Commands.TriggeredAlarms.State | String | The name of the CloudWatch alarm. | 
 
 #### Command example
+
 ```!aws-ssm-command-list next_token=AA```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1300,6 +1338,7 @@ If the argument execution_id is provide the command return detailed information 
 #### Human Readable Output
 
 >### AWS SSM Commands
+
 >|Command Id|Status|Requested date|Document name|Comment|Target Count|Error Count|Delivery Timed Out Count|Completed Count|
 >|---|---|---|---|---|---|---|---|---|
 >| Command | Cancelled | 2023-09-06T16:38:59.984000+00:00 | AWS |  | 1 | 0 | 0 | 1 |
@@ -1310,6 +1349,7 @@ If the argument execution_id is provide the command return detailed information 
 ### aws-ssm-command-run
 
 ***
+Runs commands on one or more managed nodes.
 
 #### Base Command
 
@@ -1374,8 +1414,11 @@ If the argument execution_id is provide the command return detailed information 
 | AWS.SSM.Command.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
 
 #### Command example
+
 ```!aws-ssm-command-run document_name=AWS instance_ids=i-```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1456,8 +1499,11 @@ Attempts to cancel the command specified by the Command ID. There is no guarante
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-ssm-command-cancel command_id=test```
+
 #### Human Readable Output
 
 >Cancellation command was sent successful.
