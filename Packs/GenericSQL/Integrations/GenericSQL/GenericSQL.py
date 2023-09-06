@@ -12,6 +12,9 @@ from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
+
+MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
+MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -68,7 +71,7 @@ class Client:
         connect_parameters_dict = {}
         for key, value in connect_parameters_tuple_list:
             connect_parameters_dict[key] = value
-        if dialect == "Microsoft SQL Server":
+        if dialect == MICROSOFT_SQL_SERVER:
             connect_parameters_dict['driver'] = 'FreeTDS'
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
@@ -89,7 +92,7 @@ class Client:
             module = "postgresql"
         elif dialect == "Oracle":
             module = "oracle"
-        elif dialect in {"Microsoft SQL Server", 'Microsoft SQL Server - MS ODBC Driver'}:
+        elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
         else:
             module = str(dialect)
@@ -198,7 +201,7 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
 
     """
     # for MSSQL the syntax of bind variables is with ?, unlike Postgres and My SQL with %s
-    if dialect in {"Microsoft SQL Server", 'Microsoft SQL Server - MS ODBC Driver'}:
+    if dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
         count = len(re.findall("\\?", query))
         char_to_replace = "?"
     else:
