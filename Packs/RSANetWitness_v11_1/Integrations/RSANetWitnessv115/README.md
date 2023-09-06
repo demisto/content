@@ -86,11 +86,8 @@ To setup the mirroring follow these instructions:
 1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for **RSANetWitness v11.5** and select your integration instance.
 3. Enable **Fetches incidents**.
-4. To ensure that fetch incidents works:
-   1. Select the **Fetches incidents** radio button.
-   2. Under **Incident type**, select NetWitness Incident.
-5. To ensure that mirroring works, ensure that fetch incidents works and then:
-   1. Under **Mapper (incoming)**, select RSA NetWitness v11.5 - incoming mapper.
+4. Under **Incident type**, select NetWitness Incident.
+5. Under **Mapper (incoming)**, select RSA NetWitness v11.5 - incoming mapper.
 6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in RSA NetWitness incidents will be reflected in Cortex XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents will be reflected in RSA Netwitness incidents (`status`).
