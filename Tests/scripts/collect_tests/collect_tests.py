@@ -886,7 +886,10 @@ class BranchTestCollector(TestCollector):
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
                     if "ApiModule" in yml.id_:
-                        for integrtion in self.id_set.api_modules_to_integrations.get(yml.id_, []):
+                        logger.debug(f"Found changes in ApiModule = {yml.id_}")
+                        integration_using_apimodule = self.id_set.api_modules_to_integrations.get(yml.id_, [])
+                        for integrtion in integration_using_apimodule:
+                            logger.debug(f"The integrations which using this apimodule = {integration_using_apimodule}")
                             self._collect_yml(integrtion.path)
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
