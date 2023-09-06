@@ -463,7 +463,7 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`Files not found.`);
     }
     files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
-    if (typeof files[0] == 'undefined'){
+    if (files[0]=='undefined'){
         throw new Error(`Files not found.`);
         
     }
@@ -478,16 +478,11 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`File already deleted or not found.`);
     }
     deleteFileRequest(EntryID);
-    let context = {
-        'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
-    };
     return  {Type: entryTypes.note,
             Contents: '',
             ContentsType: formats.json,
-            EntryContext: context,
+            EntryContext: invContext,
             HumanReadable: `File ${EntryID} was deleted successfully.`};
-
-
 }
 
 
