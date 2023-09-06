@@ -13,6 +13,14 @@ ReversingLabs TitaniumCloud provides threat analysis data from various Reversing
     | Credentials | True |
     | Password | True |
     | Reliability | False |
+    | Verify certificates | False |
+    | HTTP proxy address with the protocol and port number. | False |
+    | HTTP proxy username | False |
+    | HTTP proxy password | False |
+    | HTTPS proxy address with the protocol and port number. | False |
+    | HTTPS proxy username | False |
+    | HTTPS proxy password | False |
+4. 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
