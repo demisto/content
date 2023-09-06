@@ -160,7 +160,7 @@ script:
       description: '[Timestamp of the Stamus event].'
       type: String
     - contextPath: StamusIntegration.RelatedEvents.stamus.asset
-      description: '[Stamus asset]'
+      description: '[Stamus asset].'
       type: String
     - contextPath: StamusIntegration.RelatedEvents.offender
       description: '[Offender, against the Stamus asset].'
