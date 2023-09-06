@@ -92,20 +92,19 @@ To setup the mirroring follow these instructions:
 5. To ensure that mirroring works, ensure that fetch incidents works and then:
    1. Under **Mapper (incoming)**, select RSA NetWitness v11.5 - incoming mapper.
 6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in RSA Netwitness incidents will be reflected in XSOAR incidents.
+    - Incoming - Any changes in RSA NetWitness incidents will be reflected in Cortex XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents will be reflected in RSA Netwitness incidents (`status`).
-    - Incoming And Outgoing - Changes in XSOAR incidents and RSA Netwitness incidents will be reflected in both directions.
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and RSA NetWitness incidents will be reflected in both directions.
     - None - Turns off incident mirroring.
-7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident  is closed in RSA Netwitness.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
 
 Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
 **Important Notes**
 
-- When *mirroring in* incidents from RSA Netwitness to Cortex XSOAR:
-  - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in RSA Netwitness that determines whether the incident was closed is the `status` field.
-- Journal entry, task and assignee are currently not mirror
-- Because of the implementation of RSA API (you can get 1 incident by id or every incidents using a time interval), incidents are mirror max for 24 days within the limit of 1500 incidents
+- When *mirroring in* incidents from RSA NetWitness to Cortex XSOAR, if the *Close Mirrored XSOAR Incident* integration parameter is enabled, the `status` field in RSA NetWitness determines whether the incident was closed.
+- Journal entries, tasks, and assignees are currently not mirrored.
+- Because of the implementation of the RSA API (you can get 1 incident by ID or every incident using a time interval), incidents are mirrored for a maximum of 24 days within a limit of 1500 incidents.
 
 
 ## Commands

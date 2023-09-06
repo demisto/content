@@ -1323,7 +1323,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     remote_args = GetModifiedRemoteDataArgs(args)
     max_fetch_incidents = int(params.get("max_fetch"))
     max_fetch_alerts = int(params.get("max_alerts"))
-    max_time_mirror_inc = int(params.get("max_mirror_time", 4))
+    max_time_mirror_inc = min(arg_to_number(params.get("max_mirror_time")) or 3, 24)
     fetch_alert = argToBoolean(params.get("import_alerts", False))
     last_update = remote_args.last_update
     last_update_format = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # converts to a UTC timestamp
