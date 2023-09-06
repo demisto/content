@@ -217,7 +217,7 @@ tasks:
       - '7'
     scriptarguments:
       Ids:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
       Interval:
         simple: ${inputs.interval}
       PollingCommandArgName:
@@ -227,7 +227,7 @@ tasks:
       Timeout:
         simple: ${inputs.timeout}
       dt:
-        simple: FireEyeAX.Submissions(val.Status == 'In Progress')
+        simple: FireEyeAX.Submissions.URL(val.Status == 'In Progress').Key
     separatecontext: true
     loop:
       iscommand: false
