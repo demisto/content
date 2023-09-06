@@ -35,7 +35,6 @@ configuration:
   name: longRunning
   type: 8
   section: Connect
-
 - display: Use system proxy settings
   name: proxy
   type: 8
