@@ -331,7 +331,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server']
   tags:
     - gke
   rules:
@@ -623,11 +623,11 @@ merge-dev-secrets:
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
-xsoar_server_master-test_playbooks_results:
+tests_xsoar_server-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends: .server_test_playbooks_report
-  needs: ["xsoar_server_master"]
+  needs: ["tests_xsoar_server"]
 
 xsiam_server_ga-test_playbooks_results:
   variables:
