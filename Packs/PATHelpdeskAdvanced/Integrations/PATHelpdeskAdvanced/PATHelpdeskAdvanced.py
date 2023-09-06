@@ -229,7 +229,6 @@ class Client(BaseClient):
         self.token_expiry_utc: datetime | None = None
 
         self._login()  # sets request_token and token_expiry_utc
-        self._set_context_credentials()
 
     def _login(self):
         # should only be called from __init__
@@ -286,7 +285,8 @@ class Client(BaseClient):
             seconds=response["expiresIn"]
         )
         demisto.setIntegrationContext(
-            {
+            integration_context
+            | {
                 "refresh_token": self.refresh_token,
                 "request_token": self.request_token,  # TODO is it used?
                 "token_expiry_utc": str(self.token_expiry_utc),
