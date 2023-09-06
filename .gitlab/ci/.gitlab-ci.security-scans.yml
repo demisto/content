@@ -17,7 +17,7 @@ auto secure cicd:
   trigger:
     include:
       - file: "/.gitlab/ci/security-scans.yml"
-        ref: add_auto_secure_cicd
+        ref: master
         project: "xsoar/infra"
     strategy: depend
   extends:
