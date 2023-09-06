@@ -14,8 +14,13 @@ NIGHTLY_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_server_master',
+    'tests_xsoar_server: [Server 6.8]',
+    'tests_xsoar_server: [Server 6.9]',
+    'tests_xsoar_server: [Server 6.10]',
+    'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server Master]',
 ]
+
 SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-unittests-and-lint',
     'demisto-sdk-nightly:run-validations',
