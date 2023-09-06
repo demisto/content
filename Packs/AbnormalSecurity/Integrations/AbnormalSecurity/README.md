@@ -1117,3 +1117,406 @@ Submit a False Positive Report
 >|detail|
 >|---|
 >| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
+### abnormal-security-list-vendors
+
+***
+Get a list of vendors
+
+
+#### Base Command
+
+`abnormal-security-list-vendors`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                           | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| page_size | Number of vendors that are on each page. Each page of data will have at most page_size vendors. Has no effect if filter is not specified. | Optional |
+| page_number | 1-indexed page number to get a particular page of vendors. Has no effect if filter is not specified.                                      | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description**                                                                        |
+| --- | --- |----------------------------------------------------------------------------------------|
+| AbnormalSecurity.VendorsList.vendors| Unknown| List of vendors.                                                                       |
+| AbnormalSecurity.VendorsList.pageNumber | Number | The current page number.                                                               |
+| AbnormalSecurity.VendorsList.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages. |
+
+
+#### Command Example
+```!abnormal-security-list-vendors```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "VendorsList": {
+            "vendors": [
+                {
+                    "vendorDomain": "test-domain-1.com"
+                },
+                {
+                    "vendorDomain": "test-domain-2.com"
+                },
+                {
+                    "vendorDomain": "test-domain-2.com"
+                }
+            ],
+            "pageNumber": 1,
+            "nextPageNumber": 2
+        }
+    }
+}
+
+```
+
+#### Human Readable Output
+
+>### List of Vendors
+>### Vendor Domains
+>| vendorDomain      |
+>|-------------------|
+>| test-domain-1.com |
+
+### abnormal-security-get-vendor-details
+***
+Get details of a vendor 
+
+
+#### Base Command
+
+`abnormal-security-get-vendor-details`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| vendor_domain | The domain name of the vendor in question. It should be formatted as a fully qualified domain name (e.g., example.com). | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| - |----------| --- |
+| AbnormalSecurity.VendorDetails.vendorDomain | String   | The domain name of the vendor |
+| AbnormalSecurity.VendorDetails.riskLevel | String   | The risk level associated with the vendor. |
+| AbnormalSecurity.VendorDetails.vendorContacts | Unknown  | List of contacts related to the vendor. |
+| AbnormalSecurity.VendorDetails.companyContacts | Unknown   | List of contacts related to the company. |
+| AbnormalSecurity.VendorDetails.vendorCountries | Unknown   | List of countries associated with the vendor. |
+| AbnormalSecurity.VendorDetails.analysis | Unknown   | List of analyses associated with the vendor. |
+| AbnormalSecurity.VendorDetails.vendorIpAddresses | Unknown   | List of IP addresses associated with the vendor. |
+
+
+#### Command Example
+```!abnormal-security-get-vendor-details vendor_domain="test-domain-1.com"```
+
+#### Context Example
+```json
+{
+  "AbnormalSecurity": {
+    "VendorDetails": {
+      "vendorDomain": "test-domain-1.com",
+      "riskLevel": "High",
+      "vendorContacts": [
+        "john.doe@test-domain-1.com"
+      ],
+      "companyContacts": [
+        "john.doe@test-domain-2.com",
+        "jane.doe@test-domain-2.com"
+      ],
+      "vendorCountries": ["USA"],
+      "analysis": [
+        "Vendor Compromise Seen in Abnormal Community"
+      ],
+      "vendorIpAddresses": ["192.158. 1.38"]
+      
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Messages in Vendor test-domain-1.com 
+>|vendorDomain|riskLevel|vendorContacts| companyContacts |vendorCountries|analysis| vendorIpAddresses |
+>|---|---|---|------------------------------|---------------------|---|---------------|
+>| test-domain-1.com | High| john.doe@test-domain-1.com | john.doe@test-domain-2.com, jane.doe@test-domain-2.com|USA| Vendor Compromise Seen in Abnormal Community| 192.158.1.38   |
+
+### abnormal-security-get-vendor-details
+***
+Get details of a vendor 
+
+
+#### Base Command
+
+`abnormal-security-get-vendor-activity`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| vendor_domain | The domain name of the vendor in question. It should be formatted as a fully qualified domain name (e.g., example.com). | Required |
+
+
+#### Context Output
+
+| **Path**                                                       | **Type** | **Description**                                           |
+|----------------------------------------------------------------|----------|-----------------------------------------------------------|
+| AbnormalSecurity.VendorActivity.eventTimeline                  | Unknown  | Event timeline for the vendor.                            |
+| AbnormalSecurity.VendorActivity.eventTimeline.eventTimestamp   | String   | Timestamp of the event in the vendor's activity timeline. |
+| AbnormalSecurity.VendorActivity.eventTimeline.eventType        | String  | Type of event in the vendor's activity timeline.          |
+| AbnormalSecurity.VendorActivity.eventTimeline.suspiciousDomain | String  | Suspicious domain involved in the event.                  |
+| AbnormalSecurity.VendorActivity.eventTimeline.domainIp         | String  | IP address of the suspicious domain.                      |
+| AbnormalSecurity.VendorActivity.eventTimeline.ipGeolocation    | String  | Geolocation of the IP address..                           |
+| AbnormalSecurity.VendorActivity.eventTimeline.attackGoal                 | String  | The goal of the attack                                    |
+
+
+#### Command Example
+```!abnormal-security-get-vendor-activity vendor_domain="test-domain-1.com"```
+
+#### Context Example
+```json
+{
+  "AbnormalSecurity": {
+    "VendorActivity": {
+      "eventTimeline": [
+        {
+          "eventTimestamp": "2023-07-28T16:20:05Z",
+          "eventType": "Federated Signal",
+          "suspiciousDomain": "test@test-domain.com",
+          "domainIp": "192.158.1.38",
+          "ipGeolocation": null,
+          "attackGoal": "Spam"
+        }
+      ]
+    }
+  }
+}
+}
+```
+
+#### Human Readable Output
+
+>### Messages in Vendor test-domain-1.com 
+>|eventTimestamp|eventType|suspiciousDomain| domainIp | ipGeolocation | attackGoal |
+>|---|---|---|-----------------------------|-------|------|
+>| 2023-07-28T16:20:05Z | Federated Signal| Signal	test@test-domain.com| 192.158.1.38| null  | Spam | 
+
+### abnormal-security-list-vendor-cases
+***
+Get a list of vendor cases
+
+
+#### Base Command
+
+`!abnormal-security-list-vendor-cases`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported are `firstObservedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. | Optional |
+| page_size | Number of cases that are on each page.                                                                                                                                                                                                | Optional |
+| page_number | 1-indexed page number to get a particular page of cases.                                                                                                                                                                                                                                     | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.VendorCases.vendorCases| Unknown | List of vendor cases. |
+| AbnormalSecurity.VendorCases.vendorCases.vendorCaseId | Number | The identifier of the vendor case. |
+| AbnormalSecurity.VendorCases.pageNumber | Number | The current page number.  |
+
+
+#### Command Example
+```!abnormal-security-list-vendor-cases filter="lastModifiedTime gte 2020-12-01T01:01:01Z"```
+
+#### Context Example
+```json
+{
+  "AbnormalSecurity": {
+    "VendorCases": {
+      "vendorCases": [
+        {
+          "vendorCaseId": 123
+        },
+        {
+          "vendorCaseId": 456
+        },
+        {
+          "vendorCaseId": 789
+        }
+      ],
+      "pageNumber": 1
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### List of Cases
+>### Vendor Case IDs
+>| vendorCaseId |
+>|---------|
+>| 123    | 
+
+### abnormal-security-get-vendor-case-details
+***
+Get details of a vendor case
+
+
+#### Base Command
+
+`!abnormal-security-get-vendor-case-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required |
+| subtenant | Subtenant of the user (if applicable). | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| AbnormalSecurity.VendorCaseDetails.vendorCaseId | String   | The identifier of the vendor case. |
+| AbnormalSecurity.VendorCaseDetails.vendorDomain | String   | The vendor domain associated with the case. |
+| AbnormalSecurity.VendorCaseDetails.firstObservedTime | String   | The time the vendor case was first observed. |
+| AbnormalSecurity.VendorCaseDetails.lastModifiedTime | String   | The last time the vendor case was modified. |
+| AbnormalSecurity.VendorCaseDetails.insights | Unknown  | List of insights related to the vendor case. |
+| AbnormalSecurity.VendorCaseDetails.timeline | Unknown  | Timeline of events related to the vendor case. |
+
+
+#### Command Example
+```!abnormal-security-get-vendor-case-details case_id=123```
+
+#### Context Example
+```json
+{
+  "AbnormalSecurity": {
+    "AbnormalCaseDetails": {
+      "vendorCaseId": 123,
+      "vendorDomain": "some-domain.com",
+      "firstObservedTime": "2022-04-04T21:12:14Z",
+      "lastModifiedTime": "2022-04-05T14:40:11Z",
+      "insights": [
+        {
+          "highlight": "Inconsistent Sender Domain Registrars",
+          "description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."
+        },
+        {
+          "highlight": "Look-a-like Sender Domain",
+          "description": "The sending domain of this message, \"some-domain.com\", is attempting to impersonate the legitimate domain of \"some-domain.com\"."
+        },
+        {
+          "highlight": "Young Sender Domain",
+          "description": "The sender domain \"some-domain.com\" was 65 days old when the first engagement in this case was observed, a suspicious signal for a financial email conversation."
+        }
+      ],
+      "timeline": [
+        {
+          "eventTimestamp": "2022-04-04T21:12:14Z",
+          "senderAddress": "john-doe@some-domain.com",
+          "recipientAddress": "jane.doe@some-other-domain.com",
+          "subject": "Important Notice",
+          "markedAs": "Malicious",
+          "threatId": 1234
+        },
+        {
+          "eventTimestamp": "2022-04-04T21:12:14Z",
+          "senderAddress": "jand-doe@some-domain.com",
+          "recipientAddress": "john@some-other-domain.com",
+          "subject": "Important Notice",
+          "markedAs": "Malicious",
+          "threatId": 12345
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Details of Case 123
+>|vendorCaseId|vendorDomain|firstObservedTime|lastModifiedTime| insights                                                                                                                                                                                                                                                                                                                                                     | timeline                                                                                                                                                                                                            |
+>|---|---|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+>| 123 | some-domain.com| 2022-04-04T21:12:14Z | 2022-04-05T14:40:11Z| {"highlight": "Inconsistent Sender Domain Registrars","description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."}... | {"eventTimestamp": "2022-04-04T21:12:14Z","senderAddress": "john-doe@some-domain.com","recipientAddress": "jane.doe@some-other-domain.com","subject": "Important Notice","markedAs": "Malicious","threatId": 123}.. |
+
+### abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
+***
+Get a list of unanalyzed Abuse Mailbox campaigns
+
+
+#### Base Command
+
+`abnormal-security-list-unanalyzed-abuse-mailbox-campaigns`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| start             | The start time for retrieving the list of unanalyzed abuse mailbox campaigns.. | Optional |
+| end         | The end time for retrieving the list of unanalyzed abuse mailbox campaigns. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id | Number | An id which maps to an abuse campaign. |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name | Number | The name of the recipient. |
+| AbnormalSecurity.AbuseCampaign.nextPageNumber | Number | The next page number. |
+
+
+#### Command Example
+```!abnormal-security-list-unanalyzed-abuse-mailbox-campaigns```
+
+#### Context Example
+```json
+{
+  "AbnormalSecurity": {
+    "AbuseCampaign": {
+      "results": [
+        {
+          "abx_message_id": 123456789,
+          "recipient": {
+            "name": "John Doe",
+            "email": "john.doe@some-domain.com"
+          },
+          "reported_datetime": "2023-06-15T00:17:31Z",
+          "reporter": {
+            "email": "info@some-domain.com",
+            "name": "Support"
+          },
+          "subject": "URGENT",
+          "not_analyzed_reason": "INVALID_SUBMISSION"
+        },
+        {
+          "abx_message_id": 987654321,
+          "recipient": {
+            "name": "Jane Doe",
+            "email": "jane.doe@some-domain.com"
+          },
+          "reported_datetime": "2023-06-14T06:23:31Z",
+          "reporter": {
+            "email": "info@some-domain.com",
+            "name": "support"
+          },
+          "subject": "Hello",
+          "not_analyzed_reason": "INVALID_SUBMISSION"
+        }
+      ]
+    }
+  }
+}
+
+```
+
+#### Human Readable Output
+
+>### List of Abuse Mailbox Campaigns
+>### Campaign IDs
+>|abx_message_id| recipient | reported_datetime| reporter | subject | not_analyzed_reason |
+>|---|----------| -- |----------|---------|---------------------|
+>| 123456789 |  {"name": "John Doe","email": "john.doe@some-domain.com"} |2023-06-15T00:17:31Z|  "reporter": {"email": "info@some-domain.com","name": "Support"}|URGENT|INVALID_SUBMISSION|
