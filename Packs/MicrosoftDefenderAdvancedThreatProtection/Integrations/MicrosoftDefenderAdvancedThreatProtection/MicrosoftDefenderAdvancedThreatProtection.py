@@ -1772,13 +1772,17 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: str | None = None, limit: int | None = 50, skip: int | None = 0, indicator_title:
+    def sc_list_indicators(self, indicator_id: str | None = None, limit: int | None = 50, skip: int = 0, indicator_title:
                            str | None = None, indicator_value: str | None = None, indicator_type: str | None = None) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
                     indicator_id: if provided, will get only this specific id.
                     limit: Limit the returned results.
+                    skip: The number of indicators that are to be skipped and not included in the result.
+                    indicator_title: The title of the indicator to get.
+                    indicator_value: The value of the indicator to get.
+                    indicator_type: The type of the indicator to get.
 
                 Returns:
                     List of responses.
