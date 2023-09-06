@@ -3,17 +3,19 @@ from enum import Enum
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
+from websockets.exceptions import InvalidStatus
 from dateutil import tz
 import traceback
+
 
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
 
-URL = "wss://{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
+URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 
 FETCH_INTERVAL_IN_SECONDS = 60
-CONNECTION_TIMEOUT = 10
+RECV_TIMEOUT = 10
 
 
 class EventType(str, Enum):
@@ -73,7 +75,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=CONNECTION_TIMEOUT))
+            event = json.loads(connection.recv(timeout=RECV_TIMEOUT))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
@@ -100,22 +102,41 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
 
 def test_module(host: str, cluster_id: str, api_key: str):
     # set the fetch interval to 10 seconds so we don't get timeout for the test module
-    fetch_interval = 10
-    with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
-        fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
-        fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
-        return "ok"
+    fetch_interval = 2
+    try:
+        with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
+            fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
+            fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
+            return "ok"
+    except InvalidStatus as e:
+        if e.response.status_code == 401:
+            return_error("Authentication failed. Please check the Cluster ID and API key.")
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
+    fetch_interval //= len(EventType)
     with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
         demisto.info("Connected to websocket")
         while True:
             message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
             maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
             demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
-            # Send the events to the XSIAM
-            send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
+            # Send the events to the XSIAM, with events from the context
+            integration_context = demisto.getIntegrationContext()
+            message_events_from_context = integration_context.get("message_events", [])
+            message_maillog_from_context = integration_context.get("maillog_events", [])
+            message_events.extend(message_events_from_context)
+            maillog_events.extend(message_maillog_from_context)
+
+            try:
+                send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
+                # clear the context after sending the events
+                demisto.setIntegrationContext({"message_events": [], "maillog_events": []})
+            except DemistoException:
+                demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
+                # save the events to the context so we can send them again in the next execution
+                integration_context = demisto.getIntegrationContext()
+                demisto.setIntegrationContext({"message_events": message_events, "maillog_events": maillog_events})
 
 
 def main():  # pragma: no cover

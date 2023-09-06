@@ -6,10 +6,10 @@ display: Proofpoint Email Security Event Collector
 category: Analytics & SIEM
 description: Collects events for Proofpoint Email Security using the streaming API.
 configuration:
-- display: Server Host
+- display: Server URL
   name: host
   type: 0
-  defaultvalue: logstream.proofpoint.com:443
+  defaultvalue: wss://logstream.proofpoint.com:443
   required: true
 - display: Cluster ID
   name: cluster_id
