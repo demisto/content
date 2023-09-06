@@ -1,0 +1,36 @@
+{
+    "okta_okta_raw": {
+      "client": {
+        "type": "string",
+        "is_array": false
+      },
+      "actor": {
+        "type": "string",
+        "is_array": false
+      },
+      "uuid": {
+        "type": "string",
+        "is_array": false
+      },
+      "securityContext": {
+        "type": "string",
+        "is_array": false
+      },            
+      "eventType": {
+        "type": "string",
+        "is_array": false
+      },
+      "outcome": {
+        "type": "string",
+        "is_array": false
+      },
+      "target": {
+        "type": "string",
+        "is_array": false
+      },
+      "authenticationContext": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
