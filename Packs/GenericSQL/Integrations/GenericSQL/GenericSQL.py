@@ -13,6 +13,8 @@ from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
 
+POSTGRES_SQL = "PostgreSQL"
+MY_SQL = "MySQL"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
 MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
 FETCH_DEFAULT_LIMIT = '50'
@@ -86,9 +88,9 @@ class Client:
         :param dialect: the SQL db
         :return: a key string needed for the connection
         """
-        if dialect == "MySQL":
+        if dialect == MY_SQL:
             module = "mysql"
-        elif dialect == "PostgreSQL":
+        elif dialect == POSTGRES_SQL:
             module = "postgresql"
         elif dialect == "Oracle":
             module = "oracle"
@@ -200,13 +202,18 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
     Returns: A mapping (dict) and an edited query.
 
     """
-    # for MSSQL the syntax of bind variables is with ?, unlike Postgres and My SQL with %s
-    if dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
-        count = len(re.findall("\\?", query))
-        char_to_replace = "?"
-    else:
-        count = len(re.findall("%s", query))
-        char_to_replace = "%s"
+    mapping_dialect_regex = {MICROSOFT_SQL_SERVER: "\\?",
+                             MS_ODBC_DRIVER: "\\?",
+                             POSTGRES_SQL: "%s",
+                             MY_SQL: "%s"
+                             }
+    try:
+        char_to_replace = mapping_dialect_regex[dialect]
+    except Exception as e:
+        raise DemistoException(
+            "Placeholder was not found for the given dialect"
+        ) from e
+    count = len(re.findall(char_to_replace, query))
 
     bind_variables_names_list = []
     for i in range(count):
