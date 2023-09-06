@@ -302,20 +302,19 @@ tests_xsoar_server:
       variables:
         KUBERNETES_CPU_REQUEST: 2000m
   parallel:
-    - if: '$NIGHTLY'
-      when: always
-      matrix:
-        - INSTANCE_ROLE:
-            - "Server Master"
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      when: always
-      matrix:
-        - INSTANCE_ROLE:
-            - "Server 6.8"
-            - "Server 6.9"
-            - "Server 6.10"
-            - "Server 6.11"
-            - "Server Master"
+    matrix:
+      - if: '$NIGHTLY'
+        when: always
+          - INSTANCE_ROLE:
+                - "Server Master"
+      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+        when: always
+          - INSTANCE_ROLE:
+                - "Server 6.8"
+                - "Server 6.9"
+                - "Server 6.10"
+                - "Server 6.11"
+                - "Server Master"
 
 fan-in-nightly:
   tags:
