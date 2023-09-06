@@ -234,6 +234,14 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
+    - section_start "Check if nightly"
+    - |
+      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_NAME}" != "Server Master" ]; then
+        echo "Not running the instance flow, not a master instance and we are in a nightly build."
+        job-done
+        exit 0
+      fi
+    - section_end "Check if nightly"
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
@@ -303,18 +311,12 @@ tests_xsoar_server:
         KUBERNETES_CPU_REQUEST: 2000m
   parallel:
     matrix:
-      - if: '$NIGHTLY'
-        when: always
-          - INSTANCE_ROLE:
-                - "Server Master"
-      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-        when: always
-          - INSTANCE_ROLE:
-                - "Server 6.8"
-                - "Server 6.9"
-                - "Server 6.10"
-                - "Server 6.11"
-                - "Server Master"
+      - INSTANCE_ROLE:
+        - "Server 6.8"
+        - "Server 6.9"
+        - "Server 6.10"
+        - "Server 6.11"
+        - "Server Master"
 
 fan-in-nightly:
   tags:
