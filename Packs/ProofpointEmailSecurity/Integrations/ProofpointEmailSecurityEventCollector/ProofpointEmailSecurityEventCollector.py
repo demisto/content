@@ -13,6 +13,7 @@ URL = "wss://{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 
 FETCH_INTERVAL_IN_SECONDS = 60
+CONNECTION_TIMEOUT = 10
 
 
 class EventType(str, Enum):
@@ -72,12 +73,10 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            # wait for events for the remaining time of the interval
-            timeout = fetch_interval - (datetime.utcnow() - fetch_start_time).total_seconds() + 1
-            event = json.loads(connection.recv(timeout=timeout))
+            event = json.loads(connection.recv(timeout=CONNECTION_TIMEOUT))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
-            break
+            continue
         event_id = event.get("id", event.get("guid"))
         event_ts = event.get("ts")
         if not event_ts:
@@ -111,11 +110,12 @@ def test_module(host: str, cluster_id: str, api_key: str):
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
     with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
         demisto.info("Connected to websocket")
-        message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
-        maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
-        demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
-        # Send the events to the XSIAM
-        send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
+        while True:
+            message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
+            maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
+            demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
+            # Send the events to the XSIAM
+            send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
 
 
 def main():  # pragma: no cover
