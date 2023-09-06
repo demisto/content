@@ -1,0 +1,48 @@
+.auto-secure-cicd-rule:
+  rules:
+    - if: '$SECURITY_SCANS == "true"'
+
+.auto-secure-cicd-rule-always:
+  rules:
+    - if: '$SECURITY_SCANS == "true"'
+      when: always
+
+stages:
+  - security
+
+auto secure cicd:
+  stage: security
+  variables:
+    PYTHONPATH: "/root/prodsec_tools/"
+  trigger:
+    include:
+      - file: "/.gitlab/ci/security-scans.yml"
+        ref: master
+        project: "xsoar/infra"
+    strategy: depend
+  extends:
+    .auto-secure-cicd-rule
+
+fan-in-security-scans:
+  tags:
+    - gke
+  stage: fan-in
+  extends:
+    - .auto-secure-cicd-rule-always
+  script:
+    - echo "fan in"
+
+
+slack-notify-security-scans:
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Security Scans'
+    JOB_NAME: 'fan-in-security-scans'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
+  extends:
+    - .trigger-slack-notification
+    - .auto-secure-cicd-rule-always
+
