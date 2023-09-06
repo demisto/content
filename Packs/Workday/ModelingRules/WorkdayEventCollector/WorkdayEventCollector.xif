@@ -17,7 +17,7 @@ alter
     xdm.target.host.device_category = json_extract_scalar(`target`, "$.descriptor"),
     xdm.target.url = json_extract_scalar(`target`, "$.href");
 
-[MODEL: dataset=workday_sign_on_raw]
+[MODEL: dataset=workday_signon_raw]
 alter 
     // define util constants
     boolean_true = to_boolean("TRUE"),

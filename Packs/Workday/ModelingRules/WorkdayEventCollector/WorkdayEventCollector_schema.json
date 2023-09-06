@@ -38,7 +38,7 @@
       }
     },
 
-    "workday_sign_on_raw": {
+    "workday_signon_raw": {
       "access_restriction_reference": {
           "type": "string",
           " is_array": false
