@@ -5464,3 +5464,41 @@ def test_list_identity_entities_command(mocker, test_case):
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
     assert test_data.get('expected_res_len') == len(command_results.raw_response)
+
+
+@pytest.mark.parametrize("timeout, expected_timeout", [(60, 60), (None, 30)])
+def test_run_batch_write_cmd_timeout_argument(mocker, timeout, expected_timeout):
+    """
+    Given
+        - Different timeout argument
+    When
+        - Run the run_batch_write_cmd function
+    Then
+        - Asserst the expected timeout called with the http request function
+    """
+    from CrowdStrikeFalcon import run_batch_write_cmd
+    batch_id = '12345'
+    command_type = 'ls'
+    full_command = 'ls -l'
+    request_mock = mocker.patch('CrowdStrikeFalcon.http_request', return_value={})
+    run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
+    assert request_mock.call_args[1].get('params').get('timeout') == expected_timeout
+
+
+def test_list_detection_summaries_command_no_results(mocker):
+    """
+    Test cs-falcon-list-detection-summaries when no detections found
+
+    Given:
+     - There is no detection in the system
+    When:
+     - Searching for detections using cs-falcon-list-detection-summaries command
+     - The server returns empty list
+    Then:
+     - The command not fails
+    """
+    from CrowdStrikeFalcon import list_detection_summaries_command
+    response = {'meta': {'query_time': 0.028057688, }, 'resources': [], 'errors': []}
+    mocker.patch('CrowdStrikeFalcon.http_request', return_value=response)
+    res = list_detection_summaries_command()
+    assert res.readable_output == '### CrowdStrike Detections\n**No entries.**\n'

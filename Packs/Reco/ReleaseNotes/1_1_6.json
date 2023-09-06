@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"'file_id' field was removed from the scheme and replaced with 'asset_id'."}

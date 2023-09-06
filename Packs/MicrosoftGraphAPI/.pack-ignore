@@ -1,2 +1,5 @@
 [file:MicrosoftGraphAPI.yml]
 ignore=IN124
+
+[known_words]
+GCC

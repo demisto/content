@@ -11,6 +11,9 @@ The following should be configured for Kubernetes;
     * **--audit-policy-file**
     * **--audit-log-path**
 
+Note:
+In order to parse the timestamp correctly, make sure to configure the logs to be sent in a UTC timezone (timestamp ends with Z).
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.

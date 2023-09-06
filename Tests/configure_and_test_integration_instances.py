@@ -75,6 +75,7 @@ CLOUD_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 SET_SERVER_KEYS = True
 
 
@@ -82,6 +83,10 @@ class Running(IntEnum):
     CI_RUN = 0
     WITH_OTHER_SERVER = 1
     WITH_LOCAL_SERVER = 2
+
+
+def get_custom_user_agent(build_number):
+    return f"demisto-py/dev (Build:{build_number})"
 
 
 class Server:
@@ -92,9 +97,6 @@ class Server:
         self.password = None
         self.name = ''
         self.build_number = 'unknown'
-
-    def get_custom_user_agent(self):
-        return f"demisto-py/dev (Build:{self.build_number})"
 
 
 class CloudServer(Server):
@@ -126,8 +128,8 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
-        custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -157,8 +159,8 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
-        custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f"Setting user agent on client to '{custom_user_agent}'.")
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -191,7 +193,7 @@ class Build(ABC):
         'CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
-    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
+    env_results_path = f'{ARTIFACTS_FOLDER}/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -285,7 +287,7 @@ class Build(ABC):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
-                            marketplace_buckets=None):
+                            marketplace_buckets=None) -> bool:
         raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
@@ -330,14 +332,14 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids: list | None = None, multithreading=True, is_post_update: bool = False) -> bool:
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
         Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
         Args:
             pack_ids (list | None, optional): Packs to install on the server.
                 If no packs provided, installs packs that were provided by the previous step of the build.
             multithreading (bool): Whether to install packs in parallel or not.
-            is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
+            production_bucket (bool): Whether the installation is using production bucket for packs metadata. Defaults to True.
 
         Returns:
             bool: Whether packs installed successfully
@@ -352,7 +354,7 @@ class Build(ABC):
                                                                           client=server.client,
                                                                           hostname=hostname,
                                                                           multithreading=multithreading,
-                                                                          is_post_update=is_post_update)
+                                                                          production_bucket=production_bucket)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -463,7 +465,7 @@ class Build(ABC):
             self: The build object
             modified_integrations_to_configure: Integrations to configure that are already exists
             new_integrations_to_configure: Integrations to configure that were created in this build
-            demisto_client: A demisto client
+            demisto_client_: A demisto client
 
         Returns:
             A tuple with two lists:
@@ -549,9 +551,10 @@ class Build(ABC):
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
-                                 self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs(is_post_update=True)
+        installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
+                                                                        self.marketplace_tag_name, self.artifacts_folder,
+                                                                        self.marketplace_buckets)
+        installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -602,18 +605,16 @@ class XSOARBuild(Build):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
             configurations = {}
-            configure_types = []
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            configure_types.append('marketplace')
+            configure_types = ['docker hardening', 'marketplace']
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -690,7 +691,6 @@ class XSOARBuild(Build):
         Runs 'test-module' for given integration with mitmproxy
         In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
         Args:
-            build: An object containing the current build info.
             instance: A dict containing the instance details
             pre_update: Whether this instance testing is before or after the content update on the server.
 
@@ -729,6 +729,7 @@ class XSOARBuild(Build):
         logging.success('Updated marketplace url and restarted servers')
         logging.info('sleeping for 120 seconds')
         sleep(120)
+        return True
 
     @staticmethod
     def get_servers(ami_env):
@@ -802,7 +803,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(multithreading=False, is_post_update=False)
+        success = self.install_packs(multithreading=False, production_bucket=True)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -865,27 +866,33 @@ class CloudBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
                             artifacts_folder=ARTIFACTS_FOLDER_MPV2,
                             marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
+        from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
         logging.info('Copying custom build bucket to cloud_instance_bucket.')
         marketplace_name = marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
         output_file = f'{artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
+        success = True
         for server in servers:
             to_bucket = f'{marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
-                subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
-            try:
-                # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # were added, they will not appear on the cloud marketplace without sync.
-                _ = demisto_client.generic_request_func(
-                    self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync?hard=true')
-            except Exception as e:
-                logging.error(f'Filed to sync marketplace. Error: {e}')
-        logging.info('Finished copying successfully.')
+                try:
+                    subprocess.run(cmd.split(), stdout=outfile, stderr=outfile, check=True)
+                    logging.info('Finished copying successfully.')
+                except subprocess.CalledProcessError as exc:
+                    logging.exception(f'Failed to copy custom build bucket to cloud_instance_bucket. {exc}')
+                    success = False
+
+            success &= sync_marketplace(server.client)
+
+        if success:
+            logging.info('Finished copying successfully.')
+        else:
+            logging.error('Failed to copy or sync marketplace bucket.')
         sleep_time = 120
         logging.info(f'sleeping for {sleep_time} seconds')
         sleep(sleep_time)
+        return success
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this concurrently since we have only one server
@@ -1529,7 +1536,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         # creating this file to indicates that this instance passed post update tests,
         # uses this file in XSOAR destroy instances
         if build and build.__class__ == XSOARBuild:
-            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+            with open(f"{ARTIFACTS_FOLDER}/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
                 pass
 
     return testing_status
@@ -1694,7 +1701,9 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = 'origin/master{}'.format('' if build.branch_name != 'master' else '~1')
+    compare_against = (
+        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
+    )
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1844,7 +1853,7 @@ def get_packs_with_higher_min_version(packs_names: set[str],
                     their min version is greater than the server version.
     """
     extract_content_packs_path = mkdtemp()
-    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER}/content_packs.zip'
     extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
 
     packs_with_higher_version = set()
@@ -1901,7 +1910,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=list(packs_to_install_in_pre_update), is_post_update=False)
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)  # type: ignore[arg-type]
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,

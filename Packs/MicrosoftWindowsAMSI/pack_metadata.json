@@ -1,0 +1,18 @@
+{
+    "name": "Microsoft Windows AMSI",
+    "description": "The Windows Antimalware Scan Interface (AMSI) is a security feature in Windows OSs that allows services to scan for files, memory and other data for threats.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

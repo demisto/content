@@ -13,6 +13,14 @@ ReversingLabs TitaniumCloud provides threat analysis data from various Reversing
     | Credentials | True |
     | Password | True |
     | Reliability | False |
+    | Verify certificates | False |
+    | HTTP proxy address with the protocol and port number. | False |
+    | HTTP proxy username | False |
+    | HTTP proxy password | False |
+    | HTTPS proxy address with the protocol and port number. | False |
+    | HTTPS proxy username | False |
+    | HTTPS proxy password | False |
+4. 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -9373,6 +9381,8 @@ Retrieve the number of hashes functionally similar to the provided one grouped b
 ***
 Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `reversinglabs-titaniumcloud-uri-statistics`
@@ -9441,6 +9451,8 @@ Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a s
 
 ***
 Retrieve a list of all available file hashes associated with a given URI.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -9982,6 +9994,8 @@ Return a URL analysis report.
 
 ***
 Analyze a given URL.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
