@@ -581,7 +581,10 @@ def get_a_list_of_vendors_command(client, args):
     page_size = str(args.get('page_size', ''))
     page_number = str(args.get('page_number', ''))
     response = client.get_a_list_of_vendors_request(page_size, page_number)
+    markdown = '### List of Vendors\n'
+    markdown += tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorsList',
         outputs_key_field='vendorDomain',
         outputs=response,
@@ -595,7 +598,10 @@ def get_the_details_of_a_specific_vendor_command(client, args):
     vendor_domain = str(args.get('vendor_domain', ''))
 
     response = client.get_the_details_of_a_specific_vendor_request(vendor_domain)
+    markdown = '### Vendor Domain Details\n'
+    markdown += tableToMarkdown('', response, removeNull=True)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorDetails',
         outputs_key_field='vendorDomain',
         outputs=response,
@@ -609,7 +615,10 @@ def get_the_activity_of_a_specific_vendor_command(client, args):
     vendor_domain = str(args.get('vendor_domain', ''))
 
     response = client.get_the_activity_of_a_specific_vendor_request(vendor_domain)
+    markdown = '### Vendor Activity\n'
+    markdown += tableToMarkdown('', response.get('eventTimeline'), removeNull=True)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorActivity',
         outputs_key_field="",
         outputs=response,
@@ -625,8 +634,11 @@ def get_a_list_of_vendor_cases_command(client, args):
     page_number = str(args.get('page_number', ''))
 
     response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
+    markdown = '### List of Cases\n'
+    markdown += tableToMarkdown('Vendor Case IDs', response.get('vendorCases'), removeNull=True)
 
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorCases',
         outputs_key_field="vendorCaseId",
         outputs=response,
@@ -640,7 +652,11 @@ def get_the_details_of_a_vendor_case_command(client, args):
     case_id = str(args.get('case_id', ''))
 
     response = client.get_the_details_of_a_vendor_case_request(case_id)
+
+    markdown = '### Case Details\n'
+    markdown += tableToMarkdown('', response, removeNull=True)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorCaseDetails',
         outputs_key_field='vendorCaseId',
         outputs=response,
@@ -655,8 +671,11 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     end = str(args.get('end', ''))
 
     response = client.get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(start, end)
+    markdown = '### Unanalyzed Abuse Mailbox Campaigns\n'
+    markdown += tableToMarkdown('', response.get('results', []), removeNull=True)
 
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.UnanalyzedAbuseCampaigns',
         outputs_key_field='abx_message_id',
         outputs=response,

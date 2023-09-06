@@ -1237,7 +1237,7 @@ Get details of a vendor
 
 #### Human Readable Output
 
->### Messages in Vendor test-domain-1.com 
+>### Vendor Domain Details 
 >|vendorDomain|riskLevel|vendorContacts| companyContacts |vendorCountries|analysis| vendorIpAddresses |
 >|---|---|---|------------------------------|---------------------|---|---------------|
 >| test-domain-1.com | High| john.doe@test-domain-1.com | john.doe@test-domain-2.com, jane.doe@test-domain-2.com|USA| Vendor Compromise Seen in Abnormal Community| 192.158.1.38   |
@@ -1285,21 +1285,25 @@ Get details of a vendor
           "suspiciousDomain": "test@test-domain.com",
           "domainIp": "192.158.1.38",
           "ipGeolocation": null,
-          "attackGoal": "Spam"
+          "attackGoal": "Spam",
+          "actionTaken": "Remediation Triggered",  
+          "hasEngagement": false,                  
+          "recipient": "jane@doe.com",                        
+          "threatId": "184712ab-6d8b-47b3-89d3-a314efef79e2"      
         }
       ]
     }
   }
 }
-}
+
 ```
 
 #### Human Readable Output
 
->### Messages in Vendor test-domain-1.com 
->|eventTimestamp|eventType|suspiciousDomain| domainIp | ipGeolocation | attackGoal |
->|---|---|---|-----------------------------|-------|------|
->| 2023-07-28T16:20:05Z | Federated Signal| Signal	test@test-domain.com| 192.158.1.38| null  | Spam | 
+>### Vendor Activity
+>|eventTimestamp|eventType|suspiciousDomain| domainIp | ipGeolocation | attackGoal |actionTaken|hasEngagement|recipient|threatId|
+>|---|---|---|-----------------------------|-------|------|--|--|--|--|
+>| 2023-07-28T16:20:05Z | Federated Signal| Signal	test@test-domain.com| 192.158.1.38| null  | Spam |Remediation Triggered |false|jane@doe.com|184712ab-6d8b-47b3-89d3-a314efef79e2|
 
 ### abnormal-security-list-vendor-cases
 ***
@@ -1439,7 +1443,7 @@ Get details of a vendor case
 
 #### Human Readable Output
 
->### Details of Case 123
+>### Case Details
 >|vendorCaseId|vendorDomain|firstObservedTime|lastModifiedTime| insights                                                                                                                                                                                                                                                                                                                                                     | timeline                                                                                                                                                                                                            |
 >|---|---|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 >| 123 | some-domain.com| 2022-04-04T21:12:14Z | 2022-04-05T14:40:11Z| {"highlight": "Inconsistent Sender Domain Registrars","description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."}... | {"eventTimestamp": "2022-04-04T21:12:14Z","senderAddress": "john-doe@some-domain.com","recipientAddress": "jane.doe@some-other-domain.com","subject": "Important Notice","markedAs": "Malicious","threatId": 123}.. |
@@ -1515,8 +1519,7 @@ Get a list of unanalyzed Abuse Mailbox campaigns
 
 #### Human Readable Output
 
->### List of Abuse Mailbox Campaigns
->### Campaign IDs
->|abx_message_id| recipient | reported_datetime| reporter | subject | not_analyzed_reason |
->|---|----------| -- |----------|---------|---------------------|
->| 123456789 |  {"name": "John Doe","email": "john.doe@some-domain.com"} |2023-06-15T00:17:31Z|  "reporter": {"email": "info@some-domain.com","name": "Support"}|URGENT|INVALID_SUBMISSION|
+>### Unanalyzed Abuse Mailbox Campaigns
+>|abx_message_id| recipient                                       | reported_datetime| reporter                                    | subject | not_analyzed_reason |
+>|---|-------------------------------------------------| -- |---------------------------------------------|---------|---------------------|
+>| 123456789 | name: John Doe  email: john.doe@some-domain.com |2023-06-15T00:17:31Z| email : info@some-domain.com  name: Support |URGENT|INVALID_SUBMISSION|

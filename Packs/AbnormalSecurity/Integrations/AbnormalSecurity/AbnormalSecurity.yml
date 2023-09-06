@@ -552,6 +552,18 @@ script:
       - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.attackGoal
         description: The goal of the attack.
         type: String
+      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.actionTaken
+        description: Action taken in response to the event.
+        type: String
+      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.hasEngagement
+        description: Indicates whether the event involved any form of engagement.
+        type: Boolean
+      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.recipient
+        description: The recipient targeted by the event, if applicable.
+        type: Unknown
+      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.threatId
+        description: Unique identifier for the threat.
+        type: String
 
   - arguments:
       - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the keys `firstObservedTime` and `lastModifiedTime` are supported for `/vendor-cases`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC.
