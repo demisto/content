@@ -17,6 +17,11 @@ Separate pairs using __&amp;__ character, for example:
 ```
 charset=utf8&read_timeout=10
 ```
+The default value for this parameter is:
+```
+autocommit=True
+```
+
 
 ## Connection Pooling
 By default, the integration does not pool database connections. Thus, a connection is created and closed for each command run by the integration. When connection pooling is enabled, each Docker container will maintain a single connection open for time specified in the the _Connection Pool Time to Live_ parameter (default: 600 seconds). After the time to live expires, and upon execution of a new command, the database connection will close and a new connection will be created. 
