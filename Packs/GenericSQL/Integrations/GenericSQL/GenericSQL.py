@@ -415,8 +415,7 @@ def convert_sqlalchemy_to_readable_table(result: list[dict]):
 
     """
     # converting b'' and datetime objects to readable ones
-    incidents = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in result]
-    return incidents
+    return [{str(key): str(value) for key, value in dictionary.items()} for dictionary in result]
 
 
 def update_last_run_after_fetch(table: list[dict], last_run: dict, fetch_parameters: str, column_name: str,
