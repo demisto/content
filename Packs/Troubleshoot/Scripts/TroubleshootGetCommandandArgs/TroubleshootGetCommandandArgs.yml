@@ -1,22 +1,12 @@
 args:
-- default: false
-  description: Instance on which to check the command.
-  isArray: false
+- description: Instance on which to check the command.
   name: instance_name
-  required: false
-  secret: false
-- default: false
-  description: Command line to process.
-  isArray: false
+- description: Command line to process.
   name: command_line
-  required: false
-  secret: false
-comment: Gets a command with its arguments, validates the command and the arguments,
-  and then parses it to use in the Cortex XSOAR context.
+comment: Gets a command with its arguments, validates the command and the arguments, and then parses it to use in the Cortex XSOAR context.
 commonfields:
   id: TroubleshootGetCommandandArgs
   version: -1
-enabled: false
 name: TroubleshootGetCommandandArgs
 outputs:
 - contextPath: CommandArgs.instance_name
@@ -33,12 +23,11 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - troubleshoot
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

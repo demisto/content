@@ -11,7 +11,7 @@
 	"id": "AWS EC2 Instance Misconfiguration",
 	"locked": false,
 	"name": "AWS EC2 Instance Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

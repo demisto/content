@@ -1,0 +1,27 @@
+{
+    "maxResults": 2,
+    "startAt": 0,
+    "isLast": false,
+    "values": [
+        {
+            "id": 4,
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/sprint/4",
+            "state": "active",
+            "name": "TSTPRD Sprint 1",
+            "startDate": "2023-02-13T15:12:39.565Z",
+            "endDate": "2023-02-27T15:12:00.000Z",
+            "originBoardId": 12,
+            "goal": ""
+        },
+        {
+            "id": 5,
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/sprint/5",
+            "state": "future",
+            "name": "TSTPRD Sprint 2",
+            "startDate": "2023-02-07T14:57:00.000Z",
+            "endDate": "2023-02-23T14:57:00.000Z",
+            "originBoardId": 12,
+            "goal": "Goal"
+        }
+    ]
+}

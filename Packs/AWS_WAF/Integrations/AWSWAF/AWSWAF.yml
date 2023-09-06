@@ -1,0 +1,1418 @@
+category: Network Security
+commonfields:
+  id: AWS-WAF
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- display: Role Arn
+  name: roleArn
+  type: 0
+  section: Connect
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  type: 0
+  section: Connect
+  required: false
+- display: AWS Default Region
+  name: defaultRegion
+  required: true
+  type: 15
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  section: Connect
+- display: Role Session Duration
+  name: sessionDuration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- name: access_key
+  hiddenusername: true
+  type: 9
+  displaypassword: Access Key
+  section: Connect
+  required: false
+- name: secret_key
+  hiddenusername: true
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: false
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Retries
+  name: retries
+  type: 0
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Amazon Web Services Web Application Firewall (WAF)
+display: AWS-WAF
+name: AWS-WAF
+script:
+  commands:
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: addresses
+      description: A comma-separated list of the IP set addresses in CIDR notation.
+      isArray: true
+    - name: description
+      description: The IP set description.
+    - name: ip_version
+      description: The IP set versions.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "IPV4"
+      - "IPV6"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: tag_key
+      description: A comma-separated list of the keys of the tags to associate with the IP set.
+      isArray: true
+    - name: tag_value
+      description: A comma-separated list of the values of the tags to associate with the IP set.
+      isArray: true
+    description: Create a new IP set.
+    name: aws-waf-ip-set-create
+    outputs:
+    - contextPath: AWS.Waf.IpSet.Id
+      description: The IP set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Name
+      description: The IP set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Description
+      description: The IP set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.LockToken
+      description: The IP set lock token.
+      type: String
+    - contextPath: AWS.Waf.IpSet.ARN
+      description: The IP set Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Get a specific IP set.
+    name: aws-waf-ip-set-get
+    outputs:
+    - contextPath: AWS.Waf.IpSet.Id
+      description: The IP set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Name
+      description: The IP set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Description
+      description: The IP set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.IPAddressVersion
+      description: The IP set IP version.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Addresses
+      description: The IP set IP addresses.
+      type: String
+    - contextPath: AWS.Waf.IpSet.ARN
+      description: The IP set Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: addresses
+      description: A comma-separated list of the IP set addresses in CIDR notation.
+      isArray: true
+      required: true
+    - name: description
+      description: The IP set description.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to overwrite the existing addresses.
+      name: is_overwrite
+      predefined:
+      - 'true'
+      - 'false'
+    description: Update an IP set.
+    name: aws-waf-ip-set-update
+  - arguments:
+    - name: scope
+      description: The IP set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Lists IP sets.
+    name: aws-waf-ip-set-list
+    outputs:
+    - contextPath: AWS.Waf.IpSet.Id
+      description: The IP set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Name
+      description: The IP set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Description
+      description: The IP set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.LockToken
+      description: The IP set lock token.
+      type: String
+    - contextPath: AWS.Waf.IpSet.ARN
+      description: The IP set Amazon Resource Name.
+    - contextPath: AWS.Waf.IpSetNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Delete a specific IP set.
+    name: aws-waf-ip-set-delete
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: regex_pattern
+      description: A comma-separated list of the regex patterns.
+      isArray: true
+      required: true
+    - name: description
+      description: The regex set description.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: tag_key
+      description: A comma-separated list of the keys of the tags to associate with the regex set.
+      isArray: true
+    - name: tag_value
+      description: A comma-separated list of the values of the tags to associate with the regex set.
+      isArray: true
+    description: Create a new regex set.
+    name: aws-waf-regex-set-create
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.LockToken
+      description: The regex set lock token.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.ARN
+      description: The regex set Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Get a specific regex set.
+    name: aws-waf-regex-set-get
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegularExpressionList
+      description: The regex set patterns list.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.ARN
+      description: The regex set Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: regex_pattern
+      description: A comma-separated list of the regex patterns.
+      isArray: true
+      required: true
+    - name: description
+      description: The regex set description.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to overwrite the existing regex patterns.
+      name: is_overwrite
+      predefined:
+      - 'true'
+      - 'false'
+    description: Update a regex set.
+    name: aws-waf-regex-set-update
+  - arguments:
+    - name: scope
+      description: The regex set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Lists regex sets.
+    name: aws-waf-regex-set-list
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.LockToken
+      description: The regex set lock token.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.ARN
+      description: The regex set Amazon Resource Name.
+    - contextPath: AWS.Waf.RegexSetNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Delete a specific regex set.
+    name: aws-waf-regex-set-delete
+  - arguments:
+    - name: scope
+      description: The rule group scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Lists rule groups.
+    name: aws-waf-rule-group-list
+    outputs:
+    - contextPath: AWS.Waf.RuleGroup.Id
+      description: The rule group ID.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Name
+      description: The rule group name.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Description
+      description: The rule group description.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.LockToken
+      description: The rule group lock token.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.ARN
+      description: The rule group Amazon Resource Name.
+    - contextPath: AWS.Waf.RuleGroupNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The rule group name.
+      required: true
+    - name: scope
+      description: The rule group scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The rule group ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Get a specific rule group.
+    name: aws-waf-rule-group-get
+    outputs:
+    - contextPath: AWS.Waf.RuleGroup.Id
+      description: The rule group ID.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Name
+      description: The rule group name.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Description
+      description: The rule group description.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Rules
+      description: The rule group rules.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.ARN
+      description: The rule group Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The rule group name.
+      required: true
+    - name: scope
+      description: The rule group scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The rule group ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Delete a specific rule group.
+    name: aws-waf-rule-group-delete
+  - arguments:
+    - name: name
+      description: The rule group name.
+      required: true
+    - name: scope
+      description: The rule group scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: capacity
+      description: The rule group capacity.
+      required: true
+    - name: description
+      description: The rule group description.
+    - name: cloud_watch_metrics_enabled
+      description: Whether the associated resource sends metrics to Amazon CloudWatch.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: metric_name
+      description: The name of the Amazon CloudWatch metric dimension. The name can contain only the alphanumeric characters, hyphen, and underscore. The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF. The default will be the same as the group name provided in the name argument.
+    - name: sampled_requests_enabled
+      description: Whether to store a sampling of the web requests that match the rules.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: tag_key
+      description: A comma-separated list of the keys of the tags to associate with the rule group.
+      isArray: true
+    - name: tag_value
+      description: A comma-separated list of the values of the tags to associate with the rule group.
+      isArray: true
+    description: Create a new rule group.
+    name: aws-waf-rule-group-create
+    outputs:
+    - contextPath: AWS.Waf.RuleGroup.Id
+      description: The rule group ID.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Name
+      description: The rule group name.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Description
+      description: The rule group description.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.LockToken
+      description: The rule group lock token.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.ARN
+      description: The rule group Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the rule to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the rule to.
+      required: true
+    - name: rule_name
+      description: The rule name.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: priority
+      description: The rule priority.
+      required: true
+    - name: action
+      description: The rule action.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Allow"
+      - "Block"
+      - "Count"
+      - "Captcha"
+      - "Challenge"
+    - name: ip_set_arn
+      description: A comma-separated list of the IP set ARN. You can get those values by running the aws-waf-ip-set-list command.
+      isArray: true
+      required: true
+    - name: condition_operator
+      description: The rule condition operator. If more than one value to the ip_set_arn argument is provided, a value must be provided.
+      auto: PREDEFINED
+      predefined:
+      - "And"
+      - "Or"
+      - "Not"
+    description: Create an IP rule.
+    name: aws-waf-ip-rule-create
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the rule to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the rule to.
+      required: true
+    - name: rule_name
+      description: The rule name.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: priority
+      description: The rule priority.
+      required: true
+    - name: action
+      description: The rule action.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Allow"
+      - "Block"
+      - "Count"
+      - "Captcha"
+      - "Challenge"
+    - name: country_codes
+      description: A comma-separated list of two-character country codes.
+      isArray: true
+      required: true
+    description: Create a country rule.
+    name: aws-waf-country-rule-create
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the rule to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the rule to.
+      required: true
+    - name: rule_name
+      description: The rule name.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: priority
+      description: The rule priority.
+      required: true
+    - name: action
+      description: The rule action.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Allow"
+      - "Block"
+      - "Count"
+      - "Captcha"
+      - "Challenge"
+    - name: match_type
+      description: The string match type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Exactly Matches String"
+      - "Starts With String"
+      - "Ends With String"
+      - "Contains String"
+      - "Contains Words"
+      - "Matches Regex Pattern Set"
+    - name: string_to_match
+      description: The string to match. If the match_type is Contains Words, a value must be provided.
+    - name: regex_set_arn
+      description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
+    - name: web_request_component
+      required: true
+      description: The web component to inspect.
+      auto: PREDEFINED
+      predefined:
+      - "Headers"
+      - "Cookies"
+      - "Query Parameters"
+      - "Uri Path"
+      - "Query String"
+      - "Body"
+      - "HTTP Method"
+    - name: oversize_handling
+      description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
+      auto: PREDEFINED
+      predefined:
+      - "CONTINUE"
+      - "MATCH"
+      - "NO_MATCH"
+    - name: text_transformation
+      description: The text transformation to perform.
+      defaultValue: "NONE"
+      auto: PREDEFINED
+      predefined:
+      - "NONE"
+      - "COMPRESS_WHITE_SPACE"
+      - "HTML_ENTITY_DECODE"
+      - "LOWERCASE"
+      - "CMD_LINE"
+      - "URL_DECODE"
+      - "BASE64_DECODE"
+      - "HEX_DECODE"
+      - "MD5"
+      - "REPLACE_COMMENTS"
+      - "ESCAPE_SEQ_DECODE"
+      - "SQL_HEX_DECODE"
+      - "CSS_DECODE"
+      - "JS_DECODE"
+      - "NORMALIZE_PATH"
+      - "NORMALIZE_PATH_WIN"
+      - "REMOVE_NULLS"
+      - "REPLACE_NULLS"
+      - "BASE64_DECODE_EXT"
+      - "URL_DECODE_UNI"
+      - "UTF8_TO_UNICODE"
+    description: Create a string match rule.
+    name: aws-waf-string-match-rule-create
+  - arguments:
+    - name: group_id
+      description: The rule group ID to delete the rule from.
+      required: true
+    - name: group_name
+      description: The rule group name to delete the rule from.
+      required: true
+    - name: rule_name
+      description: The rule name.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Delete a specific rule from a rule group.
+    name: aws-waf-rule-delete
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the statement to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the statement to.
+      required: true
+    - name: rule_name
+      description: The rule name to associate the statement to.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: ip_set_arn
+      description: The IP set ARN. You can get this value by running the aws-waf-ip-set-list command.
+      isArray: true
+      required: true
+    - name: condition_operator
+      description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
+      auto: PREDEFINED
+      predefined:
+      - "And"
+      - "Or"
+    description: Adds an IP statement to an existing rule.
+    name: aws-waf-ip-statement-add
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the statement to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the statement to.
+      required: true
+    - name: rule_name
+      description: The rule name to associate the statement to.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: country_codes
+      description: A comma-separated list of two-character country codes.
+      isArray: true
+      required: true
+    - name: condition_operator
+      description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
+      auto: PREDEFINED
+      predefined:
+      - "And"
+      - "Or"
+    description: Adds a country statement to an existing rule.
+    name: aws-waf-country-statement-add
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the statement to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the statement to.
+      required: true
+    - name: rule_name
+      description: The rule name to associate the statement to.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: match_type
+      description: The string match type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Exactly Matches String"
+      - "Starts With String"
+      - "Ends With String"
+      - "Contains String"
+      - "Contains Words"
+      - "Matches Regex Pattern Set"
+    - name: string_to_match
+      description: The string to match. If the match_type is Contains Words, a value must be provided.
+    - name: regex_set_arn
+      description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
+    - name: web_request_component
+      required: true
+      description: The web component to inspect.
+      auto: PREDEFINED
+      predefined:
+      - "Headers"
+      - "Cookies"
+      - "Query Parameters"
+      - "Uri Path"
+      - "Query String"
+      - "Body"
+      - "HTTP Method"
+    - name: oversize_handling
+      description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
+      auto: PREDEFINED
+      predefined:
+      - "CONTINUE"
+      - "MATCH"
+      - "NO_MATCH"
+    - name: text_transformation
+      description: The text transformation to perform.
+      defaultValue: "NONE"
+      auto: PREDEFINED
+      predefined:
+      - "NONE"
+      - "COMPRESS_WHITE_SPACE"
+      - "HTML_ENTITY_DECODE"
+      - "LOWERCASE"
+      - "CMD_LINE"
+      - "URL_DECODE"
+      - "BASE64_DECODE"
+      - "HEX_DECODE"
+      - "MD5"
+      - "REPLACE_COMMENTS"
+      - "ESCAPE_SEQ_DECODE"
+      - "SQL_HEX_DECODE"
+      - "CSS_DECODE"
+      - "JS_DECODE"
+      - "NORMALIZE_PATH"
+      - "NORMALIZE_PATH_WIN"
+      - "REMOVE_NULLS"
+      - "REPLACE_NULLS"
+      - "BASE64_DECODE_EXT"
+      - "URL_DECODE_UNI"
+      - "UTF8_TO_UNICODE"
+    - name: condition_operator
+      description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
+      auto: PREDEFINED
+      predefined:
+      - "And"
+      - "Or"
+    description: Adds a string match statement to an existing rule.
+    name: aws-waf-string-match-statement-add
+  - arguments:
+    - name: group_id
+      description: The rule group ID to associate the statement to.
+      required: true
+    - name: group_name
+      description: The rule group name to associate the statement to.
+      required: true
+    - name: rule_name
+      description: The rule name to associate the statement to.
+      required: true
+    - name: scope
+      description: The rule scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: statement_json
+      description: A generic JSON statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command.
+      isArray: true
+      required: true
+    - name: condition_operator
+      description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
+      auto: PREDEFINED
+      predefined:
+      - "And"
+      - "Or"
+    description: Adds a generic statement to an existing rule.
+    name: aws-waf-statement-json-add
+  - arguments:
+    - name: statement_type
+      description: The statement type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Ip Set"
+      - "Country"
+      - "String Match"
+      - "Regex Pattern"
+    - name: web_request_component
+      description: The web component to inspect.
+      auto: PREDEFINED
+      predefined:
+      - "Headers"
+      - "Cookies"
+      - "Query Parameters"
+      - "Uri Path"
+      - "Query String"
+      - "Body"
+      - "HTTP Method"
+    description: Gets the statement template.
+    name: aws-waf-statement-json-template-get
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/boto3py3:1.0.0.63655
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

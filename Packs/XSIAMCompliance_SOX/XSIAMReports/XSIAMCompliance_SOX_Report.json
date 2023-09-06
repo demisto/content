@@ -1,0 +1,309 @@
+{
+  "fromVersion": "8.3.0",
+  "templates_data": [
+    {
+      "report_name": "SOX Compliance Report",
+      "report_description": "Monitor SOX controls and produce evidence for audits.",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "SOX Compliance Report",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "1004205575214",
+                "description": "Monitor SOX controls and produce evidence for audits."
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-2029",
+          "data": [
+            {
+              "key": "xql_1682632946644",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.event.operation = \"FILE_WRITE\" /*Filter for file write events*/\n| filter xdm.source.host.hostname contains \"*\"\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9869",
+          "data": [
+            {
+              "key": "xql_1683770468084",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.target.location.region contains \"*\" \n| fields xdm.target.agent.identifier, xdm.target.asn.as_name, xdm.target.asn.as_number, xdm.target.host.fqdn, xdm.target.ipv4, xdm.target.location.city, xdm.target.location.continent, xdm.target.location.country, xdm.target.location.latitude, xdm.target.location.longitude , xdm.target.location.region\n| comp count(xdm.target.location.country) as counter by xdm.target.location.country\n| view graph type = map xaxis = xdm.target.location.country yaxis = counter default_limit = `false` seriestitle(\"counter\",\"Volume\") ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "map",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.target.location.country"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "default_limit",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "counter",
+                          "Volume"
+                        ],
+                        "name": "seriestitle"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9773",
+          "data": [
+            {
+              "key": "xql_1682635131309",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel | filter xdm.observer.product contains \"*\"\n| dedup xdm.observer.name\n| fields xdm.observer.product , xdm.observer.name, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-5626",
+          "data": [
+            {
+              "key": "xql_1682637289521",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 2592000000
+      },
+      "global_id": "9bec0bfd38b1404cab57a76ddb72f05d",
+      "time_offset": -18000
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1682632946644",
+      "title": "SOX Section 302.2 - 302.3: Prevent data tampering",
+      "creation_time": 1687928383684,
+      "description": "Implement policies and procedures to prevent data tampering. Use this widget to query file write events.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel\n| fields xdm.source.host.hostname, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n| filter xdm.event.operation = \"FILE_WRITE\" /*Filter for file write events*/\n| filter xdm.source.host.hostname contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682635131309",
+      "title": "SOX Section 302.4.C: Validate systems are operational",
+      "creation_time": 1687928383910,
+      "description": "Implement policies and procedures to validate that systems are operational. Use this widget to query system data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.observer.name, xdm.observer.product, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time \n| filter xdm.observer.product contains \"*\"\n| dedup xdm.observer.name",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682637289521",
+      "title": "SOX Section 302.5.A - 302.5.B: Detect Security Breaches",
+      "creation_time": 1687928384125,
+      "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query triggered network rules.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| filter xdm.network.rule contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770468084",
+      "title": "SOX Section 302.4.B: Track Data Access",
+      "creation_time": 1687928384367,
+      "description": "Implement policies and procedures to track data access. Use this widget to query target location data and display the information on a map.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.target.location.region, xdm.target.location.country\n| filter xdm.target.location.region contains \"*\" \n| comp count(xdm.target.location.country) as counter by xdm.target.location.country\n| view graph type = map xaxis = xdm.target.location.country yaxis = counter default_limit = `false` seriestitle(\"counter\",\"Volume\") ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "map",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.target.location.country"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "default_limit",
+                "value": "false"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "counter",
+                  "Volume"
+                ],
+                "name": "seriestitle"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    }
+  ]
+}

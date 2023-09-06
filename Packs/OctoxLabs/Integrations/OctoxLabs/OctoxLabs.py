@@ -173,7 +173,7 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
-    device = octox.get_asset_detail(
+    device = octox.get_device_detail(
         hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
     )
     return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)

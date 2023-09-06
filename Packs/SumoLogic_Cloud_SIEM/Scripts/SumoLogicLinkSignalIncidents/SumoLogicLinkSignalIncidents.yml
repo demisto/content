@@ -1,0 +1,19 @@
+args:
+- name: id
+  description: "ID of the target incident, if not provided will use the current one"
+comment: "Command to link associated Signal Incidents to the Insight Incident"
+commonfields:
+  id: SumoLogicLinkSignalIncidents
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: SumoLogicLinkSignalIncidents
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

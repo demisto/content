@@ -1,10 +1,11 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
-    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param
+    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
 import pytest
 import json
 import io
+import requests_mock
 
 
 client = Client(base_url="demisto.com")
@@ -637,6 +638,23 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     assert expected_readable in readable
 
 
+def test_get_user_command_not_found_user(mocker):
+    """
+        Given:
+       - Username.
+
+       When:
+       - running get_user_command.
+
+       Then:
+       - Ensure that no exception was raised, and assert the readable output.
+    """
+    args = {"username": "test@this.com"}
+    mocker.patch.object(client, 'get_user', side_effect=Exception('Error in API call [404] - Not found'))
+    readable, _, _ = get_user_command(client, args)
+    assert 'User test@this.com was not found.' in readable
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args ,expected_context, expected_readable",
@@ -903,3 +921,27 @@ def test_get_readable_logs():
     result = client.get_readable_logs(logs_raw_response)
     assert len(result) == 2
     assert result == EXPEXTED_LOGS_RESULT
+
+
+def test_set_password_command():
+    client = Client('https://demisto.com')
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+
+        result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3'})
+
+    assert result[0] == 'test password was last changed on 2020-03-26T13:57:13.000Z'
+    assert mock_request.last_request.text == '{"credentials": {"password": {"value": "a1b2c3"}}}'
+
+
+def test_set_temp_password_command():
+    client = Client('https://demisto.com')
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
+
+        result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
+
+    assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'

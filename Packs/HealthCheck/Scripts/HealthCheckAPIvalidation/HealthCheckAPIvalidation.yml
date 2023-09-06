@@ -8,7 +8,6 @@ dockerimage: demisto/python3:3.10.9.46807
 enabled: true
 name: HealthCheckAPIvalidation
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

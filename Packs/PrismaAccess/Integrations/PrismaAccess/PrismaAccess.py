@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import sys
 from base64 import b64encode
@@ -5,8 +7,6 @@ from typing import Any, Dict
 
 import requests
 
-import demistomock as demisto
-from CommonServerPython import *
 from netmiko import Netmiko
 
 ''' Common setup '''
@@ -141,7 +141,7 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # py
 apiConfigured = False
 
 # Others are not mandatory as user may choose to only use XML API commands and not SSH
-KEY = demisto.params().get('key', {})
+KEY = secret_key = demisto.params().get('credentials_key', {}).get('password') or demisto.params().get('key', {})
 PORT = demisto.params().get('port')
 
 # Does user intend to leverage SSH commands
@@ -218,7 +218,6 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-    pass
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
@@ -393,7 +392,7 @@ def device_group_test():
 
 
 @logger
-def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str, str]:
+def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str) -> Dict[str, str]:
     if apiConfigured:
         xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
@@ -406,6 +405,11 @@ def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str
             cmd = '''<request><plugins><cloud_services><gpcs>
                   <logout_mobile_user><gateway>%s<user>%s</user></gateway></logout_mobile_user>
                   </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
+
+        if tenant:
+            tenant_entry = f"<multi-tenant><tenant-name><entry name='{tenant}'></entry></tenant-name>"
+            cmd = cmd.replace('<gpcs>', f'<gpcs>{tenant_entry}').replace('</logout_mobile_user>',
+                                                                         '</logout_mobile_user></multi-tenant>')
         params = {
             'type': 'op',
             'key': API_KEY,
@@ -421,8 +425,9 @@ def prisma_access_logout_user_command():
     computer = demisto.args().get('computer', '')
     domain = demisto.args().get('domain', '')
     user = demisto.args().get('user', '')
+    tenant = demisto.args().get('tenant_name', '')
 
-    result = prisma_access_logout_user(computer, domain, user)
+    result = prisma_access_logout_user(computer, domain, user, tenant)
 
     if 'result' in result['response'] and result['response']['@status'] == 'success':
         res = result['response'].get('result', '')

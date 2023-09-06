@@ -1,0 +1,14 @@
+{
+    "details": "Windows Date and Time",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "Windows Date and Time",
+    "locked": false,
+    "mergeContext": false,
+    "regex": "\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}\\s\\d{1,2}\\:\\d{1,2}\\s(AM|PM)",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

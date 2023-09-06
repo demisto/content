@@ -28,10 +28,12 @@ INDICATOR_FIELDS_MAPPER = {
 class Client(BaseClient):
 
     def __init__(self, params):
-        self._client_id = params.get('client_id')
-        self._client_secret = params.get('client_secret')
+        self._client_id = params.get('credentials_client', {}).get('identifier') or params.get('client_id')
+        self._client_secret = params.get('credentials_client', {}).get('password') or params.get('client_secret')
         self._verify_certificate = not demisto.params().get('insecure', False)
         self._server_url = params.get('server_url', "https://api.crowdstrike.com/")
+        if not(self._client_id and self._client_secret):
+            raise DemistoException('API client ID and API client secret must be provided.')
         super().__init__(base_url=self._server_url, verify=self._verify_certificate,
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token = self._get_access_token()
@@ -137,57 +139,37 @@ class Client(BaseClient):
             url_suffix = url_suffix + '?filter=' + params
         return url_suffix
 
-    def build_iterator(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None, target_countries=None,
-                       target_industries=None, custom_filter=None):
-        """Builds a list of indicators.
+    def get_indicators(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None, target_countries=None,
+                       target_industries=None, custom_filter=None, time_filter=None, sort=None):
+        """Get a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
-        actors_filter = self.build_actors_filter(target_countries, target_industries, custom_filter)
 
-        # for fetch_indicator_command only
         params = {}
-        if not limit:
-            params = self.get_last_modified_time()
-
-        url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
         if limit:
-            response = self.http_request('GET', url_suffix_to_filter_by, params={'limit': limit})
-        else:
-            response = self.http_request('GET', url_suffix_to_filter_by)
+            params['limit'] = limit
+        if offset:
+            params['offset'] = offset
+        if sort:
+            params['sort'] = sort
 
-        parsed_indicators = self.create_indicators_from_response(response, feed_tags,
-                                                                 tlp_color)  # list of dict of indicators
+        actors_filter = self.build_actors_filter(target_countries, target_industries, custom_filter)
+        url_suffix_to_filter_by = self.build_url_suffix(time_filter, actors_filter)
 
-        # for get_indicator_command only
-        if limit:
-            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
-        return parsed_indicators
+        response = self.http_request('GET', url_suffix_to_filter_by, params=params)
 
-    def set_last_modified_time(self):
-        current_time = datetime.now()
-        current_timestamp = datetime.timestamp(current_time)
-        timestamp = str(int(current_timestamp))
-        integration_context_to_set = {'last_modified_time': timestamp}
-        set_feed_last_run(integration_context_to_set)
-
-    def get_last_modified_time(self):
-        integration_context = get_feed_last_run()
-        if not integration_context:
-            params = ''
-            self.set_last_modified_time()
-        else:
-            last_modified_time = get_feed_last_run()
-            relevant_time = int(last_modified_time['last_modified_time'])
-            params = f"last_modified_date%3A%3E{relevant_time}"
-            self.set_last_modified_time()
-        return params
+        return self.create_indicators_from_response(
+            response,
+            feed_tags,
+            tlp_color
+        )
 
 
 def test_module(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
     try:
         tags = argToList(demisto.params().get('feedTags'))
-        client.build_iterator(tags, tlp_color, limit=1, offset=0)
+        client.get_indicators(tags, tlp_color, limit=1, offset=0)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
@@ -215,8 +197,13 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_colo
     custom_filter = args.get('custom_filter') if args.get('custom_filter') \
         else demisto.params().get('custom_filter')
 
-    indicators = fetch_indicators(client, feed_tags, tlp_color, limit, offset, target_countries,
-                                  target_industries, custom_filter)
+    indicators = client.get_indicators(
+        feed_tags, tlp_color,
+        limit, offset,
+        target_countries,
+        target_industries,
+        custom_filter
+    )
 
     hr_indicators = []
     for indicator in indicators:
@@ -233,8 +220,8 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_colo
     return human_readable, {}, indicators
 
 
-def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None,
-                     target_countries=None, target_industries=None, custom_filter=None) -> list:
+def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], limit: int,
+                     target_countries=None, target_industries=None, custom_filter=None) -> tuple:
     """Fetch-indicators command from CrowdStrike Feeds
 
     Args:
@@ -242,17 +229,44 @@ def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], 
         feed_tags: The indicator tags.
         tlp_color (str): Traffic Light Protocol color.
         limit: limit the amount of indicators fetched.
-        offset: the index of the first index to fetch.
         target_industries: the actor's target_industries.
         target_countries: the actor's target_countries.
         custom_filter: user actor's filter.
     Returns:
-        list. List of indicators.
+        tuple. (List of indicators, last_run data).
     """
-    indicators = client.build_iterator(feed_tags, tlp_color, limit, offset, target_countries,
-                                       target_industries, custom_filter)
+    last_run = demisto.getLastRun() or {}
+    offset = int(last_run.get('offset', '0'))
 
-    return indicators
+    last_modified_time = last_run.get('last_modified_time')
+    time_filter = f"last_modified_date%3A%3E{last_modified_time}" if last_modified_time else None
+
+    indicators = client.get_indicators(
+        feed_tags, tlp_color,
+        limit, offset,
+        target_countries,
+        target_industries,
+        custom_filter, time_filter=time_filter,
+        sort='last_modified_date'
+    )
+
+    if len(indicators) >= limit:
+        # we need to store the offset and the same last modified time for the next run
+        last_run = {
+            'last_modified_time': last_modified_time,
+            'offset': offset + limit
+        }
+    elif len(indicators) > 0:
+        # we need to store the latest updateddate from the indictators for the next run
+        latest_modified_time = max(map(lambda indicator: indicator['fields']['updateddate'], indicators))
+        new_last_modified_time = int(latest_modified_time) + 1  # + 1 to avoid get the same
+        last_run = {'last_modified_time': new_last_modified_time}
+    else:
+        # we get 0 new indicators - store the current time
+        current_timestamp = datetime.timestamp(datetime.now())
+        last_run = {'last_modified_time': int(current_timestamp)}
+
+    return indicators, last_run
 
 
 def main():
@@ -262,7 +276,7 @@ def main():
     target_countries = params.get('target_countries')
     target_industries = params.get('target_industries')
     custom_filter = params.get('custom_filter')
-    fetch_limit = params.get('limit', '200')
+    fetch_limit = int(params.get('limit', '200'))
     client = Client(params)
 
     command = demisto.command()
@@ -274,12 +288,17 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags, tlp_color, target_countries=target_countries,
-                                          target_industries=target_industries, custom_filter=custom_filter,
-                                          limit=fetch_limit, offset='0')
+
+            indicators, last_run_data = fetch_indicators(
+                client, feed_tags, tlp_color, target_countries=target_countries,
+                target_industries=target_industries, custom_filter=custom_filter,
+                limit=fetch_limit
+            )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+
+            demisto.setLastRun(last_run_data)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args(),
                                                                        feed_tags, tlp_color)  # type: ignore

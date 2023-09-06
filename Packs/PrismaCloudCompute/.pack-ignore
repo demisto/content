@@ -15,6 +15,7 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-PrismaCloudCompute.json]
 ignore=BA101
+
 [file:incidentfield-Prisma_Cloud_Compute_Raw_Alert_JSON.json]
 ignore=IF100
 
@@ -24,8 +25,28 @@ ignore=PA129
 [file:classifier-PrismaCloudCompute.json]
 ignore=BA101
 
+[file:incidentfield-Prisma_Cloud_Compute_Defender_Logs.json]
+ignore=IF113
+
+[file:incidentfield-Prisma_Audit_Table.json]
+ignore=IF113
+
+[file:incidentfield-PCC_Defender_Logs.json]
+ignore=IF113
+
+[file:TagIndicatorButton.yml]
+ignore=BA124
+
+[file:CreatePrismaCloudComputeLink.yml]
+ignore=BA124
+
+[file:CreatePrismaCloudComputeComplianceReportButton.yml]
+ignore=BA124
+
 [known_words]
 resourceType
 resourceID
 codeRepo
 registryImage
+setIndicators
+

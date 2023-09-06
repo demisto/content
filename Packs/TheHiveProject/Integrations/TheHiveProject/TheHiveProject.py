@@ -490,6 +490,8 @@ def search_cases_command(client: Client, args: dict):
 def update_case_command(client: Client, args: dict):
     case_id = args.get('id')
     args['tags'] = argToList(args.get('tags', []))
+    if args.get('severity'):
+        args['severity'] = arg_to_number(args.get('severity'))
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
@@ -1004,11 +1006,13 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     mirroring = params.get('mirror', 'Disabled').title()
-
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('apiKey')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
     client = Client(
         base_url=urljoin(params.get('url'), '/api'),
         verify=not params.get('insecure', False),
-        headers={'Authorization': f'Bearer {params.get("apiKey")}'},
+        headers={'Authorization': f'Bearer {api_key}'},
         proxy=params.get('proxy', False),
         mirroring=None if mirroring == 'Disabled' else mirroring,
     )

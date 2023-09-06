@@ -1,0 +1,98 @@
+/***********************************************************/
+/* Ivanti (Pulse) Connect Secure (Remote Access VPN)       */
+/***********************************************************/
+/* Supports extractions & mappings for Standard (default)  */ 
+/* log filter format, which logs the following fields:     */ 
+/* date, time, node, src IP, user, realm, event ID, msg.   */
+/***********************************************************/
+[MODEL: dataset="ivanti_connect_secure_raw"]
+alter
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d+"), 0)),
+    syslog_header = regextract(arrayindex(regextract(_raw_log, "(^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0) , "(\S+)"),
+    syslog_structured_data = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+(.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?\s+(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-.+)"), 0)
+| alter 
+    syslog_facility = floor(divide(syslog_priority, 8)),
+    //syslog_timestamp = arrayindex(syslog_header, 1),
+    syslog_hostname = arrayindex(syslog_header, 2),
+    syslog_app_name = rtrim(arrayindex(syslog_header, 3), ":"),
+    syslog_process_id = arrayindex(syslog_header, 4),
+    syslog_msg_id = arrayindex(syslog_header, 5),
+    syslog_structured_data_segments = regextract(syslog_structured_data, "\[([^\]]+)\]"),
+    msg_node = arrayindex(regextract(syslog_msg, "^\S+\s+\S+\s+\-\s+(\S+)"), 0),
+    msg_ip = arrayindex(regextract(syslog_msg, "\[([a-fA-F\d\.\:]+)\]"), 0),
+    msg_user1 = arrayindex(regextract(syslog_msg, "\]\s+Default\s*Network\:+([^\(]+)"), 0),
+    msg_user2 = arrayindex(regextract(syslog_msg, "\]\s+([^\(]+)"), 0),
+    msg_realm = arrayindex(regextract(syslog_msg, "\(([^\)]+)"), 0),
+    msg_roles_str = arrayindex(regextract(syslog_msg, "\)\[([^\]]+)"), 0),
+    msg_event_id = arrayindex(regextract(syslog_msg, "\].+?\]\s+([\w\-]+)\s+.+$"), 0),
+    msg_payload = arrayindex(regextract(syslog_msg, "\].+?\]\s+[\w\-]+\s+(.+$)"), 0)
+| alter
+    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8)),
+    full_user_name = coalesce(msg_user1, msg_user2),
+    event_id = if(msg_event_id != null and msg_event_id != "-", msg_event_id, syslog_msg_id != null and syslog_msg_id != "-", syslog_msg_id, null),
+    // msg_roles = regextract(msg_roles_str, "([^,]+)"),
+    msg_roles = arraymap(regextract(msg_roles_str, "([^,]+)"), ltrim("@element")),
+    event_name1 = arrayindex(regextract(msg_payload, "^(.+?)\s+\\\\"), 0),
+    event_name2 = arrayindex(regextract(msg_payload, "^([^\']+)\s+for\s+"), 0),
+    event_name3 = arrayindex(regextract(msg_payload, "^([^\']+)\s+using"), 0),
+    event_name4 = arrayindex(regextract(msg_payload, "^(.+?)\s+\'"), 0),
+    event_name5 = arrayindex(regextract(msg_payload, "^(.+?)\:"), 0),
+    event_name6 = arrayindex(regextract(msg_payload, "^(\S+\s*\S+\s*\S+)$"), 0),
+    event_name_custom1 = if(msg_payload ~= "template.+is out of date", "Template is out of date", null),
+    src_ipv4 = if(msg_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", msg_ip, null),
+    src_ipv6 = if(msg_ip ~= "\:[a-fA-F\d]{1,3}", msg_ip, null),
+    client_version = arrayindex(regextract(msg_payload, "from \S+ with [\w\-]+\/([\d\.]+\d)"), 0), 
+    client_os = arrayindex(regextract(msg_payload, "from \S+ with [\w\-]+\/[\d\.]+\d\s+\(([^\)]+)\)"), 0), 
+    session_id = arrayindex(regextract(msg_payload, "session:(\w+)"), 0), 
+    reason = arrayindex(regextract(msg_payload, "Reason:\s*([\w\s\-]+)"), 0), 
+    reason2 = arrayindex(regextract(msg_payload, "due to\s+(\S+)"), 0), 
+    target_share_server = arrayindex(regextract(msg_payload, "\s*\\\\([a-fA-F\d\.\:]+)\\\S+\$"), 0),
+    target_share_domain= arrayindex(regextract(msg_payload, "in wrkgrp\/domain\s*(\S+)"), 0),
+    error_code = arrayindex(regextract(msg_payload, "with error (\w+)"), 0)
+| alter
+    severity = to_string(syslog_severity),
+    event_name = coalesce(event_name_custom1, event_name1, event_name2, event_name3, event_name4, event_name5, event_name6),
+    user_name =  arrayindex(regextract(full_user_name, "[^\\]\\\s*(\S.+)"), 0),
+    user_domain = arrayindex(regextract(full_user_name, "([^\\]+)\\\s*\S.+"), 0),
+    dst_ipv4 = if(target_share_server ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_share_server, null),
+    dst_ipv6 = if(target_share_server ~= "\:[a-fA-F\d]{1,3}", target_share_server, null),
+    os = lowercase(client_os)
+| alter 
+    dst_hostname = if(dst_ipv4 = null and dst_ipv6 = null, target_share_server, null)
+| alter 
+    xdm.observer.name = syslog_hostname, 
+    xdm.observer.version = client_version,
+    xdm.observer.action = event_name,
+    xdm.intermediate.host.device_id = msg_node,
+    xdm.intermediate.host.hostname = syslog_hostname,
+    xdm.intermediate.application.name = syslog_app_name,
+    xdm.intermediate.process.identifier = if(syslog_process_id != "-", syslog_process_id, null),
+    xdm.source.ipv4 = src_ipv4, 
+    xdm.source.host.ipv4_addresses = arraycreate(src_ipv4),
+    xdm.source.ipv6 = src_ipv6, 
+    xdm.source.host.ipv6_addresses = arraycreate(src_ipv6),
+    xdm.source.user.username = full_user_name, 
+    xdm.source.user.upn = coalesce(user_name, full_user_name), 
+    xdm.source.user.domain = user_domain, 
+    xdm.source.user.groups = msg_roles,
+    xdm.source.agent.version = client_version, 
+    xdm.source.host.os = client_os, 
+    xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(client_os)),
+    xdm.target.ipv4 = dst_ipv4, 
+    xdm.target.host.ipv4_addresses = if(dst_ipv4 != null, arraycreate(dst_ipv4), null), 
+    xdm.target.ipv6 = dst_ipv6, 
+    xdm.target.host.ipv6_addresses = if(dst_ipv4 != null, arraycreate(dst_ipv6), null), 
+    xdm.target.host.hostname = dst_hostname,
+    xdm.target.domain = coalesce(target_share_domain, msg_realm),
+    xdm.event.description = msg_payload,
+    xdm.event.type = null, // System, User Access, Admin Access, Sensors & Client Logs; 
+    xdm.event.id = event_id,
+    xdm.event.tags = arrayconcat(if(msg_payload ~= "[Ll]ogin|[Aa]uthentication", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null), syslog_structured_data_segments), 
+    xdm.event.outcome = if(msg_payload ~= "succeeded|successful", XDM_CONST.OUTCOME_SUCCESS,  msg_payload ~= "[Ff]ailed|[Rr]ejected", XDM_CONST.OUTCOME_FAILED, null),
+    xdm.event.outcome_reason  = coalesce(reason, reason2, error_code), 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.alert.severity = severity, 
+    xdm.network.session_id = session_id,
+    xdm.session_context_id = session_id;
+/* END of Ivanti (Pulse) Connect Secure (Remote Access VPN) */ 

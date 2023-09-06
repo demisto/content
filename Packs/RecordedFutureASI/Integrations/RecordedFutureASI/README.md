@@ -25,17 +25,20 @@
 2. Search for RecordedFutureASI.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                                      | **Required**                                                                                       |
-    |----------------------------------------------------------------------------------------------------|------------|
-    | API Key                                                                                            | True                                                                                               |
-    | Project ID                                                                                         | True                                                                                               |
-    | Fetch incidents                                                                                    | False                                                                                              |
-    | Incidents Fetch Interval                                                                           | False                                                                                              |
-    | Incident type                                                                                      | False                                                                                              |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False                                                                                              |
-    | Max Fetch                                                                                          | False                                                                                              |
+| **Parameter**                                                                                      | **Required** |
+|----------------------------------------------------------------------------------------------------|--------------|
+| API Key                                                                                            | True         |
+| Project ID                                                                                         | True         |
+| Min Severity                                                                                       | False        |
+| Issue Grouping                                                                                     | False        |
+| Expand Issues                                                                                      | False        |
+| Fetch incidents                                                                                    | False        |
+| Incidents Fetch Interval                                                                           | False        |
+| Incident type                                                                                      | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False        |
+| Max Fetch                                                                                          | False        |
 
-5. Click **Test** to validate the token and connection.
+4. Click **Test** to validate the token and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -50,9 +53,11 @@ Fetches all the current or added issues.
 `asi-project-issues-fetch`
 #### Input
 
-| **Argument Name** | **Description**                     | **Required** |
-| --- |-------------------------------------| --- |
-| issues_start | Timestamp to get added issues after | Optional |
+| **Argument Name** | **Description**                                     | **Required** |
+|-------------------|-----------------------------------------------------| --- |
+| issues_start      | Timestamp to get added issues after                 | Optional |
+| group_by_host     | Whether to group results by host                    | Optional |
+| expand_issues     | Whether to expand grouped host issues by each issue | Optional |
 
 
 #### Context Output

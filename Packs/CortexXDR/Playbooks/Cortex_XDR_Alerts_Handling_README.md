@@ -2,7 +2,8 @@ This playbook is used to loop over every alert in a Cortex XDR incident.
 Supported alert categories:
 - Malware
 - Port Scan
-- Cryptojacking
+- Cloud Cryptojacking
+- Cloud Token Theft
 - RDP Brute-Force
 - First SSO Access
 - Cloud IAM User Access Investigation
@@ -14,10 +15,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Cortex XDR - Possible External RDP Brute-Force
-* Cortex XDR - Port Scan - Adjusted
-* Cortex XDR - Cloud Cryptojacking
 * Cortex XDR - Malware Investigation
+* Cortex XDR - XCloud Cryptojacking
+* Cortex XDR - Port Scan - Adjusted
 * Cortex XDR - First SSO Access
+* Cortex XDR - XCloud Token Theft Response
 * Cortex XDR - Cloud IAM User Access Investigation
 * GenericPolling
 

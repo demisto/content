@@ -1,12 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import time
 from typing import Dict
 
-import demistomock as demisto
-import requests
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -187,7 +186,7 @@ def run_vulnerabilities_fetch(last_run, first_fetch: datetime,
 
 def insert_type_to_logs(audit_logs: list, vulnerabilities: list):
     """
-    In order for the user to get easy access to events in the system based on thier type, the type of the event is added
+    In order for the user to get easy access to events in the system based on their type, the type of the event is added
     manually.
 
     Args:
@@ -199,6 +198,14 @@ def insert_type_to_logs(audit_logs: list, vulnerabilities: list):
         log.update({'xsiam_type': 'audit_log'})
     for log in vulnerabilities:
         log.update({'xsiam_type': 'vulnerability'})
+
+
+def call_send_events_to_xsiam(events, vulnerabilities, should_push_events=False):
+    """Enhanced and sends events and vulnerabilities to XSIAM"""
+    insert_type_to_logs(audit_logs=events, vulnerabilities=vulnerabilities)
+    if should_push_events:
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(vulnerabilities, vendor=VENDOR, product=PRODUCT)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -397,38 +404,41 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command in ('tenable-get-audit-logs', 'tenable-get-vulnerabilities', 'fetch-events'):
+        elif command == 'tenable-get-audit-logs':
+            results, events = get_audit_logs_command(client,
+                                                     from_date=args.get('from_date'),
+                                                     to_date=args.get('to_date'),
+                                                     actor_id=args.get('actor_id'),
+                                                     target_id=args.get('target_id'),
+                                                     limit=args.get('limit'))
+            return_results(results)
 
-            if command == 'tenable-get-audit-logs':
-                results, events = get_audit_logs_command(client,
-                                                         from_date=args.get('from_date'),
-                                                         to_date=args.get('to_date'),
-                                                         actor_id=args.get('actor_id'),
-                                                         target_id=args.get('target_id'),
-                                                         limit=args.get('limit'))
-                return_results(results)
-            elif command == 'tenable-get-vulnerabilities':
-                results = get_vulnerabilities_command(args, client)
-                if isinstance(results, CommandResults):
-                    if results.raw_response:
-                        vulnerabilities = results.raw_response  # type: ignore
-                return_results(results)
-            else:  # command == 'fetch-events':
-                last_run = demisto.getLastRun()
-                if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
-                                             vuln_fetch_interval=vuln_fetch_interval):
-                    generate_export_uuid(client, first_fetch, last_run, severity)
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities,
+                                      should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
-                vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
-                events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
+        elif command == 'tenable-get-vulnerabilities':
+            results = get_vulnerabilities_command(args, client)
+            if isinstance(results, CommandResults):
+                if results.raw_response:
+                    vulnerabilities = results.raw_response  # type: ignore
+            return_results(results)
 
-                demisto.info(f'Setting new last_runto {new_last_run}')
-                demisto.setLastRun(new_last_run)
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities,
+                                      should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
-            insert_type_to_logs(audit_logs=events, vulnerabilities=vulnerabilities)
-            if argToBoolean(args.get('should_push_events', 'true')):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                send_events_to_xsiam(vulnerabilities, vendor=VENDOR, product=PRODUCT)
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
+                                         vuln_fetch_interval=vuln_fetch_interval):
+                generate_export_uuid(client, first_fetch, last_run, severity)
+
+            vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
+            events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
+
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities, should_push_events=True)
+
+            demisto.debug(f'Setting new last_run to {new_last_run}')
+            demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:

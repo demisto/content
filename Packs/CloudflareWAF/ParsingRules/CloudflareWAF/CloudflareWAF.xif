@@ -1,0 +1,35 @@
+[INGEST:vendor="cloudflare", product="waf", target_dataset="cloudflare_waf_raw", no_hit = keep]
+// Supports RFC3339 compatible timestamps with a UTC 'Z' offset: "%Y-%m-%dT%H:%M:%SZ" (for e.g. 2023-07-17T11:30:59Z)
+filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}Z"
+| alter _time = parse_timestamp("%FT%XZ", to_string(edgeendtimestamp));
+
+// Supports RFC3339 compatible timestamps with a numeric timezone offset (for e.g. 2023-07-17T14:30:59+03:00)
+filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}"
+| alter _time = parse_timestamp("%FT%X%Ez", to_string(edgeendtimestamp));
+
+// Supports RFC3339 compatible timestamps with a numeric timezone offset and seconds fraction precision (for e.g. 2023-07-17T14:30:59.123+03:00)
+filter to_string(edgeendtimestamp) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.?\d+[Zz]|\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[\+\-]{1}\d{2}:\d{2}"
+| alter tmp_timestamp_string = replace(to_string(edgeendtimestamp), "Z", "+00:00") 
+| alter tmp_precision = arrayindex(regextract(tmp_timestamp_string, "\.(\d{1,6})"), 0)
+| alter tmp_precision_length = len(tmp_precision)
+| alter tmp_time = if( // adjust parsing format according to the precision length
+    tmp_precision_length = 1, parse_timestamp("%FT%H:%M:%E1S%Ez", tmp_timestamp_string),
+    tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp_string),
+    tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp_string),
+    tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp_string))
+| alter _time = tmp_time
+| fields - tmp*;
+
+// Supports Epoch (Unix time) timestamp in either seconds, milliseconds, microseconds or nanoseconds 
+filter to_string(edgeendtimestamp) ~= "\d{10}|\d{13}|\d{16}|\d{19}" 
+| alter tmp_epoch_string = to_string(edgeendtimestamp)
+| alter tmp_epoch_int = to_integer(tmp_epoch_string)
+| alter tmp_len = to_integer(len(tmp_epoch_string))
+| alter tmp_time = if( // convert epoch representation to a datetime type timestamp
+    // in_case of nanoseconds, we convert them to microseconds since to_timestamp does not support nanoseconds
+    tmp_len = 10, to_timestamp(tmp_epoch_int, "SECONDS"), 
+    tmp_len = 13, to_timestamp(tmp_epoch_int, "MILLIS"),  
+    tmp_len = 16, to_timestamp(tmp_epoch_int, "MICROS"),  
+    tmp_len = 19, to_timestamp(divide(tmp_epoch_int, 1000), "MICROS")) 
+| alter _time = tmp_time
+| fields - tmp*;

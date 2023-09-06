@@ -110,7 +110,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
         'managed_identities_client_id': {'password': client_id},
         'use_managed_identities': 'True',
         'resource_group': 'test_resource_group',
-        'server_url': Resources.management_azure
+        'server_url': Resources.management_azure,
+        'credentials_auth_id': {'password': 'example'}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')

@@ -1,0 +1,51 @@
+{
+   "data":[
+      {
+         "test_data_event_id":"458ad2d7-294d-4445-8f36-7aaa1284e20a",
+         "vendor":"zoom",
+         "product":"zoom",
+         "dataset":"zoom_zoom_raw",
+         "event_data":{
+            "event_type":"operation_log",
+            "time":"2023-04-03T08:58:05Z",
+            "operator":"test@test.com",
+            "category_type":"Team Chat",
+            "action":"Search",
+            "operation_detail":"Search Chat  - Search Date: 03/02/2023 - 03/30/2023"
+         },
+         "expected_values":{
+            "xdm.source.user.upn":"test@test.com",
+            "xdm.event.outcome_reason":"Search",
+            "xdm.event.original_event_type":"Team Chat",
+            "xdm.event.description":"Search Chat  - Search Date: 03/02/2023 - 03/30/2023",
+            "xdm.event.type":"operation_log"
+         }
+      },
+      {
+         "test_data_event_id":"f8f2c4a0-e6d0-4c5b-9520-512b1bd35207",
+         "vendor":"zoom",
+         "product":"zoom",
+         "dataset":"zoom_zoom_raw",
+         "event_data":{
+            "event_type":"activity_log",
+            "email":"test@test.com",
+            "time":"2023-03-01T09:58:33Z",
+            "type":"Sign in",
+            "ip_address":"8.8.8.8",
+            "client_type":"Browser",
+            "version":"-"
+         },
+         "expected_values":{
+            "xdm.source.user.upn":"test@test.com",
+            "xdm.source.interface":"Browser",
+            "xdm.event.operation":"Sign in",
+            "xdm.observer.version":"-",
+            "xdm.source.ipv4":"8.8.8.8",
+            "xdm.event.type":"activity_log"
+         }
+      }
+   ],
+   "ignored_validations":[
+      "schema_test_data_types"
+   ]
+}

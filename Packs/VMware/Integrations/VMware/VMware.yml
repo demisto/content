@@ -16,25 +16,23 @@ configuration:
   type: 9
   additionalinfo: Username and password used to login into the system.
   displaypassword: ""
-  hiddenusername: false
 - name: redirect_std_out
   display: Redirect stdout
-  required: false
   type: 8
-  additionalinfo: Used for troubleshooting purposes. 
+  additionalinfo: Used for troubleshooting purposes.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   defaultvalue: "false"
   type: 8
   additionalinfo:
-description: VMware vCenter server is a centralized management application that lets
-  you manage virtual machines and ESXi hosts centrally.
+  required: false
+description: VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
 name: VMware
 script:
@@ -42,36 +40,21 @@ script:
   - arguments:
     - name: ip
       description: A comma-separated list of IPs to filter VMs by.
-      required: false
       isArray: true
     - name: hostname
       description: Hostname to filter VMs by.
-      required: false
-      isArray: false
     - name: vm_name
       description: A comma-separated list of VM names to filter VMs by.
-      required: false
       isArray: true
     - name: uuid
       description: A comma-separated list of UUIDs to filter VMs by.
-      required: false
       isArray: true
     - description: Number of results to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - description: Page number you would like to view. Each page contains page_size
-        values. Must be used along with page_size.
-      isArray: false
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       name: page
-      required: false
-      secret: false
     - description: Number of results per page to display.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     description: Returns all virtual machines on a system.
     important:
     - contextPath: VMWare.UUID
@@ -206,8 +189,7 @@ script:
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
       required: true
-    description: Issues a command to the guest operating system asking it to perform
-      a reboot.
+    description: Issues a command to the guest operating system asking it to perform a reboot.
     name: vmware-soft-reboot
     outputs: []
   - arguments:
@@ -227,8 +209,7 @@ script:
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Quiesce guest file system (needs VMWare Tools installed). Default
-        is "False".
+      description: Quiesce guest file system (needs VMWare Tools installed). Default is "False".
       name: quiesce
       predefined:
       - "true"
@@ -266,37 +247,19 @@ script:
       required: true
     - name: event-type
       description: Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent).
-      required: false
-      isArray: false
       defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
     - name: start_date
       description: Date from which to start the event search.
-      required: false
-      isArray: false
     - name: end_date
       description: Date at which to stop the event search.
-      required: false
-      isArray: false
     - name: user
       description: If specified, only events triggered by the given user are retrieved.
-      required: false
-      isArray: false
     - description: Number of results to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - description: The page number from which to start the search. Must be used along
-        with page_size.
-      isArray: false
+    - description: The page number from which to start the search. Must be used along with page_size.
       name: page
-      required: false
-      secret: false
     - description: The number of results per page to display.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     description: Gets events of VM.
     name: vmware-get-events
     outputs:
@@ -345,16 +308,13 @@ script:
       type: String
   - name: vmware-list-vms-by-tag
     description: Lists all virtual storage objects attached to the tag.
-    deprecated: false
     arguments:
     - name: category
       description: The category to which the tag belongs.
       required: true
-      isArray: false
     - name: tag
       description: The tag to be queried.
       required: true
-      isArray: false
     outputs:
     - contextPath: VMWareTag.TagName
       description: The tag that was queried.
@@ -366,43 +326,31 @@ script:
       description: VM name to which the tag is attached.
       type: String
   - name: vmware-create-vm
-    description: Creates a new virtual machine in the current folder and attaches
-      it to the specified resource pool. This operation creates a virtual machine,
-      rather than cloning an existing one.
-    deprecated: false
+    description: Creates a new virtual machine in the current folder and attaches it to the specified resource pool. This operation creates a virtual machine, rather than cloning an existing one.
     arguments:
     - name: name
       description: Display name of the virtual machine.
       required: true
-      isArray: false
     - name: cpu-num
       description: Number of virtual processors in a virtual machine.
       required: true
-      isArray: false
     - name: cpu-allocation
       description: Resource limits for CPU.
       required: true
-      isArray: false
     - name: memory
       description: Resource limits for memory.
       required: true
-      isArray: false
     - name: virtual-memory
       description: Size of a virtual machine's memory, in MB.
       required: true
-      isArray: false
     - name: guest_id
       description: Short guest operating system identifier.
-      required: false
-      isArray: false
     - name: host
       description: The target host on which the virtual machine will run.
       required: true
-      isArray: false
     - name: folder
       description: The target folder in which the virtual machine will be located.
       required: true
-      isArray: false
     outputs:
     - contextPath: VMWare.vName
       description: VM name.
@@ -441,49 +389,33 @@ script:
       description: If true, the VM was deleted.
       type: Boolean
   - name: vmware-clone-vm
-    description: Creates a clone of this virtual machine. If the virtual machine is
-      used as a template, this method corresponds to the deploy command.
-    deprecated: false
+    description: Creates a clone of this virtual machine. If the virtual machine is used as a template, this method corresponds to the deploy command.
     arguments:
     - name: uuid
       description: The UUID of the VM to clone.
       required: true
-      isArray: false
     - name: name
       description: The name of the new virtual machine.
       required: true
-      isArray: false
     - name: folder
       description: The location of the new virtual machine.
       required: true
-      isArray: false
     - name: template
-      description: Specifies whether or not the new virtual machine should be marked
-        as a template.
-      required: false
-      isArray: false
+      description: Specifies whether or not the new virtual machine should be marked as a template.
     - auto: PREDEFINED
       name: powerOn
-      description: Specifies whether or not the new VirtualMachine should be powered
-        on after creation.
+      description: Specifies whether or not the new VirtualMachine should be powered on after creation.
       required: true
-      isArray: false
       defaultValue: "False"
       predefined:
       - "true"
       - "false"
     - name: datastore
       description: The datastore where the virtual machine should be located.
-      required: false
-      isArray: false
     - name: host
       description: The target host for the virtual machine.
-      required: false
-      isArray: false
     - name: pool
       description: The resource pool to which this virtual machine should be attached.
-      required: false
-      isArray: false
     outputs:
     - contextPath: VMWare.Name
       description: VM name.
@@ -523,39 +455,24 @@ script:
       type: Boolean
   - name: vmware-relocate-vm
     description: Relocates a virtual machine to a specified location.
-    deprecated: false
     arguments:
     - name: datastore
-      description: The datastore where the virtual machine should be located. If not
-        specified, the current datastore is used.
-      required: false
-      isArray: false
+      description: The datastore where the virtual machine should be located. If not specified, the current datastore is used.
     - name: folder
       description: The folder where the virtual machine should be located.
       required: true
-      isArray: false
     - name: host
       description: The target host for the virtual machine.
-      required: false
-      isArray: false
     - name: pool
       description: The resource pool to which this virtual machine should be attached.
-      required: false
-      isArray: false
     - name: service
-      description: The service endpoint of vCenter where the virtual machine should
-        be located. If not specified, the current vCenter service is used.
-      required: false
-      isArray: false
+      description: The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used.
     - name: profile
       description: Storage profile requirement for Virtual Machine's home directory.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: priority
       description: The task priorityץ
       required: true
-      isArray: false
       predefined:
       - defaultPriority
       - highPriority
@@ -563,17 +480,13 @@ script:
     - name: uuid
       description: The UUID of the VM to relocate
       required: true
-      isArray: false
     outputs: []
   - name: vmware-delete-vm
-    description: Destroys this object, deleting its contents and removing it from
-      its parent folder (if any).
-    deprecated: false
+    description: Destroys this object, deleting its contents and removing it from its parent folder (if any).
     arguments:
     - name: uuid
       description: The UUID of the VM to delete.
       required: true
-      isArray: false
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
@@ -583,7 +496,6 @@ script:
       type: String
   - name: vmware-register-vm
     description: Adds an existing virtual machine to the folder.
-    deprecated: false
     arguments:
     - name: path
       description: A datastore path to the virtual machine.
@@ -592,30 +504,22 @@ script:
     - name: name
       description: The name to be assigned to the virtual machine.
       required: true
-      isArray: false
     - name: host
       description: The target host on which the virtual machine will run.
       required: true
-      isArray: false
     - auto: PREDEFINED
       defaultValue: "False"
       name: as_template
-      description: Specifies whether or not the virtual machine should be marked as
-        a template.
-      required: false
-      isArray: false
+      description: Specifies whether or not the virtual machine should be marked as a template.
       predefined:
       - "true"
       - "false"
     - name: folder
       description: Folder to register the VM to.
       required: true
-      isArray: false
     outputs: []
   - name: vmware-unregister-vm
-    description: Removes this virtual machine from the inventory without removing
-      any of the virtual machine's files on disk.
-    deprecated: false
+    description: Removes this virtual machine from the inventory without removing any of the virtual machine's files on disk.
     arguments:
     - name: uuid
       description: The UUID of the VM to remove.
@@ -623,7 +527,6 @@ script:
       isArray: true
     outputs: []
   dockerimage: demisto/vmware:2.0.0.43555
-  runonce: false
   script: ""
   subtype: python3
   type: python

@@ -7,7 +7,7 @@ def execute_command(command, args):
     if command == 'getFilePath':
         return [{'Contents': {'path': './test_data/test_file.txt'}}]
     if command == "extractIndicators":
-        return [{'Contents': '1.1.1.1'}]
+        return [{'Contents': '{"IP": ["1.1.1.1"]}'}]
 
 
 def test_extract_indicators(mocker):
@@ -22,9 +22,12 @@ def test_extract_indicators(mocker):
             Validate the right output returns.
         """
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    args = {}
+    args: Dict[str, str] = {}
     results = extract_indicators_from_file(args)
-    assert {'Contents': '1.1.1.1', 'ContentsFormat': 'text', 'HumanReadable': '1.1.1.1', 'Type': 1} == results
+    assert {'Contents': '{"IP": ["1.1.1.1"]}',
+            'ContentsFormat': 'text',
+            'HumanReadable': '### IP\n- 1.1.1.1\n',
+            'Type': 1} == results
 
 
 def test_extract_indicators_no_file():
@@ -43,6 +46,25 @@ def test_extract_indicators_no_file():
         extract_indicators_from_file(args)
         if not e:
             assert False
+
+
+@pytest.mark.parametrize("params", [('{"IP": ["1.1.1.1"]}', '### IP\n- 1.1.1.1\n'),
+                                    ('a', 'JSON Decode failed on "a"')])
+def test_string_to_markdown(capfd, params):
+    """
+        Given:
+            JSON of an indicator with type as a key
+
+        When:
+            Running script on file
+
+        Then:
+            Validate the right output returns.
+        """
+    input, expected_output = params
+    output = string_to_markdown(input)
+    out, err = capfd.readouterr()
+    assert output == expected_output
 
 
 @pytest.mark.parametrize('filePath, res', [

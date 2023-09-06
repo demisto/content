@@ -1,0 +1,12 @@
+!ip ip=124.248.207.50
+!domain domain=2011.my03.com
+!url url=http://67.205.132.162/a.txt
+!file file=9c944bd7a0af0ebd8a52f16d2e09f4ae
+!mati-get-indicator indicator_value=124.248.207.50
+!cve cve=CVE-2018-8120
+!mati-get-actor actor_name=APT1
+!mati-get-malware malware_name=PoisonIvy
+!mati-get-campaign campaign_id=CAMP.21.014
+
+
+

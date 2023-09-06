@@ -24,11 +24,9 @@ args:
 - name: option2
   description: Second option for the user reply. "no" is the default.
 - name: additionalOptions
-  description: A comma delimited list of additional options if you have more than
-    2
+  description: A comma delimited list of additional options if you have more than 2
 - name: task
-  description: Which task should we close with the reply. If none then no playbook
-    tasks will be closed.
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: roles
   description: Send mail to all users of these roles (csv list)
 - name: attachIds
@@ -40,6 +38,13 @@ args:
   - html
   description: Type of email body to send - text ot HTML
   defaultValue: text
+- name: renderBody
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to render the email body
+  defaultValue: "false"
 - name: replyAddress
   description: Address of reply for html links
 - name: replyEntriesTag
@@ -52,19 +57,16 @@ args:
   description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 - name: retries
-  description: Indicates how many times to try and create an entitlement in case of
-    failure
+  description: Indicates how many times to try and create an entitlement in case of failure
   defaultValue: "10"
 - name: cc
   description: The CC email address
 - name: bcc
   description: The BCC email address
 - name: playbookTaskID
-  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all`
-    to complete all tasks from all plabooks
+  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all` to complete all tasks from all playbooks
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
-runonce: false
 marketplaces:
 - xsoar
 - marketplacev2

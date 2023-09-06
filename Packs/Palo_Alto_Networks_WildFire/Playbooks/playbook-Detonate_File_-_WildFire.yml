@@ -8,6 +8,8 @@ description: |-
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
   APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
+
+  Note: Base64 encoded files are currently not supported
 starttaskid: "0"
 tasks:
   "0":
@@ -28,8 +30,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 57.5,
+          "y": -20
         }
       }
     note: false
@@ -37,6 +39,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: d89662d0-dedb-49ff-8cba-4855a985cc38
@@ -86,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1245
+          "x": 480,
+          "y": 1185
         }
       }
     note: false
@@ -95,6 +100,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 4d801593-76c0-45bc-880c-46572315ab6d
@@ -123,8 +131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1420
+          "x": 480,
+          "y": 1360
         }
       }
     note: false
@@ -132,6 +140,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
@@ -148,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 57.5,
+          "y": 1535
         }
       }
     note: false
@@ -157,52 +168,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
-    type: condition
-    task:
-      id: 5944d365-4547-4e91-8f62-fa295fa32b38
-      version: -1
-      name: Is there a file to detonate?
-      description: Look for files to detonate.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-                accessor: EntryID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f959299e-1445-4a65-85bf-d4f70a0c7ebf
+    taskid: 55af7034-b0cf-40c7-86a5-f7efd9d31e9b
     type: condition
     task:
-      id: f959299e-1445-4a65-85bf-d4f70a0c7ebf
+      id: 55af7034-b0cf-40c7-86a5-f7efd9d31e9b
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled.
@@ -213,7 +187,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "6"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -250,11 +224,13 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 57.5,
+          "y": 115
         }
       }
     note: false
@@ -262,103 +238,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 329341a2-3ac5-422f-8264-b9fbaae07d3f
-    type: condition
+    taskid: 8cee3949-c005-4291-8152-14691d22614b
+    type: title
     task:
-      id: 329341a2-3ac5-422f-8264-b9fbaae07d3f
+      id: 8cee3949-c005-4291-8152-14691d22614b
       version: -1
-      name: Is the file type supported?
+      name: Filter only supported files
       description: Check if file type is supported.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-                filters:
-                - - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Extension
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                accessor: EntryID
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 16c9088e-43fa-494a-80f2-646461c74a66
-    type: regular
-    task:
-      id: 16c9088e-43fa-494a-80f2-646461c74a66
-      version: -1
-      name: Set Context
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
-    scriptarguments:
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
+      - "15"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 480,
+          "y": 290
         }
       }
     note: false
@@ -366,12 +270,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f964fe7b-3805-44e8-8f2e-a4b71300ad70
+    taskid: d6b386f8-698e-42d5-8944-bc6317356f61
     type: regular
     task:
-      id: f964fe7b-3805-44e8-8f2e-a4b71300ad70
+      id: d6b386f8-698e-42d5-8944-bc6317356f61
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
@@ -385,42 +292,13 @@ tasks:
     scriptarguments:
       upload:
         complex:
-          root: inputs.File
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-              ignorecase: true
-            - operator: match
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-              ignorecase: true
-            - operator: match
-              left:
-                value:
-                  simple: inputs.File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-              ignorecase: true
-          accessor: EntryID
+          root: SupportedFilesToUpload
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 895
+          "x": 480,
+          "y": 810
         }
       }
     note: false
@@ -428,6 +306,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: d1c6a572-54e7-4233-8228-daa0f7dcb176
@@ -468,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1060
+          "x": 480,
+          "y": 990
         }
       }
     note: false
@@ -477,15 +358,187 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c9040900-138b-4e2d-89d5-a424d4cd7ff4
+    type: regular
+    task:
+      id: c9040900-138b-4e2d-89d5-a424d4cd7ff4
+      version: -1
+      name: Set ASCII file types
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SupportedFilesToUpload
+      value:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: js,hta,vbs,ps1,pl,sh,py
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 04e9fcb8-1770-4f8e-80c3-34d5d9f2bdfc
+    type: regular
+    task:
+      id: 04e9fcb8-1770-4f8e-80c3-34d5d9f2bdfc
+      version: -1
+      name: Set Non ASCII file types
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SupportedFilesToUpload
+      value:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: APK,JAR,DOC,DOCX,XLS,XLSX,PPT,PPTX,OOXML,PE32,PE,PDF,DMG,PKG,RAR,7Z,ELF,DLL,MSI,RTF,LNK
+              ignorecase: true
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ASCII text
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4ef96e35-bb0b-4a27-8f95-f98fda94c98e
+    type: condition
+    task:
+      id: 4ef96e35-bb0b-4a27-8f95-f98fda94c98e
+      version: -1
+      name: Are there any supported files to detonate?
+      description: Check if there are any supported files to upload to wildfire for detonation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SupportedFilesToUpload
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "13_2_yes": 0.55,
+      "13_5_#default#": 0.35,
+      "16_12_yes": 0.58,
+      "16_5_#default#": 0.25,
+      "7_5_#default#": 0.26
+    },
     "paper": {
       "dimensions": {
-        "height": 1610,
-        "width": 717.5,
-        "x": 50,
-        "y": 50
+        "height": 1620,
+        "width": 1012.5,
+        "x": 57.5,
+        "y": -20
       }
     }
   }
@@ -507,13 +560,12 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop polling and to resume the playbook.
-    (in minutes)
+  description: The duration after which to stop polling and to resume the playbook. (in minutes)
   playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
-  description: The resource type to download. 
+  description: The resource type to download.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Score
@@ -598,5 +650,6 @@ outputs:
   description: The size of the submission.
   type: number
 tests:
-- No tests (auto formatted)
+- Wildfire Test
+- Wildfire Test With Polling
 fromversion: 5.0.0

@@ -1,0 +1,22 @@
+args:
+- description: List of potential service owners
+  isArray: true
+  name: owners
+- name: external_service
+  description: String indicating which cloud provider the service is
+comment: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
+commonfields:
+  id: GetProjectOwners
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GetProjectOwners
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

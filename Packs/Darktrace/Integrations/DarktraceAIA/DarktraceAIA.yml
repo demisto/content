@@ -1,0 +1,215 @@
+category: Network Security
+fromversion: 6.6.0
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: DarktraceAIA
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
+  display: Public API Token
+  name: publicApiKey
+  required: true
+  type: 4
+  section: Connect
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page
+  display: Private API Token
+  name: privateApiKey
+  required: true
+  type: 4
+  section: Connect
+- additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
+  defaultvalue: '0'
+  display: Minimum Score
+  name: min_score
+  required: true
+  type: 0
+  section: Collect
+- additionalinfo: Maximum number of Darktrace AI Analyst Incidents to fetch at a time
+  defaultvalue: '50'
+  display: Maximum Model Breaches per Fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
+  defaultvalue: 1 day ago
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+description: Rapid detection of malicious behaviour can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate critical incidents along with accompanying summaries and timelines. AI actions can also be applied.
+display: Darktrace AI Analyst
+name: DarktraceAIA
+script:
+  commands:
+  - name: darktrace-get-ai-analyst-incident-event
+    description: Fetch the details of an AI Analyst event
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.eventId
+      description: AIAnalyst unique identifier
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.title
+      description: AIAnalyst event title
+      type: String
+    - contextPath: Darktrace.AIAnalyst.mitreTactics
+      description: AIAnalyst mitre tactics seen on event
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.score
+      description: group score for ai analyst incident
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.category
+      description: group category for ai analyst incident
+      type: String
+    - contextPath: Darktrace.AIAnalyst.summary
+      description: AIAnalyst event summary
+      type: String
+    - contextPath: Darktrace.AIAnalyst.groupId
+      description: unique identifier for event Id
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.devices
+      description: Associated devices with incident event
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.modelBreaches
+      description: Associated model breaches with event Id
+      type: Unknown
+  - name: darktrace-get-comments-for-ai-analyst-incident-event
+    description: Fetch all comments from an AI Analyst incident Event
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.incidet_id
+      description: Incident event unique identifier
+      type: String
+    - contextPath: Darktrace.AIAnalyst.message
+      description: Posted message
+      type: String
+    - contextPath: Darktrace.AIAnalyst.eventId
+      description: Unique event identifier
+      type: String
+    - contextPath: Darktrace.AIAnalyst.time
+      description: Message post timestamp
+      type: String
+    - contextPath: Darktrace.AIAnalyst.username
+      description: Darktrace username of posting user
+      type: String
+  - name: darktrace-post-comment-to-ai-analyst-incident-event
+    description: Post a comment to an AI Analyst incident Event
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    - description: Enter a message to comment
+      name: comment
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.commented
+      description: Whether the incident is commented in Darktrace
+      type: String
+    - contextPath: Darktrace.AIAnalyst.response
+      description: Post command response
+      type: String
+    - contextPath: Darktrace.AIAnalyst.eventId
+      description: Unique event identifier
+      type: String
+    - contextPath: Darktrace.AIAnalyst.message
+      description: Message to be commented
+      type: String
+  - name: darktrace-acknowledge-ai-analyst-incident-event
+    description: Acknowledge an AI Analyst Incident Event
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.acknowledged
+      description: Whether the incident is acknowledge in Darktrace
+      type: String
+    - contextPath: Darktrace.AIAnalyst.response
+      description: Post response comment
+      type: String
+    - contextPath: Darktrace.AIAnalyst.eventId
+      description: incident event unique identifier
+      type: String
+  - name: darktrace-unacknowledge-ai-analyst-incident-event
+    description: Unacknowledge an AI Analyst Incident Event
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.unacknowledged
+      description: Whether the incident is unacknowledge in Darktrace
+      type: String
+    - contextPath: Darktrace.AIAnalyst.response
+      description: Post response comment
+      type: String
+    - contextPath: Darktrace.AIAnalyst.eventId
+      description: incident event unique identifier
+      type: String
+  - name: darktrace-get-ai-analyst-incident-group-from-eventId
+    description: Pulls all linked events for a given event. Over time, events can become merged with one another. This happens when two sets of disparate activity are suddenly linked by shared factors.
+    arguments:
+    - description: Unique identified of an AI Analyst incident event
+      name: eventId
+      required: true
+    outputs:
+    - contextPath: Darktrace.AIAnalyst.groupId
+      description: Investigation Group Unique Identifier
+      type: String
+    - contextPath: Darktrace.AIAnalyst.incidentEvents
+      description: Associated events
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.mitreTactics
+      description: Associated Mitre Tactics seen on incident
+      type: Unknown
+    - contextPath: Darktrace.AIAnalyst.groupScore
+      description: Group score
+      type: Number
+    - contextPath: Darktrace.AIAnalyst.groupCategory
+      description: Group category
+      type: String
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)

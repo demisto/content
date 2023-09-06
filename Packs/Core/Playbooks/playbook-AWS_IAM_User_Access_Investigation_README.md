@@ -1,4 +1,4 @@
-Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. 
+Deprecated. Use `Cloud IAM User Access Investigation` instead. Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. 
 The following alerts are supported for AWS environments.
 - Penetration testing tool attempt
 - Penetration testing tool activity
@@ -7,24 +7,30 @@ The following alerts are supported for AWS environments.
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* AWS IAM User Access Investigation - Remediation
+
 * Handle False Positive Alerts
 * Enrichment for Verdict
+* AWS IAM User Access Investigation - Remediation
 
 ### Integrations
+
 * CortexCoreIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
-* core-get-cloud-original-alerts
+
 * closeInvestigation
+* core-get-cloud-original-alerts
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -36,9 +42,12 @@ This playbook does not use any scripts.
 | ShouldCloseAutomatically | Whether to close alerts automatically as a false positive \(True/False\). |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![AWS IAM User Access Investigation](../doc_files/AWS_IAM_User_Access_Investigation.png)

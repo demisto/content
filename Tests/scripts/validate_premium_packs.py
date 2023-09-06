@@ -36,6 +36,7 @@ def options_handler():
                         required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
+    parser.add_argument('--build_number', help='CI build number where the instances were created', required=True)
 
     options = parser.parse_args()
     return options
@@ -215,8 +216,8 @@ def extract_credentials_from_secret(secret_path: str) -> Tuple[str, str]:
     """
     logging.info("Retrieving the credentials for Cortex XSOAR server")
     secret_conf_file = load_json(file_path=secret_path)
-    username: str = secret_conf_file.get("username")
-    password: str = secret_conf_file.get("userPassword")
+    username: str = secret_conf_file.get("username", "")
+    password: str = secret_conf_file.get("userPassword", "")
     return username, password
 
 
@@ -224,16 +225,16 @@ def main():
     install_logging("Validate Premium Packs.log")
     options = options_handler()
     exit_code = 0
-    index_data, index_file_path = get_index_json_data(
+    index_data, _ = get_index_json_data(
         service_account=options.service_account, production_bucket_name=options.production_bucket_name,
         extract_path=options.extract_path, storage_base_path=options.storage_base_path
     )
 
     # Get the first host by the ami env
     hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
-    internal_ip, tunnel_port = list(hosts.items())[0]
+    internal_ip = hosts[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
+    server = XSOARServer(internal_ip=internal_ip, user_name=username, password=password, build_number=options.build_number)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)

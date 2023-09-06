@@ -1,0 +1,45 @@
+{
+    "name": "Fortanix DSM",
+    "description": "Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager (Fortanix DSM)",
+    "support": "partner",
+    "currentVersion": "1.0.4",
+    "author": "Fortanix",
+    "url": "https://support.fortanix.com",
+    "email": "info@fortanix.com",
+    "created": "2022-12-10T08:37:18Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "Security",
+        "GDPR",
+        "PII",
+        "Compliance"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "cryptography",
+        "secret",
+        "credential",
+        "password",
+        "SSH key",
+        "Secrets Management",
+        "Encryption",
+        "Post-Quantum Cryptography",
+        "PQC",
+        "Format-Preseving Encryption",
+        "FPE",
+        "Tokenization",
+        "HSM",
+        "Vault",
+        "Fortanix DSM",
+        "Fortanix"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

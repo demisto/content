@@ -1,12 +1,11 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
     // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
-
     // List of extensions which should be recommended for users of this workspace.
     "recommendations": [
         "cortexxsoarext.xsoar",
+        "GitLab.gitlab-workflow",
         "ms-python.python",
-        "ms-toolsai.jupyter",
         "timonwong.shellcheck",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
@@ -24,10 +23,12 @@
         "KevinRose.vsc-python-indent",
         "rangav.vscode-thunder-client",
         "ms-python.black-formatter",
-        "LittleFoxTeam.vscode-python-test-adapter"
+        "LittleFoxTeam.vscode-python-test-adapter",
+        "charliermarsh.ruff",
+        "ryanluker.vscode-coverage-gutters"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [
-
+        "ms-python.flake8"
     ]
 }

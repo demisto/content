@@ -28,7 +28,7 @@ args:
   name: filter_keys
 - auto: PREDEFINED
   defaultValue: abort
-  description: The action on error to parsing pcap. 
+  description: The action on error to parsing pcap.
   name: error_action
   predefined:
   - abort
@@ -64,7 +64,6 @@ dockerimage: demisto/pcap-miner:1.0.0.32154
 enabled: true
 name: PcapExtractStreams
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

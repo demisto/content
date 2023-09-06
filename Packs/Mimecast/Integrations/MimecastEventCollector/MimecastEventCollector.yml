@@ -30,12 +30,12 @@ configuration:
   defaultvalue: 7 days
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: ''
 display: Mimecast Event Collector
 name: Mimecast Event Collector
@@ -47,18 +47,14 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set to True in order to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
       - 'False'
       required: true
-    deprecated: false
     description: Manual command to fetch events and display them.
-    execution: false
     name: mimecast-get-events
-  dockerimage: demisto/fastapi:1.0.0.48675
-  runonce: false
+  dockerimage: demisto/fastapi:1.0.0.56647
   isfetchevents: true
   subtype: python3
 marketplaces:

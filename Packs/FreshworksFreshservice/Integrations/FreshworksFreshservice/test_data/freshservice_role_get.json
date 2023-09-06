@@ -1,0 +1,11 @@
+{
+    "role": {
+        "description": "Has complete admin control over the service desk including access to account or billing related information",
+        "id": 1,
+        "name": "Account Admin",
+        "created_at": "roles[0]_created_at",
+        "updated_at": "roles[0]_updated_at",
+        "default": true,
+        "role_type": 1
+    }
+}

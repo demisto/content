@@ -10,7 +10,9 @@
         "Skyhigh Security Alert",
         "Skyhigh Security Threat",
         "Exabeam Incident",
-        "Microsoft Sentinel Incident"
+        "Microsoft Sentinel Incident",
+        "Graph Security Alert",
+        "CrowdStrike Falcon IDP Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

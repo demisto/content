@@ -1,0 +1,136 @@
+{
+    "iocs": [
+        {
+            "xsoar_indicator": {
+                "id": "135",
+                "version": 7,
+                "cacheVersn": 0,
+                "modified": "2023-03-29T08:45:03.338791077Z",
+                "timestamp": "2023-03-27T11:05:02.105210559Z",
+                "indicator_type": "File",
+                "value": "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                "source": "DBot",
+                "investigationIDs": [
+                    "8c718b2b-d02f-495b-8a9d-f639c6ddc2ee"
+                ],
+                "lastSeen": "2023-03-29T08:45:03.33833918Z",
+                "firstSeen": "2023-03-27T11:05:02.105078826Z",
+                "lastSeenEntryID": "57@8c718b2b-d02f-495b-8a9d-f639c6ddc2ee",
+                "firstSeenEntryID": "44@8c718b2b-d02f-495b-8a9d-f639c6ddc2ee",
+                "score": 0,
+                "CustomFields": {
+                    "associatedfilenames": [
+                        "1679915099850_New Text Document.txt}"
+                    ],
+                    "md5": "e086aa137fa19f67d27b39d0eca18610",
+                    "sha1": "409629a08b9b3f3be610b8832cc28822f964410f",
+                    "sha256": "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                    "sha512": "502b6772333c9f8ba18bf4b9cb47c81d1b931660e7a7a51d7b42ccf9179ea34e4d852466e1101249dbc3da32b121bf83427b0237dce1870e5e1a5b04db524cfb",
+                    "ssdeep": "3:SU7:SU7"
+                },
+                "expirationStatus": "active",
+                "expirationSource": {
+                    "setTime": "2023-03-27T11:05:02.1017092Z",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "",
+                    "instance": "",
+                    "moduleId": "",
+                    "expirationPolicy": "never",
+                    "expirationInterval": 0
+                },
+                "calculatedTime": "2023-03-29T08:45:03.33833918Z",
+                "lastReputationRun": "2023-03-29T08:45:02.829975166Z",
+                "isDetectable": true,
+                "isPreventable": true
+            },
+            "stix_type": {
+                "type": "file"
+            }
+        },
+        {
+            "xsoar_indicator": {
+                "id": "144",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-03-29T11:17:06.686913636Z",
+                "timestamp": "2023-03-29T11:17:06.686901703Z",
+                "indicator_type": "Registry Key",
+                "value": "Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\7-Zip",
+                "lastSeen": "2023-03-29T11:17:06.686871315Z",
+                "firstSeen": "2023-03-29T11:17:06.686871315Z",
+                "lastSeenEntryID": "Manual",
+                "firstSeenEntryID": "Manual",
+                "score": 0,
+                "CustomFields": {
+                    "keyvalue": [
+                        {
+                            "data": "C:\\7-Zip\\",
+                            "name": "Path",
+                            "type": "REG_SZ"
+                        },
+                        {
+                            "data": "C:\\7-Zip\\",
+                            "name": "Path64",
+                            "type": "REG_SZ"
+                        },
+                        {}
+                    ]
+                },
+                "expirationStatus": "active",
+                "expirationSource": {
+                    "setTime": "2023-03-29T11:17:06.686870937Z",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "",
+                    "instance": "",
+                    "moduleId": "",
+                    "expirationPolicy": "never",
+                    "expirationInterval": 0
+                },
+                "calculatedTime": "2023-03-29T11:17:06.686871315Z",
+                "isDetectable": false,
+                "isPreventable": false
+            },
+            "stix_type": {
+                "type": "windows-registry-key"
+            }
+        },
+        {
+            "xsoar_indicator": {
+                "id": "143",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-03-29T11:14:49.980498658Z",
+                "timestamp": "2023-03-29T11:14:49.980485621Z",
+                "indicator_type": "ASN",
+                "value": "15169",
+                "lastSeen": "2023-03-29T11:14:49.980451203Z",
+                "firstSeen": "2023-03-29T11:14:49.980451203Z",
+                "lastSeenEntryID": "Manual",
+                "firstSeenEntryID": "Manual",
+                "score": 0,
+                "CustomFields": {
+                    "name": "Google"
+                },
+                "expirationStatus": "active",
+                "expirationSource": {
+                    "setTime": "2023-03-29T11:14:49.980450705Z",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "",
+                    "instance": "",
+                    "moduleId": "",
+                    "expirationPolicy": "never",
+                    "expirationInterval": 0
+                },
+                "calculatedTime": "2023-03-29T11:14:49.980451203Z",
+                "isDetectable": false,
+                "isPreventable": false
+            },
+            "stix_type": {
+                "type": "asn"
+            }
+        }
+    ]
+}

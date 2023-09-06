@@ -1,0 +1,44 @@
+{
+    "aws_security_hub_raw": {
+      "Id": {
+        "type": "string",
+        "is_array": false
+      },
+      "ProductName": {
+        "type": "string",
+        "is_array": false
+      },
+      "Region": {
+        "type": "string",
+        "is_array": false
+      },
+      "AwsAccountId": {
+        "type": "string",
+        "is_array": false
+      },
+      "Types": {
+        "type": "string",
+        "is_array": false
+      },
+      "Severity": {
+        "type": "string",
+        "is_array": false
+      },
+      "Title": {
+        "type": "string",
+        "is_array": false
+      },
+      "Description": {
+        "type": "string",
+        "is_array": false
+      },
+      "Resources": {
+        "type": "string",
+        "is_array": false
+      },
+      "Compliance": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

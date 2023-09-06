@@ -80,7 +80,6 @@
   "skipped_integrations": {
     "skipped_integration_1": "Test is not skipped"
   },
-  "nightly_integrations": [],
   "unmockable_integrations": {},
   "docker_thresholds": {}
 }

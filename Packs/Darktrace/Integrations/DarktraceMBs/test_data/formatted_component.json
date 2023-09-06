@@ -1,0 +1,94 @@
+{
+    "active": true,
+    "chid": 502996,
+    "cid": 254503,
+    "filters": [
+        {
+            "arguments": {
+                "value": "/.*\\.\\w{1,10}\\.(?:ecc|ezz|exx|zzz|xyz|aaa|abc|ccc|vvv|xxx|ttt|micro|encrypted|locked|crypto|_crypt|crinf|r5a|XRNT|XTBL|crypt|R16M01D05|pzdc|good|LOL!|OMG!|RDM|RRK|encryptedRSA|crjoker|EnCiPhErEd|LeChiffre|keybtc@inbox_com|0x0|bleep|1999|vault|HA3|toxcrypt|magic|SUPERCRYPT|CTBL|CTB2|locky|gryphon|fun|ykcol|lukitus|EMPTY|ryk|pr(0|o)L(0|o)ck|lockbit|ragnar_[a-zA-Z0-9]{5,10}|sthd2|crypted|WNCRY|[^\\.]+wasted(_info)?|pysa)($|\\sversion.*)/i"
+            },
+            "cfhid": 4474200,
+            "cfid": 2500525,
+            "comparator": "matches regular expression",
+            "filtertype": "Message",
+            "id": "A"
+        },
+        {
+            "arguments": {
+                "value": "/^(?!.*\\s\\[[^\\]]*@[^\\]]*\\].*).+\\[\\w+(\\.onion|\\@\\w+\\.\\w+)\\].*/i"
+            },
+            "cfhid": 4474201,
+            "cfid": 2500526,
+            "comparator": "matches regular expression",
+            "filtertype": "Message",
+            "id": "B"
+        },
+        {
+            "arguments": {
+                "value": "out"
+            },
+            "cfhid": 4474202,
+            "cfid": 2500527,
+            "comparator": "is",
+            "filtertype": "Direction",
+            "id": "C"
+        },
+        {
+            "arguments": {
+                "value": "BackupData.dat.locked"
+            },
+            "cfhid": 4474203,
+            "cfid": 2500528,
+            "comparator": "does not contain",
+            "filtertype": "Message",
+            "id": "D"
+        },
+        {
+            "arguments": {},
+            "cfhid": 4474204,
+            "cfid": 2500529,
+            "comparator": "is",
+            "filtertype": "Unique message fields",
+            "id": "E"
+        },
+        {
+            "arguments": {},
+            "cfhid": 4474205,
+            "cfid": 2500530,
+            "comparator": "display",
+            "filtertype": "Message",
+            "id": "d1"
+        }
+    ],
+    "interval": 300,
+    "logic": {
+        "data": {
+            "left": {
+                "left": "A",
+                "operator": "AND",
+                "right": {
+                    "left": "C",
+                    "operator": "AND",
+                    "right": {
+                        "left": "D",
+                        "operator": "AND",
+                        "right": "E"
+                    }
+                }
+            },
+            "operator": "OR",
+            "right": {
+                "left": "B",
+                "operator": "AND",
+                "right": {
+                    "left": "C",
+                    "operator": "AND",
+                    "right": "E"
+                }
+            }
+        },
+        "version": "v0.1"
+    },
+    "mlid": 276,
+    "threshold": 4
+}

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import asyncio
 import concurrent
 import json
@@ -15,8 +17,6 @@ import urllib3
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
-import demistomock as demisto
-from CommonServerPython import *
 
 # disable unsecure warnings
 urllib3.disable_warnings()

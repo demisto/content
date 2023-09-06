@@ -1,6 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 ''' IMPORTS '''
 
 import json
@@ -423,7 +424,8 @@ def search_computer_command():
     """
     args = demisto.args()
     raw_computers = search_computer(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
-                                    args.get('group'), args.get('name'), args.get('ipAddress'), args.get('macAddress'))
+                                    args.get('group'), args.get('name'), args.get('ipAddress'), args.get('macAddress'),
+                                    args.get('fields'))
     headers = args.get('headers', COMPUTER_HEADERS)
     computers = []
     for computer in raw_computers:
@@ -446,7 +448,7 @@ def search_computer_command():
 
 
 @logger
-def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name=None, ip_address=None, mac=None):
+def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name=None, ip_address=None, mac=None, fields=None):
     """
     Sends the request for file catalog, and returns the result json
     :param q: Query to be executed
@@ -457,6 +459,7 @@ def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name
     :param name: Computer name
     :param ip_address: Last known IP address of this computer
     :param mac: MAC address of adapter used to connect to the CB Protection Server
+    :param fields: CSV list of fields to limit the fields returned from the console.
     :return: Computer response json
     """
     url_params = {
@@ -472,6 +475,14 @@ def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name
         url_params['q'].append(f'ipAddress:{ip_address}')
     if mac:
         url_params['q'].append(f'macAddress:{mac}')
+    if fields:
+        # required fields for Endpoint context output
+        all_fields = [
+            'memorySize', 'processorCount', 'processorModel', 'osShortName', 'osName',
+            'macAddress', 'machineModel', 'ipAddress', 'name', 'id'
+        ]
+        all_fields.extend([field for field in fields.split(',') if field not in all_fields])  # add requested unique fields
+        url_params['fields'] = ",".join(all_fields)
 
     return http_request('GET', '/Computer', params=url_params)
 

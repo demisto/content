@@ -27,22 +27,28 @@ ignore=BA101
 
 [file:classifier-mapper-outgoing-ServiceNow.json]
 ignore=BA101
+
 [file:incidentfield-ServiceNow_Ticket_Number.json]
 ignore=IF100
+
 [file:incidentfield-ServiceNow_Ticket_ID.json]
 ignore=IF100
 
 [known_words]
 lookback
-InfoFile
+infofile
 params
-README
+readme
 ampersand
 concat
-CMDB
-BypassAddRecord
-closeReason
-closeNotes
+cmdb
+bypassaddrecord
+closereason
+closenotes
 
 [file:classifier-ServiceNow.json]
 ignore=BA101
+
+[file:ServiceNowIncidentStatus.yml]
+ignore=BA124
+

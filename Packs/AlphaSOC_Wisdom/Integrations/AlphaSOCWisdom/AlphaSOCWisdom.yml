@@ -33,8 +33,7 @@ script:
       description: Domain name
     - contextPath: Wisdom.Flag
       description: The AlphaSOC security category or feature
-    description: Returns a list of flags (categories and features) assigned to a domain
-      by AlphaSOC Threat Intelligence
+    description: Returns a list of flags (categories and features) assigned to a domain by AlphaSOC Threat Intelligence
   - name: wisdom-ip-flags
     arguments:
     - name: proto
@@ -50,8 +49,6 @@ script:
     outputs:
     - contextPath: Wisdom.Flag
       description: The AlphaSOC security category or feature
-    description: Returns a list of flags (categories and features) assigned to an
-      IP connection (defined by protocol, destination address and port number) by
-      AlphaSOC Threat Intelligence
+    description: Returns a list of flags (categories and features) assigned to an IP connection (defined by protocol, destination address and port number) by AlphaSOC Threat Intelligence
   runonce: false
 fromversion: 5.0.0

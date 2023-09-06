@@ -1,6 +1,8 @@
 id: TIM - Process File Indicators With File Hash Type
 version: -1
 fromversion: 5.5.0
+marketplaces:
+- xsoar
 name: TIM - Process File Indicators With File Hash Type
 description: This playbook processes file indicator by tagging them
   with the relevant file hash type tag, such as Sha256, Sha1, and Md5.

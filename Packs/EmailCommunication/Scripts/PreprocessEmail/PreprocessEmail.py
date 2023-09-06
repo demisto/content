@@ -94,14 +94,15 @@ def get_entry_id_list(attachments, files):
     return entry_id_list
 
 
-def add_entries(email_reply, email_related_incident):
+def add_entries(email_reply, email_related_incident, reputation_calc_async=False):
     """Add the entries to the related incident
     Args:
         email_reply: The email reply.
         email_related_incident: The related incident.
     """
     entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident})
+    res = demisto.executeCommand("addEntries", {"entries": entries_str,
+                                 'id': email_related_incident, 'reputationCalcAsync': reputation_calc_async})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('addEntries', res['Contents']))
@@ -143,8 +144,8 @@ def get_incident_by_query(query):
     Returns:
         dict. The details of all incidents matching the query.
     """
-    # In order to avoid performance issues, limit the number of days to query back for modified incidents. By default
-    # the limit is 60 days and can be modified by the user by adding a list called
+    # In order to avoid performance issues, limit the number of days to query back for modified incidents.
+    # By default, the limit is 60 days and can be modified by the user by adding a list called
     # `XSOAR - Email Communication Days To Query` (see README for more information).
     query_time = get_query_window()
 
@@ -191,6 +192,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
     Args:
         email_related_incident (str): ID of the incident to attach the files to.
         labels (Dict): Incident's labels to fetch the relevant data from.
+        email_to (str): ID of the user the email is sent to.
     """
     message_id = ''
     instance_name = ''
@@ -247,7 +249,8 @@ def update_latest_message_field(incident_id, item_id):
     """
     try:
         demisto.debug(f'update latest message field. incident_id: {incident_id}')
-        res = demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
+        res = demisto.executeCommand('setIncident',
+                                     {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
         if is_error(res):
             demisto.error(f'Failed to setIncident. Reason: {get_error(res)}')
             raise DemistoException(f'Failed to setIncident. Reason: {get_error(res)}')
@@ -262,28 +265,30 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
     email code and original subject.
     """
 
-    query = f'(emailgeneratedcode:{email_related_incident_code}) or (emailgeneratedcodes:*{email_related_incident_code}*)'
+    query = f'(emailgeneratedcode:{email_related_incident_code}) ' \
+            f'or (emailgeneratedcodes:*{email_related_incident_code}*)'
 
     incidents_details = get_incident_by_query(query)
 
     for incident in incidents_details:
-        if email_original_subject in incident.get('emailsubject', ''):
+        email_subject = incident.get('emailsubject', '')
+        if email_subject and email_original_subject in email_subject:
             return str(incident.get('id'))
         else:
             # If 'emailsubject' doesn't match, check 'EmailThreads' context entries
             try:
                 incident_context = demisto.executeCommand("getContext", {"id": str(incident.get('id'))})
                 incident_email_threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
+                if incident_email_threads:
+                    if isinstance(incident_email_threads, dict):
+                        incident_email_threads = [incident_email_threads]
+                    search_result = next((i for i, item in enumerate(incident_email_threads) if
+                                          email_original_subject in item["EmailSubject"]), None)
+                    if search_result is not None:
+                        return str(incident.get('id'))
             except Exception as e:
                 demisto.error(f'Exception while retrieving thread context: {e}')
-
-            if incident_email_threads:
-                if isinstance(incident_email_threads, dict):
-                    incident_email_threads = [incident_email_threads]
-                search_result = next((i for i, item in enumerate(incident_email_threads) if
-                                      email_original_subject in item["EmailSubject"]), None)
-                if search_result is not None:
-                    return str(incident.get('id'))
+    return None
 
 
 def get_unique_code():
@@ -322,7 +327,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         incident_id: ID of the related incident
         attachments: File attachments from the email
     """
-    thread_number = str()
+    thread_number = ''
     thread_found = False
     try:
         # Get current email threads from context if any are present
@@ -377,7 +382,9 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 
 def main():
+    args = demisto.args()
     incident = demisto.incident()
+    attachments = incident.get('attachment', [])
     custom_fields = incident.get('CustomFields')
     email_from = custom_fields.get('emailfrom', '')
     email_cc = custom_fields.get('emailcc', '')
@@ -388,8 +395,9 @@ def main():
     email_html = custom_fields.get('emailhtml', '')
     email_received = custom_fields.get('emailreceived', '')
     email_replyto = custom_fields.get('emailreplyto', '')
-    attachments = incident.get('attachment', [])
     email_latest_message = custom_fields.get('emaillatestmessage', '')
+
+    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -413,9 +421,10 @@ def main():
         if incident_details['type'] == 'Email Communication':
             # Add new email message as Entry if type is 'Email Communication'
             demisto.debug(
-                f"Incoming email related to Email Communication Incident {email_related_incident}. Appending message there.")
+                "Incoming email related to Email Communication Incident"
+                f" {email_related_incident}. Appending a message there.")
             email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-            add_entries(email_reply, email_related_incident)
+            add_entries(email_reply, email_related_incident, reputation_calc_async)
         else:
             # For all other incident types, add message details as context entry
             demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
@@ -427,15 +436,24 @@ def main():
         return_results(False)
 
     except (IndexError, ValueError, DemistoException) as e:
-        demisto.executeCommand('setIncident',
-                               {'id': incident.get('id'), 'customFields': {'emailgeneratedcode': get_unique_code()}})
-        # Return True - tell pre-processing to create new incident
-        return_results(True)
-        if type(e).__name__ == 'IndexError':
-            demisto.debug('No related incident was found. A new incident was created.')
+        args = demisto.args()
+
+        create_incidents_untagged = argToBoolean(args.get('CreateIncidentUntaggedEmail', True))
+        if not create_incidents_untagged and isinstance(e, IndexError):
+            # Return False - tell pre-processing not to create a new incident.
+            demisto.debug("No incident was created, Reason: CreateIncidentUntaggedEmail is False")
+            return_results(False)
         else:
-            demisto.debug(f"A new incident was created. Reason: \n {e}")
+            # Return True - tell pre-processing to create a new incident.
+            if isinstance(e, IndexError):
+                demisto.debug('No related incident was found. A new incident was created.')
+            else:
+                demisto.debug(f"A new incident was created. Reason: \n {e}")
+            demisto.executeCommand('setIncident',
+                                   {'id': incident.get('id'),
+                                    'customFields': {'emailgeneratedcode': get_unique_code()}})
+            return_results(True)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

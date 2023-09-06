@@ -1,16 +1,19 @@
 from datetime import datetime
 import json
+from typing import Any
 
 import pytest
+
 import demistomock as demisto
 
 from freezegun import freeze_time
 from CommonServerPython import DemistoException, timedelta
 from MicrosoftCloudAppSecurity import Client, fetch_incidents
+from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 def get_fetch_data():
-    with open('test_data/test_data.json', 'r') as f:
+    with open('test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
@@ -70,7 +73,7 @@ def test_args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filte
 
 
 client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1', app_id='1234', verify=True,
-                       proxy=True, auth_mode='legacy')
+                       proxy=True, endpoint_type='Worldwide', auth_mode='legacy', azure_cloud=AZURE_WORLDWIDE_CLOUD)
 
 
 def test_list_alerts_command(requests_mock):
@@ -80,6 +83,14 @@ def test_list_alerts_command(requests_mock):
                       json=alert['ALERT_BY_ID_DATA'])
     res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
     assert res.outputs[0] == alert['ALERT_BY_ID_DATA_CONTEXT']
+
+
+def test_list_alerts_command_no_alerts(requests_mock):
+    from MicrosoftCloudAppSecurity import list_alerts_command
+    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/5f06d71dba4289d0602ba5ac',
+                      json={"data": []})
+    res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac', 'custom_filter': []})
+    assert res.readable_output == "No alerts found for the given filter: []."
 
 
 def test_list_activities_command(requests_mock):
@@ -101,9 +112,9 @@ def test_list_activities_command(requests_mock):
 def test_list_files_command(requests_mock):
     files = get_fetch_data()
     from MicrosoftCloudAppSecurity import list_files_command
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/files/5f077ebfc3b664209dae1f6b',
+    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/files/5f077e6fc3b664209dae1f6b',
                       json=files["FILES_BY_ID_DATA"])
-    res = list_files_command(client_mocker, {'file_id': '5f077ebfc3b664209dae1f6b'})
+    res = list_files_command(client_mocker, {'file_id': '5f077e6fc3b664209dae1f6b'})
     assert res.outputs[0] == files["FILES_BY_ID_DATA_CONTEXT"]
 
 
@@ -130,34 +141,6 @@ def test_params_to_filter(severity, resolution_status, expected):
     from MicrosoftCloudAppSecurity import params_to_filter
     res = params_to_filter(severity, resolution_status)
     assert res == expected
-
-
-def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
-    """
-    Given:
-        `getLastRun` which holds `last_fetch` and `last_fetch_id`.
-    When:
-        There are two incidents to fetch, That one of them we had already fetched the previous time.
-    Then:
-        We only fetched the one that does not exist in his system.
-    """
-    from MicrosoftCloudAppSecurity import alerts_to_incidents_and_fetch_start_from
-    incidents = get_fetch_data()
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=incidents["incidents"])
-    res_incidents, new_last_fetch_id, alert = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], '1602771392519',
-                                                 {"last_fetch": 1603365903,
-                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
-
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=[])
-    res_incidents, new_last_fetch_id, alerts = \
-        alerts_to_incidents_and_fetch_start_from([], '1602771392519', {"last_fetch": 1603365903,
-                                                                       "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
-    assert res_incidents == []
 
 
 def start_freeze_time(timestamp):
@@ -432,13 +415,9 @@ class TestCloseFalsePositive:
             close_false_positive_command(client_mocker, args)
 
 
-class TestFetchIncidentsWithLookBack:
-    LAST_RUN = {}
-    API_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
-    FREEZE_TIMESTAMP = '2022-05-15T11:00:00'
-
-    def set_last_run(self, new_last_run):
-        self.LAST_RUN = new_last_run
+class TestFetchIncidents:
+    LAST_RUN: dict[str, Any] = {}
+    FREEZE_TIMESTAMP = '2022-05-15T11:00:00.000'
 
     @pytest.mark.parametrize(
         'params, start_incidents, phase2_incident, phase3_incident',
@@ -530,7 +509,7 @@ class TestFetchIncidentsWithLookBack:
         - first fetch - should fetch incidents 2, 4, 5 (because only them match the query)
         - second fetch - should fetch incident 3 (because now incident 2, 4, 5, 3 matches the query too)
         - third fetch - should fetch incident 1 (because now incident 2, 4, 5, 3, 1 matches the query too)
-        - fourth fetch - should fetch nothing as there are not new incidents who match the query
+        - fourth fetch - should fetch nothing as there are no new incidents who match the query
         - make sure that incidents who were already fetched would not be fetched again.
         """
 
@@ -538,13 +517,12 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN = {}
 
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
         mocker.patch.object(client_mocker, 'list_incidents', return_value=start_incidents)
         mocker.patch('MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
                      side_effect=create_occur_timestamp)
 
-        filters = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
+        filters: dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
         max_results = params.get('limit')
         first_fetch = params.get('first_fetch')
         look_back = params.get('look_back')
@@ -553,7 +531,6 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 3
-        assert self.LAST_RUN.get('last_fetch_id') == '5'
         for expected_incident_id, alert in zip(['2', '4', '5'], alerts):
             assert alert.get('name') == f'test{expected_incident_id}'
 
@@ -684,7 +661,7 @@ class TestFetchIncidentsWithLookBack:
         ]
     )
     def test_fetch_incidents_with_look_back_equals_zero(
-            self, mocker, params, incidents, phase2_incident, phase3_incident
+        self, mocker, params, incidents, phase2_incident, phase3_incident
     ):
         """
         Given
@@ -699,19 +676,18 @@ class TestFetchIncidentsWithLookBack:
         - first fetch - should fetch incidents 1, 2, 3 (because only them match the query)
         - second fetch - should fetch incident 4
         - third fetch - should fetch incident 5
-        - fourth fetch - should fetch nothing as there are not new incidents who match the query
+        - fourth fetch - should fetch nothing as there are no new incidents who match the query
         """
 
         # reset last fetch and tickets
         self.LAST_RUN = {}
 
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
         mocker.patch.object(client_mocker, 'list_incidents', return_value=incidents)
         mocker.patch('MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
                      side_effect=create_occur_timestamp)
 
-        filters = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
+        filters: dict[str, Any] = {'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}
         max_results = params.get('limit')
         first_fetch = params.get('first_fetch')
         look_back = params.get('look_back')
@@ -720,7 +696,6 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 3
-        assert self.LAST_RUN.get('last_fetch_id') == '3'
         for expected_incident_id, ticket in zip(['1', '2', '3'], alerts):
             assert ticket.get('name') == f'test{expected_incident_id}'
 
@@ -742,14 +717,325 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 1
-        assert self.LAST_RUN.get('last_fetch_id') == '5'
         assert alerts[0].get('name') == 'test5'
 
         # forth fetch preparation
-        incidents = {'data': []}
+        incidents: dict[str, Any] = {'data': []}
         mocker.patch.object(client_mocker, 'list_incidents', return_value=incidents)
 
         # forth fetch
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 0
+
+    @pytest.mark.parametrize(
+        "incidents, expected_time, last_run_start",
+        [
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=10)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=10)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:50:00.001000',
+                {}
+            ),
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=8)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=8)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:52:00.001000',
+                {'time': '2022-05-15T10:50:00.001000', "limit": 10}
+            ),
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=5)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=5)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:55:00.001000',
+                {'time': '2022-05-15T10:50:00', "limit": 10}
+            )
+        ]
+    )
+    def test_fetch_incidents_with_different_last_runs(self, mocker, incidents, expected_time, last_run_start):
+        """
+        Given
+        - Case A: fetching incidents without any last run
+        - Case B: fetching incidents with last run containing date in miliseconds
+        - Case C: fetching incidents with last run not containing date in miliseconds
+
+        When
+        - trying to fetch incidents only one round
+
+        Then
+        - make sure that the new time in the last run contains the date with miliseconds
+        - make sure that the new time in the last run is increased with one milisecond
+        - make sure incidents were returned and were parsed successfully
+        """
+        self.LAST_RUN = last_run_start
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch(
+            'MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
+            side_effect=create_occur_timestamp
+        )
+
+        mocker.patch.object(client_mocker, 'list_incidents', return_value=incidents)
+
+        self.LAST_RUN, alerts = fetch_incidents(
+            client=client_mocker, max_results='10', last_run=self.LAST_RUN,
+            first_fetch='1 year ago', filters={'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}, look_back=0
+        )
+
+        assert self.LAST_RUN.get('time') == expected_time
+        assert len(alerts) == 2
+
+
+@pytest.mark.parametrize(
+    "fetch_time",
+    [
+        "2022-05-15T10:50:00",
+        "2022-05-15T10:50:00.000",
+        "2022-05-15T10:50:15.123",
+        "2022-05-15T10:50:15.100",
+        "2022-05-15T10:50:15.120"
+    ]
+)
+def test_format_fetch_start_time_to_timestamp(mocker, fetch_time):
+    """
+    Given
+    - Case A: fetch time that does not have miliseconds
+    - Case B: fetch time that have miliseconds with zeros only
+    - Case C + D + E: fetch time that have miliseconds that are not zeros only
+
+    When
+    - running format_fetch_start_time_to_timestamp
+
+    Then
+    - make sure we create a timestamp that is only based on 13 digits
+    """
+    from MicrosoftCloudAppSecurity import format_fetch_start_time_to_timestamp
+    start_freeze_time(fetch_time)
+    mocker.patch('MicrosoftCloudAppSecurity.parse', return_value=datetime.now())
+    timestamp = format_fetch_start_time_to_timestamp(fetch_time)
+    assert len(str(timestamp)) == 13
+
+
+@pytest.mark.parametrize(
+    "timestamp, expected_datetime_string",
+    [
+        (1652611800000, "2022-05-15T10:50:00.000"),
+        (1652611812000, "2022-05-15T10:50:12.000"),
+        (1652611812100, "2022-05-15T10:50:12.100"),
+        (1652611812120, "2022-05-15T10:50:12.120"),
+        (1652611812123, "2022-05-15T10:50:12.123")
+    ]
+)
+def test_timestamp_to_datetime_string(timestamp, expected_datetime_string):
+    """
+    Given
+    - 13 characters timestamps
+
+    When
+    - running timestamp_to_datetime_string
+
+    Then
+    - make sure a valid datetime string is created
+    """
+    from MicrosoftCloudAppSecurity import timestamp_to_datetime_string
+    assert timestamp_to_datetime_string(timestamp) == expected_datetime_string
+
+
+class TestModuleTest:
+    """
+    Code Analysis
+
+    Objective:
+    The test_module function is used to test the connection to the Microsoft Cloud App Security API and verify that the
+    integration is properly configured. It checks the authentication mode, lists alerts, and optionally lists incidents and
+    validates a custom filter.
+
+    Inputs:
+    - client: an instance of the Client class that is used to communicate with the Microsoft Cloud App Security API.
+    - is_fetch: a boolean value that indicates whether to test the fetch-incidents command.
+    - custom_filter: a string that contains a custom filter in JSON format.
+
+    Flow:
+    - Check if the authentication mode is device code flow and raise an exception if it is.
+    - List alerts by calling the list_alerts method of the client object.
+    - If is_fetch is true, list incidents by calling the list_incidents method of the client object.
+    - If custom_filter is not None, validate it by parsing it as JSON.
+
+    Outputs:
+    - If the function completes without raising an exception, it returns the string 'ok'.
+    - If an exception is raised, it returns an error message as a string.
+
+    Additional aspects:
+    - The function handles exceptions related to connection errors and authorization errors.
+    - The function validates the custom filter by parsing it as JSON, but it does not check the validity of the filter itself.
+    """
+
+    #  Tests that the client can list alerts.
+    def test_test_module_alerts(self, mocker):
+        """
+        Given:
+        - A client object.
+
+        When:
+        - Calling the test_module function with is_fetch=False and custom_filter=None.
+
+        Then:
+        - Ensure the client can list alerts.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'Worldwide', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
+        mocker.patch.object(client, 'list_alerts', return_value=None)
+        mocker.patch.object(client, 'list_alerts', return_value={})
+
+        result = test_module(client, False, None)
+
+        assert result == 'ok'
+        client.list_alerts.assert_called_once_with(url_suffix='/alerts/', request_data={})
+
+    #  Tests that the client can list incidents.
+    def test_test_module_incidents(self, mocker):
+        """
+        Given:
+        - A client object.
+
+        When:
+        - Calling the test_module function with is_fetch=True and custom_filter=None.
+
+        Then:
+        - Ensure the client can list incidents.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
+        mocker.patch.object(client, 'list_alerts', return_value=None)
+        mocker.patch.object(client, 'list_incidents', return_value={})
+
+        result = test_module(client, True, None)
+
+        assert result == 'ok'
+        client.list_incidents.assert_called_once_with(filters={}, limit=1)
+
+    #  Tests that an exception is raised if the client is using device code flow.
+    def test_test_module_device_code_flow(self):
+        """
+        Given:
+        - A client object with auth_mode=device code flow.
+
+        When:
+        - Calling the test_module function.
+
+        Then:
+        - Ensure a DemistoException is raised.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'device code flow', AZURE_WORLDWIDE_CLOUD)
+
+        assert test_module(
+            client, False, None) == 'To test the device code flow Please run !microsoft-cas-auth-start and ' \
+                                    '!microsoft-cas-auth-complete and check the connection using !microsoft-cas-auth-test'
+
+    #  Tests that a DemistoException is raised if the custom filter is incorrectly formatted.
+    def test_test_module_custom_filter(self, mocker):
+        """
+        Given:
+        - A client object.
+
+        When:
+        - Calling the test_module function with is_fetch=True and an incorrectly formatted custom_filter.
+
+        Then:
+        - Ensure a DemistoException is raised.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
+        mocker.patch.object(client, 'list_alerts', return_value=None)
+        mocker.patch.object(client, 'list_incidents', return_value={})
+
+        result = test_module(client, True, '{"invalid: "json"}')
+        assert result == 'Custom Filter Error: Your custom filter format is incorrect, please try again.'
+
+    #  Tests that a connection error message is returned if there is no connection.
+    def test_test_module_connection_error(self, mocker):
+        """
+        Given:
+        - A client object that raises a connection error.
+
+        When:
+        - Calling the test_module function.
+
+        Then:
+        - Ensure a connection error message is returned.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'com', 'https://invalid-url.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
+        mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('No connection'))
+
+        result = test_module(client, False, None)
+
+        assert result == 'Connection Error: The URL you entered is probably incorrect, please try again.'
+
+    #  Tests that an authorization error message is returned if the API key is incorrect.
+    def test_test_module_authorization_error(self, mocker):
+        """
+        Given:
+        - A client object that raises an authorization error.
+
+        When:
+        - Calling the test_module function.
+
+        Then:
+        - Ensure an authorization error message is returned.
+        """
+        from MicrosoftCloudAppSecurity import test_module
+
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
+        mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('Invalid token'))
+
+        result = test_module(client, False, None)
+
+        assert result == 'Authorization Error: make sure API Key is correctly set.'

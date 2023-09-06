@@ -1,0 +1,754 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "expand": "schema,names",
+        "startAt": 0,
+        "maxResults": 2,
+        "total": 2,
+        "issues": [
+            {
+                "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+                "id": "21430",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21430",
+                "key": "TSTPRD-5",
+                "fields": {
+                    "statuscategorychangedate": "2023-02-02T17:59:21.895+0200",
+                    "customfield_10070": [],
+                    "customfield_10071": null,
+                    "customfield_10072": null,
+                    "customfield_10073": null,
+                    "customfield_10074": null,
+                    "customfield_10075": null,
+                    "customfield_10076": null,
+                    "fixVersions": [],
+                    "customfield_10078": null,
+                    "resolution": null,
+                    "customfield_10079": null,
+                    "lastViewed": null,
+                    "customfield_10060": null,
+                    "customfield_10061": null,
+                    "customfield_10062": null,
+                    "customfield_10063": null,
+                    "customfield_10064": null,
+                    "customfield_10065": null,
+                    "epic": null,
+                    "customfield_10066": null,
+                    "customfield_10067": null,
+                    "priority": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/priority/3",
+                        "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+                        "name": "Medium",
+                        "id": "3"
+                    },
+                    "customfield_10068": null,
+                    "customfield_10069": null,
+                    "labels": [],
+                    "timeestimate": null,
+                    "aggregatetimeoriginalestimate": null,
+                    "versions": [],
+                    "issuelinks": [],
+                    "assignee": null,
+                    "status": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/status/10000",
+                        "description": "",
+                        "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                        "name": "To Do",
+                        "id": "10000",
+                        "statusCategory": {
+                            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/statuscategory/2",
+                            "id": 2,
+                            "key": "new",
+                            "colorName": "blue-gray",
+                            "name": "To Do"
+                        }
+                    },
+                    "components": [],
+                    "customfield_10050": null,
+                    "customfield_10051": null,
+                    "customfield_10052": null,
+                    "customfield_10053": null,
+                    "customfield_10054": null,
+                    "customfield_10055": null,
+                    "customfield_10056": null,
+                    "customfield_10057": null,
+                    "customfield_10058": null,
+                    "customfield_10059": null,
+                    "customfield_10049": null,
+                    "aggregatetimeestimate": null,
+                    "creator": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                        "accountId": "dummy_account_id",
+                        "emailAddress": "admin@demistodev.com",
+                        "avatarUrls": {
+                            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                        },
+                        "displayName": "Example User",
+                        "active": true,
+                        "timeZone": "Asia/Jerusalem",
+                        "accountType": "atlassian"
+                    },
+                    "subtasks": [],
+                    "customfield_10040": null,
+                    "customfield_10041": null,
+                    "customfield_10042": null,
+                    "customfield_10043": null,
+                    "reporter": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                        "accountId": "dummy_account_id",
+                        "emailAddress": "admin@demistodev.com",
+                        "avatarUrls": {
+                            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                        },
+                        "displayName": "Example User",
+                        "active": true,
+                        "timeZone": "Asia/Jerusalem",
+                        "accountType": "atlassian"
+                    },
+                    "aggregateprogress": {
+                        "progress": 0,
+                        "total": 0
+                    },
+                    "customfield_10045": null,
+                    "customfield_10047": null,
+                    "customfield_10048": null,
+                    "customfield_10038": null,
+                    "customfield_10039": null,
+                    "progress": {
+                        "progress": 0,
+                        "total": 0
+                    },
+                    "votes": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/TSTPRD-5/votes",
+                        "votes": 0,
+                        "hasVoted": false
+                    },
+                    "worklog": {
+                        "startAt": 0,
+                        "maxResults": 20,
+                        "total": 0,
+                        "worklogs": []
+                    },
+                    "issuetype": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issuetype/10003",
+                        "id": "10003",
+                        "description": "Stories track functionality or features expressed as user goals.",
+                        "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/issuetype/avatar/10315?size=medium",
+                        "name": "Story",
+                        "subtask": false,
+                        "avatarId": 10315,
+                        "hierarchyLevel": 0
+                    },
+                    "timespent": null,
+                    "sprint": {
+                        "id": 4,
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/sprint/4",
+                        "state": "active",
+                        "name": "TSTPRD Sprint 1",
+                        "startDate": "2023-02-13T15:12:39.565Z",
+                        "endDate": "2023-02-27T15:12:00.000Z",
+                        "originBoardId": 12,
+                        "goal": ""
+                    },
+                    "customfield_10031": null,
+                    "project": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/project/10019",
+                        "id": "10019",
+                        "key": "TSTPRD",
+                        "name": "TestProd",
+                        "projectTypeKey": "software",
+                        "simplified": false,
+                        "avatarUrls": {
+                            "48x48": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407",
+                            "24x24": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=small",
+                            "16x16": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=xsmall",
+                            "32x32": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=medium"
+                        }
+                    },
+                    "customfield_10032": null,
+                    "customfield_10033": null,
+                    "aggregatetimespent": null,
+                    "customfield_10034": null,
+                    "customfield_10035": null,
+                    "customfield_10036": null,
+                    "customfield_10037": null,
+                    "customfield_10027": null,
+                    "customfield_10028": null,
+                    "customfield_10029": null,
+                    "resolutiondate": null,
+                    "workratio": -1,
+                    "watches": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/TSTPRD-5/watchers",
+                        "watchCount": 1,
+                        "isWatching": true
+                    },
+                    "issuerestriction": {
+                        "issuerestrictions": {},
+                        "shouldDisplay": false
+                    },
+                    "created": "2023-02-02T17:59:21.527+0200",
+                    "customfield_10022": null,
+                    "customfield_10023": [],
+                    "customfield_10024": null,
+                    "customfield_10025": null,
+                    "customfield_10016": null,
+                    "customfield_10017": null,
+                    "customfield_10018": [
+                        {
+                            "id": 4,
+                            "name": "TSTPRD Sprint 1",
+                            "state": "active",
+                            "boardId": 12,
+                            "goal": "",
+                            "startDate": "2023-02-13T15:12:39.565Z",
+                            "endDate": "2023-02-27T15:12:00.000Z"
+                        }
+                    ],
+                    "customfield_10019": "0|i00k5m:xi",
+                    "updated": "2023-02-19T19:46:19.787+0200",
+                    "customfield_10090": null,
+                    "customfield_10091": null,
+                    "customfield_10092": null,
+                    "customfield_10093": null,
+                    "customfield_10094": null,
+                    "customfield_10095": null,
+                    "timeoriginalestimate": null,
+                    "description": "Please finish this ASAP.",
+                    "customfield_10097": null,
+                    "customfield_10013": null,
+                    "customfield_10014": null,
+                    "customfield_10015": {
+                        "hasEpicLinkFieldDependency": false,
+                        "showField": false,
+                        "nonEditableReason": {
+                            "reason": "PLUGIN_LICENSE_ERROR",
+                            "message": "The Parent Link is only available to Jira Premium users."
+                        }
+                    },
+                    "timetracking": {},
+                    "customfield_10005": null,
+                    "customfield_10006": null,
+                    "customfield_10007": null,
+                    "security": null,
+                    "customfield_10008": null,
+                    "customfield_10009": null,
+                    "attachment": [],
+                    "flagged": false,
+                    "summary": "Hire managers",
+                    "customfield_10080": null,
+                    "customfield_10081": null,
+                    "customfield_10082": null,
+                    "customfield_10083": null,
+                    "customfield_10084": null,
+                    "customfield_10085": null,
+                    "customfield_10086": null,
+                    "customfield_10087": null,
+                    "customfield_10088": null,
+                    "customfield_10089": null,
+                    "customfield_10001": null,
+                    "customfield_10002": null,
+                    "customfield_10003": null,
+                    "customfield_10004": null,
+                    "environment": null,
+                    "duedate": null,
+                    "comment": {
+                        "comments": [
+                            {
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21430/comment/18236",
+                                "id": "18236",
+                                "author": {
+                                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                                    "accountId": "dummy_account_id",
+                                    "emailAddress": "admin@demistodev.com",
+                                    "avatarUrls": {
+                                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                                    },
+                                    "displayName": "Example User",
+                                    "active": true,
+                                    "timeZone": "Asia/Jerusalem",
+                                    "accountType": "atlassian"
+                                },
+                                "body": "Hello [~accountid:60655c8870af500075ddb7e8] ",
+                                "updateAuthor": {
+                                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                                    "accountId": "dummy_account_id",
+                                    "emailAddress": "admin@demistodev.com",
+                                    "avatarUrls": {
+                                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                                    },
+                                    "displayName": "Example User",
+                                    "active": true,
+                                    "timeZone": "Asia/Jerusalem",
+                                    "accountType": "atlassian"
+                                },
+                                "created": "2023-02-13T18:13:51.047+0200",
+                                "updated": "2023-02-13T18:13:51.047+0200",
+                                "jsdPublic": true
+                            }
+                        ],
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21430/comment",
+                        "maxResults": 1,
+                        "total": 1,
+                        "startAt": 0
+                    }
+                }
+            },
+            {
+                "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+                "id": "21427",
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21427",
+                "key": "TSTPRD-2",
+                "fields": {
+                    "statuscategorychangedate": "2023-02-02T16:44:39.424+0200",
+                    "parent": {
+                        "id": "21426",
+                        "key": "TSTPRD-1",
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21426",
+                        "fields": {
+                            "summary": "We need to ship the latest features.",
+                            "status": {
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/status/10000",
+                                "description": "",
+                                "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                                "name": "To Do",
+                                "id": "10000",
+                                "statusCategory": {
+                                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/statuscategory/2",
+                                    "id": 2,
+                                    "key": "new",
+                                    "colorName": "blue-gray",
+                                    "name": "To Do"
+                                }
+                            },
+                            "priority": {
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/priority/3",
+                                "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+                                "name": "Medium",
+                                "id": "3"
+                            },
+                            "issuetype": {
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issuetype/10000",
+                                "id": "10000",
+                                "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+                                "iconUrl": "https://demistodev.atlassian.net/images/icons/issuetypes/epic.svg",
+                                "name": "Epic",
+                                "subtask": false,
+                                "hierarchyLevel": 1
+                            }
+                        }
+                    },
+                    "customfield_10070": [],
+                    "customfield_10071": null,
+                    "customfield_10072": null,
+                    "customfield_10073": null,
+                    "customfield_10074": null,
+                    "customfield_10075": null,
+                    "customfield_10076": null,
+                    "fixVersions": [],
+                    "customfield_10078": null,
+                    "customfield_10079": null,
+                    "resolution": null,
+                    "lastViewed": null,
+                    "customfield_10060": null,
+                    "customfield_10061": null,
+                    "customfield_10062": null,
+                    "customfield_10063": null,
+                    "customfield_10064": null,
+                    "customfield_10065": null,
+                    "epic": {
+                        "id": 21426,
+                        "key": "TSTPRD-1",
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21426",
+                        "name": "Ship to Prod",
+                        "summary": "We need to ship the latest features.",
+                        "color": {
+                            "key": "color_8"
+                        },
+                        "done": false
+                    },
+                    "customfield_10066": null,
+                    "customfield_10067": null,
+                    "priority": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/priority/3",
+                        "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+                        "name": "Medium",
+                        "id": "3"
+                    },
+                    "customfield_10068": null,
+                    "customfield_10069": null,
+                    "labels": [],
+                    "aggregatetimeoriginalestimate": null,
+                    "timeestimate": null,
+                    "versions": [],
+                    "issuelinks": [
+                        {
+                            "id": "10030",
+                            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issueLink/10030",
+                            "type": {
+                                "id": "10003",
+                                "name": "Relates",
+                                "inward": "relates to",
+                                "outward": "relates to",
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issueLinkType/10003"
+                            },
+                            "outwardIssue": {
+                                "id": "21428",
+                                "key": "TSTPRD-3",
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21428",
+                                "fields": {
+                                    "summary": "Build Backend",
+                                    "status": {
+                                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/status/10000",
+                                        "description": "",
+                                        "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                                        "name": "To Do",
+                                        "id": "10000",
+                                        "statusCategory": {
+                                            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/statuscategory/2",
+                                            "id": 2,
+                                            "key": "new",
+                                            "colorName": "blue-gray",
+                                            "name": "To Do"
+                                        }
+                                    },
+                                    "priority": {
+                                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/priority/3",
+                                        "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+                                        "name": "Medium",
+                                        "id": "3"
+                                    },
+                                    "issuetype": {
+                                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issuetype/10001",
+                                        "id": "10001",
+                                        "description": "A task that needs to be done.",
+                                        "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                                        "name": "Task",
+                                        "subtask": false,
+                                        "avatarId": 10318,
+                                        "hierarchyLevel": 0
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "assignee": null,
+                    "status": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/status/10000",
+                        "description": "",
+                        "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                        "name": "To Do",
+                        "id": "10000",
+                        "statusCategory": {
+                            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/statuscategory/2",
+                            "id": 2,
+                            "key": "new",
+                            "colorName": "blue-gray",
+                            "name": "To Do"
+                        }
+                    },
+                    "components": [],
+                    "customfield_10050": null,
+                    "customfield_10051": null,
+                    "customfield_10052": null,
+                    "customfield_10053": null,
+                    "customfield_10054": null,
+                    "customfield_10055": null,
+                    "customfield_10056": null,
+                    "customfield_10057": null,
+                    "customfield_10058": null,
+                    "customfield_10059": null,
+                    "customfield_10049": null,
+                    "aggregatetimeestimate": null,
+                    "creator": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                        "accountId": "dummy_account_id",
+                        "emailAddress": "admin@demistodev.com",
+                        "avatarUrls": {
+                            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                        },
+                        "displayName": "Example User",
+                        "active": true,
+                        "timeZone": "Asia/Jerusalem",
+                        "accountType": "atlassian"
+                    },
+                    "subtasks": [],
+                    "customfield_10040": null,
+                    "customfield_10041": null,
+                    "customfield_10042": null,
+                    "customfield_10043": null,
+                    "reporter": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                        "accountId": "dummy_account_id",
+                        "emailAddress": "admin@demistodev.com",
+                        "avatarUrls": {
+                            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                        },
+                        "displayName": "Example User",
+                        "active": true,
+                        "timeZone": "Asia/Jerusalem",
+                        "accountType": "atlassian"
+                    },
+                    "aggregateprogress": {
+                        "progress": 0,
+                        "total": 0
+                    },
+                    "customfield_10045": null,
+                    "customfield_10047": null,
+                    "customfield_10048": null,
+                    "customfield_10038": null,
+                    "customfield_10039": null,
+                    "progress": {
+                        "progress": 0,
+                        "total": 0
+                    },
+                    "votes": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/TSTPRD-2/votes",
+                        "votes": 0,
+                        "hasVoted": false
+                    },
+                    "worklog": {
+                        "startAt": 0,
+                        "maxResults": 20,
+                        "total": 0,
+                        "worklogs": []
+                    },
+                    "issuetype": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issuetype/10001",
+                        "id": "10001",
+                        "description": "A task that needs to be done.",
+                        "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                        "name": "Task",
+                        "subtask": false,
+                        "avatarId": 10318,
+                        "hierarchyLevel": 0
+                    },
+                    "timespent": null,
+                    "sprint": {
+                        "id": 4,
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/sprint/4",
+                        "state": "active",
+                        "name": "TSTPRD Sprint 1",
+                        "startDate": "2023-02-13T15:12:39.565Z",
+                        "endDate": "2023-02-27T15:12:00.000Z",
+                        "originBoardId": 12,
+                        "goal": ""
+                    },
+                    "project": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/project/10019",
+                        "id": "10019",
+                        "key": "TSTPRD",
+                        "name": "TestProd",
+                        "projectTypeKey": "software",
+                        "simplified": false,
+                        "avatarUrls": {
+                            "48x48": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407",
+                            "24x24": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=small",
+                            "16x16": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=xsmall",
+                            "32x32": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10407?size=medium"
+                        }
+                    },
+                    "customfield_10031": null,
+                    "customfield_10032": null,
+                    "customfield_10033": null,
+                    "aggregatetimespent": null,
+                    "customfield_10034": null,
+                    "customfield_10035": null,
+                    "customfield_10036": null,
+                    "customfield_10037": null,
+                    "customfield_10027": null,
+                    "customfield_10029": null,
+                    "resolutiondate": null,
+                    "workratio": -1,
+                    "issuerestriction": {
+                        "issuerestrictions": {},
+                        "shouldDisplay": false
+                    },
+                    "watches": {
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/TSTPRD-2/watchers",
+                        "watchCount": 1,
+                        "isWatching": true
+                    },
+                    "created": "2023-02-02T16:44:38.839+0200",
+                    "customfield_10022": null,
+                    "customfield_10023": [],
+                    "customfield_10024": null,
+                    "customfield_10025": null,
+                    "customfield_10016": null,
+                    "customfield_10017": null,
+                    "customfield_10018": [
+                        {
+                            "id": 4,
+                            "name": "TSTPRD Sprint 1",
+                            "state": "active",
+                            "boardId": 12,
+                            "goal": "",
+                            "startDate": "2023-02-13T15:12:39.565Z",
+                            "endDate": "2023-02-27T15:12:00.000Z"
+                        }
+                    ],
+                    "customfield_10019": "0|i00k5m:xr",
+                    "updated": "2023-02-20T16:03:25.523+0200",
+                    "customfield_10090": null,
+                    "customfield_10091": null,
+                    "customfield_10092": null,
+                    "customfield_10093": null,
+                    "customfield_10094": null,
+                    "customfield_10095": null,
+                    "timeoriginalestimate": null,
+                    "customfield_10096": null,
+                    "customfield_10097": null,
+                    "description": null,
+                    "customfield_10013": "TSTPRD-1",
+                    "customfield_10014": null,
+                    "customfield_10015": {
+                        "hasEpicLinkFieldDependency": false,
+                        "showField": false,
+                        "nonEditableReason": {
+                            "reason": "PLUGIN_LICENSE_ERROR",
+                            "message": "The Parent Link is only available to Jira Premium users."
+                        }
+                    },
+                    "timetracking": {},
+                    "customfield_10005": null,
+                    "customfield_10006": null,
+                    "customfield_10007": null,
+                    "security": null,
+                    "customfield_10008": null,
+                    "attachment": [],
+                    "customfield_10009": null,
+                    "flagged": false,
+                    "summary": "Build UI",
+                    "customfield_10080": null,
+                    "customfield_10081": null,
+                    "customfield_10082": null,
+                    "customfield_10083": null,
+                    "customfield_10084": null,
+                    "customfield_10085": null,
+                    "customfield_10086": null,
+                    "customfield_10087": null,
+                    "customfield_10088": null,
+                    "customfield_10089": null,
+                    "customfield_10001": null,
+                    "customfield_10002": null,
+                    "customfield_10003": null,
+                    "customfield_10004": null,
+                    "environment": null,
+                    "duedate": null,
+                    "comment": {
+                        "comments": [
+                            {
+                                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21427/comment/18268",
+                                "id": "18268",
+                                "author": {
+                                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                                    "accountId": "dummy_account_id",
+                                    "emailAddress": "admin@demistodev.com",
+                                    "avatarUrls": {
+                                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                                    },
+                                    "displayName": "Example User",
+                                    "active": true,
+                                    "timeZone": "Asia/Jerusalem",
+                                    "accountType": "atlassian"
+                                },
+                                "body": "We have the same parent",
+                                "updateAuthor": {
+                                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
+                                    "accountId": "dummy_account_id",
+                                    "emailAddress": "admin@demistodev.com",
+                                    "avatarUrls": {
+                                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                                    },
+                                    "displayName": "Example User",
+                                    "active": true,
+                                    "timeZone": "Asia/Jerusalem",
+                                    "accountType": "atlassian"
+                                },
+                                "created": "2023-02-20T16:03:25.523+0200",
+                                "updated": "2023-02-20T16:03:25.523+0200",
+                                "jsdPublic": true
+                            }
+                        ],
+                        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/issue/21427/comment",
+                        "maxResults": 1,
+                        "total": 1,
+                        "startAt": 0
+                    }
+                }
+            }
+        ]
+    },
+    "HumanReadable": "### Sprint Issues in board 12\n|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-02-02T17:59:21.527+0200 | Example User(admin@demistodev.com) | Please finish this ASAP. |  | 21430 | Story | TSTPRD-5 |  | Medium | TestProd | Example User(admin@demistodev.com) | To Do | Hire managers | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21430 |\n|  | 2023-02-02T16:44:38.839+0200 | Example User(admin@demistodev.com) |  |  | 21427 | Task | TSTPRD-2 |  | Medium | TestProd | Example User(admin@demistodev.com) | To Do | Build UI | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21427 |\n",
+    "EntryContext": {
+        "Jira.SprintIssues(val.boardId && val.boardId == obj.boardId && val.sprintId && val.sprintId == obj.sprintId)": {
+            "Ticket": [
+                {
+                    "LastSeen": "",
+                    "LastUpdate": "2023-02-19T19:46:19.787+0200",
+                    "Attachments": [],
+                    "Components": [],
+                    "Id": "21430",
+                    "Key": "TSTPRD-5",
+                    "Summary": "Hire managers",
+                    "Status": "To Do",
+                    "Priority": "Medium",
+                    "ProjectName": "TestProd",
+                    "DueDate": "",
+                    "Created": "2023-02-02T17:59:21.527+0200",
+                    "Labels": [],
+                    "Assignee": "",
+                    "Creator": "Example User(admin@demistodev.com)",
+                    "Description": "Please finish this ASAP."
+                },
+                {
+                    "LastSeen": "",
+                    "LastUpdate": "2023-02-20T16:03:25.523+0200",
+                    "Attachments": [],
+                    "Components": [],
+                    "Id": "21427",
+                    "Key": "TSTPRD-2",
+                    "Summary": "Build UI",
+                    "Status": "To Do",
+                    "Priority": "Medium",
+                    "ProjectName": "TestProd",
+                    "DueDate": "",
+                    "Created": "2023-02-02T16:44:38.839+0200",
+                    "Labels": [],
+                    "Assignee": "",
+                    "Creator": "Example User(admin@demistodev.com)",
+                    "Description": ""
+                }
+            ],
+            "boardId": "12",
+            "sprintId": "4"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

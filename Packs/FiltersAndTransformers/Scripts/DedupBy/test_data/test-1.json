@@ -1,0 +1,360 @@
+[
+  {
+    "value": null,
+    "args": [
+      {}
+    ],
+    "result": []
+  },
+  {
+    "value": [
+      1,
+      2,
+      3
+    ],
+    "args": [
+      {}
+    ],
+    "result": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "value": [
+      null,
+      -1,
+      0.5,
+      0,
+      1,
+      "aaa",
+      true,
+      {
+        "key": "value"
+      },
+      null,
+      [1,2,3],
+      "aaa",
+      true,
+      {
+        "key": "value"
+      },
+      1
+    ],
+    "args": [
+      {}
+    ],
+    "result": [
+      null,
+      -1,
+      0.5,
+      0,
+      1,
+      "aaa",
+      true,
+      {
+        "key": "value"
+      },
+      [1,2,3]
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "aaa": "bbb"
+        }
+      },
+      {
+        "key1": {
+          "aaa": "bbb"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": null
+      },
+      {
+        "key1": null
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1"
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "aaa": "bbb"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": null
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": "aaa",
+        "key2": "xxx"
+      },
+      {
+        "key1": "bbb",
+        "key2": "xxx"
+      },
+      {
+        "key1": "aaa",
+        "key2": "yyy"
+      },
+      {
+        "key1": "aaa",
+        "key2": "yyy"
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1, key2"
+      }
+    ],
+    "result": [
+      {
+        "key1": "aaa",
+        "key2": "xxx"
+      },
+      {
+        "key1": "bbb",
+        "key2": "xxx"
+      },
+      {
+        "key1": "aaa",
+        "key2": "yyy"
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key2": {
+            "key3": "aaa"
+          }
+        }
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1.key\\.2.key3"
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key2": {
+            "key3": "aaa"
+          }
+        }
+      }
+    ]
+  },
+  
+  {
+    "value": [
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.1"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.1"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.2"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.2"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.3"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.3"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.1"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.1"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.2"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.2"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.3"
+      },
+      {
+        "DestinationIP": "2.2.2.2",
+        "SourceIP": "192.168.1.3"
+      }
+    ],
+    "args": [
+      {
+        "keys": "SourceIP"
+      }
+    ],
+    "result": [
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.1"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.2"
+      },
+      {
+        "DestinationIP": "1.1.1.1",
+        "SourceIP": "192.168.1.3"
+      }
+    ]
+  }
+]

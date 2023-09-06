@@ -1,0 +1,40 @@
+{
+    "workday_activity_raw": {
+      "systemAccount": {
+        "type": "string",
+        "is_array": false
+      },
+      "activityAction": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAgent": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskId": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceType": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "sessionId": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskDisplayName": {
+        "type": "string",
+        "is_array": false
+      },
+      "target": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

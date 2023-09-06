@@ -1,0 +1,56 @@
+{
+    "forcepoint_forcepoint_dlp_raw": {
+      "eventid": {
+        "type": "string",
+        "is_array": false
+      },
+      "act": {
+        "type": "string",
+        "is_array": false
+      },
+      "analyzedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "cat": {
+        "type": "string",
+        "is_array": false
+      },
+      "suser": {
+        "type": "string",
+        "is_array": false
+      },
+      "duser": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "fname": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceIp": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceServiceName": {
+        "type": "string",
+        "is_array": false
+      },
+      "severityType": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceHost": {
+        "type": "string",
+        "is_array": false
+      },
+      "productVersion": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+}

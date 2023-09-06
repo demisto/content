@@ -1,6 +1,6 @@
-from typing import Callable, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from collections.abc import Callable
 
 import uuid
 
@@ -460,7 +460,7 @@ class Client(BaseClient):
             **format_custom_query_args(custom_query),
         )
 
-        return self._http_request("GET", "message-tracking/messages", params=params)
+        return self._http_request("GET", "message-tracking/messages", params=params, params_parser=urllib.parse.quote)
 
     def message_details_get_request(
         self,
@@ -614,12 +614,9 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     try:
         if custom_query:
-            return {
-                key: value
-                for key, value in (
-                    field.split("=") for field in custom_query.split(";")
-                )
-            }
+            return dict(
+                field.split("=") for field in custom_query.split(";")
+            )
         else:
             return {}
     except ValueError:
@@ -655,45 +652,24 @@ def format_reporting_datetime(time_expression: str) -> str:
     return arg_to_datetime(time_expression).strftime(CISCO_REPORTING_TIME_FORMAT)  # type: ignore
 
 
-def format_timestamp(timestamp: str) -> str:
+def format_timestamp(timestamp: str, output_format: str = DATETIME_FORMAT) -> str:
     """
     Format Cisco SMA timestamp to datetime string.
 
     Args:
         timestamp (str): Cisco SMA timestamp.
+        output_format (str): The format of the return date.
 
     Returns:
         str: Datetime formatted string.
     """
-    return datetime.strptime(timestamp, TIMESTAMP_FORMAT).strftime(DATETIME_FORMAT)
 
-
-def format_quarantine_timestamp(timestamp: str) -> str:
-    """
-    Format Cisco SMA Quarantine timestamp to datetime string.
-
-    Args:
-        timestamp (str): Cisco SMA quarantine timestamp.
-
-    Returns:
-        str: Datetime formatted string.
-    """
-    return datetime.strptime(timestamp, QUARANTINE_TIMESTAMP_FORMAT).strftime(
-        DATETIME_FORMAT
-    )
-
-
-def format_last_run(last_run: str) -> str:
-    """
-    Format fetch incidents last run to Cisco SMA datetime format.
-
-    Args:
-        last_run (str): Fetch incidents last run.
-
-    Returns:
-        str: Datetime formatted string.
-    """
-    return datetime.strptime(last_run, DATETIME_FORMAT).strftime(CISCO_TIME_FORMAT)
+    try:
+        datetime_res = arg_to_datetime(timestamp)
+    except ValueError:
+        timestamp = timestamp.replace('GMT ', 'GMT')
+        datetime_res = arg_to_datetime(timestamp)
+    return datetime_res.strftime(output_format)  # type: ignore
 
 
 def format_number_list_argument(number_list_string: str) -> List[int]:
@@ -790,7 +766,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
     return args
 
 
-def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tuple:
+def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tuple:
     """
     Executing Manual Pagination (using the page and page size arguments)
     or Automatic Pagination (display a number of total results).
@@ -1760,7 +1736,7 @@ def fetch_incidents(
     """
     start_time = last_run.get("start_time")
     start_date = (
-        format_last_run(start_time) if start_time else format_datetime(first_fetch)
+        format_timestamp(start_time, output_format=CISCO_TIME_FORMAT) if start_time else format_datetime(first_fetch)
     )
     end_date = format_datetime("now")
     quarantine_type = QUARANTINE_TYPE
@@ -1788,8 +1764,8 @@ def fetch_incidents(
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
     for incident in quarantine_messages:
-        incident_datetime = format_quarantine_timestamp(
-            dict_safe_get(incident, ["attributes", "date"])
+        incident_datetime = format_timestamp(
+            dict_safe_get(incident, ["attributes", "date"]),
         )
         message_id = incident.get("mid")
         if (

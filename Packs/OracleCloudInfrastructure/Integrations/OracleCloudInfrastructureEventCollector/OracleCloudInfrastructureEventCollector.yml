@@ -1,0 +1,73 @@
+category: Analytics & SIEM
+commonfields:
+  id: OracleCloudInfrastructureEventCollector
+  version: -1
+configuration:
+- display: Tenancy OCID
+  name: tenancy_ocid
+  required: true
+  type: 0
+  section: Connect
+- display: User OCID
+  name: user_ocid
+  required: true
+  type: 0
+  section: Connect
+- display: API Key Fingerprint
+  displaypassword: API Private Key
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Region
+  name: region
+  additionalinfo: Must be one the available regions for Oracle Cloud Infrastructure. For more information see the integration's description.
+  required: true
+  type: 0
+  section: Connect
+- display: First fetch time
+  defaultvalue: 3 days
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Number of events to fetch per fetch.
+  name: max_fetch
+  type: 0
+  defaultvalue: 100
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Collects audit log events from Oracle Cloud Infrastructure resources.
+display: Oracle Cloud Infrastructure Event Collector
+name: OracleCloudInfrastructureEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to true in order to create events, otherwise the command will only display them. Default is false.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Manual command to fetch and display events.
+    name: oracle-cloud-infrastructure-get-events
+  dockerimage: demisto/oci:1.0.0.72733
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

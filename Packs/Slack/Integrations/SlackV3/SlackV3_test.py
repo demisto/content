@@ -1,17 +1,13 @@
 import json as js
 import threading
 import io
-
 import pytest
 import slack_sdk
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 from slack_sdk.errors import SlackApiError
-
 from unittest.mock import MagicMock
-
 from CommonServerPython import *
-
 import datetime
 
 
@@ -20,8 +16,10 @@ def load_test_data(path):
         return f.read()
 
 
+CHANNELS = load_test_data('./test_data/channels.txt')
 USERS = load_test_data('./test_data/users.txt')
 CONVERSATIONS = load_test_data('./test_data/conversations.txt')
+MESSAGES = load_test_data('./test_data/messages.txt')
 PAYLOAD_JSON = load_test_data('./test_data/payload.txt')
 INTEGRATION_CONTEXT: dict
 
@@ -132,11 +130,11 @@ INBOUND_MESSAGE_FROM_BOT = {
     "event": {
         "type": "message",
         "subtype": "bot_message",
-        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "text": "This is a bot message\nView it on: <https://somexsoarserver.com#/home>",
         "ts": "1644999987.969789",
         "username": "I'm a BOT",
         "icons": {
-            "image_48": "https:\/\/someimage.png"
+            "image_48": "https://someimage.png"
         },
         "bot_id": "B01UZHGMQ9G",
         "channel": "C033HLL3N81",
@@ -159,6 +157,7 @@ INBOUND_MESSAGE_FROM_BOT = {
 
 INBOUND_MESSAGE_FROM_USER = {
     "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "user": {'id': "ZSADAD12"},
     "team_id": "TABQMPKP0",
     "api_app_id": "A01TXQAGB2P",
     "event": {
@@ -205,11 +204,11 @@ INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID = {
     "event": {
         "type": "message",
         "subtype": "This is missing",
-        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "text": "This is a bot message\nView it on: <https://somexsoarserver.com#/home>",
         "ts": "1644999987.969789",
         "username": "I'm a BOT",
         "icons": {
-            "image_48": "https:\/\/someimage.png"
+            "image_48": "https://someimage.png"
         },
         "bot_id": "W12345678",
         "channel": "C033HLL3N81",
@@ -259,7 +258,7 @@ INBOUND_EVENT_MESSAGE = {
             "ts": "1645712173.407939",
             "username": "test",
             "icons": {
-                "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-07-14\/2273797940146_48.png"
+                "image_48": "https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-07-14/2273797940146_48.png"
             },
             "bot_id": "B0342JWALTG",
             "blocks": [{
@@ -299,7 +298,7 @@ INBOUND_EVENT_MESSAGE = {
         "state": {
             "values": {}
         },
-        "response_url": "https:\/\/hooks.slack.com\/actions\/T019C4MM2VD\/3146697353558\/Y6ic5jAvlJ6p9ZU9HmyU9sPZ",
+        "response_url": "https://hooks.slack.com/actions/T019C4MM2VD/3146697353558/Y6ic5jAvlJ6p9ZU9HmyU9sPZ",
         "actions": [{
             "action_id": "o2pI",
             "block_id": "06eO",
@@ -316,6 +315,87 @@ INBOUND_EVENT_MESSAGE = {
     },
     "type": "interactive",
     "accepts_response_payload": False
+}
+
+INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID = {
+    "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "team_id": "TABQMPKP0",
+    "api_app_id": "A01TXQAGB2P",
+    "event": {
+        "type": "message",
+        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "ts": "1644999987.969789",
+        "username": "I'm a BOT",
+        "icons": {
+            "image_48": "https:\/\/someimage.png"
+        },
+        "bot_id": "B01UZHGMQ9G",
+        "channel": "C033HLL3N81",
+        "event_ts": "1644999987.969789",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "Ev0337CL1P0D",
+    "event_time": 1644999987,
+    "authorizations": [{
+        "enterprise_id": None,
+        "team_id": "TABQMPKP0",
+        "user_id": "U0209BPNFC0",
+        "is_bot": True,
+        "is_enterprise_install": False
+    }],
+    "is_ext_shared_channel": False,
+    "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
+}
+
+SIMPLE_USER_MESSAGE = {
+    "token": "d8on5ZZu1q907qYxV65stnfx",
+    "team_id": "team_id",
+    "context_team_id": "context_team_id",
+    "context_enterprise_id": None,
+    "api_app_id": "api_app_id",
+    "event": {
+        "client_msg_id": "6af5a984-e50c-426f-abf0-d42c2246a9d1",
+        "type": "message",
+        "text": "messgae from user test_1",
+        "user": "USER_USER_1",
+        "ts": "1681650557.769109",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "UgHdS",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "messgae from user test_1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "ABCDFCFRTGY",
+        "channel": "ABCDFCFRTGR",
+        "event_ts": "1681650557.769109",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "event_id",
+    "event_time": 1681650557,
+    "authorizations": [
+        {
+            "enterprise_id": None,
+            "team_id": "team_id",
+            "user_id": "user_id",
+            "is_bot": True,
+            "is_enterprise_install": False
+        }
+    ],
+    "is_ext_shared_channel": False,
+    "event_context": "event_context"
 }
 
 
@@ -1854,7 +1934,8 @@ async def test_handle_dm_create_with_error(mocker):
 
     assert demisto_user == {'id': 'demisto_id'}
     assert incident_string == 'open 123 incident'
-    assert message_args == {'channel': 'ey', 'text': 'Failed creating incidents: omg'}
+    assert message_args == {'channel': 'ey',
+                            'text': 'Failed creating incidents: omg'}
 
 
 @pytest.mark.asyncio
@@ -1896,7 +1977,11 @@ async def test_translate_create(mocker):
                                                     'spengler@ghostbusters.example.com', demisto_user)
     type_data = await SlackV3.translate_create(type_message, 'spengler',
                                                'spengler@ghostbusters.example.com', demisto_user)
-
+    raw_json_prefix = '{"ReporterEmail": "spengler@ghostbusters.example.com", "Message": '
+    expected_res = {"name": "xyz", "role": "Analyst",
+                    "rawJSON": '{"ReporterEmail": "spengler@ghostbusters.example.com",'
+                               ' "Message": "create incident json={\\u201cname\\u201d:'
+                               ' \\u201cxyz\\u201d, \\u201crole\\u201d: \\u201cAnalyst\\u201d}"}'}
     create_args = SlackV3.create_incidents.call_args_list
     json_args = create_args[0][0][0]
     name_args = create_args[1][0][0]
@@ -1906,11 +1991,12 @@ async def test_translate_create(mocker):
     # Assert
 
     assert SlackV3.create_incidents.call_count == 4
-
-    assert json_args == [{"name": "xyz", "role": "Analyst"}]
-    assert name_args == [{"name": "eyy"}]
-    assert name_type_args == [{"name": "eyy", "type": "Access"}]
-    assert type_name_args == [{"name": "eyy", "type": "Access"}]
+    assert json_args[0] == expected_res
+    assert name_args == [{'name': 'eyy', 'rawJSON': raw_json_prefix + '"create incident name=eyy"}'}]
+    assert name_type_args == [{'name': 'eyy', 'type': 'Access',
+                               'rawJSON': raw_json_prefix + '"create incident name= eyy type= Access"}'}]
+    assert type_name_args == [{'name': 'eyy', 'type': 'Access',
+                               'rawJSON': raw_json_prefix + '"create incident  type= Access name= eyy"}'}]
 
     assert json_data == success_message
     assert wrong_json_data == 'No other properties other than json should be specified.'
@@ -1953,12 +2039,14 @@ async def test_translate_create_newline_json(mocker):
 
     create_args = SlackV3.create_incidents.call_args
     json_args = create_args[0][0]
-
+    raw_json = '{"ReporterEmail": "spengler@ghostbusters.example.com", "Message":' \
+               ' "            create incident json={            \\"name\\":\\"xyz\\",' \
+               '            \\"details\\": \\"1.1.1.1,8.8.8.8\\"                    }"}'
     # Assert
 
     assert SlackV3.create_incidents.call_count == 1
 
-    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8", 'rawJSON': raw_json}]
 
     assert json_data == success_message
 
@@ -2296,6 +2384,22 @@ def test_send_request(mocker):
 
     assert user_res == 'cool'
     assert channel_res == 'neat'
+
+
+def test_reset_user_session(mocker):
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'admin.users.session.reset':
+            return {'ok': True}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(demisto, 'args', return_value={'user_id': 'U012A3CDE'})
+
+    SlackV3.user_session_reset()
 
 
 def test_send_request_channel_id(mocker):
@@ -4353,7 +4457,9 @@ TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_BOT, True),
     (INBOUND_MESSAGE_FROM_USER, False),
     (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True),
-    (INBOUND_EVENT_MESSAGE, False)
+    (INBOUND_EVENT_MESSAGE, False),
+    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True),
+    (SIMPLE_USER_MESSAGE, False)
 ]
 
 
@@ -4365,6 +4471,7 @@ def test_is_bot_message(message, expected_response):
         Test Case 2 - A message from a user
         Test Case 3 - A message from a bot, but only containing a bot id which matches our bot id.
         Test Case 4 - A message from a user which is a reply to an action.
+        Test Case 4 - A message from a bot without bot_msg as a subtype but also without user_id.
     When:
         Determining if the message is from a bot
     Then:
@@ -4372,6 +4479,7 @@ def test_is_bot_message(message, expected_response):
         Test Case 2 - Will determine False
         Test Case 3 - Will determine True
         Test Case 4 - Will determine False
+        Test Case 5 - Will determine True
     """
     import SlackV3
     SlackV3.BOT_ID = 'W12345678'
@@ -4847,3 +4955,100 @@ def test_check_for_unanswered_questions(mocker):
     total_questions = js.loads(updated_context.get('questions'))
 
     assert len(total_questions) == 0
+
+
+def test_list_channels(mocker):
+    """
+    Given:
+        A list of channels.
+    When:
+        Listing Channels.
+    Assert:
+        fields match and are listed.
+    """
+    import SlackV3
+    slack_response_mock = {
+        'ok': True,
+        'channels': json.loads(CHANNELS)}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]}])
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'public_channel': 'public_channel', 'limit': 1})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    # mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=slack_response_mock)
+    SlackV3.list_channels()
+    assert demisto.results.called
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channels list for None with filter None\n' \
+                                                               '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n' \
+                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the' \
+                                                               ' one channel that will always include everyone. It’s a great'\
+                                                               ' spot for announcements and team-wide conversations. |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
+
+
+def test_conversation_history(mocker):
+    """
+    Given:
+        A set of conversations.
+    When:
+        Listing conversation history.
+    Assert:
+        Conversations are returned.
+    """
+    import SlackV3
+    slack_response_mock = {
+        'ok': True,
+        'messages': json.loads(MESSAGES)}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync',
+                        side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]},
+                                     {'user': js.loads(USERS)[0]}])
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'conversation_id': 1, 'limit': 1})
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+
+    SlackV3.conversation_history()
+
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID ' \
+                                                               '- 1\n|FullName|HasReplies|Name|Text|ThreadTimeStamp' \
+                                                               '|TimeStamp|Type|UserId|\n|---|---|---|---|---|' \
+                                                               '---|---|---|\n| spengler | No | spengler | There' \
+                                                               ' are two types of people in this world, those' \
+                                                               ' who can extrapolate from incomplete data... | N/A ' \
+                                                               '| 1690479909.804939 | message | U047D5QSZD4 |\n|' \
+                                                               ' spengler | Yes | spengler | Give me a fresh dad joke' \
+                                                               ' | 1690479887.647239 | 1690479887.647239 | message ' \
+                                                               '| U047D5QSZD4 |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
+
+
+def test_conversation_replies(mocker):
+    """
+    Given:
+        A conversation with replies
+    When:
+        Looking for conversations with replies
+    Assert:
+        Conversations has replies.
+    """
+    import SlackV3
+    mocker.patch.object(slack_sdk.WebClient, 'api_call')
+    mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'thread_timestamp': 1234, 'limit': 1})
+    mocker.patch.object(demisto, 'results')
+    slack_response_mock = {
+        'ok': True,
+        'messages': json.loads(MESSAGES)}
+    mocker.patch.object(SlackV3, 'send_slack_request_sync',
+                        side_effect=[slack_response_mock,
+                                     {'user': js.loads(USERS)[0]},
+                                     {'user': js.loads(USERS)[0]}])
+    SlackV3.conversation_replies()
+    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channel details from Channel ID' \
+                                                               ' - 1\n|FullName|IsParent|Name|Text|ThreadTimeStamp' \
+                                                               '|TimeStamp|Type|UserId|\n|---|---|---|---|---|---' \
+                                                               '|---|---|\n| spengler | No | spengler | There are ' \
+                                                               'two types of people in this world, those who can ' \
+                                                               'extrapolate from incomplete data... | ' \
+                                                               ' | 1690479909.804939 | message | U047D5QSZD4 ' \
+                                                               '|\n| spengler | Yes | spengler | Give me a fresh dad' \
+                                                               ' joke | 1690479887.647239 | 1690479887.647239 | message |' \
+                                                               ' U047D5QSZD4 |\n'
+    assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'

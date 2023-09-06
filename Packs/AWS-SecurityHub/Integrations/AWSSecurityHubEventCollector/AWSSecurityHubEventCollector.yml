@@ -1,0 +1,128 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: AWS Security Hub Event Collector
+  version: -1
+configuration:
+- display: AWS Default Region
+  name: default_region
+  required: true
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  type: 15
+  section: Connect
+- display: Role Arn
+  name: role_arn
+  type: 0
+  section: Connect
+  required: false
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Role Session Name
+  name: role_session_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Duration
+  name: role_session_duration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Max events per fetch
+  additionalinfo: The maximum number of events to retrieve for each event type. Can only be values between 0 and 10,000. For more information about event types, see the help section.
+  defaultvalue: '1000'
+  name: max_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+  defaultvalue: 60,10
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: An XSIAM event collector integration for AWS Security Hub.
+display: AWS Security Hub Event Collector
+name: AWS Security Hub Event Collector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: true
+      defaultValue: '100'
+      description: Amount of events to fetch per request. Can be values between 1 and 100.
+      name: page_size
+    - description: Maximum results to return. Must be a positive integer (higher than 0).
+      name: limit
+    description: Fetch events from AWS Security Hub.
+    name: aws-securityhub-get-events
+  dockerimage: demisto/boto3py3:1.0.0.71373
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

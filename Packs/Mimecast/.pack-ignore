@@ -1,5 +1,6 @@
 [file:MimecastV2.yml]
-ignore=IN126,IN145,IN124
+ignore=IN126,IN124
+
 [file:README.md]
 ignore=RM104
 
@@ -8,3 +9,13 @@ ignore=IM111
 
 [file:MimecastEventCollector_image.png]
 ignore=IM111
+
+[file:MimecastModelingRules.yml]
+ignore=MR108
+
+[file:MimecastModelingRules_1_3.yml]
+ignore=MR108
+
+[file:MimecastParsingRules.yml]
+ignore=PR101
+

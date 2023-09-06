@@ -1,0 +1,1027 @@
+category: Network Security
+commonfields:
+  id: KnowBe4_KMSAT
+  version: -1
+configuration:
+- defaultvalue: https://us.api.knowbe4.com
+  display: Your Reporting Server URL
+  name: url
+  required: true
+  type: 0
+  additionalinfo: URL of the Reporting API endpoint, only FQDN is required, e.g. https://us.api.knowbe4.com
+- displaypassword: Reporting API Key
+  additionalinfo: The Reporting API Key to use for connection
+  name: apikey
+  required: true
+  hiddenusername: true
+  type: 9
+- defaultvalue: https://api.events.knowbe4.com
+  display: Your User Events Server URL
+  name: userEventsUrl
+  required: true
+  type: 0
+  additionalinfo: URL of the User Events API endpoint, only FQDN is required, e.g. https://api.events.knowbe4.com
+- displaypassword: User Events API Key
+  additionalinfo: The User Events API Key to use for connection
+  name: userEventsApiKey
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
+display: "KnowBe4KMSAT"
+name: KnowBe4_KMSAT
+script:
+  commands:
+  - name: kmsat-account-info-list
+    arguments: []
+    outputs:
+    - contextPath: KMSAT.AccountInfo.name
+      description: "Account Name"
+      type: String
+    - contextPath: KMSAT.AccountInfo.type
+      description: "Account Type"
+      type: String
+    - contextPath: KMSAT.AccountInfo.domains
+      description: "Account Domains"
+      type: String
+    - contextPath: KMSAT.AccountInfo.admins.id
+      description: "Account Admin ID"
+      type: Number
+    - contextPath: KMSAT.AccountInfo.admins.first_name
+      description: "Account Admin First Name"
+      type: String
+    - contextPath: KMSAT.AccountInfo.admins.last_name
+      description: "Account Admin Last Name"
+      type: String
+    - contextPath: KMSAT.AccountInfo.admins.email
+      description: "Account Admin Email"
+      type: String
+    - contextPath: KMSAT.AccountInfo.subscription_level
+      description: "Account Subscription Level"
+      type: String
+    - contextPath: KMSAT.AccountInfo.subscription_end_date
+      description: "Account Subscription End Date"
+      type: Date
+    - contextPath: KMSAT.AccountInfo.number_of_seats
+      description: "Number of Seats"
+      type: Number
+    - contextPath: KMSAT.AccountInfo.current_risk_score
+      description: "Account Risk Score"
+      type: Number
+    description: Returns KMSAT account information
+  - name: kmsat-account-risk-score-history-list
+    arguments:
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.AccountRiskScoreHistory.risk_score
+      description: Account Risk Score and Associated Date
+      type: String
+    - contextPath: KMSAT.AccountRiskScoreHistory.date
+      description: Account Risk Score History Date
+      type: Date
+    description: Returns KMSAT Account Risk Score History.
+  - name: kmsat-groups-list
+    arguments:
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.Groups.id
+      description: Groups ID
+      type: Number
+    - contextPath: KMSAT.Groups.name
+      description: Groups Name
+      type: String
+    - contextPath: KMSAT.Groups.group_type
+      description: Groups Type
+      type: String
+    - contextPath: KMSAT.Groups.provisioning_guid
+      description: Groups Provisioning GUID
+      type: String
+    - contextPath: KMSAT.Groups.member_count
+      description: Groups Member Count
+      type: Number
+    - contextPath: KMSAT.Groups.current_risk_score
+      description: Groups Risk Score
+      type: Number
+    - contextPath: KMSAT.Groups.status
+      description: Groups Status
+      type: String
+    description: Returns KMSAT Group Specific Risk Score History.
+  - name: kmsat-groups-risk-score-history-list
+    arguments:
+    - name: group_id
+      required: true
+      description: Group ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.GroupsRiskScoreHistory.risk_score
+      description: Groups Risk score and associated date
+      type: String
+    - contextPath: KMSAT.GroupsRiskScoreHistory.date
+      description: Groups Risk score history date
+      type: Date
+    description: Returns KMSAT Group Specific Risk Score History.
+  - name: kmsat-groups-members-list
+    arguments:
+    - name: group_id
+      required: true
+      description: Group ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.GroupsMembers.id
+      description: Groups Member ID
+      type: Number
+    - contextPath: KMSAT.GroupsMembers.employee_number
+      description: Groups Member Employee Number
+      type: String
+    - contextPath: KMSAT.GroupsMembers.first_name
+      description: Groups Member First Name
+      type: String
+    - contextPath: KMSAT.GroupsMembers.last_name
+      description: Groups Member Last Name
+      type: String
+    - contextPath: KMSAT.GroupsMembers.job_title
+      description: Groups Member Job Title
+      type: String
+    - contextPath: KMSAT.GroupsMembers.email
+      description: Groups Member Email
+      type: String
+    - contextPath: KMSAT.GroupsMembers.phish_prone_percentage
+      description: Groups Member Phish Prone Percentage
+      type: Number
+    - contextPath: KMSAT.GroupsMembers.phone_number
+      description: Groups Member Phone Number
+      type: String
+    - contextPath: KMSAT.GroupsMembers.extension
+      description: Groups Member Extension
+      type: String
+    - contextPath: KMSAT.GroupsMembers.mobile_phone_number
+      description: Groups Member Phone Number
+      type: String
+    - contextPath: KMSAT.GroupsMembers.location
+      description: Groups Member Location
+      type: String
+    - contextPath: KMSAT.GroupsMembers.division
+      description: Groups Member Division
+      type: String
+    - contextPath: KMSAT.GroupsMembers.manager_name
+      description: Groups Member Manager Name
+      type: String
+    - contextPath: KMSAT.GroupsMembers.manager_email
+      description: Groups Member Manager Email
+      type: String
+    - contextPath: KMSAT.GroupsMembers.provisioning_managed
+      description: Groups Member Provisioning Managed
+      type: Boolean
+    - contextPath: KMSAT.GroupsMembers.provisioning_guid
+      description: Groups Member Provisioning GUID
+      type: Unknown
+    - contextPath: KMSAT.GroupsMembers.groups
+      description: Groups Member Groups
+      type: Number
+    - contextPath: KMSAT.GroupsMembers.current_risk_score
+      description: Groups Member Current Risk Score
+      type: Number
+    - contextPath: KMSAT.GroupsMembers.aliases
+      description: Groups Member Aliases
+      type: String
+    - contextPath: KMSAT.GroupsMembers.joined_on
+      description: Groups Member Joined On
+      type: Date
+    - contextPath: KMSAT.GroupsMembers.last_sign_in
+      description: Groups Member Last Sign In
+      type: Date
+    - contextPath: KMSAT.GroupsMembers.status
+      description: Groups Member Status
+      type: String
+    - contextPath: KMSAT.GroupsMembers.organization
+      description: Groups Member Organization
+      type: String
+    - contextPath: KMSAT.GroupsMembers.department
+      description: Groups Member Department
+      type: String
+    - contextPath: KMSAT.GroupsMembers.language
+      description: Groups Member Language
+      type: String
+    - contextPath: KMSAT.GroupsMembers.comment
+      description: Groups Member Comment
+      type: String
+    - contextPath: KMSAT.GroupsMembers.employee_start_date
+      description: Groups Member Employee Start Date
+      type: Date
+    - contextPath: KMSAT.GroupsMembers.archived_at
+      description: Groups Member Archived At
+      type: Date
+    - contextPath: KMSAT.GroupsMembers.custom_field_1
+      description: Groups Member Custom Field 1
+      type: String
+    - contextPath: KMSAT.GroupsMembers.custom_field_2
+      description: Groups Member Custom Field 2
+      type: String
+    - contextPath: KMSAT.GroupsMembers.custom_field_3
+      description: Groups Member Custom Field 3
+      type: String
+    - contextPath: KMSAT.GroupsMembers.custom_field_4
+      description: Groups Member Custom Field 4
+      type: String
+    - contextPath: KMSAT.GroupsMembers.custom_date_1
+      description: Groups Member Custom Date 1
+      type: Date
+    - contextPath: KMSAT.GroupsMembers.custom_date_2
+      description: Groups Member Custom Date 2
+      type: Date
+    description: Returns KMSAT Groups Members.
+  - name: kmsat-users-risk-score-history-list
+    arguments:
+    - name: user_id
+      required: true
+      description: User ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.UsersRiskScoreHistory.risk_score
+      description: Users Risk score and associated date
+      type: Number
+    - contextPath: KMSAT.UsersRiskScoreHistory.date
+      description: Users Risk score history date
+      type: Date
+    description: Returns KMSAT User Specific Risk Score History
+  - name: kmsat-phishing-security-tests-list
+    arguments:
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.PhishingSecurity.campaign_id
+      description: Phishing Security Campaign ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.pst_id
+      description: Phishing Security PST ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.status
+      description: Phishing Security Status
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.name
+      description: Phishing Security Name
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.groups.group_id
+      description: Phishing Security Group ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.groups.name
+      description: Phishing Security Group Name
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.phish_prone_percentage
+      description: Phishing Security Phishing Prone Percent
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.started_at
+      description: Phishing Security Started At Date
+      type: Date
+    - contextPath: KMSAT.PhishingSecurity.duration
+      description: Phishing Security Duration
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.categories.category_id
+      description: Phishing Security Category ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.categories.name
+      description: Phishing Security Category Name
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.template.id
+      description: Phishing Security Template ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.template.name
+      description: Phishing Security Template Name
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.landing_page.id
+      description: Phishing Security Landing Page ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.landing_page.name
+      description: Phishing Security Landing Page Name
+      type: String
+    - contextPath: KMSAT.PhishingSecurity.scheduled_count
+      description: Phishing Security Scheduled Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.delivered_count
+      description: Phishing Security Delivered Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.opened_count
+      description: Phishing Security Opened Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.clicked_count
+      description: Phishing Security Clicked Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.replied_count
+      description: Phishing Security Replied Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.attachment_open_count
+      description: Phishing Security Attachment Open Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.macro_enabled_count
+      description: Phishing Security Macro Enabled Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.data_entered_count
+      description: Phishing Security Data Entered Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.qr_code_scanned_count
+      description: Phishing Security QR Code Scanned Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.reported_count
+      description: Phishing Security Reported Count
+      type: Number
+    - contextPath: KMSAT.PhishingSecurity.bounced_count
+      description: Phishing Security Bounced Count
+      type: Number
+    description: Returns All Phishing Security Tests (PSTs)
+  - name: kmsat-phishing-security-tests-recipients-list
+    arguments:
+    - name: pst_id
+      required: true
+      description: PST ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.PhishingSecurityPST.recipient_id
+      description: Phishing Security Recipient ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurityPST.psd_id
+      description: Phishing Security PST ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurityPST.user
+      description: Phishing Security User
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.template
+      description: Phishing Security Template
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.scheduled_at
+      description: Phishing Security Scheduled At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.delivered_at
+      description: Phishing Security Delivered At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.opened_at
+      description: Phishing Security Opened At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.clicked_at
+      description: Phishing Security Clicked At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.replied_at
+      description: Phishing Security Replied At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.attachment_opened_at
+      description: Phishing Security Attachment Opened At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
+      description: Phishing Security Macro Enabled At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
+      description: Phishing Security Date Entered At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.qr_code_scanned
+      description: Phishing Security QR Scanned At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.reported_at
+      description: Phishing Security Reported At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.bounced_at
+      description: Phishing Security Bounced At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.ip
+      description: Phishing Security IP
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.ip_location
+      description: Phishing Security IP Location
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.browser
+      description: Phishing Security Browser
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.browser_version
+      description: Phishing Security Browser Security
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.os
+      description: Phishing Security OS
+      type: String
+    description: Returns a Specific Recipient's Results.
+  - name: kmsat-phishing-security-tests-failed-recipients-list
+    arguments:
+    - name: pst_id
+      required: true
+      description: PST ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.PhishingSecurityPST.recipient_id
+      description: Phishing Security Recipient ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurityPST.psd_id
+      description: Phishing Security PST ID
+      type: Number
+    - contextPath: KMSAT.PhishingSecurityPST.user
+      description: Phishing Security User
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.template
+      description: Phishing Security Template
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.scheduled_at
+      description: Phishing Security Scheduled At
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.delivered_at
+      description: Phishing Security Delivered At
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.opened_at
+      description: Phishing Security Opened At
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.clicked_at
+      description: Phishing Security Clicked At
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.replied_at
+      description: Phishing Security Replied At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.attachment_opened_at
+      description: Phishing Security Attachment Opened At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
+      description: Phishing Security Macro Enabled At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
+      description: Phishing Security Date Entered At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.qr_code_scanned
+      description: Phishing Security QR Scanned At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.reported_at
+      description: Phishing Security Reported At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.bounced_at
+      description: Phishing Security Bounced At
+      type: Date
+    - contextPath: KMSAT.PhishingSecurityPST.ip
+      description: Phishing Security IP
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.ip_location
+      description: Phishing Security IP Location
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.browser
+      description: Phishing Security Browser
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.browser_version
+      description: Phishing Security Browser Security
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.os
+      description: Phishing Security OS
+      type: String
+    - contextPath: KMSAT.PhishingSecurityPST.meta.paging_end
+      description: Phishing Security Meta Page End
+      type: Boolean
+    - contextPath: KMSAT.PhishingSecurityPST.meta.filtered_items_in_page
+      description: Phishing Security Meta Filtered Items
+      type: Number
+    - contextPath: KMSAT.PhishingSecurityPST.meta.items_total
+      description: Phishing Security Meta Items Total
+      type: Number
+    description: Returns a Specific Failed Recipient's Results.
+  - name: kmsat-phishing-campaigns-security-tests-list
+    arguments:
+    - name: campaign_id
+      required: true
+      description: Campaign ID
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.CampaignPST.campaign_id
+      description: Campaign Phishing Security Campaign ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.pst_id
+      description: Campaign Phishing Security PST ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.status
+      description: Campaign Phishing Security Status
+      type: String
+    - contextPath: KMSAT.CampaignPST.name
+      description: Campaign Phishing Security Name
+      type: String
+    - contextPath: KMSAT.CampaignPST.groups.group_id
+      description: Campaign Phishing Security Group ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.groups.name
+      description: Campaign Phishing Security Name
+      type: String
+    - contextPath: KMSAT.CampaignPST.phish_prone_percentage
+      description: Campaign Phishing Security Phish Prone Percentage
+      type: Number
+    - contextPath: KMSAT.CampaignPST.started_at
+      description: Campaign Phishing Security Started At
+      type: Date
+    - contextPath: KMSAT.CampaignPST.duration
+      description: Campaign Phishing Security Duration
+      type: Number
+    - contextPath: KMSAT.CampaignPST.categories.category_id
+      description: Campaign Phishing Security Categories Category ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.categories.name
+      description: Campaign Phishing Security Categories Name
+      type: String
+    - contextPath: KMSAT.CampaignPST.template.id
+      description: Campaign Phishing Security Template ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.template.name
+      description: Campaign Phishing Security Template Name
+      type: String
+    - contextPath: KMSAT.CampaignPST.landing_page.id
+      description: Campaign Phishing Security Landing Page ID
+      type: Number
+    - contextPath: KMSAT.CampaignPST.landing_page.name
+      description: Campaign Phishing Security Landing Page Name
+      type: String
+    - contextPath: KMSAT.CampaignPST.scheduled_count
+      description: Campaign Phishing Security Scheduled Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.delivered_count
+      description: Campaign Phishing Security Delivered Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.opened_count
+      description: Campaign Phishing Security Opened Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.clicked_count
+      description: Campaign Phishing Security Clicked Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.replied_count
+      description: Campaign Phishing Security Replied Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.attachment_open_count
+      description: Campaign Phishing Security Attachment Open Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.macro_enabled_count
+      description: Campaign Phishing Security Macro Enabled Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.data_entered_count
+      description: Campaign Phishing Security Data Entered Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.qr_code_scanned_count
+      description: Campaign Phishing Security QR Code Scanned Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.reported_count
+      description: Campaign Phishing Security Reported Count
+      type: Number
+    - contextPath: KMSAT.CampaignPST.bounced_count
+      description: Campaign Phishing Security Bounced Count
+      type: Number
+    description: Returns All Campaign Phishing Security Tests (PSTs).
+  - name: kmsat-training-campaigns-list
+    arguments:
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.TrainingCampaigns.campaign_id
+      description: Training Campaigns Campaign ID
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.name
+      description: Training Campaigns Name
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.groups.group_id
+      description: Training Campaigns Groups ID
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.groups.name
+      description: "raining Campaigns Groups Name"
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.status
+      description: Training Campaigns Status
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.store_purchase_id
+      description: Training Campaigns Content Store Purchase ID
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.content.content_type
+      description: Training Campaigns Content Type
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.name
+      description: Training Campaigns Content Name
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.description
+      description: Training Campaigns Content Description
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.type
+      description: Training Campaigns Type
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.duration
+      description: Training Campaigns Duration
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.content.retired
+      description: Training Campaigns Retired
+      type: Boolean
+    - contextPath: KMSAT.TrainingCampaigns.content.retirement_date
+      description: Training Campaigns Retirement Date
+      type: Date
+    - contextPath: KMSAT.TrainingCampaigns.content.publish_date
+      description: Training Campaigns Publish Date
+      type: Date
+    - contextPath: KMSAT.TrainingCampaigns.content.publisher
+      description: Training Campaigns Publisher
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.purchase_date
+      description: Training Campaigns Purchase Date
+      type: Date
+    - contextPath: KMSAT.TrainingCampaigns.content.policy_url
+      description: Training Campaigns Policy URL
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.policy_id
+      description: Training Campaigns Policy ID
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.content.minimum_time
+      description: Training Campaigns Minimum Time
+      type: Number
+    - contextPath: KMSAT.TrainingCampaigns.content.default_language
+      description: Training Campaigns Default Language
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.content.published
+      description: Training Campaigns Published
+      type: Boolean
+    - contextPath: KMSAT.TrainingCampaigns.duration_type
+      description: Training Campaigns Duration Type
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.start_date
+      description: Training Campaigns Start Date
+      type: Date
+    - contextPath: KMSAT.TrainingCampaigns.end_date
+      description: Training Campaigns  End Date
+      type: Date
+    - contextPath: KMSAT.TrainingCampaigns.relative_duration
+      description: Training Campaigns Relative Duration
+      type: String
+    - contextPath: KMSAT.TrainingCampaigns.auto_enroll
+      description: Training Campaigns Auto Enroll
+      type: Boolean
+    - contextPath: KMSAT.TrainingCampaigns.allow_multiple_enrollments
+      description: Training Campaigns Allow Multiple Enrollments
+      type: Boolean
+    - contextPath: KMSAT.TrainingCampaigns.completion_percentage
+      description: Training Campaigns Completion Percentage
+      type: Number
+    description: Returns All Training Campaigns.
+  - name: kmsat-training-enrollments-list
+    arguments:
+    - name: status
+      description: Status
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.TrainingEnrollments.data.enrollment_id
+      description: Training Enrollments Enrollment ID
+      type: Number
+    - contextPath: KMSAT.TrainingEnrollments.data.content_type
+      description: Training Enrollments Content Type
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.module_name
+      description: Training Enrollments Module Name
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.user.id
+      description: Training Enrollments User ID
+      type: Number
+    - contextPath: KMSAT.TrainingEnrollments.data.user.first_name
+      description: Training Enrollments User First Name
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.user.last_name
+      description: Training Enrollments Last Name
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.user.email
+      description: Training Enrollments User Email
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.campaign_name
+      description: Training Enrollments Campaign Name
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.enrollment_date
+      description: Training Enrollments Enrollment Date
+      type: Date
+    - contextPath: KMSAT.TrainingEnrollments.data.start_date
+      description: Training Enrollments Start Date
+      type: Date
+    - contextPath: KMSAT.TrainingEnrollments.data.completion_date
+      description: Training Enrollments Completion Date
+      type: Date
+    - contextPath: KMSAT.TrainingEnrollments.data.status
+      description: Training Enrollments Status
+      type: String
+    - contextPath: KMSAT.TrainingEnrollments.data.time_spent
+      description: Training Enrollments Time Spent
+      type: Number
+    - contextPath: KMSAT.TrainingEnrollments.data.policy_acknowledged
+      description: Training Enrollments Policy Acknowledged
+      type: Boolean
+    - contextPath: KMSAT.TrainingEnrollments.meta.paging_end
+      description: Training Enrollments Meta Page End
+      type: Boolean
+    - contextPath: KMSAT.TrainingEnrollments.meta.filtered_items_in_page
+      description: Training Enrollments Meta Filtered Items
+      type: Number
+    - contextPath: KMSAT.TrainingEnrollments.meta.items_total
+      description: Training Enrollments Meta Items Total
+      type: Number
+    description: Returns all Training Enrollments
+  - name: kmsat-user-events-list
+    arguments:
+    - name: event_type
+      description: Filter by Event Type
+    - name: target_user
+      description: Filter by User
+    - name: external_id
+      description: Filter by External ID
+    - name: source
+      description: Filter by Source
+    - name: occurred_date
+      description: Filter by Occurred Date (YYYY-MM-DD)
+    - name: risk_level
+      description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
+      auto: PREDEFINED
+      predefined:
+      - "-10"
+      - "-9"
+      - "-8"
+      - "-7"
+      - "-6"
+      - "-5"
+      - "-4"
+      - "-3"
+      - "-2"
+      - "-1"
+      - "-0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+    - name: risk_decay_mode
+      description: Filter by Risk Decay Mode by entering a value of 0 or 1
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+    - name: risk_expire_date
+      description: Filter by Risk Expire Date (YYYY-MM-DD)
+    - name: order_by
+      description: Order returned events by ID, Event Type, or Occurred Date ("id", "event_type", "occurred_date")
+    - name: order_direction
+      description: Order returned events in ascending (asc) or descending (desc) order ("asc", "desc")
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    outputs:
+    - contextPath: KMSAT.UserEvents.id
+      description: "Unique ID of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvents.user.email
+      description: "User email address"
+      type: String
+    - contextPath: KMSAT.UserEvents.user.id
+      description: "User ID"
+      type: Number
+    - contextPath: KMSAT.UserEvents.user.archived
+      description: "User Archived flag"
+      type: Boolean
+    - contextPath: KMSAT.UserEvents.external_id
+      description: "External ID of the event"
+      type: String
+    - contextPath: KMSAT.UserEvents.source
+      description: "Source of the event"
+      type: String
+    - contextPath: KMSAT.UserEvents.description
+      description: "Description of the event"
+      type: String
+    - contextPath: KMSAT.UserEvents.occurred_date
+      description: "When the event occurred"
+      type: Date
+    - contextPath: KMSAT.UserEvents.risk.level
+      description: "Risk Level of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvents.risk.factor
+      description: "Risk Factor of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvents.risk.decay_mode
+      description: "The Risk Level Decay Mode"
+      type: String
+    - contextPath: KMSAT.UserEvents.risk.expire_date
+      description: "Risk Expire Date"
+      type: String
+    - contextPath: KMSAT.UserEvents.event_type.id
+      description: "Event Type ID"
+      type: Number
+    - contextPath: KMSAT.UserEvents.event_type.name
+      description: "Event Type Name"
+      type: String
+    description: Returns all KMSAT User Events.
+  - name: kmsat-user-event-list
+    arguments:
+    - name: id
+      required: true
+      description: event ID
+    outputs:
+    - contextPath: KMSAT.UserEvent.id
+      description: "Unique ID of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvent.user.email
+      description: "User email address"
+      type: String
+    - contextPath: KMSAT.UserEvent.user.id
+      description: "User ID"
+      type: Number
+    - contextPath: KMSAT.UserEvent.user.archived
+      description: "User Archived flag"
+      type: Boolean
+    - contextPath: KMSAT.UserEvent.external_id
+      description: "External ID of the event"
+      type: String
+    - contextPath: KMSAT.UserEvent.source
+      description: "Source of the event"
+      type: String
+    - contextPath: KMSAT.UserEvent.description
+      description: "Description of the event"
+      type: String
+    - contextPath: KMSAT.UserEvent.occurred_date
+      description: "When the event occurred"
+      type: Date
+    - contextPath: KMSAT.UserEvent.risk.level
+      description: "Risk Level of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvent.risk.factor
+      description: "Risk Factor of the event"
+      type: Number
+    - contextPath: KMSAT.UserEvent.risk.decay_mode
+      description: "The Risk Level Decay Mode"
+      type: String
+    - contextPath: KMSAT.UserEvent.risk.expire_date
+      description: "Risk Expire Date"
+      type: String
+    - contextPath: KMSAT.UserEvent.event_type.id
+      description: "Event Type ID"
+      type: Number
+    - contextPath: KMSAT.UserEvent.event_type.name
+      description: "Event Type Name"
+      type: String
+    description: Returns a KMSAT User Event.
+  - name: kmsat-user-event-types-list
+    arguments:
+    - name: name
+      description: Filter by name of the event type
+    outputs:
+    - contextPath: KMSAT.UserEventTypes.id
+      description: "ID of the Event Type"
+      type: Number
+    - contextPath: KMSAT.UserEventTypes.account_id
+      description: "Account ID"
+      type: Number
+    - contextPath: KMSAT.UserEventTypes.name
+      description: "Name of the Event Type"
+      type: String
+    - contextPath: KMSAT.UserEventTypes.description
+      description: "Description of Event Type"
+      type: String
+    description: Returns all KMSAT User Event Types
+  - name: kmsat-user-event-create
+    arguments:
+    - name: target_user
+      description: User's email address
+      required: true
+    - name: event_type
+      description: If the event type does not already exist, the value entered here will be used to create a new event type.
+      required: true
+    - name: external_id
+      description: Include a custom External ID.
+    - name: source
+      description: Include a custom Source
+    - name: description
+      description: Description of the Event
+    - name: occurred_date
+      description: (YYYY-MM-DD) If a date is not set, this field will default to the current time (UTC).
+    - name: risk_level
+      description: Assign a value from -10 (low risk) to 10 (high risk).
+      auto: PREDEFINED
+      predefined:
+      - "-10"
+      - "-9"
+      - "-8"
+      - "-7"
+      - "-6"
+      - "-5"
+      - "-4"
+      - "-3"
+      - "-2"
+      - "-1"
+      - "-0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+    - name: risk_decay_mode
+      auto: PREDEFINED
+      description: Assign a value of 0 or 1.
+      predefined:
+      - "0"
+      - "1"
+    - name: risk_expire_date
+      description: (YYYY-MM-DD) If a date is not set, this field will default to the occurred_date plus one (1) month.
+    outputs:
+    - contextPath: KMSAT.UserEventCreate.id
+      description: "Unique ID of the event"
+      type: Number
+    description: Adds a User Event
+  - name: kmsat-user-event-delete
+    arguments:
+    - name: id
+      description: Event ID
+      required: true
+    description: Deletes User Event by Event ID
+  - name: kmsat-user-event-status-list
+    arguments:
+    - name: id
+      description: Request Event ID from kmsat-user-event-create
+      required: true
+    outputs:
+    - contextPath: KMSAT.UserEventStatus.id
+      description: "ID of the Event Type"
+      type: Number
+    - contextPath: KMSAT.UserEventTypes.details
+      description: "Details of event request including event id and any failures"
+      type: Object
+    - contextPath: KMSAT.UserEventTypes.details.events
+      description: "list of event ids"
+      type: Array
+    - contextPath: KMSAT.UserEventTypes.details.failures
+      description: "list of failures"
+      type: Array
+    - contextPath: KMSAT.UserEventTypes.processed
+      description: "date the event was processed"
+      type: Date
+    - contextPath: KMSAT.UserEventTypes.api_key
+      description: "api key name of the request"
+      type: String
+    description: returns the status of the User Event request
+  - name: kmsat-user-event-statuses-list
+    arguments:
+    - name: processed
+      description: The date and time the API request was processed.
+    - name: page
+      required: true
+      description: Page Number
+    - name: per_page
+      description: Per Page Amount
+    description: returns the status of the User Event request
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

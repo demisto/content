@@ -1,0 +1,29 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "7fa10cdb-238f-4c0b-8499-018fee6a7914",
+    "isPredefined": true,
+    "name": "Use Case Backlog Time",
+    "params": {
+        "keys": [
+            "sum|usecasebacklogtimer.totalDuration"
+        ]
+    },
+    "query": "-category:job type:\"Use Case Builder\"",
+    "version": -1,
+    "widgetType": "duration",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

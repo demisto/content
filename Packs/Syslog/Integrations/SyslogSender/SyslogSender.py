@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
 
 from contextlib import contextmanager
@@ -16,9 +15,7 @@ from rfc5424logging import Rfc5424SysLogHandler
 import socket
 import ssl
 
-
 ''' CONSTANTS '''
-
 
 PLAYGROUND_INVESTIGATION_TYPE = 9
 INCIDENT_OPENED = 'incidentOpened'
@@ -108,7 +105,7 @@ class SyslogHandlerTLS(logging.Handler):
         The record is formatted, and then sent to the syslog server. If
         exception information is present, it is NOT sent to the server.
         """
-        ident = ''          # prepended to all messages
+        ident = ''  # prepended to all messages
         try:
             msg = self.format(record)
             if ident:
@@ -256,7 +253,7 @@ def send_log(manager: SyslogManager, message: str, log_level: str):
     :param message: The message to send
     :param log_level: The logging level
     """
-    with manager.get_logger() as syslog_logger:   # type: Logger
+    with manager.get_logger() as syslog_logger:  # type: Logger
         if log_level == 'DEBUG':
             syslog_logger.debug(message)
         if log_level == 'INFO':
@@ -384,12 +381,16 @@ def main():
         error_message = f"The following error was thrown: {exception_msg} "
         if 'PEM lib (_ssl.c:4123)' in exception_msg:
             error_message += 'Potential causes could include: ' \
-                'That the certificate is not in the correct format (e.g. it\'s not in PEM format)- '\
-                'Make sure to insert the Certificate was insert correctly. ' \
-                'or, The certificate is expired or otherwise invalid'
+                             'That the certificate is not in the correct format (e.g. it\'s not in PEM format)- ' \
+                             'Make sure to insert the Certificate was insert correctly. ' \
+                             'or, The certificate is expired or otherwise invalid'
         elif 'CERTIFICATE_VERIFY_FAILED' in exception_msg:
             error_message += 'If the certificate is self sign, make sure to check the Self Signed Certificate button.' \
-                'Otherwise, The certificate is not trusted by the system or by the client trying to establish the connection'
+                             'Otherwise, The certificate is not trusted by the system or by the client trying to' \
+                             ' establish the connection'
+        elif 'UnicodeError: label too long' in exception_msg:
+            error_message += '\nPotential cause could be too long URL label, which means  there is a part of the' \
+                             ' URL between two dots that is longer than 64 chars.'
         raise DemistoException(error_message)
 
 

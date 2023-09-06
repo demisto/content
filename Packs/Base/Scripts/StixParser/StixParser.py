@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import tempfile
 from typing import Tuple
 
 from lxml import etree
-import demistomock as demisto
-from CommonServerPython import *
 from bs4 import BeautifulSoup
 import dateutil.parser
 from netaddr import IPNetwork

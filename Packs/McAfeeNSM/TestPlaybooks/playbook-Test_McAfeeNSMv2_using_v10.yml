@@ -1,0 +1,1288 @@
+id: Test_McAfeeNSMv2_using_v10
+version: -1
+name: Test_McAfeeNSMv2_using_v10
+description: |-
+  A test playbook for McAfee NSM v2
+  This test can only be run on a V10 instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6868c64d-24d2-4688-8f2f-104bd5e9c3a2
+    type: start
+    task:
+      id: 6868c64d-24d2-4688-8f2f-104bd5e9c3a2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d06ea924-174b-4e7b-8e3c-aba7e9477556
+    type: regular
+    task:
+      id: d06ea924-174b-4e7b-8e3c-aba7e9477556
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f835d715-eab5-4703-8f32-71f75022f7c0
+    type: title
+    task:
+      id: f835d715-eab5-4703-8f32-71f75022f7c0
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 3b24fc6f-c2c9-4953-8ede-fa19a5d64b68
+    type: regular
+    task:
+      id: 3b24fc6f-c2c9-4953-8ede-fa19a5d64b68
+      version: -1
+      name: List device interface
+      description: List the interfaces related to a given device.
+      script: "|||nsm-list-device-interface"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "55"
+    scriptarguments:
+      device_id:
+        simple: "1003"
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 41266aaf-368a-496c-8089-9df6cf111a17
+    type: condition
+    task:
+      id: 41266aaf-368a-496c-8089-9df6cf111a17
+      version: -1
+      name: Verify device interfaces were returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Interface
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: d5bcdd18-938a-4e8b-81fb-a278b1513d8b
+    type: regular
+    task:
+      id: d5bcdd18-938a-4e8b-81fb-a278b1513d8b
+      version: -1
+      name: List domain device
+      description: List the devices related to a given domain.
+      script: "|||nsm-list-domain-device"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "57"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: cff0f829-2c43-4ed8-8f7b-fb87194c917c
+    type: condition
+    task:
+      id: cff0f829-2c43-4ed8-8f7b-fb87194c917c
+      version: -1
+      name: Verify devices were returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Device
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 46fc57bd-ecad-49ac-84a5-e1ff729b9713
+    type: regular
+    task:
+      id: 46fc57bd-ecad-49ac-84a5-e1ff729b9713
+      version: -1
+      name: List device policy
+      description: List all the policies assigned to a domain or a specific device.
+      script: "|||nsm-list-device-policy"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "59"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 46f65cef-8cb6-4c37-832b-28dbf3817a04
+    type: condition
+    task:
+      id: 46f65cef-8cb6-4c37-832b-28dbf3817a04
+      version: -1
+      name: Verify device policies were returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: DevicePolicy
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 17ff4cda-1894-4cd9-8165-4876034efec6
+    type: regular
+    task:
+      id: 17ff4cda-1894-4cd9-8165-4876034efec6
+      version: -1
+      name: List interface policy
+      description: List all the policies assigned to all interfaces or a specific interface.
+      script: "|||nsm-list-interface-policy"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "61"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 7043a03c-fb6a-4209-8591-2b6c5db17186
+    type: condition
+    task:
+      id: 7043a03c-fb6a-4209-8591-2b6c5db17186
+      version: -1
+      name: Verify interface policies were returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: InterfacePolicy
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f41d8706-f55b-41d9-8c4e-d4c2fa8f3757
+    type: regular
+    task:
+      id: f41d8706-f55b-41d9-8c4e-d4c2fa8f3757
+      version: -1
+      name: Assign device policy
+      description: Assign a policy to a specific device.
+      script: "|||nsm-assign-device-policy"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "72"
+    scriptarguments:
+      device_id:
+        simple: "1003"
+      domain_id:
+        simple: "0"
+      pre_firewall_policy_name:
+        simple: Test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: e896f8af-56f0-4379-8a4d-b1116370413e
+    type: regular
+    task:
+      id: e896f8af-56f0-4379-8a4d-b1116370413e
+      version: -1
+      name: Get device configuration
+      description: Provides configuration information of a given device.
+      script: "|||nsm-get-device-configuration"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "75"
+    scriptarguments:
+      device_id:
+        simple: "1003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 3bc82b90-e43e-4685-872b-09d775cc233c
+    type: regular
+    task:
+      id: 3bc82b90-e43e-4685-872b-09d775cc233c
+      version: -1
+      name: Deploy the pending change
+      description: |-
+        Deploy the pending changes.
+         Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
+        To get the pending changes, use the !nsm-get-device-configuration command.
+      script: "|||nsm-deploy-device-configuration"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "73"
+    scriptarguments:
+      device_id:
+        simple: "1003"
+      interval_in_seconds:
+        simple: "10"
+      push_configuration_signature_set:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 0de8ad1c-e77e-4732-899e-f118209c497d
+    type: regular
+    task:
+      id: 0de8ad1c-e77e-4732-899e-f118209c497d
+      version: -1
+      name: Assign interface policy
+      description: Assign a policy to a specific interface.
+      script: "|||nsm-assign-interface-policy"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "74"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+      interface_id:
+        simple: "103"
+      ips_policy_name:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 7d4f6a12-9ee7-4685-8709-dd3cccf51f78
+    type: regular
+    task:
+      id: 7d4f6a12-9ee7-4685-8709-dd3cccf51f78
+      version: -1
+      name: Verify the human readable was  a success message
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "65"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: successfully
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 7f149131-4e1e-468d-8317-ace6d9b57d52
+    type: regular
+    task:
+      id: 7f149131-4e1e-468d-8317-ace6d9b57d52
+      version: -1
+      name: Verify the human readable was  as expected
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "68"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 2d3d1b4a-d3d6-436f-8f2b-c16ff3447ad4
+    type: regular
+    task:
+      id: 2d3d1b4a-d3d6-436f-8f2b-c16ff3447ad4
+      version: -1
+      name: Verify the human readable was  a success message
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "63"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: successfully
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: b6de2fac-79cf-474f-8f61-db81a34b092b
+    type: condition
+    task:
+      id: b6de2fac-79cf-474f-8f61-db81a34b092b
+      version: -1
+      name: Verify configuration was returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: DeviceConfiguration
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 92071ef2-819d-47be-8977-f2710b62dd53
+    type: regular
+    task:
+      id: 92071ef2-819d-47be-8977-f2710b62dd53
+      version: -1
+      name: List domain rule object
+      description: Gets the list of rule objects defined in a particular domain.
+      script: "|||nsm-list-domain-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "77"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 81b005f8-db26-4196-8e24-bb7f5ead84dc
+    type: condition
+    task:
+      id: 81b005f8-db26-4196-8e24-bb7f5ead84dc
+      version: -1
+      name: Verify the results are modified to fit v9
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule.Network_IPV_4.networkIPV4List
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.Network_IPV_4.networkIPV4List
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.0.0/16
+                accessor: "[0]"
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.0.0/16
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: e085b10e-89cd-4d22-8bab-275d721cccd1
+    type: regular
+    task:
+      id: e085b10e-89cd-4d22-8bab-275d721cccd1
+      version: -1
+      name: Get rule object
+      description: Gets the details of a rule object.
+      script: "|||nsm-get-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "79"
+    scriptarguments:
+      rule_id:
+        simple: "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: b34d1f34-3271-4b13-8d34-32ad3d5028b3
+    type: condition
+    task:
+      id: b34d1f34-3271-4b13-8d34-32ad3d5028b3
+      version: -1
+      name: Verify the results are modified to fit v9
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      condition-1:
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: condition-1
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.Network_IPV_4.networkIPV4List
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.0.0/16
+                accessor: "[0].Network_IPV_4.networkIPV4List.[0]"
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.0.0/16
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: d4b0b469-9523-4bb8-8ab3-560d6e31d557
+    type: regular
+    task:
+      id: d4b0b469-9523-4bb8-8ab3-560d6e31d557
+      version: -1
+      name: create rule object
+      description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
+      script: "|||nsm-create-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "85"
+    scriptarguments:
+      address_ip_v.4:
+        simple: 1.1.1.1
+      domain:
+        simple: "0"
+      name:
+        simple: test_playbook
+      rule_object_type:
+        simple: Endpoint IP V.4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 6860deee-c5db-40a2-8311-7b8007c46ea2
+    type: regular
+    task:
+      id: 6860deee-c5db-40a2-8311-7b8007c46ea2
+      version: -1
+      name: delete rule object
+      description: Deletes a rule object.
+      script: "|||nsm-delete-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "14"
+    scriptarguments:
+      rule_id:
+        complex:
+          root: aaa
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: c812c204-1d33-4853-8b93-53b3710a4daa
+    type: regular
+    task:
+      id: c812c204-1d33-4853-8b93-53b3710a4daa
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "78"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: b95e4ff7-2004-426a-853c-59b9f98cc313
+    type: regular
+    task:
+      id: b95e4ff7-2004-426a-853c-59b9f98cc313
+      version: -1
+      name: List domain rule object
+      description: Gets the list of rule objects defined in a particular domain.
+      script: "|||nsm-list-domain-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "86"
+    scriptarguments:
+      domain_id:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 410d3b8d-6f6e-4d33-8a6e-7bacf435c970
+    type: regular
+    task:
+      id: 410d3b8d-6f6e-4d33-8a6e-7bacf435c970
+      version: -1
+      name: Save the rule id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "87"
+    scriptarguments:
+      key:
+        simple: aaa
+      value:
+        complex:
+          root: NSM.Rule
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: NSM.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook
+          accessor: ruleobjId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 28543d9f-dae2-4b0d-801d-da8d2ad3f933
+    type: regular
+    task:
+      id: 28543d9f-dae2-4b0d-801d-da8d2ad3f933
+      version: -1
+      name: Update rule object
+      description: Updates a Rule object. In case of address rule update, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
+      script: "|||nsm-update-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "88"
+    scriptarguments:
+      address_ip_v.4:
+        simple: 3.3.3.3
+      domain:
+        simple: "0"
+      is_overwrite:
+        simple: "true"
+      name:
+        simple: test_playbook_change
+      rule_id:
+        complex:
+          root: aaa
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 4642fd60-0520-4bec-80d1-9f9aacac9cac
+    type: regular
+    task:
+      id: 4642fd60-0520-4bec-80d1-9f9aacac9cac
+      version: -1
+      name: Get rule object
+      description: Gets the details of a rule object.
+      script: "|||nsm-get-rule-object"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "89"
+    scriptarguments:
+      rule_id:
+        complex:
+          root: aaa
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: d2e081e6-7a23-4f5b-8df3-1417fc177c76
+    type: condition
+    task:
+      id: d2e081e6-7a23-4f5b-8df3-1417fc177c76
+      version: -1
+      name: Verify the rule object name was updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test_playbook_change
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_change
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 6f1321c3-828a-4458-8559-772525edc99a
+    type: condition
+    task:
+      id: 6f1321c3-828a-4458-8559-772525edc99a
+      version: -1
+      name: Verify the rule object address was updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: NSM.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test_playbook_change
+                accessor: HostIPv4.hostIPv4AddressList.[0]
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5460,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

@@ -1,6 +1,6 @@
-import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import boto3
 
 import urllib3.util
 from datetime import timezone
@@ -491,6 +491,50 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     return kwargs
 
 
+def is_advanced_filters_contain_all_fields(filters_list: list) -> bool:
+    """
+    Check if all the filters in the list contain the fields "name", "value", and "comparison".
+
+    Args:
+        filters_list (list): A list of filters.
+
+    Returns:
+        bool: True if all the filters contain the fields "name", "value", and "comparison", False otherwise.
+    """
+    return all(
+        "name" in filter_str
+        and "value" in filter_str
+        and "comparison" in filter_str
+        for filter_str in filters_list
+    )
+
+
+def is_advanced_filter_fields_in_right_order(filters_list: list) -> bool:
+    """
+    Check if the fields "name", "value", and "comparison" appear in the correct order in each filter string in the list.
+
+    Args:
+        filters_list (list): A list of filter strings.
+
+    Returns:
+        bool: True if the fields "name", "value", and "comparison" appear in the correct order
+        in each filter string in the list, False otherwise.
+    """
+    for filter_str in filters_list:
+        name_index = filter_str.find('name=')
+        value_index = filter_str.find('value=')
+        comparison_index = filter_str.find('comparison=')
+        if not name_index < value_index < comparison_index:
+            return False
+    return True
+
+
+def is_valid_advanced_filters(string_filters: str) -> bool:
+    filters_list = string_filters.split(';')
+    return is_advanced_filters_contain_all_fields(filters_list)\
+        and is_advanced_filter_fields_in_right_order(filters_list)
+
+
 def parse_filter_field(string_filters) -> dict:
     """
     Parses string with sets of name, value and comparison into a dict
@@ -500,20 +544,19 @@ def parse_filter_field(string_filters) -> dict:
     Returns:
         A dict of the form {<name1>:[{'Value': <value1>, 'Comparison': <comparison1>}],<name2>:[{...}]}
     """
-    filters = {}
-    regex = re.compile(r'name=([\w\d_:.-]+),value=([\w\d_:.-]*),comparison=([ /\w\d@_,.\*-]+)', flags=re.I)
-    regex_parse_result = regex.findall(string_filters)
-    if regex_parse_result:
-        for name, value, comparison in regex_parse_result:
-            filters.update({
-                name: [{
-                    'Value': value,
-                    'Comparison': comparison.upper()
-                }]
-            })
+    filters: dict = {}
+    if is_valid_advanced_filters(string_filters):
+        try:
+            filters_list = string_filters.split(';')
+            filters = {split_str[0].split('=')[1]: [{'Value': split_str[1].split('=')[1],
+                                                    'Comparison':split_str[2].split('=')[1].upper()}]
+                       for split_str in [filter_str.split(',') for filter_str in filters_list]}
+        except Exception:
+            demisto.error(f'Failed parsing filters: {string_filters}\n error: {Exception}')
     else:
-        demisto.info(f'could not parse filter: {string_filters}')
-
+        demisto.info(f'Advanced filters does not contain all fields or fields are not in\
+            the correct order: name,value,comparison: {string_filters}\
+            Will run with an empty filter.')
     return filters
 
 
@@ -637,6 +680,8 @@ def enable_security_hub_command(client, args):
 def get_master_account_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.get_master_account(**kwargs)
+    if 'Master' in response:
+        response['Master'] = convert_members_date_type([response.get('Master')])
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
     table_header = 'AWS SecurityHub GetMasterAccount'
@@ -824,7 +869,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
                         'next_token': next_token})
     demisto.incidents(incidents)
 
-    if archive_findings:
+    if archive_findings and findings:
         kwargs = {
             'FindingIdentifiers': [
                 {'Id': finding['Id'], 'ProductArn': finding['ProductArn']} for finding in findings
@@ -841,7 +886,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
-def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:  # type: ignore
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -868,7 +913,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
             }
         ]
     }
-    response = client.get_findings(Filters=filters)
+    response = client.get_findings(Filters=filters)  # type: ignore
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     incident_last_update = finding.get('UpdatedAt', '')
@@ -899,7 +944,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:  # type: ignore
     """
     Mirrors out local changes to the remote system.
     Args:
@@ -953,7 +998,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
 
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
-        response = client.batch_update_findings(**kwargs)
+        response = client.batch_update_findings(**kwargs)   # type: ignore
         demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
@@ -964,6 +1009,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok', {}, {}
+    return 'Failed to execute test-module command', {}, {}
 
 
 def main():  # pragma: no cover
@@ -990,13 +1036,15 @@ def main():  # pragma: no cover
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
     resolve_findings = params.get('resolve_finding')
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries)
+                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         client = aws_client.aws_session(
             service='securityhub',
             region=args.get('region'),

@@ -1,6 +1,6 @@
-import asana
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import asana
 
 
 def get_asana_client(token):

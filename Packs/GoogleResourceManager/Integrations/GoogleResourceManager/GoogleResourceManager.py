@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import time
 import urllib.parse
@@ -7,8 +9,6 @@ import googleapiclient
 from oauth2client import service_account
 from googleapiclient import discovery
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
@@ -18,10 +18,10 @@ from CommonServerPython import *  # noqa: F401
 # Params for assembling object of the Service Account Credentials File Contents
 PARAMS = demisto.params()
 SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id')
-PRIVATE_KEY_ID = PARAMS.get('private_key_id')
-PRIVATE_KEY = PARAMS.get('private_key')
-CLIENT_EMAIL = PARAMS.get('client_email')
-CLIENT_ID = PARAMS.get('client_id')
+PRIVATE_KEY_ID = PARAMS.get('private_key_id_creds', {}).get('password') or PARAMS.get('private_key_id')
+PRIVATE_KEY = PARAMS.get('private_key_creds', {}).get('password') or PARAMS.get('private_key')
+CLIENT_EMAIL = PARAMS.get('client_email_creds', {}).get('identifier') or PARAMS.get('client_email')
+CLIENT_ID = PARAMS.get('client_email_creds', {}).get('password') or PARAMS.get('client_id')
 CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url')
 PROXY = PARAMS.get('proxy')
 DISABLE_SSL = PARAMS.get('insecure')

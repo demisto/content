@@ -1,0 +1,58 @@
+[MODEL: dataset=microsoft_defender_cloud_apps_raw]
+filter event_type_name = "activities_login"
+| alter activityResult_isSuccess = json_extract_scalar(mainInfo, "$.activityResult.isSuccess"),
+        outcome = coalesce(json_extract_scalar(rawDataJson, "$.LoginStatus"), json_extract_scalar(mainInfo, "$.type"))
+| alter outcome = if(outcome = "login" and activityResult_isSuccess = "true", "success", outcome = "login" and activityResult_isSuccess = "false", "failure", lowercase(outcome))
+| alter xdm.event.id = to_string(idValue),
+        xdm.event.type = event_type_name,
+        xdm.source.ipv4 = json_extract_scalar(device, "$.clientIP"),
+        xdm.source.user_agent = json_extract_scalar(device, "$.userAgent"),
+        xdm.source.location.country = json_extract_scalar(location, "$.countryCode"),
+        xdm.source.location.city = json_extract_scalar(location, "$.city"),
+        xdm.source.location.region = json_extract_scalar(location, "$.region"),
+        xdm.source.location.longitude = to_float(json_extract_scalar(location, "$.longitude")),
+        xdm.source.location.latitude = to_float(json_extract_scalar(location, "$.latitude")),
+        xdm.event.outcome = if(outcome ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome ~= "success", XDM_CONST.OUTCOME_SUCCESS, outcome = null, null, to_string(outcome)),
+        xdm.event.outcome_reason = json_extract_scalar(mainInfo, "$.activityResult.message"),
+        xdm.source.user.username = coalesce(json_extract_scalar(user , "$.userName"),json_extract_scalar(rawDataJson , "$.Upn")),
+        xdm.source.application.name = appName,
+        xdm.event.description = description,
+        xdm.alert.severity = severity;
+filter event_type_name = "activities_admin"
+| alter outcome = lowercase(json_extract_scalar(rawDataJson, "$.ResultStatus"))
+| alter xdm.event.id = to_string(idValue),
+        xdm.event.type = event_type_name,
+        xdm.event.operation_sub_type = eventTypeValue,
+        xdm.event.description = description,
+        xdm.source.ipv4 = json_extract_scalar(device, "$.clientIP"),
+        xdm.source.user_agent = json_extract_scalar(device, "$.userAgent"),
+        xdm.source.location.country = json_extract_scalar(location, "$.countryCode"),
+        xdm.source.location.city = json_extract_scalar(location, "$.city"),
+        xdm.source.location.region = json_extract_scalar(location, "$.region"),
+        xdm.event.operation = json_extract_scalar(mainInfo, "$.prettyOperationName"),
+        xdm.source.process.command_line = concat(json_extract_scalar(mainInfo, "$.prettyOperationName"), " ",json_extract_scalar(rawDataJson ,"$.Parameters")),
+        xdm.event.outcome = if(outcome ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome ~= "success", XDM_CONST.OUTCOME_SUCCESS, outcome ~= "error", XDM_CONST.OUTCOME_PARTIAL, outcome = null, null, to_string(outcome)),        
+        xdm.target.resource.id = json_extract_scalar(rawDataJson, "$.ObjectId"),
+        xdm.source.user.identifier = json_extract_scalar(rawDataJson, "$.UserId"),
+        xdm.source.user.username = json_extract_scalar(user, "$.userName"),
+        xdm.alert.severity = severity,
+        xdm.source.application.name= appName;
+filter event_type_name = "alerts"
+| alter entities_string = to_string(entities)
+| alter username_1 = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"user\",\s*\"label\":\s*\"([^\"]+)\","),0)),
+        username_2 = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"account\",\s*\"label\":\s*\"[^\"]+\",\s*\"id\":\s*\"[^\"]+\",\s*\"pa\":\s*\"([^\"]+)\","),0))
+| alter xdm.event.id = to_string(idValue),
+        xdm.event.type = event_type_name,
+        xdm.alert.severity = if(severityValue=0, "LOW", severityValue=1, "MEDIUM", severityValue=2, "HIGH", severityValue=3, "INFORMATIONAL"),
+        xdm.observer.action = if(resolutionStatusValue=0, "OPEN", resolutionStatusValue=1, "DISMISSED", resolutionStatusValue=2, "RESOLVED", resolutionStatusValue=3, "FALSE_POSITIVE", resolutionStatusValue=4, "BENIGN", resolutionStatusValue=5, "TRUE_POSITIVE"),
+        xdm.alert.name = title,
+        xdm.alert.description = description,
+        xdm.source.user.username = coalesce(username_1, username_2),
+        xdm.source.user.first_name = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"account\",\s*\"label\":\s*\"([^\s]+)\s[^\"^\s]+\""),0)),
+        xdm.source.user.last_name = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"account\",\s*\"label\":\s*\"[^\s]+\s([^\"^\s]+)\""),0)),
+        xdm.source.application.name = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"service\",\s*\"label\":\s*\"([^\"]+)\""),0)),
+        xdm.source.host.ipv4_addresses = regextract(entities_string, "\"type\":\s*\"ip\",\s*\"label\":\s*\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\""),
+        xdm.source.host.ipv6_addresses = regextract(entities_string, "\"type\":\s*\"ip\",\s*\"label\":\s*\"([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})\""),
+        xdm.alert.subcategory = to_string(arrayindex(regextract(entities_string, "\"type\":\s*\"policyRule\",\s*\"label\":\s*\"[^\"]*\",\s*\"id\":\s*\"[^\"]*\",\s*\"policyType\":\s*\"([^\"]+)\""),0)),
+        xdm.alert.mitre_tactics = arraymap(json_extract_array(evidence  ,"$."), json_extract_scalar("@element", "$.title.parameters.tactic")),
+        xdm.alert.mitre_techniques = arraymap(json_extract_array(evidence  ,"$."), json_extract_scalar("@element", "$.title.parameters.technique_id"));

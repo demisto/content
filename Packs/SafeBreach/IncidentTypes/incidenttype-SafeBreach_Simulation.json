@@ -1,6 +1,5 @@
 {
     "autorun": false,
-    "closureScript": "",
     "color": "#18DEE5",
     "days": 0,
     "daysR": 0,
@@ -11,10 +10,8 @@
     "id": "SafeBreach Simulation",
     "locked": false,
     "name": "SafeBreach Simulation",
-    "preProcessingScript": "",
     "readonly": false,
     "reputationCalc": 0,
-    "sortValues": null,
     "system": false,
     "version": -1,
     "weeks": 0,

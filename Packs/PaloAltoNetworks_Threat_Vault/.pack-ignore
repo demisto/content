@@ -2,12 +2,13 @@
 ignore=RM104
 
 [file:Threat_Vault.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109
 
 [file:ThreatVaultv2.yml]
-ignore=IN145,IN126
+ignore=IN126
 
 [known_words]
-ThreatVault
+threatvault
 md
-RTDNS
+rtdns
+

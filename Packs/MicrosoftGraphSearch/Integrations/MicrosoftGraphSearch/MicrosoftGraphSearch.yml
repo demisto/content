@@ -1,0 +1,93 @@
+category: Cloud Services
+commonfields:
+  id: Microsoft Graph Search
+  version: -1
+configuration:
+- display: ""
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  name: creds_auth_id
+  required: true
+  type: 9
+- display: ""
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  name: creds_refresh_token
+  required: true
+  type: 9
+- display: ""
+  displaypassword: Key or Client Secret (can be used instead of Certificate Thumbprint and Private Key)
+  hiddenusername: true
+  name: creds_enc_key
+  type: 9
+  required: false
+- display: Certificate Thumbprint (can be used instead of Client Secret)
+  displaypassword: Private Key
+  name: creds_certificate
+  type: 9
+  required: false
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  hidden: true
+  name: private_key
+  type: 14
+  required: false
+- display: ""
+  displaypassword: Authorization code (run msgraph-generate-login-url command)
+  hiddenusername: true
+  name: creds_auth_code
+  type: 9
+  required: false
+- display: Application redirect URI
+  name: redirect_uri
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
+display: Microsoft Graph Search
+name: Microsoft Graph Search
+script:
+  commands:
+  - arguments: []
+    description: Tests connectivity.
+    name: msgraph-search-test
+  - arguments:
+    - description: Represents a (text string) search query that contains search terms and optional filters.
+      name: query_string
+      required: true
+      type: unknown
+    - auto: PREDEFINED
+      description: 'One or more types of resources expected in the response. '
+      name: entity_type
+      predefined:
+      - list
+      - site
+      - listItem
+      - message
+      - event
+      - drive
+      - driveItem
+      - externalItem
+      required: true
+    description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
+    name: msgraph-search-content
+    outputs:
+    - contextPath: SearchContent
+      description: OneDrive or SharePoint content returned from the search
+  - name: msgraph-search-generate-login-url
+    arguments: []
+    description: Generate the login url used for Authorization code flow.
+  dockerimage: demisto/crypto:1.0.0.66562
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

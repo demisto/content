@@ -139,7 +139,6 @@ script:
       description: SQL Statement
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
-hidden: false
 tests:
 - No tests - test was moved to NonCircleTests
 fromversion: 5.0.0

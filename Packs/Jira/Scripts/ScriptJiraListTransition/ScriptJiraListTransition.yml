@@ -9,11 +9,10 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 comment: |-
-  This script lists all possible transitions for a given issue.
+  This script lists all possible transitions for a given Jira issue.
 runas: DBotWeakRole
 tests:
-- Jira-v2-Test
+- No tests

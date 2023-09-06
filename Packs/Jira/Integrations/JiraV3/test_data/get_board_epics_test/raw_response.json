@@ -1,0 +1,29 @@
+{
+    "maxResults": 2,
+    "startAt": 0,
+    "isLast": true,
+    "values": [
+        {
+            "id": 21360,
+            "key": "COMPANYSA-1",
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21360",
+            "name": "Create Company Snoozing App",
+            "summary": "Start creating the company snoozing app",
+            "color": {
+                "key": "color_4"
+            },
+            "done": false
+        },
+        {
+            "id": 21424,
+            "key": "COMPANYSA-30",
+            "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/epic/21424",
+            "name": "New Epic",
+            "summary": "Issue for demo",
+            "color": {
+                "key": "color_3"
+            },
+            "done": false
+        }
+    ]
+}

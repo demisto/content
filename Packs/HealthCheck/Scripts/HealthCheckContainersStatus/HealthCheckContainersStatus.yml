@@ -9,7 +9,6 @@ outputs:
 - contextPath: containers
   description: Containers status table
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

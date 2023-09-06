@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 
-import demistomock as demisto  # noqa: F401
 import pyjq
-from CommonServerPython import *  # noqa: F401
 
 
 ''' MAIN FUNCTION '''

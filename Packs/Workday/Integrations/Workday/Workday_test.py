@@ -1,7 +1,7 @@
 import io
 import json
 import pytest
-from Workday import Client, list_workers_command, create_worker_context, convert_to_json
+from Workday import Client, list_workers_command, create_worker_context, convert_to_json, main
 
 from CommonServerPython import CommandResults
 
@@ -110,3 +110,33 @@ WORKER_CONTEXT_DATA = [{
         {'ID': 'PHONE_REFERENCE-3-14614', 'Phone_Number': '+966555055555', 'Type': 'Mobile', 'Usage': 'HOME'}],
     'Managers': [{'Manager_ID': '100700', 'Manager_Name': 'Manager 700'},
                  {'Manager_ID': '100600', 'Manager_Name': 'Manager 600'}]}]
+
+
+def test_api_request_returns_expected_data(mocker):
+    """
+    Given:
+    - Valid input parameters.
+    - A successful API request that returns expected data.
+    When:
+    - Calling the main function.
+    Then:
+    - Ensure the function properly handles the API request and returns the expected data.
+    """
+    import demistomock as demisto
+    import Workday
+    params = {
+        'credentials': {'identifier': 'user', 'password': 'pass'},
+        'base_url': 'https://test.com',
+        'cred_tenant_name': {'password': 'tenant'},
+        'insecure': False,
+        'proxy': False,
+        'cred_token': {'password': 'token'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='workday-list-workers')
+    mocker.patch.object(demisto, 'args', return_value={'page': '1', 'count': '1'})
+    mocker.patch.object(Client, 'list_workers', return_value=({}, [{'Worker_Data': {'Worker_ID': '123'}}]))
+    XML_RAW_RESPONSE = util_read_file('test_data/xml_raw_response.txt')
+    mocker.patch.object(client, '_http_request', return_value=XML_RAW_RESPONSE)
+    mocker.patch.object(Workday, 'create_worker_context', return_value=None)
+    main()

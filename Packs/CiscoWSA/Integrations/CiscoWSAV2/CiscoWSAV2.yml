@@ -1,0 +1,701 @@
+commonfields:
+  id: CiscoWSAv2
+  version: -1
+name: CiscoWSAv2
+display: Cisco WSA v2
+category: Network Security
+description: Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
+fromversion: 6.2.0
+configuration:
+- name: base_url
+  display: Server URL
+  required: true
+  type: 0
+- name: credentials
+  display: Username
+  required: true
+  type: 9
+  additionalinfo: ""
+  displaypassword: Password
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  type: python
+  subtype: python3
+  script: '-'
+  dockerimage: demisto/python3:3.10.13.72123
+  commands:
+  - name: cisco-wsa-access-policy-list
+    description: |-
+      Retrieve access policies.
+      Access policies contain allowed/blocked URL categories in the network.
+    arguments:
+    - name: policy_names
+      description: Policy names to retrieve.
+      isArray: true
+    - name: page
+      description: |-
+        The page number of the results to retrieve.
+        Minimum value is 1.
+    - name: page_size
+      description: The number of results per page. The maximum value is 100.
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_expiry
+      description: Policy expiry date.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_status
+      description: Policy status.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_description
+      description: Policy description.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.membership
+      description: Identification Profiles info.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.objects
+      description: Policy custom objects blocking settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.protocols_user_agents
+      description: Policy protocols and user agents settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.http_rewrite_profile
+      description: Policy HTTP rewrite profile settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.avc
+      description: Application visibility and control.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.url_filtering
+      description: URL filtering settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.amw_reputation
+      description: Anti-Malware and reputation settings.
+  - name: cisco-wsa-access-policy-create
+    description: |-
+      Create an access policy.
+      This command enables you to create the access policy object. To define more settings you can use the dependencies commands:
+      cisco-wsa-access-policy-protocols-user-agents-update (Update the Protocols and User Agents policy for access policy).
+      cisco-wsa-access-policy-url-filtering-update (Update the URL filtering policy for access policy).
+      cisco-wsa-access-policy-applications-update (Update the applications policy for access policy. Only applicable for global_policy).
+      cisco-wsa-access-policy-objects-update (Update the objects policy for access policy).
+      cisco-wsa-access-policy-anti-malware-update (Update the anti-malware policy for access policy).
+    arguments:
+    - name: policy_name
+      description: Policy name.
+      required: true
+    - name: policy_status
+      description: Policy status.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: policy_description
+      description: Policy description
+    - name: policy_order
+      description: Index of the policies in the collection.
+      required: true
+    - name: policy_expiry
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
+    - name: identification_profiles
+      description: Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.)
+      required: true
+      isArray: true
+  - name: cisco-wsa-access-policy-update
+    description: Update the access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: new_policy_name
+      description: New policy name.
+    - name: policy_status
+      description: Policy status.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: policy_order
+      description: Index of policies in the collection. Not applicable for global_policy.
+    - name: policy_expiry
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
+    - name: policy_description
+      description: Policy description to update.
+  - name: cisco-wsa-access-policy-protocols-user-agents-update
+    description: Update the Protocols and User Agents policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: settings_status
+      description: Settings status for the Protocols and User Agents.
+      defaultValue: custom
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
+      - disable
+    - name: block_custom_user_agents
+      description: |-
+        Comma-separated list of custom user agents to block, in regular expression format.
+        Pattern examples:
+        All Firefox versions: "Mozilla/.* Gecko/.* Firefox/"	
+        Firefox versions 1.5.x: "Mozilla/.* Gecko/.* Firefox/1\.5"	
+        All Internet Explorer versions: "Mozilla/.*compatible; MSIE"
+        Internet Explorer version 5.5: "Mozilla/.*compatible; MSIE 5\.5"
+        Specific user agent: Mozilla/4.0 (compatible; MSIE 5.5;): "Mozilla/4.0 \(compatible; MSIE 5.5;\)"
+        Relevant while settings_status is custom.
+      isArray: true
+    - name: allow_connect_ports
+      description: |-
+        Comma-separated list of HTTP connect ports.
+        HTTP CONNECT enables applications to tunnel outbound traffic over HTTP,
+        unless the protocol is blocked above.
+        Traffic tunneled through HTTP CONNECT will not be scanned,
+        except for SSL ports (specified on Security Services > HTTPS Proxy)
+        e.g. 1-65535,20,21.
+        Relevant while settings_status is custom.
+      isArray: true
+    - name: block_protocols
+      description: Block network protocols. Relevant while settings_status is custom.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - ftp
+      - http
+  - name: cisco-wsa-access-policy-url-filtering-update
+    description: Update the URL filtering policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: predefined_categories_action
+      description: Predefined categories action.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - warn
+    - name: predefined_categories
+      description: Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+    - name: youtube_categories_action
+      description: YouTube categories action.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - allow
+    - name: youtube_categories
+      description: Comma-separated list of YouTube categories.
+      isArray: true
+    - name: custom_categories_action
+      description: Custom categories action.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - warn
+    - name: custom_categories
+      description: Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+    - name: uncategorized_url
+      description: Uncategorized URL action.
+      auto: PREDEFINED
+      predefined:
+      - use_global
+      - block
+      - monitor
+      - warn
+    - name: update_categories_action
+      description: |-
+        When predefined URL categories are periodically updated,
+        new categories may be introduced, or two (or more) existing categories may be merged.
+        Select whether the most or least restrictive action should be applied in these cases.
+        For new categories, in Access policies,
+        most restrictive is always Block and least restrictive is always Monitor.
+        For merged categories, the most or least restrictive setting will be selected out of the
+        settings previously assigned.
+        For instance, if category A was set to Block, and category B was set to Warn,
+        and the two are merged into category C,
+        the most restrictive action will be Block and the least restrictive action will be Warn.
+      auto: PREDEFINED
+      predefined:
+      - use_global
+      - most restrictive
+      - least restrictive
+    - name: content_rating_status
+      description: |-
+        When Site Content Rating is enabled, user access to web content rated as adult oriented or
+        explicit on sites that support content rating will be denied.
+        Supported sites include Flickr, Craigslist and YouTube.
+        However, users can still access content on these websites that is not rated as adult oriented or explicit.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: content_rating_action
+      description: Action if site setting (content_rating_status) allows adult/explicit content.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - warn
+    - name: safe_search_status
+      description: |-
+        When Safe Search is enabled, non-safe content, including the cached non-safe content
+        will be blocked from the search result from the following search engines:
+        Dogpile, Yandex, Google, Yahoo, Bing, WebCrawler, DuckDuckGo, Dailymotion and eBay.
+        If safe search failed to be enforced on a supported search engine, it will be blocked.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: unsupported_safe_search_engine
+      description: Action for search engines that don't support safe search.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+  - name: cisco-wsa-access-policy-applications-update
+    description: Update applications policy for access policy. Only applicable for global_policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: settings_status
+      description: Applications settings status.
+      defaultValue: custom
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
+    - name: application
+      description: Application type to perform the action on.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Games
+      - Enterprise Applications
+      - Media
+      - Collaboration
+      - Instant Messaging
+      - Facebook
+      - Social Networking
+      - Internet Utilities
+      - Webmail
+      - Proxies
+      - Presentation / Conferencing
+      - Software Updates
+      - iTunes
+      - Google+
+      - File Sharing
+      - Myspace
+      - Blogging
+      - LinkedIn
+      - Office Suites
+    - name: action
+      description: Application action.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+    - name: values
+      description: Comma-separated list of application values to perform the action on.
+      required: true
+      isArray: true
+  - name: cisco-wsa-access-policy-objects-update
+    description: Update objects policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: object_type
+      description: Object type to perform the action on.
+      auto: PREDEFINED
+      predefined:
+      - Executable Code
+      - Web Page Content
+      - Media
+      - P2P Metafiles
+      - Miscellaneous
+      - Document Types
+      - Archives
+      - Installers
+      - Inspectable Archives
+    - name: object_action
+      description: |-
+        Object action.
+        Note: "inspect" and "allow" actions are only valid when the object type is "Inspectable Archives".
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+      - allow
+      - inspect
+    - name: object_values
+      description: Comma-separated list of object values to perform the action on.
+      isArray: true
+    - name: block_custom_mime_types
+      description: Block custom MIME types, e.g., audio/x-mpeg3 or audio/*.
+    - name: http_or_https_max_object_size_mb
+      description: HTTP/HTTPS maximum download size.
+    - name: ftp_max_object_size_mb
+      description: FTP maximum download size.
+  - name: cisco-wsa-access-policy-anti-malware-update
+    description: Update the anti-malware policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+    - name: settings_status
+      description: Settings status for the anti-malware.
+      defaultValue: custom
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
+    - name: web_reputation_status
+      description: |-
+        Web Reputation Filters will automatically block transactions with a low Web Reputation score.
+        For transactions with a higher Web Reputation score,
+        scanning will be performed using the services selected by Adaptive Scanning.
+        If Web Reputation Filtering is disabled in this policy,
+        transactions will not be automatically blocked based on low Web Reputation Score.
+        Blocking of sites that contain malware or other high-risk content is controlled by the additional arguments.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: file_reputation_filtering_status
+      description: |-
+        File Reputation Filters will identify transactions containing known malicious or high-risk files.
+        Files that are unknown may be forwarded to the cloud for file analysis.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: file_reputation_action
+      description: |-
+        File Reputation action.
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+    - name: anti_malware_scanning_status
+      description: |-
+        Anti-Malware scanning status.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: suspect_user_agent_scanning
+      description: |-
+        Suspect user agent scanning action.
+        Required while anti_malware_scanning_status is enabled.
+        Not relevant while anti_malware_scanning_status is disabled.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - scan
+      - none
+    - name: block_malware_categories
+      description: Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Adware
+      - Browser Helper Object
+      - Commercial System Monitor
+      - Dialer
+      - Generic Spyware
+      - Hijacker
+      - Other Malware
+      - Phishing URL
+      - PUA
+      - System Monitor
+      - Trojan Downloader
+      - Trojan Horse
+      - Trojan Phisher
+      - Virus
+      - Worm
+    - name: block_other_categories
+      description: Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Encrypted File
+      - Outbreak Heuristics
+      - Unscannable
+  - name: cisco-wsa-access-policy-delete
+    description: Delete access policy.
+    arguments:
+    - name: policy_names
+      description: Comma-separated list of policy names to delete.
+      required: true
+      isArray: true
+  - name: cisco-wsa-domain-map-list
+    description: |-
+      Retrieve domains mapping.
+      Domain maps are DNS mappings of domain to IP addresses.
+    arguments:
+    - name: domain_names
+      description: Comma-separated list of domain names to retrieve.
+      isArray: true
+    - name: ip_addresses
+      description: |-
+        Comma-separated list of IP addresses to search for.
+        This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
+      isArray: true
+    - name: page
+      description: |-
+        The page number of the results to retrieve.
+        Minimum value is 1.
+    - name: page_size
+      description: The number of results per page. The maximum value is 100.
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.DomainMap.domain_name
+      description: Domain name.
+    - type: String
+      contextPath: CiscoWSA.DomainMap.ip_addresses
+      description: Mapped IP addresses.
+    - type: Number
+      contextPath: CiscoWSA.DomainMap.order
+      description: Index of the domain map in the collection.
+  - name: cisco-wsa-domain-map-create
+    description: Create domain mapping for IP addresses.
+    arguments:
+    - name: domain_name
+      description: The domain name to create.
+      required: true
+    - name: order
+      description: Index of the domain map in the collection.
+      required: true
+    - name: ip_addresses
+      description: Comma-separated list of IP addresses to map for the domain.
+      required: true
+      isArray: true
+  - name: cisco-wsa-domain-map-update
+    description: Update the domain map.
+    arguments:
+    - name: domain_name
+      description: The domain name to update.
+      required: true
+    - name: new_domain_name
+      description: New domain name.
+    - name: order
+      description: Index of the domain map in the collection.
+    - name: ip_addresses
+      description: |-
+        Comma-separated list of IP addresses to map for the domain.
+        Updating this will overwrite the existing IP addresses.
+      isArray: true
+  - name: cisco-wsa-domain-map-delete
+    description: Delete domain map.
+    arguments:
+    - name: domain_names
+      description: Comma-separated list of domain names to delete.
+      required: true
+      isArray: true
+  - name: cisco-wsa-identification-profiles-list
+    description: |-
+      Retrieve identification profiles.
+      Identification profiles are classifications of users, defining authentication requirements.
+    arguments:
+    - name: profile_names
+      description: Comma-separated list of profile names to retrieve.
+      isArray: true
+    - name: page
+      description: |-
+        The page number of the results to retrieve.
+        Minimum value is 1.
+    - name: page_size
+      description: The number of results per page. The maximum value is 100.
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.status
+      description: Identification Profile status.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.profile_name
+      description: Identification Profile name.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.description
+      description: Identification Profile description.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.protocols
+      description: Identification Profile protocol.
+    - type: Number
+      contextPath: CiscoWSA.IdentificationProfile.order
+      description: Identification Profile order in the list.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.predefined
+      description: Identification Profile predefined URL categories.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.custom
+      description: Identification Profile custom URL categories.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.uncategorized
+      description: Identification Profile uncategorized URL categories status.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.ip
+      description: Identification Profile IP.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.proxy_port
+      description: Identification Profile proxy port.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UserAgents.predefined
+      description: The predefined user-agent.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UserAgents.custom
+      description: User-agent custom.
+  - name: cisco-wsa-identification-profiles-create
+    description: Create an identification profile.
+    arguments:
+    - name: profile_name
+      description: Profile name to create.
+      required: true
+    - name: status
+      description: Status of new identification profile.
+      defaultValue: enable
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: description
+      description: Description of new identification profile.
+      required: true
+    - name: order
+      description: |-
+        Index of the identification profiles in the collection.
+        Not applicable for global_identification_profile.
+      defaultValue: 1
+    - name: protocols
+      description: Comma-separated list of network protocols of identification profile.
+      defaultValue: HTTPS
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
+    - name: proxy_ports
+      description: |-
+        Comma-separated list of proxy ports.
+        Membership is defined by proxy port for forward connections,
+        where certain clients have been configured to use a specific connecting port.
+        For transparent connections, membership by proxy port applies to the port of the destination URL.
+        Leave this field blank if membership by connecting proxy port is not needed.
+        e.g., 22-1000,3331
+      isArray: true
+    - name: members_by_subnet
+      description: Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      isArray: true
+    - name: predefined_url_categories
+      description: |-
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+    - name: custom_url_categories
+      description: |-
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+  - name: cisco-wsa-identification-profiles-update
+    description: Update the identification profile. This command rewrites the profile values (does not append). For example, if the proxy_ports is defined as 4000,5000 and you insert proxy_ports=8000, the proxy_ports will be 8000.
+    arguments:
+    - name: profile_name
+      description: Profile name to update.
+      required: true
+    - name: new_profile_name
+      description: New profile name for the identification profile.
+    - name: status
+      description: Updated the status of the identification profile.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: description
+      description: Updated description of the identification profile.
+    - name: order
+      description: |-
+        Index of the Identification profile in the collection.
+        Not applicable for global_identification_profile.
+    - name: protocols
+      description: Comma-separated list of network protocols of the identification profile.
+      defaultValue: HTTPS
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
+    - name: proxy_ports
+      description: |-
+        Comma-separated list of proxy ports.
+        Membership is defined by the proxy port for forward connections,
+        where certain clients have been configured to use a specific connecting port.
+        For transparent connections, membership by proxy port applies to the port of the destination URL.
+        Leave this field blank if membership by connecting proxy port is not needed.
+        e.g.,  22-1000,3331
+      isArray: true
+    - name: members_by_subnet
+      description: Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5.
+      isArray: true
+    - name: predefined_url_categories
+      description: |-
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+    - name: custom_url_categories
+      description: |-
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      isArray: true
+  - name: cisco-wsa-identification-profiles-delete
+    description: Delete identification profiles.
+    arguments:
+    - name: profile_names
+      description: Comma-separated list of profile names to delete.
+      required: true
+      isArray: true
+  - name: cisco-wsa-url-categories-list
+    description: Retrieve URL categories of available categories to allow/block in access policies.
+    arguments:
+    - name: contain
+      description: A string that contains the category to search for.
+    - name: type
+      description: Type of category.
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - predefined
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.UrlCategory.predefined
+      description: Predefined URL categories.
+    - type: String
+      contextPath: CiscoWSA.UrlCategory.custom
+      description: Custom URL categories.

@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 
-import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
-from CommonServerPython import *  # noqa: F401
 from tld import get_tld
 
 

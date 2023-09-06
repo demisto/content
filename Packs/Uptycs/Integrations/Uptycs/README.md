@@ -89,6 +89,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 31. uptycs-get-saved-queries
 32. uptycs-run-saved-query
 33. uptycs-post-saved-query
+34. uptycs-get-carves
+35. uptycs-get-carves-link
+36. uptycs-get-carves-download-file
+37. uptycs-get-asset-with-id
+38. uptycs-get-tag
+39. uptycs-get-tags
+40. uptycs-delete-tag
+41. uptycs-create-lookuptable
+42. uptycs-post-lookuptable-data
+43. uptycs-edit-lookuptable
+44. uptycs-get-lookuptable
+45. uptycs-get-lookuptables
+46. uptycs-delete-lookuptable
+47. uptycs-delete-assets-tag
 ### 1. uptycs-get-assets
 ---
 return assets enrolled with Uptycs
@@ -2577,6 +2591,726 @@ There is no context output for this command.
 |name|type|description|query|executionType|grouping|custom|
 |---|---|---|---|---|---|---|
 |process_query|default|This is a test query with a variable argument for the column 'name’|select * from processes where name=:name limit 1|global|""|true|
+
+### 34. uptycs-get-carves
+---
+Get the list of carves file from a specific path.
+##### Base Command
+
+`uptycs-get-carves`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | Retrieve carves from a specific path | Optional |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.Carves.id | string | Uptycs id of the carved file |
+| Uptycs.Carves.assetId | string | Uptycs id of the asset |
+| Uptycs.Carves.path | string | File path to the carved file |
+| Uptycs.Carves.createdAt | date | Time at which the file was carved |
+| Uptycs.Carves.updatedAt | date | Time at which the carve was updated |
+| Uptycs.Carves.status | string | Status of carve in Uptycs database |
+| Uptycs.Carves.assetHostName | string | Hostname in the Uptycs database |
+| Uptycs.Carves.offset | number | Carved file size offset |
+| Uptycs.Carves.length | number | Carved file size length |
+| Uptycs.Carves.deletedUserName | number | Deleted user name |
+| Uptycs.Carves.deleted_at | number | Time at which the carve was deleted |
+
+##### Command Example
+`uptycs-get-carves path="/etc/"`
+
+##### Context Example
+```
+ {
+    "Uptycs.Carves": [
+        {
+            "id": "e037cb0b-e9b0-4061-8966-5d3404cef9f6",
+            "assetId": "2fb29ec9-5c16-4021-af7c-65528fead280",
+            "path": "/etc/hosts",
+            "createdAt": "2023-05-19T06:58:12.304Z",
+            "updatedAt": "2023-05-19T06:58:13.576Z",
+            "status": "FINISHED",
+            "assetHostName": "uptycs-testhost",
+            "offset": 0,
+            "length": 197,
+            "deletedUserName": null,
+            "deletedAt": null
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs Carves
+|id|assetId|path|createdAt|updatedAt|status|assetHostName|offset|length|deletedUserName|deletedAt|
+|---|---|---|---|---|---|---|---|---|---|---|
+|e037cb0b-e9b0-4061-8966-5d3404cef9f6|2fb29ec9-5c16-4021-af7c-65528fead280|/etc/hosts|2023-05-19T06:58:12.304Z|2023-05-19T06:58:13.576Z|FINISHED|uptycs-testhost|0|197|||
+
+
+
+### 35. uptycs-get-carves-link
+---
+Get the url of a carved file using uuid
+##### Base Command
+
+`uptycs-get-carves-link`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| carve_id | uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.| Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.CarvesLink.url | string | url of the carved file |
+
+##### Command Example
+`uptycs-get-carves-link carve_id="e037cb0b-e9b0-4061-8966-5d3404cef9f6"`
+
+##### Context Example
+```
+ {
+    "Uptycs.CarvesLink.url": "https://uptycs-carves-xxxxx.s3.us-xxxx-2.amazonaws.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/xxxx...."
+ }
+```
+
+##### Human Readable Output
+### Uptycs Carves
+|url|
+|---|
+|https://uptycs-carves-xxxxx.s3.us-xxxx-2.amazonaws.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/xxxx....|
+
+
+### 36. uptycs-get-carves-download-file
+---
+Download a carved file using uuid
+##### Base Command
+
+`uptycs-get-carves-download-file`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| carve_id | uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.| Required |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+
+##### Command Example
+`uptycs-get-carves-download-file carve_id="e037cb0b-e9b0-4061-8966-5d3404cef9f6"`
+
+##### Context Example
+
+There is no context output for this command.
+
+##### Human Readable Output
+### Uptycs Carves file download
+`Uploaded file: e037cb0b-e9b0-4061-8966-5d3404cef9f6.tar`
+
+
+
+### 37. uptycs-get-asset-with-id
+---
+Get an Uptycs asset details.
+##### Base Command
+
+`uptycs-get-asset-with-id`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Uptycs asset id. Get the id from the list of assets with the command uptycs-get-assets.| Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.Asset.hostName | string | Hostname in Uptycs DB |
+| Uptycs.Asset.location | string | Host location |
+| Uptycs.Asset.gateway | string | Gateway ip |
+| Uptycs.Asset.cpuBrand | string | Cpu brand |
+| Uptycs.Asset.hardwareModel | string | Hardware model |
+| Uptycs.Asset.hardwareVendor | string | Hardware vendor |
+| Uptycs.Asset.cores | number | Number of cores |
+| Uptycs.Asset.logicalCores | number | Number of logical cores |
+| Uptycs.Asset.memoryMb | number | Memory in mb |
+| Uptycs.Asset.os | string | os installed on asset (Windows, Linux, Mac OS X) |
+| Uptycs.Asset.osVersion | string | os version |
+| Uptycs.Asset.osFlavor | string | os flavor |
+| Uptycs.Asset.osKey | string | os key |
+| Uptycs.Asset.osqueryVersion | string | Uptycs osquery version |
+| Uptycs.Asset.status | string | status of host |
+| Uptycs.Asset.arch | string | Host cpu architecture |
+| Uptycs.Asset.agentVersion | string | Uptycs agent version |
+| Uptycs.Asset.quarantinedStatus | string | Uptycs agent quarantine status |
+| Uptycs.Asset.osDisplay | string | os version detailed info|
+| Uptycs.Asset.tags | string | Uptycs asset tags |
+| Uptycs.Asset.disabled | boolean | Asset disabled status |
+| Uptycs.Asset.objectGroupId | string | Uptycs object group id |
+| Uptycs.Asset.lastEnrolledAt | date | Last enrolled at time |
+| Uptycs.Asset.live | boolean | Asset live status |
+
+
+##### Command Example
+`uptycs-get-asset-with-id asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
+
+##### Context Example
+```
+{
+    "Uptycs.Asset": [
+        {
+            "status": "active",
+            "live": true,
+            "disabled": false,
+            "quarantinedStatus": false,
+            "tags": "assets,macos,darwin",
+            "lastEnrolledAt": "2019-07-19 14:47:27.485",
+            "osVersion": "10.14.5",
+            "osqueryVersion": "3.x.x.x-Uptycs",
+            "agentVersion": "5.x.x.x-Uptycs",
+            "created_at": "2018-09-25 16:38:16.440",
+            "osFlavor": "darwin",
+            "hostName": "kyle-mbp-work",
+            "gateway": "x.y.z.a",
+            "os": "Mac OS X",
+            "osKey": "darwin_10.14.5",
+            "objectGroupId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "cpuBrand": "Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz",
+            "hardwareModel": "HVM domU",
+            "hardwareVendor": "Xen",
+            "cores": 2,
+            "logicalCores": 2,
+            "memoryMb": 8192,
+            "arch": "x86_64",
+            "osDisplay": "macOS 10.14.5",
+            "location": "United States"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs Assets
+|status|live|disabled|quarantinedStatus|tags|lastEnrolledAt|osVersion|osqueryVersion|agentVersion|createdAt|osFlavor|hostName|gateway|os|osKey|objectGroupId|cpuBrand|hardwareModel|hardwareSerial|hardwareVendor|cores|logicalCores|memoryMb|arch|osDisplay|location|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.x.x.x-Uptycs |5.x.x.x-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |x.y.z.a|Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
+
+
+### 38. uptycs-get-tag
+---
+Return Uptycs asset tag details
+##### Base Command
+
+`uptycs-get-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | Uptycs tag id. Get the id from the list of tags with the command uptycs-get-tags. | Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.tag.tag | string | Tag name in Uptycs DB |
+| Uptycs.tag.resourceType | string | Tag resource type |
+| Uptycs.tag.seedId | string | Uptycs seed id |
+| Uptycs.tag.key | string | Tag key |
+| Uptycs.tag.value | string | Tag value |
+| Uptycs.tag.flagProfileId | string | Uptycs flag profile id |
+| Uptycs.tag.customProfileId | string | Uptycs custom profile id |
+| Uptycs.tag.complianceProfileId | string | Uptycs compliance profile id |
+| Uptycs.tag.processBlockRuleId | string | Uptycs process block rule id |
+| Uptycs.tag.dnsBlockRuleId | string | Uptycs dns block rule id  |
+| Uptycs.tag.windowsDefenderPreferenceId | string | Windows Defender Preference Id |
+| Uptycs.tag.createdBy | string | Id of creator |
+| Uptycs.tag.updatedBy | string | Id of last modifier |
+| Uptycs.tag.createdAt | date | Created at time |
+| Uptycs.tag.updatedAt | date | Updated at time |
+| Uptycs.tag.status | string | Status of tag |
+| Uptycs.tag.source | string | Source of tag |
+| Uptycs.tag.system | boolean | Status of system |
+| Uptycs.tag.custom | boolean | Status of custom |
+| Uptycs.tag.tagRuleId | string | Uptycs tag rule id |
+
+
+##### Command Example
+`uptycs-get-tag tag_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
+
+##### Context Example
+```
+{
+    "Uptycs.tag": [
+        {
+            "tag": "asset-group=Asset test 1",
+            "resourceType": "asset",
+            "seedId": "14e579e4-3661-4bd6-ace3-082cf6fc4ec5",
+            "key": "asset-group",
+            "value": "Asset test 1",
+            "flagProfileId": "5d894e7c-5606-4380-8711-123ee2a7d96c",
+            "customProfileId": null,
+            "complianceProfileId": null,
+            "processBlockRuleId": "ec272101-e5c1-58b2-f847-c439abdadcf4",
+            "dnsBlockRuleId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "windowsDefenderPreferenceId": null,
+            "createdBy": "testuser",
+            "updatedBy": "testuser",
+            "createdAt": "2019-07-19 14:47:27.485",
+            "updatedAt": "2019-07-19 14:47:27.485",
+            "status": "active",
+            "source": "direct",
+            "system": false,
+            "custom": false,
+            "tagRuleId": null
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs tag
+|tag|resourceType|seedId|key|value|flagProfileId|customProfileId|complianceProfileId|processBlockRuleId|dnsBlockRuleId|windowsDefenderPreferenceId|createdBy|updatedBy|createdAt|updatedAt|status|source|system|custom|tagRuleId|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|asset-group=Asset test 1|asset|14e579e4-3661-4bd6-ace3-082cf6fc4ec5|asset-group|Asset test 1|5d894e7c-5606-4380-8711-123ee2a7d96c|||ec272101-e5c1-58b2-f847-c439abdadcf4|984d4a7a-9f3a-580a-a3ef-2841a561669b||testuser|testuser|2019-07-19 14:47:27.485|2019-07-19 14:47:27.485|active|direct|false|false||
+
+
+### 39. uptycs-get-tags
+---
+Return a list of Uptycs asset tags with details.
+##### Base Command
+
+`uptycs-get-tags`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key | Uptycs tag key | Optional |
+| value | Uptycs tag value | Optional |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.tags.id | string | Tag id in Uptycs DB |
+| Uptycs.tags.tag | string | Tag name in Uptycs DB |
+| Uptycs.tags.resourceType | string | Tag resource type |
+| Uptycs.tags.seedId | string | Uptycs seed id |
+| Uptycs.tags.key | string | Uptycs tag key |
+| Uptycs.tags.value | string | Uptycs tag value |
+| Uptycs.tags.flagProfileId | string | Uptycs flag profile id |
+| Uptycs.tags.customProfileId | string | Uptycs custom profile id  |
+| Uptycs.tags.complianceProfileId | string | Uptycs compliance profile id |
+| Uptycs.tags.processBlockRuleId | string | Uptycs process block rule id |
+| Uptycs.tags.dnsBlockRuleId | string | Uptycs dns block rule id  |
+| Uptycs.tags.windowsDefenderPreferenceId | string | Windows Defender Preference Id |
+| Uptycs.tags.createdBy | string | Id of tag creator |
+| Uptycs.tags.updatedBy | string | Id of last modifier |
+| Uptycs.tags.createdAt | date | Created at time |
+| Uptycs.tags.updatedAt | date | Updated at time |
+| Uptycs.tags.status | string | status of tag |
+| Uptycs.tags.source | string | source of tag |
+| Uptycs.tags.system | boolean | system status |
+| Uptycs.tags.custom | boolean | custom status |
+| Uptycs.tags.tagRuleId | string | Uptycs tag rule id  |
+
+
+##### Command Example
+`uptycs-get-tags key="asset-group"`
+
+##### Context Example
+```
+{
+    "Uptycs.tags": [
+        {
+            "tag": "asset-group=Asset test 1",
+            "resourceType": "asset",
+            "seedId": "14e579e4-3661-4bd6-ace3-082cf6fc4ec5",
+            "key": "asset-group",
+            "value": "Asset test 1",
+            "flagProfileId": "5d894e7c-5606-4380-8711-123ee2a7d96c",
+            "customProfileId": null,
+            "complianceProfileId": null,
+            "processBlockRuleId": "ec272101-e5c1-58b2-f847-c439abdadcf4",
+            "dnsBlockRuleId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "windowsDefenderPreferenceId": null,
+            "createdBy": "testuser",
+            "updatedBy": "testuser",
+            "createdAt": "2019-07-19 14:47:27.485",
+            "updatedAt": "2019-07-19 14:47:27.485",
+            "status": "active",
+            "source": "direct",
+            "system": false,
+            "custom": false,
+            "tagRuleId": null
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs tags
+|tag|resourceType|seedId|key|value|flagProfileId|customProfileId|complianceProfileId|processBlockRuleId|dnsBlockRuleId|windowsDefenderPreferenceId|createdBy|updatedBy|createdAt|updatedAt|status|source|system|custom|tagRuleId|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|asset-group=Asset test 1|asset|14e579e4-3661-4bd6-ace3-082cf6fc4ec5|asset-group|Asset test 1|5d894e7c-5606-4380-8711-123ee2a7d96c|||ec272101-e5c1-58b2-f847-c439abdadcf4|984d4a7a-9f3a-580a-a3ef-2841a561669b||testuser|testuser|2019-07-19 14:47:27.485|2019-07-19 14:47:27.485|active|direct|false|false||
+
+
+### 40. uptycs-delete-tag
+---
+Delete an Uptycs asset tag
+##### Base Command
+
+`uptycs-delete-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | Delete the tag matching this id. Get the id from the list of tags with the command uptycs-get-tags.| Required |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`uptycs-delete-tag tag_id="14e579e4-3661-4bd6-ace3-082cf6fc4ec5"`
+
+##### Context Example
+```
+```
+
+##### Human Readable Output
+### Uptycs deleted tag
+Uptycs Deleted tag
+
+
+### 41. uptycs-create-lookuptable
+---
+Create a new Uptycs lookup table.
+##### Base Command
+
+`uptycs-create-lookuptable`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of a lookup table | Required |
+| id_field | Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.| Required |
+| description | Description of a lookup table. | Optional |
+| filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.lookuptable.id | string | Id of lookup table in Uptycs DB |
+| Uptycs.lookuptable.name | string | Name of the created lookup table |
+
+##### Command Example
+`uptycs-create-lookuptable name="test_table" id_field="remote_address" description="look up table with remote address"`
+
+##### Context Example
+```
+{
+    "Uptycs.lookuptable": [
+        {
+            "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "name": "test_table"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs create lookup table
+|id|name|
+|---|---|
+|984d4a7a-9f3a-580a-a3ef-2841a561669b|test_table|
+
+
+### 42. uptycs-post-lookuptable-data
+---
+Update csv data for a look up table.
+##### Base Command
+
+`uptycs-post-lookuptable-data`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_id | Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.| Required |
+| filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.| Required |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`uptycs-post-lookuptable-data table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" filename="lookuptable.csv"`
+
+##### Context Example
+```
+```
+
+##### Human Readable Output
+Uptycs Posted lookup table data
+
+
+### 43. uptycs-edit-lookuptable
+---
+Edit an Uptycs lookup table
+##### Base Command
+
+`uptycs-edit-lookuptable`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_id | Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.| Required |
+| name | Name of a lookup table. | Optional |
+| description | A lookup table description. | Optional |
+| active | Enable or disable the table with a boolean flag of true or false. | Optional |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`uptycs-edit-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" name="test_table_new" description="look up table with remote address"`
+
+##### Context Example
+```
+{
+    "Uptycs.lookuptable": [
+        {
+            "active": true,
+            "createdAt": "2023-04-21T08:27:20.888Z",
+            "createdBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
+            "customerId": "b1c3b08c-eedd-4b94-8ba0-9ca322401016",
+            "dataLookupTable": null,
+            "description": "look up table with remote address",
+            "fetchRowsquery": "SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '984d4a7a-9f3a-580a-a3ef-2841a561669b'",
+            "forRuleEngine": true,
+            "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "idField": "remote_address",
+            "name": "test_table_new",
+            "rowCount": 24,
+            "seedId": null,
+            "updatedAt": "2023-04-25T04:11:04.664Z",
+            "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs edit lookup table
+|active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
+
+
+### 44. uptycs-get-lookuptable
+---
+Get an Uptycs lookup table details
+##### Base Command
+
+`uptycs-get-lookuptable`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_id | Id of table in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.| Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.lookuptable.seedId | string | Uptycs seed id |
+| Uptycs.lookuptable.name | string | Look up table name |
+| Uptycs.lookuptable.description | string | Description of the table |
+| Uptycs.lookuptable.active | boolean | Active status of the table |
+| Uptycs.lookuptable.idField | string | Uptycs id field |
+| Uptycs.lookuptable.rowCount | number | Row count of table |
+| Uptycs.lookuptable.forRuleEngine | boolean | Status of flag forRuleEngine |
+| Uptycs.lookuptable.createdBy | string | Id of creator |
+| Uptycs.lookuptable.updatedBy | string | Id of last modifier |
+| Uptycs.lookuptable.createdAt | date | Created at time |
+| Uptycs.lookuptable.updatedAt | date | Updated at time |
+| Uptycs.lookuptable.dataLookupTable | string | Data look up table name |
+| Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
+
+##### Command Example
+`uptycs-get-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
+
+##### Context Example
+```
+{
+    "Uptycs.lookuptable": [
+        {
+            "active": true,
+            "createdAt": "2023-04-21T08:27:20.888Z",
+            "createdBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
+            "customerId": "b1c3b08c-eedd-4b94-8ba0-9ca322401016",
+            "dataLookupTable": null,
+            "description": "look up table with remote address",
+            "fetchRowsquery": "SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '984d4a7a-9f3a-580a-a3ef-2841a561669b'",
+            "forRuleEngine": true,
+            "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "idField": "remote_address",
+            "name": "test_table_new",
+            "rowCount": 24,
+            "seedId": null,
+            "updatedAt": "2023-04-25T04:11:04.664Z",
+            "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs look up tables
+|active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
+
+
+### 45. uptycs-get-lookuptables
+---
+Get List of Uptycs lookup table details
+##### Base Command
+
+`uptycs-get-lookuptables`
+##### Input
+
+There are no arguments for this command.
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.lookuptable.id | string | Uptycs id of look up table |
+| Uptycs.lookuptable.seedId | string | Uptycs seed id |
+| Uptycs.lookuptable.name | string | Look up table name |
+| Uptycs.lookuptable.description | string | Description of the table |
+| Uptycs.lookuptable.active | boolean | Active status of the table |
+| Uptycs.lookuptable.idField | string | Uptycs id field |
+| Uptycs.lookuptable.rowCount | number | Row count of table |
+| Uptycs.lookuptable.forRuleEngine | boolean | Status of flag forRuleEngine |
+| Uptycs.lookuptable.createdBy | string | Id of creator |
+| Uptycs.lookuptable.updatedBy | string | Id of last modifier |
+| Uptycs.lookuptable.createdAt | date | Created at time |
+| Uptycs.lookuptable.updatedAt | date | Updated at time |
+| Uptycs.lookuptable.dataLookupTable | string | Data look up table name |
+| Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
+
+##### Command Example
+`uptycs-get-lookuptables`
+
+##### Context Example
+```
+{
+    "Uptycs.lookuptables": [
+        {
+            "active": true,
+            "createdAt": "2023-04-21T08:27:20.888Z",
+            "createdBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
+            "customerId": "b1c3b08c-eedd-4b94-8ba0-9ca322401016",
+            "dataLookupTable": null,
+            "description": "look up table with remote address",
+            "fetchRowsquery": "SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '984d4a7a-9f3a-580a-a3ef-2841a561669b'",
+            "forRuleEngine": true,
+            "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "idField": "remote_address",
+            "name": "test_table_new",
+            "rowCount": 24,
+            "seedId": null,
+            "updatedAt": "2023-04-25T04:11:04.664Z",
+            "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs look up tables
+|active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
+
+
+### 46. uptycs-delete-lookuptable
+---
+Delete an Uptycs lookup table
+##### Base Command
+
+`uptycs-delete-lookuptable`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_id | Table id in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.| Required |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`uptycs-delete-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
+
+##### Context Example
+```
+```
+
+##### Human Readable Output
+### Uptycs deleted lookuptable
+Uptycs Deleted lookuptable
+
+
+### 47. uptycs-delete-assets-tag
+---
+Disassociate an asset with a tag
+##### Base Command
+
+`uptycs-delete-assets-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | Disassociate the tag matching this id with the given asset_id. Get the id from the list of tags with the command uptycs-get-tags.| Required |
+| asset_id | Disassociate the asset matching this asset id with the given tag_id. Get the id from the list of asset with the command uptycs-get-assets.| Required |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`uptycs-delete-asset-tag tag_id="14e579e4-3661-4bd6-ace3-082cf6fc4ec5" asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
+
+##### Context Example
+```
+
+```
+
+##### Human Readable Output
+### Uptycs delete assets tag
+Uptycs disassociated assets tags
 
 
 ## Additional Information

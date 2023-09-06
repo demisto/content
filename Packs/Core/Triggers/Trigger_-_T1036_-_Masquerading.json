@@ -1,5 +1,5 @@
 {
-  "trigger_id": "ba1d7a7c593a407fabc124262e39ff63",
+  "trigger_id": "36ff93e2ba62421cbaf704a395c7a7d1",
   "playbook_id": "T1036 - Masquerading",
   "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Masquerading”",
   "description": "This trigger is responsible for handling T1036 - Masquerading alerts",

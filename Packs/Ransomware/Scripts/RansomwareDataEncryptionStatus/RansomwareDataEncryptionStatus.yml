@@ -5,9 +5,7 @@ dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: RansomwareDataEncryptionStatus
 runas: DBotWeakRole
-runonce: false
-comment: A Widget script - checks for the data encryption status in post ransomware
-  investigation  playbook and layout.
+comment: A Widget script - checks for the data encryption status in post ransomware investigation  playbook and layout.
 script: ''
 scripttarget: 0
 subtype: python3

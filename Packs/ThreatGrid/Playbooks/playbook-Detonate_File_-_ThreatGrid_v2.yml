@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e942d3a4-1890-46b5-8a3a-f25caa8ef11d
+    taskid: 1ce459a4-b6cb-4ce1-8189-8011ab82305b
     type: condition
     task:
-      id: e942d3a4-1890-46b5-8a3a-f25caa8ef11d
+      id: 1ce459a4-b6cb-4ce1-8189-8011ab82305b
       description: condition
       version: -1
       name: Is ThreatGrid enabled?
@@ -67,7 +67,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Threat Grid
+                        simple: ThreatGridv2
                 - - operator: isEqualString
                     left:
                       value:
@@ -77,6 +77,8 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -94,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: cb4900e3-374f-4192-8d5a-cb6c95e80471
+    taskid: 60aa8fdc-d576-4409-8df6-27876aa6a064
     type: condition
     task:
-      id: cb4900e3-374f-4192-8d5a-cb6c95e80471
+      id: 60aa8fdc-d576-4409-8df6-27876aa6a064
       description: condition
       version: -1
       name: Is there a file to detonate?
@@ -171,8 +173,7 @@ tasks:
       id: 0f9a53c1-0acf-4957-8722-d43505a392ec
       version: -1
       name: Is the file type supported?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -235,8 +236,7 @@ tasks:
       id: e4859d43-1c66-4c82-8b80-928a72c6e94f
       version: -1
       name: ThreatGrid Upload File
-      description: Submits a sample to threat grid for analysis. URL or file, not
-        both.
+      description: Submits a sample to threat grid for analysis. URL or file, not both.
       script: '|||threat-grid-sample-upload'
       type: regular
       iscommand: true
@@ -247,6 +247,10 @@ tasks:
     scriptarguments:
       file_id:
         simple: ${File.EntryID}
+      interval_in_seconds:
+        simple: ${inputs.interval}
+      timeout_in_seconds:
+        simple: ${inputs.timeout}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -361,8 +365,22 @@ inputs:
   value:
     complex:
       root: File
-  required: true
+  required: false
   description: File object of the file to detonate.
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "60"
+  required: false
+  description: Indicates the time in seconds until the polling sequence times out.
+    Default is 60.
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "10"
+  required: false
+  description: Indicates the time in seconds to wait between command execution when
+    'polling' argument is true. Minimum value is 10 seconds. Default is 10.
   playbookInputQuery: null
 outputs:
 - contextPath: File.Type
@@ -378,4 +396,8 @@ quiet: true
 fromversion: 5.0.0
 description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
 tests:
- -  Detonate File - Generic Test
+- Detonate File - Generic Test
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all

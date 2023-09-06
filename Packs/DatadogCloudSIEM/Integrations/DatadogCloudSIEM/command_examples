@@ -1,0 +1,16 @@
+!datadog-event-list limit=2
+!datadog-event-create title="EventTitle" text="EventText"
+!datadog-tag-list limit=10
+!datadog-host-tag-get host_name="TestHost2"
+!datadog-host-tag-create host_name="TestHost2" tags="env:prod"
+!datadog-host-tag-update host_name="TestHost2"
+!datadog-host-tag-delete host_name="TestHost2"
+!datadog-active-metric-list from="-2days"
+!datadog-metric-search query="datadog.agent.python.version"
+!datadog-metric-metadata-get metric_name="system.io.block_in"
+!datadog-metric-metadata-update metric_name="system.io.block_in"
+!datadog-incident-create customer_impacted=False title="incident-test1"
+!datadog-incident-update incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438
+!datadog-incident-delete incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438
+!datadog-incident-list limit=2
+!datadog-time-series-point-query from="-2days" query="system.cpu.idle" to=now

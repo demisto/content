@@ -1,0 +1,33 @@
+{
+    "name": "WALLIX Bastion",
+    "description": "Integrations for WALLIX Bastion appliances",
+    "support": "partner",
+    "currentVersion": "1.0.5",
+    "author": "WALLIX",
+    "url": "https://www.wallix.com/privileged-access-management/",
+    "email": "",
+    "categories": [
+        "Authentication & Identity Management"
+    ],
+    "tags": [
+        "Compliance",
+        "IT",
+        "IAM"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Identity and Access Management",
+        "Compliance"
+    ],
+    "keywords": [
+        "wallix",
+        "wab",
+        "bastion",
+        "pam",
+        "privileged access management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

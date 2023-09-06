@@ -1,7 +1,7 @@
 id: scan_assets_nexpose
 version: -1
 name: Scan Assets - Nexpose
-description: Starts a Nexpose scan according to asset IP addresses or host names, and waits for the scan to finish by polling the scan status in pre-defined intervals.
+description: Deprecated. Use the "Scan Site - Nexpose" playbook instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -332,3 +332,4 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No test
+deprecated: true

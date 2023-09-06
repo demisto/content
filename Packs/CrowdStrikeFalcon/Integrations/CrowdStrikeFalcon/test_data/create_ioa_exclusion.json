@@ -1,0 +1,25 @@
+{
+    "meta": {
+        "query_time": 1.223231572,
+        "trace_id": "123456"
+    },
+    "errors": null,
+    "resources": [
+        {
+            "id": "123456",
+            "name": "test",
+            "description": "example description",
+            "pattern_id": "123456",
+            "pattern_name": "name for 123456",
+            "ifn_regex": "c:\\\\windows\\\\system32\\\\poqexec\\.exe",
+            "cl_regex": ".*",
+            "detection_json": "{'foo': 'bar'}",
+            "groups": [],
+            "applied_globally": true,
+            "last_modified": "2023-03-05T14:20:37.13160884Z",
+            "modified_by": "admin",
+            "created_on": "2023-03-05T14:20:37.13160884Z",
+            "created_by": "admin"
+        }
+    ]
+}

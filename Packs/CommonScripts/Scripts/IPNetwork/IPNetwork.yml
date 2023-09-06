@@ -1,14 +1,10 @@
 args:
-- default: false
-  description: IP/CIDR, e.g. 192.168.0.0/24
-  isArray: false
+- description: IP/CIDR, e.g. 192.168.0.0/24
   name: cidr
   required: true
-  secret: false
 commonfields:
   id: IPNetwork
   version: -1
-enabled: false
 name: IPNetwork
 comment: |
   Gather information regarding CIDR -
@@ -47,12 +43,10 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - ip
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.66339
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0

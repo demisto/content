@@ -47,6 +47,7 @@ Test Collection Unit-Test cases
       playbook ID "myOtherTestPlaybook".
 - `T` Reputation test collection test. one indicator type of reputation, and 3 test playbooks defined in the conf.json file
       under the "reputation_tests" list. Should collect all 3 tests.
+- `PR1` has a pack with components for XSOAR and XSIAM, but the component for XSIAM is only parsing rule.
 """
 
 
@@ -60,7 +61,7 @@ class CollectTestsMocker:
         self.path_manager = PathManager(content_path)
         self.path_manager.id_set_path = content_path / 'Tests' / 'id_set.json'
         self.path_manager.conf_path = content_path / 'Tests' / 'conf.json'
-        self.previous_path_manager = None
+        self.previous_path_manager: PathManager | None = None
 
     def __enter__(self):
         self.previous_path_manager = collect_tests.PATHS
@@ -113,6 +114,7 @@ class MockerCases:
     skipped_nightly_test = CollectTestsMocker(TEST_DATA / 'skipped_nightly_test')
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
     RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
+    PR1 = CollectTestsMocker(TEST_DATA / 'PR1')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -206,7 +208,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_5, Machine.MASTER), None),
+     (Machine.V6_8, Machine.MASTER), None),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -236,6 +238,10 @@ NIGHTLY_TESTS: tuple = (
     # modeling rule testdata file exists, expect modeling rule to be collected
     (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
+
+    # only parsing rule component exists, expect the pack to be collected for installation
+    (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
+     None),
 )
 
 
@@ -302,7 +308,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('myXSOAROnlyPack',)),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
-        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_5, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
+        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_8, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
@@ -429,6 +435,14 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
          ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
+
+        # (36) see PR1 definition at the top of this file - only parsing rules xif file was changed
+        (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.xif',), (), ('MyXSIAMPack',)),
+
+        # (37) see PR1 definition at the top of this file - only parsing rules yml file was changed
+        (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',)),
     )
 )
 def test_branch(

@@ -1,0 +1,18 @@
+[MODEL: dataset=workday_activity_raw]
+alter
+    src_ip_v4 = if(ipAddress !~= ":", ipAddress, null),
+    src_ip_v6 = if(ipAddress ~= ":", ipAddress, null)
+| alter 
+    xdm.source.user.username = systemAccount,
+    xdm.observer.action = activityAction,
+    xdm.source.user_agent = userAgent,
+    xdm.event.id = taskId,
+    xdm.source.host.device_category = deviceType,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.session_context_id = sessionId,
+    xdm.event.operation_sub_type = taskDisplayName
+| alter
+    xdm.source.user.identifier = json_extract_scalar(`target`, "$.id"),
+    xdm.target.host.device_category = json_extract_scalar(`target`, "$.descriptor"),
+    xdm.target.url = json_extract_scalar(`target`, "$.href");

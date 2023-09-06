@@ -1,0 +1,81 @@
+{
+    "associatedToAll": true,
+    "associatedTypes": [
+        "Domain"
+    ],
+    "caseInsensitive": true,
+    "cliName": "dnsrecords",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "TXT",
+                "SPF",
+                "MX",
+                "DMARC",
+                "SOA",
+                "TXT",
+                "CAA",
+                "A",
+                "AAAA"
+            ],
+            "type": "singleSelect",
+            "width": 100
+        },
+        {
+            "displayName": "TTL",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "ttl",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 100
+        },
+        {
+            "displayName": "Data",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "data",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_dnsrecords",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "DNS Records",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

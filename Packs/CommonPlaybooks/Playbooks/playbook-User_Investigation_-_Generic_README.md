@@ -9,25 +9,32 @@ Supported Integrations:
 -XDR By Palo Alto Networks
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Okta - User Investigation
+
 * SIEM - Search for Failed logins
+* Okta - User Investigation
 * Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * MathUtil
+* Set
 * CountArraySize
 
 ### Commands
-* pan-os-query-logs
+
 * pan-os-get-logs
+* pan-os-query-logs
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -48,6 +55,7 @@ This playbook does not use any integrations.
 | ASN | The ASN from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -71,5 +79,7 @@ This playbook does not use any integrations.
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![User Investigation - Generic](../doc_files/User_Investigation_-_Generic.png)

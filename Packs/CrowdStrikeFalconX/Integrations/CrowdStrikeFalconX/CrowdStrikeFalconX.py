@@ -712,7 +712,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                                 score=score_field,
                                 reliability=reliability)
 
-        info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
+        info = {item['id']: item.get('value') for item in sandbox.get('version_info', [])}
         relationships: Optional[List[EntityRelationship]] = None
         if sandbox.get('submission_type', '') in ('file_url', 'file'):
             relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
@@ -1302,7 +1302,7 @@ def get_results_function_args(outputs, extended_data, item_type, interval_in_sec
 
 
 def pop_polling_related_args(args: dict) -> None:
-    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling'):
+    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling', 'environment_id'):
         args.pop(key, None)
 
 
@@ -1435,7 +1435,7 @@ def main():
     reliability = params.get('reliability', DBotScoreReliability.B)
 
     command = demisto.command()
-    LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
+    demisto.debug(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
 
     try:
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy,

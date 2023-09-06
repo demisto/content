@@ -19,7 +19,7 @@ INDICATORS = [
 TYPES = [
     "File",
     "IP",
-    "IP",
+    "URL",
     "Domain",
     "URL",
     "CIDR",
@@ -71,7 +71,7 @@ INDICATORS_CLASSIFICATION_DATA = [
         "1.1.1.1/path", FeedIndicatorType.URL
     ),
     (
-        "1.1.1.1:8080", FeedIndicatorType.IP
+        "1.1.1.1:8080", FeedIndicatorType.URL
     ),
     (
         "19.117.63.253:28/other/path", FeedIndicatorType.URL

@@ -1,0 +1,56 @@
+{
+    "ironscales_ironscales_raw": {
+        "incident_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "classification": {
+            "type": "string",
+            "is_array": false
+        },
+        "first_reported_date": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "themis_verdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "mail_server": {
+            "type": "string",
+            "is_array": false
+        },
+        "reports": {
+            "type": "string",
+            "is_array": false
+        },
+        "links": {
+            "type": "string",
+            "is_array": false
+        },
+        "attachments": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "headers": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

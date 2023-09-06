@@ -85,8 +85,11 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.LAYOUT_RULE,
 }
 
-IGNORED_FILE_TYPES: set[FileType] = {
+ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
     FileType.README,
+}
+
+IGNORED_FILE_TYPES: set[FileType] = {
     FileType.PACK_IGNORE,
     FileType.XIF_FILE,
     FileType.SECRET_IGNORE,
@@ -120,11 +123,17 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
 
 XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.PARSING_RULE,
+    FileType.PARSING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
     FileType.TRIGGER,
     FileType.MODELING_RULE_SCHEMA,
     FileType.XDRC_TEMPLATE,
-    FileType.LAYOUT_RULE
+    FileType.LAYOUT_RULE,
+    FileType.XDRC_TEMPLATE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.CORRELATION_RULE,
 }

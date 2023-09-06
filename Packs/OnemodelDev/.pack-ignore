@@ -1,0 +1,6 @@
+[file:OneModelDevModelingRules_1_3.yml]
+ignore=MR108
+
+[file:OneModelDevModelingRules.yml]
+ignore=MR108
+

@@ -29,4 +29,4 @@ ChatMessage.Read - Delegated
 ChatMessage.Send - Delegated
 
 ---
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail)
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-teams)

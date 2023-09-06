@@ -11,7 +11,7 @@
 	"id": "Azure Network Misconfiguration",
 	"locked": false,
 	"name": "Azure Network Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - Azure Network Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - Azure Network Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

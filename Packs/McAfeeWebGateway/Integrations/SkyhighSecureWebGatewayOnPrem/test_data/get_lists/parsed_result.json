@@ -1,0 +1,12 @@
+{
+    "HumanReadable": "### Lists\n|Title|ID|Type|\n|---|---|---|\n| blocklist | com.scur.type.regex.386 | regex |\n",
+    "EntryContext": {
+        "SWG.List(val.ID && val.ID == obj.ID)": [
+            {
+                "ID": "com.scur.type.regex.386",
+                "Title": "blocklist",
+                "Type": "regex"
+            }
+        ]
+    }
+}

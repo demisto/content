@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import List, Optional, Union
-from CommonServerPython import *
-import demistomock as demisto
 
 from xlsxwriter import Workbook
 from xlsxwriter.format import Format

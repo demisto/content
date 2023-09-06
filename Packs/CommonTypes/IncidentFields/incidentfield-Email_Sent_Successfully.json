@@ -1,0 +1,32 @@
+{
+    "id": "incident_emailsentsuccessfully",
+    "version": -1,
+    "modified": "2023-03-08T12:15:15.732121599Z",
+    "name": "Email Sent Successfully",
+    "ownerOnly": false,
+    "description": "Whether the email has been successfully sent.",
+    "cliName": "emailsentsuccessfully",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Password Reset via Chatbot"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

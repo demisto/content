@@ -149,4 +149,11 @@ ignore=IF113
 ignore=IF113
 
 [known_words]
-BPA
+bpa
+
+[file:EntryWidgetCoATechniquesList.yml]
+ignore=BA124
+
+[file:EntryWidgetCoAHandled.yml]
+ignore=BA124
+

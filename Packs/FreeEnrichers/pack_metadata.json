@@ -1,0 +1,82 @@
+{
+    "name": "Free Enrichers",
+    "description": "This content Pack helps set up free enrichers (Plug & Enrich, Free with sign-up) available for TIM",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2023-06-08T12:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Enricher",
+        "Plug & Enrich"
+    ],
+    "itemPrefix": [
+    ],
+    "useCases": [
+    ],
+    "keywords": [
+        "Feed"
+    ],
+    "dependencies": {
+        "Barracuda": {
+            "mandatory": false,
+            "display_name": "Barracuda Reputation Block List (BRBL)"
+        },
+        "CIRCLHashlookup": {
+            "mandatory": false,
+            "display_name": "CIRCL hash lookup is a public API to lookup hash values against known database of files."
+        },
+        "Cryptocurrency": {
+            "mandatory": false,
+            "display_name": "Add a reputation for cryptocurrency addresses."
+        },
+        "Dnstwist": {
+            "mandatory": false,
+            "display_name": "Detect typosquatting, phishing, and corporate espionage."
+        },
+        "Ja3er": {
+            "mandatory": false,
+            "display_name": "Query for hashes of JA3 fingerprints"
+        },
+        "JARM": {
+            "mandatory": false,
+            "display_name": "Generating new JARM fingerprints of servers using TLS."
+        },
+        "OpenPhish": {
+            "mandatory": false,
+            "display_name": "OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence."
+        },
+        "PhishTank": {
+            "mandatory": false,
+            "display_name": "PhishTank is a free community site where anyone can submit, verify, track and share phishing data"
+        },
+        "Spamcop": {
+            "mandatory": false,
+            "display_name": "SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address"
+        },
+        "TeamCymru": {
+            "mandatory": false,
+            "display_name": "Team Cymru is an internet security firm that offers research services making the internet a more secure place."
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "Data Mining for Threat Intelligence"
+        },
+        "URLhaus": {
+            "mandatory": false,
+            "display_name": "URLhaus has the goal of sharing malicious URLs that are being used for malware distribution."
+        },
+        "Whois": {
+            "mandatory": false,
+            "display_name": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata."
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

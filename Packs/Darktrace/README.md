@@ -1,11 +1,16 @@
-Rapid detection of malicious behavior can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate. 
+As organizations continue to mature their security stack and adopt defence-in-depth practices, it is increasingly important for security operation teams to have their data available in one place, rather than spread across multiple tools.
+ 
+This integration pack enriches your Cortex XSOAR playbooks with information from Darktrace’s self-learning AI in our DETECT product family. This ensures your endpoint data is accompanied by tailored Darktrace alerts on anomalous activities within your network, SaaS, cloud and industrial environments.
+ 
+Together with XSOAR, this pack can speed up your triage workflow, boost SOC efficiency and ensure all your security coverage can be found in one place. 
 
 What does this pack do?
-- Gathers information about every anomaly detection (model breach) made by the Darktrace platform and populates it in XSOAR.
-- Allows users to acknowledge model breaches from XSOAR for an integrated workflow
-- Gets comments made by analysts within Darktrace
-- Populates information about devices similar to the ones involved in model breaches
-- Gathers identifying and connection information about internal devices
-- Returns information about external endpoints
+
+This pack provides three optional sub-integrations by pulling a variety of Darktrace metrics:
+
+- Model Breaches and all model breach related actions (such as commenting, acknowledging and model logic info).
+- AI Analyst investigations indicative of critical incidents along with accompanying summaries and timelines. AI actions can also be applied.
+- Device administration data including device statuses and tags. Your understanding of potential threats can also be levelled-up with Advanced Search logs from DPI.
  
-Included with this pack is an out-of-the-box incident type, a classifier and mapper, a generic playbook, and a custom layout to easily view all Darktrace model breach information related to an incident. Each of these elements can also be easily customized to fit the needs of your organization.
+
+Customers can decide which of these alerts are integrated, ensuring visibility is bespoke to your individual SOC’s needs. Alerts from the connector will populate in the XSOAR ‘Incidents’ tab.

@@ -66,6 +66,7 @@ class Client(BaseClient):
         close_incident=False,
         reopen_incident=False,
         reopen_group="",
+        input_tag="",
     ):
         headers = {
             "Authorization": api_key,
@@ -84,6 +85,7 @@ class Client(BaseClient):
         self.close_incident = close_incident
         self.reopen_incident = reopen_incident
         self.reopen_group = reopen_group
+        self.input_tag = input_tag
         self._active_user = None
 
     @property
@@ -379,7 +381,7 @@ def comments_to_notes(client: Client, comments: List):
             "HumanReadable": f"{comment_text}{footer}",
             "ReadableContentsFormat": EntryFormat.TEXT,
             "Note": True,
-            "Tags": [],
+            "Tags": [client.input_tag],
             "sort": get_sort(occurred, oid),
         }
 
@@ -493,7 +495,7 @@ def attachment_note_from_link(
     text = client.download_attachment(link)
     result = fileResult(filename, text)
     result["Note"] = True
-    result["Tags"] = []
+    result["Tags"] = [client.input_tag]
     return result
 
 
@@ -608,6 +610,7 @@ def fetch_incidents(
         alert["xsoar_mirror_instance"] = integration_instance
         alert["xsoar_mirror_id"] = alert_id
         alert["xsoar_mirror_tags"] = [client.comment_tag, client.escalate_tag]
+        alert["xsoar_input_tag"] = client.input_tag
 
         # Link back to ZTAP
         alert["url"] = alert.get("url")
@@ -716,10 +719,7 @@ def update_remote_system(
             user = str(entry.get("user", ""))
             contents = str(entry.get("contents", ""))
             footer = f"Sent by {user} {XSOAR_EXCLUDE_MESSAGE}"
-            if client.comment_tag in entry["tags"]:
-                text = f"{contents}\n\n---\n\n{footer}"
-                client.upload_comment(alert_id, text)
-            elif client.escalate_tag in entry["tags"]:
+            if client.escalate_tag in entry["tags"]:
                 footer = ESCALATE_REASON + "\n\n" + footer
                 text = f"{contents}\n\n---\n\n{footer}"
                 try:
@@ -731,6 +731,9 @@ def update_remote_system(
                         client.upload_comment(alert_id, text)
                     else:
                         raise e
+            elif client.comment_tag in entry["tags"]:
+                text = f"{contents}\n\n---\n\n{footer}"
+                client.upload_comment(alert_id, text)
 
     alert = client.get_alert(alert_id)
 
@@ -854,6 +857,7 @@ def main() -> None:
     close_incident = params.get("close_incident", False)
     reopen_incident = params.get("reopen_incident", False)
     reopen_group = params.get("reopen_group", "Default")
+    input_tag = params.get("input_tag")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -869,6 +873,7 @@ def main() -> None:
             close_incident=close_incident,
             reopen_incident=reopen_incident,
             reopen_group=reopen_group,
+            input_tag=input_tag,
         )
 
         if demisto.command() == "test-module":

@@ -1,0 +1,6 @@
+[INGEST:vendor="McAfee", product="NSM", target_dataset="mcafee_nsm_raw"]
+// Support only date time of format: yyyy-MM-dd hh:mm:ss UTC. For example: "2023-06-01 10:00:00 UTC".
+filter _raw_log ~= "at\s*\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*UTC"
+| alter tmp_time_string = arrayindex(regextract(_raw_log ,"at\s*(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2})\s*UTC"),0)
+| alter _time = coalesce(parse_timestamp("%Y-%m-%d %H:%M:%S",tmp_time_string ), _insert_time )
+| fields -tmp_time_string;

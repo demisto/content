@@ -715,6 +715,153 @@ There is no context output for this command.
 
 >Report with ID = 4 is categorized successfully.
 
+
+### cofense-report-attachment-payload-list
+***
+Retrieves attachment payloads based on provided report id in the command arguments.
+Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
+
+
+#### Base Command
+
+`cofense-report-attachment-payload-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Specify ID of the report to retrieve the attachment payloads. | Required |
+| page_size | Specify the number of attachment payloads to retrieve per page. Note: Possible values are between 1 and 200. Default is 20. | Optional |
+| page_number | Specify a page number to retrieve the attachment payloads. Default is 1. | Optional |
+| created_at | Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
+| updated_at | Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cofense.AttachmentPayload.id | String | Unique identifier of the attachment payload. | 
+| Cofense.AttachmentPayload.type | String | Type of the resource of Cofense Triage. | 
+| Cofense.AttachmentPayload.links.self | String | Link of the resource. | 
+| Cofense.AttachmentPayload.attributes.mime_type | String | MIME type of the payload. | 
+| Cofense.AttachmentPayload.attributes.md5 | String | MD5 hash of the payload. | 
+| Cofense.AttachmentPayload.attributes.sha256 | String | SHA256 hash of the payload. | 
+| Cofense.AttachmentPayload.attributes.risk_score | Number | Risk score of the payload. | 
+| Cofense.AttachmentPayload.attributes.created_at | Date | Date and time, in ISO 8601 format, when the resource was created. | 
+| Cofense.AttachmentPayload.attributes.updated_at | Date | Date and time, in ISO 8601 format, when the resource was last updated. | 
+| Cofense.AttachmentPayload.relationships.attachments.links.self | String | Link to retrieve the attachment containing the payload. | 
+| Cofense.AttachmentPayload.relationships.attachments.links.related | String | Link to retrieve the detailed information of the attachment containing the payload. | 
+| Cofense.AttachmentPayload.relationships.clusters.links.self | String | Link to retrieve the cluster of reports containing the payload. | 
+| Cofense.AttachmentPayload.relationships.clusters.links.related | String | Link to retrieve the detailed information of the cluster of reports containing the payload. | 
+| Cofense.AttachmentPayload.relationships.integration_submissions.links.self | String | Link to retrieve the integration submissions related to attachment. | 
+| Cofense.AttachmentPayload.relationships.integration_submissions.links.related | String | Link to retrieve the detailed information of the integration submissions related to attachment. | 
+| Cofense.AttachmentPayload.relationships.reports.links.self | String | Link to retrieve the report with attachments containing the payload. | 
+| Cofense.AttachmentPayload.relationships.reports.links.related | String | Link to retrieve the detailed information of the report with attachments containing the payload. | 
+
+
+#### Command Example
+```!cofense-report-attachment-payload-list id=47024 page_size=2```
+
+#### Context Example
+```json
+{
+  "Cofense": {
+    "AttachmentPayload": [
+      {
+        "attributes": {
+          "created_at": "2020-10-21T20:57:56.750Z",
+          "md5": "99a9eb2612d7e84c5402fde1114c53ee",
+          "mime_type": "application/xml; charset=us-ascii",
+          "risk_score": 0,
+          "sha256": "22b3e2a4f41a0a0b6c93cd0da7b28b84a2375b815f787624e81acaaf32a5d191",
+          "updated_at": "2022-03-08T20:20:32.561Z"
+        },
+        "id": "74",
+        "links": {
+          "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74"
+        },
+        "relationships": {
+          "attachments": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/attachments",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/attachments"
+            }
+          },
+          "clusters": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/clusters",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/clusters"
+            }
+          },
+          "integration_submissions": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/integration_submissions",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/integration_submissions"
+            }
+          },
+          "reports": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/reports",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/reports"
+            }
+          }
+        },
+        "type": "attachment_payloads"
+      },
+      {
+        "attributes": {
+          "created_at": "2020-10-21T20:57:56.940Z",
+          "md5": "61da9c47fff9b04e59b951aa700c7980",
+          "mime_type": "image/png; charset=binary",
+          "sha256": "7757f5392a8971b280464ae0d760b04980b82a9a2a3105c2bd6c9293ff7f9b9a",
+          "updated_at": "2020-10-21T20:57:56.940Z"
+        },
+        "id": "78",
+        "links": {
+          "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78"
+        },
+        "relationships": {
+          "attachments": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/attachments",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/attachments"
+            }
+          },
+          "clusters": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/clusters",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/clusters"
+            }
+          },
+          "integration_submissions": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/integration_submissions",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/integration_submissions"
+            }
+          },
+          "reports": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/reports",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/reports"
+            }
+          }
+        },
+        "type": "attachment_payloads"
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Attachment Payload(s)
+>|Attachment Payload ID|Mime Type|MD5|SHA256|Risk Score|Created At|Updated At|
+>|---|---|---|---|---|---|---|
+>| 74 | application/xml; charset=us-ascii | 99a9eb2612d7e84c5402fde1114c53ee | 22b3e2a4f41a0a0b6c93cd0da7b28b84a2375b815f787624e81acaaf32a5d191 | 0 | 2020-10-21T20:57:56.750Z | 2022-03-08T20:20:32.561Z |
+>| 78 | image/png; charset=binary | 61da9c47fff9b04e59b951aa700c7980 | 7757f5392a8971b280464ae0d760b04980b82a9a2a3105c2bd6c9293ff7f9b9a |  | 2020-10-21T20:57:56.940Z | 2020-10-21T20:57:56.940Z |
+
+
 ### cofense-category-list
 ***
 Retrieves categories based on the provided parameters.
@@ -2411,3 +2558,4 @@ The ability to mirror incident data has been added.
 * *cofense-threat-indicator-create*
 * *cofense-threat-indicator-update*
 * *cofense-url-list*
+* *cofense-report-attachment-payload-list*

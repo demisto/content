@@ -5,6 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Remediation - Azure Network Misconfiguration
 description: |-
+  Deprecated. Use Prisma Cloud Remediation - Azure Network Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud Azure Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -835,4 +836,5 @@ outputs:
   description: Security group name.
   type: string
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

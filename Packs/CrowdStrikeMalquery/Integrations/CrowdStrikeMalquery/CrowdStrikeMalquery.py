@@ -382,12 +382,13 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    client_id: str = params.get('client_id')
-    client_secret: str = params.get('client_secret')
+    client_id: str = params.get('credentials_client').get('identifier') or params.get('client_id')
+    client_secret: str = params.get('credentials_client').get('password') or params.get('client_secret')
     base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/malquery')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
-
+    if not(client_id and client_secret):
+        raise DemistoException('Client ID and Client Secret must be provided.')
     commands = {
         'test-module': test_module,
         'cs-malquery-exact-search': exact_search_command,

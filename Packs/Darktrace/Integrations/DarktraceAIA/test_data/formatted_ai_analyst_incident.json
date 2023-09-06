@@ -1,0 +1,14 @@
+{
+    "eventId": "bc64f242-ce29-4f35-bc94-230991116564", 
+    "title": "Possible Hijack of AzureActiveDirectory Account", 
+    "mitreTactics": ["privilege-escalation"], 
+    "score": "94%",
+    "createdAt": "2022-07-26T16:45:09.000Z", 
+    "category": "critical", 
+    "summary": "\n\nThough this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.\n\nConsequently, the security team may wish to confirm that this activity was legitimate and expected.", "groupId": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc", "devices": [{"identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com", 
+    "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com", "ip": null, "mac": null, "subnet": null, "did": 1975, "sid": -9}], 
+    "modelBreaches": 
+    {"0": {"modelName": "SaaS / Admin / User Added To Admin Group", 
+    "pbid": 27055, "threatScore": 73, 
+    "timestamp": "2022-07-26T16:40:36.000Z"}}, 
+    "link": "/#aiagroup/g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc"}

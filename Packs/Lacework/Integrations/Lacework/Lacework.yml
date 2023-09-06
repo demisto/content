@@ -9,8 +9,8 @@ configuration:
   type: 0
 - display: Lacework Sub-Account Name (If Required)
   name: lacework_subaccount
-  required: false
   type: 0
+  required: false
 - display: Lacework API Key
   name: lacework_api_key
   required: true
@@ -21,7 +21,6 @@ configuration:
   type: 4
 - defaultvalue: high
   display: Lacework Alert Severity Threshold
-  hidden: false
   name: lacework_event_severity
   options:
   - critical
@@ -33,15 +32,14 @@ configuration:
   type: 15
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)
-  hidden: false
   name: lacework_event_history
   options:
   - '1'
@@ -51,27 +49,20 @@ configuration:
   - '5'
   - '6'
   - '7'
-  required: false
   type: 15
-description: Lacework provides end-to-end cloud security automation for AWS, Azure,
-  and GCP with a comprehensive view of risks across cloud workloads and containers.
+  required: false
+description: Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 display: Lacework
 name: Lacework
 script:
   commands:
   - arguments:
-    - default: false
-      description: The Lacework Alert ID to be retrieved.
-      isArray: false
+    - description: The Lacework Alert ID to be retrieved.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Details
-      description: The scope of data to retrieve from Lacework for the specified Alert
-        ID
-      isArray: false
+      description: The scope of data to retrieve from Lacework for the specified Alert ID
       name: scope
       predefined:
       - Details
@@ -80,11 +71,7 @@ script:
       - RelatedAlerts
       - Integrations
       - Timeline
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch details for a specific Alert in Lacework.
-    execution: false
     name: lw-get-alert-details
     outputs:
     - contextPath: Lacework.Alert.startTime
@@ -112,24 +99,18 @@ script:
       description: The alert description provides why the potential threat occurred.
       type: String
     - contextPath: Lacework.Alert.alertInfo.subject
-      description: The alert subject. In some cases, the alert subject can be the
-        same as the alert name.
+      description: The alert subject. In some cases, the alert subject can be the same as the alert name.
       type: String
     - contextPath: Lacework.Alert.entityMap
       description: The entity map for the alert.
       type: Unknown
   - arguments:
-    - default: false
-      description: The AWS Account ID to use when fetching compliance data.
-      isArray: false
+    - description: The AWS Account ID to use when fetching compliance data.
       name: account_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: AWS_CIS_S3
       description: The Report Type to fetch from Lacework.
-      isArray: false
       name: report_type
       predefined:
       - AWS_CIS_S3
@@ -139,18 +120,9 @@ script:
       - NIST_800-171_Rev2
       - PCI
       - SOC
-      required: false
-      secret: false
-    - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
-      isArray: false
+    - description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       name: rec_id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch the latest AWS compliance data from Lacework.
-    execution: false
     name: lw-get-aws-compliance-assessment
     outputs:
     - contextPath: Lacework.Compliance.reportType
@@ -268,40 +240,23 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - default: false
-      description: The Azure Tenant ID to use when fetching compliance data.
-      isArray: false
+    - description: The Azure Tenant ID to use when fetching compliance data.
       name: tenant_id
       required: true
-      secret: false
-    - default: false
-      description: The Azure Subscription ID to use when fetching compliance data.
-      isArray: false
+    - description: The Azure Subscription ID to use when fetching compliance data.
       name: subscription_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: AZURE_CIS
       description: The Report Type to fetch from Lacework.
-      isArray: false
       name: report_type
       predefined:
       - AZURE_CIS
       - AZURE_PCI
       - AZURE_SOC
-      required: false
-      secret: false
-    - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
-      isArray: false
+    - description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       name: rec_id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch the latest Azure compliance data from Lacework.
-    execution: false
     name: lw-get-azure-compliance-assessment
     outputs:
     - contextPath: Lacework.Compliance.reportType
@@ -419,34 +374,20 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - default: false
-      description: The GCP Project ID to use when fetching compliance data.
-      isArray: false
+    - description: The GCP Project ID to use when fetching compliance data.
       name: project_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: GCP_CIS
       description: The Report Type to fetch from Lacework.
-      isArray: false
       name: report_type
       predefined:
       - GCP_CIS
       - GCP_PCI
       - GCP_SOC
-      required: false
-      secret: false
-    - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
-      isArray: false
+    - description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       name: rec_id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch the latest GCP compliance data from Lacework.
-    execution: false
     name: lw-get-gcp-compliance-assessment
     outputs:
     - contextPath: Lacework.Compliance.reportType
@@ -564,15 +505,10 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - default: false
-      description: The GCP Organization ID to use when fetching projects data.
-      isArray: false
+    - description: The GCP Organization ID to use when fetching projects data.
       name: organization_id
       required: true
-      secret: false
-    deprecated: false
     description: Fetch a list of GCP projects that are under an organization.
-    execution: false
     name: lw-get-gcp-projects-by-organization
     outputs:
     - contextPath: Lacework.GCP.organization
@@ -582,31 +518,15 @@ script:
       description: The GCP Projects associated to the Organization.
       type: String
   - arguments:
-    - default: false
-      description: The primary ID that is used to fetch the report; for example, AWS
-        Account ID or Azure Tenant ID.
-      isArray: false
+    - description: The primary ID that is used to fetch the report; for example, AWS Account ID or Azure Tenant ID.
       name: primary_query_id
-      required: false
-      secret: false
-    - default: false
-      description: The secondary ID that is used to fetch the report; for example,
-        GCP Project ID or Azure Subscription ID.
-      isArray: false
+    - description: The secondary ID that is used to fetch the report; for example, GCP Project ID or Azure Subscription ID.
       name: secondary_query_id
-      required: false
-      secret: false
-    - default: false
-      description: The report definition's name that is used when generating the report.
-      isArray: false
+    - description: The report definition's name that is used when generating the report.
       name: report_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: LW_AWS_SEC_ADD_1_0
       description: The report's notification type; for example, AZURE_NIST_CSF.
-      isArray: false
       name: report_type
       predefined:
       - AZURE_CIS
@@ -652,25 +572,13 @@ script:
       - AWS_PCI_DSS_3.2.1
       - AWS_SOC_2
       - LW_AWS_SEC_ADD_1_0
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Default
+    - defaultValue: Default
       description: The template's name that is used for the report; for example, Default.
-      isArray: false
       name: template_name
       required: true
-      secret: false
-    - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
-      isArray: false
+    - description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       name: rec_id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch a specified compliance report from Lacework.
-    execution: false
     name: lw-get-compliance-report
     outputs:
     - contextPath: Lacework.Compliance.reportType
@@ -788,41 +696,17 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
-        "2020-01-01T01:10:00Z")
-      isArray: false
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
-      isArray: false
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: An array of objects to add information to refine your search results.
-      isArray: false
+    - description: An array of objects to add information to refine your search results.
       name: filters
-      required: false
-      secret: false
-    - default: false
-      description: An array of strings to specify which top-level fields of the response
-        schema you want to receive.
-      isArray: false
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
       name: returns
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing a limit on the number or results to return.
-      isArray: false
+    - description: An integer representing a limit on the number or results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch container vulnerability information from Lacework.
-    execution: false
     name: lw-get-container-vulnerabilities
     outputs:
     - contextPath: Lacework.Vulnerability.Container.evalCtx.exception_props
@@ -871,8 +755,7 @@ script:
       description: The SHA256 hash of the layer which introduced the vulnerability
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.src
-      description: The path within the container identifying the source of the vulnerability
-        data
+      description: The path within the container identifying the source of the vulnerability data
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.version_format
       description: The format of the version data for the vulnerable package
@@ -881,8 +764,7 @@ script:
       description: An integer representing whether a fix is available for the vulnerability
       type: Number
     - contextPath: Lacework.Vulnerability.Container.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and
-        package
+      description: The version in which the vulnerability is fixed for the CVE and package
       type: String
     - contextPath: Lacework.Vulnerability.Container.imageId
       description: The image ID of the container identified in the evaluation
@@ -903,41 +785,17 @@ script:
       description: A unique hash of all data contained in the vulnerability
       type: String
   - arguments:
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
-        "2020-01-01T01:10:00Z")
-      isArray: false
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
-      isArray: false
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: An array of objects to add information to refine your search results.
-      isArray: false
+    - description: An array of objects to add information to refine your search results.
       name: filters
-      required: false
-      secret: false
-    - default: false
-      description: An array of strings to specify which top-level fields of the response
-        schema you want to receive.
-      isArray: false
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
       name: returns
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing a limit on the number or results to return.
-      isArray: false
+    - description: An integer representing a limit on the number or results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch host vulnerability information from Lacework.
-    execution: false
     name: lw-get-host-vulnerabilities
     outputs:
     - contextPath: Lacework.Vulnerability.Host.cveProps.description
@@ -974,8 +832,7 @@ script:
       description: An integer representing whether a fix is available for the vulnerability
       type: String
     - contextPath: Lacework.Vulnerability.Host.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and
-        package
+      description: The version in which the vulnerability is fixed for the CVE and package
       type: String
     - contextPath: Lacework.Vulnerability.Host.machineTags
       description: A string representing the machine tags in key/value pairs
@@ -999,10 +856,7 @@ script:
       description: A unique hash of all data contained in the vulnerability
       type: String
   dockerimage: demisto/lacework:1.0.0.47313
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

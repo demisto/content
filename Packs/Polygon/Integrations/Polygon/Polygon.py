@@ -2,11 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 from io import StringIO
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = "Group-IB THF Polygon"

@@ -1,0 +1,1079 @@
+category: Analytics & SIEM
+commonfields:
+  id: DatadogCloudSIEM
+  version: -1
+configuration:
+- additionalinfo: Datadog website URL
+  display: Server URL
+  name: site
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for authentication
+  display: API Key
+  name: api_key
+  type: 4
+  hidden: true
+- name: api_key_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+- display: Application Key
+  name: app_key
+  type: 4
+  additionalinfo: The application key to use for authentication.
+  hidden: true
+- name: app_key_creds
+  type: 9
+  displaypassword: Application Key
+  hiddenusername: true
+- display: How many incidents to fetch each time.
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: '50'
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: 3 days
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: |-
+  Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
+
+  The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
+display: Datadog Cloud SIEM
+name: DatadogCloudSIEM
+script:
+  commands:
+  - arguments:
+    - description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
+      name: text
+      required: true
+    - description: The title of an event.
+      name: title
+      required: true
+    - description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
+      name: date_happened
+    - description: A device name.
+      name: device_name
+    - description: Host name to associate with the event.
+      name: host_name
+    - auto: PREDEFINED
+      description: |-
+        The priority of the event.
+
+        Restricted value : low
+        Permitted value : normal (Bug will be fixed in the near future.)
+      name: priority
+      predefined:
+      - normal
+      - low
+    - description: ID of the parent event.
+      name: related_event_id
+    - description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
+      name: tags
+    - description: "An arbitrary string to use for aggregation. \nIf you specify a key, all events using that key are grouped together in the Event Stream. \nLimited to 100 characters."
+      name: aggregation_key
+    - description: 'The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.'
+      name: source_type_name
+    - auto: PREDEFINED
+      description: If an alert event is enabled, set its type.
+      name: alert_type
+      predefined:
+      - error
+      - warning
+      - info
+      - success
+      - user_update
+      - recommendation
+      - snapshot
+    description: This endpoint allows you to post events to the stream.
+    name: datadog-event-create
+    outputs:
+    - contextPath: Datadog.Event.date_happened
+      description: The timestamp of when the event happened.
+      type: Number
+    - contextPath: Datadog.Event.id
+      description: Integer ID of the event.
+      type: Number
+    - contextPath: Datadog.Event.priority
+      description: 'The priority of the event.  Possible values: normal, low.'
+      type: String
+    - contextPath: Datadog.Event.text
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
+      type: String
+    - contextPath: Datadog.Event.tags
+      description: A list of tags to apply to the event.
+      type: Unknown
+    - contextPath: Datadog.Event.url
+      description: URL of the event.
+      type: String
+    - contextPath: Datadog.Event.status
+      description: The status of the event.
+      type: String
+    - contextPath: Datadog.Event.title
+      description: The event title.
+      type: String
+    - contextPath: Datadog.Event.alert_type
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
+      type: String
+    - contextPath: Datadog.Event.device_name
+      description: A device name associated with the event.
+      type: String
+    - contextPath: Datadog.Event.source_type_name
+      description: The type of event being posted.
+      type: String
+    - contextPath: Datadog.Event.host
+      description: Host name to associate with the event. Any tags associated with the host are also applied to this event.
+      type: String
+  - arguments:
+    - description: The ID of the event.
+      name: event_id
+    - description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      name: start_date
+    - description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      name: end_date
+    - auto: PREDEFINED
+      description: The priority of the event.
+      name: priority
+      predefined:
+      - normal
+      - low
+    - description: |-
+        A comma-separated string of sources.
+        A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.
+      name: sources
+    - description: "A comma-separated list indicating what tags, if any, should be used to filter the list of events. \nEx: \"environment:production, region:East\"."
+      name: tags
+    - auto: PREDEFINED
+      description: Set unaggregated to 'true' to return all events within the specified [start,end] timeframe.
+      name: unaggregated
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response.
+      name: exclude_aggregate
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The page number. Default is 1.
+      name: page
+    - description: The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      name: limit
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    description: Get a list of events / Get the details of a particular event.
+    name: datadog-event-list
+    outputs:
+    - contextPath: Datadog.Event.alert_type
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
+      type: String
+    - contextPath: Datadog.Event.date_happened
+      description: The timestamp of when the event happened.
+      type: Number
+    - contextPath: Datadog.Event.device_name
+      description: 'A device name. '
+      type: String
+    - contextPath: Datadog.Event.id
+      description: Integer ID of the event.
+      type: Number
+    - contextPath: Datadog.Event.priority
+      description: 'The priority of the event.  Possible values: normal, low.'
+      type: String
+    - contextPath: Datadog.Event.text
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
+      type: String
+    - contextPath: Datadog.Event.tags
+      description: A list of tags to apply to the event.
+      type: Unknown
+    - contextPath: Datadog.Event.url
+      description: URL of the event.
+      type: String
+    - contextPath: Datadog.Event.status
+      description: The status of the event.
+      type: String
+    - contextPath: Datadog.Event.host
+      description: Host name to associate with the event. Any tags associated with the host are also applied to this event.
+      type: String
+    - contextPath: Datadog.Event.title
+      description: The Event title.
+      type: String
+    - contextPath: Datadog.Event.source_type_name
+      description: The type of event being posted.
+      type: String
+  - arguments:
+    - description: The page number. Default is 1.
+      name: page
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      name: limit
+    - description: |-
+        Source to filter.
+        Ex: user, datadog.
+      name: source
+    description: Return a mapping of tags to hosts for your whole infrastructure.
+    name: datadog-tag-list
+    outputs:
+    - contextPath: Datadog.Tag
+      description: A list of tags to apply to the host.
+      type: String
+    - contextPath: Datadog.HostTag
+      description: The host name.
+      type: Unknown
+  - arguments:
+    - description: The host name.
+      name: host_name
+      required: true
+    - description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
+      name: tags
+      required: true
+    description: This endpoint allows you to add new tags to a host, optionally specifying where these tags come from.
+    name: datadog-host-tag-create
+    outputs:
+    - contextPath: Datadog.Tag
+      description: A list of tags to apply to the host.
+      type: Unknown
+    - contextPath: Datadog.HostTag
+      description: The host name.
+      type: String
+  - arguments:
+    - description: The host name.
+      name: host_name
+      required: true
+    - description: |-
+        Source to filter.
+        Ex: user, datadog.
+      name: source
+    - description: The page number. Default is 1.
+      name: page
+    - description: "The number of requested results per page. \nDefault is 50. "
+      name: page_size
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      name: limit
+    description: Return the list of tags that apply to a given host.
+    name: datadog-host-tag-get
+    outputs:
+    - contextPath: Datadog.Tag
+      description: A list of tags to apply to the host.
+      type: Unknown
+    - contextPath: Datadog.HostTag
+      description: The host name.
+      type: String
+  - arguments:
+    - description: The host name.
+      name: host_name
+      required: true
+    - description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
+      name: tags
+    description: This endpoint allows you to replace all tags in an integration source with those supplied in the request.
+    name: datadog-host-tag-update
+    outputs:
+    - contextPath: Datadog.Tag
+      description: A list of tags to apply to the host.
+      type: Unknown
+    - contextPath: Datadog.HostTag
+      description: The host name.
+      type: String
+  - arguments:
+    - description: Host name from which to remove associated tags.
+      name: host_name
+      required: true
+    description: This endpoint allows you to remove all user-assigned tags for a single host.
+    name: datadog-host-tag-delete
+  - arguments:
+    - description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
+      name: from
+      required: true
+    - description: |-
+        Hostname for filtering the list of metrics.
+
+        Please do not complete this field (Bug will be fixed in the near future.)
+      name: host_name
+    - description: |-
+        Filter metrics that have been submitted with the given tags.
+        Ex: “region:east,env:prod”
+      name: tag_filter
+    - description: The page number. Default is 1.
+      name: page
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      name: limit
+    description: Get the list of actively reporting metrics.
+    name: datadog-active-metric-list
+    outputs:
+    - contextPath: Datadog.Metric.from
+      description: Time when the metrics were active in seconds since the Unix epoch.
+      type: String
+    - contextPath: Datadog.Metric
+      description: List of metric names.
+      type: Unknown
+  - arguments:
+    - description: |-
+        Query string to search metrics from last 24 hours in Datadog.
+        A complete list of query string values are available here: https://app.datadoghq.com/metric/summary
+      name: query
+      required: true
+    description: Search for metrics from the last 24 hours in Datadog.
+    name: datadog-metric-search
+    outputs:
+    - contextPath: Datadog.Metric.metric_name
+      description: List of metrics that match the search query.
+      type: Unknown
+  - arguments:
+    - description: Name of the metric for which to get metadata.
+      name: metric_name
+      required: true
+    description: Get metadata about a specific metric.
+    name: datadog-metric-metadata-get
+    outputs:
+    - contextPath: Datadog.MetricMetadata.description
+      description: Metric description.
+      type: String
+    - contextPath: Datadog.MetricMetadata.integration
+      description: Name of the integration that sent the metric if applicable.
+      type: String
+    - contextPath: Datadog.MetricMetadata.per_unit
+      description: Per unit of the metric such as second in bytes per second.
+      type: String
+    - contextPath: Datadog.MetricMetadata.short_name
+      description: A human-readable and abbreviated version of the metric name.
+      type: String
+    - contextPath: Datadog.MetricMetadata.statsd_interval
+      description: StatsD flush interval of the metric in seconds if applicable.
+      type: Number
+    - contextPath: Datadog.MetricMetadata.type
+      description: Metric type.
+      type: String
+    - contextPath: Datadog.MetricMetadata.unit
+      description: Primary unit of the metric.
+      type: String
+    - contextPath: Datadog.MetricMetadata.metric_name
+      description: The metric name.
+      type: String
+  - arguments:
+    - description: Name of the metric for which to edit metadata.
+      name: metric_name
+      required: true
+    - description: Metric description.
+      name: description
+    - description: "Per unit of the metric  \nA complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
+      name: per_unit
+    - description: A human-readable and abbreviated version of the metric name.
+      name: short_name
+    - description: StatsD flush interval of the metric in seconds if applicable.
+      name: statsd_interval
+    - auto: PREDEFINED
+      description: Metric type.
+      name: type
+      predefined:
+      - count
+      - rate
+      - gauge
+      - set
+      - histogram
+      - distribution
+    - description: Primary unit of the metric.
+      name: unit
+    description: Edit metadata of a specific metric.
+    name: datadog-metric-metadata-update
+    outputs:
+    - contextPath: Datadog.MetricMetadata.description
+      description: Metric description.
+      type: String
+    - contextPath: Datadog.MetricMetadata.per_unit
+      description: Per unit of the metric such as second in bytes per second.
+      type: String
+    - contextPath: Datadog.MetricMetadata.short_name
+      description: A human-readable and abbreviated version of the metric name.
+      type: String
+    - contextPath: Datadog.MetricMetadata.statsd_interval
+      description: StatsD flush interval of the metric in seconds if applicable.
+      type: Number
+    - contextPath: Datadog.MetricMetadata.type
+      description: Metric type.
+      type: String
+    - contextPath: Datadog.MetricMetadata.unit
+      description: Primary unit of the metric.
+      type: String
+    - contextPath: Datadog.MetricMetadata.metric_name
+      description: The metric name.
+      type: String
+  - arguments:
+    - description: The title of the incident, which summarizes what happened.
+      name: title
+      required: true
+    - auto: PREDEFINED
+      description: |-
+        The severity of the incident.
+        Default value=unknown
+      name: severity
+      predefined:
+      - SEV-1
+      - SEV-2
+      - SEV-3
+      - SEV-4
+      - SEV-5
+      - UNKNOWN
+    - auto: PREDEFINED
+      description: The state of the incident.
+      name: state
+      predefined:
+      - active
+      - stable
+      - resolved
+    - auto: PREDEFINED
+      description: Specify how the incident was detected.
+      name: detection_method
+      predefined:
+      - customer
+      - employee
+      - monitor
+      - other
+      - unknown
+    - description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
+      name: root_cause
+    - description: Summary of the incident.
+      name: summary
+    - description: |-
+        The Markdown content of the cell  that is used to format using the Markdown syntax rules.
+        If content is provided, important attribute is required.
+      name: content
+    - auto: PREDEFINED
+      description: A flag indicating whether the timeline cell is important and should be highlighted.
+      name: important
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The name of the notified handle.
+      name: display_name
+    - description: The email address used for the notification.
+      name: handle
+    description: Create an incident.
+    name: datadog-incident-create
+    outputs:
+    - contextPath: Datadog.Incident.id
+      description: The ID of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.public_id
+      description: The monotonically increasing integer ID for the incident.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.resolved
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.title
+      description: The title of the incident, which summarizes what happened.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_scope
+      description: A summary of the impact customers experienced during the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impact_start
+      description: Timestamp when customers began being impacted by the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impact_end
+      description: Timestamp when customers were no longer impacted by the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impacted
+      description: A flag indicating whether the incident caused customer impact.
+      type: Boolean
+    - contextPath: Datadog.Incident.attributes.notification_handles.display_name
+      description: The name of the notified handle.
+      type: String
+    - contextPath: Datadog.Incident.attributes.notification_handles.handle
+      description: The email address used for the notification.
+      type: String
+    - contextPath: Datadog.Incident.attributes.created
+      description: Timestamp when the incident was created.
+      type: String
+    - contextPath: Datadog.Incident.attributes.modified
+      description: Timestamp when the incident was last modified.
+      type: String
+    - contextPath: Datadog.Incident.attributes.detected
+      description: Timestamp when the incident was detected.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_duration
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_detect
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_repair
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_internal_response
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_resolve
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.fields.severity.value
+      description: The severity of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.state.value
+      description: The status of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.detection_method.value
+      description: Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.root_cause.value
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.summary.value
+      description: Summary of incident.
+      type: String
+    - contextPath: Datadog.Incident.relationships.created_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.integrations.data.id
+      description: A unique identifier that represents the integration metadata.
+      type: String
+    - contextPath: Datadog.Incident.relationships.last_modified_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.commander_user.data.id
+      description: A unique identifier that represents the user.
+      type: Unknown
+    - contextPath: Datadog.Incident.included.attributes.created_at
+      description: Creation time of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.disabled
+      description: Whether the user is disabled.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.email
+      description: Email of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.handle
+      description: Handle of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.icon
+      description: URL of the user's icon.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.modified_at
+      description: Time that the user was last modified.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.name
+      description: Name of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.service_account
+      description: Whether the user is a service account.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.status
+      description: Status of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.title
+      description: Title of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.verified
+      description: Whether the user is verified.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.id
+      description: ID of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.org.id
+      description: ID of the organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_orgs.id
+      description: ID of the other organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_users.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.roles.id
+      description: The unique identifier of the role.
+      type: String
+  - arguments:
+    - description: The UUID of the incident.
+      name: incident_id
+      required: true
+    description: Delete an existing incident.
+    name: datadog-incident-delete
+  - arguments:
+    - description: The UUID of the incident.
+      name: incident_id
+      required: true
+    - description: |-
+        Specifies the end of the search time frame.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      name: customer_impact_end
+    - description: A summary of the impact customers experienced during the incident.
+      name: customer_impact_scope
+    - description: |-
+        Timestamp when customers began being impacted by the incident.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      name: customer_impact_start
+    - description: |-
+        Timestamp when the incident was detected.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      name: detected
+    - auto: PREDEFINED
+      description: |-
+        The severity of the incident.
+        Default value=unknown
+      name: severity
+      predefined:
+      - SEV-1
+      - SEV-2
+      - SEV-3
+      - SEV-4
+      - SEV-5
+      - UNKNOWN
+    - auto: PREDEFINED
+      description: The state of the incident.
+      name: state
+      predefined:
+      - active
+      - stable
+      - resolved
+    - auto: PREDEFINED
+      description: Specify how the incident was detected.
+      name: detection_method
+      predefined:
+      - customer
+      - employee
+      - monitor
+      - other
+      - unknown
+    - description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
+      name: root_cause
+    - description: Summary of the incident.
+      name: summary
+    - description: The name of the notified handle.
+      name: display_name
+    - description: The email address used for the notification.
+      name: handle
+    - description: The title of the incident, which summarizes what happened.
+      name: title
+    description: Updates an incident. Provide only the attributes that should be updated as this request is a partial update.
+    name: datadog-incident-update
+    outputs:
+    - contextPath: Datadog.Incident.id
+      description: The incident ID.
+      type: String
+    - contextPath: Datadog.Incident.attributes.public_id
+      description: The monotonically increasing integer ID for the incident.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.title
+      description: The title of the incident, which summarizes what happened.
+      type: String
+    - contextPath: Datadog.Incident.attributes.resolved
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_scope
+      description: A summary of the impact customers experienced during the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_start
+      description: Timestamp when customers began being impacted by the incident.
+      type: Date
+    - contextPath: Datadog.Incident.attributes.customer_impact_end
+      description: Timestamp when customers were no longer impacted by the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impacted
+      description: A flag indicating whether the incident caused customer impact.
+      type: Boolean
+    - contextPath: Datadog.Incident.attributes.notification_handles.handle
+      description: The email address used for the notification.
+      type: String
+    - contextPath: Datadog.Incident.attributes.notification_handles.display_name
+      description: The name of the notified handle.
+      type: String
+    - contextPath: Datadog.Incident.attributes.created
+      description: Timestamp when the incident was created.
+      type: String
+    - contextPath: Datadog.Incident.attributes.modified
+      description: Timestamp when the incident was last modified.
+      type: String
+    - contextPath: Datadog.Incident.attributes.detected
+      description: Timestamp when the incident was detected.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_duration
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_detect
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_repair
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_internal_response
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_resolve
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.fields.severity.value
+      description: The severity of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.state.value
+      description: The status of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.detection_method.value
+      description: 'Specify how the incident was detected with these default options: customer, employee, monitor, other, or unknown.'
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.root_cause.value
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.summary.value
+      description: Summary of incident.
+      type: String
+    - contextPath: Datadog.Incident.relationships.created_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.last_modified_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.commander_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.created_at
+      description: Creation time of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.disabled
+      description: Whether the user is disabled.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.email
+      description: Email of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.handle
+      description: Handle of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.icon
+      description: URL of the user's icon.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.modified_at
+      description: Time that the user was last modified.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.name
+      description: Name of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.service_account
+      description: Whether the user is a service account.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.status
+      description: Status of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.title
+      description: Title of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.verified
+      description: Whether the user is verified.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.id
+      description: ID of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.org.id
+      description: ID of the organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_orgs.id
+      description: ID of the other organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_users.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.roles.id
+      description: The unique identifier of the role.
+      type: String
+  - arguments:
+    - description: The UUID of the incident.
+      name: incident_id
+    - auto: PREDEFINED
+      description: The status of the incident.
+      name: state
+      predefined:
+      - active
+      - stable
+      - resolved
+    - auto: PREDEFINED
+      description: The severity of the incident.
+      name: severity
+      predefined:
+      - SEV-1
+      - SEV-2
+      - SEV-3
+      - SEV-4
+      - SEV-5
+      - UNKNOWN
+    - auto: PREDEFINED
+      description: A flag indicating whether the incident caused customer impact.
+      name: customer_impacted
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Specify how the incident was detected.
+      name: detection_method
+      predefined:
+      - customer
+      - employee
+      - monitor
+      - other
+      - unknown
+    - auto: PREDEFINED
+      description: Specifies the order of returned incidents
+      name: sort
+      predefined:
+      - asc
+      - desc
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    - description: The page number. Default is 1.
+      name: page
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      name: limit
+    - auto: PREDEFINED
+      description: |-
+        Specifies which types of related objects should be included in the response.
+        Allowed enum values: users, attachments
+      name: include
+      predefined:
+      - users
+      - attachments
+    description: Get all incidents for the user’s organization / Get the details of an incident using incident_id.
+    name: datadog-incident-list
+    outputs:
+    - contextPath: Datadog.Incident.id
+      description: The ID of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.public_id
+      description: The monotonically increasing integer ID for the incident.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.resolved
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.title
+      description: The title of the incident, which summarizes what happened.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_scope
+      description: A summary of the impact customers experienced during the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impact_start
+      description: Timestamp when customers began being impacted by the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impact_end
+      description: Timestamp when customers were no longer impacted by the incident.
+      type: Unknown
+    - contextPath: Datadog.Incident.attributes.customer_impacted
+      description: A flag indicating whether the incident caused customer impact.
+      type: Boolean
+    - contextPath: Datadog.Incident.attributes.notification_handles.display_name
+      description: The name of the notified handle.
+      type: String
+    - contextPath: Datadog.Incident.attributes.notification_handles.handle
+      description: The email address used for the notification.
+      type: String
+    - contextPath: Datadog.Incident.attributes.created
+      description: Timestamp when the incident was created.
+      type: String
+    - contextPath: Datadog.Incident.attributes.modified
+      description: Timestamp when the incident was last modified.
+      type: String
+    - contextPath: Datadog.Incident.attributes.detected
+      description: Timestamp when the incident was detected.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_duration
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_detect
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_repair
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_internal_response
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_resolve
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.fields.severity.value
+      description: The severity of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.state.value
+      description: The status of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.detection_method.value
+      description: Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.root_cause.value
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.summary.value
+      description: Summary of incident.
+      type: String
+    - contextPath: Datadog.Incident.relationships.created_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.integrations.data.id
+      description: A unique identifier that represents the integration metadata.
+      type: String
+    - contextPath: Datadog.Incident.relationships.last_modified_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.commander_user.data.id
+      description: A unique identifier that represents the user.
+      type: Unknown
+    - contextPath: Datadog.Incident.included.attributes.created_at
+      description: Creation time of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.disabled
+      description: Whether the user is disabled.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.email
+      description: Email of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.handle
+      description: Handle of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.icon
+      description: URL of the user's icon.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.modified_at
+      description: Time that the user was last modified.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.name
+      description: Name of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.service_account
+      description: Whether the user is a service account.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.attributes.status
+      description: Status of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.title
+      description: Title of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.attributes.verified
+      description: Whether the user is verified.
+      type: Boolean
+    - contextPath: Datadog.Incident.included.id
+      description: ID of the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.org.id
+      description: ID of the organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_orgs.id
+      description: ID of the other organization.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.other_users.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.included.relationships.roles.id
+      description: The unique identifier of the role.
+      type: String
+  - arguments:
+    - description: |-
+        Start of the queried time period.
+        Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'.
+      name: from
+      required: true
+    - description: |-
+        End of the queried time period.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'.
+      name: to
+      required: true
+    - description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values are available here: https://app.datadoghq.com/metric/summary."
+      name: query
+      required: true
+    description: Query of sequence of data points that are collected over time intervals, allowing us to track changes over time.
+    name: datadog-time-series-point-query
+    outputs:
+    - contextPath: Datadog.TimeSeriesPoint.from_date
+      description: Start of requested time window in milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.error
+      description: Message indicating the errors if status is not OK.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.group_by
+      description: List of tag keys on which to group.
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.message
+      description: Message indicating success if status is OK.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.query
+      description: Query string.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.res_type
+      description: Type of response.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.aggr
+      description: Aggregation type.
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.series.display_name
+      description: Display name of the metric.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.end
+      description: End of the time window in milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.series.expression
+      description: Metric expression.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.interval
+      description: Number of seconds between data samples.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.length
+      description: Number of data samples.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.metric
+      description: Metric name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.pointlist
+      description: List of points of the time series.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.query_index
+      description: The index of the series query within the request.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.scope
+      description: Metric scope, comma-separated list of tags.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.start
+      description: Start of the time window in milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.series.tag_set
+      description: Unique tags identifying this series.
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.family
+      description: Unit family allows for conversion between units of the same family, for scaling.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.name
+      description: Unit name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.plural
+      description: Plural form of the unit's name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.scale_factor
+      description: Factor for scaling between units of the same family.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.short_name
+      description: Abbreviation of the unit.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.status
+      description: Status of the query.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.to_date
+      description: End of requested time window in milliseconds since Unix epoch.
+      type: Date
+  dockerimage: demisto/datadog-api-client:1.0.0.72092
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- DatadogCloudSIEM
+fromversion: 6.8.0

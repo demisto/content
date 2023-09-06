@@ -1,16 +1,11 @@
 args:
 - default: true
   description: String to pad with zeros.
-  isArray: false
   name: value
   required: true
-  secret: false
-- default: false
-  description: The desired length of the string. The value specified in the "value" argument will be padded with zeros until the string reaches this length.
-  isArray: false
+- description: The desired length of the string. The value specified in the "value" argument will be padded with zeros until the string reaches this length.
   name: length
   required: true
-  secret: false
   defaultValue: "0"
 comment: Adds zeros (0) to the beginning of the string, until the string reaches the specified length.
 commonfields:
@@ -19,7 +14,6 @@ commonfields:
 enabled: true
 name: PadZeros
 script: '-'
-system: false
 tags:
 - transformer
 - string
@@ -28,8 +22,7 @@ timeout: '0'
 type: python
 subtype: python3
 runas: DBotWeakRole
-runonce: false
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test
 fromversion: 5.0.0

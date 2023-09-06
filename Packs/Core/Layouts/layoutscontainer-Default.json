@@ -48,10 +48,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 26,
+                                "id": "incident-playbookId-field",
+                                "index": 3,
+                                "listId": "w68olunplf-3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "sourcehostname",
                                 "height": 26,
                                 "id": "bfb2d810-2762-11ec-9959-2922ebe0f011",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -61,7 +72,7 @@
                                 "fieldId": "sourceip",
                                 "height": 26,
                                 "id": "c28fb940-2762-11ec-9959-2922ebe0f011",
-                                "index": 3,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -71,18 +82,7 @@
                                 "fieldId": "severity",
                                 "height": 26,
                                 "id": "incident-severity-field",
-                                "index": 4,
-                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "playbookid",
-                                "height": 26,
-                                "id": "incident-playbookId-field",
-                                "index": 4,
+                                "index": 6,
                                 "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -92,7 +92,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 26,
                                 "id": "incident-sourceBrand-field",
-                                "index": 5,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -101,7 +101,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 26,
                                 "id": "incident-sourceInstance-field",
-                                "index": 6,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

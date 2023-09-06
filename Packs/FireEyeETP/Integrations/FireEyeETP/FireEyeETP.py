@@ -20,7 +20,7 @@ urllib3.disable_warnings()
 GLOBAL VARS
 '''
 
-API_KEY = demisto.params().get('api_key')
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
 BASE_PATH = '{}/api/v1'.format(demisto.params().get('server'))
 HTTP_HEADERS = {
     'Content-Type': 'application/json'
@@ -607,6 +607,8 @@ EXECUTION
 
 
 def main():
+    if not API_KEY:
+        return_error('API key must be provided.')
     set_proxies()
 
     try:

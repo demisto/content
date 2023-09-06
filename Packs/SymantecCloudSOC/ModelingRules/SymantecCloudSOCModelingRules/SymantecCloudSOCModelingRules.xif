@@ -1,0 +1,19 @@
+[MODEL: dataset ="symantec_cloud_soc_raw"]
+alter browsers_array = json_extract_array(browsers, "$"),
+      devices_array = json_extract_array(devices, "$")
+| alter  len_browsers = array_length(browsers_array),
+         len_devices = array_length(devices_array)
+| alter xdm.alert.severity = severity,
+    xdm.source.location.country = coalesce(country, arrayindex(regextract(locations , "\(([^\)]+)\)"),0)),
+    xdm.source.location.city = coalesce(city, arrayindex(regextract(locations , "^(.*?)\s*\("),0)),
+    xdm.source.location.latitude = to_float(latitude),
+    xdm.source.location.longitude = to_float(longitude),
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(hosts,host)),
+    xdm.event.operation_sub_type = activity_type,
+    xdm.target.application.name = service,
+    xdm.target.resource.type = object_type,
+    xdm.source.user.username = user_name,
+    xdm.source.user.upn = user,
+    xdm.network.http.browser = if(len_browsers >= 2 ,replace(arraystring(browsers_array, ","),"\"",""), replace(arrayindex(browsers_array,0),"\"","")),
+    xdm.source.host.hostname = if(len_devices >= 2 ,replace(arraystring(devices_array, ","),"\"",""), replace(arrayindex(devices_array,0),"\"","")),
+    xdm.event.type = type;

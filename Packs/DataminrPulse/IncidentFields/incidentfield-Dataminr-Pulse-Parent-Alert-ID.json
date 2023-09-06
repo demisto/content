@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulseparentalertid",
+    "version": -1,
+    "modified": "2023-01-30T12:32:04.824923662+05:30",
+    "name": "Dataminr Pulse Parent Alert ID",
+    "ownerOnly": false,
+    "cliName": "dataminrpulseparentalertid",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

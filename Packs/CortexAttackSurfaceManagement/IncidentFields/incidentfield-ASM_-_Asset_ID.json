@@ -7,7 +7,7 @@
     "description": "UUID for ASM Asset",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmassetid",
     "isReadOnly": false,
     "locked": false,

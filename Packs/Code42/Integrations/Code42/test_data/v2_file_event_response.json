@@ -1,0 +1,824 @@
+{
+  "fileEvents": [
+    {
+      "@timestamp": "2022-12-09T19:03:11.954000Z",
+      "destination": {
+        "accountName": null,
+        "accountType": null,
+        "category": "Device",
+        "domains": [],
+        "email": {
+          "recipients": null,
+          "subject": null
+        },
+        "ip": null,
+        "name": "Unmonitored Device",
+        "operatingSystem": null,
+        "printJobName": null,
+        "printerName": null,
+        "printedFilesBackupPath": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "event": {
+        "action": "file-downloaded",
+        "id": "0106499c-89d0-4809-bef8-f647a6059982_EPS",
+        "ingested": "2022-12-09T19:03:12.329000Z",
+        "inserted": "2022-12-09T19:51:57.374625Z",
+        "observer": "Salesforce",
+        "relatedEvents": null,
+        "shareType": [],
+        "vector": "DOWNLOADED",
+        "detectorDisplayName": null
+      },
+      "file": {
+        "acquiredFrom": [],
+        "category": "Spreadsheet",
+        "categoryByBytes": null,
+        "categoryByExtension": "Spreadsheet",
+        "changeType": "NONE",
+        "classifications": [],
+        "cloudDriveId": null,
+        "created": "2022-12-09T19:03:08Z",
+        "directory": null,
+        "directoryId": [],
+        "hash": {
+          "md5": null,
+          "md5Error": null,
+          "sha256": null,
+          "sha256Error": null
+        },
+        "id": null,
+        "mimeTypeByBytes": null,
+        "mimeTypeByExtension": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified": null,
+        "name": "New Contacts & Accounts Report-2022-12-09-11-03-08.xlsx",
+        "owner": null,
+        "sizeInBytes": null,
+        "url": null,
+        "originalName": null,
+        "originalDirectory": null,
+        "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      },
+      "process": {
+        "executable": null,
+        "owner": null
+      },
+      "report": {
+        "count": 20,
+        "description": null,
+        "headers": [
+          "SALUTATION",
+          "FIRST_NAME",
+          "LAST_NAME",
+          "TITLE",
+          "ACCOUNT.NAME",
+          "ADDRESS2_STREET",
+          "ADDRESS2_CITY",
+          "ADDRESS2_STATE",
+          "ADDRESS2_ZIP",
+          "ADDRESS2_COUNTRY",
+          "PHONE1",
+          "PHONE2",
+          "PHONE3",
+          "EMAIL",
+          "OWNER_FULL_NAME"
+        ],
+        "id": "00O5f000002mwE0",
+        "name": "New Contacts & Accounts Report",
+        "type": "REPORT_TYPE_SAVED"
+      },
+      "risk": {
+        "indicators": [
+          {
+            "name": "Download to unmonitored device from corporate Salesforce",
+            "weight": 6,
+            "id": "Download to unmonitored device from corporate Salesforce"
+          },
+          {
+            "name": "Spreadsheet",
+            "weight": 0,
+            "id": "Spreadsheet"
+          }
+        ],
+        "score": 6,
+        "severity": "MODERATE",
+        "trustReason": null,
+        "trusted": false,
+        "preventativeControl": null,
+        "untrustedValues": {
+          "accountNames": [],
+          "domains": [],
+          "gitRepositoryUris": [],
+          "slackWorkspaces": [],
+          "urlPaths": []
+        }
+      },
+      "source": {
+        "accountName": null,
+        "accountType": null,
+        "category": "CRM Tools",
+        "domain": null,
+        "domains": [],
+        "email": {
+          "from": null,
+          "sender": null
+        },
+        "ip": null,
+        "name": "Salesforce",
+        "operatingSystem": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "user": {
+        "deviceUid": null,
+        "email": "jim.harper@example.com",
+        "id": "1004440923549707297"
+      },
+      "git": {
+        "eventId": null,
+        "lastCommitHash": null,
+        "repositoryEmail": null,
+        "repositoryEndpointPath": null,
+        "repositoryUri": null,
+        "repositoryUser": null
+      }
+    },
+    {
+      "@timestamp": "2022-11-16T17:52:03.973000Z",
+      "destination": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domains": [],
+        "email": {
+          "recipients": null,
+          "subject": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "printJobName": null,
+        "printerName": null,
+        "printedFilesBackupPath": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "event": {
+        "action": "file-shared",
+        "id": "01270061-c1b3-4cdc-b8c0-22dead42903d",
+        "ingested": "2022-11-16T17:52:05.144000Z",
+        "inserted": "2022-11-16T17:52:26.784379Z",
+        "observer": "OneDrive",
+        "relatedEvents": null,
+        "shareType": [
+          "Anyone with the link"
+        ],
+        "vector": "UNKNOWN",
+        "detectorDisplayName": "Microsoft OneDrive"
+      },
+      "file": {
+        "acquiredFrom": [],
+        "category": "Image",
+        "categoryByBytes": "Image",
+        "categoryByExtension": "Image",
+        "changeType": "SHARING_CHANGED",
+        "classifications": [],
+        "cloudDriveId": "b!tR03IxgHLEGXv_6PuGPEq5eHAy2F159GgLE4TK6QKcyZYuGEi_uCSLs7LwUpM_0j",
+        "created": "2022-11-16T17:47:27Z",
+        "directory": null,
+        "directoryId": [
+          "662fd289-7b77-4440-9ff6-34842b9d1c33"
+        ],
+        "hash": {
+          "md5": "615e8ef6427757644666fc664ff3f303",
+          "md5Error": null,
+          "sha256": "efe68f962fbc9230e6fdeb61e95fa218d178d44b5c74351ccb4ab78b1ce07e19",
+          "sha256Error": null
+        },
+        "id": "af6721ad-3788-433a-9da2-661ce0e32ae5",
+        "mimeTypeByBytes": "image/png",
+        "mimeTypeByExtension": "image/png",
+        "modified": "2022-11-16T17:47:30Z",
+        "name": "1668620812_InsulatedStackModel2.png",
+        "owner": "darnell.waters@example.onmicrosoft.com",
+        "sizeInBytes": 138394,
+        "url": "https://example-my.sharepoint.com/:i:/g/personal/darnell_waters_example_onmicrosoft_com/Ea0hZ6-INzpDnaJmHODjKuUBMlUe1V_p1uHU0YsXQy7AqQ",
+        "originalName": null,
+        "originalDirectory": null,
+        "mimeType": "image/png"
+      },
+      "process": {
+        "executable": null,
+        "owner": null
+      },
+      "report": {
+        "count": null,
+        "description": null,
+        "headers": [],
+        "id": null,
+        "name": null,
+        "type": null
+      },
+      "risk": {
+        "indicators": [
+          {
+            "name": "Public link from corporate OneDrive",
+            "weight": 5,
+            "id": "Public link from corporate OneDrive"
+          },
+          {
+            "name": "Image",
+            "weight": 0,
+            "id": "Image"
+          }
+        ],
+        "score": 5,
+        "severity": "MODERATE",
+        "trustReason": null,
+        "trusted": false,
+        "preventativeControl": null,
+        "untrustedValues": {
+          "accountNames": [],
+          "domains": [],
+          "gitRepositoryUris": [],
+          "slackWorkspaces": [],
+          "urlPaths": []
+        }
+      },
+      "source": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domain": null,
+        "domains": [],
+        "email": {
+          "from": null,
+          "sender": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "user": {
+        "deviceUid": null,
+        "email": "darnell.waters@example.com",
+        "id": "1004438887768763425"
+      },
+      "git": {
+        "eventId": null,
+        "lastCommitHash": null,
+        "repositoryEmail": null,
+        "repositoryEndpointPath": null,
+        "repositoryUri": null,
+        "repositoryUser": null
+      }
+    },
+    {
+      "@timestamp": "2023-02-07T17:33:52Z",
+      "destination": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domains": [],
+        "email": {
+          "recipients": [
+            "jenvang651@yahoo.com"
+          ],
+          "subject": "PyTorch3D Dev Code - 2023-02-07T11:33:19.678816100"
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "printJobName": null,
+        "printerName": null,
+        "printedFilesBackupPath": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "event": {
+        "action": "file-emailed",
+        "id": "03bdf601-3f28-42b5-94e0-cd1a6dddd9c2",
+        "ingested": "2023-02-07T17:33:54.671000Z",
+        "inserted": "2023-02-07T17:34:01.959921Z",
+        "observer": "Gmail",
+        "relatedEvents": null,
+        "shareType": [],
+        "vector": "EMAILED",
+        "detectorDisplayName": "C42Demo Gmail"
+      },
+      "file": {
+        "acquiredFrom": [],
+        "category": "SourceCode",
+        "categoryByBytes": "SourceCode",
+        "categoryByExtension": "SourceCode",
+        "changeType": "NONE",
+        "classifications": [],
+        "cloudDriveId": null,
+        "created": "2023-02-07T17:33:52Z",
+        "directory": null,
+        "directoryId": [],
+        "hash": {
+          "md5": "6bf85ff9edc620c7ba9b57ab3b752c11",
+          "md5Error": null,
+          "sha256": "73620a0a8554a56e93b90fe2c8a3f732be881a7da930603a5c6e4c9207fee2d5",
+          "sha256Error": null
+        },
+        "id": null,
+        "mimeTypeByBytes": "text/x-python",
+        "mimeTypeByExtension": "text/x-python",
+        "modified": null,
+        "name": "1675791199 setup.py",
+        "owner": null,
+        "sizeInBytes": 2722,
+        "url": null,
+        "originalName": null,
+        "originalDirectory": null,
+        "mimeType": "text/x-python"
+      },
+      "process": {
+        "executable": null,
+        "owner": null
+      },
+      "report": {
+        "count": null,
+        "description": null,
+        "headers": [],
+        "id": null,
+        "name": null,
+        "type": null
+      },
+      "risk": {
+        "indicators": [
+          {
+            "name": "Contract",
+            "weight": 1,
+            "id": "Contract"
+          },
+          {
+            "name": "Sent from corporate Gmail",
+            "weight": 3,
+            "id": "Sent from corporate Gmail"
+          },
+          {
+            "name": "Source code",
+            "weight": 3,
+            "id": "Source code"
+          }
+        ],
+        "score": 7,
+        "severity": "HIGH",
+        "trustReason": null,
+        "trusted": false,
+        "preventativeControl": null,
+        "untrustedValues": {
+          "accountNames": [],
+          "domains": [
+            "yahoo.com"
+          ],
+          "gitRepositoryUris": [],
+          "slackWorkspaces": [],
+          "urlPaths": []
+        }
+      },
+      "source": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domain": null,
+        "domains": [],
+        "email": {
+          "from": "jennifer.vang@example.com",
+          "sender": "jennifer.vang@example.com"
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "user": {
+        "deviceUid": null,
+        "email": "jennifer.vang@example.com",
+        "id": "1004440649225448481"
+      },
+      "git": {
+        "eventId": null,
+        "lastCommitHash": null,
+        "repositoryEmail": null,
+        "repositoryEndpointPath": null,
+        "repositoryUri": null,
+        "repositoryUser": null
+      }
+    },
+    {
+      "@timestamp": "2022-11-23T14:36:05.080000Z",
+      "destination": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domains": [],
+        "email": {
+          "recipients": null,
+          "subject": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "printJobName": null,
+        "printerName": null,
+        "printedFilesBackupPath": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "event": {
+        "action": "file-shared",
+        "id": "046dbf8a-d45f-4c2f-9491-0ab7070b25e6",
+        "ingested": "2022-11-23T14:36:06.064000Z",
+        "inserted": "2022-11-23T14:36:38.760724Z",
+        "observer": "OneDrive",
+        "relatedEvents": null,
+        "shareType": [
+          "Anyone with the link"
+        ],
+        "vector": "UNKNOWN",
+        "detectorDisplayName": "Microsoft OneDrive"
+      },
+      "file": {
+        "acquiredFrom": [],
+        "category": "Image",
+        "categoryByBytes": "Image",
+        "categoryByExtension": "Image",
+        "changeType": "SHARING_CHANGED",
+        "classifications": [],
+        "cloudDriveId": "b!tR03IxgHLEGXv_6PuGPEq5eHAy2F159GgLE4TK6QKcyZYuGEi_uCSLs7LwUpM_0j",
+        "created": "2022-11-23T14:33:19Z",
+        "directory": null,
+        "directoryId": [
+          "662fd289-7b77-4440-9ff6-34842b9d1c33"
+        ],
+        "hash": {
+          "md5": "20888577414bd64cf0318636da2aeb3d",
+          "md5Error": null,
+          "sha256": "f37fc9fa04c19b510476dbbbe786dd78d0598fc06b60549ee4e8c8950338aaf3",
+          "sha256Error": null
+        },
+        "id": "22f3d9e2-803d-4acf-890e-0f9e840cacf0",
+        "mimeTypeByBytes": "image/png",
+        "mimeTypeByExtension": "image/png",
+        "modified": "2022-11-23T14:33:23Z",
+        "name": "1669213974_CopeLabsNetworkDiagram.png",
+        "owner": "darnell.waters@example.onmicrosoft.com",
+        "sizeInBytes": 230843,
+        "url": "https://example-my.sharepoint.com/:i:/g/personal/darnell_waters_example_onmicrosoft_com/EeLZ8yI9gM9KiQ4PnoQMrPABCjuRb_iN2gnk90eLFsJNxw",
+        "originalName": null,
+        "originalDirectory": null,
+        "mimeType": "image/png"
+      },
+      "process": {
+        "executable": null,
+        "owner": null
+      },
+      "report": {
+        "count": null,
+        "description": null,
+        "headers": [],
+        "id": null,
+        "name": null,
+        "type": null
+      },
+      "risk": {
+        "indicators": [
+          {
+            "name": "Public link from corporate OneDrive",
+            "weight": 5,
+            "id": "Public link from corporate OneDrive"
+          },
+          {
+            "name": "Image",
+            "weight": 0,
+            "id": "Image"
+          }
+        ],
+        "score": 5,
+        "severity": "MODERATE",
+        "trustReason": null,
+        "trusted": false,
+        "preventativeControl": null,
+        "untrustedValues": {
+          "accountNames": [],
+          "domains": [],
+          "gitRepositoryUris": [],
+          "slackWorkspaces": [],
+          "urlPaths": []
+        }
+      },
+      "source": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domain": null,
+        "domains": [],
+        "email": {
+          "from": null,
+          "sender": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "user": {
+        "deviceUid": null,
+        "email": "darnell.waters@example.com",
+        "id": "1004438887768763425"
+      },
+      "git": {
+        "eventId": null,
+        "lastCommitHash": null,
+        "repositoryEmail": null,
+        "repositoryEndpointPath": null,
+        "repositoryUri": null,
+        "repositoryUser": null
+      }
+    },
+    {
+      "@timestamp": "2023-03-08T10:40:05.290000Z",
+      "destination": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domains": [],
+        "email": {
+          "recipients": null,
+          "subject": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "printJobName": null,
+        "printerName": null,
+        "printedFilesBackupPath": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "event": {
+        "action": "file-shared",
+        "id": "06689ebf-cfc8-46f9-a0e0-428a24a800c9",
+        "ingested": "2023-03-08T10:40:05.325000Z",
+        "inserted": "2023-03-08T10:40:28.586970Z",
+        "observer": "OneDrive",
+        "relatedEvents": null,
+        "shareType": [
+          "Anyone with the link"
+        ],
+        "vector": "UNKNOWN",
+        "detectorDisplayName": "Microsoft OneDrive"
+      },
+      "file": {
+        "acquiredFrom": [],
+        "category": "Image",
+        "categoryByBytes": "Image",
+        "categoryByExtension": "Image",
+        "changeType": "SHARING_CHANGED",
+        "classifications": [],
+        "cloudDriveId": "b!tR03IxgHLEGXv_6PuGPEq5eHAy2F159GgLE4TK6QKcyZYuGEi_uCSLs7LwUpM_0j",
+        "created": "2023-03-08T10:36:46Z",
+        "directory": null,
+        "directoryId": [
+          "662fd289-7b77-4440-9ff6-34842b9d1c33"
+        ],
+        "hash": {
+          "md5": "3d2bfb60649ab6c73f9c61bf2437281f",
+          "md5Error": null,
+          "sha256": "ec92af08f9e40e7131e8816ce41f58abc99da5bbebc62910a432b0da763a1c3b",
+          "sha256Error": null
+        },
+        "id": "1c9be240-5c83-45d2-ab61-52d7fe53a5fd",
+        "mimeTypeByBytes": "image/png",
+        "mimeTypeByExtension": "image/png",
+        "modified": "2023-03-08T10:36:50Z",
+        "name": "1678271780_Longfellow Network Redesign Concepts.png",
+        "owner": "darnell.waters@example.onmicrosoft.com",
+        "sizeInBytes": 76265,
+        "url": "https://example-my.sharepoint.com/:i:/g/personal/darnell_waters_example_onmicrosoft_com/EUDimxyDXNJFq2FS1_5Tpf0BPV1RjA_FawtBXUx8hDopIQ",
+        "originalName": null,
+        "originalDirectory": null,
+        "mimeType": "image/png"
+      },
+      "process": {
+        "executable": null,
+        "owner": null
+      },
+      "report": {
+        "count": null,
+        "description": null,
+        "headers": [],
+        "id": null,
+        "name": null,
+        "type": null
+      },
+      "risk": {
+        "indicators": [
+          {
+            "name": "Elevated access",
+            "weight": 1,
+            "id": "Elevated access"
+          },
+          {
+            "name": "Performance concerns",
+            "weight": 2,
+            "id": "Performance concerns"
+          },
+          {
+            "name": "Public link from corporate OneDrive",
+            "weight": 5,
+            "id": "Public link from corporate OneDrive"
+          },
+          {
+            "name": "Image",
+            "weight": 0,
+            "id": "Image"
+          }
+        ],
+        "score": 8,
+        "severity": "HIGH",
+        "trustReason": null,
+        "trusted": false,
+        "preventativeControl": null,
+        "untrustedValues": {
+          "accountNames": [],
+          "domains": [],
+          "gitRepositoryUris": [],
+          "slackWorkspaces": [],
+          "urlPaths": []
+        }
+      },
+      "source": {
+        "accountName": null,
+        "accountType": null,
+        "category": null,
+        "domain": null,
+        "domains": [],
+        "email": {
+          "from": null,
+          "sender": null
+        },
+        "ip": null,
+        "name": null,
+        "operatingSystem": null,
+        "privateIp": [],
+        "removableMedia": {
+          "busType": null,
+          "capacity": null,
+          "mediaName": null,
+          "name": null,
+          "partitionId": [],
+          "serialNumber": null,
+          "vendor": null,
+          "volumeName": []
+        },
+        "tabs": [],
+        "user": {
+          "email": []
+        }
+      },
+      "user": {
+        "deviceUid": null,
+        "email": "darnell.waters@example.com",
+        "id": "1004438887768763425"
+      },
+      "git": {
+        "eventId": null,
+        "lastCommitHash": null,
+        "repositoryEmail": null,
+        "repositoryEndpointPath": null,
+        "repositoryUri": null,
+        "repositoryUser": null
+      }
+    }
+  ],
+  "nextPgToken": "06689ebf-cfc8-46f9-a0e0-428a24a800c9",
+  "problems": null,
+  "totalCount": 3327
+}

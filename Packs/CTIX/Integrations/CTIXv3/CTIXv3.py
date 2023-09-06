@@ -12,6 +12,7 @@ import hmac
 import hashlib
 import base64
 import uuid
+from datetime import datetime
 
 
 def is_valid_uuid(uuid_string):
@@ -133,7 +134,7 @@ class Client(BaseClient):
         :param dict params: Paramters to be added in request
         :return dict: Params dictionary with AccessID, Expires and Signature
         """
-        expires = int(time.time() + 5)
+        expires = int(time.time() + 15)
         params["AccessID"] = self.access_id
         params["Expires"] = expires
         params["Signature"] = self.signature(expires)
@@ -668,6 +669,49 @@ class Client(BaseClient):
         }
 
         return self.post_http_request(client_url, payload, params)
+
+    def get_vulnerability_product_details(self, obj_id: str, page: int, page_size: int):
+        """
+        Get Vulnerability Product Details
+
+        :param str obj_id: The ID of the vulnerability to get the product details for
+        :param int page: Paginated number from where data will be polled
+        :param int page_size: Size of the result
+        :return dict: Returns response for query
+        """
+        url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/product-details/"
+        client_url = self.base_url + url_suffix
+        params = {"page": page, "page_size": page_size}
+        return self.get_http_request(client_url, {}, **params)
+
+    def get_vulnerability_cvss_score(self, obj_id: str, page: int, page_size: int):
+        """
+        Get Vulnerability CVSS Score
+
+        :param str obj_id: The ID of the vulnerability to get the product details for
+        :param int page: Paginated number from where data will be polled
+        :param int page_size: Size of the result
+        :return dict: Returns response for query
+        """
+        url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/cvss-score/"
+        client_url = self.base_url + url_suffix
+        params = {"page": page, "page_size": page_size}
+        return self.get_http_request(client_url, {}, **params)
+
+    def get_vulnerability_source_description(self, obj_id: str, source_id: str, page: int, page_size: int):
+        """
+        Get Vulnerability Source Description
+
+        :param str obj_id: The ID of the vulnerability to get the source description for
+        :param str source_id: The ID of the source to get the description for
+        :param int page: Paginated number from where data will be polled
+        :param int page_size: Size of the result
+        :return dict: Returns response for query
+        """
+        url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/source-description/"
+        client_url = self.base_url + url_suffix
+        params = {"source_id": source_id, "page": page, "page_size": page_size}
+        return self.get_http_request(client_url, {}, **params)
 
 
 """ HELPER FUNCTIONS """
@@ -1423,7 +1467,7 @@ def get_indicator_details_command(client: Client, args: Dict[str, Any]) -> Comma
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
 
-    response = client.get_indicator_details(object_type, object_id, params)
+    response = client.get_indicator_details(object_type.lower(), object_id, params)
     data = response.get("data")
     data = no_result_found(data)
     if isinstance(data, CommandResults):
@@ -1924,6 +1968,98 @@ def make_request(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             ]
 
 
+def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    page = 1
+    page_size = 15
+    params = {"page": page, "page_size": page_size}
+    cve = argToList(args["cve"])
+    extra_fields = argToList(args.get("extra_fields", []))
+    response = client.get_lookup_threat_data("vulnerability", [], cve, params)
+    threat_data_list = response.get("data", {}).get("results", [])
+    results = [data for data in threat_data_list]
+    results = no_result_found(results)
+
+    if isinstance(results, CommandResults):
+        return [results]
+
+    final_results = []
+    for result in results:
+        final_results.append(_lookup_cve_result(client, result, page, page_size, extra_fields))
+    return final_results
+
+
+def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, page_size: int, extra_fields: List[str]):
+    cve_uuid = str(cve_detail.get("id"))
+    created = str(datetime.fromtimestamp(cve_detail.get("created", 0)))
+    modified = str(datetime.fromtimestamp(cve_detail.get("modified", 0)))
+    name = cve_detail.get("name")
+    extra_field_values = {k: cve_detail.get(k, None) for k in extra_fields}
+    cve_sources = [
+        source.get("id") for source in cve_detail.get("sources", []) if source.get("id")
+    ]
+
+    response = client.get_vulnerability_product_details(cve_uuid, page, page_size)
+    product_details_list = response.get("data", {}).get("results", [])
+    results = [data for data in product_details_list]
+    cpe_list = ",\n".join(product.get("product") for product in results)
+
+    response = client.get_vulnerability_cvss_score(cve_uuid, page, page_size)
+    cvss_score_list = response.get("data", {}).get("results", [])
+    cvss2 = next(
+        (result.get("cssv2") for result in cvss_score_list if result.get("cssv2")), None
+    )
+    cvss3 = next(
+        (result.get("cssv3") for result in cvss_score_list if result.get("cssv3")), None
+    )
+    cvss_map_value = 0
+    if cvss3:
+        cvss_map_value = cvss3
+    elif cvss2:
+        cvss_map_value = cvss2
+
+    dbot_reputation_score = 0
+    if 0 < cvss_map_value < 3:
+        dbot_reputation_score = 1
+    elif 3 <= cvss_map_value < 7:
+        dbot_reputation_score = 2
+    elif 7 <= cvss_map_value:
+        dbot_reputation_score = 3
+
+    description = None
+    if cve_sources:
+        for source in cve_sources:
+            response = client.get_vulnerability_source_description(
+                cve_uuid, source, page, page_size
+            )
+            source_description = response.get("data", {}).get("result", {})
+            if source_description:
+                description = source_description.get("description")
+                if description:
+                    break
+
+    cve_standard_context = Common.CVE(name, cvss2, created, modified, description)
+    data = {
+        "cpes": cpe_list or "None",
+        "cvss2": cvss2 or "None",
+        "cvss3": cvss3 or "None",
+        "dbot_reputation": dbot_reputation_score,
+        "description": description,
+        "last_modified": modified,
+        "last_published": created,
+        "name": name,
+        "uuid": cve_uuid,
+        "extra_data": json.dumps(extra_field_values),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Get CVE Information", data, removeNull=True),
+        outputs_prefix="CTIX.VulnerabilityLookup",
+        outputs=data,
+        outputs_key_field="id",
+        indicator=cve_standard_context,
+        raw_response=data,
+    )
+
+
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
@@ -1987,12 +2123,14 @@ def main() -> None:
             "url": (url, (client, args)),
             "ip": (ip, (client, args)),
             "file": (file, (client, args)),
+            "cve": (cve_command, (client, args)),
             "ctix-get-all-notes": (get_all_notes, (client, args)),
             "ctix-get-note-details": (get_note_details, (client, args)),
             "ctix-create-note": (create_note, (client, args)),
             "ctix-update-note": (update_note, (client, args)),
             "ctix-delete-note": (delete_note, (client, args)),
             "ctix-make-request": (make_request, (client, args)),
+            "ctix-get-vulnerability-data": (cve_command, (client, args)),
         }
 
         func, params = CMD_TO_FUNC[demisto.command()]

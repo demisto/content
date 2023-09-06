@@ -1,0 +1,30 @@
+{
+    "_id": "59490d9be57c281391e11cdb",
+    "FoundDate": "FoundDate",
+    "Assets": [],
+    "Assignees": [],
+    "Details": {
+        "Title": "Dark Web - Company RDP accounts are offered for sale in a black market",
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Severity": "Medium",
+        "Images": [
+            "59490d98e57c281391e11cda"
+        ],
+        "Tags": [],
+        "Source": {
+            "Type": "Black Market",
+            "NetworkType": "DarkWeb",
+            "URL": null
+        },
+        "Description": "Dark Web - Company RDP accounts are offered for sale in a black market by BHGroup. Further investigation is recommended. Click \"Remediate\" in order to ask IntSights to remove the malicious page."
+    },
+    "TakedownStatus": "NotSent",
+    "IsFlagged": false,
+    "UpdateDate": "UpdateDate",
+    "RelatedIocs": [],
+    "RelatedThreatIDs": [],
+    "Closed": {
+        "IsClosed": false
+    }
+}

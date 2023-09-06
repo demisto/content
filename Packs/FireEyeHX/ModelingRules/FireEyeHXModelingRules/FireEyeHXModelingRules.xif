@@ -1,0 +1,247 @@
+[MODEL: dataset = fireeye_hx_raw]
+// API logs
+filter cefVersion = null
+| alter
+        // addressNotificationEvent fields
+        addressNotificationEvent_address = json_extract_scalar(event_values, "$['addressNotificationEvent/address']"),
+        // dnsLookupEvent fields
+        dnsLookupEvent_hostname = json_extract_scalar(event_values, "$['dnsLookupEvent/hostname']"),
+        dnsLookupEvent_pid = json_extract_scalar(event_values, "$['dnsLookupEvent/pid']"),
+        dnsLookupEvent_ppath = json_extract_scalar(event_values, "$['dnsLookupEvent/ppath']"),
+        dnsLookupEvent_process = json_extract_scalar(event_values, "$['dnsLookupEvent/process']"),
+        dnsLookupEvent_processPath = json_extract_scalar(event_values, "$['dnsLookupEvent/processPath']"),
+        dnsLookupEvent_username = json_extract_scalar(event_values, "$['dnsLookupEvent/username']"),
+        // fileWriteEvent fields
+        fileWriteEvent_eventReason = json_extract_scalar(event_values, "$['fileWriteEvent/eventReason']"),
+        fileWriteEvent_fileExtension = json_extract_scalar(event_values, "$['fileWriteEvent/fileExtension']"),
+        fileWriteEvent_fileName = json_extract_scalar(event_values, "$['fileWriteEvent/fileName']"),
+        fileWriteEvent_filePath = json_extract_scalar(event_values, "$['fileWriteEvent/filePath']"),
+        fileWriteEvent_parentPid = json_extract_scalar(event_values, "$['fileWriteEvent/parentPid']"),
+        fileWriteEvent_size = json_extract_scalar(event_values, "$['fileWriteEvent/size']"),
+        fileWriteEvent_pid = json_extract_scalar(event_values, "$['fileWriteEvent/pid']"),
+        fileWriteEvent_username = json_extract_scalar(event_values, "$['fileWriteEvent/username']"),
+        fileWriteEvent_md5 = json_extract_scalar(event_values, "$['fileWriteEvent/md5']"),
+        fileWriteEvent_process = json_extract_scalar(event_values, "$['fileWriteEvent/process']"),
+        fileWriteEvent_processPath = json_extract_scalar(event_values, "$['fileWriteEvent/processPath']"),
+        fileWriteEvent_devicePath = json_extract_scalar(event_values, "$['fileWriteEvent/devicePath']"),
+        fileWriteEvent_ppath = json_extract_scalar(event_values, "$['fileWriteEvent/ppath']"),
+        // imageLoadEvent fields
+        imageLoadEvent_fileExtension = json_extract_scalar(event_values, "$['imageLoadEvent/fileExtension']"),
+        imageLoadEvent_filename = json_extract_scalar(event_values, "$['imageLoadEvent/filename']"),
+        imageLoadEvent_filePath = json_extract_scalar(event_values, "$['imageLoadEvent/filePath']"),
+        imageLoadEvent_fullPath = json_extract_scalar(event_values, "$['imageLoadEvent/fullPath']"),
+        imageLoadEvent_devicePath = json_extract_scalar(event_values, "$['imageLoadEvent/devicePath']"),
+        imageLoadEvent_ppath = json_extract_scalar(event_values, "$['imageLoadEvent/ppath']"),
+        imageLoadEvent_processPath = json_extract_scalar(event_values, "$['imageLoadEvent/processPath']"),
+        imageLoadEvent_process = json_extract_scalar(event_values, "$['imageLoadEvent/process']"),
+        imageLoadEvent_username = json_extract_scalar(event_values, "$['imageLoadEvent/username']"),
+        imageLoadEvent_pid = json_extract_scalar(event_values, "$['imageLoadEvent/pid']"),
+        // networkEvent fields
+        networkEvent_localIP = json_extract_scalar(event_values, "$['networkEvent/localIP']"),
+        networkEvent_protocol = json_extract_scalar(event_values, "$['networkEvent/protocol']"),
+        networkEvent_remoteIP = json_extract_scalar(event_values, "$['networkEvent/remoteIP']"),
+        networkEvent_pid = json_extract_scalar(event_values, "$['networkEvent/pid']"),
+        networkEvent_remotePort = json_extract_scalar(event_values, "$['networkEvent/remotePort']"),
+        networkEvent_localPort = json_extract_scalar(event_values, "$['networkEvent/localPort']"),
+        networkEvent_ppath = json_extract_scalar(event_values, "$['networkEvent/ppath']"),
+        networkEvent_processPath = json_extract_scalar(event_values, "$['networkEvent/processPath']"),
+        networkEvent_process = json_extract_scalar(event_values, "$['networkEvent/process']"),
+        // urlMonitorEvent fields
+        urlMonitorEvent_requestUrl = json_extract_scalar(event_values, "$['urlMonitorEvent/requestUrl']"),
+        urlMonitorEvent_urlMethod = json_extract_scalar(event_values, "$['urlMonitorEvent/urlMethod']"),
+        urlMonitorEvent_userAgent = json_extract_scalar(event_values, "$['urlMonitorEvent/userAgent']"),
+        urlMonitorEvent_pid = json_extract_scalar(event_values, "$['urlMonitorEvent/pid']"),
+        urlMonitorEvent_username = json_extract_scalar(event_values, "$['urlMonitorEvent/username']"),
+        urlMonitorEvent_process = json_extract_scalar(event_values, "$['urlMonitorEvent/process']"),
+        urlMonitorEvent_processPath = json_extract_scalar(event_values, "$['urlMonitorEvent/processPath']"),
+        urlMonitorEvent_ppath = json_extract_scalar(event_values, "$['urlMonitorEvent/ppath']"),
+        urlMonitorEvent_localPort = json_extract_scalar(event_values, "$['urlMonitorEvent/localPort']"),
+        urlMonitorEvent_remotePort = json_extract_scalar(event_values, "$['urlMonitorEvent/remotePort']"),
+        // processEvent fields
+        processEvent_pid = json_extract_scalar(event_values, "$['urlMonitorEvent/pid']"),
+        processEvent_ppath = json_extract_scalar(event_values, "$['urlMonitorEvent/ppath']"),
+        processEvent_process = json_extract_scalar(event_values, "$['urlMonitorEvent/process']"),
+        // processEvent fields
+        registryEvent_pid = json_extract_scalar(event_values, "$['registryEvent/pid']"),
+        registryEvent_process = json_extract_scalar(event_values, "$['registryEvent/process']"),
+        registryEvent_processPath = json_extract_scalar(event_values, "$['registryEvent/processPath']"),
+        registryEvent_ppath = json_extract_scalar(event_values, "$['registryEvent/ppath']")
+| alter md5values = arraymap(md5values -> [], trim("@element", "\""))
+| alter
+        xdm.event.type = coalesce(event_type, json_extract_scalar(condition, "$.event_type")),
+        xdm.observer.unique_identifier = json_extract_scalar(appliance, "$._id"),
+        xdm.alert.name = coalesce(json_extract_scalar(indicator, "$.display_name"), json_extract_scalar(indicator, "$.name")),
+        xdm.alert.subcategory = json_extract_scalar(indicator, "$.category"),
+        xdm.alert.original_alert_id = to_string(event_id),
+        xdm.intermediate.host.ipv4_addresses = arraycreate(addressNotificationEvent_address),
+        xdm.intermediate.host.ipv6_addresses = arraycreate(addressNotificationEvent_address),
+        xdm.network.dns.dns_question.name = dnsLookupEvent_hostname,
+        xdm.source.process.pid = to_integer(dnsLookupEvent_pid),
+        xdm.source.process.executable.path = dnsLookupEvent_ppath,
+        xdm.source.process.name = dnsLookupEvent_process,
+        xdm.source.process.executable.directory = dnsLookupEvent_processPath,
+        xdm.source.user.username = coalesce(dnsLookupEvent_username,imageLoadEvent_username,urlMonitorEvent_username,fileWriteEvent_username),
+        xdm.event.outcome_reason = fileWriteEvent_eventReason,
+        xdm.target.file.extension = fileWriteEvent_fileExtension,
+        xdm.target.file.filename = fileWriteEvent_fileName,
+        xdm.target.file.path = fileWriteEvent_filePath,
+        xdm.target.file.directory = fileWriteEvent_filePath,
+        xdm.target.process.parent_id = fileWriteEvent_parentPid,
+        xdm.target.process.pid = to_number(coalesce(networkEvent_pid,processEvent_pid,registryEvent_pid,urlMonitorEvent_pid,imageLoadEvent_pid,fileWriteEvent_pid)),
+        xdm.target.process.name = coalesce(fileWriteEvent_process,imageLoadEvent_process,networkEvent_process, processEvent_process,registryEvent_process,urlMonitorEvent_process),
+        xdm.target.process.executable.size = to_number(fileWriteEvent_size),
+        xdm.target.module.extension = imageLoadEvent_fileExtension,
+        xdm.target.module.filename = imageLoadEvent_filename,
+        xdm.target.module.path = imageLoadEvent_filePath,
+        xdm.target.module.directory = imageLoadEvent_fullPath,
+        xdm.target.process.executable.directory = coalesce(fileWriteEvent_processPath,imageLoadEvent_processPath,networkEvent_processPath,registryEvent_processPath,urlMonitorEvent_processPath),
+        xdm.target.process.executable.path = coalesce(fileWriteEvent_ppath,imageLoadEvent_ppath,networkEvent_ppath,processEvent_ppath,registryEvent_ppath,urlMonitorEvent_ppath),
+        xdm.target.host.fqdn = coalesce(fileWriteEvent_devicePath,imageLoadEvent_devicePath),
+        xdm.source.ipv4 = networkEvent_localIP,
+        xdm.source.ipv6 = networkEvent_localIP,
+        xdm.source.port = to_number(coalesce(networkEvent_localPort,urlMonitorEvent_localPort)),
+        xdm.network.ip_protocol = networkEvent_protocol,
+        xdm.target.ipv4 = networkEvent_remoteIP,
+        xdm.target.ipv6 = networkEvent_remoteIP,
+        xdm.target.port = to_number(coalesce(networkEvent_remotePort,urlMonitorEvent_remotePort)),
+        xdm.target.url = urlMonitorEvent_requestUrl,
+        xdm.network.http.method = urlMonitorEvent_urlMethod,
+        xdm.source.user_agent = urlMonitorEvent_userAgent,
+        xdm.observer.name = source,
+        xdm.observer.type = subtype,
+        xdm.event.outcome = resolution,
+        xdm.target.file.md5 = arraystring(arraydistinct(arrayconcat(md5values, arraycreate(fileWriteEvent_md5))), ",");
+// Syslog CEF logs
+filter cefVersion != null
+| alter
+        FireEye_Agent_Version = if(cs2Label = "FireEye Agent Version", cs2, null),
+        containment_action = if(cs3Label = "Containment action", cs3, null),
+        IOC_Name = if(cs4Label = "IOC Name", cs4, null),
+        Process_Name = if(cs4Label = "Process Name", cs4, null),
+        Target_OS = lowercase(if(cs6Label = "Target OS", cs6, null)),
+        resolution_cs = if(cs7Label = "Resolution", cs7, null),
+        Alert_Types = if(cs8Label = "Alert Types", cs8, null),
+        MD5_hash = if(cs9Label = "MD5", cs9, null),
+        Alert_Correlation_ID = if(cs10Label = "Alert Correlation ID", cs10, null),
+        categoryOutcome = lowercase(categoryOutcome)
+// Mapping fields
+| alter
+        xdm.source.ipv4 = arrayindex(regextract(dst, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 = arrayindex(regextract(dst, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.source.host.hostname = dhost,
+        xdm.source.host.mac_addresses = arraycreate(dmac),
+        xdm.target.domain = dntdom,
+        xdm.observer.name = dvchost,
+        xdm.event.id = externalId,
+        xdm.event.type = cefName,
+        xdm.source.user.username = suser,
+        xdm.target.file.filename = fname,
+        xdm.target.file.path = filePath,
+        xdm.target.url = request,
+        xdm.event.description = coalesce(msg, categoryTupleDescription),
+        xdm.event.outcome = if(categoryOutcome contains "success", XDM_CONST.OUTCOME_SUCCESS, categoryOutcome contains "failure", XDM_CONST.OUTCOME_FAILED, categoryOutcome contains "completed", XDM_CONST.OUTCOME_SUCCESS, to_string(categoryOutcome)),
+        xdm.event.log_level = if(cefSeverity = "10", XDM_CONST.LOG_LEVEL_ALERT, cefSeverity = "0", XDM_CONST.LOG_LEVEL_INFORMATIONAL, cefSeverity = "4", XDM_CONST.LOG_LEVEL_WARNING, cefSeverity = "7", XDM_CONST.LOG_LEVEL_ERROR),
+        xdm.alert.name = IOC_Name,
+        xdm.alert.subcategory = to_string(Alert_Types),
+        xdm.source.host.os = Target_OS,
+        xdm.observer.action = coalesce(resolution_cs, containment_action),
+        xdm.source.agent.version = FireEye_Agent_Version,
+        xdm.alert.original_alert_id = Alert_Correlation_ID,
+        xdm.source.process.name = Process_Name,
+        xdm.source.process.executable.md5 = MD5_hash,
+        xdm.source.host.os_family = if(Target_OS contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, Target_OS contains "mac", XDM_CONST.OS_FAMILY_MACOS, Target_OS contains "linux", XDM_CONST.OS_FAMILY_LINUX, Target_OS contains "android", XDM_CONST.OS_FAMILY_ANDROID, Target_OS contains "ios", XDM_CONST.OS_FAMILY_IOS, Target_OS contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, Target_OS contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, Target_OS contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, Target_OS contains "centos", XDM_CONST.OS_FAMILY_CENTOS, Target_OS contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, Target_OS contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, Target_OS contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(Target_OS));
+
+[MODEL: dataset = fireeye_hx_audit_raw]
+// Modeling for Action audit logs
+filter _raw_log contains "Action ID"
+// Extract fields
+| alter
+       http_request_method = arrayindex(regextract(_raw_log, "descr: ([A-Z]{2,})\s/"),0),
+       http_status = lowercase(arrayindex(regextract(_raw_log, "status: ([A-Za-z].+)$"),0)),
+       ip_address = arrayindex(regextract(_raw_log, "IP address: ([^\s,]+)"),0),
+       log_level = lowercase(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
+// Mapping fields
+| alter
+        xdm.event.type = "user actions",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\s(\S+)\s[^\[\s]+\["),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\s\S+\s([^\[\s]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[(\d+)\]"),0)),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
+        xdm.event.id = arrayindex(regextract(_raw_log, "Action ID (\d+)"),0),
+        xdm.source.ipv4 = arrayindex(regextract(ip_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 = arrayindex(regextract(ip_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.source.interface = arrayindex(regextract(_raw_log, "source interface name: ([^\s,]+)"),0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.network.session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
+        xdm.network.http.method = if(http_request_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_request_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_request_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_request_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_request_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_request_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_request_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_request_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_request_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_request_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_request_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_request_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_request_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_request_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_request_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_request_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_request_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_request_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_request_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_request_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_request_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_request_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_request_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_request_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_request_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_request_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_request_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_request_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_request_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_request_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_request_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_request_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_request_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_request_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_request_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_request_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_request_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_request_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_request_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_request_method)),
+        xdm.network.http.url = arrayindex(regextract(_raw_log, "descr: [A-Z]{2,}\s(/[\w/]+)"),0),
+        xdm.source.user.username = arrayindex(regextract(_raw_log, "requested by: user ([^\s]+)"),0),
+        xdm.event.outcome = if(http_status contains "success", XDM_CONST.OUTCOME_SUCCESS, http_status contains "failure", XDM_CONST.OUTCOME_FAILED, http_status = "CHALLENGE", to_string(http_status)),
+        xdm.target.domain = arrayindex(regextract(_raw_log, "domain name: ([^\s,]+)"),0);
+// Modeling for authentication audit logs
+filter _raw_log contains ": User log"
+// Extracting fields
+| alter
+        eventtype = arrayindex(regextract(_raw_log, "AUDIT: ([A-Za-z\s]+):"),0),
+        auth_userName = arrayindex(regextract(_raw_log, "username '([^']+)'"),0),
+        auth_remote_address = arrayindex(regextract(_raw_log, "remote address '([^']+)'"),0),
+        auth_auth_method = arrayindex(regextract(_raw_log, "auth method \'([^']+)\'"),0),
+        auth_session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
+//Mapping fields
+| alter
+        xdm.event.type = eventtype,
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\s(\S+)\s[^\[\s]+\["),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\s\S+\s([^\[\s]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[(\d+)\]"),0)),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
+        xdm.auth.auth_method = auth_auth_method,
+        xdm.source.user.username = auth_userName,
+        xdm.source.ipv4 = arrayindex(regextract(auth_remote_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 = arrayindex(regextract(auth_remote_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.network.session_id = auth_session_id,
+        xdm.event.description = arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0);
+// Modeling for cli audit logs
+filter _raw_log contains "[cli.NOTICE]: AUDIT:"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
+// Mapping fields
+| alter
+        xdm.event.type = "cli audit",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\s(\S+)\s[^\[\s]+\["),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\s\S+\s([^\[\s]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[(\d+)\]"),0)),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
+        xdm.source.user.username = arrayindex(regextract(_raw_log, "user ([^:]+):"),0),
+        xdm.source.process.command_line = arrayindex(regextract(_raw_log, "command: (.*)$"),0);
+// Modeling for web session audit logs
+filter _raw_log contains "[wsmd.NOTICE]: AUDIT:"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
+// Mapping fields
+| alter
+        xdm.event.type = "web session",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\s(\S+)\s[^\[\s]+\["),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\s\S+\s([^\[\s]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[(\d+)\]"),0)),
+        xdm.network.session_id = arrayindex(regextract(_raw_log, "Web session (\d+)"),0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level));
+// Modeling for change audit logs
+filter _raw_log contains "Config change ID"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
+// Mapping fields
+| alter
+        xdm.event.type = "changes",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\s(\S+)\s[^\[\s]+\["),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\s\S+\s([^\[\s]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[(\d+)\]"),0)),
+        xdm.network.session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
+        xdm.source.user.username = arrayindex(regextract(_raw_log, "requested by: user ([^\s]+)"),0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\s\S+\s[^\[\s]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level));

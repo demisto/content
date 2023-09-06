@@ -30,7 +30,6 @@ outputs:
   type: string
 scripttarget: 0
 timeout: 900ns
-runonce: false
 runas: DBotWeakRole
 tests:
 - no test (Impossible to mock test)

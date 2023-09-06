@@ -1,0 +1,623 @@
+id: Get Code42 Employee Information
+version: -1
+fromversion: "6.8.0"
+name: Get Code42 Employee Information
+description: Receives usernames from a Code42 Incydr alert and queries Active Directory for employee and supervisor information, if applicable.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 413529f6-5bdf-494d-85e9-a3c9e90599be
+    type: start
+    task:
+      id: 413529f6-5bdf-494d-85e9-a3c9e90599be
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 268613d9-87ad-4de2-8d5e-a1f802ae4b59
+    type: condition
+    task:
+      id: 268613d9-87ad-4de2-8d5e-a1f802ae4b59
+      version: -1
+      name: Is Input an Email, Display Name, or Username?
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Display Name:
+      - "3"
+      Email:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Email
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.user
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: .*@.*
+            iscontext: true
+          right:
+            value: {}
+    - label: Display Name
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.user
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: '[ ]+'
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 93c29d02-bca4-4196-804b-66ca1dddfa4f
+    type: regular
+    task:
+      id: 93c29d02-bca4-4196-804b-66ca1dddfa4f
+      version: -1
+      name: Query Active Directory via Email
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      attributes:
+        simple: department
+      email:
+        simple: ${inputs.user}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 13a18fc7-0421-4131-8c8f-2dbdf507043c
+    type: regular
+    task:
+      id: 13a18fc7-0421-4131-8c8f-2dbdf507043c
+      version: -1
+      name: Query Active Directory via Display Name
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      attributes:
+        simple: department
+      name:
+        simple: ${inputs.user}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b17c5bd4-f092-4c22-8456-f842c18e2131
+    type: regular
+    task:
+      id: b17c5bd4-f092-4c22-8456-f842c18e2131
+      version: -1
+      name: Query Active Directory via Username
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      attributes:
+        simple: department
+      username:
+        simple: ${inputs.user}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 69b4b363-ddb0-4c56-84a0-23a9c3b29262
+    type: condition
+    task:
+      id: 69b4b363-ddb0-4c56-84a0-23a9c3b29262
+      version: -1
+      name: Does Incident ID Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.incidentid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 003851f6-c62c-4447-8938-377aaf5375e0
+    type: regular
+    task:
+      id: 003851f6-c62c-4447-8938-377aaf5375e0
+      version: -1
+      name: Set Manager Incident Info
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      employeemanageremail:
+        simple: ${ManagerAccount.attributes.mail}
+      employeemanagername:
+        simple: ${ManagerAccount.attributes.displayName}
+      id:
+        simple: ${inputs.incidentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 787.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4569d13c-7081-4865-8f8a-639a1300f500
+    type: title
+    task:
+      id: 4569d13c-7081-4865-8f8a-639a1300f500
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 14a9a37a-5846-41b4-8958-e54f38a8056e
+    type: regular
+    task:
+      id: 14a9a37a-5846-41b4-8958-e54f38a8056e
+      version: -1
+      name: Query Active Directory for Manager
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attributes:
+        simple: department
+      dn:
+        simple: ${Account.Manager}
+      extend-context:
+        simple: ManagerAccount=.
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0f1e84ae-8e4f-4acb-83da-864446f1ec3e
+    type: title
+    task:
+      id: 0f1e84ae-8e4f-4acb-83da-864446f1ec3e
+      version: -1
+      name: Get Manager Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b4beb002-9f70-4a30-8b4a-08729b1bf682
+    type: condition
+    task:
+      id: b4beb002-9f70-4a30-8b4a-08729b1bf682
+      version: -1
+      name: Does Manager Attribute Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 68fbd026-e809-48dc-828d-99eae1334718
+    type: regular
+    task:
+      id: 68fbd026-e809-48dc-828d-99eae1334718
+      version: -1
+      name: Set Employee Incident Info
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      employeedepartment:
+        simple: ${Account.department}
+      employeedisplayname:
+        simple: ${Account.DisplayName}
+      employeeemail:
+        simple: ${Account.Email}
+      id:
+        simple: ${inputs.incidentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 507d1a41-2cf3-4e66-8802-7148d4f5d456
+    type: condition
+    task:
+      id: 507d1a41-2cf3-4e66-8802-7148d4f5d456
+      version: -1
+      name: Does Incident ID Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.incidentid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2db60b86-4bad-4cc9-8e22-64daa41e7003
+    type: condition
+    task:
+      id: 2db60b86-4bad-4cc9-8e22-64daa41e7003
+      version: -1
+      name: Is Active Directory Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_7_#default#": 0.26,
+      "12_10_#default#": 0.53,
+      "12_11_yes": 0.49,
+      "5_6_yes": 0.38,
+      "5_7_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1930,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: user
+  value: {}
+  required: true
+  description: The username to query in Active Directory.
+  playbookInputQuery:
+- key: incidentid
+  value: {}
+  required: false
+  description: The Palo Alto XSOAR incident ID that receives the employee information (optional).
+  playbookInputQuery:
+outputs:
+- contextPath: Account.DisplayName
+  description: The display name of the user.
+  type: string
+- contextPath: Account.Manager
+  description: The manager of the user.
+  type: string
+- contextPath: Account.Username
+  description: The samAccountName of the user.
+  type: string
+- contextPath: Account.Email
+  description: The email address of the user.
+  type: string
+- contextPath: Account.department
+  description: The Department of the user.
+  type: string
+tests:
+- No tests (auto formatted)

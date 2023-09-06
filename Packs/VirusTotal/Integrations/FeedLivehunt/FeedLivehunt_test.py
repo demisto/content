@@ -1,6 +1,7 @@
 import demistomock as demisto
 from FeedLivehunt import Client, fetch_indicators_command, get_indicators_command, main
 from unittest.mock import call
+from freezegun import freeze_time
 
 MOCK_VT_RESPONSE = {
     "data": [
@@ -215,6 +216,7 @@ def test_main_manual_command(mocker):
     assert get_api_indicators_mock.call_args == call('tag:"Wannacry"', 7)
 
 
+@freeze_time("2022-11-03 13:40:00 UTC")
 def test_main_default_command(mocker):
     params = {
         'tlp_color': None,

@@ -1,7 +1,8 @@
 id: search_and_delete_emails_-_generic
 version: -1
 name: Search And Delete Emails - Generic
-description: This playbook searches and delete emails with similar attributes of a malicious email.
+deprecated: true
+description: Deprecated. Use `Search And Delete Emails - Generic v2` instead. This playbook searches and delete emails with similar attributes of a malicious email.
 starttaskid: "0"
 tasks:
   "0":

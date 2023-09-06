@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 767cdfcc-ed06-49fc-8bfc-bfe50c16c00a
+    taskid: c4045844-37fa-436f-8861-b74f17b86baa
     type: start
     task:
-      id: 767cdfcc-ed06-49fc-8bfc-bfe50c16c00a
+      id: c4045844-37fa-436f-8861-b74f17b86baa
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ac4adbab-7a91-4af5-8490-befbac9d628f
+    taskid: 564a93de-1811-423f-8987-8652ce16633e
     type: regular
     task:
-      id: ac4adbab-7a91-4af5-8490-befbac9d628f
+      id: 564a93de-1811-423f-8987-8652ce16633e
       version: -1
       name: DeleteContext
       description: DeleteContext
@@ -48,7 +48,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -68,45 +69,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 71bcf372-fd15-4278-8170-addc584b02f2
-    type: regular
-    task:
-      id: 71bcf372-fd15-4278-8170-addc584b02f2
-      version: -1
-      name: xdr-get-endpoints
-      description: xdr-get-endpoints
-      script: '|||xdr-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 432.5,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c2fcd07b-77f6-4698-81e0-cd821a1b9ada
+    taskid: 985048a2-3720-4975-8284-f05cc93775cd
     type: regular
     task:
-      id: c2fcd07b-77f6-4698-81e0-cd821a1b9ada
+      id: 985048a2-3720-4975-8284-f05cc93775cd
       version: -1
       name: xdr-retrieve-files
       description: Retrieves files from selected endpoints. You can retrieve up to
@@ -123,26 +91,7 @@ tasks:
       - "5"
     scriptarguments:
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-                iscontext: true
-              right:
-                value:
-                  simple: CONNECTED
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                iscontext: true
-              right:
-                value:
-                  simple: AGENT_TYPE_SERVER
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       windows_file_paths:
         simple: C:\Users\demisto\Desktop\demisto.txt
     separatecontext: false
@@ -163,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 98b7bd8b-5790-4508-828d-b0fb65711112
+    taskid: 06520682-d7fe-43c4-89c9-7780b86843bb
     type: playbook
     task:
-      id: 98b7bd8b-5790-4508-828d-b0fb65711112
+      id: 06520682-d7fe-43c4-89c9-7780b86843bb
       version: -1
       name: Cortex XDR - Check Action Status
       description: Checks the action status of an action ID. \nEnter the action ID
@@ -204,10 +153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5ff7798b-daba-4321-8163-611824489e5e
+    taskid: c0e40057-86b0-4c0f-8fef-3917389c16aa
     type: condition
     task:
-      id: 5ff7798b-daba-4321-8163-611824489e5e
+      id: c0e40057-86b0-4c0f-8fef-3917389c16aa
       version: -1
       name: Verify check action status
       type: condition
@@ -242,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 33241c55-875d-4e24-8e44-fa4941c8abd4
+    taskid: dae73f05-a898-4eff-8a67-464c741efca0
     type: playbook
     task:
-      id: 33241c55-875d-4e24-8e44-fa4941c8abd4
+      id: dae73f05-a898-4eff-8a67-464c741efca0
       version: -1
       name: Cortex XDR - Retrieve File Playbook
       description: |-
@@ -262,26 +211,7 @@ tasks:
       - "8"
     scriptarguments:
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-                iscontext: true
-              right:
-                value:
-                  simple: CONNECTED
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                iscontext: true
-              right:
-                value:
-                  simple: AGENT_TYPE_SERVER
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       windows_file_paths:
         simple: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
     separatecontext: true
@@ -307,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c1dd9f46-8e57-4c02-8787-39ed23359d6c
+    taskid: a9d84851-0cc7-4171-8617-74d11dca0c2f
     type: condition
     task:
-      id: c1dd9f46-8e57-4c02-8787-39ed23359d6c
+      id: a9d84851-0cc7-4171-8617-74d11dca0c2f
       version: -1
       name: Verify retrieve file
       type: condition
@@ -345,10 +275,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a0e5bdfc-3bb1-4b48-87b6-cf0ff4ee09a1
+    taskid: b933c9b5-ebd8-405c-86a6-4cbaf1f57913
     type: title
     task:
-      id: a0e5bdfc-3bb1-4b48-87b6-cf0ff4ee09a1
+      id: b933c9b5-ebd8-405c-86a6-4cbaf1f57913
       version: -1
       name: Success!
       type: title
@@ -384,4 +314,5 @@ view: |-
   }
 inputs: []
 outputs: []
+quiet: false
 fromversion: 5.0.0

@@ -9,7 +9,6 @@ configuration:
   required: true
   type: 0
 - display: IllusionBLACK API Client Id
-  hidden: false
   name: client_id
   required: true
   type: 0
@@ -19,64 +18,52 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- display: First fetch time for fetching incidents (2 days, 3 weeks, etc)
-  hidden: false
-  name: first_fetch
   required: false
+- display: First fetch time for fetching incidents (2 days, 3 weeks, etc)
+  name: first_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 description: Smokescreen IllusionBLACK is a deception-based threat defense platform designed to accurately and efficiently detect targeted threats including reconnaissance, lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks, and ransomware in real-time.
 display: Smokescreen IllusionBLACK
 name: Smokescreen IllusionBLACK
 script:
   commands:
-  - deprecated: false
-    description: Gets a list of Active Directory decoys.
-    execution: false
+  - description: Gets a list of Active Directory decoys.
     name: illusionblack-get-ad-decoys
     outputs:
     - contextPath: IllusionBlack.AdDecoy
       description: IllusionBLACK AD Decoy users.
       type: Unknown
-  - deprecated: false
-    description: Gets a list of Network decoys.
-    execution: false
+  - description: Gets a list of Network decoys.
     name: illusionblack-get-network-decoys
     outputs:
     - contextPath: IllusionBlack.NetworkDecoy
       description: IllusionBLACK Network decoys.
       type: Unknown
-  - deprecated: false
-    description: Gets a list of Threat Intel decoys.
-    execution: false
+  - description: Gets a list of Threat Intel decoys.
     name: illusionblack-get-ti-decoys
     outputs:
     - contextPath: IllusionBlack.TIDecoy
       description: IllusionBLACK TI Decoys.
       type: Unknown
   - arguments:
-    - default: false
-      description: Hostname or IP address to check.
-      isArray: false
+    - description: Hostname or IP address to check.
       name: host
       required: true
-      secret: false
-    deprecated: false
     description: Checks if a host or IP address is a network decoy.
-    execution: false
     name: illusionblack-is-host-decoy
     outputs:
     - contextPath: IllusionBlack.IsHostDecoy.Host
@@ -86,15 +73,10 @@ script:
       description: The boolean value whether the host is a decoy or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: Active Directory user name to check.
-      isArray: false
+    - description: Active Directory user name to check.
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: Checks if an Active Directory user is a decoy.
-    execution: false
     name: illusionblack-is-user-decoy
     outputs:
     - contextPath: IllusionBlack.IsUserDecoy.User
@@ -104,15 +86,10 @@ script:
       description: The boolean value whether the user is a decoy or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: 'Subdomain to check. For example: dec.smokescreen.io.'
-      isArray: false
+    - description: 'Subdomain to check. For example: dec.smokescreen.io.'
       name: subdomain
       required: true
-      secret: false
-    deprecated: false
     description: Checks if a subdomain is a Threat Intel decoy.
-    execution: false
     name: illusionblack-is-subdomain-decoy
     outputs:
     - contextPath: IllusionBlack.IsSubdomainDecoy.Subdomain
@@ -122,48 +99,25 @@ script:
       description: The boolean value whether the subdomain is a decoy or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: Number of events. It can be between 1 and 1000.
-      isArray: false
+    - description: Number of events. It can be between 1 and 1000.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'IllusionBLACK query. For example: "attacker.ip is \"1.2.3.4\""'
-      isArray: false
+    - description: 'IllusionBLACK query. For example: "attacker.ip is \"1.2.3.4\""'
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: ISO 8601 formatted date string.
-      isArray: false
+    - description: ISO 8601 formatted date string.
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: ISO 8601 formatted date string.
-      isArray: false
+    - description: ISO 8601 formatted date string.
       name: to
-      required: false
-      secret: false
-    deprecated: false
     description: Gets events from IllusionBLACK.
-    execution: false
     name: illusionblack-get-events
     outputs:
     - contextPath: IllusionBlack.Event
       description: IllusionBLACK Events.
       type: Unknown
   - arguments:
-    - default: false
-      description: IllusionBLACK Event ID.
-      isArray: false
+    - description: IllusionBLACK Event ID.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single event by the event ID.
-    execution: false
     name: illusionblack-get-event-by-id
     outputs:
     - contextPath: IllusionBlack.Event
@@ -184,11 +138,8 @@ script:
     - contextPath: IllusionBlack.Event.type
       description: IllusionBLACK Event Attack Type.
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

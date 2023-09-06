@@ -1,0 +1,132 @@
+category: Vulnerability Management
+commonfields:
+  id: CIRCL CVE Search
+  version: -1
+configuration:
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: https://cve.circl.lu/api/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: Searches for CVE information using circl.lu.
+display: CIRCL CVE Search
+name: CIRCL CVE Search
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of CVEs to display.
+      name: limit
+    description: Returns the latest updated CVEs.
+    name: cve-latest
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The CVE ID. For example: CVE-2014-1234.'
+      isArray: true
+      name: cve
+      required: true
+    description: Returns CVE information by CVE ID.
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Score
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.CVSS.Vector
+      description: The CVSS Vector of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Table
+      description: The CVSS table of the CVE.
+      type: String
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: CVE.Tags
+      description: A list of tags.
+      type: List
+    - contextPath: CVE.Relationships
+      description: A list of relationships of the CVE.
+      type: List
+    - contextPath: CVE.vulnerableconfigurations
+      description: A dictionary of CPE strings with `cpe` key for a grid.
+      type: String
+    - contextPath: CVE.vulnerableproduct
+      description: A dictionary of CPE strings with `cpe` key for a grid.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  dockerimage: demisto/python3:3.10.12.68714
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- CIRCL CVE Search - Test
+fromversion: 6.5.0

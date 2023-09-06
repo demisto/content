@@ -1,0 +1,59 @@
+{
+  "server_version": "8.3.0",
+  "file_version": "2",
+  "marketplaces": [
+    "marketplacev2"
+  ],
+  "updated_corepacks_content": {
+    "corePacks": [
+        "Whois/1.4.16/Whois.zip",
+        "Base/1.32.21/Base.zip",
+        "CoreAlertFields/1.0.26/CoreAlertFields.zip",
+        "Core/2.0.3/Core.zip",
+        "CommonTypes/3.3.81/CommonTypes.zip",
+        "FeedUnit42v2/1.0.31/FeedUnit42v2.zip",
+        "EDL/3.2.5/EDL.zip",
+        "ImageOCR/1.1.17/ImageOCR.zip",
+        "DemistoLocking/1.0.5/DemistoLocking.zip",
+        "CortexAttackSurfaceManagement/1.6.26/CortexAttackSurfaceManagement.zip",
+        "Unit42Intel/1.0.9/Unit42Intel.zip",
+        "VirusTotal/2.6.7/VirusTotal.zip",
+        "AutoFocus/2.1.12/AutoFocus.zip",
+        "DefaultPlaybook/2.0.2/DefaultPlaybook.zip",
+        "DemistoRESTAPI/1.3.32/DemistoRESTAPI.zip",
+        "FiltersAndTransformers/1.2.25/FiltersAndTransformers.zip",
+        "ThreatIntelligenceManagement/1.1.4/ThreatIntelligenceManagement.zip",
+        "rasterize/1.2.21/rasterize.zip",
+        "HelloWorld/1.2.21/HelloWorld.zip",
+        "Palo_Alto_Networks_WildFire/2.1.30/Palo_Alto_Networks_WildFire.zip",
+        "CommonScripts/1.12.9/CommonScripts.zip",
+        "CommonPlaybooks/2.3.83/CommonPlaybooks.zip",
+        "FeedMitreAttackv2/1.1.19/FeedMitreAttackv2.zip"
+    ],
+    "upgradeCorePacks": [
+        "AutoFocus",
+        "Base",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "CommonTypes",
+        "Core",
+        "CoreAlertFields",
+        "CortexAttackSurfaceManagement",
+        "DefaultPlaybook",
+        "DemistoLocking",
+        "DemistoRESTAPI",
+        "EDL",
+        "FeedMitreAttackv2",
+        "FeedUnit42v2",
+        "FiltersAndTransformers",
+        "HelloWorld",
+        "ImageOCR",
+        "Palo_Alto_Networks_WildFire",
+        "ThreatIntelligenceManagement",
+        "Unit42Intel",
+        "VirusTotal",
+        "Whois",
+        "rasterize"
+    ]
+  }
+}

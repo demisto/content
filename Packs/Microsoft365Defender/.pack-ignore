@@ -2,4 +2,11 @@
 ignore=IN124
 
 [known_words]
-SafeLinks
+safelinks
+
+[file:MS365DefenderUserListToTable.yml]
+ignore=BA124
+
+[file:MS365DefenderCountIncidentCategories.yml]
+ignore=BA124
+

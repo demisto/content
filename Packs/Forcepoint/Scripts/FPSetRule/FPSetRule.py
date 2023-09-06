@@ -1,7 +1,7 @@
-from re import escape
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from re import escape
+
 
 FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
 CMD_SET_RULE_FORMAT = "sed -i '/^{0}={1} action=/{{h;s/{0}={1} action=[A-Za-z]*$/{0}={1} action={2}/}};${{x;/^$/{{" \

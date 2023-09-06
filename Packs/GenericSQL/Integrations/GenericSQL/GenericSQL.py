@@ -16,7 +16,7 @@ FETCH_DEFAULT_LIMIT = '50'
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
     from expiringdict import ExpiringDict  # pylint: disable=E0401
-except Exception:
+except Exception:  # noqa: S110
     pass
 
 
@@ -151,9 +151,13 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
-        result = self.connection.execute(sql_query, bind_vars)
-        # For avoiding responses with lots of records
-        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+        with self.connection as connection:
+            # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
+            connection.execution_options(isolation_level="AUTOCOMMIT")
+            result = self.connection.execute(sql_query, bind_vars)
+            # For avoiding responses with lots of records
+            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
+
         headers = []
         if results:
             # if the table isn't empty
@@ -462,8 +466,11 @@ def fetch_incidents(client: Client, params: dict):
     last_run = demisto.getLastRun()
     last_run = last_run if last_run else \
         initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
+    demisto.debug("GenericSQL - Start fetching")
+    demisto.debug(f"GenericSQL - Last run: {json.dumps(last_run)}")
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
                                  params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
     limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
                                                        params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
@@ -478,6 +485,10 @@ def fetch_incidents(client: Client, params: dict):
     if table:
         last_run = update_last_run_after_fetch(table, last_run, params.get('fetch_parameters', ''),
                                                params.get('column_name', ''), params.get('id_column', ''))
+    demisto.debug(f'GenericSQL - Next run after incidents fetching: {json.dumps(last_run)}')
+    demisto.debug(f"GenericSQL - Number of incidents before filtering: {len(result)}")
+    demisto.debug(f"GenericSQL - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"GenericSQL - Number of incidents skipped: {(len(result) - len(incidents))}")
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
@@ -524,7 +535,6 @@ def main():
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
-        LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,

@@ -1,5 +1,3 @@
-[file:SendGrid.yml]
-ignore=IN145
-
 [file:SendGrid_image.png]
 ignore=IM111
+

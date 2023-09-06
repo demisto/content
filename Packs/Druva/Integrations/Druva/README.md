@@ -1,6 +1,4 @@
-Centrally orchestrate ransomware response and recovery via API integrations and automated playbooks. This content pack will empower you to get back to normal faster after security incidents such as insider threats and ransomware attacks.
-
-This integration was integrated and tested with Public APIs available on Druva Public Cloud documented at https://developer.druva.com/
+Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 
 ## Configure Druva Ransomware Response on Cortex XSOAR
 
@@ -8,40 +6,50 @@ This integration was integrated and tested with Public APIs available on Druva P
 2. Search for Druva Ransomware Response.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Druva API URL | True |
-| clientId | Client ID | True |
-| secretKey | Secret Key | True |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Druva API URL |  | True |
+    | Client ID |  | True |
+    | Secret Key |  | True |
+    | Fetch indicators |  | False |
+    | Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
+    | Source Reliability | Reliability of the source providing the intelligence data | True |
+    |  |  | False |
+    |  |  | False |
+    | Feed Fetch Interval |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### druva-find-device
-***
-Finds Device ID for specific hostname
 
+### druva-find-device
+
+***
+Finds device information for a specific hostname.
 
 #### Base Command
 
 `druva-find-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_string | Prefix Search String for data source name | Required | 
-
+| search_string | The full string or prefix from the data resource name to search. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.Resource.resourceID | number | Resource ID. | 
-| Druva.Resource.resourceName | string | Resource Name | 
-| Druva.Resource.resourceType | unknown | Resource Type | 
-| Druva.Resource.resourceParent | string | Resource Server or User | 
-
+| Druva.Resource.resourceID | number | The ID of the Resource. | 
+| Druva.Resource.resourceName | string | The name of the Resource. | 
+| Druva.Resource.resourceType | unknown | The type of the Resource. | 
+| Druva.Resource.resourceParent | string | The name of the resource user for a device or server. | 
+| Druva.Resource.orgID | unknown | The Organisation ID of device  | 
 
 #### Command Example
 ```!druva-find-device search_string=sah```
@@ -61,7 +69,6 @@ Finds Device ID for specific hostname
     }
 }
 ```
-
 #### Human Readable Output
 
 >### Found Druva Devices
@@ -69,33 +76,31 @@ Finds Device ID for specific hostname
 >|---|---|---|---|---|---|
 >| -1 | 4497505 | SahilG-MBP | Druva Integrations | enabled | Endpoint |
 
-
 ### druva-list-quarantine-ranges
-***
-Lists all quarantine ranges in your environment
 
+***
+Lists all quarantine ranges in your environment.
 
 #### Base Command
 
 `druva-list-quarantine-ranges`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.activeQuarantineRanges.resourceID | number | Resource ID. | 
-| Druva.activeQuarantineRanges.resourceName | string | Resource Name | 
-| Druva.activeQuarantineRanges.resourceParent | string | Resource User Or Server | 
-| Druva.activeQuarantineRanges.resourceType | string | Resource Type | 
-| Druva.activeQuarantineRanges.fromDate | string | Quarantine Start Date | 
-| Druva.activeQuarantineRanges.toDate | string | Quarantine End Date | 
-| Druva.activeQuarantineRanges.rangeID | unknown | Quarantine Range ID | 
-
+| Druva.activeQuarantineRanges.resourceID | number | The ID of the resource. | 
+| Druva.activeQuarantineRanges.resourceName | string | The name of the resource. | 
+| Druva.activeQuarantineRanges.resourceParent | string | The name of the resource user for a device or server. | 
+| Druva.activeQuarantineRanges.resourceType | string | The type of the resource. | 
+| Druva.activeQuarantineRanges.fromDate | string | The start date of the quarantine. | 
+| Druva.activeQuarantineRanges.toDate | string | The end date of the quarantine. | 
+| Druva.activeQuarantineRanges.rangeID | unknown | The range ID of the quarantined resource. | 
 
 #### Command Example
 ```!druva-list-quarantine-ranges```
@@ -128,32 +133,30 @@ Lists all quarantine ranges in your environment
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 
-
 ### druva-quarantine-resource
-***
-Quarantine a resource
 
+***
+Quarantines a resource.
 
 #### Base Command
 
 `druva-quarantine-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | resource id for which you would like to list resources | Required | 
-| resource_type | type or resource : Endpoint or  File Server or NAS | Required | 
-| from_date | Date from which a quarantine range should start. If not provided then it is considered as open ended. example: 2020-10-25 | Optional | 
-| to_date | Date from which a quarantine range should end. If not provided then it is considered as open ended. example: 2020-10-25 | Optional | 
-
+| resource_id | The ID of the resource to quarantine. | Required | 
+| resource_type | The resource type to quarantine. Can be: "Endpoint", "File Server", or "NAS". | Required | 
+| org_id | Specify your org id for NAS and File server for End points set org_id to -1. | Optional | 
+| from_date | Date from which a quarantine range should start. If not provided, it is considered open ended. For example, 2020-10-25. | Optional | 
+| to_date | Date from which a quarantine range should end. If not provided, it is considered open ended. For example, 2020-10-25. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.QuarantinedRangeID | string | RangeID of the Quarantined Resource | 
-
-
+| Druva.QuarantinedRangeID | string | The range ID of the Quarantined Resource. | 
 #### Command Example
 ```!druva-quarantine-resource resource_id=4497505 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10```
 
@@ -206,27 +209,25 @@ Quarantine a resource
 >| 2020-03-01 | -1 | 445 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-03-10 | endpoints |
 >| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 
-
 ### druva-delete-quarantine-range
-***
-Delete a quarantine range
 
+***
+Deletes a quarantine range.
 
 #### Base Command
 
 `druva-delete-quarantine-range`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id | ID of range to be deleted | Required | 
-| resource_id | resource id for which you would like to delete the range | Required | 
-
+| range_id | ID of the range to be deleted. | Required | 
+| resource_id | The resource ID for which the quarantine range is to be deleted. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
 #### Command Example
 ```!druva-delete-quarantine-range range_id=354 resource_id=3335062```
 
@@ -245,28 +246,25 @@ There is no context output for this command.
 >|RangeID|
 >|---|
 >| 354 |
-
-
 ### druva-view-quarantine-range
-***
-View Quarantine Range Details
 
+***
+View details of the quarantine range.
 
 #### Base Command
 
 `druva-view-quarantine-range`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id | ID of range to be viewed | Required | 
-| resource_id | resource id for which you would like to view the range | Required | 
-
+| range_id | The ID of the range to be viewed. | Required | 
+| resource_id | The resource ID for which you would like to view the range. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
 #### Command Example
 ```!druva-view-quarantine-range range_id=415 resource_id=4497505```
 
@@ -298,34 +296,30 @@ There is no context output for this command.
 >|addedTime|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|workload|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-07-13T07:58:46Z | 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
-
-
 ### druva-update-quarantine-range
-***
-Updates an existing Quarantine Range
 
+***
+Updates an existing quarantine range of a resource.
 
 #### Base Command
 
 `druva-update-quarantine-range`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | ID of resource to be updated | Required | 
-| range_id | ID of range to be updated | Required | 
-| resource_type | type or resource to be updated : Endpoint or  File Server or NAS  | Required | 
-| from_date | Update Date from which a quarantine range should start. If not provided then it is considered as open ended. example: 2020-10-25 | Optional | 
-| to_date | Updated Date from which a quarantine range should end. If not provided then it is considered as open ended. example: 2020-10-25 | Optional | 
-
+| resource_id | The ID of the resource to be updated. | Required | 
+| range_id | The ID of range to be updated. | Required | 
+| resource_type | The resource type to be updated. Can be: "Endpoint", "File Server", or "NAS". | Required | 
+| from_date | The date from which a quarantine range should start. If not provided, it is open-ended. For example, 2020-10-25. | Optional | 
+| to_date | The date from which a quarantine range should end. If not provided, it is open-ended. For example, 2020-10-25. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.updatedQuarantineRange | string | Range ID of the Updated Quarantined Range | 
-
-
+| Druva.updatedQuarantineRange | string | The range ID of the updated quarantined range. | 
 #### Command Example
 ```!druva-update-quarantine-range range_id=415 resource_id=4497505 from_date=2020-07-13 to_date=2020-07-15 resource_type=Endpoint```
 
@@ -378,31 +372,28 @@ Updates an existing Quarantine Range
 >| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 >| 2020-03-01 | -1 | 445 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-03-10 | endpoints |
 
-
 ### druva-list-quarantine-snapshots
-***
-List all quarantine Snapshots for a quarantine range
 
+***
+List all quarantine snapshots for a quarantine range.
 
 #### Base Command
 
 `druva-list-quarantine-snapshots`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | resource id for which you would like to view the quarantined snapshots | Required | 
-| range_id | ID of range for which quarantined snapshots are to be viewed | Required | 
-
+| resource_id | The resource ID of the quarantined snapshots to view. | Required | 
+| range_id | The range ID of the quarantined snapshots to view. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.quarantinedSnapshots.snapshotID | string | ID of the quarantined snapshot | 
-| Druva.quarantinedSnapshots.name | string | Name of the quarantined snapshot | 
-
-
+| Druva.quarantinedSnapshots.snapshotID | string | ID of the quarantined snapshot. | 
+| Druva.quarantinedSnapshots.name | string | Name of the quarantined snapshot. | 
 #### Command Example
 ```!druva-list-quarantine-snapshots range_id=415 resource_id=4497505```
 
@@ -730,31 +721,28 @@ List all quarantine Snapshots for a quarantine range
 >|  | 0 | 0 | 0 | Jul 14 2020, 08:55 | MTMyNzQtVHVlIEp1bCAxNCAwODo1NTowNCAyMDIw | Jul 14 2020, 08:55 | 105355564 | Snapshot Quarantined | 0 | 0 |
 >|  | 67 | 0 | 0 | Jul 13 2020, 01:02 | MTMyNzQtTW9uIEp1bCAxMyAwMTowMjoyNSAyMDIw | Jul 13 2020, 01:02 | 228657822 | Snapshot Quarantined | 67 | 0 |
 
-
 ### druva-delete-quarantined-snapshot
-***
-Delete a quarantined Snapshot. Warning: Snapshots once deleted can not be recovered.
 
+***
+Deletes a quarantined Snapshot. Snapshots that are deleted cannot be recovered.
 
 #### Base Command
 
 `druva-delete-quarantined-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | resource id for which you would like to delete a quarantined snapshots | Required | 
-| snapshot_id | ID of snapshot you would like to delete | Required | 
-| range_id | Range id for which you would like to delete a quarantined snapshots | Required | 
-
+| resource_id | The resource ID to delete a quarantined snapshot. | Required | 
+| snapshot_id | The ID of the snapshot to delete. | Required | 
+| range_id | The range ID to delete a quarantined snapshot. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.quarantinedSnapshots.snapshotID | string | ID of the quarantined snapshot | 
-
-
+| Druva.quarantinedSnapshots.snapshotID | string | ID of the quarantined snapshot. | 
 #### Command Example
 ```!druva-delete-quarantined-snapshot range_id=415 resource_id=4497505 snapshot_id=MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw```
 
@@ -772,29 +760,28 @@ Delete a quarantined Snapshot. Warning: Snapshots once deleted can not be recove
 
 
 ### druva-endpoint-search-file-hash
-***
-Search a file use SHA1 checksum
 
+***
+Searches a file using the SHA1 checksum.
 
 #### Base Command
 
 `druva-endpoint-search-file-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha1_checksum | checksum of the file to be searched | Required | 
-
+| sha1_checksum | SHA1 checksum of the file to be searched. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Druva.searchEndpointsFileHashResults.deviceID | string | Device ID of device the input hash | 
-| Druva.searchEndpointsFileHashResults.fileName | string | Name of the file on the Endpoint | 
-| Druva.searchEndpointsFileHashResults.objectID | string | Object ID | 
-| Druva.searchEndpointsFileHashResults.userID | string | User ID of the Endpoint | 
-
+| Druva.searchEndpointsFileHashResults.deviceID | string | The device ID on the Endpoint. | 
+| Druva.searchEndpointsFileHashResults.fileName | string | Name of the file on the Endpoint. | 
+| Druva.searchEndpointsFileHashResults.objectID | string | The object ID on the Endpoint. | 
+| Druva.searchEndpointsFileHashResults.userID | string | The user ID of the Endpoint. | 
 
 #### Command Example
 ```!druva-endpoint-search-file-hash sha1_checksum=cec8ad914b1e9db83626b98e8d98512616975fdf```
@@ -913,83 +900,276 @@ Search a file use SHA1 checksum
 >| 2020-05-11T23:49:17Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Documents\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNuNCIsInNwYXRoIjoic2FoaWwvRG9jdW1lbnRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjQwIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
 >| 2017-08-12T06:22:30Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Downloads\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNvTCIsInNwYXRoIjoic2FoaWwvRG93bmxvYWRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjlNIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
 
-
 ### druva-endpoint-initiate-restore
-***
-Restore Data to a replacement device. Delete a quarantined Snapshot. Warning: This command will restore your endpoint data from a prior day snapshot. Any changes since the snapshot date may be lost.
 
+***
+Restores data to a replacement device and deletes a quarantined Snapshot. This command restores your endpoint data from a day prior to the snapshot. Any changes made after the snapshot date may be lost.
 
 #### Base Command
 
 `druva-endpoint-initiate-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source_resourceid | Select resource id to restore from  | Required | 
-| target_resourceid | Select resource id to restore to  | Required | 
-| restore_location | Select Target Restore Location: 1) Desktop - If you want to restore the data to the desktop on the target device. 2) Original - If you want to restore data to the same location from which it was backed up. 3) If you want to restore the data at a custom location, specify absolute path of the location. Example - /Users/username/Desktop | Required | 
-
+| source_resourceid | Select a Resource ID in which to restore. . | Required | 
+| target_resourceid | Select a Resource ID in which to restore. | Required | 
+| restore_location | Specify the target Restore Location. Can be: "Desktop" - if you want to restore the data to the desktop on the target device, "Original" - if you want to restore data to the same location from which it was backed up, or to restore the data to a custom location, specify the absolute path of the location. For example,  /Users/username/Desktop. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### druva-endpoint-check-restore-status
-***
-Check Restore Job Status
 
+***
+Checks the restore job status of the endpoint.
 
 #### Base Command
 
 `druva-endpoint-check-restore-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| restore_id | Job ID of Restore | Required | 
-
+| restore_id | The restore ID of the job. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### druva-endpoint-decommission
-***
-Remote Wipe Infected Endpoint Resource. Delete a quarantined Snapshot. Warning: This command will remote wipe data from the end point. This action can not be undone.
 
+***
+Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot. This command remote wipes data from the endpoint. This action cannot be undone.
 
 #### Base Command
 
 `druva-endpoint-decommission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | ID of endpoint resource to be decommissioned | Required | 
-
+| resource_id | ID of endpoint resource to be decommissioned. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+### druva-find-user
 
-#### Command Example
-``` ```
+***
+Finds user information for a specific username.
+
+#### Base Command
+
+`druva-find-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_string | Complete user name or p. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Druva.User.userID | unknown | The full string or prefix from the user name to search. | 
+
+#### Command example
+```!druva-find-user user_string=rit1```
+#### Context Example
+```json
+{
+    "Druva": {
+        "User": [
+            {
+                "emailID": "test@test.com",
+                "userID": 10000135,
+                "userName": "test"
+            },
+            {
+                "emailID": "test123@test.com",
+                "userID": 10000154,
+                "userName": "test123"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Found Druva users
+>|emailID|userID|userName|
+>|---|---|---|
+>| test@test.com | 10000135 | test |
+>| test123@test.com | 10000154 | test123 |
+
+
+### druva-find-userDevice
+
+***
+Finds device information for a specific user.
+
+#### Base Command
+
+`druva-find-userDevice`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userID | The userID to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Druva.Resource.resourceID | string | The ID of the Resource. | 
+| Druva.Resource.resourceType | string | The type of the Resource. | 
+
+#### Command example
+```!druva-find-userDevice userID=10000135```
+#### Context Example
+```json
+{
+    "Druva": {
+        "Resource": [
+            {
+                "profileID": 183,
+                "resourceID": 10000105,
+                "resourceName": "DDSPL1571N",
+                "resourceStatus": "Enabled",
+                "resourceType": "Endpoint",
+                "userID": 10000135,
+                "userName": "rit1"
+            },
+            {
+                "profileID": 183,
+                "resourceID": 10000103,
+                "resourceName": "rit1's OneDrive",
+                "resourceStatus": "Enabled",
+                "resourceType": "OneDrive",
+                "userID": 10000135,
+                "userName": "rit1"
+            },
+            {
+                "profileID": 183,
+                "resourceID": 10000104,
+                "resourceName": "rit1's Google Drive",
+                "resourceStatus": "Enabled",
+                "resourceType": "Google Drive",
+                "userID": 10000135,
+                "userName": "rit1"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found Druva Devices
+>|profileID|resourceID|resourceName|resourceStatus|resourceType|userID|userName|
+>|---|---|---|---|---|---|---|
+>| 183 | 10000105 | DDSPL1571N | Enabled | Endpoint | 10000135 | rit1 |
+>| 183 | 10000103 | rit1's OneDrive | Enabled | OneDrive | 10000135 | rit1 |
+>| 183 | 10000104 | rit1's Google Drive | Enabled | Google Drive | 10000135 | rit1 |
+
+
+### druva-find-sharePointSites
+
+***
+Find all share point resources with given user name 
+
+#### Base Command
+
+`druva-find-sharePointSites`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_string | The full string or prefix from the share point url to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Druva.Resource.resourceID | unknown | The ID of the Resource. | 
+| Druva.Resource.resourceType | unknown | The type of the Resource. | 
+
+#### Command example
+```!druva-find-sharePointSites search_string="auto_restore_XQ9OBZ"```
+#### Context Example
+```json
+{
+    "Druva": {
+        "Resource": {
+            "resourceID": 53,
+            "resourceName": "auto_restore_XQ9OBZ",
+            "resourceParentName": "https://druvainternal.sharepoint.com/sites/auto_restore_XQ9OBZ",
+            "resourceStatus": "Disabled",
+            "resourceType": "SharePoint",
+            "siteType": "Other Site"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found Druva Devices
+>|resourceID|resourceName|resourceParentName|resourceStatus|resourceType|siteType|
+>|---|---|---|---|---|---|
+>| 53 | auto_restore_XQ9OBZ | https:<span>//</span>druvainternal.sharepoint.com/sites/auto_restore_XQ9OBZ | Disabled | SharePoint | Other Site |
+
+
+### druva-find-sharedDrives
+
+***
+Finds shared drives resources specific to share drive name
+
+#### Base Command
+
+`druva-find-sharedDrives`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_string | The full string or prefix from the share drive name to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Druva.Resource.resourceID | unknown | The ID of the Resource. | 
+| Druva.Resource.resourceType | unknown | The type of the Resource. | 
+
+#### Command example
+```!druva-find-sharedDrives search_string="rahul_drive"```
+#### Context Example
+```json
+{
+    "Druva": {
+        "Resource": {
+            "resourceID": 104,
+            "resourceName": "rahul_drive",
+            "resourceParentName": "https://drive.google.com/drive/folders/0AIL1ax7fcxDKUk9PVA",
+            "resourceStatus": "Enabled",
+            "resourceType": "Shared Drive"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found Druva Devices
+>|resourceID|resourceName|resourceParentName|resourceStatus|resourceType|
+>|---|---|---|---|---|
+>| 104 | rahul_drive | https:<span>//</span>drive.google.com/drive/folders/0AIL1ax7fcxDKUk9PVA | Enabled | Shared Drive |
 

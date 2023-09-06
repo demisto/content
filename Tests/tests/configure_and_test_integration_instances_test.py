@@ -1,6 +1,5 @@
 import os
 import pytest
-from unittest.mock import mock_open
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
     get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
@@ -195,20 +194,29 @@ def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
         os.chdir(current_path)
 
 
-def test_get_packs_with_higher_min_version(mocker):
+@pytest.mark.parametrize(
+    'pack_version, expected_results',
+    [('6.5.0', {'TestPack'}), ('6.8.0', set())])
+def test_get_packs_with_higher_min_version(mocker, pack_version, expected_results):
     """
     Given:
         - Pack names to install.
+        - case 1: pack with a version lower than the machine.
+        - case 2: pack with a version higher than the machine.
     When:
         - Running 'get_packs_with_higher_min_version' method.
     Then:
         - Assert the returned packs are with higher min version than the server version.
+        - case 1: shouldn't filter any packs.
+        - case 2: should filter the pack.
     """
 
-    mocker.patch("builtins.open", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
+    mocker.patch("Tests.configure_and_test_integration_instances.extract_packs_artifacts")
+    mocker.patch("Tests.configure_and_test_integration_instances.get_json_file",
+                 return_value={"serverMinVersion": "6.6.0"})
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, 'content', '6.5.0')
-    assert packs_with_higher_min_version == {'TestPack'}
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, pack_version)
+    assert packs_with_higher_min_version == expected_results
 
 
 CHANGED_MARKETPLACE_PACKS = [
@@ -253,3 +261,15 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     first_added_to_marketplace = filter_new_to_marketplace_packs(build, {'pack_name'})
     assert the_expected_result == first_added_to_marketplace
+
+
+EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/server-image-master-345040-2023-06-04', '99.99.98'),
+                          ('projects/xsoar-content-build/global/images/server-image-ga-6-11-300044-2023-06-04', '6.11.0'),
+                          ('server-image-ga-6-11-300044-2023-06-04', '6.11.0')]
+
+
+@pytest.mark.parametrize('instances_ami_name, res_version', EXTRACT_SERVER_VERSION)
+def test_extract_server_numeric_version(instances_ami_name, res_version):
+    from Tests.test_content import extract_server_numeric_version
+    default_version = '99.99.98'
+    assert extract_server_numeric_version(instances_ami_name, default_version) == res_version

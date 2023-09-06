@@ -854,6 +854,512 @@ There are no input arguments for this command.
 >| 62 | REMEDIATION_OVERRIDEN |
 
 
+### symantec-dlp-get-incident-original-message
+
+***
+Fetches the original message from an incident. Requires SDLP 15.8.
+
+#### Base Command
+
+`symantec-dlp-get-incident-original-message`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.EntryID | String | The EntryID of the original message file. | 
+| InfoFile.Extension | String | The extension of the original message file. | 
+| InfoFile.Name | String | The name of the original message file. | 
+| InfoFile.Info | String | The info of the original message file. | 
+| InfoFile.Size | Number | The size of the original message file. | 
+| InfoFile.Type | String | The type of the original message file. | 
+
+#### Command example
+```!symantec-dlp-get-incident-original-message incident_id=1```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "2442@1a367091-9d9f-4851-8e71-bfbbb66563a6",
+        "Info": "text/plain",
+        "MD5": "cb79735bc7c9de30eb3a63110c6febd9",
+        "Name": "unknown",
+        "SHA1": "30dcc9ed8a7b1f44de4c4cdcde055708f96487d5",
+        "SHA256": "d085bf376b122a38064ef32ede13b0ff64b7dc085079e1cfd57ae664bf76d78b",
+        "SHA512": "3db852235a9d84dccacc04e805c5a3d843d0cd90c71833e2b8c68c17f77f04aadd88f8f72216a9f23417336e689c342a25588390002edd51605067a78bfabfa4",
+        "SSDeep": "3:ZwRRrPD+sGMw2Bu:+7Dy324",
+        "Size": 37,
+        "Type": "ASCII text, with no line terminators"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+### symantec-dlp-get-report-filters
+
+***
+Retrieves the filter criteria for a saved search in the Enforce console by report ID. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-get-report-filters`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | Report ID for which to retrieve filters. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.ReportFilter | Unknown | The filter criteria for a saved search in the Enforce console. | 
+
+#### Command example
+```!symantec-dlp-get-report-filters report_id=1```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "ReportFilter": {
+            "filter": {
+                "booleanOperator": "AND",
+                "filterType": "booleanLogic",
+                "filters": [
+                    {
+                        "filterType": "string",
+                        "operandOne": {
+                            "name": "messageSource"
+                        },
+                        "operandTwoValues": [
+                            "NETWORK"
+                        ],
+                        "operator": "EQ"
+                    },
+                    {
+                        "booleanOperator": "AND",
+                        "filterType": "booleanLogic",
+                        "filters": [
+                            {
+                                "filterType": "localDateTime",
+                                "operandOne": {
+                                    "name": "messageDate"
+                                },
+                                "operandTwoValues": [
+                                    "2022-01-01T00:00:00"
+                                ],
+                                "operator": "GTE"
+                            },
+                            {
+                                "filterType": "localDateTime",
+                                "operandOne": {
+                                    "name": "messageDate"
+                                },
+                                "operandTwoValues": [
+                                    "2022-12-31T23:59:59"
+                                ],
+                                "operator": "LTE"
+                            },
+                            {
+                                "filterType": "string",
+                                "operandOne": {
+                                    "function": "UPPER",
+                                    "name": "networkSenderIdentifier"
+                                },
+                                "operandTwoValues": [
+                                    "example_email@demisto.com"
+                                ],
+                                "operator": "IN"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "filterString": "{\"select\": [{\"id\": 173, \"name\": \"messageDate\"}, {\"id\": 174, \"name\": \"incidentId\"}, {\"id\": 175, \"name\": \"networkSenderIdentifier\"}, {\"id\": 176, \"name\": \"messageSubject\"}, {\"id\": 177, \"name\": \"recipientIdentifier\"}, {\"id\": 178, \"name\": \"policyName\"}, {\"id\": 179, \"name\": \"matchCount\"}, {\"id\": 180, \"name\": \"incidentStatusName\"}], \"filter\": {\"filterType\": \"booleanLogic\", \"booleanOperator\": \"AND\", \"filters\": [{\"filterType\": \"string\", \"operandOne\": {\"name\": \"messageSource\"}, \"operator\": \"EQ\", \"operandTwoValues\": [\"NETWORK\"]}, {\"filterType\": \"booleanLogic\", \"booleanOperator\": \"AND\", \"filters\": [{\"filterType\": \"localDateTime\", \"operandOne\": {\"name\": \"messageDate\"}, \"operator\": \"GTE\", \"operandTwoValues\": [\"2022-01-01T00:00:00\"]}, {\"filterType\": \"localDateTime\", \"operandOne\": {\"name\": \"messageDate\"}, \"operator\": \"LTE\", \"operandTwoValues\": [\"2022-12-31T23:59:59\"]}, {\"filterType\": \"string\", \"operandOne\": {\"name\": \"networkSenderIdentifier\", \"function\": \"UPPER\"}, \"operator\": \"IN\", \"operandTwoValues\": [\"example_email@demisto.com\"]}]}]}, \"orderBy\": [{\"field\": {\"name\": \"messageDate\"}, \"order\": \"DESC\"}]}",
+            "orderBy": [
+                {
+                    "field": {
+                        "name": "messageDate"
+                    },
+                    "order": "DESC"
+                }
+            ],
+            "select": [
+                {
+                    "id": 173,
+                    "name": "messageDate"
+                },
+                {
+                    "id": 174,
+                    "name": "incidentId"
+                },
+                {
+                    "id": 175,
+                    "name": "networkSenderIdentifier"
+                },
+                {
+                    "id": 176,
+                    "name": "messageSubject"
+                },
+                {
+                    "id": 177,
+                    "name": "recipientIdentifier"
+                },
+                {
+                    "id": 178,
+                    "name": "policyName"
+                },
+                {
+                    "id": 179,
+                    "name": "matchCount"
+                },
+                {
+                    "id": 180,
+                    "name": "incidentStatusName"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Returned results for report id 1
+### symantec-dlp-list-users
+
+***
+Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.Users | Unknown | List of SDLP users and details. | 
+
+#### Command example
+```!symantec-dlp-list-users```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "Users": {
+            "accountDisabled": "no",
+            "emailAddress": "test@gmail.com",
+            "roles": [
+                "API Web"
+            ],
+            "userId": 1,
+            "userName": "User1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Symantec DLP Users
+>|Accountdisabled|Emailaddress|Roles|Userid|Username|
+>|---|---|---|---|---|
+>| no | test@gmail.com | API Web | 1 | User1 |
+
+### symantec-dlp-get-sender-recipient-pattern
+
+***
+Returns a sender/recipient pattern. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-get-sender-recipient-pattern`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pattern_id | Pattern ID for which to retrieve pattern details. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.SenderRecipientPattern | Unknown | Sender/recipient pattern returned from the Enforce console. | 
+
+#### Command example
+```!symantec-dlp-get-sender-recipient-pattern pattern_id=1```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "SenderRecipientPattern": {
+            "description": "demo",
+            "id": 1,
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername "
+            },
+            "modifiedDate": "05/16/23 12:20 PM",
+            "name": "XSOAR Sender Block Example",
+            "ruleType": 4,
+            "userPatterns": [
+                "domain-jsmith",
+                "domain-jdoe"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### XSOAR Sender Block Example
+>|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
+>|---|---|---|---|---|---|---|---|
+>| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
+
+### symantec-dlp-list-sender-recipient-patterns
+
+***
+Returns a list of all sender/recipient patterns from the Enforce console. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-list-sender-recipient-patterns`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.Patterns | Unknown |  The list of all sender/recipient patterns returned from the Enforce console. | 
+
+#### Command example
+```!symantec-dlp-list-sender-recipient-patterns```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "Patterns": {
+            "description": "demo",
+            "id": 1,
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername "
+            },
+            "modifiedDate": "05/16/23 12:20 PM",
+            "name": "XSOAR Sender Block Example",
+            "ruleType": 4,
+            "userPatterns": [
+                "domain-jsmith",
+                "domain-jdoe"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sender/Recipient Patterns
+>|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
+>|---|---|---|---|---|---|---|---|
+>| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
+
+### symantec-dlp-update-sender-pattern
+
+***
+Updates a sender pattern in the Enforce console. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-update-sender-pattern`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pattern_id | ID number of the pattern to update. | Required | 
+| ips | Comma-separated list of IP addresses for the pattern. Note: These IP values will replace the existing values in the pattern. | Optional | 
+| users | Comma-separated list of emails, Windows names, or screen names for the pattern. Note: These user values will replace the existing values in the pattern. | Optional | 
+| name | Name of the sender pattern. Note: This value will change the name of the pattern if different from the existing name. | Required | 
+| description | Description of the sender pattern. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.SenderUpdate | Unknown | Results of updating the sender pattern from the Enforce Console. | 
+
+#### Command example
+```!symantec-dlp-update-sender-pattern pattern_id=1 name="XSOAR Sender Block Example" description="demo"```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "SenderUpdate": {
+            "description": "demo",
+            "id": 1,
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername "
+            },
+            "modifiedDate": "05/16/23 12:20 PM",
+            "name": "XSOAR Sender Block Example",
+            "ruleType": 4,
+            "userPatterns": [
+                "domain-jsmith",
+                "domain-jdoe"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sender Pattern Update Results
+>|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
+>|---|---|---|---|---|---|---|---|
+>| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
+
+### symantec-dlp-update-recipient-pattern
+
+***
+Updates a recipient pattern in the Enforce console. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-update-recipient-pattern`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pattern_id | ID number of the pattern to update. | Required | 
+| ips | Comma-separated list of IP addresses for the pattern. Note: These IP values will replace the existing values in the pattern. | Optional | 
+| emails | Comma-separated list of emails for the pattern. Note: These email values will replace the existing values in the pattern. | Optional | 
+| domains | Comma-separated list of domains for the pattern. Note: These domain values will replace the existing values in the pattern. | Optional | 
+| name | Name of the sender pattern. Note: This value will change the name of the pattern if different from the existing name. | Required | 
+| description | Description of the sender pattern. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.RecipientUpdate | Unknown | Results of updating the recipient pattern from the Enforce Console. | 
+
+#### Command example
+```!symantec-dlp-update-recipient-pattern pattern_id=1 name="XSOAR Recipient Edit Test" description="updated from XSOAR for demo"```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "RecipientUpdate": {
+            "description": "updated from XSOAR for demo",
+            "emailAddresses": [
+                "test1@gmail.com",
+                "test2@gmail.com"
+            ],
+            "id": 1,
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername"
+            },
+            "modifiedDate": "05/16/23 12:18 PM",
+            "name": "XSOAR Recipient Edit Test",
+            "ruleType": 2,
+            "urlDomains": [
+                "example.com",
+                "external.com"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sender Pattern Update Results
+>|description|emailAddresses|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|urlDomains|
+>|---|---|---|---|---|---|---|---|---|
+>| updated from XSOAR for demo | test1@gmail.com,<br/>test2@gmail.com | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername | 05/16/23 12:18 PM | XSOAR Recipient Edit Test | 2 | example.com,<br/>external.com |
+
+### symantec-dlp-get-message-body
+
+***
+Returns the message body from the Enforce console by incident ID. Requires SDLP 16.0.
+
+#### Base Command
+
+`symantec-dlp-get-message-body`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SymantecDLP.MessageBody | Unknown | Message body for the incident returned by the Enforce console. | 
+
+#### Command example
+```!symantec-dlp-get-message-body incident_id=1```
+#### Context Example
+```json
+{
+    "SymantecDLP": {
+        "MessageBody": {
+            "IncidentID": "1",
+            "MessageBody": "message body for incident 1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Message body for incident 1 written to context data
+
 ## Breaking changes from the previous version of this integration - Symantec Data Loss Prevention v2
 
 ### Commands

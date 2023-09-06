@@ -13,9 +13,9 @@ This playbook does not use any integrations.
 * Exists
 
 ### Commands
-* extrahop-get-peers
-* extrahop-device-search
-* extrahop-get-activity-map
+* extrahop-peers-get
+* extrahop-devices-search
+* extrahop-activity-map-get
 
 ## Playbook Inputs
 ---

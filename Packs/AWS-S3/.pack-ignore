@@ -1,2 +1,3 @@
 [file:AWS-S3.yml]
-ignore=BA108,BA109,IN145,IN124
+ignore=BA108,BA109,IN124
+

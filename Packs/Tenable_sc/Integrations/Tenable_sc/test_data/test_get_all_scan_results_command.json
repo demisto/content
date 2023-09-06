@@ -1,0 +1,30 @@
+
+{
+    "test_case_1":{
+        "args":{
+            "limit": 1
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":[{"completedChecks":"23509703","description":"",
+        "details":"Adv Scan","finishTime":"1684701030","id":"160","importStart":"1684701033","importStatus":"Finished","name":"Test SCAN NEW",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"repository":{"description":"","id":"1","name":"Local",
+        "type":"Local","uuid":"uuid"},"scanDuration":"5422","scannedIPs":"161","startTime":"1684695608",
+        "status":"Completed"},{"completedChecks":"23085210","description":"Test scan 2023","details":"Network Scan","finishTime":"1684720349",
+        "id":"161","importStart":"1684720351","importStatus":"Finished","name":"test_scan_2023-mart-05-1950","owner":{"firstname":"","id":"2",
+        "lastname":"","username":"secman","uuid":"uuid"},"ownerGroup":{"description":"Full Access group",
+        "id":"0","name":"Full Access"},"repository":{"description":"","id":"1","name":"Local","type":"Local","uuid":"uuid"},
+        "scanDuration":"7341","scannedIPs":"159","startTime":"1684713008","status":"Completed"}],
+        "usable":[{"completedChecks":"23509703","description":"",
+        "details":"Adv Scan","finishTime":"1684701030","id":"160","importStart":"1684701033","importStatus":"Finished","name":"Test SCAN NEW",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"repository":{"description":"","id":"1","name":"Local",
+        "type":"Local","uuid":"uuid"},"scanDuration":"5422","scannedIPs":"161","startTime":"1684695608",
+        "status":"Completed"},{"completedChecks":"23085210","description":"Test scan 2023","details":"Network Scan","finishTime":"1684720349",
+        "id":"161","importStart":"1684720351","importStatus":"Finished","name":"test_scan_2023-mart-05-1950","owner":{"firstname":"","id":"2",
+        "lastname":"","username":"secman","uuid":"uuid"},"ownerGroup":{"description":"Full Access group",
+        "id":"0","name":"Full Access"},"repository":{"description":"","id":"1","name":"Local","type":"Local","uuid":"uuid"},
+        "scanDuration":"7341","scannedIPs":"159","startTime":"1684713008","status":"Completed"}]},"timestamp":1687098646,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan results - 0-0\nTotal number of elements is 2\n|ID|Name|Status|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 160 | Test SCAN NEW | Completed | Adv Scan | Full Access | lmanager | 161 | 2023-05-21T19:00:08Z | 2023-05-21T20:30:30Z | 90.36666666666666 | 23509703 | 2023-05-21T20:30:33Z | Local |\n",
+        "expected_ec": [{"ID": "160", "Name": "Test SCAN NEW", "Status": "Completed", "Policy": "Adv Scan", "Group": "Full Access", "Checks": "23509703", "StartTime": "2023-05-21T19:00:08Z", "EndTime": "2023-05-21T20:30:30Z", "Duration": 90.36666666666666, "ImportTime": "2023-05-21T20:30:33Z", "ScannedIPs": "161", "Owner": "lmanager", "RepositoryName": "Local", "ImportStatus": "Finished"}]       
+    }
+}

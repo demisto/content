@@ -1,21 +1,13 @@
 args:
-- default: false
-  description: 'Whether to export the result to context. Possible values: "true" and "false".'
-  isArray: false
+- description: 'Whether to export the result to context. Possible values: "true" and "false".'
   name: export_to_context
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
   defaultValue: "true"
-- default: false
-  description: 'Whether to ignore deprecated automation. Possible values: "true" and "false".'
-  isArray: false
+- description: 'Whether to ignore deprecated automation. Possible values: "true" and "false".'
   name: ignore_deprecated_automations
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - "true"
@@ -25,7 +17,6 @@ comment: 'List all Docker images that are in use by the installed integrations a
 commonfields:
   id: ListUsedDockerImages
   version: -1
-enabled: false
 name: ListUsedDockerImages
 outputs:
 - contextPath: UsedDockerImages.DockerImage
@@ -35,7 +26,6 @@ outputs:
   description: The integration or automation name that used the specific Docker image.
   type: String
 script: '-'
-system: false
 tags:
 - Utility
 - Dockers
@@ -43,7 +33,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.1.0
 tests:
 - ListUsedDockerImages - Test

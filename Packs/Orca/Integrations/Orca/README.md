@@ -72,3 +72,99 @@ Get Description of An asset
 #### Command Example
 ``` ```
 
+#### Base Command
+
+`orca-set-alert-severity`
+#### Input
+
+| **Argument Name** | **Description**                | **Required** |
+|-------------------|--------------------------------|--------------|
+| alert_id          | Id of the alert.               | Required     | 
+| score             | New score value. From 0 to 10. | Required     | 
+
+
+#### Context Output
+
+| **Path**                      | **Type** | **Description**   |
+|-------------------------------| --- |-------------------|
+| Orca.Alert    | String | Alert description | 
+
+
+#### Command Example
+``` !orca-set-alert-severity alert_id=orca1 score=5 ```
+
+`orca-get-alert-event-log`
+#### Input
+
+| **Argument Name** | **Description**                | **Required** |
+|-------------------|--------------------------------|--------------|
+| alert_id          | Id of the alert.               | Required     | 
+| limit             | Limit of the event logs | Optional     | 
+| start_at_index             | Start at index | Optional     | 
+| type             | Type of the event logs | Optional     | 
+
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**     |
+|--------------------------------| --- |---------------------|
+| Orca.Manager.EventLog      | String | Event log           | 
+
+
+#### Command Example
+``` !orca-get-alert-event-log alert_id=orca1 limit=10 ```
+
+`orca-set-alert-status`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+| status            | New alert status | Required     | 
+
+
+#### Context Output
+
+| **Path**            | **Type** | **Description**  |
+|---------------------| --- |------------------|
+| Orca.SetAlertStatus | String | Operation result | 
+
+
+#### Command Example
+``` !orca-set-alert-status alert_id=orca1 status=open ```
+
+`orca-verify-alert`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+
+
+#### Context Output
+
+| **Path**         | **Type** | **Description**  |
+|------------------| --- |------------------|
+| Orca.VerifyAlert | String | Operation result | 
+
+
+#### Command Example
+``` !orca-verify-alert alert_id=orca1 ```
+
+`orca-download-malicious-file`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+
+
+#### Context Output
+
+| **Path**  | **Type** | **Description** |
+|-----------| --- |-----------------|
+| Orca.File | unknown | Malicious File  | 
+
+
+#### Command Example
+``` !orca-download-malicious-file alert_id=orca1```

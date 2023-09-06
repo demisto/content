@@ -5,6 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Remediation - Azure AKS Misconfiguration
 description: |
+  Deprecated. Use Prisma Cloud Remediation - Azure AKS Misconfiguration v2 instead.
   This playbook remediates Prisma Cloud Azure AKS alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -574,4 +575,5 @@ outputs:
   description: AKS cluster name.
   type: string
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true

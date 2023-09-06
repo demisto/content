@@ -37,6 +37,12 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how far backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Required Permissions
+The following permissions are required for all commands:
+- Mail.ReadWrite - Application
+- Mail.Send - Application
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -618,6 +624,21 @@ Update the status of an email to read / unread.
 | folder_id | The folder ID. | Optional | 
 | status | Status to set the email to. Possible values are: Read, Unread. | Required | 
 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### msgraph-mail-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-mail-auth-reset`
+#### Input
+There are no input arguments for this command.
 
 #### Context Output
 
