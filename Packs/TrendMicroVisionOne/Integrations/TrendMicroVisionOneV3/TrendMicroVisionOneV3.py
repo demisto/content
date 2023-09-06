@@ -37,7 +37,23 @@ from pytmv1 import (
 """CONSTANTS"""
 USER_AGENT = "TMV1CortexXSOARApp/1.1"
 VENDOR_NAME = "TrendMicroVisionOneV3"
+ACCOUNT_IDENTIFIERS = "account_identifiers"
+EMAIL_IDENTIFIERS = "email_identifiers"
+ENDPOINT_IDENTIFIERS = "endpoint_identifiers"
+PROCESS_IDENTIFIERS = "process_identifiers"
+COLLECT_FILES = "collect_files"
 BLOCK = "block"
+URLS = "urls"
+INTERVAL_IN_SECONDS = "interval_in_seconds"
+BLOCK_OBJECTS = "block_objects"
+ADD_BLOCKLIST = "Add To Blocklist."
+REMOVE_BLOCKLIST = "Remove from Blocklist."
+COLLECT_FILE = "Collect Forensic File."
+ISOLATE_ENDPOINT = "Isolate Endpoint."
+RESTORE_ENDPOINT = "Restore Endpoint."
+TERMINATE_PROCESS = "Terminate Process."
+ADD_EXCEPTION_LIST = "Add To Exception List."
+DELETE_EXCEPTION_LIST = "Delete from Exception List."
 MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
@@ -74,9 +90,9 @@ ENTRY_ID = "entry_id"
 DATA = "data"
 TYPE = "type"
 VALUE = "value"
-FILE_SHA = "file_sha1"
-FILENAME = "filename"
+FILE_SHA1 = "file_sha1"
 CRITERIA = "criteria"
+SUCCEEDED = "succeeded"
 EXCEPTION_LIST = "exceptionList"
 SUSPICIOUS_LIST = "suspiciousObjectList"
 LAST_MODIFIED = "lastModified"
@@ -93,10 +109,17 @@ QUEUED = "queued"
 RUNNING = "running"
 WAITFORAPPROVAL = "waitForApproval"
 OS_TYPE = "os"
+FAILED_CONNECTIVITY = "Connectivity failed!"
+PASSED_CONNECTIVITY = "Connectivity Passed!"
 ADD_SUSPICIOUS = "Add to Suspicious List."
 DELETE_SUSPICIOUS = "Delete from Suspicious List."
 QUARANTINE_EMAIL = "Quarantine Email Message."
 DELETE_EMAIL = "Delete Email Message."
+RESTORE_EMAIL = "Restore Email Message."
+ENABLE_ACCOUNT = "Enable User Account."
+DISABLE_ACCOUNT = "Disable User Account."
+SIGN_OUT_ACCOUNT = "Sign Out Account."
+FORCE_PASSWORD_RESET = "Force Password Reset."
 FILEPATH = "filepath"
 FILE_PATH = "file_path"
 FILE_NAME = "filename"
@@ -140,8 +163,9 @@ TABLE_ADD_TO_BLOCKLIST = "Add to block list "
 TABLE_REMOVE_FROM_BLOCKLIST = "Remove from block list "
 TABLE_QUARANTINE_EMAIL_MESSAGE = "Quarantine email message "
 TABLE_DELETE_EMAIL_MESSAGE = "Delete email message "
-TABLE_ISOLATE_ENDPOINT_MESSAGE = "Isolate endpoint connection "
-TABLE_RESTORE_ENDPOINT_MESSAGE = "Restore endpoint connection "
+TABLE_RESTORE_EMAIL_MESSAGE = "Restore email message "
+TABLE_ISOLATE_ENDPOINT = "Isolate endpoint connection "
+TABLE_RESTORE_ENDPOINT = "Restore endpoint connection "
 TABLE_TERMINATE_PROCESS = "Terminate process "
 TABLE_ADD_EXCEPTION_LIST = "Add object to exception list "
 TABLE_DELETE_EXCEPTION_LIST = "Delete object from exception list "
@@ -174,6 +198,7 @@ ADD_BLOCKLIST_COMMAND = "trendmicro-visionone-add-to-block-list"
 REMOVE_BLOCKLIST_COMMAND = "trendmicro-visionone-remove-from-block-list"
 QUARANTINE_EMAIL_COMMAND = "trendmicro-visionone-quarantine-email-message"
 DELETE_EMAIL_COMMAND = "trendmicro-visionone-delete-email-message"
+RESTORE_EMAIL_COMMAND = "trendmicro-visionone-restore-email-message"
 ISOLATE_ENDPOINT_COMMAND = "trendmicro-visionone-isolate-endpoint"
 RESTORE_ENDPOINT_COMMAND = "trendmicro-visionone-restore-endpoint-connection"
 TERMINATE_PROCESS_COMMAND = "trendmicro-visionone-terminate-process"
@@ -221,8 +246,9 @@ table_name = {
     REMOVE_BLOCKLIST_COMMAND: TABLE_REMOVE_FROM_BLOCKLIST,
     QUARANTINE_EMAIL_COMMAND: TABLE_QUARANTINE_EMAIL_MESSAGE,
     DELETE_EMAIL_COMMAND: TABLE_DELETE_EMAIL_MESSAGE,
-    ISOLATE_ENDPOINT_COMMAND: TABLE_ISOLATE_ENDPOINT_MESSAGE,
-    RESTORE_ENDPOINT_COMMAND: TABLE_RESTORE_ENDPOINT_MESSAGE,
+    RESTORE_EMAIL_COMMAND: TABLE_RESTORE_EMAIL_MESSAGE,
+    ISOLATE_ENDPOINT_COMMAND: TABLE_ISOLATE_ENDPOINT,
+    RESTORE_ENDPOINT_COMMAND: TABLE_RESTORE_ENDPOINT,
     TERMINATE_PROCESS_COMMAND: TABLE_TERMINATE_PROCESS,
     ADD_EXCEPTION_LIST_COMMAND: TABLE_ADD_EXCEPTION_LIST,
     DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
@@ -308,7 +334,7 @@ class Client(BaseClient):
                     table_name[CHECK_TASK_STATUS_COMMAND], resp.error, removeNull=True
                 ),
                 outputs_prefix="VisionOne.Task_Status",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.error,
             )
         # Assign values on a successful call
@@ -353,7 +379,7 @@ class Client(BaseClient):
                     removeNull=True,
                 ),
                 outputs_prefix="VisionOne.Sandbox_Submission_Polling",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.error,
             )
         # Get the task status of rest call
@@ -361,7 +387,7 @@ class Client(BaseClient):
             task_status = unwrap(resp.response).status
 
         file_entry = None
-        if task_status.lower() == "succeeded":
+        if task_status.lower() == SUCCEEDED:
             resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
             if _is_pytmv1_error(resp.result_code):
                 return CommandResults(
@@ -371,7 +397,7 @@ class Client(BaseClient):
                         removeNull=True,
                     ),
                     outputs_prefix="VisionOne.Sandbox_Submission_Polling",
-                    outputs_key_field="error",
+                    outputs_key_field="message",
                     outputs=resp.error,
                 )
             else:
@@ -573,7 +599,7 @@ def run_polling_command(
     :param client: client object to use http_request.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get("interval_in_seconds", 30))
+    interval_in_secs = int(args.get(INTERVAL_IN_SECONDS, 30))
     task_id = args.get(TASKID, EMPTY_STRING)
     if cmd == CHECK_TASK_STATUS_COMMAND:
         command_results = client.status_check(args)
@@ -592,8 +618,8 @@ def run_polling_command(
         # schedule next poll
         polling_args = {
             task_id: task_id,
-            "interval_in_seconds": interval_in_secs,
-            "polling": True,
+            INTERVAL_IN_SECONDS: interval_in_secs,
+            POLLING: True,
             **args,
         }
         scheduled_command = ScheduledCommand(
@@ -643,8 +669,8 @@ def test_module(client: Client) -> Any:
     # Make rest call
     resp = v1_client.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
-        return "Connectivity failed!"
-    return "Connectivity Passed!"
+        return FAILED_CONNECTIVITY
+    return PASSED_CONNECTIVITY
 
 
 def enable_or_disable_user_account(
@@ -672,7 +698,7 @@ def enable_or_disable_user_account(
     """
     # Required Params
     account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("account_identifiers", [{}])
+        args.get(ACCOUNT_IDENTIFIERS, [{}])
     )
     account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
@@ -684,8 +710,8 @@ def enable_or_disable_user_account(
         for account in account_identifiers:
             account_tasks.append(
                 AccountTask(
-                    account_name=account["account_name"],
-                    description=account.get("description", "Enable User Account."),
+                    account_name=account[ACCOUNT_NAME],
+                    description=account.get(DESCRIPTION, ENABLE_ACCOUNT),
                 )
             )
         # Make rest call
@@ -697,7 +723,7 @@ def enable_or_disable_user_account(
                     table_name[command], resp.errors, removeNull=True
                 ),
                 outputs_prefix="VisionOne.User_Account",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.errors,
             )
         # Add results to message to be sent to the War Room
@@ -710,8 +736,8 @@ def enable_or_disable_user_account(
         for account in account_identifiers:
             account_tasks.append(
                 AccountTask(
-                    account_name=account["account_name"],
-                    description=account.get("description", "Disable User Account."),
+                    account_name=account[ACCOUNT_NAME],
+                    description=account.get(DESCRIPTION, DISABLE_ACCOUNT),
                 )
             )
         # Make rest call
@@ -723,7 +749,7 @@ def enable_or_disable_user_account(
                     table_name[command], resp.errors, removeNull=True
                 ),
                 outputs_prefix="VisionOne.User_Account",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.errors,
             )
         # Add results to message to be sent to the War Room
@@ -755,7 +781,7 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     """
     # Required Params
     account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("account_identifiers", [{}])
+        args.get(ACCOUNT_IDENTIFIERS, [{}])
     )
     account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
@@ -765,8 +791,8 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     for account in account_identifiers:
         account_tasks.append(
             AccountTask(
-                account_name=account["account_name"],
-                description=account.get("description", "Sign Out Account."),
+                account_name=account[ACCOUNT_NAME],
+                description=account.get(DESCRIPTION, SIGN_OUT_ACCOUNT),
             )
         )
     # Make rest call
@@ -778,7 +804,7 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
                 table_name[FORCE_SIGN_OUT_COMMAND], resp.errors, removeNull=True
             ),
             outputs_prefix="VisionOne.Force_Sign_Out",
-            outputs_key_field="error",
+            outputs_key_field="message",
             outputs=resp.errors,
         )
     # Add results to message to be sent to the War Room
@@ -813,7 +839,7 @@ def force_password_reset(
     """
     # Required Params
     account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("account_identifiers", [{}])
+        args.get(ACCOUNT_IDENTIFIERS, [{}])
     )
     account_tasks: List[AccountTask] = []
     message: Dict[str, Any] = {}
@@ -823,8 +849,8 @@ def force_password_reset(
     for account in account_identifiers:
         account_tasks.append(
             AccountTask(
-                account_name=account["account_name"],
-                description=account.get("description", "Force Password Reset."),
+                account_name=account[ACCOUNT_NAME],
+                description=account.get(DESCRIPTION, FORCE_PASSWORD_RESET),
             )
         )
     # Make rest call
@@ -945,7 +971,7 @@ def add_or_remove_from_block_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
+    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
     block_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
@@ -955,9 +981,9 @@ def add_or_remove_from_block_list(
         for obj in block_objects:
             block_tasks.append(
                 ObjectTask(
-                    object_type=_get_ot_enum(obj["object_type"]),
-                    object_value=obj["object_value"],
-                    description=obj.get("description", "Add To Blocklist"),
+                    object_type=_get_ot_enum(obj[OBJECT_TYPE]),
+                    object_value=obj[OBJECT_VALUE],
+                    description=obj.get(DESCRIPTION, ADD_BLOCKLIST),
                 )
             )
         # Make rest call
@@ -969,7 +995,7 @@ def add_or_remove_from_block_list(
                     table_name[command], resp.errors, removeNull=True
                 ),
                 outputs_prefix="VisionOne.BlockList",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.errors,
             )
         # Add results to message to be sent to the War Room
@@ -982,9 +1008,9 @@ def add_or_remove_from_block_list(
         for obj in block_objects:
             block_tasks.append(
                 ObjectTask(
-                    object_type=_get_ot_enum(obj["object_type"]),
-                    object_value=obj["object_value"],
-                    description=obj.get("description", "Remove from Blocklist"),
+                    object_type=_get_ot_enum(obj[OBJECT_TYPE]),
+                    object_value=obj[OBJECT_VALUE],
+                    description=obj.get(DESCRIPTION, REMOVE_BLOCKLIST),
                 )
             )
         # Make rest call
@@ -1077,7 +1103,7 @@ def quarantine_or_delete_email_message(
     """
     # Required Params
     email_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("email_identifiers", [{}])
+        args.get(EMAIL_IDENTIFIERS, [{}])
     )
     message: Dict[str, Any] = {}
     email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
@@ -1111,7 +1137,7 @@ def quarantine_or_delete_email_message(
                     table_name[command], resp.errors, removeNull=True
                 ),
                 outputs_prefix="VisionOne.Email",
-                outputs_key_field="error",
+                outputs_key_field="message",
                 outputs=resp.errors,
             )
 
@@ -1147,7 +1173,79 @@ def quarantine_or_delete_email_message(
                     table_name[command], resp.errors, removeNull=True
                 ),
                 outputs_prefix="VisionOne.Email",
-                outputs_key_field="error",
+                outputs_key_field="message",
+                outputs=resp.errors,
+            )
+        # Add results to message to be sent to the War Room
+        message = {
+            "multi_response": [item.dict() for item in unwrap(resp.response).items]
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        outputs_prefix="VisionOne.Email",
+        outputs_key_field="multi_response",
+        outputs=message,
+    )
+
+
+def restore_email_message(
+    client: Client, command: str, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Restores a quarantined email message and
+    sends the result to demist war room.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+
+    :type command: ``str``
+    :param command: type of command either
+    trendmicro-visionone-quarantine-email-message or
+    trendmicro-visionone-delete-email-message
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    email_identifiers: List[Dict[str, str]] = json.loads(
+        args.get(EMAIL_IDENTIFIERS, [{}])
+    )
+    message: Dict[str, Any] = {}
+    email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
+    # Create email task list
+    for email in email_identifiers:
+        if email.get(MESSAGE_ID, EMPTY_STRING):
+            email_tasks.append(
+                EmailMessageIdTask(
+                    message_id=email[MESSAGE_ID],
+                    description=email.get(DESCRIPTION, RESTORE_EMAIL),
+                    mail_box=email.get(MAILBOX, EMPTY_STRING),
+                )
+            )
+        elif email.get(UNIQUE_ID, EMPTY_STRING):
+            email_tasks.append(
+                EmailMessageUIdTask(
+                    unique_id=email[UNIQUE_ID],
+                    description=email.get(DESCRIPTION, RESTORE_EMAIL),
+                )
+            )
+        # Make rest call
+        resp = v1_client.restore_email_message(*email_tasks)
+        # Check if an error occurred for each call
+        if _is_pytmv1_error(resp.result_code):
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[command], resp.errors, removeNull=True
+                ),
+                outputs_prefix="VisionOne.Email",
+                outputs_key_field="message",
                 outputs=resp.errors,
             )
         # Add results to message to be sent to the War Room
@@ -1186,7 +1284,7 @@ def isolate_or_restore_connection(
     """
     # Required Params
     endpoint_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("endpoint_identifiers", [{}])
+        args.get(ENDPOINT_IDENTIFIERS, [{}])
     )
     message: Dict[str, Any] = {}
     endpt_tasks: List[EndpointTask] = []
@@ -1200,14 +1298,14 @@ def isolate_or_restore_connection(
                 endpt_tasks.append(
                     EndpointTask(
                         endpoint_name=endpt[ENDPOINT],
-                        description=endpt.get(DESCRIPTION, "Isolate Endpoint."),
+                        description=endpt.get(DESCRIPTION, ISOLATE_ENDPOINT),
                     )
                 )
             elif endpt.get(AGENT_GUID, EMPTY_STRING):
                 endpt_tasks.append(
                     EndpointTask(
                         agent_guid=endpt[AGENT_GUID],
-                        description=endpt.get(DESCRIPTION, "Isolate Endpoint"),
+                        description=endpt.get(DESCRIPTION, ISOLATE_ENDPOINT),
                     )  # type: ignore
                 )
         # Make rest call
@@ -1234,14 +1332,14 @@ def isolate_or_restore_connection(
                 endpt_tasks.append(
                     EndpointTask(
                         endpoint_name=endpt[ENDPOINT],
-                        description=endpt.get(DESCRIPTION, "Restore Endpoint."),
+                        description=endpt.get(DESCRIPTION, RESTORE_ENDPOINT),
                     )
                 )
             elif endpt.get(AGENT_GUID, EMPTY_STRING):
                 endpt_tasks.append(
                     EndpointTask(
                         agent_guid=endpt[AGENT_GUID],
-                        description=endpt.get(DESCRIPTION, "Restore Endpoint."),
+                        description=endpt.get(DESCRIPTION, RESTORE_ENDPOINT),
                     )  # type: ignore
                 )
         # Make rest call
@@ -1287,7 +1385,7 @@ def terminate_process(
     """
     # Required Params
     process_identifiers: List[Dict[str, str]] = json.loads(
-        args.get("process_identifiers", [{}])
+        args.get(PROCESS_IDENTIFIERS, [{}])
     )
     process_tasks: List[ProcessTask] = []
     message: Dict[str, Any] = {}
@@ -1299,19 +1397,19 @@ def terminate_process(
         if process.get("endpoint"):
             process_tasks.append(
                 ProcessTask(
-                    endpoint_name=process["endpoint"],
-                    file_sha1=process["file_sha1"],
-                    description=process.get("description", "Terminate Process."),
-                    file_name=process.get("filename", ""),
+                    endpoint_name=process[ENDPOINT],
+                    file_sha1=process[FILE_SHA1],
+                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
+                    file_name=process.get(FILE_NAME, EMPTY_STRING),
                 )
             )
         elif process.get(AGENT_GUID):
             process_tasks.append(
                 ProcessTask(
                     agent_guid=process[AGENT_GUID],
-                    file_sha1=process["file_sha1"],
-                    description=process.get("description", "Terminate Process."),
-                    file_name=process.get("filename", ""),
+                    file_sha1=process[FILE_SHA1],
+                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
+                    file_name=process.get(FILE_NAME, EMPTY_STRING),
                 )  # type: ignore
             )
     # Make rest call
@@ -1360,7 +1458,7 @@ def add_or_delete_from_exception_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
+    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
 
     excp_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
@@ -1374,7 +1472,7 @@ def add_or_delete_from_exception_list(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
-                    description=obj.get(DESCRIPTION, "Add To Exception List."),
+                    description=obj.get(DESCRIPTION, ADD_EXCEPTION_LIST),
                 )
             )
         # Make rest call
@@ -1401,7 +1499,7 @@ def add_or_delete_from_exception_list(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
-                    description=obj.get(DESCRIPTION, "Delete from Exception List."),
+                    description=obj.get(DESCRIPTION, DELETE_EXCEPTION_LIST),
                 )
             )
         # Make rest call
@@ -1449,7 +1547,7 @@ def add_to_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, Any]] = json.loads(args.get("block_objects", [{}]))
+    block_objects: List[Dict[str, Any]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
 
     suspicious_tasks: List[SuspiciousObjectTask] = []
     message: Dict[str, Any] = {}
@@ -1514,7 +1612,7 @@ def delete_from_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
+    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
 
     suspicious_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
@@ -1717,7 +1815,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     :rtype: ``dict`
     """
     # Required Params
-    collect_files: List[Dict[str, str]] = json.loads(args.get("collect_files", [{}]))
+    collect_files: List[Dict[str, str]] = json.loads(args.get(COLLECT_FILES, [{}]))
 
     # Create file task list
     file_tasks: List[FileTask] = []
@@ -1731,7 +1829,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
                 FileTask(
                     endpoint_name=file[ENDPOINT],
                     file_path=file[FILE_PATH],
-                    description=file.get(DESCRIPTION, "Collect File."),
+                    description=file.get(DESCRIPTION, COLLECT_FILE),
                 )
             )
         else:
@@ -1739,7 +1837,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
                 FileTask(
                     agent_guid=file[AGENT_GUID],
                     file_path=file[FILE_PATH],
-                    description=file.get(DESCRIPTION, "Collect File."),
+                    description=file.get(DESCRIPTION, COLLECT_FILE),
                 )  # type: ignore
             )
     # Make rest call
@@ -2166,7 +2264,7 @@ def submit_urls_to_sandbox(
     :rtype: ``dict`
     """
     # Required Params
-    urls: List[str] = json.loads(args.get("urls", []))
+    urls: List[str] = json.loads(args.get(URLS, []))
 
     message: Dict[str, Any] = {}
     submit_urls_resp: List[Dict[str, Any]] = []
@@ -2216,7 +2314,7 @@ def get_alert_details(
     :rtype: ``dict`
     """
     # Required Params
-    workbench_id: str = args.get("workbench_id", EMPTY_STRING)
+    workbench_id: str = args.get(WORKBENCH_ID, EMPTY_STRING)
 
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
@@ -2399,6 +2497,9 @@ def main():  # pragma: no cover
 
         elif command in (QUARANTINE_EMAIL_COMMAND, DELETE_EMAIL_COMMAND):
             return_results(quarantine_or_delete_email_message(client, command, args))
+
+        elif command == RESTORE_EMAIL_COMMAND:
+            return_results(restore_email_message(client, command, args))
 
         elif command in (ISOLATE_ENDPOINT_COMMAND, RESTORE_ENDPOINT_COMMAND):
             return_results(isolate_or_restore_connection(client, command, args))
