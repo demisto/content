@@ -656,7 +656,7 @@ class Client(BaseClient):
 
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
-                     no_record_found_res: dict = {'result': []}):
+                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
         Args:
@@ -668,6 +668,7 @@ class Client(BaseClient):
             file: request  file
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
+            get_attachments: if to get attachments or not.
 
         Returns:
             response from API
@@ -687,6 +688,10 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
+        # The attachments table does not support v2 api version
+        if get_attachments:
+            url = url.replace('/v2', '/v1')
+
         max_retries = 3
         num_of_tries = 0
         while num_of_tries < max_retries:
@@ -831,7 +836,7 @@ class Client(BaseClient):
         query = f'table_sys_id={ticket_id}'
         if sys_created_on:
             query += f'^sys_created_on>{sys_created_on}'
-        return self.send_request('attachment', 'GET', params={'sysparm_query': query})
+        return self.send_request('attachment', 'GET', params={'sysparm_query': query}, get_attachments=True)
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
