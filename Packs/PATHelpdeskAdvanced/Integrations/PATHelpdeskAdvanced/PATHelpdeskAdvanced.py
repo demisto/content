@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal
+from typing import Literal, NamedTuple
 from collections.abc import Callable
 from collections.abc import Sequence
 
@@ -10,7 +10,7 @@ from CommonServerUserPython import *  # noqa
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = "HelpdeskAdvanced"
 
-FILTER_REGEX = re.compile(
+FILTER_CONDITION_REGEX = re.compile(
     r"\A(?P<key>\".*?\") (?P<op>eq|gt|lt|ge|lt|sw|ne) (?P<value>(?:\".*?\"|null))\Z"
 )
 
@@ -26,8 +26,8 @@ class Field:
             else:
                 title_parts.append(part.title())
 
-        self.demisto_name = demisto_name
-        self.hda_name = "".join(title_parts)
+        self.demisto_name = demisto_name  # lower_case
+        self.hda_name = "".join(title_parts)  # PascalCase
 
 
 OBJECT_TYPE_ID = Field("object_type_id")
@@ -83,6 +83,7 @@ SITE_VISIBLE = Field("site_visible")
 DESCRIPTION = Field("description")
 TICKET_PRIORITY = Field("ticket_priority")
 _PRIORITY = Field("priority")
+_TICKET_SOURCE = Field("ticket_source")
 
 HARDCODED_COLUMNS = [
     # sent on every listing request
@@ -135,7 +136,7 @@ HARDCODED_COLUMNS = [
 ID_DESCRIPTION_COLUMN_NAMES = [field.hda_name for field in (ID, DESCRIPTION)]
 
 
-def safe_arg_to_number(argument: str, argument_name: str) -> int:
+def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
     # arg_to_number is typed as if it returns Optional[int], which causes mypy issues down the road.
     # this method solves them
     if (result := arg_to_number(argument)) is None:
@@ -148,7 +149,7 @@ def parse_filter_conditions(strings: Sequence[str]) -> list[dict]:
 
 
 def _parse_filter_condition(string: str) -> dict:
-    if not (match := FILTER_REGEX.match(string)):
+    if not (match := FILTER_CONDITION_REGEX.match(string)):
         raise DemistoException(
             f'Cannot parse {string}. Expected a phrase of the form "key" operator "value" or "key" operator null'
         )
@@ -188,7 +189,7 @@ class RequestNotSuccessfulError(DemistoException):
         )
 
 
-def parse_ticket_status_mapping(response: dict) -> dict[str, str]:
+def map_id_to_description(response: dict) -> dict[str, str]:
     return {item[ID.hda_name]: item[DESCRIPTION.hda_name] for item in response["data"]}
 
 
@@ -227,9 +228,9 @@ class Client(BaseClient):
         self.request_token: str | None = None
         self.token_expiry_utc: datetime | None = None
 
-        self.__login()  # sets request_token and token_expiry_utc
+        self._login()  # sets request_token and token_expiry_utc
 
-    def __login(self):
+    def _login(self):
         # should only be called from __init__
         def generate_new_token() -> dict:
             return self.http_request(
@@ -298,15 +299,12 @@ class Client(BaseClient):
         )
 
     def list_tickets(self, **kwargs) -> dict:
-        start = safe_arg_to_number(kwargs.get("start", 0), "start")
-        limit = safe_arg_to_number(kwargs["limit"], "limit")
-
         params: dict[str, str | list | int] = {
             "entity": "Ticket",  # hardcoded
             "columnExpressions": HARDCODED_COLUMNS,  # hardcoded
             "columnNames": HARDCODED_COLUMNS,  # hardcoded
-            "start": start,
-            "limit": limit,
+            "start": safe_arg_to_number(kwargs.get("start", 0), "start"),
+            "limit": safe_arg_to_number(kwargs["limit"], "limit"),
         }
 
         if filter_params := parse_filter_conditions(kwargs.get("filter") or ()):
@@ -328,7 +326,7 @@ class Client(BaseClient):
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
             }
-            | {
+            | {  # maps "TicketAttachment_i+1" to file content
                 f"TicketAttachment_{i+1}": Path(
                     demisto.getFilePath(entry_id)["path"]
                 ).read_text()
@@ -387,13 +385,15 @@ class Client(BaseClient):
             },
         )
 
-    def change_ticket_status(self, **kwargs) -> dict:
-        statuses_to_id = parse_ticket_status_mapping(
+    def change_ticket_status(
+        self, status: str, ticket_id: str, note: str | None
+    ) -> dict:
+        statuses_to_id = map_id_to_description(
             self.list_ticket_statuses(limit=1000)
         )  # TODO 1000?
 
         # Find status ID matching the selected status
-        if (status := statuses_to_id.get(kwargs["status"])) is None:
+        if (status_id := statuses_to_id.get(status)) is None:
             demisto.debug(f"status to id mapping: {statuses_to_id}")
             raise DemistoException(
                 f"Cannot find id for {status}."
@@ -401,11 +401,11 @@ class Client(BaseClient):
             )
 
         params = {
-            "ticketID": kwargs["ticket_id"],
-            "ticketStatusID": status,
+            "ticketID": ticket_id,
+            "ticketStatusID": status_id,
         }
 
-        if note := kwargs.get("note"):
+        if note:
             params["note"] = note
 
         return self.http_request(
@@ -427,6 +427,112 @@ class Client(BaseClient):
             },
         )
 
+    def list_ticket_sources(self, limit: int) -> dict:
+        return self.http_request(
+            url_suffix="HDAPortal/WSC/Projection",
+            method="POST",
+            attempted_action="listing ticket priorities",
+            params={
+                "entity": _TICKET_SOURCE.hda_name,
+                "columnExpressions": ID_DESCRIPTION_COLUMN_NAMES,
+                "columenNames": ID_DESCRIPTION_COLUMN_NAMES,
+                "start": 0,
+                "limit": limit,
+            },
+        )
+
+    def get_ticket_history(self, ticket_id: str) -> dict:
+        return self.http_request(
+            url_suffix=f"HDAPortal/Ticket/History?ObjectID={ticket_id}",
+            method="POST",
+            attempted_action="getting ticket history",
+        )
+
+    def list_users(self, **kwargs):
+        columns = [
+            "ID",
+            "User.FirstName",
+            "User.LastName",
+            "User.EMail",
+            "User.Phone",
+            "User.Mobile",
+        ]
+
+        params = {
+            "entity": "Users",
+            "columnExpressions": columns,
+            "columnNames": columns,
+            "start": (pagination := paginate(**kwargs)).start,
+            "limit": pagination.limit,
+        }
+
+        if user_ids := argToList(kwargs["user_id"]):
+            params["filter"] = parse_filter_conditions(
+                tuple(f'{ID.hda_name} eq "{id_}"' for id_ in user_ids)
+            )
+
+        return self.http_request(
+            url_suffix="/HDAPortal/WSC/Projection",
+            method="POST",
+            attempted_action="listing user(s)",
+            params=params,
+        )
+
+    def list_groups(self, **kwargs):
+        columns = [column.hda_name for column in (ID, DESCRIPTION, OBJECT_TYPE_ID)]
+
+        params = {
+            "entity": "UserGroup",
+            "columnExpressions": columns,
+            "columnNames": columns,
+            "start": (pagination := paginate(**kwargs)).start,
+            "limit": pagination.limit,
+        }
+
+        if group_id := kwargs.get("group_id"):
+            params["filter"] = [
+                parse_filter_conditions(f'{ID.hda_name} eq "{group_id}"')
+            ]
+
+        return self.http_request(
+            url_suffix="/HDAPortal/WSC/Projection",
+            method="POST",
+            attempted_action="listing group(s)",
+            params=params,
+        )
+
+
+class PaginateArgs(NamedTuple):
+    start: int
+    limit: int
+
+
+def paginate(**kwargs) -> PaginateArgs:
+    limit = kwargs["limit"]  # TODO required?
+
+    page = kwargs.get("page")
+    page_size = kwargs.get("page_size")
+
+    none_arg_count = sum((page is None, page_size is None))
+
+    if none_arg_count == 1:
+        raise DemistoException(
+            "To paginate, provide both `page` and `page_size` arguments."
+            "To only get the first n results (without paginating), use the `limit` argument."
+        )
+
+    if none_arg_count == 2:  # neither page nor page_size provided
+        return PaginateArgs(start=0, limit=limit)
+
+    # here none_arg_count = 0, meaning both were provided
+    page = safe_arg_to_number(page, "page")
+    page_size = safe_arg_to_number(page_size, "page_size")
+
+    return PaginateArgs(
+        start=page * page_size,  # TODO 0 or 1 indexed?
+        limit=min(limit, page_size),
+    )
+
 
 def create_ticket_command(client: Client, **kwargs) -> CommandResults:
     response = client.create_ticket(**kwargs)
@@ -437,7 +543,7 @@ def create_ticket_command(client: Client, **kwargs) -> CommandResults:
 
     return CommandResults(
         outputs_prefix=f"{VENDOR}.Ticket",
-        outputs_key_field=f"{VENDOR}.Ticket.{ID.hda_name}",
+        outputs_key_field=ID.hda_name,
         outputs=response,  # todo check human readable, titles
         readable_output=tableToMarkdown(
             "Ticket Created", t=response_for_human_readable
@@ -450,7 +556,7 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket",
-        outputs_key_field=f"{VENDOR}.Ticket.{ID.hda_name}",  # TODO choose fields for HR?
+        outputs_key_field=ID.hda_name,  # TODO choose fields for HR?
         raw_response=response,
     )
 
@@ -473,7 +579,7 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
         readable_output=f"Added attachment ID(s) {attachment_ids_str} to ticket {args['ticket_id']} succesfully",
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket.Attachment",
-        outputs_key_field=f"{VENDOR}.Ticket.Attachment.{ID.hda_name}",
+        outputs_key_field=ID.hda_name,
         raw_response=response,
     )
 
@@ -512,18 +618,66 @@ def list_ticket_priorities_command(client: Client, _: dict) -> CommandResults:
     )
 
 
+def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
+    limit = safe_arg_to_number(args["limit"], "limit")
+
+    response = client.list_ticket_sources(limit)
+    outputs = map_id_to_description(response["data"])
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix=f"{VENDOR}.{_TICKET_SOURCE.hda_name}",
+        readable_output=tableToMarkdown(
+            name="PAT HelpdeskAdvanced Ticket Sources",
+            t=outputs,
+            headers=["Source ID", "Source Description"],
+        ),
+        raw_response=response,
+    )
+
+
+def get_ticket_history_command(client: Client, args: dict):
+    response = client.get_ticket_history(args["ticket_id"])
+
+    return CommandResults(
+        outputs=response["data"],
+        outputs_prefix=f"{VENDOR}.Ticket",
+        outputs_key_field=ID.hda_name,
+        raw_response=response,
+        readable_output=tableToMarkdown(
+            name="PAT HelpdeskAdvanced Ticket History",
+            t=response["data"],  # TODO check readable outputs
+        ),
+    )
+
+
+def list_users_command(client: Client, args: dict):
+    response = client.list_users(**args)
+
+    return CommandResults(
+        outputs=response["data"],
+        outputs_prefix=f"{VENDOR}.User",
+        outputs_key_field=ID.hda_name,
+        raw_response=response,  # TODO HR fields
+    )
+
+
+commands: dict[str, Callable] = {
+    "hda-create-ticket": create_ticket_command,
+    "hda-list-tickets": list_tickets_command,
+    "hda-add-ticket-comment": add_ticket_comment_command,
+    "hda-change-ticket-status": change_ticket_status_command,
+    "hda-add-ticket-attachment": add_ticket_attachment_command,
+    "hda-list-ticket-attachments": list_ticket_attachments_command,
+    "hda-list-ticket-priorities": list_ticket_priorities_command,
+    "hda-list-ticket-sources": list_ticket_sources_command,
+    "hda-get-ticket-history": get_ticket_history_command,
+    "hda-list-users": list_users_command,
+}
+
+
 def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     params = demisto.params()
-
-    commands: dict[str, Callable] = {
-        "hda-create-ticket": create_ticket_command,
-        "hda-list-tickets": list_tickets_command,
-        "hda-add-ticket-comment": add_ticket_comment_command,
-        "hda-add-ticket-attachment": add_ticket_attachment_command,
-        "hda-list-ticket-attachments": list_ticket_attachments_command,
-    }
-
     try:
         client = Client(
             base_url=params["server_url"],
@@ -534,19 +688,23 @@ def main() -> None:
         )
 
         if (command := demisto.command()) == "test-module":
-            ...  # TODO
+            # TODO client ctor checks credentials - should we just return "ok"?
+            client.list_ticket_statuses()
+            result = "ok"
 
         elif command in commands:
-            return_results((commands[command])(client, demisto.args()))
+            result = commands[command](client, demisto.args())
 
         else:
             raise NotImplementedError
+
+        return_results(result)
 
     except Exception as e:
         return_error(
             "\n".join(
                 (
-                    f"Failed to execute {demisto.command()} command.",
+                    f"Failed to execute {demisto.command()}.",
                     "Error:",
                     str(e),
                 )
