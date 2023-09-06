@@ -594,38 +594,36 @@ def test_main_fetch_events() -> None:
     }
 
     # Mocking demisto.command to return 'fetch-events'
-    with patch("demistomock.command", return_value="fetch-events"):
-        # Mocking other demisto functions
-        with patch("demistomock.getLastRun", return_value={"some": "data"}), patch(
-            "demistomock.setLastRun"
-        ) as mock_set_last_run, patch(
-            "demistomock.params", return_value=mock_params
-        ), patch(
-            "WorkdaySignOnEventCollector.Client"
-        ) as mock_client, patch(
-            "WorkdaySignOnEventCollector.fetch_sign_on_events_command"
-        ) as mock_fetch_sign_on_events_command, patch(
-            "WorkdaySignOnEventCollector.send_events_to_xsiam"
-        ) as mock_send_events_to_xsiam:
-            # Mocking the output of fetch_sign_on_events_command
-            mock_events = [{"event": "data"}]
-            mock_new_last_run = {"new": "data"}
-            mock_fetch_sign_on_events_command.return_value = (
-                mock_events,
-                mock_new_last_run,
-            )
+    with patch("demistomock.command", return_value="fetch-events"), patch(
+        "demistomock.getLastRun", return_value={"some": "data"}
+    ), patch("demistomock.setLastRun") as mock_set_last_run, patch(
+        "demistomock.params", return_value=mock_params
+    ), patch(
+        "WorkdaySignOnEventCollector.Client"
+    ) as mock_client, patch(
+        "WorkdaySignOnEventCollector.fetch_sign_on_events_command"
+    ) as mock_fetch_sign_on_events_command, patch(
+        "WorkdaySignOnEventCollector.send_events_to_xsiam"
+    ) as mock_send_events_to_xsiam:
+        # Mocking the output of fetch_sign_on_events_command
+        mock_events = [{"event": "data"}]
+        mock_new_last_run = {"new": "data"}
+        mock_fetch_sign_on_events_command.return_value = (
+            mock_events,
+            mock_new_last_run,
+        )
 
-            # When: Calling the main function
-            main()
+        # When: Calling the main function
+        main()
 
-            # Then: Validate the function calls and arguments
-            mock_fetch_sign_on_events_command.assert_called_with(
-                client=mock_client.return_value,
-                max_fetch=10000,
-                last_run={"some": "data"},
-            )
+        # Then: Validate the function calls and arguments
+        mock_fetch_sign_on_events_command.assert_called_with(
+            client=mock_client.return_value,
+            max_fetch=10000,
+            last_run={"some": "data"},
+        )
 
-            mock_send_events_to_xsiam.assert_called_with(
-                mock_events, vendor=VENDOR, product=PRODUCT
-            )
-            mock_set_last_run.assert_called_with(mock_new_last_run)
+        mock_send_events_to_xsiam.assert_called_with(
+            mock_events, vendor=VENDOR, product=PRODUCT
+        )
+        mock_set_last_run.assert_called_with(mock_new_last_run)
