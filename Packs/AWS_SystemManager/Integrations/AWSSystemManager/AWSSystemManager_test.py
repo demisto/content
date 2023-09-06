@@ -28,7 +28,7 @@ from AWSSystemManager import (
     run_automation_execution_command,
     run_command_command,
     validate_args,
-    update_if_value
+    update_if_value,
 )
 from pytest_mock import MockerFixture
 
@@ -102,50 +102,57 @@ def util_load_json(path: str) -> dict:
         ({}, {"b": 2}, {}, {"b": 2}),
         ({"a": 1}, {"b": 2}, {"a": "A"}, {"A": 1, "b": 2}),
     ],
-    ids=["add args to empty  kwargs", "keep kwargs the same, when no args", "add args to kwargs that already have values"]
+    ids=[
+        "add args to empty  kwargs",
+        "keep kwargs the same, when no args",
+        "add args to kwargs that already have values",
+    ],
 )
-def test_update_if_value(args: dict[str, str], kwargs: dict[str, str], input_to_output_keys: dict[str, str], expected_results: dict[str, str]):
+def test_update_if_value(
+    args: dict[str, str],
+    kwargs: dict[str, str],
+    input_to_output_keys: dict[str, str],
+    expected_results: dict[str, str],
+):
     assert update_if_value(args, kwargs, input_to_output_keys) == expected_results
 
 
 @pytest.mark.parametrize(
-    'value, excepted_value',
+    "value, excepted_value",
     [
-        (
-            "key1:value1",
-            {'key1': ['value1']}
-        ),
-        (
-            "key1:value1,",
-            {'key1': ['value1']}
-        ),
-        (
-            "key1:value1,value2",
-            {'key1': ['value1', "value2"]}
-        ),
-        (
-            "key1:value1,value2,",
-            {'key1': ['value1', "value2"]}
-        ),
+        ("key1:value1", {"key1": ["value1"]}),
+        ("key1:value1,", {"key1": ["value1"]}),
+        ("key1:value1,value2", {"key1": ["value1", "value2"]}),
+        ("key1:value1,value2,", {"key1": ["value1", "value2"]}),
         (
             "key1:value1,value2,key2:value1",
-            {'key1': ['value1', "value2"], 'key2': ['value1']}
+            {"key1": ["value1", "value2"], "key2": ["value1"]},
         ),
         (
             "key1:value1,value2,key2:value1,",
-            {'key1': ['value1', "value2"], 'key2': ['value1']}
+            {"key1": ["value1", "value2"], "key2": ["value1"]},
         ),
         (
             "key1:value1,key2:value1,value2,value3,key3:value1",
-            {'key1': ['value1'], 'key2': ['value1', 'value2', 'value3'], 'key3': ['value1']}
+            {
+                "key1": ["value1"],
+                "key2": ["value1", "value2", "value3"],
+                "key3": ["value1"],
+            },
         ),
         (
             "key1:value1,key2:value1,value2,value3,key3:value1,",
-            {'key1': ['value1'], 'key2': ['value1', 'value2', 'value3'], 'key3': ['value1']}
-        )
-    ]
+            {
+                "key1": ["value1"],
+                "key2": ["value1", "value2", "value3"],
+                "key3": ["value1"],
+            },
+        ),
+    ],
 )
-def test_format_parameters_arguments(value: str, excepted_value: dict[str, Any]) -> None:
+def test_format_parameters_arguments(
+    value: str, excepted_value: dict[str, Any]
+) -> None:
     """
     Given
         a dictionary of parameters,
@@ -183,9 +190,16 @@ def test_format_document_version(document_version: str, expected_response: str) 
     [
         ({"instance_id": "test_id"}, "Invalid instance id: test_id"),
         ({"association_id": "test_id"}, "Invalid association id: test_id"),
-        ({"association_version": "test_version"}, "Invalid association version: test_version"),
+        (
+            {"association_version": "test_version"},
+            "Invalid association version: test_version",
+        ),
     ],
-    ids=["Invalid instance id", "Invalid association id", "Invalid association version"],
+    ids=[
+        "Invalid instance id",
+        "Invalid association id",
+        "Invalid association version",
+    ],
 )
 def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
     """
@@ -221,7 +235,9 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
     """
     response = next_token_command_result(next_token, prefix)
     to_context = response.to_context()
-    assert to_context.get("EntryContext") == {f"AWS.SSM.{prefix}(val.NextToken)": {"NextToken": next_token}}
+    assert to_context.get("EntryContext") == {
+        f"AWS.SSM.{prefix}(val.NextToken)": {"NextToken": next_token}
+    }
 
 
 @pytest.mark.parametrize(
@@ -232,29 +248,37 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
             {"Associations": [{"LastExecutionDate": "test"}]},
         ),
         (
-            {"Associations": [{"LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000)}]},
+            {
+                "Associations": [
+                    {"LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000)}
+                ]
+            },
             {"Associations": [{"LastExecutionDate": "2023-07-25T18:51:28.607000"}]},
         ),
         (
             {
-                "AssociationDescription":
-                {
+                "AssociationDescription": {
                     "LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000),
                     "Date": datetime(2023, 7, 25, 18, 51, 28, 607000),
                 },
             },
             {
                 "AssociationDescription": {
-                    "LastExecutionDate": "2023-07-25T18:51:28.607000", "Date": "2023-07-25T18:51:28.607000",
+                    "LastExecutionDate": "2023-07-25T18:51:28.607000",
+                    "Date": "2023-07-25T18:51:28.607000",
                 },
             },
         ),
     ],
-    ids=["dict with string value",
-         "dict with key that contain datetime object",
-         "dict with multiply keys with datetime object"],
+    ids=[
+        "dict with string value",
+        "dict with key that contain datetime object",
+        "dict with multiply keys with datetime object",
+    ],
 )
-def test_convert_datetime_to_iso(data: dict[str, Any], expected_response: dict[str, Any]) -> None:
+def test_convert_datetime_to_iso(
+    data: dict[str, Any], expected_response: dict[str, Any]
+) -> None:
     """
     Given:
         data (dict): The input dictionary containing  datetime object.
@@ -279,9 +303,11 @@ def test_get_automation_execution_status(mocker: MockerFixture) -> None:
     Then:
         it should return the expected automation execution status, which is "Success".
     """
-    mocker.patch.object(MockClient,
-                        "get_automation_execution",
-                        return_value={"AutomationExecution": {"AutomationExecutionStatus": "Success"}})
+    mocker.patch.object(
+        MockClient,
+        "get_automation_execution",
+        return_value={"AutomationExecution": {"AutomationExecutionStatus": "Success"}},
+    )
     assert get_automation_execution_status("test_id", MockClient()) == "Success"
 
 
@@ -294,9 +320,9 @@ def test_get_command_status(mocker: MockerFixture) -> None:
     Then:
         it should return the expected command status, which is "Success".
     """
-    mocker.patch.object(MockClient,
-                        "list_commands",
-                        return_value={"Commands": [{"Status": "Success"}]})
+    mocker.patch.object(
+        MockClient, "list_commands", return_value={"Commands": [{"Status": "Success"}]}
+    )
     assert get_command_status("test_id", MockClient()) == "Success"
 
 
@@ -364,7 +390,10 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
     res = remove_tags_from_resource_command(args, MockClient())
-    assert res.readable_output == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
+    assert (
+        res.readable_output
+        == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
+    )
 
 
 def test_get_inventory_command(mocker: MockerFixture) -> None:
@@ -434,7 +463,9 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     response: list[CommandResults] = get_inventory_command({}, MockClient())
 
     to_context = response[0].to_context()
-    assert to_context.get("EntryContext") == {"AWS.SSM.InventoryNextToken(val.NextToken)": {"NextToken": "test_token"}}
+    assert to_context.get("EntryContext") == {
+        "AWS.SSM.InventoryNextToken(val.NextToken)": {"NextToken": "test_token"}
+    }
 
 
 def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
@@ -463,7 +494,9 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
     mock_response: dict = util_load_json("test_data/get_inventory_entry_command.json")
-    mock_list_inventory_entry_request = mocker.patch.object(MockClient, "list_inventory_entries", return_value=mock_response)
+    mock_list_inventory_entry_request = mocker.patch.object(
+        MockClient, "list_inventory_entries", return_value=mock_response
+    )
 
     args = {
         "instance_id": "i-0a00aaa000000000a",
@@ -547,7 +580,10 @@ def test_get_association_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/association_description.json")
     mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
-    response = get_association_command({"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"}, MockClient())
+    response = get_association_command(
+        {"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"},
+        MockClient(),
+    )
 
     assert response.outputs == mock_response["AssociationDescription"]
     assert response.readable_output == (
@@ -582,9 +618,15 @@ def test_list_versions_association_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/list_association_versions_response.json")
-    mocker.patch.object(MockClient, "list_association_versions", return_value=mock_response)
-    response = list_versions_association_command({"association_id": "12345678-0000-0000-0000-000000000000"}, MockClient())
+    mock_response: dict = util_load_json(
+        "test_data/list_association_versions_response.json"
+    )
+    mocker.patch.object(
+        MockClient, "list_association_versions", return_value=mock_response
+    )
+    response = list_versions_association_command(
+        {"association_id": "12345678-0000-0000-0000-000000000000"}, MockClient()
+    )
 
     assert response[0].outputs == mock_response["AssociationVersions"]
     assert response[0].readable_output == (
@@ -656,8 +698,12 @@ def test_get_automation_execution_command(mocker: MockerFixture) -> None:
         it should return the expected CommandResults object with the specified outputs and readable_output.
     """
     mock_response: dict = util_load_json("test_data/get_automation_execution.json")
-    mocker.patch.object(MockClient, "get_automation_execution", return_value=mock_response)
-    response = get_automation_execution_command({"execution_id": "test_id"}, MockClient())
+    mocker.patch.object(
+        MockClient, "get_automation_execution", return_value=mock_response
+    )
+    response = get_automation_execution_command(
+        {"execution_id": "test_id"}, MockClient()
+    )
 
     assert response.outputs == mock_response["AutomationExecution"]
     assert response.readable_output == (
@@ -679,7 +725,9 @@ def test_list_automation_executions_command(mocker: MockerFixture) -> None:
         it should return the expected CommandResults object with the specified outputs and readable_output.
     """
     mock_response: dict = util_load_json("test_data/list_automation_executions.json")
-    mocker.patch.object(MockClient, "describe_automation_executions", return_value=mock_response)
+    mocker.patch.object(
+        MockClient, "describe_automation_executions", return_value=mock_response
+    )
     response = list_automation_executions_command({}, MockClient())
 
     assert response[0].outputs == mock_response["AutomationExecutionMetadataList"]
@@ -719,23 +767,44 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
     ("status", "expected_message"),
     [
         ("Success", "The automation completed successfully."),
-        ("Failed", "The automation didn't complete successfully. This is a terminal state."),
+        (
+            "Failed",
+            "The automation didn't complete successfully. This is a terminal state.",
+        ),
         ("Cancelled", "The automation was stopped by a requester before it completed."),
-        ("TimedOut", "A step or approval wasn't completed before the specified timeout period."),
+        (
+            "TimedOut",
+            "A step or approval wasn't completed before the specified timeout period.",
+        ),
     ],
-    ids=["status is Success", "status is Failed", "status is Cancelled", "status is TimedOut"],
+    ids=[
+        "status is Success",
+        "status is Failed",
+        "status is Cancelled",
+        "status is TimedOut",
+    ],
 )
-def test_run_automation_execution_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+def test_run_automation_execution_command(
+    mocker: MockerFixture, status: str, expected_message: str
+) -> None:
     args = {
         "document_name": "AWS",
         "parameters": json.dumps({"InstanceId": ["i-1234567890abcdef0"]}),
         "polling": True,
     }
-    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
-    mocker.patch.object(MockClient, "get_automation_execution", return_value={
-        "AutomationExecution": {"AutomationExecutionStatus": status}})
-    mocker.patch.object(MockClient, "start_automation_execution", return_value={
-        "AutomationExecutionId": "test_id"})
+    mocker.patch.object(
+        ScheduledCommand, "raise_error_if_not_supported", return_value=None
+    )
+    mocker.patch.object(
+        MockClient,
+        "get_automation_execution",
+        return_value={"AutomationExecution": {"AutomationExecutionStatus": status}},
+    )
+    mocker.patch.object(
+        MockClient,
+        "start_automation_execution",
+        return_value={"AutomationExecutionId": "test_id"},
+    )
 
     result: CommandResults = run_automation_execution_command(args, MockClient())
 
@@ -757,13 +826,26 @@ def test_run_automation_execution_command(mocker: MockerFixture, status: str, ex
     ("status", "expected_message"),
     [
         ("Success", "The automation completed successfully."),
-        ("Failed", "The automation didn't complete successfully. This is a terminal state."),
+        (
+            "Failed",
+            "The automation didn't complete successfully. This is a terminal state.",
+        ),
         ("Cancelled", "The automation was stopped by a requester before it completed."),
-        ("TimedOut", "A step or approval wasn't completed before the specified timeout period."),
+        (
+            "TimedOut",
+            "A step or approval wasn't completed before the specified timeout period.",
+        ),
     ],
-    ids=["status is Success", "status is Failed", "status is Cancelled", "status is TimedOut"],
+    ids=[
+        "status is Success",
+        "status is Failed",
+        "status is Cancelled",
+        "status is TimedOut",
+    ],
 )
-def test_cancel_automation_execution_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+def test_cancel_automation_execution_command(
+    mocker: MockerFixture, status: str, expected_message: str
+) -> None:
     """
     Given:
         a mocker with a patched `cancel_automation_execution` method that returns a mock response,
@@ -777,24 +859,29 @@ def test_cancel_automation_execution_command(mocker: MockerFixture, status: str,
         "first_run": True,
         "include_polling": True,
     }
-    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(
+        ScheduledCommand, "raise_error_if_not_supported", return_value=None
+    )
     mocker.patch.object(MockClient, "stop_automation_execution")
-    mocker.patch.object(MockClient,
-                        "get_automation_execution",
-                        return_value={"AutomationExecution": {"AutomationExecutionStatus": status}}
-                        )
+    mocker.patch.object(
+        MockClient,
+        "get_automation_execution",
+        return_value={"AutomationExecution": {"AutomationExecutionStatus": status}},
+    )
     response: CommandResults = cancel_automation_execution_command(args, MockClient())
 
     assert response.readable_output == "Cancellation command was sent successful."
 
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
-        'automation_execution_id': 'test_id',
-        'first_run': False,
-        'include_polling': True,
-        'hide_polling_output': True
+        "automation_execution_id": "test_id",
+        "first_run": False,
+        "include_polling": True,
+        "hide_polling_output": True,
     }
-    response: CommandResults = cancel_automation_execution_command(args_to_next_run, MockClient())
+    response: CommandResults = cancel_automation_execution_command(
+        args_to_next_run, MockClient()
+    )
     assert response.readable_output == expected_message
 
 
@@ -803,22 +890,29 @@ def test_cancel_automation_execution_command(mocker: MockerFixture, status: str,
     [
         ("Failed", "The command wasn't successful on the managed node."),
         ("Cancelled", "The command was canceled before it was completed."),
-        ("Delivery Timed Out", "The command wasn't delivered to the managed node before the total timeout expired."),
+        (
+            "Delivery Timed Out",
+            "The command wasn't delivered to the managed node before the total timeout expired.",
+        ),
     ],
     ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
 )
-def test_run_command_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+def test_run_command_command(
+    mocker: MockerFixture, status: str, expected_message: str
+) -> None:
     args = {
         "document_name": "AWS",
         "instance_ids": "i-1234567890abcdef0,i-1234567890abcdef1",
         "polling": True,
     }
     mock_response: dict = util_load_json("test_data/run_command_response.json")
-    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(
+        ScheduledCommand, "raise_error_if_not_supported", return_value=None
+    )
     mocker.patch.object(MockClient, "send_command", return_value=mock_response)
-    mocker.patch.object(MockClient,
-                        "list_commands",
-                        return_value={"Commands": [{"Status": status}]})
+    mocker.patch.object(
+        MockClient, "list_commands", return_value={"Commands": [{"Status": status}]}
+    )
 
     result: CommandResults = run_command_command(args, MockClient())
 
@@ -827,11 +921,11 @@ def test_run_command_command(mocker: MockerFixture, status: str, expected_messag
 
     args_to_next_run = result.scheduled_command._args
     assert args_to_next_run == {
-        'document_name': 'AWS',
-        'instance_ids': 'i-1234567890abcdef0,i-1234567890abcdef1',
-        'polling': True,
-        'command_id': 'command_id_test',
-        'hide_polling_output': True
+        "document_name": "AWS",
+        "instance_ids": "i-1234567890abcdef0,i-1234567890abcdef1",
+        "polling": True,
+        "command_id": "command_id_test",
+        "hide_polling_output": True,
     }
 
     result = run_command_command(args_to_next_run, MockClient())
@@ -843,11 +937,16 @@ def test_run_command_command(mocker: MockerFixture, status: str, expected_messag
     [
         ("Failed", "The command wasn't successful on the managed node."),
         ("Cancelled", "The command was canceled before it was completed."),
-        ("Delivery Timed Out", "The command wasn't delivered to the managed node before the total timeout expired."),
+        (
+            "Delivery Timed Out",
+            "The command wasn't delivered to the managed node before the total timeout expired.",
+        ),
     ],
     ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
 )
-def test_cancel_command_command(mocker: MockerFixture, status: str, expected_message: str) -> None:
+def test_cancel_command_command(
+    mocker: MockerFixture, status: str, expected_message: str
+) -> None:
     """
     Given:
         a mocker with a patched `cancel_automation_execution` method that returns a mock response,
@@ -861,21 +960,23 @@ def test_cancel_command_command(mocker: MockerFixture, status: str, expected_mes
         "first_run": True,
         "include_polling": True,
     }
-    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(
+        ScheduledCommand, "raise_error_if_not_supported", return_value=None
+    )
     mocker.patch.object(MockClient, "cancel_command")
-    mocker.patch.object(MockClient,
-                        "list_commands",
-                        return_value={"Commands": [{"Status": status}]})
+    mocker.patch.object(
+        MockClient, "list_commands", return_value={"Commands": [{"Status": status}]}
+    )
     response: CommandResults = cancel_command_command(args, MockClient())
 
     assert response.readable_output == "Cancellation command was sent successful."
 
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
-        'command_id': 'test_id',
-        'first_run': False,
-        'include_polling': True,
-        'hide_polling_output': True
+        "command_id": "test_id",
+        "first_run": False,
+        "include_polling": True,
+        "hide_polling_output": True,
     }
     response: CommandResults = cancel_command_command(args_to_next_run, MockClient())
     assert response.readable_output == expected_message
