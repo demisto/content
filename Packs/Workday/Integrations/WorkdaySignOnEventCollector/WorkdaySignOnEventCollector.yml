@@ -11,7 +11,7 @@ configuration:
   required: true
   defaultvalue: 'https://services1.myworkday.com'
   type: 0
-  additionalinfo: 'API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'API endpoint of Workday server. Can be obtained from the View API Clients report in the Workday application.'
   section: Connect
 - name: tenant_name
   display: Tenant Name
@@ -42,7 +42,7 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
-- additionalinfo: The maximum number of sign on events to retrieve. Large amount of events can cause performance issues.
+- additionalinfo: The maximum number of sign on events to retrieve. Large amount of events may cause performance issues.
   defaultvalue: '10000'
   display: Max events per fetch
   name: max_fetch
@@ -64,7 +64,7 @@ name: Workday Sign On Event Collector
 script:
   commands:
   - name: workday-get-sign-on-events
-    description: Returns Sign On events extracted from Workday. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+    description: Returns sign on events extracted from Workday. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     deprecated: false
     arguments:
     - auto: PREDEFINED
@@ -91,7 +91,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: relative_from_date
-      description: 'The query from date, for example, "5 minutes". Be advised, it is strongly suggested to keep this parameter limited in time.'
+      description: 'The query from date, for example, "5 minutes". Note: We strongly suggest to limit the value of this parameter.'
       required: false
       isArray: false
       defaultValue: ""

@@ -13,7 +13,7 @@ configuration:
   name: longRunningPort
   required: true
   type: 0
-description: Generates mock signon events for Workday Signon Event Collector. Use these for testing and development.
+description: Generates mock sign on events for Workday Signon Event Collector. Use these for testing and development.
 display: Workday Signon Event Generator (Beta)
 name: WorkdaySignonEventGenerator
 system: true
