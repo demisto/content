@@ -111,7 +111,7 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README)'
+    - description: 'The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README).'
       name: resource_id
       required: true
     - description: 'The name of the tag. Note: Don’t enter personally identifiable information in this field.'
@@ -171,7 +171,7 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The ID of the resource to remove tags.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README)'
+    - description: 'The ID of the resource to remove tags.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README).'
       name: resource_id
       required: true
     - description: The name of the tag which want to be remove.
@@ -208,7 +208,7 @@ script:
       name: roleSessionDuration
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     description: Query inventory information. This includes managed node status, such as Stopped or Terminated.
     name: aws-ssm-inventory-get
@@ -293,7 +293,7 @@ script:
       required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     description: A list of inventory items returned by the request.
     name: aws-ssm-inventory-entry-list
@@ -366,7 +366,7 @@ script:
       name: roleSessionDuration
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     description: "Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule."
     name: aws-ssm-association-list
@@ -451,7 +451,7 @@ script:
       name: association_id
     - description: Specify the association version to retrieve. To view the latest version, either specify $LATEST for this parameter, or omit this parameter.
       name: association_version
-    description: Describes the association for the specified target or managed node. if the association was established using the Targets parameter, the association details must be retrieved using the associated ID. this command must provide either association id or instance_id and document_name
+    description: Describes the association for the specified target or managed node. if the association was established using the Targets parameter, the association details must be retrieved using the associated ID. this command must provide either association id or instance_id and document_name.
     name: aws-ssm-association-get
     outputs:
     - contextPath: AWS.SSM.Association.AssociationDescription.Name
@@ -620,7 +620,7 @@ script:
       required: true
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Retrieves all versions of an association for a specific association ID.
     name: aws-ssm-association-version-list
@@ -686,7 +686,7 @@ script:
       description: By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions.
       type: Boolean
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames
-      description: 'The names or Amazon Resource Names (ARNs) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. '
+      description: 'The names or Amazon Resource Names (ARNs) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. .'
       type: String
     - contextPath: AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts
       description: The Amazon Web Services accounts targeted by the current Automation execution.
@@ -744,7 +744,7 @@ script:
       name: roleSessionDuration
     - description: The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
     name: aws-ssm-document-list
@@ -839,7 +839,7 @@ script:
     - description: The name of the SSM document.
       name: document_name
       required: true
-    - description: "The document version. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number"
+    - description: "The document version. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number."
       name: document_version
     - description: Specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed.
       name: version_name
@@ -874,7 +874,7 @@ script:
       description: The status of the SSM document.
       type: String
     - contextPath: AWS.SSM.Document.Document.StatusInformation
-      description: A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.”
+      description: A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.”.
       type: String
     - contextPath: AWS.SSM.Document.Document.DocumentVersion
       description: The document version.
@@ -995,11 +995,11 @@ script:
       required: true
     - description: User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused.
       name: client_token
-    - description: "The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number"
+    - description: "The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number."
       name: document_version
     - description: The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10.
       name: max_concurrency
-    - description: The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. for more information see in the readme file.)
+    - description: The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. for more information see in the readme file.).
       name: max_errors
     - description: "The execution mode of the automation. Valid modes include the following: Auto and Interactive. The default mode is Auto."
       name: mode
@@ -1014,7 +1014,7 @@ script:
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
       defaultValue: 30
-    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: {\"InstanceId\":[\"i-dummy\"]}'
+    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: InstanceId:i-dummy,Role:Admin,User.'
       name: parameters
     - description: This is for the polling to work. not for the user.
       hidden: true
@@ -1117,7 +1117,7 @@ script:
     - description: The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. The default value is 50.
       name: limit
       defaultValue: 50
-    - description: The token for the next set of items to return. (received this token from a previous call.)
+    - description: The token for the next set of items to return. (received this token from a previous call.).
       name: next_token
     description: If the argument execution_id is provide the command return detailed information about a particular Automation execution. if not provide the command provides details about all active and terminated Automation executions.
     name: aws-ssm-automation-execution-list
@@ -1213,7 +1213,7 @@ script:
       description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
       type: String
     - contextPath: AWS.SSM.AutomationExecution.StepExecutions.Targets.Values
-      description: User-defined criteria that maps to Key
+      description: User-defined criteria that maps to Key.
       type: String
     - contextPath: AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Accounts
       description: The Amazon Web Services accounts targeted by the current Automation execution.
@@ -1439,13 +1439,13 @@ script:
     - description: The maximum number of items to return for this call.
       name: limit
       defaultValue: 50
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Lists the commands requested by users of the Amazon Web Services account.
     name: aws-ssm-command-list
     outputs:
     - contextPath: AWS.SSM.CommandNextToken
-      description: The token for the next set of items to return. (Received this token from a previous call.)
+      description: The token for the next set of items to return. (Received this token from a previous call.).
       type: String
     - contextPath: AWS.SSM.Commands.CommandId
       description: A unique identifier for this command.
@@ -1493,7 +1493,7 @@ script:
       description: The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command.
       type: String
     - contextPath: AWS.SSM.Commands.MaxConcurrency
-      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. '
+      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. .'
       type: String
     - contextPath: AWS.SSM.Commands.MaxErrors
       description: The maximum number of errors allowed before the system stops sending the command to additional targets.
@@ -1514,7 +1514,7 @@ script:
       description: The Identity and Access Management (IAM) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
       type: String
     - contextPath: AWS.SSM.Commands.NotificationConfig.NotificationArn
-      description: 'An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. '
+      description: 'An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. .'
       type: String
     - contextPath: AWS.SSM.Commands.NotificationConfig.NotificationEvents
       description: The different events for receive notifications.
@@ -1523,7 +1523,7 @@ script:
       description: The type of notification.
       type: String
     - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName
-      description: 'The name of the CloudWatch Logs log group where to send command output. If don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: `aws/ssm/SystemsManagerDocumentName`'
+      description: 'The name of the CloudWatch Logs log group where to send command output. If don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: `aws/ssm/SystemsManagerDocumentName`.'
       type: String
     - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchOutputEnabled
       description: Enables Systems Manager to send command output to CloudWatch Logs.
@@ -1573,7 +1573,7 @@ script:
     - description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
       name: document_name
       required: true
-    - description: The IDs of the managed nodes where the command should run. Can get from aws-ssm-inventory-get command. (Can specify up to 50 IDs.)
+    - description: The IDs of the managed nodes where the command should run. Can get from aws-ssm-inventory-get command. (Can specify up to 50 IDs.).
       name: instance_ids
       required: true
       isArray: true
@@ -1652,7 +1652,7 @@ script:
       description: The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command.
       type: String
     - contextPath: AWS.SSM.Command.MaxConcurrency
-      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. '
+      description: 'The maximum number of managed nodes that are allowed to run the command at the same time. .'
       type: String
     - contextPath: AWS.SSM.Command.MaxErrors
       description: The maximum number of errors allowed before the system stops sending the command to additional targets.
@@ -1682,7 +1682,7 @@ script:
       description: The type of notification.
       type: String
     - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName
-      description: "The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName"
+      description: "The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName."
       type: String
     - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
       description: Enables Systems Manager to send command output to CloudWatch Logs.
