@@ -26,15 +26,13 @@ def download_markdown_images_from_artifacts(
     pack_images_names: dict = {}
 
     for pack_name, readme_description_images_data in readme_urls_data_dict.items():
+        logging.info('downloading from pack {pack_name}')
         pack_images_names[pack_name] = {}
         for readme_desc_data, images_data in readme_description_images_data.items():
             for markdown_url_data in images_data:
                 original_markdown_url = markdown_url_data.get("original_markdown_url")
-                final_dst_image_path = str(markdown_url_data.get("final_dst_image_path"))
                 image_name = str(markdown_url_data.get("image_name"))
                 relative_image_path = str(markdown_url_data.get("relative_image_path"))
-
-                logging.info(f"image_final_storage_des ={final_dst_image_path}")
 
                 download_markdown_image_from_url_and_upload_to_gcs(
                     original_markdown_url,
@@ -132,6 +130,7 @@ def copy_markdown_images(
     markdown_images: dict = {}
     if markdown_images := images_data.get(BucketUploadFlow.MARKDOWN_IMAGES, {}):
         for pack_name, readme_description_md in markdown_images.items():
+            logging.info('markdown images from pack {pack_name} are beeing downloaded.')
             task_status = True
             err_msg = f"Failed copying {pack_name} pack readme images."
 
