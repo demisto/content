@@ -186,7 +186,7 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
 def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
         tuple[dict[str, Any], str | Any]:
     """
-    In case of passing just bind_variables_values, since it's not already supported from SQL Alchemy 2.x.x versions,
+    In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
     this function generates names for those variables and return an edited query with a mapping.
     Args:
         bind_variables_values_list: Values to put in the bind variables
