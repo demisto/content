@@ -100,7 +100,7 @@ def test_generate_pseudo_id() -> None:
         "Short_Session_ID": "12345",
         "User_Name": "ABC123",
         "Successful": 1,
-        "Signon_DateTime": "2021-09-01T12:00:00Z",
+        "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
     }
     # When: Calling `generate_pseudo_id` to calculate the unique ID.
     event1_str: str = json.dumps(event1, sort_keys=True)
@@ -140,7 +140,7 @@ def test_generate_pseudo_id() -> None:
 
     # Given: A large event dictionary.
     event4 = {str(i): i for i in range(10000)}  # Create a large dictionary
-    event4["Signon_DateTime"] = "2021-09-01T12:00:00Z"  # Add a Signon_DateTime key
+    event4["Signon_DateTime"] = "2023-09-04T07:47:57.460-07:00"  # Add a Signon_DateTime key
     # When & Then: Calling `generate_pseudo_id` to check if the function can handle it.
     assert generate_pseudo_id(event4)
 
@@ -169,13 +169,13 @@ def test_process_and_filter_events() -> None:
             "Short_Session_ID": "12345",
             "User_Name": "ABC6789",
             "Successful": 1,
-            "Signon_DateTime": "2021-09-01T12:00:00Z",
+            "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
         },
         {
             "Short_Session_ID": "12346",
             "User_Name": "ABC6790",
             "Successful": 1,
-            "Signon_DateTime": "2021-09-01T12:00:01Z",
+            "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
         },
     ]
     from_time: str = "2021-09-01T12:00:00Z"
@@ -224,7 +224,7 @@ def test_convert_to_json() -> None:
             <Get_Workday_Account_Signons_Response>
                 <Response_Data>
                     <Workday_Account_Signon>
-                        <Signon_DateTime>2021-09-01T12:00:00Z</Signon_DateTime>
+                        <Signon_DateTime>2023-09-04T07:47:57.460-07:00</Signon_DateTime>
                     </Workday_Account_Signon>
                 </Response_Data>
             </Get_Workday_Account_Signons_Response>
@@ -240,12 +240,12 @@ def test_convert_to_json() -> None:
         raw_json_response["Envelope"]["Body"]["Get_Workday_Account_Signons_Response"][
             "Response_Data"
         ]["Workday_Account_Signon"][0]["Signon_DateTime"]
-        == "2021-09-01T12:00:00Z"
+        == "2023-09-04T07:47:57.460-07:00"
     )
 
     assert (
         account_signon_data["Workday_Account_Signon"][0]["Signon_DateTime"]
-        == "2021-09-01T12:00:00Z"
+        == "2023-09-04T07:47:57.460-07:00"
     )
 
 
@@ -476,7 +476,7 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
         # Given: Sample data to be returned by the mock
         mock_events = [
             {
-                "Signon_DateTime": "2021-09-01T11:00:00Z",
+                "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
                 "User_Name": "John",
                 "Short_Session_ID": "123456",
                 "Successful": 1,
@@ -505,11 +505,11 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
             # Then: Validate the function's return value
             assert len(events) == 1
             assert events[0]["User_Name"] == "John"
-            assert events[0]["_time"] == "2021-09-01T11:00:00Z"
+            assert events[0]["_time"] == "2023-09-04T07:47:57.460-07:00"
             assert results.readable_output.startswith("### Sign On Events List:")
 
 
-@freeze_time("2021-09-02T00:00:00Z")
+@freeze_time("2023-09-04T00:00:00.000-07:00")
 def test_fetch_sign_on_events_command_single_page() -> None:
     """
     Given:
@@ -532,18 +532,18 @@ def test_fetch_sign_on_events_command_single_page() -> None:
     # Given: Sample data to be returned by the mock
     mock_events = [
         {
-            "Signon_DateTime": "2021-09-01T11:00:00Z",
+            "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
             "User_Name": "John",
             "Short_Session_ID": "123456",
             "Successful": 1,
-            "_time": "2021-09-01T11:00:00Z",  # This is added by the process_events function
+            "_time": "2023-09-04T07:47:57.460-07:00",  # This is added by the process_events function
         }
     ]
 
     # Setup: Mock the client's retrieve_events method and demisto.getLastRun function
     mock_retrieve_response = ({"Workday_Account_Signon": mock_events}, 1)
     mock_last_run = {
-        "last_fetch_time": "2021-09-01T10:59:00Z",
+        "last_fetch_time": "2023-09-04T07:47:57.460-07:00",
         "previous_run_pseudo_ids": set(),
     }
 
@@ -564,8 +564,8 @@ def test_fetch_sign_on_events_command_single_page() -> None:
     # Then: Validate the function's return value
     assert len(events) == 1
     assert events[0]["User_Name"] == "John"
-    assert events[0]["_time"] == "2021-09-01T11:00:00Z"
-    assert new_last_run["last_fetch_time"] == "2021-09-01T11:00:00Z"
+    assert events[0]["_time"] == "2023-09-04T07:47:57.460-07:00"
+    assert new_last_run["last_fetch_time"] == "2023-09-04T07:47:57.460-07:00"
 
 
 def test_main_fetch_events() -> None:

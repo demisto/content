@@ -10,14 +10,15 @@ urllib3.disable_warnings()
 VENDOR = "workday"
 PRODUCT = "sign_on"
 API_VERSION = "v40.0"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
+EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
 TIMEDELTA = 1
 
 
 def get_from_time(seconds_ago: int) -> str:
     current_time = datetime.now(tz=timezone.utc)
     from_time = current_time - timedelta(seconds=seconds_ago)
-    return from_time.strftime(DATE_FORMAT)
+    return from_time.strftime(REQUEST_DATE_FORMAT)
 
 
 def fletcher16(data: bytes) -> int:
@@ -242,7 +243,7 @@ class Client(BaseClient):
         """
         seconds_ago = 5
         from_time = get_from_time(seconds_ago)
-        to_time = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+        to_time = datetime.now(tz=timezone.utc).strftime(REQUEST_DATE_FORMAT)
 
         payload = self.generate_test_payload(from_time=from_time, to_time=to_time)
 
@@ -295,11 +296,14 @@ def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_
     duplicates = []
     pseudo_ids_for_next_iteration = set()
 
-    from_datetime = datetime.strptime(from_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    try:
+        from_datetime = datetime.strptime(from_time, REQUEST_DATE_FORMAT).replace(tzinfo=timezone.utc)
+    except ValueError:
+        from_datetime = datetime.strptime(from_time, EVENT_DATE_FORMAT).replace(tzinfo=timezone.utc)
     most_recent_event_time = datetime.min.replace(tzinfo=timezone.utc)
 
     for event in events:
-        event_datetime = datetime.strptime(event["Signon_DateTime"], DATE_FORMAT).replace(tzinfo=timezone.utc)
+        event_datetime = datetime.strptime(event["Signon_DateTime"], EVENT_DATE_FORMAT).replace(tzinfo=timezone.utc)
 
         # Add '_time' key to each event
         event["_time"] = event.get("Signon_DateTime")
@@ -324,7 +328,7 @@ def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_
         demisto.debug(f"Found {len(duplicates)} duplicate events: {duplicates}")
 
     for event in non_duplicates:
-        event_datetime = datetime.strptime(event["_time"], DATE_FORMAT).replace(tzinfo=timezone.utc)
+        event_datetime = datetime.strptime(event["_time"], EVENT_DATE_FORMAT).replace(tzinfo=timezone.utc)
 
         if event_datetime >= last_second_start_time:
             event_pseudo_id = generate_pseudo_id(event)
@@ -351,7 +355,7 @@ def fetch_sign_on_logs(
     page = 1  # We assume that we will need to make one call at least
     total_fetched = 0  # Keep track of the total number of events fetched
     res, total_pages = client.retrieve_events(
-        from_time=from_date, to_time=to_date, page=1, count=limit_to_fetch
+        from_time=from_date, to_time=to_date, page=1, count=999
     )
     sign_on_events_from_api = res.get("Workday_Account_Signon", [])
     sign_on_logs.extend(sign_on_events_from_api)
@@ -429,14 +433,14 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
     current_time = datetime.utcnow()
     if "last_fetch_time" not in last_run:
         first_fetch_time = current_time - timedelta(minutes=1)
-        first_fetch_str = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        first_fetch_str = first_fetch_time.strftime(REQUEST_DATE_FORMAT)
         from_date = last_run.get("last_fetch_time", first_fetch_str)
     else:
         from_date = last_run.get("last_fetch_time")
     # Checksums in this context is used as an ID since none is provided directly from Workday.
     # This is to prevent duplicates.
     previous_run_pseudo_ids = last_run.get("previous_run_pseudo_ids", {})
-    to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    to_date = datetime.now(tz=timezone.utc).strftime(REQUEST_DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
     sign_on_events = fetch_sign_on_logs(
         client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date
@@ -523,8 +527,8 @@ def main() -> None:  # pragma: no cover
                     arg=args.get('relative_from_date'),
                     arg_name='Relative datetime',
                     required=False
-                ).strftime(DATE_FORMAT)
-                to_time = datetime.utcnow().strftime(DATE_FORMAT)
+                ).strftime(REQUEST_DATE_FORMAT)
+                to_time = datetime.utcnow().strftime(REQUEST_DATE_FORMAT)
             else:
                 from_time = args.get("from_date")
                 to_time = args.get("to_date")
