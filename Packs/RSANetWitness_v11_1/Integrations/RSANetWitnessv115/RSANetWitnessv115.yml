@@ -71,11 +71,11 @@ configuration:
   type: 15
 - defaultvalue: "true"
   display: Close Mirrored XSOAR Incident
-  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA Netwitness.
+  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
   name: close_incident
   required: false
   type: 8
-- additionalinfo: This parameter represents the number of days the integration will mirror RSA incident. The default value is 3 days, the maximum 24 days.
+- additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
   display: Mirroring Days Limit
   name: max_mirror_time
   required: false
