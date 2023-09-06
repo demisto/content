@@ -11,7 +11,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-- Stealthwatch Cloud
+* Stealthwatch Cloud
 
 ### Scripts
 
@@ -19,24 +19,23 @@ This playbook does not use any scripts.
 
 ### Commands
 
-- sw-block-domain-or-ip
+* sw-block-domain-or-ip
 
 ## Playbook Inputs
 
 ---
 
-| **Name** | **Description**      | **Default Value** | **Required** |
-| -------- | -------------------- | ----------------- | ------------ |
-| Domain   | The Domain to block. |                   | Optional     |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Domain | The Domain to block. |  | Optional |
 
 ## Playbook Outputs
 
 ---
-
 There are no outputs for this playbook.
 
 ## Playbook Image
 
 ---
 
-![Block Domain - Cisco Stealthwatch](../doc_files/CiscoStealthwatch-Block-Domain-Playbook.png)
+![Block Domain - Cisco Stealthwatch](../doc_files/Block_Domain_-_Cisco_Stealthwatch.png)
