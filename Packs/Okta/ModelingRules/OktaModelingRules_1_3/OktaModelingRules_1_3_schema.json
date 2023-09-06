@@ -28,6 +28,30 @@
       "type": "string",
       "is_array": false
     },
+    "debugContext": {
+      "type": "string",
+      "is_array": false
+    },
+    "request": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "displayMessage": {
+      "type": "string",
+      "is_array": false
+    },
+    "transaction": {
+      "type": "string",
+      "is_array": false
+    },
+    "legacyEventType": {
+      "type": "string",
+      "is_array": false
+    },                                    
     "authenticationContext": {
       "type": "string",
       "is_array": false
