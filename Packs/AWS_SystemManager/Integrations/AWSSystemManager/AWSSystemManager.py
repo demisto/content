@@ -1160,7 +1160,8 @@ def cancel_automation_execution_command(
         Type=type_,
     )
     args["first_run"] = False
-    # if polling stops after the first run, this will be the final result in the war room otherwise this will be the partial result
+    # if polling stops after the first run, this will be the final result in the war room
+    # otherwise this will be the partial result
     return PollResult(
         response=CommandResults(
             readable_output="Cancellation command was sent successful.",

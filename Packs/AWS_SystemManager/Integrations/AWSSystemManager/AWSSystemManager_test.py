@@ -504,7 +504,8 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
         TypeName=args["type_name"],
         MaxResults=50,
     )
-    assert response[0].outputs == mock_response["Entries"]
+
+    assert response[0].outputs == mock_response
     assert response[0].readable_output == (
         "### AWS SSM Inventory Entry\n"
         "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
