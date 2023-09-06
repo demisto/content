@@ -153,7 +153,6 @@ TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
 # Moderate Retry Mechanism
 MAX_DELAY_REQUEST_COUNTER = 6
 
-### TEST
 class CloudEndpointNotSetException(Exception):
     pass
 
@@ -583,7 +582,7 @@ def create_custom_azure_cloud(origin: str,
             synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
             attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
         ))
-
+        demisto.info("TEST")
 
 def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
