@@ -1606,7 +1606,7 @@ def test_get_organizations(mocker):
     ]
     mocker.patch("JiraV2.jira_req", return_value=ORGANIZATIONS)
     result = get_organizations_command()
-    assert result.raw_response == organizations
+    assert result.outputs == organizations
 
 
 def test_get_project_role(mocker):
