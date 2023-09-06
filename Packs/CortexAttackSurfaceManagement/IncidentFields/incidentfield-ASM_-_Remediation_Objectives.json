@@ -39,7 +39,7 @@
         {},
         {}
     ],
-    "description": "Remediation objectives uses to display the remediation actions to the end user",
+    "description": "Remediation objectives uses to display the remediation actions to the end user.",
     "editForm": true,
     "group": 0,
     "hidden": false,

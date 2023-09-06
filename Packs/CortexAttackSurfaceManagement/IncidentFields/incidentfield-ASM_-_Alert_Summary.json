@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "URL to display/download summary."
         },
         {
             "displayName": "EntryID",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "File entryID."
         }
     ],
     "content": true,

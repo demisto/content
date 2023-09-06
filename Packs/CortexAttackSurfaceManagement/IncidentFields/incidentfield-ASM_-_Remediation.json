@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Description of the remediation action."
         },
         {
             "displayName": "ActionTimestamp",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Timestamp of when action was taken."
         },
         {
             "displayName": "Outcome",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Outcome of the remediation action."
         },
         {
             "displayName": "OutcomeTimestamp",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "timestamp of the remediation outcome."
         }
     ],
     "content": true,
