@@ -2,10 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import botocore.exceptions
 from datetime import datetime, date
-import urllib3.util
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 SERVICE = 'iam'
 
@@ -1045,6 +1042,54 @@ def tag_role_command(args, client):
                                f"\nencountered the following exception: {str(e)}")
 
 
+def list_attached_role_policies_command(args: dict, client) -> list[CommandResults]:
+    aws_args = {"RoleName": (role_name := args["roleName"])}
+
+    for demisto_key, aws_key in (
+        ("pathPrefix", "PathPrefix"),
+        ("marker", "Marker"),
+        ("maxItems", "MaxItems")
+    ):  # optional keys, renaming to match AWS API
+        if (value := args.get(demisto_key)) is not None:
+            aws_args[aws_key] = value
+
+    if (max_itmes := aws_args.get("MaxItems")) is not None:
+        aws_args["MaxItems"] = int(max_itmes)
+    try:
+        raw_response = client.list_attached_role_policies(**aws_args)
+    except Exception as e:
+        raise DemistoException(f"Couldn't list role policies with {args}\n"
+                               f"encountered the following exception: {str(e)}") from e
+
+    policies = [
+        policy | {"RoleName": role_name}
+        for policy in raw_response["AttachedPolicies"]
+    ]
+
+    query_outputs = {k: v for k, v in raw_response.items() if k in ("IsTruncated", "Marker")}
+    return [
+        CommandResults(
+            # Main result - here be policies
+            raw_response=raw_response,
+            outputs=policies,
+            outputs_prefix='AWS.IAM.Roles.AttachedPolicies.Policies',
+            readable_output=tableToMarkdown(
+                name=f"Attached Policies for Role {role_name}",
+                t=policies,
+            )),
+        CommandResults(
+            # Secondary result object, for querying the next ones (if necessary)
+            raw_response=raw_response,
+            outputs=query_outputs,
+            outputs_prefix="AWS.IAM.Roles.AttachedPolicies.Query",
+            readable_output=f"Listed {len(policies)} attached policies for role {role_name}"
+            if not raw_response.get("IsTruncated")
+            else (f"Listed {len(policies)} role policies but more are available. "
+                  "Either increase the `maxItems` argument, or use `marker` argument with the value from context.")
+        )
+    ]
+
+
 def tag_user_command(args, client):
     """
     Add the given tags to the given user.
@@ -1348,7 +1393,8 @@ def main():     # pragma: no cover
             return_results(untag_role_command(args, client))
         elif command == 'aws-iam-get-access-key-last-used':
             return_results(get_access_key_last_used_command(args, client))
-
+        elif command == 'aws-iam-list-attached-role-policies':
+            return_results(list_attached_role_policies_command(args, client))
     except Exception as e:
         LOG(str(e))
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
