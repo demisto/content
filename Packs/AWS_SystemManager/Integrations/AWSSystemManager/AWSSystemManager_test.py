@@ -1,10 +1,11 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any
 
 import pytest
 from AWSSystemManager import (
+    format_parameters_arguments,
     add_tags_to_resource_command,
     cancel_automation_execution_command,
     convert_datetime_to_iso,
@@ -27,6 +28,7 @@ from AWSSystemManager import (
     run_automation_execution_command,
     run_command_command,
     validate_args,
+    update_if_value
 )
 from pytest_mock import MockerFixture
 
@@ -37,71 +39,132 @@ class MockClient:
     def __init__(self) -> None:
         pass
 
-    def add_tags_to_resource(self, **kwargs) -> NoReturn:
+    def add_tags_to_resource(self, **kwargs) -> dict:
         pass
 
-    def remove_tags_from_resource(self, **kwargs) -> NoReturn:
+    def remove_tags_from_resource(self, **kwargs) -> dict:
         pass
 
-    def get_inventory(self, **kwargs) -> NoReturn:
+    def get_inventory(self, **kwargs) -> dict:
         pass
 
-    def list_inventory_entries(self, **kwargs) -> NoReturn:
+    def list_inventory_entries(self, **kwargs) -> dict:
         pass
 
-    def list_associations(self, **kwargs) -> NoReturn:
+    def list_associations(self, **kwargs) -> dict:
         pass
 
-    def describe_association(self, **kwargs) -> NoReturn:
+    def describe_association(self, **kwargs) -> dict:
         pass
 
-    def list_association_versions(self, **kwargs) -> NoReturn:
+    def list_association_versions(self, **kwargs) -> dict:
         pass
 
-    def list_documents(self, **kwargs) -> NoReturn:
+    def list_documents(self, **kwargs) -> dict:
         pass
 
-    def describe_document(self, **kwargs) -> NoReturn:
+    def describe_document(self, **kwargs) -> dict:
         pass
 
-    def get_automation_execution(self, **kwargs) -> NoReturn:
+    def get_automation_execution(self, **kwargs) -> dict:
         pass
 
-    def describe_automation_executions(self, **kwargs) -> NoReturn:
+    def describe_automation_executions(self, **kwargs) -> dict:
         pass
 
-    def start_automation_execution(self, **kwargs) -> NoReturn:
+    def start_automation_execution(self, **kwargs) -> dict:
         pass
 
-    def list_commands(self, **kwargs) -> NoReturn:
+    def list_commands(self, **kwargs) -> dict:
         pass
-    
-    def stop_automation_execution(self, **kwargs) -> NoReturn:
+
+    def stop_automation_execution(self, **kwargs) -> dict:
         pass
-    
-    def send_command(self, **kwargs) -> NoReturn:
+
+    def send_command(self, **kwargs) -> dict:
         pass
-    
-    def cancel_command(self, **kwargs) -> NoReturn:
+
+    def cancel_command(self, **kwargs) -> dict:
         pass
 
 
 def util_load_json(path: str) -> dict:
-    with Path(path).open(encoding="utf-8") as f:
-        return json.loads(f.read())
+    return json.loads(Path(path).read_text())
 
 
 """ Tests For The Helper Functions """
 
 
 @pytest.mark.parametrize(
+    "args, kwargs, input_to_output_keys, expected_results",
+    [
+        ({"a": 1}, {}, {"a": "A"}, {"A": 1}),
+        ({}, {"b": 2}, {}, {"b": 2}),
+        ({"a": 1}, {"b": 2}, {"a": "A"}, {"A": 1, "b": 2}),
+    ],
+    ids=["add args to empty  kwargs", "keep kwargs the same, when no args", "add args to kwargs that already have values"]
+)
+def test_update_if_value(args: dict[str, str], kwargs: dict[str, str], input_to_output_keys: dict[str, str], expected_results: dict[str, str]):
+    assert update_if_value(args, kwargs, input_to_output_keys) == expected_results
+
+
+@pytest.mark.parametrize(
+    'value, excepted_value',
+    [
+        (
+            "key1:value1",
+            {'key1': ['value1']}
+        ),
+        (
+            "key1:value1,",
+            {'key1': ['value1']}
+        ),
+        (
+            "key1:value1,value2",
+            {'key1': ['value1', "value2"]}
+        ),
+        (
+            "key1:value1,value2,",
+            {'key1': ['value1', "value2"]}
+        ),
+        (
+            "key1:value1,value2,key2:value1",
+            {'key1': ['value1', "value2"], 'key2': ['value1']}
+        ),
+        (
+            "key1:value1,value2,key2:value1,",
+            {'key1': ['value1', "value2"], 'key2': ['value1']}
+        ),
+        (
+            "key1:value1,key2:value1,value2,value3,key3:value1",
+            {'key1': ['value1'], 'key2': ['value1', 'value2', 'value3'], 'key3': ['value1']}
+        ),
+        (
+            "key1:value1,key2:value1,value2,value3,key3:value1,",
+            {'key1': ['value1'], 'key2': ['value1', 'value2', 'value3'], 'key3': ['value1']}
+        )
+    ]
+)
+def test_format_parameters_arguments(value: str, excepted_value: dict[str, Any]) -> None:
+    """
+    Given
+        a dictionary of parameters,
+    When
+        `format_parameters_arguments` is called with the parameters,
+    Then
+        it should return the expected formatted response.
+    """
+    assert format_parameters_arguments(value) == excepted_value
+
+
+@pytest.mark.parametrize(
     ("document_version", "expected_response"),
     [
         ("test_version", "test_version"),
-        (None, "$DEFAULT"),
+        ("default", "$DEFAULT"),
         ("latest", "$LATEST"),
     ],
-    ids=["custom version", "default version when the arg equal None", "latest version"],
+    ids=["custom version", "default version", "latest version"],
 )
 def test_format_document_version(document_version: str, expected_response: str) -> None:
     """
@@ -119,11 +182,10 @@ def test_format_document_version(document_version: str, expected_response: str) 
     ("args", "expected_error_message"),
     [
         ({"instance_id": "test_id"}, "Invalid instance id: test_id"),
-        ({"document_name": "@_name"}, "Invalid document name: @_name"),
         ({"association_id": "test_id"}, "Invalid association id: test_id"),
         ({"association_version": "test_version"}, "Invalid association version: test_version"),
     ],
-    ids=["Invalid instance id", "Invalid document name", "Invalid association id", "Invalid association version"],
+    ids=["Invalid instance id", "Invalid association id", "Invalid association version"],
 )
 def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
     """
@@ -424,34 +486,6 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
     )
 
 
-def test_list_inventory_entry_command_raise_error() -> None:
-    """
-    When:
-        - The list_inventory_entry_command function is called with the provided arguments:
-          - 'instance_id': "bla-0a00aaa000000000a"
-          - 'type_name': "test_type_name".
-
-    Then:
-        - The function call is expected to raise a DemistoException with a message that matches
-          "Invalid instance id: bla-0a00aaa000000000a".
-
-    Note:
-    ----
-        the instance_id is not valid because is not match the regex of the instance id.(should begin with i-.)
-        Check `validate_args` function for more details.
-    """
-    with pytest.raises(
-        DemistoException, match="Invalid instance id: bla-0a00aaa000000000a",
-    ):
-        list_inventory_entry_command(
-            {
-                "instance_id": "bla-0a00aaa000000000a",
-                "type_name": "test_type_name",
-            },
-            MockClient(),
-        )
-
-
 def test_list_associations_command(mocker: MockerFixture) -> None:
     """
     Given:
@@ -479,7 +513,7 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
     response = list_associations_command({}, MockClient())
     assert response[0].outputs == mock_response["Associations"]
     assert response[0].readable_output == (
-        "### AWS SSM Association\n"
+        "### AWS SSM Associations\n"
         "|Association id|Association version|Document name|Last execution date|Resource status count|Status|\n"
         "|---|---|---|---|---|---|\n"
         "| AssociationId_test | 1 | AWS-GatherSoftwareInventory | 2023-07-25 18:51:28.607000+03:00 |  | Pending |\n"
@@ -517,7 +551,7 @@ def test_get_association_command(mocker: MockerFixture) -> None:
 
     assert response.outputs == mock_response["AssociationDescription"]
     assert response.readable_output == (
-        "### Association\n"
+        "### AWS SSM Association\n"
         "|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|"
         "Resource status count|Schedule expression|Status|\n"
         "|---|---|---|---|---|---|---|---|---|---|\n"
@@ -744,11 +778,11 @@ def test_cancel_automation_execution_command(mocker: MockerFixture, status: str,
         "include_polling": True,
     }
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
-    mocker.patch.object(MockClient, "stop_automation_execution")  
+    mocker.patch.object(MockClient, "stop_automation_execution")
     mocker.patch.object(MockClient,
                         "get_automation_execution",
                         return_value={"AutomationExecution": {"AutomationExecutionStatus": status}}
-                    )
+                        )
     response: CommandResults = cancel_automation_execution_command(args, MockClient())
 
     assert response.readable_output == "Cancellation command was sent successful."
@@ -828,10 +862,10 @@ def test_cancel_command_command(mocker: MockerFixture, status: str, expected_mes
         "include_polling": True,
     }
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
-    mocker.patch.object(MockClient, "cancel_command")  
+    mocker.patch.object(MockClient, "cancel_command")
     mocker.patch.object(MockClient,
-                            "list_commands",
-                            return_value={"Commands": [{"Status": status}]})
+                        "list_commands",
+                        return_value={"Commands": [{"Status": status}]})
     response: CommandResults = cancel_command_command(args, MockClient())
 
     assert response.readable_output == "Cancellation command was sent successful."

@@ -1,5 +1,5 @@
 import re
-from typing import TYPE_CHECKING, Any, NoReturn
+from typing import TYPE_CHECKING, Any, NamedTuple, NoReturn
 
 import demistomock as demisto
 from AWSApiModule import *
@@ -17,19 +17,19 @@ if TYPE_CHECKING:
         ListAssociationsRequestRequestTypeDef,
         ListCommandsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
-        SendCommandRequestRequestTypeDef,
     )
-# TODO document_version default value?
 """ CONSTANTS """
 
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
-FINAL_STATUSES_AUTOMATION = {
+DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
+FINAL_AUTOMATION_STATUSES = {
     "Success": "The automation completed successfully.",
     "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
     "Cancelled": "The automation was stopped by a requester before it completed.",
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
-FINAL_STATUSES_COMMAND = {
+FINAL_COMMAND_STATUSES = {
     "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned\
         an exit code of zero.\
         All command invocations have reached a terminal state, and the value of max-errors wasn't reached.\
@@ -42,33 +42,114 @@ FINAL_STATUSES_COMMAND = {
     "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. \
         The system has canceled the command before executing it on any node.",
     "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied \
-        doesn't count against the parent command’s max-errors limit, \
+        doesn't count against the parent command's max-errors limit, \
         but does contribute to whether the parent command status is Success or Failed.",
     "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
 }
-REGEX_PATTERNS = {
-    "association_id": (r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
-                       "Invalid association id: {association_id}"),
-    "association_version": (r"([$]LATEST)|([1-9][0-9]*)", "Invalid association version: {association_version}"),
-    "instance_id": (r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)", "Invalid instance id: {instance_id}"),
-    # TODO not sure if 128 or 200, in the docs it says 128 in the res is says 200
-    "document_name": (r"^[a-zA-Z0-9_\-.:/]{3,128}$", "Invalid document name: {document_name}"),
-    "document_version": (r"([$]LATEST|[$]DEFAULT|^[1-9][0-9]*$)", "Invalid document version: {document_version}"),  # TODO same
-}
+
+
+class RegexValidator(NamedTuple):
+    name: str
+    regex: re.Pattern[str]
+    error_template: str
+
+
+ASSOCIATION_ID_VALIDATOR = RegexValidator(
+    name="association_id",
+    regex=re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"),
+    error_template="Invalid association id: {association_id}"
+)
+
+ASSOCIATION_VERSION_VALIDATOR = RegexValidator(
+    name="association_version",
+    regex=re.compile(r"([$]LATEST)|([1-9][0-9]*)"),
+    error_template="Invalid association version: {association_version}"
+)
+
+INSTANCE_ID_VALIDATOR = RegexValidator(
+    name="instance_id",
+    regex=re.compile(r"(^i-(\w{8}|\w{17})$)|(^mi-\w{17}$)"),
+    error_template="Invalid instance id: {instance_id}"
+)
 
 """ Helper functions """
 
 
-# def format_parametres_arguments(parameters: str) -> dict[str, Any]:
-#     pass
+def update_if_value(input_dictionary: dict, output_dictionary: Any, input_to_output_keys: dict[str, str]) -> Any:
+    for input_key, output_key in input_to_output_keys.items():
+        if value := input_dictionary.get(input_key):
+            output_dictionary[output_key] = value
+    return output_dictionary
 
-def format_document_version(document_version: str | None) -> str:
+
+def parsed_inventory(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "Instance Id": data.get("InstanceId"),
+        "Computer Name": data.get("ComputerName"),
+        "Platform Type": data.get("PlatformType"),
+        "Platform Name": data.get("PlatformName"),
+        "Agent version": data.get("AgentVersion"),
+        "IP address": data.get("IpAddress"),
+        "Resource Type": data.get("ResourceType"),
+    }
+
+
+def format_parameters_arguments(parameters: str) -> dict[str, Any]:
+    """Formats the 'parameters' string into a dictionary.
+
+    Args:
+        parameters (str): A string containing key-value pairs separated by colons and
+            values separated by commas.
+
+    Returns:
+        dict[str, Any]: A dictionary where keys are extracted from the input string,
+            and values are lists of values associated with each key.
+
+    Example:
+        Use this function to format a parameters string:
+
+        >>> parameters = "key1:value1,value2,key2:value3"
+        >>> formatted_parameters = format_parameters_arguments(parameters)
+        >>> print(formatted_parameters)
+        {'key1': ['value1', 'value2'], 'key2': ['value3']}
+
+    Note:
+        - The input string should follow the format 'key:value1,value2,...'.
+        - The function will return an empty dictionary if no valid key-value pairs
+          are found in the input string.
+
+    """
+
+    items = parameters.split(",")
+    formatted_parameters = {}
+    current_key = None
+
+    for item in items:
+        parts = item.split(":")
+
+        if len(parts) == 2:
+            key, value = parts
+
+            if key != current_key:
+                current_key = key
+                formatted_parameters[key] = [value]
+            else:
+                formatted_parameters[key].append(value)
+        elif current_key is not None:
+            for part in parts:
+                if part.strip():
+                    formatted_parameters[current_key].append(part)
+
+    return formatted_parameters
+
+
+def format_document_version(document_version: str) -> str:
     """Formats an AWS Systems Manager (SSM) document version .
     convert the string to the correct format for the API call.
 
     Args:
     ----
-        document_version (str | None): The document version to format.
+        document_version (str): The document version to format.
 
     Returns:
     -------
@@ -85,8 +166,9 @@ def format_document_version(document_version: str | None) -> str:
     """
     if document_version == "latest":
         return "$LATEST"
-
-    return document_version or "$DEFAULT"
+    elif document_version == "default":
+        return "$DEFAULT"
+    return document_version
 
 
 def validate_args(args: dict[str, Any]) -> NoReturn | None:
@@ -115,9 +197,9 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
             print(f"Validation error: {e}")
         ```
     """
-    for arg_name, (regex_pattern, error_message) in REGEX_PATTERNS.items():
-        if (arg_value := args.get(arg_name)) and not re.search(regex_pattern, arg_value):
-            raise DemistoException(error_message.format(**{arg_name: arg_value}))
+    for validate in [ASSOCIATION_ID_VALIDATOR, ASSOCIATION_VERSION_VALIDATOR, INSTANCE_ID_VALIDATOR]:
+        if (arg_value := args.get(validate.name)) and not re.search(validate.regex, arg_value):
+            raise DemistoException(validate.error_template.format(**{validate.name: arg_value}))
     return None
 
 
@@ -212,8 +294,7 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
         }
     """
     return CommandResults(
-        outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {"NextToken": next_token}},
-        readable_output="test",  # TODO need to delete after CIAC-8157 is merged
+        outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {"NextToken": next_token}}
     )
 
 
@@ -371,25 +452,14 @@ def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
             )
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
-                parsed_entity.update(
-                    {
-                        "Instance Id": content.get("InstanceId"),
-                        "Computer Name": content.get("ComputerName"),
-                        "Platform Type": content.get("PlatformType"),
-                        "Platform Name": content.get("PlatformName"),
-                        "Agent version": content.get("AgentVersion"),
-                        "IP address": content.get("IpAddress"),
-                        "Resource Type": content.get("ResourceType"),
-                    },
-                )
+                parsed_entity.update(parsed_inventory(content))
                 parsed_entities.append(parsed_entity)
         return parsed_entities
 
     kwargs: "GetInventoryRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.get_inventory(**kwargs)
     command_results = []
@@ -402,8 +472,7 @@ def get_inventory_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
     entities = response.get("Entities", [])
     # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
     for item in entities:
-        item.update(item["Data"])
-        item.pop("Data")
+        item.update(item.pop("Data"))
 
     command_results.append(
         CommandResults(
@@ -440,43 +509,16 @@ def list_inventory_entry_command(args: dict[str, Any], ssm_client: "SSMClient") 
     ------
         DemistoException: If an invalid instance ID is provided.
     """
-
-    def _parse_inventory_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Parses a list of inventory entries and returns a list of dictionaries containing relevant information.
-
-        Args:
-        ----
-            entries (list[dict]): A list of inventory entries to parse.
-
-        Returns:
-        -------
-            list[dict]: A list of dictionaries containing relevant information for each inventory entry.
-        """
-        return [
-            {
-                "Instance Id": entry.get("InstanceId"),
-                "Computer Name": entry.get("ComputerName"),
-                "Platform Type": entry.get("PlatformType"),
-                "Platform Name": entry.get("PlatformName"),
-                "Agent version": entry.get("AgentVersion"),
-                "IP address": entry.get("IpAddress"),
-                "Resource Type": entry.get("ResourceType"),
-            }
-            for entry in entries
-        ]
-
-    validate_args(args)
-
     kwargs = {
         "InstanceId": args["instance_id"],
         "TypeName": args["type_name"],
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    kwargs.update({"NextToken": next_token}) if (
-        next_token := args.get("next_token")
-    ) else None
+
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_inventory_entries(**kwargs)
+    response.pop('ResponseMetadata')
     entries = response.get("Entries", [])
 
     command_results = []
@@ -488,11 +530,11 @@ def list_inventory_entry_command(args: dict[str, Any], ssm_client: "SSMClient") 
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.InventoryEntry",
-            outputs=entries,
+            outputs=response,
             outputs_key_field="InstanceId",
             readable_output=tableToMarkdown(
                 name="AWS SSM Inventory Entry",
-                t=_parse_inventory_entries(entries),
+                t=[parsed_inventory(entry) for entry in entries],
             ),
         ),
     )
@@ -534,9 +576,8 @@ def list_associations_command(args: dict[str, Any], ssm_client: "SSMClient") -> 
     kwargs: "ListAssociationsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    kwargs.update({"NextToken": next_token}) if (
-        next_token := args.get("next_token")
-    ) else None
+
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_associations(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -554,7 +595,7 @@ def list_associations_command(args: dict[str, Any], ssm_client: "SSMClient") -> 
             outputs=associations,
             outputs_key_field="AssociationId",
             readable_output=tableToMarkdown(
-                name="AWS SSM Association",
+                name="AWS SSM Associations",
                 t=_parse_associations(associations),
             ),
         ),
@@ -601,9 +642,7 @@ def get_association_command(args: dict[str, Any], ssm_client: "SSMClient") -> Co
     instance_id = args.get("instance_id")
     document_name = args.get("document_name")
 
-    validate_args(args)  # raises DemistoException if invalid args
-
-    if not bool(association_id or (instance_id and document_name)):
+    if not (association_id or (instance_id and document_name)):
         msg = "This command  must provide either association id or instance_id and document_name."
         raise DemistoException(msg)
 
@@ -624,7 +663,7 @@ def get_association_command(args: dict[str, Any], ssm_client: "SSMClient") -> Co
         outputs_key_field="AssociationId",
         outputs_prefix="AWS.SSM.Association",
         readable_output=tableToMarkdown(
-            name="Association",
+            name="AWS SSM Association",
             t=_parse_association(association_description),
         ),
     )
@@ -665,9 +704,8 @@ def list_versions_association_command(args: dict[str, Any], ssm_client: "SSMClie
             }
             for association_version in association_versions
         ]
-    validate_args(args)
     kwargs = {"AssociationId": args["association_id"], "MaxResults": arg_to_number(args.get("limit", 50)) or 50}
-    kwargs.update({"NextToken": next_token}) if (next_token := args.get("next_token")) else None
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_association_versions(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -732,8 +770,7 @@ def list_documents_command(args: dict[str, Any], ssm_client: "SSMClient") -> lis
     kwargs: "ListDocumentsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_documents(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -795,10 +832,9 @@ def get_document_command(args: dict[str, Any], ssm_client: "SSMClient") -> Comma
             "Status": document.get("Status"),
         }
     kwargs = {"Name": args["document_name"]}
-    kwargs["DocumentVersion"] = format_document_version(args.get("document_version"))
-
-    if version_name := args.get("version_name"):
-        kwargs["VersionName"] = version_name
+    if document_version := args.get("document_version"):
+        kwargs["DocumentVersion"] = format_document_version(document_version)
+    kwargs = update_if_value(args, kwargs, {"version_name": "VersionName"})
 
     response = ssm_client.describe_document(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -863,8 +899,7 @@ def list_automation_executions_command(args: dict[str, Any], ssm_client: "SSMCli
     kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
             "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.describe_automation_executions(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -893,8 +928,9 @@ def list_automation_executions_command(args: dict[str, Any], ssm_client: "SSMCli
 
 @polling_function(
     name="aws-ssm-automation-execution-run",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    requires_polling_arg=False,  # means it will always be default to poll, poll=true,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)),
+    timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
+    requires_polling_arg=False,  # means it will always default to poll
 )
 def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     """Initiates or polls the status of an AWS Systems Manager (SSM) automation execution.
@@ -920,30 +956,21 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
         PollResult: An object containing the results of the command and whether to continue polling.
     """
     execution_id = args.get("execution_id")
-    tag_key = args.get("tag_key")
-    tag_value = args.get("tag_value")
-    if not execution_id:  # if this is the first time the function is called
-        if parameters := args.get("parameters"):
-            try:
-                parameters = json.loads(parameters)
-            except Exception as e:
-                msg = 'The parameters argument is not in a valid JSON structure. For example: {"key": "value"}'
-                raise DemistoException(
-                    msg,
-                ) from e
 
+    if not execution_id:  # if this is the first time the function is called
+        tag_key = args.get("tag_key")
+        tag_value = args.get("tag_value")
         kwargs = {
             "DocumentName": args["document_name"],
             "Mode": args.get("mode", "Auto"),
-            **({"Tags": [{"Key": tag_key, "Value": tag_value}]} if tag_key and tag_value else {}),
-            **{k: v for k, v in [
-                ("Parameters", parameters),
-                ("ClientToken", args.get("client_token")),
-                ("MaxConcurrency", args.get("max_concurrency")),
-                ("MaxErrors", args.get("max_error")),
-            ] if v},
+            **({"Tags": [{"Key": tag_key, "Value": tag_value}]} if tag_key and tag_value else {})
         }
-        kwargs["DocumentVersion"] = format_document_version(args.get("document_version"))
+        if document_version := args.get("document_version"):
+            kwargs["DocumentVersion"] = format_document_version(document_version)
+        input_to_output_keys = {"client_token": "ClientToken", "max_concurrency": "MaxConcurrency", "max_error": "MaxErrors"}
+        kwargs = update_if_value(args, kwargs, input_to_output_keys)
+        if parameters := args.get("parameters"):
+            kwargs["Parameters"] = format_parameters_arguments(parameters)
         execution_id = ssm_client.start_automation_execution(**kwargs)["AutomationExecutionId"]
         args["execution_id"] = execution_id  # needed for the polling and is `hidden: true` in the yml file.
         return PollResult(
@@ -953,10 +980,10 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
             args_for_next_run=args,
         )
     status = get_automation_execution_status(execution_id, ssm_client)
-    if status in FINAL_STATUSES_AUTOMATION:
+    if status in FINAL_AUTOMATION_STATUSES:
         return PollResult(  # if execution not in progress, return the status and end the polling loop
             response=CommandResults(
-                readable_output=FINAL_STATUSES_AUTOMATION[status],
+                readable_output=FINAL_AUTOMATION_STATUSES[status],
             ),
             continue_to_poll=False,
         )
@@ -970,12 +997,14 @@ def run_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClien
 
 @polling_function(
     name="aws-ssm-automation-execution-cancel",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    requires_polling_arg=False,  # TODO check if needed
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)),
+    timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
+    requires_polling_arg=True,
+    polling_arg_name="include_polling"
 )
 def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     """Cancels an AWS Systems Manager (SSM) automation execution or monitors its cancellation status.
-        Note: the argument "first_run" is hidden: true in the yml file,
+        Note: the argument `first_run` is hidden: true in the yml file,
             and is used to determine if this is the first time the function.
 
     Args:
@@ -993,12 +1022,12 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
     type_ = args.get("type", "Cancel")
     include_polling = argToBoolean(args.get("include_polling", False))
 
-    if not argToBoolean(args.get("first_run")):
+    if not argToBoolean(args["first_run"]):
         status = get_automation_execution_status(automation_execution_id, ssm_client)
-        if status in FINAL_STATUSES_AUTOMATION:  # STOP POLLING
+        if status in FINAL_AUTOMATION_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_STATUSES_AUTOMATION[status],
+                    readable_output=FINAL_AUTOMATION_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
@@ -1017,7 +1046,7 @@ def cancel_automation_execution_command(args: dict[str, Any], ssm_client: "SSMCl
         AutomationExecutionId=automation_execution_id, Type=type_,
     )
     args["first_run"] = False
-    # if the polling is stop after first run, this will be the final result in the war room otherwise this will be the partial result
+    # if polling stops after the first run, this will be the final result in the war room otherwise this will be the partial result
     return PollResult(
         response=CommandResults(readable_output="Cancellation command was sent successful."),
         partial_result=CommandResults(readable_output="Cancellation command was sent successful."),
@@ -1091,16 +1120,17 @@ def list_commands_command(args: dict[str, Any], ssm_client: "SSMClient") -> list
 
 @polling_function(
     name="aws-ssm-command-run",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)),
+    timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,  # means it will always be default to poll, poll=true,
 )
-def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:  # TODO Invocation
+def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     if command_id := args.get("command_id"):
         status = get_command_status(command_id, ssm_client)
-        if status in FINAL_STATUSES_COMMAND:
+        if status in FINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_STATUSES_COMMAND[status],
+                    readable_output=FINAL_COMMAND_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
@@ -1112,33 +1142,21 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
                 response=None,
             )
 
-    kwargs: "SendCommandRequestRequestTypeDef" = {
+    kwargs = {
         "DocumentName": args["document_name"],
         "InstanceIds": argToList(args["instance_ids"]),
-        "DocumentVersion": format_document_version(args.get("document_version")),
     }
-    if comment := args.get("comment"):
-        kwargs["Comment"] = comment
-    if output_s3_bucket_name := args.get("output_s3_bucket_name"):
-        kwargs["OutputS3BucketName"] = output_s3_bucket_name
-    if output_s3_key_prefix := args.get("output_s3_key_prefix"):
-        kwargs["OutputS3KeyPrefix"] = output_s3_key_prefix
-    if timeout_seconds := arg_to_number(args.get("timeout_seconds")):
-        if 2592000 < timeout_seconds < 30:
-            raise DemistoException("The timeout_seconds argument must be between 30 seconds and 2592000 seconds.")
-        kwargs["TimeoutSeconds"] = timeout_seconds
-    if max_concurrency := args.get("max_concurrency"):
-        kwargs["MaxConcurrency"] = max_concurrency
-    if max_errors := args.get("max_errors"):
-        kwargs["MaxErrors"] = max_errors
+    if document_version := args.get("document_version"):
+        kwargs["DocumentVersion"] = format_document_version(document_version)
+    input_to_output_keys = {"comment": "Comment",
+                            "output_s3_bucket_name": "OutputS3BucketName",
+                            "output_s3_key_prefix": "OutputS3KeyPrefix",
+                            "max_concurrency": "MaxConcurrency",
+                            "max_errors": "MaxErrors",
+                            }
+    kwargs = update_if_value(args, kwargs, input_to_output_keys)
     if parameters := args.get("parameters"):
-        try:
-            kwargs["Parameters"] = json.loads(parameters)  # TODO CHANGE TO REGEX
-        except Exception as e:
-            msg = 'The parameters argument is not in a valid JSON structure. For example: {"key": "value"}'
-            raise DemistoException(
-                msg,
-            ) from e
+        parameters = format_parameters_arguments(parameters)
 
     command = ssm_client.send_command(**kwargs)
     command = convert_datetime_to_iso(command)["Command"]
@@ -1160,19 +1178,21 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
 
 @polling_function(
     name="aws-ssm-command-cancel",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    requires_polling_arg=False,  # TODO check if needed
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS)),
+    timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
+    requires_polling_arg=True,
+    polling_arg_name="include_polling"
 )
 def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     command_id = args["command_id"]
     include_polling = argToBoolean(args.get("include_polling", False))
 
-    if not argToBoolean(args.get("first_run")):
+    if not argToBoolean(args["first_run"]):
         status = get_command_status(command_id, ssm_client)
-        if status in FINAL_STATUSES_COMMAND:  # STOP POLLING
+        if status in FINAL_COMMAND_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_STATUSES_COMMAND[status],
+                    readable_output=FINAL_COMMAND_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
@@ -1243,6 +1263,7 @@ def main():
         aws_access_key_id,
         aws_secret_access_key,
     )
+    validate_args(args)
 
     aws_client = AWSClient(
         aws_default_region,
@@ -1261,45 +1282,47 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
+        results: CommandResults | list[CommandResults] | str
         match command:
             case "test-module":
-                return_results(test_module(ssm_client))
+                results = test_module(ssm_client)
             case "aws-ssm-tag-add":
-                return_results(add_tags_to_resource_command(args, ssm_client))
+                results = add_tags_to_resource_command(args, ssm_client)
             case "aws-ssm-tag-remove":
-                return_results(remove_tags_from_resource_command(args, ssm_client))
+                results = remove_tags_from_resource_command(args, ssm_client)
             case "aws-ssm-inventory-get":
-                return_results(get_inventory_command(args, ssm_client))
+                results = get_inventory_command(args, ssm_client)
             case "aws-ssm-inventory-entry-list":
-                return_results(list_inventory_entry_command(args, ssm_client))
+                results = list_inventory_entry_command(args, ssm_client)
             case "aws-ssm-association-list":
-                return_results(list_associations_command(args, ssm_client))
+                results = list_associations_command(args, ssm_client)
             case "aws-ssm-association-get":
-                return_results(get_association_command(args, ssm_client))
+                results = get_association_command(args, ssm_client)
             case "aws-ssm-association-version-list":
-                return_results(list_versions_association_command(args, ssm_client))
+                results = list_versions_association_command(args, ssm_client)
             case "aws-ssm-document-list":
-                return_results(list_documents_command(args, ssm_client))
+                results = list_documents_command(args, ssm_client)
             case "aws-ssm-document-get":
-                return_results(get_document_command(args, ssm_client))
+                results = get_document_command(args, ssm_client)
             case "aws-ssm-automation-execution-list":
                 if args.get("execution_id"):
-                    return_results(get_automation_execution_command(args, ssm_client))
-                return_results(list_automation_executions_command(args, ssm_client))
+                    results = get_automation_execution_command(args, ssm_client)
+                else:
+                    results = list_automation_executions_command(args, ssm_client)
             case "aws-ssm-automation-execution-run":
-                return_results(run_automation_execution_command(args, ssm_client))
+                results = run_automation_execution_command(args, ssm_client)
             case "aws-ssm-automation-execution-cancel":
-                return_results(cancel_automation_execution_command(args, ssm_client))
+                results = cancel_automation_execution_command(args, ssm_client)
             case "aws-ssm-command-list":
-                return_results(list_commands_command(args, ssm_client))
+                results = list_commands_command(args, ssm_client)
             case "aws-ssm-command-run":
-                return_results(run_command_command(args, ssm_client))
+                results = run_command_command(args, ssm_client)
             case "aws-ssm-command-cancel":
-                return_results(cancel_command_command(args, ssm_client))
+                results = cancel_command_command(args, ssm_client)
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)
-
+        return_results(results)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
