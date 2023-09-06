@@ -83,7 +83,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.file_reputation
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-av-scanners
     description: Retrieve AV Scanner data from TitaniumCloud.
@@ -103,7 +103,7 @@ script:
       description: Bad hash SHA256.
       type: Unknown
     - contextPath: ReversingLabs.av_scanners
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-file-analysis
     description: Retrieve File Analysis by hash data from TitaniumCloud.
@@ -123,7 +123,7 @@ script:
       description: Bad hash SHA256.
       type: Unknown
     - contextPath: ReversingLabs.file_analysis
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-rha1-functional-similarity
     description: Retrieve a list of functionally similar hashes to the provided one.
@@ -137,7 +137,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.functional_similarity
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-rha1-analytics
     description: Retrieve the number of hashes functionally similar to the provided one grouped by classification.
@@ -169,7 +169,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.rha1_analytics
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-uri-statistics
     description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
@@ -192,7 +192,7 @@ script:
       description: Destination email address.
       type: Unknown
     - contextPath: ReversingLabs.uri_statistics
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-uri-index
     description: Retrieve a list of all available file hashes associated with a given URI.
@@ -206,7 +206,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.uri_index
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-advanced-search
     description: Search for hashes using multi-part search criteria.
@@ -220,7 +220,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.advanced_search
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-expression-search
     description: Search provides samples first seen on a particular date, filtered by search criteria.
@@ -236,7 +236,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.expression_search
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-file-download
     description: Download files associated with a SHA1, MD5 or SHA256 hash.
@@ -276,7 +276,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.url_report
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-analyze-url
     description: Analyze a given URL.
@@ -287,7 +287,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.analyze_url
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-submit-for-dynamic-analysis
     description: Submit an existing sample for dynamic analysis.
@@ -301,7 +301,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.detonate_sample_dynamic
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-get-dynamic-analysis-results
     description: Retrieve dynamic analysis results.
@@ -312,10 +312,10 @@ script:
       required: true
     outputs:
     - contextPath: File.SHA1
-      description: 'The SHA1 hash of the file'.
+      description: 'The SHA1 hash of the file.'
       type: Unknown
     - contextPath: ReversingLabs.dynamic_analysis_results
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-certificate-analytics
     description: Retrieve certificate analytics.
@@ -326,7 +326,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.certificate_analytics
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-yara-ruleset-actions
     description: Perform various YARA ruleset actions.
@@ -353,16 +353,16 @@ script:
       - 'false'
     outputs:
     - contextPath: ReversingLabs.create_yara_ruleset
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.delete_yara_ruleset
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.get_yara_ruleset_info
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.get_yara_ruleset_text
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-yara-matches-feed
     description: Returns a recordset of YARA ruleset matches in the specified time range.
@@ -379,7 +379,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.yara_matches_feed
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-yara-retro-hunt-actions
     description: Perform various YARA retroactive hunting actions.
@@ -398,16 +398,16 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.enable_yara_retro
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.start_yara_retro
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.check_yara_retro_status
-      description: ''.
+      description: ''
       type: Unknown
     - contextPath: ReversingLabs.cancel_yara_retro
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
     description: Returns a recordset of YARA ruleset matches in the specified time range.
@@ -424,7 +424,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.yara_retro_matches_feed
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-reanalyze-sample
     description: Accepts a hash of a sample in the cloud that you want to reanalyze.
@@ -434,7 +434,7 @@ script:
       required: true
     outputs:
     - contextPath: ReversingLabs.reanalyze_sample
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-imphash-similarity
     description: Accepts an imphash and returns a list of SHA-1 hashes of files sharing that imphash.
@@ -447,7 +447,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.imphash_similarity
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-url-downloaded-files
     description: Returns a list of files downloaded from the provided URL.
@@ -487,7 +487,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.url_downloaded_files
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-url-latest-analyses-feed
     description: Returns the latest URL analysis reports.
@@ -500,7 +500,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.url_latest_analyses_feed
-      description: ''.
+      description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-url-analyses-feed-from-date
     description: Returns URL analyses reports from the defined time onward.
@@ -523,7 +523,7 @@ script:
       defaultValue: 5000
     outputs:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
-      description: ''.
+      description: ''
       type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
   runonce: false
