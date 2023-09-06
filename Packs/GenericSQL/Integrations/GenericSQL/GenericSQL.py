@@ -323,7 +323,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         result = convert_sqlalchemy_to_readable_table(result)
         result = result[skip:skip + limit]
 
-        human_readable = tableToMarkdown(name="Query result:", t=result, headers=headers, removeNull=True)
+        human_readable = tableToMarkdown(name="Query result", t=result, headers=headers, removeNull=True)
 
         context = {
             "Result": result,
