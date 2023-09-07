@@ -49,7 +49,7 @@ tasks:
       brand: cybleeventsv2
     scriptarguments:
       end_date:
-        simple: ${incident.end_date}
+        simple: ${inputs.end_date}
       from:
         simple: "0"
       limit:
@@ -57,7 +57,7 @@ tasks:
       order_by:
         simple: asc
       start_date:
-        simple: ${incident.start_date}
+        simple: ${inputs.start_date}
     separatecontext: false
     view: |-
       {

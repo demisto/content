@@ -42,6 +42,11 @@ configuration:
   name: first_fetch_timestamp
   type: 0
   required: false
+- display: Hide (CVV/Expiry)
+  hidden: false
+  name: hide_data
+  required: false
+  type: 8
 description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 display: CybleEvents v2
 name: cybleeventsv2

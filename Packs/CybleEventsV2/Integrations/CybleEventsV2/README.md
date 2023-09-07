@@ -14,6 +14,7 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
+    | Hide (CVV/Expiry) | Check the box if you wish to hide CVV and Expiry date of card | False | 
 
 4. To ensure that fetch incidents works:
     * Select the Fetches incidents radio button.
