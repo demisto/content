@@ -8,11 +8,20 @@ from ProofpointEmailSecurityEventCollector import (
     datetime,
     timedelta,
     websocket_connections,
+    perform_long_running_loop,
+    DemistoException,
+    Connection
 )
 import ProofpointEmailSecurityEventCollector
 from freezegun import freeze_time
 
 CURRENT_TIME: datetime | None = None
+
+EVENTS = [
+    {"ts": "2023-08-16T13:24:12.147573+0100", "message": "Test message 1", "id": 1},
+    {"ts": "2023-08-14T13:24:12.147573+0200", "message": "Test message 2", "id": 2},
+    {"ts": "2023-08-12T13:24:11.147573+0000", "message": "Test message 3", "guid": 3},
+]
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -34,11 +43,7 @@ class MockConnection:
     ):
         global CURRENT_TIME
         self.id = uuid.uuid4()
-        self.events = [
-            {"ts": "2023-08-16T13:24:12.147573+0100", "message": "Test message 1", "id": 1},
-            {"ts": "2023-08-14T13:24:12.147573+0200", "message": "Test message 2", "id": 2},
-            {"ts": "2023-08-12T13:24:11.147573+0000", "message": "Test message 3", "guid": 3},
-        ]
+        self.events = EVENTS
         self.index = 0
 
     def recv(self, timeout):
@@ -99,6 +104,16 @@ def test_fetch_events(mocker, connection):
 
 @freeze_time("2023-08-16T13:24:12.147573+0100")
 def test_connects_to_websocket(mocker):
+    """
+    Given:
+        - A host with cluster id and api key to connect to
+
+    When:
+        - Creating a connection to the websocket
+
+    Then:
+        - Ensure that the function connects to the websocket with the correct url
+    """
     # Mock the connect function from websockets.sync.client
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
@@ -135,3 +150,39 @@ def test_connects_to_websocket(mocker):
         connect_mock.call_args_list[1][0][0]
         == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"  # noqa: E501
     )
+
+
+def test_handle_failures_of_send_events(mocker):
+    """
+    Given:
+        - A connection to the websocket, and events are fetched from the socket
+
+    When:
+        - Sending events to XSIAM are failing.
+
+    Then:
+        - Add the failing events to the context, and try again in the next run.
+    """
+    def fetch_events_mock(event_type: EventType, connection: Connection, fetch_interval: int):
+        if event_type == EventType.MESSAGE:
+            return EVENTS[:2]
+        return EVENTS[2:]
+
+    def sends_events_to_xsiam_mock(events, **kwargs):
+        raise DemistoException("Message")
+
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "fetch_events", side_effect=fetch_events_mock)
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
+    perform_long_running_loop(MockConnection(), MockConnection(), 60)
+    context = demisto.getIntegrationContext()
+    assert context["message_events"] == EVENTS[:2]
+    assert context["maillog_events"] == EVENTS[2:]
+
+    second_try_send_events_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam")
+    perform_long_running_loop(MockConnection(), MockConnection(), 60)
+    context = demisto.getIntegrationContext()
+    # check the the context is cleared
+    assert not context
+    # check that the events failed events were sent to xsiam
+    for event in EVENTS:
+        assert event in second_try_send_events_mock.call_args_list[0][0][0]

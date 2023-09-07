@@ -16,6 +16,7 @@ URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 FETCH_INTERVAL_IN_SECONDS = 60
 RECV_TIMEOUT = 10
+FETCH_SLEEP = 5
 
 
 class EventType(str, Enum):
@@ -115,30 +116,36 @@ def test_module(host: str, cluster_id: str, api_key: str):
             return_error("Authentication failed. Please check the Cluster ID and API key.")
 
 
+def perform_long_running_loop(message_connection: Connection, maillog_connection: Connection, fetch_interval: int):
+    message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
+    maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
+    demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
+    # Send the events to the XSIAM, with events from the context
+    integration_context = demisto.getIntegrationContext()
+    message_events_from_context = integration_context.get("message_events", [])
+    message_maillog_from_context = integration_context.get("maillog_events", [])
+    message_events.extend(message_events_from_context)
+    maillog_events.extend(message_maillog_from_context)
+
+    try:
+        send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
+        # clear the context after sending the events
+        demisto.setIntegrationContext({})
+    except DemistoException:
+        demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
+        # save the events to the context so we can send them again in the next execution
+        integration_context = demisto.getIntegrationContext()
+        demisto.setIntegrationContext({"message_events": message_events, "maillog_events": maillog_events})
+
+
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
     fetch_interval = max(1, fetch_interval // len(EventType))
     with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
         demisto.info("Connected to websocket")
         while True:
-            message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
-            maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
-            demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
-            # Send the events to the XSIAM, with events from the context
-            integration_context = demisto.getIntegrationContext()
-            message_events_from_context = integration_context.get("message_events", [])
-            message_maillog_from_context = integration_context.get("maillog_events", [])
-            message_events.extend(message_events_from_context)
-            maillog_events.extend(message_maillog_from_context)
-
-            try:
-                send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
-                # clear the context after sending the events
-                demisto.setIntegrationContext({"message_events": [], "maillog_events": []})
-            except DemistoException:
-                demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
-                # save the events to the context so we can send them again in the next execution
-                integration_context = demisto.getIntegrationContext()
-                demisto.setIntegrationContext({"message_events": message_events, "maillog_events": maillog_events})
+            perform_long_running_loop(message_connection, maillog_connection, fetch_interval)
+            # sleep for a bit to not throttle the CPU
+            time.sleep(FETCH_SLEEP)
 
 
 def main():  # pragma: no cover
