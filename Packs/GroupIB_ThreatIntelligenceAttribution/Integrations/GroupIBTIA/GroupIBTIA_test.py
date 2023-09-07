@@ -94,8 +94,9 @@ RESULTS.update({
                         '"bp/phishing_kit", "relatedIndicatorsData": [[]], '
                         '"systemSeverity": 2}'}]),
 })
-COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_repository', 'osi/public_leak',
-                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached"]
+COLLECTION_NAMES = ['compromised/card', 'osi/git_repository', 'osi/public_leak',
+                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached",
+                    "compromised/account_group"]
 
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)

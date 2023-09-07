@@ -555,7 +555,7 @@
             {
                 "rawJSON": {
                     "gibcollection": "ioc/common",
-                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "gibid": "1111111111111111111111111111111111111111",
                     "type": "URL",
                     "value": "https://some.ru",
                     "firstseenbysource": "2012-10-24T00:00:00Z",
@@ -565,7 +565,7 @@
             {
                 "rawJSON": {
                     "gibcollection": "ioc/common",
-                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "gibid": "1111111111111111111111111111111111111111",
                     "type": "Domain",
                     "value": "some.ru",
                     "firstseenbysource": "2012-10-24T00:00:00Z",
@@ -575,7 +575,7 @@
             {
                 "rawJSON": {
                     "gibcollection": "ioc/common",
-                    "gibid": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+                    "gibid": "1111111111111111111111111111111111111111",
                     "type": "IP",
                     "value": "11.11.11.11",
                     "firstseenbysource": "2012-10-24T00:00:00Z",

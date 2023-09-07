@@ -1,4 +1,119 @@
 {
+    "compromised/account_group":[
+        [
+            {"dateFirstCompromised": null,
+            "dateFirstSeen": "2022-10-20T18:12:28+00:00",
+            "dateLastCompromised": null,
+            "dateLastSeen": "2022-10-20T18:12:28+00:00",
+            "displayOptions": {
+                "favouriteForCompanies": [],
+                "hideForCompanies": [],
+                "isFavourite": false,
+                "isHidden": false
+            },
+            "evaluation": {
+                "admiraltyCode": "A2",
+                "credibility": 80,
+                "reliability": 100,
+                "severity": "red",
+                "tlp": "red",
+                "ttl": 30
+            },
+            "eventCount": 1,
+            "events": [
+                {
+                    "client": {
+                        "ipv4": {
+                            "asn": "ASN",
+                            "city": "City",
+                            "countryCode": "Code",
+                            "countryName": "Country Name",
+                            "ip": "11.11.11.11",
+                            "provider": "provider",
+                            "region": "region"
+                        },
+                        "ipv6": null
+                    },
+                    "cnc": {
+                        "cnc": "https://some.ru",
+                        "domain": "some.ru",
+                        "ipv4": {
+                            "asn": "ASN",
+                            "city": "City",
+                            "countryCode": "Code",
+                            "countryName": "Country Name",
+                            "ip": "11.11.11.11",
+                            "provider": "provider",
+                            "region": "region"
+                        },
+                        "ipv6": null,
+                        "url": "https://some.ru"
+                    },
+                    "dateCompromised": null,
+                    "dateDetected": "2022-10-20T18:12:28+00:00",
+                    "id": "1111111111111111111111111111111111111111",
+                    "malware": {
+                        "category": [],
+                        "class": null,
+                        "id": "1111111111111111111111111111111111111111",
+                        "name": "AZORult",
+                        "platform": [],
+                        "stixGuid": "1111111111111111111111111111111111111111",
+                        "threatLevel": null
+                    },
+                    "oldId": "11111111",
+                    "person": null,
+                    "source": {
+                        "id": "",
+                        "idType": "",
+                        "type": "Botnet"
+                    },
+                    "stixGuid": "1111111111111111111111111111111111111111",
+                    "threatActor": null
+                }
+            ],
+            "id": "1111111111111111111111111111111111111111",
+            "login": "some@gmail.com",
+            "malware": [
+                {
+                    "category": [],
+                    "class": null,
+                    "id": "1111111111111111111111111111111111111111",
+                    "name": "Name",
+                    "platform": [],
+                    "stixGuid": null,
+                    "threatLevel": null
+                }
+            ],
+            "parsedLogin": {
+                "domain": "some.com",
+                "ip": null
+            },
+            "password": "?",
+            "port": null,
+            "portalLink": null,
+            "seqUpdate": 1670823245323,
+            "service": {
+                "domain": "some.com",
+                "host": "some.com",
+                "ip": null,
+                "url": "https://some.ru"
+            },
+            "source": [
+                {
+                    "id": "",
+                    "idType": "",
+                    "type": "Botnet"
+                }
+            ],
+            "sourceId": [],
+            "sourceType": [
+                "Botnet"
+            ],
+            "threatActor": []}
+        ],
+        1614919893874
+    ],
     "compromised/account": [
         [
             {
