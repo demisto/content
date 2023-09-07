@@ -254,7 +254,7 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[d
                     for sg in interface['Groups']:
                         group_list.append(sg['GroupId'])
                     mapping_dict[interface['NetworkInterfaceId']] = group_list
-                    instance_to_use = instance['ModuleName']
+                    instance_to_use = instance['Metadata']['instance']
                     break
         if match:
             break
