@@ -22,6 +22,9 @@ SCAN_ACTION = "scan-action"
 RESPONSE_TYPE = "response"
 CLEAN_HTML_TAGS = re.compile('<.*?>')
 API_LIMIT = 1000
+REGULAR_SCAN_TYPE = "Regular"
+STOP_SCAN_ACTION = "Stop"
+CANCEL_SCAN_ACTION = "Cancel"
 
 
 @dataclass
@@ -115,14 +118,14 @@ class Headers(list, Enum):
     ]
     SCAN = [
         'id',
-        'app_id',
-        'scan_config_id',
-        'submitter_id',
-        'submit_time',
-        'completion_time',
         'status',
         'failure_reason',
         'scan_type',
+        'submit_time',
+        'completion_time',
+        'app_id',
+        'scan_config_id',
+        'submitter_id',
         'validation_parent_scan_id'
     ]
 
@@ -473,7 +476,8 @@ class Client(BaseClient):
         return self._http_request(
             method=RequestAction.GET,
             url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/action",
-            ok_codes=[HTTPStatus.OK],
+            ok_codes=[HTTPStatus.OK, HTTPStatus.NO_CONTENT],
+            resp_type=RESPONSE_TYPE,
             error_message="Please verify the scan status is RUNNING.",
         )
 
@@ -938,10 +942,16 @@ def submit_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
+    scan_type = args.get("scan_type", "")
+    parent_scan_id = args.get("parent_scan_id")
+
+    if scan_type != REGULAR_SCAN_TYPE and not parent_scan_id:
+        raise ValueError("Please insert parent_scan_id.")
+
     client.submit_scan(
         scan_config_id=args.get("scan_config_id", ""),
-        scan_type=args.get("scan_type", "").upper(),
-        parent_scan_id=args.get("parent_scan_id"),
+        scan_type=scan_type.upper(),
+        parent_scan_id=parent_scan_id,
     )
     return CommandResults(readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
                                                                            action=ReadableOutputs.SUBMITTED))
@@ -1055,8 +1065,22 @@ def get_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-@ logger
-def submit_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def validate_submit_scan_action(action: str, scan_data):
+    if action in [STOP_SCAN_ACTION, CANCEL_SCAN_ACTION]:
+        scan_status = scan_data.get("status", "")
+        allowed_statuses = ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"]
+        if scan_status not in allowed_statuses:
+            raise ValueError(f"Scan status must be one of {allowed_statuses}")
+
+
+@logger
+@polling_function(
+    name="app-sec-scan-action-submit",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", "30")),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", "600")),
+    requires_polling_arg=False,
+)
+def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     Submit scan action.
 
@@ -1065,21 +1089,40 @@ def submit_scan_action_command(client: Client, args: dict[str, Any]) -> CommandR
         args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    client.submit_scan_action(
-        scan_id=args.get(XsoarArgKey.SCAN, ""),
-        action=args.get("action", "").upper(),
-    )
-    return CommandResults(
-        readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                                         action=ReadableOutputs.CHANGED.value.format(
-                                                             args.get("action", "")),
-                                                         object_id=args.get(XsoarArgKey.SCAN, ""))
+    action = args.get("action", "")
+    scan_id = args.get(XsoarArgKey.SCAN, "")
+
+    if args.get("first_run", "") == "0":
+        scan_data = client.list_scan(obj_id=scan_id)
+        validate_submit_scan_action(action=action, scan_data=scan_data)
+        args['first_run'] = "1"
+        client.submit_scan_action(
+            scan_id=scan_id,
+            action=action.upper(),
+        )
+
+    get_response = client.get_scan_action(obj_id=scan_id)
+    if isinstance(get_response, requests.Response) and get_response.status_code == HTTPStatus.OK:
+        return PollResult(
+            response={},
+            continue_to_poll=True,
+            args_for_next_run=args,
+        )
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+                                                             action=ReadableOutputs.CHANGED.value.format(
+                                                                 args.get("action", "")),
+                                                             object_id=args.get(XsoarArgKey.SCAN, ""))
+        ),
+        continue_to_poll=False,
     )
 
 
-@logger
+@ logger
 def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get attack.
@@ -1102,7 +1145,7 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@logger
+@ logger
 def get_attack_documentation_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1129,7 +1172,7 @@ def get_attack_documentation_command(
     )
 
 
-@logger
+@ logger
 def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List scan configs.
@@ -1153,7 +1196,7 @@ def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-@logger
+@ logger
 def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List apps.
@@ -1176,7 +1219,7 @@ def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@logger
+@ logger
 def list_attack_template_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1201,7 +1244,7 @@ def list_attack_template_command(
     )
 
 
-@logger
+@ logger
 def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List engine groups.
@@ -1223,7 +1266,7 @@ def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-@logger
+@ logger
 def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List engines.
@@ -1245,7 +1288,7 @@ def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@logger
+@ logger
 def list_module_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List modules.
@@ -1326,6 +1369,9 @@ def list_handler(
     response = handle_list_request(pagination=pagination,
                                    obj_id=obj_id,
                                    request_command=request_command)
+    if isinstance(response, requests.Response):
+        response = response.json()
+
     raw_response = copy.deepcopy(response)
 
     parsed_response = parse_list_response(
@@ -1504,12 +1550,13 @@ def parse_list_response(data: list[dict[str, Any]],
         list: Parsed output.
     """
     parsed_response = []
-    for obj in data:
-        obj.pop("links", None)
-        if remove_html_tags:
-            obj = copy.deepcopy(clean_html_tags(obj))
-        parsed_response.append(parser_command(obj) if parser_command else flatten_dict(obj)
-                               if use_flatten_dict else obj)
+    if isinstance(data, list):
+        for obj in data:
+            obj.pop("links", None)
+            if remove_html_tags:
+                obj = copy.deepcopy(clean_html_tags(obj))
+            parsed_response.append(parser_command(obj) if parser_command else flatten_dict(obj)
+                                   if use_flatten_dict else obj)
 
     return parsed_response
 
@@ -1702,7 +1749,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](client=client, args=args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

@@ -1,3 +1,4 @@
+import http
 import json
 import os
 from collections.abc import Callable
@@ -90,7 +91,7 @@ def mock_client() -> Client:
             ),
         ),
         (
-            {"scan_config_id": EXAMPLE_ID, "scan_type": " Regular"},
+            {"scan_config_id": EXAMPLE_ID, "scan_type": "Regular"},
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-submit",
             UrlPrefix.SCAN,
             RequestAction.POST,
@@ -106,16 +107,6 @@ def mock_client() -> Client:
                                              action=ReadableOutputs.DELETED,
                                              object_id=EXAMPLE_ID)
         ),
-        (
-            {"scan_id": EXAMPLE_ID, "action": "Cancel"},
-            f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-submit",
-            f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action",
-            RequestAction.PUT,
-            generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                             action=ReadableOutputs.CHANGED.value.format("Cancel"),
-                                             object_id=EXAMPLE_ID)
-        ),
-
     ),
 )
 def test_no_content_commands(
@@ -165,6 +156,41 @@ def test_no_content_commands(
             requests_mock.delete(url=url)
 
     result = commands[command](mock_client, args)
+    assert result.readable_output == excepted_output
+
+
+def test_pooling_commands(
+    requests_mock,
+    mock_client: Client,
+):
+    """
+    Scenario: Test commands with action.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - app-sec-scan-submit called.
+    Then:
+     - Ensure that readable outputs is correct.
+    """
+    from Rapid7AppSec import submit_scan_action_command
+
+    excepted_output = generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+                                                       action=ReadableOutputs.CHANGED.value.format("Resume"),
+                                                       object_id=EXAMPLE_ID)
+
+    url = urljoin(
+        mock_client._base_url,
+        f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action"
+    )
+    requests_mock.get(url=url, status_code=http.HTTPStatus.NO_CONTENT)
+
+    url = urljoin(
+        mock_client._base_url,
+        f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action"
+    )
+    requests_mock.put(url=url)
+
+    result = submit_scan_action_command(client=mock_client, args={"scan_id": EXAMPLE_ID, "action": "Resume"})
     assert result.readable_output == excepted_output
 
 
@@ -437,6 +463,7 @@ def test_list_commands(
     requests_mock.get(url=url, json=json_response)
     args = args | {"page": None, "page_size": None, "limit": 1}
     result = commands[command](mock_client, args)
+
     assert result.outputs_prefix == output_prefix
     assert result.outputs_key_field == outputs_key_field
     assert result.outputs[0][result.outputs_key_field] == EXAMPLE_ID
@@ -495,7 +522,7 @@ def test_pagination(
     """
 
     from Rapid7AppSec import list_vulnerability_command
-    all_data = []
+
     for endpoint, json_path in endpoints:
         json_response = load_mock_response(file_name=json_path)
         url = urljoin(
@@ -503,8 +530,8 @@ def test_pagination(
             endpoint
         )
         requests_mock.get(url=url, json=json_response)
-        all_data += json_response.get("data", [])
 
     result = list_vulnerability_command(mock_client, args)
     assert result.outputs_prefix == "Rapid7AppSec.Vulnerability"
-    assert arg_to_number(args.get("limit")) >= API_LIMIT or result.raw_response == json_response
+    limit = arg_to_number(args.get("limit"))
+    assert (isinstance(limit, int) and limit >= API_LIMIT) or (result.raw_response == json_response)

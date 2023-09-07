@@ -361,8 +361,20 @@ script:
       - Authenticate
       - Cancel
       required: true
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    - name: first_run
+      description: First polling run.
+      hidden: true
+      defaultValue: '0'
+      required: true
     description: "Submit a new scan action. “Scan actions values are: \"PAUSE\", \"RESUME\", \"STOP\", \"AUTHENTICATE\", and \"CANCEL\". Relevant when Scan status is RUNNING."
     execution: false
+    polling: true
     name: app-sec-scan-action-submit
   - arguments:
     - description: The scan ID to delete (dependencies - use app-sec-scan-list to get all scan IDs).
