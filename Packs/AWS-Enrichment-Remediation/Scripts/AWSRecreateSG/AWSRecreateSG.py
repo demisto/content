@@ -6,6 +6,8 @@ from typing import Any
 import traceback
 from random import randint
 
+ROLE_SESSION_NAME = "xsoar-session"
+
 
 def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     """
@@ -115,7 +117,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         description = "copied from rule " + info['GroupName'] + " by Xpanse Active Response module"
         cmd_args = {"groupName": new_name, "vpcId": info['VpcId'], "description": description, "using": instance_to_use}
         if assume_role:
-            cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+            cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
         new_sg = demisto.executeCommand("aws-ec2-create-security-group", cmd_args)
         if isError(new_sg):
             raise ValueError('Error on creating new security group')
@@ -123,7 +125,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     for item in recreate_list:
         cmd_args = {"groupId": new_id, "IpPermissionsFull": item, "using": instance_to_use}
         if assume_role:
-            cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+            cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
         res = demisto.executeCommand("aws-ec2-authorize-security-group-ingress-rule",
                                      cmd_args)
         if isError(res):
@@ -141,7 +143,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         e_format = str([egress]).replace("'", "\"")
         cmd_args = {"groupId": new_id, "IpPermissionsFull": e_format, "using": instance_to_use}
         if assume_role:
-            cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+            cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
         res = demisto.executeCommand("aws-ec2-authorize-security-group-egress-rule",
                                      cmd_args)
         # Don't error if the message is that the rule already exists.
@@ -156,7 +158,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                            """"PrefixListIds": [], "UserIdGroupPairs": []}]"""
         cmd_args = {"groupId": new_id, "IpPermissionsFull": all_traffic_rule, "using": instance_to_use}
         if assume_role:
-            cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+            cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
         res = demisto.executeCommand("aws-ec2-revoke-security-group-egress-rule",
                                      cmd_args)
         if isError(res):
@@ -182,7 +184,7 @@ def replace_sgs(replace_list: list, int_sg_mapping: dict, assume_role: str, inst
         formatted_list = ','.join(int_sg_mapping[entry['int']])
         cmd_args = {"networkInterfaceId": entry['int'], "groups": formatted_list, "using": instance_to_use}
         if assume_role:
-            cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+            cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
         res = demisto.executeCommand("aws-ec2-modify-network-interface-attribute",
                                      cmd_args)
         if isError(res):
@@ -207,7 +209,7 @@ def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, a
         for sg in int_sg_mapping[mapping]:
             cmd_args = {"groupIds": sg, "using": instance_to_use}
             if assume_role:
-                cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+                cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
             sg_info = demisto.executeCommand("aws-ec2-describe-security-groups", cmd_args)
             if isError(sg_info):
                 raise ValueError('Error on describing security group')
@@ -234,7 +236,7 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[d
     """
     cmd_args = {"instanceIds": instance_id}
     if assume_role:
-        cmd_args.update({'roleArn': assume_role, 'roleSessionName': "xsoar-session"})
+        cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
     instance_info = demisto.executeCommand("aws-ec2-describe-instances", cmd_args)
     # Need a for loop in case multiple AWS-EC2 integrations are configured.
     match = False
@@ -254,6 +256,8 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[d
                     mapping_dict[interface['NetworkInterfaceId']] = group_list
                     instance_to_use = instance['ModuleName']
                     break
+        if match:
+            break
     if match is False:
         raise ValueError('could not find interface with public IP association')
     return mapping_dict, instance_to_use
