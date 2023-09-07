@@ -111,7 +111,7 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The resource ID to be tagged.(e.g., MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README).'
+    - description: 'The resource ID to be tagged.(e.g., MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: 'The name of the tag. Note: Don’t enter personally identifiable information in this field.'
@@ -171,7 +171,7 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The ID of the resource to remove tags.(e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README).'
+    - description: 'The ID of the resource to remove tags.(e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: The name of the tag to remove.

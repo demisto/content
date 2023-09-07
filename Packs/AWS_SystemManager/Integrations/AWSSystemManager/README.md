@@ -52,7 +52,7 @@ For example, Key=Owner,Value=SysAdmin.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more example see in the README). | Required | 
+| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde. | Required | 
 | tag_key | The name of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 | tag_value | The value of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 
@@ -921,7 +921,7 @@ Initiates execution of an Automation runbook.
 | client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional | 
 | document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
 | max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional | 
-| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. for more information see in the readme file.). | Optional | 
+| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. If you specify 3, for example, the system stops running the automation when the fourth error is received. If you specify 0, then the system stops running the automation on additional targets after the first error result is returned. If you run an automation on 50 resources and set max-errors to 10%, then the system stops running the automation on additional targets when the sixth error is received. Executions that are already running an automation when max-errors is reached are allowed to complete, but some of these executions may fail as well. If you need to ensure that there won’t be more than max-errors failed executions, set max-concurrency to 1 so the executions proceed one at a time. | Optional | 
 | mode | The execution mode of the automation. Valid modes include the following: Auto and Interactive. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
 | tag_key | The name of the tag. | Optional | 
 | tag_value | The value of the tag. | Optional | 
