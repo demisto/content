@@ -1359,7 +1359,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                     demisto.debug(f"Skipping this step, max number of pull alerts already reached"
                                   f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
         inc_last_update = arg_to_datetime(inc["lastUpdated"])
-        if inc_last_update:
+        if inc_last_update and last_update_format:
             demisto.debug(f"Incident {inc.get('id')} - "
                           f"Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "
                           f"Need update => {last_update_format.timestamp() < inc_last_update.timestamp()}")
@@ -1390,13 +1390,14 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     res = {}
     for inc_id, inc in inc_data.items():
         inc_created =  arg_to_datetime(inc["Created"])
-        inc_created = inc_created.replace(tzinfo=timezone.utc)
-        diff = current_time - inc_created
-        if diff.days <= max_time_mirror_inc: # maximum RSA aggregation time 24 days
-            res[inc_id] = inc
-        else:
-            demisto.debug(f"Incident {inc_id} has expired => {diff.days}")
-            total_know += 1
+        if inc_created:
+            inc_created = inc_created.replace(tzinfo=timezone.utc)
+            diff = current_time - inc_created
+            if diff.days <= max_time_mirror_inc: # maximum RSA aggregation time 24 days
+                res[inc_id] = inc
+            else:
+                demisto.debug(f"Incident {inc_id} has expired => {diff.days}")
+                total_know += 1
     demisto.debug(f"{total_know} incidents cleaned from integration context for exceeding RSA monitoring age")
     demisto.debug(f"Current context integration after cleaning => {json.dumps(clean_secret_integration_context())}")
     int_cont["IncidentsDataCount"] = res
