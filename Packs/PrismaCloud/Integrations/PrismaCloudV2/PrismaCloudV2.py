@@ -237,7 +237,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'resource', json_data=data)
 
-    def resource_list_request(self, list_type: str):
+    def resource_list_request(self, list_type: Optional[str]):
         params = assign_params(listType=list_type)
 
         return self._http_request('GET', 'v1/resource_list', params=params)
@@ -246,7 +246,7 @@ class Client(BaseClient):
         return self._http_request('GET', f'user/role/{user_id}')
 
     def all_user_roles_list_request(self):
-        return self._http_request('GET', f'user/role')
+        return self._http_request('GET', 'user/role')
 
     def account_list_request(self, exclude_account_group_details: str):
         data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
@@ -1649,10 +1649,10 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field='id',
         readable_output=f'Showing {len(readable_responses)} of {total_response_amount} results:\n'
                         + tableToMarkdown('Resources Details:',
-                                        readable_responses,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+                                          readable_responses,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=response_items,
         raw_response=response_items
     )
@@ -1665,11 +1665,11 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     all_results = argToBoolean(args.get('all_results', 'false'))
 
     if user_id:
-        response_items = client.user_roles_list_request(user_id)
-        response_items = [response_items]
+        response_items = client.user_roles_list_request(str(user_id))
+        response_items = [response_items] if response_items else []
     else:
         response_items = client.all_user_roles_list_request()
-    
+
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
         demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
@@ -1684,10 +1684,10 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
                         + tableToMarkdown('User Roles Details:',
-                                        response_items,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=response_items,
         raw_response=response_items
     )
@@ -2114,7 +2114,7 @@ def main() -> None:
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
-            
+
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
         }
