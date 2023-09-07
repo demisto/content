@@ -130,9 +130,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: |
+    - description: |-
         Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. The result of this list request contains only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to false.
         If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.
+        .
       name: sync_token
     description: Returns the rules in the access control list for the calendar.
     name: google-calendar-acl-list
