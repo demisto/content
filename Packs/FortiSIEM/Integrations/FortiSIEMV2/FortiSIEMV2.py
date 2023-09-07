@@ -220,7 +220,7 @@ class FortiSIEMClient(BaseClient):
         params = assign_params(size=size, incidentId=incident_id)
 
         response = self._http_request('GET', 'pub/incident/triggeringEvents',
-                                      params=params)
+                                      params=params, ok_codes=(200, 201, 204, 400))
         return response
 
     def watchlist_list_by_entry_value_request(self, entry_value: str):
@@ -1067,10 +1067,15 @@ def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int
     Returns:
        None
     """
-    events_list_response = client.events_list_request(max_events_fetch,
-                                                      incident_id)
-    formatted_events = format_outputs_time_attributes_to_iso(
-        [event.get('attributes') for event in events_list_response])
+    events_list_response = client.events_list_request(max_events_fetch, incident_id)
+
+    if isinstance(events_list_response, dict):
+        data = events_list_response.get('data')
+        if not data:
+            return []
+    else:
+        data = events_list_response
+    formatted_events = format_outputs_time_attributes_to_iso([event.get('attributes') for event in data])
     for event in formatted_events:
         event['Event ID'] = str(event['Event ID'])  # To avoid overridden by XSOAR since it's a huge number.
     return formatted_events

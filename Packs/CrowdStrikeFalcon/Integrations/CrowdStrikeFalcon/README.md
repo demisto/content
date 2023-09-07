@@ -431,7 +431,7 @@ or by providing the IDs of the detections.
 
 * * * * *
 
-Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note: IDP detections are not supported.
 
 #### Base Command
 
