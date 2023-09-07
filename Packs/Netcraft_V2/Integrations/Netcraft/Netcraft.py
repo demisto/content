@@ -118,6 +118,11 @@ class Client(BaseClient):
             'GET', 'submission', f'submission/{uuid}'
         )
 
+    def file_report_submit(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'submission', 'report/files/', json_data=body,
+        )
+
     def submission_file_list(self, uuid: str, params: dict) -> dict:
         return self._http_request(
             'GET', 'submission', f'submission/{uuid}/files', params=params
@@ -132,6 +137,11 @@ class Client(BaseClient):
                 resp_type='content'
             ),
             EntryType.ENTRY_INFO_FILE
+        )
+
+    def url_report_submit(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'submission', 'report/urls/', json_data=body,
         )
 
     def submission_mail_list(self, uuid: str) -> dict:
@@ -150,6 +160,11 @@ class Client(BaseClient):
             EntryType.ENTRY_INFO_FILE
         )
 
+    def email_report_submit(self, body: dict) -> dict:
+        return self._http_request(
+            'POST', 'submission', 'report/mail/', json_data=body,
+        )
+
     def submission_url_list(self, uuid: str, params: dict) -> dict:
         return self._http_request(
             'GET', 'submission', f'submission/{uuid}/urls', params=params
@@ -165,15 +180,6 @@ class Client(BaseClient):
             ),
             EntryType.ENTRY_INFO_FILE
         )
-
-    # def file_report_submit(self, params: dict) -> None:
-    #     ...
-
-    # def url_report_submit(self, params: dict) -> None:
-    #     ...
-
-    # def email_report_submit(self, params: dict) -> None:
-    #     ...
 
 
 ''' HELPER FUNCTIONS '''
@@ -296,45 +302,13 @@ def convert_keys_to_bool(d: dict, *keys):
 ''' COMMAND FUNCTIONS '''
 
 
-# TODO test_module
 def test_module(client: Client) -> str:
-    '''
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-    '''
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-    try:
-        if PARAMS.get('isFetch'):  # Tests fetch incident:
-            if not dateparser.parse(PARAMS['first_fetch']):
-                raise ValueError(f'{PARAMS["first_fetch"]!r} is not a valid time.')
-            else:
-                return 'ok'
-
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
+    if PARAMS.get('isFetch') and not arg_to_datetime(PARAMS['first_fetch']):
+        raise ValueError(f'{PARAMS["first_fetch"]!r} is not a valid time.')
+    # test takedown service
+    client.get_takedowns({'page_size': 1})
+    # test submission service
+    client.submission_list({'max_results': 1})
     return 'ok'
 
 
@@ -383,7 +357,7 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
     return list(map(to_xsoar_incident, incidents))
 
 
-def netcraft_attack_report_command(client: Client, args: dict) -> CommandResults:
+def attack_report_command(client: Client, args: dict) -> CommandResults:
 
     def args_to_params(args: dict) -> tuple[dict, dict | None]:
         if entry_id := args.get('entryId'):
@@ -419,7 +393,7 @@ def netcraft_attack_report_command(client: Client, args: dict) -> CommandResults
     )
 
 
-def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults:
+def takedown_list_command(client: Client, args: dict) -> CommandResults:
 
     def args_to_params(args: dict) -> dict:
         report_source = args.pop('report_source')
@@ -483,7 +457,7 @@ def netcraft_takedown_list_command(client: Client, args: dict) -> CommandResults
     )
 
 
-def netcraft_takedown_update_command(client: Client, args: dict) -> CommandResults:
+def takedown_update_command(client: Client, args: dict) -> CommandResults:
 
     def args_to_params(args: dict) -> dict:
         return args | {
@@ -510,14 +484,14 @@ def netcraft_takedown_update_command(client: Client, args: dict) -> CommandResul
     )
 
 
-def netcraft_takedown_escalate_command(client: Client, args: dict) -> CommandResults:
+def takedown_escalate_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         raw_response=client.takedown_escalate(args),
         readable_output=f'##### Takedown successfully escalated.\nTakedown ID: {args["takedown_id"]}',
     )
 
 
-def netcraft_takedown_note_create_command(client: Client, args: dict) -> CommandResults:
+def takedown_note_create_command(client: Client, args: dict) -> CommandResults:
     response = client.takedown_note_create(
         args | {'text': args.pop('note_text')}
     )
@@ -533,7 +507,7 @@ def netcraft_takedown_note_create_command(client: Client, args: dict) -> Command
     )
 
 
-def netcraft_takedown_note_list_command(client: Client, args: dict) -> CommandResults:
+def takedown_note_list_command(client: Client, args: dict) -> CommandResults:
 
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
@@ -561,7 +535,7 @@ def netcraft_takedown_note_list_command(client: Client, args: dict) -> CommandRe
     )
 
 
-def netcraft_attack_type_list_command(client: Client, args: dict) -> CommandResults:
+def attack_type_list_command(client: Client, args: dict) -> CommandResults:
 
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
@@ -583,13 +557,22 @@ def netcraft_attack_type_list_command(client: Client, args: dict) -> CommandResu
         readable_output=response_to_readable(response)
     )
 
-
-def netcraft_submission_list_command(client: Client, args: dict) -> CommandResults:
+@polling_function(
+    name='netcraft-submission-list',
+    interval=arg_to_number(demisto.getArg('interval_in_seconds')),
+    timeout=arg_to_number(demisto.getArg('timeout')),
+    poll_message='Processing:'
+)
+def submission_list_command(client: Client, args: dict) -> PollResult:
 
     def response_to_readable(submissions: list[dict]) -> str:
         return ''  # TODO get UI layout
 
-    def uuid_response_to_context(response: dict, uuid) -> dict:
+    def with_uuid_response_to_readable(submission: dict) -> str:
+        '''Called only when the "submission_uuid" is provided.'''
+        return ''  # TODO get UI layout
+
+    def with_uuid_response_to_context(response: dict, uuid) -> dict:
         '''
         Called only when the "submission_uuid" is provided and does the following:
         1. adds the uuid the output so that there is a uuid for every submission under 'Netcraft.Submission'.
@@ -610,11 +593,14 @@ def netcraft_submission_list_command(client: Client, args: dict) -> CommandResul
 
     if uuid := args.pop('submission_uuid', None):
         response = client.get_submission(uuid)
-        return CommandResults(
-            readable_output=response_to_readable(response),
-            outputs_prefix='Netcraft.Submission',
-            outputs_key_field='uuid',
-            outputs=uuid_response_to_context(response, uuid),
+        return PollResult(
+            CommandResults(
+                readable_output=with_uuid_response_to_readable(response),
+                outputs_prefix='Netcraft.Submission',
+                outputs_key_field='uuid',
+                outputs=with_uuid_response_to_context(response, uuid),
+            ),
+            continue_to_poll=(response.get('state') == 'processing')
         )
     else:
         response = client.submission_list(args | {
@@ -622,17 +608,27 @@ def netcraft_submission_list_command(client: Client, args: dict) -> CommandResul
             'page_size': args.pop('limit')
         })
         submissions = response.get('submissions', [])
-        return CommandResults(
-            readable_output=response_to_readable(submissions),
-            raw_response=response,
-            outputs={
-                'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': submissions,
-                'Netcraft.SubmissionNextToken(val.NextPageToken)': {'NextPageToken': response.get('marker', marker)}
-            },
+        return PollResult(
+            CommandResults(
+                readable_output=response_to_readable(submissions),
+                raw_response=response,
+                # this method is used so that the key Netcraft.SubmissionNextToken is overridden on each run
+                outputs={
+                    'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': submissions,
+                    'Netcraft.SubmissionNextToken(val.NextPageToken)': {'NextPageToken': response.get('marker', marker)}
+                },
+            ),
         )
 
 
-def netcraft_submission_file_list_command(client: Client, args: dict) -> CommandResults:
+def file_report_submit_command(client: Client, args: dict) -> CommandResults:
+    response = client.file_report_submit(
+        args  # TODO 
+    )
+    return submission_list_command(client, args | {'submission_uuid': response['uuid']})
+
+
+def submission_file_list_command(client: Client, args: dict) -> CommandResults:
 
     def response_to_readable(files: list[dict]) -> str:
         return ''  # TODO get UI layout
@@ -653,11 +649,21 @@ def netcraft_submission_file_list_command(client: Client, args: dict) -> Command
     )
 
 
-def netcraft_file_screenshot_get_command(client: Client, args: dict) -> dict:
+def file_screenshot_get_command(client: Client, args: dict) -> dict:
     return client.file_screenshot_get(**args)
 
 
-def netcraft_submission_mail_list_command(client: Client, args: dict) -> CommandResults:
+def email_report_submit_command(client: Client, args: dict) -> CommandResults:
+
+    response = client.email_report_submit({
+        'email': args.pop('reporter_email'),
+        'message': args.pop('message'),
+        'password': args.pop('password', None),
+    })
+    return submission_list_command(client, args | {'submission_uuid': response['uuid']})
+
+
+def submission_mail_list_command(client: Client, args: dict) -> CommandResults:
     response = client.submission_mail_list(**args)
     return CommandResults(
         outputs=response,
@@ -667,11 +673,23 @@ def netcraft_submission_mail_list_command(client: Client, args: dict) -> Command
     )
 
 
-def netcraft_mail_screenshot_get_command(client: Client, args: dict) -> dict:
+def mail_screenshot_get_command(client: Client, args: dict) -> dict:
     return client.mail_screenshot_get(**args)
 
 
-def netcraft_submission_url_list_command(client: Client, args: dict) -> CommandResults:
+def url_report_submit_command(client: Client, args: dict) -> CommandResults:
+
+    response = client.url_report_submit({
+        'email': args.pop('reporter_email'),
+        'urls': [
+            {'url': url} for url in argToList(args.pop('urls'))
+            # TODO find out what to do with args.pop('reason', None)
+        ]
+    })
+    return submission_list_command(client, args | {'submission_uuid': response['uuid']})
+
+
+def submission_url_list_command(client: Client, args: dict) -> CommandResults:
 
     # TODO int_to_bool(tags.submitter_tag)
     response = client.submission_url_list(**args)  # TODO pagination
@@ -685,23 +703,9 @@ def netcraft_submission_url_list_command(client: Client, args: dict) -> CommandR
     )
 
 
-def netcraft_url_screenshot_get_command(client: Client, args: dict) -> dict:
+def url_screenshot_get_command(client: Client, args: dict) -> dict:
     # TODO type of screenshot can be gif or png
     return client.url_screenshot_get(**args)
-
-
-# TODO POLLING FUNCTIONS:
-
-# def netcraft_file_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
-
-
-# def netcraft_url_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
-
-
-# def netcraft_email_report_submit_command(client: Client, args: dict) -> CommandResults:
-#     ...
 
 
 ''' MAIN FUNCTION '''
@@ -721,53 +725,45 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-
         match command:
             case 'test-module':
                 return_results(test_module(client))
             case 'fetch-incidents':
                 demisto.incidents(fetch_incidents(client))
-            case 'get-modified-remote-data':
-                return_results(get_modified_remote_data(client, args))
-            # case 'get-remote-data':
-            #     return_results(get_remote_data(client, args))
-            # case 'update-remote-system':
-            #     return_results(update_remote_system(client, args))
-
             case 'netcraft-attack-report':
-                return_results(netcraft_attack_report_command(client, args))
+                return_results(attack_report_command(client, args))
             case 'netcraft-takedown-list':
-                return_results(netcraft_takedown_list_command(client, args))
+                return_results(takedown_list_command(client, args))
             case 'netcraft-takedown-update':
-                return_results(netcraft_takedown_update_command(client, args))
+                return_results(takedown_update_command(client, args))
             case 'netcraft-takedown-escalate':
-                return_results(netcraft_takedown_escalate_command(client, args))
+                return_results(takedown_escalate_command(client, args))
             case 'netcraft-takedown-note-create':
-                return_results(netcraft_takedown_note_create_command(client, args))
+                return_results(takedown_note_create_command(client, args))
             case 'netcraft-takedown-note-list':
-                return_results(netcraft_takedown_note_list_command(client, args))
+                return_results(takedown_note_list_command(client, args))
             case 'netcraft-attack-type-list':
-                return_results(netcraft_attack_type_list_command(client, args))
-            case 'netcraft-file-report-submit':
-                return_results(netcraft_file_report_submit_command(client, args))
-            case 'netcraft-url-report-submit':
-                return_results(netcraft_url_report_submit_command(client, args))
-            case 'netcraft-email-report-submit':
-                return_results(netcraft_email_report_submit_command(client, args))
+                return_results(attack_type_list_command(client, args))
             case 'netcraft-submission-list':
-                return_results(netcraft_submission_list_command(client, args))
+                return_results(submission_list_command(client, args))
             case 'netcraft-submission-file-list':
-                return_results(netcraft_submission_file_list_command(client, args))
+                return_results(submission_file_list_command(client, args))
             case 'netcraft-file-screenshot-get':
-                return_results(netcraft_file_screenshot_get_command(client, args))
+                return_results(file_screenshot_get_command(client, args))
             case 'netcraft-submission-mail-list':
-                return_results(netcraft_submission_mail_list_command(client, args))
+                return_results(submission_mail_list_command(client, args))
             case 'netcraft-mail-screenshot-get':
-                return_results(netcraft_mail_screenshot_get_command(client, args))
+                return_results(mail_screenshot_get_command(client, args))
             case 'netcraft-submission-url-list':
-                return_results(netcraft_submission_url_list_command(client, args))
+                return_results(submission_url_list_command(client, args))
             case 'netcraft-url-screenshot-get':
-                return_results(netcraft_url_screenshot_get_command(client, args))
+                return_results(url_screenshot_get_command(client, args))
+            case 'netcraft-file-report-submit':
+                return_results(file_report_submit_command(client, args))
+            case 'netcraft-url-report-submit':
+                return_results(url_report_submit_command(client, args))
+            case 'netcraft-email-report-submit':
+                return_results(email_report_submit_command(client, args))
             case _:
                 raise NotImplementedError(f'{command!r} is not a Netcraft command.')
 

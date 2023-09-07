@@ -705,6 +705,7 @@ script:
       description: Indicates whether or not you have chosen to automatically authorise takedowns under this type.
       type: Boolean
   - name: 'netcraft-submission-list'
+    polling: true
     description: Get basic information about a submissions.
     arguments:
     - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
@@ -727,6 +728,18 @@ script:
     - description: |
         The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
       name: next_token
+    - name: polling
+      hidden: true
+      defaultValue: 'false'
+    - defaultValue: '30'
+      hidden: true
+      name: interval_in_seconds
+    - defaultValue: '600'
+      hidden: true
+      name: timeout
+    - defaultValue: true
+      hidden: true
+      name: hide_polling_output
     outputs:
     - contextPath: Netcraft.Submission.date
       description: The unix timestamp of the submission.
@@ -830,6 +843,133 @@ script:
     - contextPath: Netcraft.SubmissionNextToken
       description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is *not* provided.
       type: String
+  - name: 'netcraft-file-report-submit'
+    polling: true
+    description: Report files to Netcraft for analysis.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: A base64 encoded string of the file. To report multiple files, upload the files to XSOAR and provide the file entry IDs in the "entry_id" argument. Max 10 files per submission, with a maximum combined file size of 20MiB.
+      name: file_content
+    - description: |
+        The name of the file. To report multiple files, upload the files to XSOAR and provide the file entry IDs in the "entry_id" argument.
+      name: file_name
+    - description: A comma separated list of XSOAR file entry IDs to report. Max 10 files per submission, with a maximum combined file size of 20MiB. The arguments "file_content" and "file_name" can be used for reporting a single file.
+      isArray: true
+      name: entry_id
+    - description: The reason the file is considered malicious, should be less than 1000 characters.
+      name: reason
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The unix timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A unix timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has a mail.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A unix timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the mail associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the mail in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
   - name: 'netcraft-submission-file-list'
     description: Get basic information about a submission's files. When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
@@ -892,6 +1032,130 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+  - name: 'netcraft-email-report-submit'
+    polling: true
+    description: |
+      Report email messages to Netcraft for analysis. The mail will be examined for malicious attachments and URLs.
+      Optionally, mails can be encrypted before upload. If a mail is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: Either a plain text string of the malicious mail in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted mail in MIME format. Max message size is 20MiB.
+      name: message
+      required: true
+    - description: The password used to encrypt/decrypt the MIME mail. Should not be provided if the mail is not encrypted.
+      name: password
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The unix timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A unix timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has a mail.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A unix timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the mail associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the mail in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
   - name: 'netcraft-submission-mail-list'
     description: Get basic information about a submission's mail. When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
@@ -950,6 +1214,129 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+  - name: 'netcraft-url-report-submit'
+    polling: true
+    description: Report URLs to Netcraft for analysis.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: A comma separated list of URLs to report. Up to 1000 URLs per submission are permitted.
+      isArray: true
+      name: urls
+      required: true
+    - description: The reason the URLs are considered malicious
+      name: reason
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The unix timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A unix timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has a mail.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A unix timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the mail associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the mail in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
   - name: 'netcraft-submission-url-list'
     description: Get basic information about a submission's URLs. When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
@@ -1069,105 +1456,6 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
-
-  - name: 'netcraft-file-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: |
-        'The format of content_file is A base64 encoded string of the file"files":
-        [{"content": "file_content","filename": "file_name"}]The purpose of this argument
-        is to support reporting of multiple files with entry_id OR single file by file_content&file_name'
-      name: file_content
-    - description: ''
-      name: file_name
-    - description: ''
-      isArray: true
-      name: entry_id
-    - description: ''
-      name: reason
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-  - name: 'netcraft-url-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: ''
-      isArray: true
-      name: urls
-      required: true
-    - description: ''
-      name: reason
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-  - name: 'netcraft-email-report-submit'
-    polling: true
-    arguments:
-    - description: ''
-      name: reporter_email
-      required: true
-    - description: |
-        Either a plain text string of the malicious mail in MIME format or
-        if the password paramater is provided, a base64 encoded AES-256-CBC encrypted
-        mail in MIME format. Max message size is 20MiB.
-      name: message
-      required: true
-    - description: |
-        The password used to encrypt/decrypt the MIME mail. Should not be
-        provided if the mail is not encrypted.
-      name: password
-    - auto: PREDEFINED
-      description: |
-        "Default value = trueIf the user changed to false we will not \_\
-        execute the polling mechanism."
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - description: |
-        Default 30
-      name: interval_in_seconds
-    - description: |
-        Default 600
-      name: timeout
-    description: |
-      ''
-    outputs: []
-
   script: '-'
   type: python
   dockerimage: demisto/python3:3.10.12.63474
