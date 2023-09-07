@@ -123,7 +123,7 @@ SG_INFO = [
 
 INSTANCE_INFO = [
     {
-        "Metadata": { "instance": "AWS - EC2"},
+        "Metadata": {"instance": "AWS - EC2"},
         "Type": 1,
         "Contents": {
             "AWS.EC2.Instances(val.InstanceId === obj.InstanceId)": [
