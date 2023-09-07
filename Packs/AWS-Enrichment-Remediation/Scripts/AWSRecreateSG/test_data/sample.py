@@ -129,18 +129,18 @@ INSTANCE_INFO = [
             "AWS.EC2.Instances(val.InstanceId === obj.InstanceId)": [
                 {
                     "NetworkInterfaces": [
-                      {
-                          "Association": {
-                              "PublicIp": "1.1.1.1"
-                          },
-                          "Groups": [
-                              {
-                                  "GroupId": "sg-00000000000000000",
-                                  "GroupName": "sg-name"
-                              }
-                          ],
-                          "NetworkInterfaceId": "eni-00000000000000000"
-                      }
+                        {
+                            "Association": {
+                                "PublicIp": "1.1.1.1"
+                            },
+                            "Groups": [
+                                {
+                                    "GroupId": "sg-00000000000000000",
+                                    "GroupName": "sg-name"
+                                }
+                            ],
+                            "NetworkInterfaceId": "eni-00000000000000000"
+                        }
                     ]
                 }
             ]
