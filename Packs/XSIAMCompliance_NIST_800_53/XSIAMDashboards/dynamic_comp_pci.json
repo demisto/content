@@ -1,7 +1,7 @@
 {
     "dashboards_data": [
         {
-            "name": "Nadav dynamic dashboard",
+            "name": "dynamic_comp_pci",
             "description": "Example",
             "status": "ENABLED",
             "layout": [
