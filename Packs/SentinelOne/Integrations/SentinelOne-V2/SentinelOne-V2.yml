@@ -1849,10 +1849,10 @@ script:
       description: 'A comma-separated list of free-text filtered by the indicator name. Example: "foo.dll".'
     - name: creator_contains
       description: 'A comma-separated list of free-text filtered by the user who uploaded the Threat Intelligence indicator. Example: "admin@sentinelone.com".'
+    - name: category_in
+      description: "The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC."
     - name: description_contains
       description: 'A comma-separated list of free-text filtered by the description of the indicator. Example: "Malicious-activity".'
-    - name: category_in
-      description: "The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC".
     - name: updated_at_gte
       description: 'The time (greater or equal to) at which the indicator was last updated in the SentinelOne database. Example: "2021-07-13T20:33:29.007906Z".'
     - name: updated_at_lte
@@ -2139,7 +2139,7 @@ script:
   - arguments:
     - name: agent_ids
       required: true
-      description: "A comma-separated list of agent IDs. Example: 14629133470822878,14627455454652878".
+      description: "A comma-separated list of agent IDs. Example: 14629133470822878,14627455454652878."
     name: sentinelone-get-installed-applications
     description: Get the installed applications for a specific agent.
     outputs:
@@ -2161,7 +2161,7 @@ script:
   - arguments:
     - name: agent_ids
       required: true
-      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878".
+      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878."
     name: sentinelone-initiate-endpoint-scan
     description: Initiate the endpoint virus scan on provided agent IDs.
     outputs:
