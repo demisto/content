@@ -69,6 +69,7 @@ class Client:
             connect_parameters_dict[key] = value
         if dialect == "Microsoft SQL Server":
             connect_parameters_dict['driver'] = 'FreeTDS'
+            connect_parameters_dict.setdefault('autocommit', 'True')
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
             if not verify_certificate:

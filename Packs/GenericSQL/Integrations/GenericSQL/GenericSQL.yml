@@ -66,7 +66,6 @@ configuration:
   name: connect_parameters
   type: 0
   required: false
-  defaultvalue: "autocommit=True"
 - defaultvalue: '50'
   display: Fetch Limit (Default / Max - 50, Recommended less than 50)
   name: max_fetch
