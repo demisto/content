@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
   script: "-"
@@ -864,7 +864,7 @@ script:
       description: The cloud provider metadata of the host.
       type: Unknown
     - contextPath: PrismaCloudCompute.DefenderDetails.cluster
-      description: The provided cluster name. (Fallback is the internal IP address.)
+      description: The provided cluster name. (Fallback is the internal IP address).
       type: String
     - contextPath: PrismaCloudCompute.DefenderDetails.clusterID
       description: The unique ID generated for each daemon set and used to group defenders by clusters. Note - Kubernetes does not provide a cluster name as part of its API.
@@ -1056,7 +1056,7 @@ script:
       description: Binaries in the image.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.cloudMetadata
-      description: The metadata for an instance running in a cloud provider (AWS/GCP/Azure)
+      description: The metadata for an instance running in a cloud provider (AWS/GCP/Azure).
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.clusters
       description: Cluster names.
@@ -1113,7 +1113,7 @@ script:
       description: Image ID.
       type: String
     - contextPath: PrismaCloudCompute.ReportsImagesScan.image
-      description: A container image
+      description: A container image.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.installedProducts
       description: Data regarding products running in the environment.
@@ -1203,7 +1203,7 @@ script:
       description: Total number of vulnerabilities.
       type: Number
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution
-      description: The number of vulnerabilities per type,
+      description: The number of vulnerabilities per type.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore
       description: Image's CVE risk score.
@@ -1404,7 +1404,7 @@ script:
     description: Get the list of Prisma Cloud Compute vulnerabilities resources.
     arguments:
     - name: cve
-      description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535
+      description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535.
       isArray: true
       defaultValue: ""
     - name: limit
@@ -1498,7 +1498,7 @@ script:
     arguments:
     - name: policy
       required: true
-      description: The complete policy object.  Can be obtained from prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. command
+      description: The complete policy object.  Can be obtained from prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. command.
     - name: attack_type
       required: true
       auto: PREDEFINED
@@ -1513,7 +1513,7 @@ script:
       - malformedReq
       - advancedProtectionEffect
       - intelGathering
-      description: The specific policy to update
+      description: The specific policy to update.
     - name: action
       required: true
       auto: PREDEFINED
@@ -1524,21 +1524,21 @@ script:
       - allow
       - disable
       - reCAPTCHA
-      description: The new policy action for the attack type
+      description: The new policy action for the attack type.
     - name: rule_name
       required: true
-      description: The rule name for the WaaS policy settings
+      description: The rule name for the WaaS policy settings.
     description: Update the Waas Policy for containers
   - name: prisma-cloud-compute-get-audit-firewall-container-alerts
     arguments:
     - name: ImageName
       required: true
-      description: The image name to get the alerts for
+      description: The image name to get the alerts for.
     - name: FromDays
-      description: The Number of days back to look
+      description: The Number of days back to look.
     - name: audit_type
       required: true
-      description: The type of audit alert to retrieve
+      description: The type of audit alert to retrieve.
     - name: limit
       description: The limit of the number of alerts to return
     description: Get the audits for the firewall container policies
