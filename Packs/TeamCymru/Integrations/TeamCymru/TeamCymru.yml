@@ -101,7 +101,7 @@ script:
     - defaultValue: ','
       description: |-
         Delimiter by which the content of the file is separated.
-        Eg:  " , " , " : ", " ; "
+        Eg:  " , " , " : ", " ; ".
       name: delimiter
     description: |-
       Checks the reputation of a CSV list of IPv4 addresses within a file. 
