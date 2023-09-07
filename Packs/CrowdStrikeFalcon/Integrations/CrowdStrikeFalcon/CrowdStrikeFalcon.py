@@ -2651,7 +2651,7 @@ def fetch_incidents():
 
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
-                                                                      fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
+                                                                      fetch_limit=fetch_limit, id_field='name')
             updated_last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
                                                       fetch_limit=fetch_limit,
                                                       start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
