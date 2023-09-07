@@ -13,7 +13,7 @@ outputs:
   description: Name (CN or SAN) that appears in the certificate.
   type: String
 - contextPath: Certificate.SubjectDN
-  description: |
+  description: |-
     The Subject Distinguished Name of the certificate. This field includes the Common Name of the certificate.
   type: String
 - contextPath: Certificate.PEM
