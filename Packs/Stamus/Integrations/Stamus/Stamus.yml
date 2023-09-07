@@ -67,7 +67,7 @@ script:
     name: stamus-check-ioc
     outputs:
     - contextPath: StamusIntegration.IOC
-      description: '[Fetch events matching an IOC.]'
+      description: '[Fetch events matching an IOC].'
       type: String
     - contextPath: StamusIntegration.IOC.timestamp
       description: '[Timestamp of the event].'
