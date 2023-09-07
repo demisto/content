@@ -1,4 +1,4 @@
-
+import freezegun
 from requests import Response
 from MicrosoftApiModule import *
 import demistomock as demisto
@@ -18,11 +18,10 @@ OK_CODES = (200, 201, 202)
 CLIENT_ID = 'dummy_client'
 CLIENT_SECRET = 'dummy_secret'
 APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
-AUTH_CODE = 'dummy_auth_code'
-REDIRECT_URI = 'https://localhost/myapp'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 RESOURCES = ['https://resource1.com', 'https://resource2.com']
+FREEZE_STR_DATE = "1970-01-01 00:00:00"
 
 
 def oproxy_client_tenant():
@@ -64,17 +63,15 @@ def oproxy_client_refresh():
                            )
 
 
-def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
+def self_deployed_client():
     tenant_id = TENANT
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
-    auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else ''
     resource = RESOURCE
     ok_codes = OK_CODES
 
     return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
-                           grant_type=grant_type, auth_code=auth_code,
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
@@ -721,7 +718,7 @@ def test_generate_login_url():
     """
     from MicrosoftApiModule import generate_login_url
 
-    client = self_deployed_client(grant_type=AUTHORIZATION_CODE)
+    client = self_deployed_client()
 
     result = generate_login_url(client)
 
@@ -731,47 +728,117 @@ def test_generate_login_url():
     assert expected_url in result.readable_output, "Login URL is incorrect"
 
 
-def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
+@pytest.mark.parametrize('params, expected_resource_manager, expected_active_directory, expected_microsoft_graph_resource_id', [
+    ({'azure_cloud': 'Germany'}, 'https://management.microsoftazure.de',
+     'https://login.microsoftonline.de', 'https://graph.microsoft.de'),
+    ({'azure_cloud': 'Custom', 'server_url': 'mock_url'}, 'mock_url',
+     'https://login.microsoftonline.com', 'https://graph.microsoft.com/'),
+    ({'azure_ad_endpoint': 'mock_endpoint'}, 'https://management.azure.com/', 'mock_endpoint',
+     'https://graph.microsoft.com/'),
+    ({'url': 'mock_url'}, 'https://management.azure.com/', 'https://login.microsoftonline.com', 'mock_url'),
+    ({}, 'https://management.azure.com/', 'https://login.microsoftonline.com', 'https://graph.microsoft.com/')
+])
+def test_get_azure_cloud(params, expected_resource_manager, expected_active_directory, expected_microsoft_graph_resource_id):
     """
     Given:
-        - The auth code was reconfigured
+        - params with different azure_cloud values
+        case 1: azure_cloud = Germany
+        case 2: azure_cloud = Custom and server_url
+        case 3: azure_cloud = None. azure_ad_endpoint in params
+        case 4: azure_cloud = None. url in params
+        case 5 : params is empty
     When:
-        - Calling function get_access_token
+        - Calling function get_azure_cloud
     Then:
-        - Ensure the access token is as expected in the body of the request and in the integration context
+        - Ensure the generated url are as expected.
     """
-    context = {'auth_code': AUTH_CODE, 'access_token': TOKEN,
-               'valid_until': 3605, 'current_refresh_token': REFRESH_TOKEN}
+    from MicrosoftApiModule import get_azure_cloud
+    assert get_azure_cloud(params=params, integration_name='test').endpoints.resource_manager == expected_resource_manager
+    assert get_azure_cloud(params=params, integration_name='test').endpoints.active_directory == expected_active_directory
+    assert get_azure_cloud(
+        params=params, integration_name='test').endpoints.microsoft_graph_resource_id == expected_microsoft_graph_resource_id
 
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
-    mocker.patch.object(demisto, 'setIntegrationContext')
 
-    tenant_id = TENANT
-    client_id = CLIENT_ID
-    client_secret = CLIENT_SECRET
-    base_url = BASE_URL
-    new_auth_code = 'reconfigured_auth_code'
-    resource = None
-    ok_codes = OK_CODES
-    grant_type = AUTHORIZATION_CODE
+@freezegun.freeze_time(FREEZE_STR_DATE)
+def test_should_delay_true():
+    """
+    Given:
+        - Mocked context with later next request time than the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return the expected value.
+    """
+    from MicrosoftApiModule import should_delay_request
+    from datetime import datetime
 
-    client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
-                             grant_type=grant_type, auth_code=new_auth_code,
-                             resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    mocked_next_request_time = datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp() + 1.0
+    excepted_error = f"The request will be delayed until {datetime.fromtimestamp(mocked_next_request_time)}"
+    with pytest.raises(Exception) as e:
+        should_delay_request(mocked_next_request_time)
+    assert str(e.value) == excepted_error
 
-    requests_mock.post(
-        APP_URL,
-        json={'access_token': TOKEN, 'expires_in': '3600'})
 
-    body = {
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'redirect_uri': REDIRECT_URI,
-        'grant_type': AUTHORIZATION_CODE,
-        'code': new_auth_code,
-    }
+@freezegun.freeze_time(FREEZE_STR_DATE)
+def test_should_delay_false():
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return with no error.
+    """
+    from MicrosoftApiModule import should_delay_request
+    from datetime import datetime
 
-    assert client.get_access_token()
-    req_body = requests_mock._adapter.last_request._request.body
-    assert urllib.parse.urlencode(body) == req_body
-    assert demisto.getIntegrationContext().get('auth_code') == new_auth_code
+    mocked_next_request_time = datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp()
+    should_delay_request(mocked_next_request_time)
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+@pytest.mark.parametrize('mocked_next_request_time,excepted', [(2, 4.0), (3, 8.0), (6, 64.0)])
+def test_calculate_next_request_time(mocked_next_request_time, excepted):
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the function should_delay_request.
+     Then:
+        - Ensure the function return with no error.
+    """
+    from MicrosoftApiModule import calculate_next_request_time
+    assert calculate_next_request_time(mocked_next_request_time) == excepted
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+@pytest.mark.parametrize('mocked_delay_request_counter,excepted',
+                         [({'delay_request_counter': 5}, {'next_request_time': 32.0, 'delay_request_counter': 6}),
+                          ({'delay_request_counter': 6}, {'next_request_time': 64.0, 'delay_request_counter': 7}),
+                          ({'delay_request_counter': 7}, {'next_request_time': 64.0, 'delay_request_counter': 7})])
+def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_counter, excepted):
+    """
+    Given:
+        - Mocked context with next request time equal to the current time.
+    When:
+        - Calling the _oproxy_authorize function.
+     Then:
+        - Ensure the function return with no error and the context has been set with the right values.
+    """
+    from datetime import datetime
+    # pytest raises a warning when there is error in the stderr, this is a workaround to disable it
+    with capfd.disabled():
+        client = oproxy_client_refresh()
+        error = Response()
+        error.status_code = 400
+        error.reason = "Bad Request"
+        mocked_next_request_time = {'next_request_time': datetime.strptime(FREEZE_STR_DATE, '%Y-%m-%d %H:%M:%S').timestamp()}
+
+        mocked_context = mocked_next_request_time | mocked_delay_request_counter
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value=mocked_context)
+        mocker.patch.object(client, '_oproxy_authorize_build_request', return_value=error)
+        res = mocker.patch.object(demisto, 'setIntegrationContext')
+
+        with pytest.raises(Exception):
+            client._oproxy_authorize()
+        assert res.call_args[0][0] == excepted
