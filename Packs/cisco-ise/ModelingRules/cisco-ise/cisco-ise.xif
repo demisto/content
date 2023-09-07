@@ -178,7 +178,8 @@ alter
     get_tar_ip = arrayindex(regextract(_raw_log, "(?:PeerAddress|DestinationIPAddress)=([^,;\\]+)"),0),
     get_rules_1 = arrayindex(regextract(_raw_log, "posturePassCondition=((?:\S+\\,\s)+[^\\,]+)"),0),
     get_rules_2 = arrayindex(regextract(_raw_log, "IdentitySelectionMatchedRule=([^,\\;]+)"),0),
-    get_UserType = arrayindex(regextract(_raw_log, "UserType=([^,\\;]+)"),0)
+    get_UserType = arrayindex(regextract(_raw_log, "UserType=([^,\\;]+)"),0),
+    get_sys_mgmt = arrayindex(regextract(_raw_log, "System-Management:\s+([^\,]+)"),0)
 | alter
     check_src_ipv4 = if(get_src_ip !~= ":", get_src_ip, null),
     check_src_ipv6 = if(get_src_ip ~= ":", get_src_ip, null),
@@ -192,7 +193,7 @@ alter
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
     xdm.source.host.device_category = to_string(regextract(_raw_log, "NetworkDeviceGroups=([^\,\\]+)")),
     xdm.event.description = if(logSeverity != null, coalesce(get_description1, get_description2, get_description4), get_description3),
-    xdm.alert.description = coalesce(get_message, get_ProfilerErrorMessage, get_FailureReason),
+    xdm.alert.description = coalesce(get_message, get_ProfilerErrorMessage, get_FailureReason, get_sys_mgmt),
     xdm.source.ipv4 = check_src_ipv4,
     xdm.source.ipv6 = check_src_ipv6,
     xdm.source.host.os = get_os,
