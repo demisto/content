@@ -1803,7 +1803,7 @@ script:
       - "True"
       - "False"
     - auto: PREDEFINED
-      description: Bodies of items (files/documents) to which the query applies. Prefer 'user' or 'drive' to 'allDrives' for efficiency. By default, corpora is set to 'user'. However, this can change depending on the filter set through the 'query' argument.
+      description: Bodies of items (files/documents) to which the query applies. Prefer 'User' or 'Drive' to 'All Drives' for efficiency. By default, corpora is set to 'User'. However, this can change depending on the filter set through the 'query' argument.
       name: corpora
       defaultValue: "User"
       predefined:
