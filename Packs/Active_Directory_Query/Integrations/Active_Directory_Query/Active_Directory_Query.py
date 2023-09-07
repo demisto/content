@@ -682,10 +682,10 @@ def search_users(default_base_dn, page_size):
                     user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
                         user_account_control) or user_account_control
     entry_context = {
-            'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
-            # 'backward compatability' with ADGetUser script
-            'Account(obj.ID == val.ID)': accounts,
-            'ActiveDirectory(true)': {'UsersPageCookie': entries['page_cookie']}
+        'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
+        # 'backward compatability' with ADGetUser script
+        'Account(obj.ID == val.ID)': accounts,
+        'ActiveDirectory(true)': {'UsersPageCookie': entries['page_cookie']}
     }
     remove_nulls_from_dictionary(entry_context)
 
@@ -695,7 +695,7 @@ def search_users(default_base_dn, page_size):
         'Contents': entries['raw'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown("Active Directory - Get Users", entries['flat']),
-        'EntryContext': entry_contex
+        'EntryContext': entry_context
     }
     demisto.results(demisto_entry)
 
