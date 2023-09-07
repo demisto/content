@@ -951,7 +951,7 @@ def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> d
         'User': 'user',
         'Domain': 'domain',
         'Drive': 'drive',
-        'All Drivers': 'allDrives'
+        'All Drives': 'allDrives'
     }
 
     http_request_params: dict[str, str] = assign_params(
@@ -963,6 +963,10 @@ def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> d
         driveId=args.get('drive_id'),
         corpora=corpora_values[args.get('corpora', 'User')]
     )
+
+    # driveId must be specified if and only if corpora is set to drive
+    if http_request_params.get('driveId'):
+        http_request_params['corpora'] = 'drive'
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id

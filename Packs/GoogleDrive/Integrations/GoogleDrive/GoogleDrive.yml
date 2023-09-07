@@ -1810,7 +1810,7 @@ script:
       - "User"
       - "Domain"
       - "Drive"
-      - "All Drivers"
+      - "All Drives"
     - name: drive_id
       description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command.
     outputs:
