@@ -620,7 +620,7 @@ script:
       required: true
     - description: The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.).
+    - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
     description: Retrieves all versions of an association for a specific association ID.
     name: aws-ssm-association-version-list
@@ -1016,7 +1016,7 @@ script:
       defaultValue: 30
     - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: InstanceId:i-dummy,Role:Admin,User.'
       name: parameters
-    - description: This is for the polling to work. not for the user.
+    - description: The ID of the execution. This is for the polling to work, not for the user.
       hidden: true
       name: execution_id
     - description: The timeout in seconds until polling ends.
@@ -1523,7 +1523,7 @@ script:
       description: The type of notification.
       type: String
     - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName
-      description: 'The name of the CloudWatch Logs log group where to send command output. If don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: `aws/ssm/SystemsManagerDocumentName`.'
+      description: 'The name of the CloudWatch Logs log group where to send command output. If a group name is not specified, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: `aws/ssm/SystemsManagerDocumentName`.'
       type: String
     - contextPath: AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchOutputEnabled
       description: Enables Systems Manager to send command output to CloudWatch Logs.
