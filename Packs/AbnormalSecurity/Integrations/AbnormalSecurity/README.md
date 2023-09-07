@@ -1147,9 +1147,10 @@ Get a list of vendors
 
 | **Path** | **Type** | **Description**                                                                        |
 | --- | --- |----------------------------------------------------------------------------------------|
-| AbnormalSecurity.VendorsList.vendors| Unknown| List of vendors.                                                                       |
-| AbnormalSecurity.VendorsList.pageNumber | Number | The current page number.                                                               |
-| AbnormalSecurity.VendorsList.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages. |
+| AbnormalSecurity.VendorsList.vendors                   | Unknown | List of vendors.                                                                         |
+| AbnormalSecurity.VendorsList.vendors.vendorDomain      | String  | The domain of the vendor.                                                                |
+| AbnormalSecurity.VendorsList.pageNumber                | Number  | The current page number.                                                                 |
+| AbnormalSecurity.VendorsList.nextPageNumber            | Number  | The next page number. Will not be included in the response if there are no more pages.   |
 
 
 #### Command Example
@@ -1204,14 +1205,14 @@ Get details of a vendor
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| - |----------| --- |
-| AbnormalSecurity.VendorDetails.vendorDomain | String   | The domain name of the vendor |
-| AbnormalSecurity.VendorDetails.riskLevel | String   | The risk level associated with the vendor. |
-| AbnormalSecurity.VendorDetails.vendorContacts | Unknown  | List of contacts related to the vendor. |
-| AbnormalSecurity.VendorDetails.companyContacts | Unknown   | List of contacts related to the company. |
-| AbnormalSecurity.VendorDetails.vendorCountries | Unknown   | List of countries associated with the vendor. |
-| AbnormalSecurity.VendorDetails.analysis | Unknown   | List of analyses associated with the vendor. |
+| **Path**                                         | **Type** | **Description** |
+|--------------------------------------------------|----------| ---|
+| AbnormalSecurity.VendorDetails.vendorDomain      | String   | The domain name of the vendor |
+| AbnormalSecurity.VendorDetails.riskLevel         | String   | The risk level associated with the vendor. |
+| AbnormalSecurity.VendorDetails.vendorContacts    | Unknown  | List of contacts related to the vendor. |
+| AbnormalSecurity.VendorDetails.companyContacts   | Unknown   | List of contacts related to the company. |
+| AbnormalSecurity.VendorDetails.vendorCountries   | Unknown   | List of countries associated with the vendor. |
+| AbnormalSecurity.VendorDetails.analysis          | Unknown   | List of analyses associated with the vendor. |
 | AbnormalSecurity.VendorDetails.vendorIpAddresses | Unknown   | List of IP addresses associated with the vendor. |
 
 
@@ -1250,7 +1251,7 @@ Get details of a vendor
 >|---|---|---|------------------------------|---------------------|---|---------------|
 >| test-domain-1.com | High| john.doe@test-domain-1.com | john.doe@test-domain-2.com, jane.doe@test-domain-2.com|USA| Vendor Compromise Seen in Abnormal Community| 192.158.1.38   |
 
-### abnormal-security-get-vendor-details
+### abnormal-security-get-vendor-activity
 ***
 Get details of a vendor 
 
@@ -1271,11 +1272,15 @@ Get details of a vendor
 |----------------------------------------------------------------|----------|-----------------------------------------------------------|
 | AbnormalSecurity.VendorActivity.eventTimeline                  | Unknown  | Event timeline for the vendor.                            |
 | AbnormalSecurity.VendorActivity.eventTimeline.eventTimestamp   | String   | Timestamp of the event in the vendor's activity timeline. |
-| AbnormalSecurity.VendorActivity.eventTimeline.eventType        | String  | Type of event in the vendor's activity timeline.          |
-| AbnormalSecurity.VendorActivity.eventTimeline.suspiciousDomain | String  | Suspicious domain involved in the event.                  |
-| AbnormalSecurity.VendorActivity.eventTimeline.domainIp         | String  | IP address of the suspicious domain.                      |
-| AbnormalSecurity.VendorActivity.eventTimeline.ipGeolocation    | String  | Geolocation of the IP address..                           |
-| AbnormalSecurity.VendorActivity.eventTimeline.attackGoal                 | String  | The goal of the attack                                    |
+| AbnormalSecurity.VendorActivity.eventTimeline.eventType        | String   | Type of event in the vendor's activity timeline.          |
+| AbnormalSecurity.VendorActivity.eventTimeline.suspiciousDomain | String   | Suspicious domain involved in the event.                  |
+| AbnormalSecurity.VendorActivity.eventTimeline.domainIp         | String   | IP address of the suspicious domain.                      |
+| AbnormalSecurity.VendorActivity.eventTimeline.ipGeolocation    | String   | Geolocation of the IP address.                            |
+| AbnormalSecurity.VendorActivity.eventTimeline.attackGoal       | String   | The goal of the attack.                                   |
+| AbnormalSecurity.VendorActivity.eventTimeline.actionTaken      | String   | Action taken in response to the event.                    |
+| AbnormalSecurity.VendorActivity.eventTimeline.hasEngagement    | Boolean  | Indicates whether the event involved any form of engagement. |
+| AbnormalSecurity.VendorActivity.eventTimeline.recipient        | Unknown  | The recipient targeted by the event, if applicable.       |
+| AbnormalSecurity.VendorActivity.eventTimeline.threatId         | String   | Unique identifier for the threat.                         |
 
 
 #### Command Example

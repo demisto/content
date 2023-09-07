@@ -132,6 +132,7 @@ script:
     - contextPath: AbnormalSecurity.ThreatDetails.messages.attackedParty
       description: The party that was targeted by an attack.
       type: String
+
     - contextPath: AbnormalSecurity.ThreatDetails.messages.attachmentCount
       description: The number of attachments in the message.
       type: Number
@@ -500,182 +501,182 @@ script:
     name: abnormal-security-submit-false-positive-report
 
   - arguments:
-      - description: Number of vendors that should appear on each page. Each page of data will have at most this many vendors.
-        name: page_size
-        required: false
-      - description: 1-indexed page number to get a particular page of vendors.
-        name: page_number
-        required: false
+    - description: Number of vendors that should appear on each page. Each page of data will have at most this many vendors.
+      name: page_size
+      required: false
+    - description: 1-indexed page number to get a particular page of vendors.
+      name: page_number
+      required: false
     description: Get a list of vendors.
     name: abnormal-security-list-vendors
     outputs:
-      - contextPath: AbnormalSecurity.VendorsList.vendors
-        description: List of vendors.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorsList.vendors.vendorDomain
-        description: The domain of the vendor.
-        type: String
-      - contextPath: AbnormalSecurity.VendorsList.pageNumber
-        description: The current page number.
-        type: Number
-      - contextPath: AbnormalSecurity.VendorsList.nextPageNumber
-        description: The next page number.
-        type: Number
+    - contextPath: AbnormalSecurity.VendorsList.vendors
+      description: List of vendors.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorsList.vendors.vendorDomain
+      description: The domain of the vendor.
+      type: String
+    - contextPath: AbnormalSecurity.VendorsList.pageNumber
+      description: The current page number.
+      type: Number
+    - contextPath: AbnormalSecurity.VendorsList.nextPageNumber
+      description: The next page number.
+      type: Number
 
   - arguments:
-      - description: The domain name of the specific vendor for which you want to get details.
-        name: vendor_domain
-        required: true
+    - description: The domain name of the specific vendor for which you want to get details.
+      name: vendor_domain
+      required: true
     description: Get the details of a specific vendor.
     name: abnormal-security-get-vendor-details
     outputs:
-      - contextPath: AbnormalSecurity.VendorDetails.vendorDomain
-        description: The domain name of the vendor.
-        type: String
-      - contextPath: AbnormalSecurity.VendorDetails.riskLevel
-        description: The risk level associated with the vendor.
-        type: String
-      - contextPath: AbnormalSecurity.VendorDetails.vendorContacts
-        description: List of contacts related to the vendor.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorDetails.companyContacts
-        description: List of contacts related to the company.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorDetails.vendorCountries
-        description: List of countries associated with the vendor.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorDetails.analysis
-        description: List of analyses associated with the vendor.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorDetails.vendorIpAddresses
-        description: List of IP addresses associated with the vendor.
-        type: Unknown
+    - contextPath: AbnormalSecurity.VendorDetails.vendorDomain
+      description: The domain name of the vendor.
+      type: String
+    - contextPath: AbnormalSecurity.VendorDetails.riskLevel
+      description: The risk level associated with the vendor.
+      type: String
+    - contextPath: AbnormalSecurity.VendorDetails.vendorContacts
+      description: List of contacts related to the vendor.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorDetails.companyContacts
+      description: List of contacts related to the company.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorDetails.vendorCountries
+      description: List of countries associated with the vendor.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorDetails.analysis
+      description: List of analyses associated with the vendor.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorDetails.vendorIpAddresses
+      description: List of IP addresses associated with the vendor.
+      type: Unknown
 
   - arguments:
-      - description: Domain name for the vendor whose activity is to be retrieved
-        name: vendor_domain
-        required: true
+    - description: Domain name for the vendor whose activity is to be retrieved
+      name: vendor_domain
+      required: true
     description: Get the activity for a specific vendor.
     name: abnormal-security-get-vendor-activity
     outputs:
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline
-        description: Event timeline for the vendor.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.eventTimestamp
-        description: Timestamp of the event in the vendor's activity timeline.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.eventType
-        description: Type of event in the vendor's activity timeline.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.suspiciousDomain
-        description: Suspicious domain involved in the event.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.domainIp
-        description: IP address of the suspicious domain.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.ipGeolocation
-        description: Geolocation of the IP address.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.attackGoal
-        description: The goal of the attack.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.actionTaken
-        description: Action taken in response to the event.
-        type: String
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.hasEngagement
-        description: Indicates whether the event involved any form of engagement.
-        type: Boolean
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.recipient
-        description: The recipient targeted by the event, if applicable.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.threatId
-        description: Unique identifier for the threat.
-        type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline
+      description: Event timeline for the vendor.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.eventTimestamp
+      description: Timestamp of the event in the vendor's activity timeline.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.eventType
+      description: Type of event in the vendor's activity timeline.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.suspiciousDomain
+      description: Suspicious domain involved in the event.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.domainIp
+      description: IP address of the suspicious domain.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.ipGeolocation
+      description: Geolocation of the IP address.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.attackGoal
+      description: The goal of the attack.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.actionTaken
+      description: Action taken in response to the event.
+      type: String
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.hasEngagement
+      description: Indicates whether the event involved any form of engagement.
+      type: Boolean
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.recipient
+      description: The recipient targeted by the event, if applicable.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.threatId
+      description: Unique identifier for the threat.
+      type: String
 
   - arguments:
-      - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the keys `firstObservedTime` and `lastModifiedTime` are supported for `/vendor-cases`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC.
-        name: filter
-        required: false
-      - description: Number of vendor cases that should appear on each page. Each page of data will have at most this many vendor cases.
-        name: page_size
-        required: false
-      - description: 1-indexed page number to get a particular page of vendor cases.
-        name: page_number
-        required: false
+    - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the keys `firstObservedTime` and `lastModifiedTime` are supported for `/vendor-cases`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC.
+      name: filter
+      required: false
+    - description: Number of vendor cases that should appear on each page. Each page of data will have at most this many vendor cases.
+      name: page_size
+      required: false
+    - description: 1-indexed page number to get a particular page of vendor cases.
+      name: page_number
+      required: false
     description: Get a list of vendor cases.
     name: abnormal-security-list-vendor-cases
     outputs:
-      - contextPath: AbnormalSecurity.VendorCases.vendorCases
-        description: List of vendor cases.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorCases.vendorCases.vendorCaseId
-        description: The identifier of the vendor case.
-        type: Number
-      - contextPath: AbnormalSecurity.VendorCases.pageNumber
-        description: The current page number.
-        type: Number
+    - contextPath: AbnormalSecurity.VendorCases.vendorCases
+      description: List of vendor cases.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorCases.vendorCases.vendorCaseId
+      description: The identifier of the vendor case.
+      type: Number
+    - contextPath: AbnormalSecurity.VendorCases.pageNumber
+      description: The current page number.
+      type: Number
 
   - arguments:
-      - description: The identifier of the vendor case to retrieve details for.
-        name: case_id
-        required: true
+    - description: The identifier of the vendor case to retrieve details for.
+      name: case_id
+      required: true
     description: Get the details of a vendor case.
     name: abnormal-security-get-vendor-case-details
     outputs:
-      - contextPath: AbnormalSecurity.VendorCaseDetails.vendorCaseId
-        description: The identifier of the vendor case.
-        type: String
-      - contextPath: AbnmoralSecurity.VendorCaseDetails.vendorDomain
-        description: The vendor domain associated with the case.
-        type: String
-      - contextPath: AbnormalSecurity.VendorCaseDetails.firstObservedTime
-        description: The time the vendor case was first observed.
-        type: String
-      - contextPath: AbnormalSecurity.VendorCaseDetails.lastModifiedTime
-        description: The last time the vendor case was modified.
-        type: String
-      - contextPath: AbnormalSecurity.VendorCaseDetails.insights
-        description: List of insights related to the vendor case.
-        type: Unknown
-      - contextPath: AbnormalSecurity.VendorCaseDetails.timeline
-        description: Timeline of events related to the vendor case.
-        type: Unknown
+    - contextPath: AbnormalSecurity.VendorCaseDetails.vendorCaseId
+      description: The identifier of the vendor case.
+      type: String
+    - contextPath: AbnmoralSecurity.VendorCaseDetails.vendorDomain
+      description: The vendor domain associated with the case.
+      type: String
+    - contextPath: AbnormalSecurity.VendorCaseDetails.firstObservedTime
+      description: The time the vendor case was first observed.
+      type: String
+    - contextPath: AbnormalSecurity.VendorCaseDetails.lastModifiedTime
+      description: The last time the vendor case was modified.
+      type: String
+    - contextPath: AbnormalSecurity.VendorCaseDetails.insights
+      description: List of insights related to the vendor case.
+      type: Unknown
+    - contextPath: AbnormalSecurity.VendorCaseDetails.timeline
+      description: Timeline of events related to the vendor case.
+      type: Unknown
 
 
   - arguments:
-      - description: The start time for retrieving the list of unanalyzed abuse mailbox campaigns.
-        name: start
-        required: false
-      - description: The end time for retrieving the list of unanalyzed abuse mailbox campaigns.
-        name: end
-        required: false
+    - description: The start time for retrieving the list of unanalyzed abuse mailbox campaigns.
+      name: start
+      required: false
+    - description: The end time for retrieving the list of unanalyzed abuse mailbox campaigns.
+      name: end
+      required: false
     description: Get a list of unanalyzed abuse mailbox campaigns.
     name: abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
     outputs:
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id
-        description: An id which maps to an abuse campaign.
-        type: Number
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name
-        description: The name of the recipient.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.email
-        description: The email address of the recipient.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reported_datetime
-        description: The datetime the report was made.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.email
-        description: The email address of the reporter.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.name
-        description: The name of the reporter.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.subject
-        description: The subject of the message.
-        type: String
-      - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.not_analyzed_reason
-        description: The reason the message was not analyzed.
-        type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id
+      description: An id which maps to an abuse campaign.
+      type: Number
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name
+      description: The name of the recipient.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.email
+      description: The email address of the recipient.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reported_datetime
+      description: The datetime the report was made.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.email
+      description: The email address of the reporter.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.name
+      description: The name of the reporter.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.subject
+      description: The subject of the message.
+      type: String
+    - contextPath: AbnormalSecurity.UnanalyzedAbuseCampaigns.results.not_analyzed_reason
+      description: The reason the message was not analyzed.
+      type: String
 
 
   - arguments:
@@ -684,7 +685,7 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
     deprecated: true
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   script: ''
   subtype: python3
   type: python
