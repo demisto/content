@@ -238,8 +238,9 @@ xpanse-prepare-testing-bucket:
     - EXIT_CODE=0
     - section_start "Check if nightly"
     - |
-      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_NAME}" != "Server Master" ]; then
-        echo "Not running the instance flow, not a master instance and we are in a nightly build."
+      echo "Instance role:${INSTANCE_ROLE}"
+      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
+        echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
         job-done
         exit 0
       fi
