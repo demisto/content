@@ -14,11 +14,16 @@
 
 
 .setup-network-certs: &setup-network-certs
-  - source .gitlab/helper_functions.sh
-  - chmod 700 $NETWORK_SETUP
-  - source $NETWORK_SETUP
+  - section_start "Setup network certs" --collapsed
+  - chmod 700 ${CERTIFICATE_SETUP_SCRIPT}
+  - source ${CERTIFICATE_SETUP_SCRIPT}
   - section_end "Setup network certs"
 
+.setup-artifactory: &setup-artifactory
+  - section_start "Setup Artifactory" --collapsed
+  - chmod 700 ${ARTIFACTORY_SETUP_SCRIPT}
+  - source ${ARTIFACTORY_SETUP_SCRIPT}
+  - section_end "Setup Artifactory"
 
 ### Global Script Snippets ###
 
@@ -166,7 +171,9 @@
 
 .default-before-script:
   before_script:
+    - source .gitlab/helper_functions.sh
     - *setup-network-certs
+    - *setup-artifactory
     - *stop_contrib_external_build
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
