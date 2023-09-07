@@ -90,7 +90,7 @@ SOURCE_TYPES_OPTIONS = ['Github', 'Bitbucket', 'Gitlab', 'AzureRepos', 'cli', 'A
 STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
 
 TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs', 'lastModifiedTs',
-               'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn']
+               'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn', 'lastLoginTs']
 
 ''' CLIENT CLASS '''
 
@@ -248,6 +248,9 @@ class Client(BaseClient):
     def all_user_roles_list_request(self):
         return self._http_request('GET', 'user/role')
 
+    def users_list_request(self):
+        return self._http_request('GET', 'v3/user')
+
     def account_list_request(self, exclude_account_group_details: str):
         data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
 
@@ -356,6 +359,8 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict) -> None:
     """
     for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
+            # if epoch_value == -1:
+            #     continue
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
 
 
@@ -1637,7 +1642,7 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
-    
+
     readable_responses = deepcopy(response_items)
     nested_headers = {'resourceListType': 'Type'}
     for readable_response in readable_responses:
@@ -1684,6 +1689,39 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
                         + tableToMarkdown('User Roles Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    response_items = client.users_list_request()
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+        roles = []
+        for role in response_item.get('roles', []):
+            roles.append(role.get('name'))
+        response_item['roles names'] = roles
+
+    headers = ['displayName', 'email', 'enabled', 'username', 'type', 'roles names']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Users',
+        outputs_key_field='username',
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Users Details:',
                                           response_items,
                                           headers=headers,
                                           removeNull=True,
@@ -2108,6 +2146,7 @@ def main() -> None:
             'prisma-cloud-resource-get': resource_get_command,
             'prisma-cloud-resource-list': resource_list_command,
             'prisma-cloud-user-roles-list': user_roles_list_command,
+            'prisma-cloud-users-list': users_list_command,
             'prisma-cloud-account-list': account_list_command,
             'prisma-cloud-account-status-get': account_status_get_command,
             'prisma-cloud-account-owner-list': account_owner_list_command,

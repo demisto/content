@@ -111,7 +111,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -1043,6 +1043,73 @@ script:
     - contextPath: PrismaCloud.UserRoles.accountGroups
       description: User roles account groups.
       type: Unknown
+  - arguments:
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get users lists.
+    name: prisma-cloud-users-list
+    outputs:
+    - contextPath: PrismaCloud.Users.email
+      description: Prisma Cloud user email.
+      type: String
+    - contextPath: PrismaCloud.Users.firstName
+      description: User first name.
+      type: String
+    - contextPath: PrismaCloud.Users.lastName
+      description: User last name.
+      type: String
+    - contextPath: PrismaCloud.Users.timeZone
+      description: User time zone.
+      type: String
+    - contextPath: PrismaCloud.Users.enabled
+      description: User enabled.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.lastModifiedBy
+      description: User last modified user.
+      type: String
+    - contextPath: PrismaCloud.Users.lastModifiedTs
+      description: User last modified time.
+      type: Date
+    - contextPath: PrismaCloud.Users.lastLoginTs
+      description: User last login time.
+      type: Date
+    - contextPath: PrismaCloud.Users.displayName
+      description: User display name.
+      type: String
+    - contextPath: PrismaCloud.Users.ssoBypassAllowed
+      description: Whether sso bypass is allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysAllowed
+      description: Whether access keys are allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.defaultRoleId
+      description: User default role ID.
+      type: String
+    - contextPath: PrismaCloud.Users.roleIds
+      description: User role IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.roles
+      description: User roles.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.username
+      description: User username.
+      type: String
+    - contextPath: PrismaCloud.Users.type
+      description: User type.
+      type: String
+    - contextPath: PrismaCloud.Users.enableKeyExpiration
+      description: Whether key expiration is enabled for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysCount
+      description: User access keys count.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
