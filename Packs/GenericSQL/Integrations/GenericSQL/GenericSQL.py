@@ -69,8 +69,10 @@ class Client:
             connect_parameters_dict[key] = value
         if dialect == "Microsoft SQL Server":
             connect_parameters_dict['driver'] = 'FreeTDS'
+            connect_parameters_dict.setdefault('autocommit', 'True')
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
+            connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
                 connect_parameters_dict['TrustServerCertificate'] = 'yes'
         return connect_parameters_dict
@@ -151,13 +153,9 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
-        with self.connection as connection:
-            # The isolation level is for stored procedures SQL queries that include INSERT, DELETE etc.
-            connection.execution_options(isolation_level="AUTOCOMMIT")
-            result = self.connection.execute(sql_query, bind_vars)
-            # For avoiding responses with lots of records
-            results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
-
+        result = self.connection.execute(sql_query, bind_vars)
+        # For avoiding responses with lots of records
+        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
         if results:
             # if the table isn't empty
