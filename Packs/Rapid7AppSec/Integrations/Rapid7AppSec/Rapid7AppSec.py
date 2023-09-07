@@ -1065,14 +1065,6 @@ def get_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-def validate_submit_scan_action(action: str, scan_data):
-    if action in [STOP_SCAN_ACTION, CANCEL_SCAN_ACTION]:
-        scan_status = scan_data.get("status", "")
-        allowed_statuses = ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"]
-        if scan_status not in allowed_statuses:
-            raise ValueError(f"Scan status must be one of {allowed_statuses}")
-
-
 @logger
 @polling_function(
     name="app-sec-scan-action-submit",
@@ -1703,6 +1695,25 @@ def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
         str: API endpoint for list request.
     """
     return urljoin(url_prefix, obj_id) if obj_id else url_prefix
+
+
+@logger
+def validate_submit_scan_action(action: str, scan_data: dict):
+    """
+    Validate the scan action.
+
+    Args:
+        action (str): Scan action.
+        scan_data (dict): Scan data.
+
+    Raises:
+        ValueError: Scan status must be one of ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"]
+    """
+    if action in [STOP_SCAN_ACTION, CANCEL_SCAN_ACTION]:
+        scan_status = scan_data.get("status", "")
+        allowed_statuses = ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"]
+        if scan_status not in allowed_statuses:
+            raise ValueError(f"Scan status must be one of {allowed_statuses}")
 
 
 def main() -> None:

@@ -417,6 +417,16 @@ def test_list_commands(
      - app-sec-vulnerability-list called.
      - app-sec-vulnerability-history-list called.
      - app-sec-vulnerability-comment-list called.
+     - app-sec-attack-get called.
+     - app-sec-attack-documentation-get called.
+     - app-sec-scan-action-get called.
+     - app-sec-scan-execution-details-list called.
+     - app-sec-scan-platform-event-list called.
+     - app-sec-scan-engine-event-list called.
+     - app-sec-app-list called.
+     - app-sec-engine-list called.
+     - app-sec-module-list called.
+     - app-sec-scan-config-list called.
 
     Then:
      - Ensure that output prefix is correct.
