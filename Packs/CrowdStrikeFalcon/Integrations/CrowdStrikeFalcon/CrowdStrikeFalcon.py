@@ -1369,7 +1369,7 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER
         :rtype ``dict``
     """
     params = {
-        'sort': 'created_timestamp.asc',
+        'sort': 'start_time.asc',
         'offset': offset,
         'filter': filter_arg
     }
@@ -2632,7 +2632,7 @@ def fetch_incidents():
                                                                     date_format=IDP_DATE_FORMAT)
         fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
         fetch_query = demisto.params().get('idp_detections_fetch_query', "")
-        filter = f"product:'idp'+created_timestamp:>'{start_fetch_time}'"
+        filter = f"product:'idp'+start_time:>'{start_fetch_time}'"
 
         if fetch_query:
             filter += f"+{fetch_query}"
