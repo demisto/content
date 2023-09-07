@@ -1,0 +1,20 @@
+commonfields:
+  id: ShowCPEmailInfo
+  version: -1
+name: ShowCPEmailInfo
+script: '-'
+type: python
+tags: []
+comment: Get email info from Check Point Smart API.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - CheckPointHEC|||checkpointhec-get-email-info
+runonce: false
+dockerimage: demisto/python3:3.10.13.72123
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
