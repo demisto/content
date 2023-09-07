@@ -1276,6 +1276,14 @@ Get details of a vendor
 
 ### abnormal-security-get-vendor-activity
 
+# <<<<<<< HEAD
+
+---
+
+Get details of a vendor
+
+> > > > > > > 52b3eaef7e (validating files)
+
 ---
 
 Get details of a vendor
