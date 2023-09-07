@@ -1431,7 +1431,7 @@ script:
       description: CodeRepos is a list of impacted code repositories.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount
-      description: CodeReposCount is the total impacted code repositories count
+      description: CodeReposCount is the total impacted code repositories count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functions
       description: Functions is a map between function id to its details.
@@ -1540,7 +1540,7 @@ script:
       required: true
       description: The type of audit alert to retrieve.
     - name: limit
-      description: The limit of the number of alerts to return
+      description: The limit of the number of alerts to return.
     description: Get the audits for the firewall container policies
     outputs: []
   - arguments:
