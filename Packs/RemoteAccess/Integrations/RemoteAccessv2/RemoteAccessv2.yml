@@ -46,7 +46,7 @@ name: RemoteAccess v2
 script:
   commands:
   - arguments:
-    - description: Command to run on the remote machine. You can pass concatenated commands as an argument by ';', when executing several commands simultaneously in a single SSH session. For example 'echo1;echo2'
+    - description: Command to run on the remote machine. You can pass concatenated commands as an argument by ';', when executing several commands simultaneously in a single SSH session. For example 'echo1;echo2'.
       name: cmd
       required: true
     - description: Password required to match the Additional Password parameter if it was supplied to run the command.
