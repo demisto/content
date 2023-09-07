@@ -7,8 +7,8 @@ on your AWS environment.
 - Instance profile requires permission to assume the roles needed by the AWS integrations.
 
 ### Configure AWS Settings
-- Create an IAM Role for the Instance Profile.
-- Attach a Role to the Instance Profile.
-- Configure the Necessary IAM Roles that the AWS Integration Can Assume.
+- Create an IAM role for the Instance Profile.
+- Attach a role to the Instance Profile.
+- Configure the necessary IAM roles that the AWS Integration can assume.
 
 For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
