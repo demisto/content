@@ -1,0 +1,35 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - Configuration"
+ ],
+ "caseInsensitive": true,
+ "cliName": "availableoktaapplications",
+ "closeForm": false,
+ "content": true,
+ "description": "Available Okta applications",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_availableoktaapplications",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Available Okta applications",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "script": "IAMPopulateOktaAppData",
+ "fieldCalcScript": "IAMFindOktaApplications",
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "selectValues": [
+ 	"Select"
+ ],
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

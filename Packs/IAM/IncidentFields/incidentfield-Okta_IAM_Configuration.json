@@ -1,0 +1,32 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - Configuration"
+ ],
+ "caseInsensitive": true,
+ "cliName": "oktaiamconfiguration",
+ "closeForm": false,
+ "content": true,
+ "description": "Okta IAM Configuration",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_oktaiamconfiguration",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Okta IAM Configuration",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "IAMGetOktaInstances",
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "markdown",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

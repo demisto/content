@@ -1,0 +1,1605 @@
+id: IAM - Activate User In Active Directory
+version: -1
+name: IAM - Activate User In Active Directory
+description: This playbook activates users in Active Directory. It generates a password,
+  sets the account with the new password, and enables the account. Additionally, it
+  sends out an email to the email provided in the "ITNotificationEmail" input which includes
+  the new user’s temporary password for preparing new hires’ environments.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 00777791-8908-462a-8d42-b9a3578e8565
+    type: start
+    task:
+      id: 00777791-8908-462a-8d42-b9a3578e8565
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3ad52638-937f-4a7e-83a6-ea406879ab51
+    type: condition
+    task:
+      id: 3ad52638-937f-4a7e-83a6-ea406879ab51
+      version: -1
+      name: Are the required playbook inputs configured?
+      description: Checks whether the mandatory playbook inputs are configured.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ITNotificationEmail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d314f8a5-f6f1-4fc0-8ee3-ad8f88892c3e
+    type: regular
+    task:
+      id: d314f8a5-f6f1-4fc0-8ee3-ad8f88892c3e
+      version: -1
+      name: Enable user in Active Directory
+      description: Enables the user in Active Directory
+      script: Active Directory Query v2|||iam-update-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: The user has been enabled in Active Directory.
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 40012949-d8ad-4140-8cc8-88fc6f7b5b0a
+    type: regular
+    task:
+      id: 40012949-d8ad-4140-8cc8-88fc6f7b5b0a
+      version: -1
+      name: Show an error and request inputs to be filled in
+      description: Please configure the required ITNotificationEmail playbook input.
+        Then re-run the flow.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      message:
+        simple: Please configure the required ITNotificationEmail playbook input. Then
+          re-run the playbook.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: fbc36534-111d-4f43-889b-d251821c9572
+    type: regular
+    task:
+      id: fbc36534-111d-4f43-889b-d251821c9572
+      version: -1
+      name: Get user from Active Directory
+      description: Retrieves the user from Active Directory.
+      script: Active Directory Query v2|||iam-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 08e01c75-f700-4097-89fb-f060d869278a
+    type: title
+    task:
+      id: 08e01c75-f700-4097-89fb-f060d869278a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 5870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 574adc1d-98cc-4ed3-8edf-5097746ea2b7
+    type: regular
+    task:
+      id: 574adc1d-98cc-4ed3-8edf-5097746ea2b7
+      version: -1
+      name: Set the User Profile's AD Account Status to Enabled
+      description: Updates the User Profile's AD Account Status field to Enabled,
+        to signify that the user is enabled in Active Directory. Also updates the
+        incident details.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      adaccountstatus:
+        simple: Enabled
+      id:
+        complex:
+          root: indicator
+          accessor: id
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: ${incident.displayname} has been enabled successfully in Active Directory.
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 550daa2f-7e16-4bb4-8fc1-6ae5fb94994b
+    type: regular
+    task:
+      id: 550daa2f-7e16-4bb4-8fc1-6ae5fb94994b
+      version: -1
+      name: Get the User Profile from XSOAR
+      description: Gets the User Profile indicator belonging to the employee from
+        XSOAR.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: type:"User Profile" employeeid:"${incident.employeeid}"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a38fb54c-6d40-4c5b-8d8c-97ec332536be
+    type: regular
+    task:
+      id: a38fb54c-6d40-4c5b-8d8c-97ec332536be
+      version: -1
+      name: Close incident
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 5700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 91829577-e7ac-40e3-80ad-35740116c384
+    type: condition
+    task:
+      id: 91829577-e7ac-40e3-80ad-35740116c384
+      version: -1
+      name: Was the user found in Active Directory?
+      description: Checks whether the user account was found in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      User Found:
+      - "39"
+      User Not Found:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: User Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IAM.Vendor.details.mail
+            iscontext: true
+    - label: User Not Found
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                accessor: errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 7ff21607-ab07-478b-80d7-073aa65f40d7
+    type: regular
+    task:
+      id: 7ff21607-ab07-478b-80d7-073aa65f40d7
+      version: -1
+      name: Fix the current issue
+      description: Asks the user to fix and then re-run the IAM - New Hire incident
+        of the user.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      message:
+        simple: "The incident failed for one of two reasons:\n\n1. A connectivity\
+          \ issue with Active Directory. In this case, check your Active Directory\
+          \ instance configuration (are you using port 636?).\n\n2. User creation\
+          \ failed. Make sure you have a valid transformer script which determines\
+          \ the OU where the user will be created. \nThe transformer script should\
+          \ be in the Active Directory outgoing mapper, in the User Profile incident\
+          \ type and schema type, under the \"ou\" field.\n\n3. The User Initialization\
+          \ Script failed, usually for one of the following reasons:\nA. The password-generation\
+          \ script configured in the playbook inputs does not meet the password complexity\
+          \ policy of your organization.\nB. The user account could not be enabled\
+          \ for any reason. \n\nReview the error message in the incident layout and\
+          \ determine the cause of error.\nAfter fixing the issue, re-run this playbook."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: fbdcfd0a-baa9-49a4-8747-01119598d9fd
+    type: regular
+    task:
+      id: fbdcfd0a-baa9-49a4-8747-01119598d9fd
+      version: -1
+      name: Clear the context
+      description: Deletes the context to ensure that if the playbook is re-run for
+        any reason, it will not be negatively affected by old data.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: ADInitSuccess
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Error Code
+      output:
+        simple: ' '
+    - incidentfield: Error Message
+      output:
+        simple: ' '
+    - incidentfield: details
+      output:
+        simple: User ${incident.displayname} is pending activation.
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fb7c0911-2e8a-471e-8c55-6c4544679974
+    type: condition
+    task:
+      id: fb7c0911-2e8a-471e-8c55-6c4544679974
+      version: -1
+      name: Was the user enabled successfully?
+      description: Checks whether the user was successfully enabled in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      Yes, Don't Send Email:
+      - "6"
+      Yes, Send Email:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: Yes, Send Email
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: update
+                accessor: success
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SendEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Yes, Don't Send Email
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: update
+                accessor: success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3d1a4c11-57cd-4526-8c30-8ea4b1cd5a2e
+    type: condition
+    task:
+      id: 3d1a4c11-57cd-4526-8c30-8ea4b1cd5a2e
+      version: -1
+      name: Did user creation succeed?
+      description: Checks whether the script that initializes the user in Active Directory
+        executed successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor.success
+                filters:
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: a3818ad2-55fc-417a-8438-072595d11292
+    type: regular
+    task:
+      id: a3818ad2-55fc-417a-8438-072595d11292
+      version: -1
+      name: Display error information in the incident layout
+      description: Displays information about the error that occurred in the incident
+        layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      errorcode:
+        complex:
+          root: IAM.Vendor
+          accessor: errorCode
+      errormessage:
+        complex:
+          root: IAM.Vendor
+          accessor: errorMessage
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 4595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: There was an issue with the Active Directory user creation or activation.
+          See the error section for more details.
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4d50cc04-178f-4fa6-8c81-6f3f29799325
+    type: title
+    task:
+      id: 4d50cc04-178f-4fa6-8c81-6f3f29799325
+      version: -1
+      name: Error
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 4435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 5bbb0a2e-66f4-4cef-8aef-854b6f49ed76
+    type: condition
+    task:
+      id: 5bbb0a2e-66f4-4cef-8aef-854b6f49ed76
+      version: -1
+      name: Is the account already active?
+      description: Checks whether the account is already enabled in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                accessor: active
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 2515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 0381db0e-b71d-4ae3-8676-ff4322b7ffef
+    type: regular
+    task:
+      id: 0381db0e-b71d-4ae3-8676-ff4322b7ffef
+      version: -1
+      name: Send a welcome email to the employee and their manager
+      description: |-
+        Sends an email welcoming the new employee and their manager. The email includes basic information about the employee's user.
+        If the employee is an acquisition hire (if the incident.acquisitionhire field equals Yes), then the manager will not be added to the email's CC address.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cc:
+        complex:
+          root: incident
+          accessor: acquisitionhire
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else: {}
+              equals:
+                value:
+                  simple: "No"
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: incident.manageremailaddress
+                iscontext: true
+      htmlBody:
+        complex:
+          root: EmailHTML
+      subject:
+        simple: Welcome to the company, ${incident.displayname}!
+      to:
+        complex:
+          root: IAM.Vendor.details
+          accessor: mail
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 068995d5-11bd-4857-8a78-67183f7cc861
+    type: regular
+    task:
+      id: 068995d5-11bd-4857-8a78-67183f7cc861
+      version: -1
+      name: Send an email to IT with the error information
+      description: Sends an email to the IT department with the user and error information.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body:
+        simple: |-
+          There was an error activating a user in Active Directory. Please find the error details below and fix the issue:
+
+          Username that failed: ${incident.username}
+          Integration Brand Name: ${IAM.Vendor(val.success==false).brand}
+          Integration Instance Name: ${IAM.Vendor(val.success==false).instanceName}
+          Error Code: ${IAM.Vendor(val.success==false).errorCode}
+          Error Message: ${IAM.Vendor(val.success==false).errorMessage}${IAM.InitADUser.errorDetails}
+
+          Link to incident:  ${IncidentLink}
+      subject:
+        simple: Error activating ${incident.username} in Active Directory
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 5992351f-03a1-44fc-829b-8166a947ebf2
+    type: regular
+    task:
+      id: 5992351f-03a1-44fc-829b-8166a947ebf2
+      version: -1
+      name: Get the URL of this server
+      description: Gets the URL of the server in order to create a link to the incident.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 4760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 5366c23e-8302-4fab-88e2-1ab48079aee7
+    type: regular
+    task:
+      id: 5366c23e-8302-4fab-88e2-1ab48079aee7
+      version: -1
+      name: Create a link to the current incident
+      description: Creates a link to the current incident, using the URL of this server
+        and the current incident ID.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: IncidentLink
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /#/incident/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 592c7a98-6d26-4215-8c29-8b8ae855fa4d
+    type: regular
+    task:
+      id: 592c7a98-6d26-4215-8c29-8b8ae855fa4d
+      version: -1
+      name: Wait before sending welcome email
+      description: Waits the amount of seconds specified in the SecondsToWaitBeforeWelcomeEmail
+        before sending the welcome email to the activated user and their manager.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      seconds:
+        complex:
+          root: inputs.SecondsToWaitBeforeWelcomeEmail
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 4340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 67d782f4-207b-4e32-80eb-46d89a5bdd6b
+    type: title
+    task:
+      id: 67d782f4-207b-4e32-80eb-46d89a5bdd6b
+      version: -1
+      name: Activation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 011e1524-4808-4705-8ef5-4d8f09282a8e
+    type: condition
+    task:
+      id: 011e1524-4808-4705-8ef5-4d8f09282a8e
+      version: -1
+      name: Is activation approval required?
+      description: |-
+        Checks whether approval for past hire dates is needed according to the playbook inputs, and checks whether the employee's hire date goes back at least 1 day from today (past hire date).
+        The comparison is done by comparing the hire date at 00:00 (beginning of the day), adding 1 day to it, today's current date and time.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AfterRelativeDate
+          left:
+            value:
+              simple: midnight
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: hiredate
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ManuallyApprovePastHireDates
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: f778b2ce-725d-441c-839a-e54ffcfeb261
+    type: condition
+    task:
+      id: f778b2ce-725d-441c-839a-e54ffcfeb261
+      version: -1
+      name: Should the account be activated?
+      description: Asks the user whether the account should be activated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "48"
+      "Yes":
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: a096fd0f-3517-46b4-8fee-9902be8634f0
+    type: condition
+    task:
+      id: a096fd0f-3517-46b4-8fee-9902be8634f0
+      version: -1
+      name: Is there an HTML template input?
+      description: Checks whether there is a playbook input for the HTML template
+        to use in the welcome email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.WelcomeEmailHTMLList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 4500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 46f82306-ee89-4377-8b5b-80732d5c35dd
+    type: regular
+    task:
+      id: 46f82306-ee89-4377-8b5b-80732d5c35dd
+      version: -1
+      name: Load HTML template from list
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: EmailHTML
+      listTemplate:
+        complex:
+          root: inputs.WelcomeEmailHTMLList
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 4695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: fdf29c66-59d0-439e-8dee-db817c792669
+    type: regular
+    task:
+      id: fdf29c66-59d0-439e-8dee-db817c792669
+      version: -1
+      name: Create generic email template
+      description: Saves a generic template to be used for the welcome email.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: EmailHTML
+      value:
+        simple: |-
+          <HTML>
+            We would like to welcome you as you are starting your new position in our company.
+          Please find your user information below:<br><br>
+          Name: ${incident.displayname}<br>
+          Username: ${incident.username}<br>
+          Email:  ${incident.email}<br>
+          Start Date: ${incident.hiredate}<br>
+          <br><br>
+          A separate email with your temporary password has been sent to IT and/or to your manager.
+          </HTML>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 4695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 3b326d0a-c4dc-4b6d-836d-9caf85bce99f
+    type: condition
+    task:
+      id: 3b326d0a-c4dc-4b6d-836d-9caf85bce99f
+      version: -1
+      name: Is the user already initialized?
+      description: Checks whether the user was already initialized.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indicator.CustomFields.adaccountstatus
+            iscontext: true
+          right:
+            value:
+              simple: Pending
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 8c071cd2-8440-4165-88fb-c162de95cf77
+    type: regular
+    task:
+      id: 8c071cd2-8440-4165-88fb-c162de95cf77
+      version: -1
+      name: Find duplicate incidents
+      description: Searches for older incidents that are duplicates of this incident
+        according to the user email field.
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      filterQuery:
+        simple: type:"IAM - AD User Activation"
+      hoursBack:
+        simple: "48"
+      ignoreClosedIncidents:
+        simple: "yes"
+      similarIncidentFields:
+        simple: email
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: e7d20b9d-6ed7-4e0c-8fa3-84c0d7cdd960
+    type: condition
+    task:
+      id: e7d20b9d-6ed7-4e0c-8fa3-84c0d7cdd960
+      version: -1
+      name: Were duplicate incidents found?
+      description: Checks whether at least one duplicate incident was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: similarIncidentList
+                accessor: rawId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: eccec0c6-d2e0-4295-8dbc-a234bffdce62
+    type: regular
+    task:
+      id: eccec0c6-d2e0-4295-8dbc-a234bffdce62
+      version: -1
+      name: Close duplicate incidents
+      description: Closes the duplicate incidents that were found, with a close reason
+        indicating that they are duplicates of the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      closeNotes:
+        simple: Duplicate of ${incident.id}
+      id:
+        complex:
+          root: similarIncidentList
+          accessor: rawId
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: d4720751-7bad-4236-843b-e3f1b71f6a4c
+    type: title
+    task:
+      id: d4720751-7bad-4236-843b-e3f1b71f6a4c
+      version: -1
+      name: Incident Deduplication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 37808ba2-7e2f-442b-8cf2-872df87595d3
+    type: regular
+    task:
+      id: 37808ba2-7e2f-442b-8cf2-872df87595d3
+      version: -1
+      name: Remove requirement to change password on next login
+      description: Changes the pwdLastSet attribute to -1, thus removing the restriction
+        of having to change the password at next user login.
+      script: '|||ad-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      attribute-name:
+        simple: pwdLastSet
+      attribute-value:
+        simple: ${.=-1}
+      username:
+        complex:
+          root: IAM.Vendor.details
+          accessor: sAMAccountName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 5280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 3770a97e-42cd-4a57-89e4-230ce25ee3e1
+    type: regular
+    task:
+      id: 3770a97e-42cd-4a57-89e4-230ce25ee3e1
+      version: -1
+      name: Set the User Profile as processed
+      description: Updates the User Profile's Is Processed field to True.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        complex:
+          root: indicator
+          accessor: id
+      isprocessed:
+        simple: "true"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 632b715a-ae0c-42a8-86fc-0918d889d64a
+    type: regular
+    task:
+      id: 632b715a-ae0c-42a8-86fc-0918d889d64a
+      version: -1
+      name: Set the User Profile as not processed
+      description: Updates the User Profile's Is Processed field to False.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        complex:
+          root: indicator
+          accessor: id
+      isprocessed:
+        simple: "true"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 5530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: b92ba8b6-bf7f-48ba-8422-aee8ede00a63
+    type: regular
+    task:
+      id: b92ba8b6-bf7f-48ba-8422-aee8ede00a63
+      version: -1
+      name: Set the User Profile's AD Account Status to Disabled
+      description: Updates the User Profile's AD Account Status field to Enabled,
+        to signify that the user is enabled in Active Directory. Also updates the
+        incident details.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      adaccountstatus:
+        simple: Disabled
+      id:
+        complex:
+          root: indicator
+          accessor: id
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: Activation for ${incident.displayname} was disapproved.
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 55c4120c-f0a8-4f0f-8207-ce63ce86972a
+    type: playbook
+    task:
+      id: 55c4120c-f0a8-4f0f-8207-ce63ce86972a
+      version: -1
+      name: IAM - Create User In Active Directory
+      playbookName: IAM - Create User In Active Directory
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_20_#default#": 0.38,
+      "16_6_Yes, Don't Send Email": 0.29,
+      "18_20_#default#": 0.19,
+      "18_30_yes": 0.2,
+      "1_3_#default#": 0.57,
+      "1_7_yes": 0.82,
+      "21_30_#default#": 0.35,
+      "21_6_yes": 0.13,
+      "30_29_#default#": 0.33,
+      "30_33_yes": 0.27,
+      "33_29_Yes": 0.37,
+      "42_1_#default#": 0.38,
+      "9_20_#default#": 0.1,
+      "9_39_User Found": 0.51,
+      "9_49_User Not Found": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5885,
+        "width": 2080,
+        "x": -480,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ITNotificationEmail
+  value: {}
+  required: true
+  description: Email to notify about errors in the provisioning process.
+  playbookInputQuery:
+- key: SecondsToWaitBeforeWelcomeEmail
+  value:
+    simple: "30"
+  required: true
+  description: Determines how many seconds to wait before sending the welcome email
+    to the user and their manager after activation.
+  playbookInputQuery:
+- key: ManuallyApprovePastHireDates
+  value:
+    simple: "False"
+  required: false
+  description: Whether to ask the user to manually approve activations for users who
+    have past hire dates (hire date is 1 day or more before the current date). Can
+    be True or False.
+  playbookInputQuery:
+- key: WelcomeEmailHTMLList
+  value: {}
+  required: false
+  description: Optional - the name of an XSOAR list that contains an HTML template
+    for new hire welcome emails. If no list is specified, an email with a  generic
+    structure will be sent.
+  playbookInputQuery:
+- key: SendEmail
+  value: {}
+  required: false
+  description: Whether to send a welcome email to newly activated users. Any value
+    other than "True" means no email will be sent.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

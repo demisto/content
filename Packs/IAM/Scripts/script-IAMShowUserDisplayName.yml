@@ -1,0 +1,35 @@
+commonfields:
+  id: IAMShowUserDisplayName
+  version: -1
+name: IAMShowUserDisplayName
+script: |2
+
+
+  BLACK_COLOR = "color:rgb(64,65,66)"
+
+  # Getting user display name:
+  incident = demisto.incidents()
+  display_name = str(incident[0].get('CustomFields', {}).get('displayname', ''))
+
+  html = "<div style='text-align:center; padding: 6px; font-size:32px; " + BLACK_COLOR + ";'>" + display_name + "</div>"
+
+  # Return the data to the layout:
+  demisto.results({
+  'ContentsFormat': formats['html'],
+  'Type': entryTypes['note'],
+  'Contents': html
+  })
+type: python
+tags:
+- IAM
+- dynamic-section
+comment: Shows the display name of the user in app-sync incident layouts.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

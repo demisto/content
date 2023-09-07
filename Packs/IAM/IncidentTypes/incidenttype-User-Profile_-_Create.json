@@ -1,0 +1,23 @@
+{
+    "id": "User Profile - Create",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "User Profile - Create",
+    "prevName": "User Profile - Create",
+    "color": "#01a2ec",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 1,
+    "layout": "User Profile",
+    "fromVersion": "6.0.0"
+}

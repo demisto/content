@@ -1,0 +1,32 @@
+commonfields:
+  id: IAMShowEventAction
+  version: -1
+name: IAMShowEventAction
+script: |2+
+
+
+  incident = demisto.incidents()
+  eventaction = "'" + str(incident[0].get('CustomFields', {}).get('eventaction', '')) + "'"
+
+  html = "<div style='color:#404142;text-align:center;'><h1>" + str(eventaction) + "</h1></div>"
+
+  demisto.results({
+  'ContentsFormat': formats['html'],
+  'Type': entryTypes['note'],
+  'Contents': html
+  })
+
+
+type: python
+tags:
+- dynamic-section
+comment: Displays the event action taken in IAM incidents.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

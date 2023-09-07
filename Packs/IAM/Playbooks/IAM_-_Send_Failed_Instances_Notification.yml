@@ -1,0 +1,301 @@
+id: IAM - Send Failed Instances Notification
+version: -1
+name: IAM - Send Failed Instances Notification
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 325438aa-6e2d-477d-873b-7a238e927d8f
+    type: start
+    task:
+      id: 325438aa-6e2d-477d-873b-7a238e927d8f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8c521d79-187e-496e-81fc-97bb9e9dda40
+    type: condition
+    task:
+      id: 8c521d79-187e-496e-81fc-97bb9e9dda40
+      version: -1
+      name: Is there anything to notify about?
+      description: Checks whether provisioning occurred in any instance.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FailedInstances
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d5c94eab-6066-4f90-8ba7-9b2a0c019265
+    type: regular
+    task:
+      id: d5c94eab-6066-4f90-8ba7-9b2a0c019265
+      version: -1
+      name: Notify IT about failures
+      description: Sends an email to the email configured in the "ITNotificationEmail"
+        playbook input, notifying them about instances that failed while running CRUD
+        commands.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          <h3>Incident ${incident.type} failed for ${incident.email}.</h3>
+          <p>&nbsp;</p>
+          <table style="border-collapse: collapse; width: 99.7157%; height: 347px;" border="1">
+          <tbody>
+          <tr style="height: 26px;">
+          <td style="width: 4.87799%; height: 26px;">Username</td>
+          <td style="width: 34.8313%; height: 26px;">&nbsp;${inputs.FailedInstances.username}</td>
+          </tr>
+          <tr style="height: 35px;">
+          <td style="width: 4.87799%; height: 35px;">Action</td>
+          <td style="width: 34.8313%; height: 35px;">${inputs.FailedInstances.action}</td>
+          </tr>
+          <tr style="height: 29px;">
+          <td style="width: 4.87799%; height: 29px;">Success</td>
+          <td style="width: 34.8313%; height: 29px;">${inputs.FailedInstances.success}</td>
+          </tr>
+          <tr style="height: 69px;">
+          <td style="width: 4.87799%; height: 69px;">Error Message</td>
+          <td style="width: 34.8313%; height: 69px;">${inputs.FailedInstances.errorMessage}</td>
+          </tr>
+          <tr style="height: 30px;">
+          <td style="width: 4.87799%; height: 30px;">Error Code</td>
+          <td style="width: 34.8313%; height: 30px;">${inputs.FailedInstances.errorCode}</td>
+          </tr>
+          <tr style="height: 18px;">
+          <td style="width: 4.87799%; height: 18px;">Instance Name</td>
+          <td style="width: 34.8313%; height: 18px;">${inputs.FailedInstances.instanceName}</td>
+          </tr>
+          <tr style="height: 37px;">
+          <td style="width: 4.87799%; height: 37px;">Brand</td>
+          <td style="width: 34.8313%; height: 37px;">${inputs.FailedInstances.brand}</td>
+          </tr>
+          <tr style="height: 38px;">
+          <td style="width: 4.87799%; height: 38px;">ID</td>
+          <td style="width: 34.8313%; height: 38px;">${inputs.FailedInstances.id}</td>
+          </tr>
+          <tr style="height: 65px;">
+          <td style="width: 4.87799%; height: 65px;">Details</td>
+          <td style="width: 34.8313%; height: 65px;">${inputs.FailedInstances.details}</td>
+          </tr>
+          </tbody>
+          </table>
+          <p>&nbsp;</p>
+          <p>Link to the incident: ${IncidentLink}</p>
+          <p>&nbsp;</p>
+      subject:
+        simple: IAM incident ${incident.id} failed with user ${incident.displayname}
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a13bf344-4833-441c-8b46-fe9d7d66688d
+    type: title
+    task:
+      id: a13bf344-4833-441c-8b46-fe9d7d66688d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a551ebb0-5522-480c-8231-077095dc5f59
+    type: regular
+    task:
+      id: a551ebb0-5522-480c-8231-077095dc5f59
+      version: -1
+      name: Get the URL of this server
+      description: Gets the URL of the server in order to create a link to the incident.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6a65ad57-95f3-46a9-89ab-5d671ea56fad
+    type: regular
+    task:
+      id: 6a65ad57-95f3-46a9-89ab-5d671ea56fad
+      version: -1
+      name: Create a link to the current incident
+      description: Creates a link to the current incident, using the URL of this server
+        and the current incident ID.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: IncidentLink
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /#/incident/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 720,
+        "x": 110,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: FailedInstances
+  value:
+    complex:
+      root: IAM.Vendor
+      filters:
+      - - operator: isFalse
+          left:
+            value:
+              simple: IAM.Vendor.success
+            iscontext: true
+  required: false
+  description: A list of instances where provisioning failed.
+  playbookInputQuery:
+- key: ITNotificationEmail
+  value:
+    complex:
+      root: inputs.ITNotificationEmail
+  required: false
+  description: The email of an IT personnel that should address instance failure errors.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Sends notifications about applications where provisioning failed.

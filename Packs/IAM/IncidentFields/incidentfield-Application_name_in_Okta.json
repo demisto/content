@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - Configuration"
+ ],
+ "caseInsensitive": true,
+ "cliName": "applicationnameinokta",
+ "closeForm": false,
+ "content": true,
+ "description": "Application name in Okta",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_applicationnameinokta",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Application name in Okta",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

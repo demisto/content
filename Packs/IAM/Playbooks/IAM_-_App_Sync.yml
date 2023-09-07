@@ -1,0 +1,1241 @@
+id: IAM - App Sync
+version: -1
+name: IAM - App Sync
+description: Syncs users to apps from which the user was added or removed. The playbook
+  utilizes the "IAM Configuration" incident type to determine which integration instance
+  the command needs to execute in. It creates or disables the user according to the
+  fetched event type, tracks errors if there are any, and assigns an analyst to review
+  the incident when needed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c6b6bd29-de47-47a9-8cc3-b65c603a455f
+    type: start
+    task:
+      id: c6b6bd29-de47-47a9-8cc3-b65c603a455f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: cf575f04-5964-438d-82f2-6aa532a1da59
+    type: regular
+    task:
+      id: cf575f04-5964-438d-82f2-6aa532a1da59
+      version: -1
+      name: Check whether the user is assigned to the app
+      description: Returns whether the user is assigned to the Okta App or not.
+      script: '|||okta-get-app-user-assignment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      application_id:
+        complex:
+          root: incident
+          accessor: applicationid
+      retry-count:
+        simple: "30"
+      retry-interval:
+        simple: "60"
+      user_id:
+        complex:
+          root: incident
+          accessor: userid
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: abd58f75-ee2e-4c01-88df-75a4001b26bf
+    type: title
+    task:
+      id: abd58f75-ee2e-4c01-88df-75a4001b26bf
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 041b14b7-6acd-4a32-824e-279b8ef17ec9
+    type: regular
+    task:
+      id: 041b14b7-6acd-4a32-824e-279b8ef17ec9
+      version: -1
+      name: Get User Profile by user email
+      description: Gets the XSOAR User Profile indicator by the user email.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: type:"User Profile" value:"${incident.username}"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5a250a35-c046-4802-839d-3b5057af4669
+    type: regular
+    task:
+      id: 5a250a35-c046-4802-839d-3b5057af4669
+      version: -1
+      name: Get instance name by Okta App ID
+      description: Saves the integration instance name that corresponds to the Okta
+        App ID in a separate context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InstanceName
+      value:
+        complex:
+          root: Okta.IAMConfiguration
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Okta.IAMConfiguration.ApplicationID
+                iscontext: true
+              right:
+                value:
+                  simple: incident.applicationid
+                iscontext: true
+          accessor: Instance
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d23f6b28-ee0e-49e4-8ae0-0f8ee462159f
+    type: regular
+    task:
+      id: d23f6b28-ee0e-49e4-8ae0-0f8ee462159f
+      version: -1
+      name: Close event
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 9e20e616-f004-45e2-84b3-74eede6df342
+    type: condition
+    task:
+      id: 9e20e616-f004-45e2-84b3-74eede6df342
+      version: -1
+      name: Determine event type
+      description: Determines whether the app sync event requires adding or removing
+        the user. This also accommodates for race conditions where a user was added
+        to, and removed from, an application in a short period of time, and the first
+        incident was the second one to run - in which case, the irrelevant incident
+        is closed immediately, and the other incident proceeds as usual.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      Add:
+      - "32"
+      Remove:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: Add
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: application.user_membership.add
+          ignorecase: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Okta.AppUserAssignment.IsAssigned
+            iscontext: true
+    - label: Remove
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: application.user_membership.remove
+          ignorecase: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: Okta.AppUserAssignment.IsAssigned
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 122f98ba-415a-4745-8705-92816672160f
+    type: regular
+    task:
+      id: 122f98ba-415a-4745-8705-92816672160f
+      version: -1
+      name: Disable user in the instance
+      description: Disables the user in the instance of the App ID. Also populates
+        incident fields with the error code and error message if there are any errors.
+      script: '|||iam-disable-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      retry-count:
+        simple: "30"
+      retry-interval:
+        simple: "60"
+      user-profile:
+        complex:
+          root: indicator
+          accessor: CustomFields
+      using:
+        complex:
+          root: InstanceName
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Error Code
+      output:
+        complex:
+          root: IAM.Vendor
+          accessor: errorCode
+    - incidentfield: Error Message
+      output:
+        complex:
+          root: IAM.Vendor
+          accessor: errorMessage
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: e4c2d091-ecbe-4abd-816f-a81cb1020169
+    type: title
+    task:
+      id: e4c2d091-ecbe-4abd-816f-a81cb1020169
+      version: -1
+      name: Create / Enable User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 72b86651-ce5a-439f-8c9c-8e0330d64994
+    type: title
+    task:
+      id: 72b86651-ce5a-439f-8c9c-8e0330d64994
+      version: -1
+      name: Disable User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 28d7a1a5-c223-40b9-89cb-cf3f83507d9a
+    type: regular
+    task:
+      id: 28d7a1a5-c223-40b9-89cb-cf3f83507d9a
+      version: -1
+      name: Create/enable user in the instance
+      description: Updates an existing user with the data passed in the user-profile
+        argument. Also populates incident fields with the error code and error message
+        if there are any errors.
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      retry-count:
+        simple: "30"
+      retry-interval:
+        simple: "60"
+      user-profile:
+        complex:
+          root: indicator
+          accessor: CustomFields
+      using:
+        complex:
+          root: InstanceName
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Error Code
+      output:
+        complex:
+          root: IAM.Vendor
+          accessor: errorCode
+    - incidentfield: Error Message
+      output:
+        complex:
+          root: IAM.Vendor
+          accessor: errorMessage
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: d1671f51-8c9d-49c9-8ac0-437cadefdee8
+    type: condition
+    task:
+      id: d1671f51-8c9d-49c9-8ac0-437cadefdee8
+      version: -1
+      name: Did app sync fail?
+      description: Checks whether the app sync process failed for any reason, by checking
+        whether IAM.Vendor.success is equal to "false".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                accessor: success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 930b6327-bfa3-4e21-8e02-4f42fb643c9b
+    type: regular
+    task:
+      id: 930b6327-bfa3-4e21-8e02-4f42fb643c9b
+      version: -1
+      name: Review and fix issues in the incident
+      description: Prints an error entry explaining why the app sync failed.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      message:
+        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName}\
+          \ \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the\
+          \ following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\
+          \nPlease fix the errors and proceed only once the incident can be closed."
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 6db4c223-ac4e-4654-8b49-24adb8e71a28
+    type: regular
+    task:
+      id: 6db4c223-ac4e-4654-8b49-24adb8e71a28
+      version: -1
+      name: Assign a user to review the incident
+      description: Assigns a user to review the incident according to the playbook
+        inputs specified, or chooses them randomly if none were specified.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      assignBy:
+        complex:
+          root: inputs.UserAssignmentMethod
+      onCall:
+        complex:
+          root: inputs.AssignOnlyOnCall
+      roles:
+        complex:
+          root: inputs.UserRoleToAssignForFailures
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: e3a27eaa-83a5-44f2-805c-916266fb6b0e
+    type: condition
+    task:
+      id: e3a27eaa-83a5-44f2-805c-916266fb6b0e
+      version: -1
+      name: Was the User Profile found?
+      description: Checks whether a User Profile indicator with the specified email
+        was found in the system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: indicator
+                accessor: CustomFields
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 3d9accf9-466e-4039-8778-670c9a6405b9
+    type: regular
+    task:
+      id: 3d9accf9-466e-4039-8778-670c9a6405b9
+      version: -1
+      name: Initial user sync required
+      description: The User Profile indicator was not found in Cortex XSOAR. Please
+        make sure that a User Profile indicator with the same email as the user that
+        was assigned to the app exists in the system. If the user does not exist,
+        make sure you follow the User Provisioning flow, as outlined in the ILM (Identity
+        Lifecycle Management) article before running this playbook. Once the initial
+        user sync is performed, you can delete the context in this incident using
+        the “DeleteContext” command, using the “all=yes” argument. After deleting
+        the context, please re-run this playbook.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      message:
+        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please
+          make sure that a User Profile indicator with the same email as the user
+          that was assigned to the app exists in the system. If the user does not
+          exist, make sure you follow the User Provisioning flow, as outlined in the
+          ILM (Identity Lifecycle Management) article before running this playbook.
+          Once the initial user sync is performed, you can delete the context in this
+          incident using the "DeleteContext" command, using the "all=yes" argument.
+          After deleting the context, please re-run this playbook. '
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 28250077-5c75-403e-8123-8d1d1317f6ef
+    type: title
+    task:
+      id: 28250077-5c75-403e-8123-8d1d1317f6ef
+      version: -1
+      name: Mismatch between event type and actual user assignment in Okta
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: a17787a3-fd01-413a-89a3-aea0b6f7672a
+    type: condition
+    task:
+      id: a17787a3-fd01-413a-89a3-aea0b6f7672a
+      version: -1
+      name: Was an instance name found for the app ID?
+      description: Checks whether an instance name that corresponds to the Okta App
+        ID was found in the app provisioning configuration.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InstanceName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: f83af3a6-6cbf-4bda-8a19-9753f4fca60c
+    type: regular
+    task:
+      id: f83af3a6-6cbf-4bda-8a19-9753f4fca60c
+      version: -1
+      name: App-sync configuration required
+      description: Explains that the the list used for app-sync has invalid mapping
+        of instance name to Okta App ID.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      message:
+        simple: |-
+          No instance name was found that corresponds to the Okta App ID to which the user is being synced. This means that the app-sync configuration is invalid or empty. This could happen for one of two reasons:
+          1. You have not configured your app-sync. Please create an IAM - Configuration incident and map the integration instance names to Okta App IDs using the steps explained in the ILM article on our documentation website.
+          2. When you configured the app-sync, you mistyped the Okta App ID. Please fix the configuration using the "okta-iam-set-configuration" command.
+
+          After configuring or fixing the configuration of your app-sync with the correct Okta App ID to which this user was expected to be synced, run "DeleteContext" with the parameter "all" set to "yes" under this incident, and then re-run this playbook. Alternatively, you may reset the "last run" timestamp of the instance to trigger the same incident to be fetched and run again automatically.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 614a2141-6863-4f0b-861c-04040a116289
+    type: regular
+    task:
+      id: 614a2141-6863-4f0b-861c-04040a116289
+      version: -1
+      name: Get Okta configuration
+      description: Gets the IAM configuration data from the integration context.
+      script: '|||okta-iam-get-configuration'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      using:
+        complex:
+          root: incident
+          accessor: sourceInstance
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 3ad102d4-155d-4499-8b35-caf840e4a3d8
+    type: regular
+    task:
+      id: 3ad102d4-155d-4499-8b35-caf840e4a3d8
+      version: -1
+      name: Update incident name and details
+      description: |-
+        Updates the incident name with a suffix of "- Skipped", and the details to reflect that the incident did not make any changes because there was a mismatch between the event type and the current assignment status of the user in Okta. E.g., this incident could be a user assignment event, but the user was already removed from the app in Okta, and this incident ran in that time window.
+        You may encounter this a lot when running app-sync for the first time, where old logs are fetched, and users who were added and removed intermittently will cause both 'add' and 'remove' incidents to be created simultaneously.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      details:
+        simple: Sync not required - mismatch between event type and actual user assignment
+          status in Okta.
+      name:
+        complex:
+          root: incident
+          accessor: name
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' - Skipped'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 833a1e08-ba5d-4c44-834f-6380011290fb
+    type: regular
+    task:
+      id: 833a1e08-ba5d-4c44-834f-6380011290fb
+      version: -1
+      name: Clear the context
+      description: Deletes the context to ensure that if the playbook is re-run for
+        any reason, it will not be negatively affected by old data.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 49510645-5846-4ac4-8731-c91128d12054
+    type: condition
+    task:
+      id: 49510645-5846-4ac4-8731-c91128d12054
+      version: -1
+      name: Is the Demisto Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "47"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    reputationcalc: 1
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 4fde548f-7f83-40d6-8826-8f9941a2f048
+    type: regular
+    task:
+      id: 4fde548f-7f83-40d6-8826-8f9941a2f048
+      version: -1
+      name: Lock the User Profile before modification
+      description: Locks changes for the User Profile by the UserID of the user in
+        Okta. This is used to prevent simultaneous changes to the same User Profile
+        which may result in incorrect updates.
+      script: '|||demisto-lock-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      info:
+        simple: A lock for the User Profile.
+      name:
+        complex:
+          root: Okta.AppUserAssignment
+          accessor: UserID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 9501e39c-3f1a-42f2-8dc8-91140067aaad
+    type: regular
+    task:
+      id: 9501e39c-3f1a-42f2-8dc8-91140067aaad
+      version: -1
+      name: Demisto Lock integration is required
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Please verify that the Demisto Lock integration is installed and is
+          enabled. The integration is needed to ensure that the User Profile indicators
+          are updated correctly.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: a12a1a6a-4a65-4553-80b3-ca6ce0fba25e
+    type: regular
+    task:
+      id: a12a1a6a-4a65-4553-80b3-ca6ce0fba25e
+      version: -1
+      name: Release the User Profile lock
+      description: Release a lock
+      script: '|||demisto-lock-release'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        complex:
+          root: Okta.AppUserAssignment
+          accessor: UserID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: c4d8aeb0-70f9-4868-8fc8-a5aa949104fe
+    type: condition
+    task:
+      id: c4d8aeb0-70f9-4868-8fc8-a5aa949104fe
+      version: -1
+      name: Is the Demisto Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "62"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    reputationcalc: 1
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 071685f4-046c-433c-89e3-16885a1ac8d1
+    type: regular
+    task:
+      id: 071685f4-046c-433c-89e3-16885a1ac8d1
+      version: -1
+      name: Lock the User Profile before modification
+      description: Locks changes for the User Profile by the UserID of the user in
+        Okta. This is used to prevent simultaneous changes to the same User Profile
+        which may result in incorrect updates.
+      script: '|||demisto-lock-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      info:
+        simple: A lock for the User Profile.
+      name:
+        complex:
+          root: Okta.AppUserAssignment
+          accessor: UserID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 82e0dd9d-309d-4e22-882a-91e6994e09f9
+    type: regular
+    task:
+      id: 82e0dd9d-309d-4e22-882a-91e6994e09f9
+      version: -1
+      name: Get new applications for User Profile
+      description: Creates a new value for the User Profile's Application field.
+      scriptName: IAMUpdateApplicationsField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      active:
+        complex:
+          root: IAM.Vendor
+          accessor: active
+      applications:
+        complex:
+          root: indicator.[0].CustomFields
+          accessor: applications
+      brand:
+        complex:
+          root: IAM.Vendor
+          accessor: brand
+      instance_name:
+        complex:
+          root: IAM.Vendor
+          accessor: instanceName
+      user_id:
+        complex:
+          root: IAM.Vendor
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: ede31d63-4786-47a0-8378-6e2029683c6a
+    type: regular
+    task:
+      id: ede31d63-4786-47a0-8378-6e2029683c6a
+      version: -1
+      name: Update the User Profile's applications
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      applications:
+        complex:
+          root: UserApplications
+      id:
+        complex:
+          root: indicator.[0]
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "27_32_Add": 0.61,
+      "27_33_Remove": 0.55,
+      "27_40_#default#": 0.8,
+      "35_26_#default#": 0.21,
+      "35_37_yes": 0.22,
+      "38_18_yes": 0.41,
+      "38_39_#default#": 0.42,
+      "41_42_#default#": 0.29,
+      "46_47_yes": 0.57,
+      "46_48_#default#": 0.39,
+      "61_48_#default#": 0.37,
+      "61_62_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3710,
+        "width": 2560,
+        "x": -800,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: UserRoleToAssignForFailures
+  value: {}
+  required: false
+  description: The Cortex XSOAR role from which to assign users to the incident when
+    a CRUD operation fails. This can be left empty to assign users from all roles.
+  playbookInputQuery:
+- key: UserAssignmentMethod
+  value: {}
+  required: false
+  description: |-
+    Determines the way in which user assignments will be decided in Cortex XSOAR for the failed incidents.
+    Can be one of the following: "random", "machine-learning", "top-user", "less-busy-user", "online", "current".
+    If left empty, users will be assigned randomly.
+  playbookInputQuery:
+- key: AssignOnlyOnCall
+  value: {}
+  required: false
+  description: Determines whether to assign only users that are currently on a shift
+    to failed incidents. Set to "true" to assign only users that are currently working,
+    or set to "false" or leave empty to assign any user.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "User Profile"
+ ],
+ "caseInsensitive": true,
+ "cliName": "terminationdate",
+ "closeForm": false,
+ "content": true,
+ "description": "Termination Date",
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_terminationdate",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Termination Date",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": true,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

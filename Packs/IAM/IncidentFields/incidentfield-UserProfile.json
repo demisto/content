@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IAM - New Hire",
+        "IAM - Terminate User",
+        "IAM - Update User",
+        "User Profile",
+        "IAM - Sync User",
+        "IAM - Rehire User",
+        "IAM - AD User Activation",
+        "IAM - AD User Deactivation"
+    ],
+    "systemAssociatedTypes": [
+        "IAM - AD User Activation",
+        "IAM - AD User Deactivation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "userprofile",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_userprofile",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "UserProfile",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

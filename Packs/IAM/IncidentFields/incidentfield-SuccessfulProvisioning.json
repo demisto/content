@@ -1,0 +1,102 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IAM - New Hire",
+        "IAM - Rehire User",
+        "IAM - Sync User",
+        "IAM - Terminate User",
+        "IAM - Update User",
+        "User Profile"
+    ],
+    "caseInsensitive": true,
+    "cliName": "successfulprovisioning",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Brand Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "brandname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Instance Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "instancename",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Action",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "action",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Skipped",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "skipped",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "boolean",
+            "width": 102
+        },
+        {
+            "displayName": "Skip Reason",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "skipreason",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Details about instances where provisioning was successful.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_successfulprovisioning",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SuccessfulProvisioning",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

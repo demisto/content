@@ -1,0 +1,270 @@
+id: IAM - App Group Sync
+inputs: []
+name: IAM - App Group Sync
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5da5f92-2d21-430d-8d3a-c47b7da9b36d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b5da5f92-2d21-430d-8d3a-c47b7da9b36d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d2dbf4cf-d065-407b-87b9-3800baed9ec6
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d2dbf4cf-d065-407b-87b9-3800baed9ec6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 1
+    scriptarguments:
+      key:
+        simple: GroupSyncSettings
+      value:
+        simple: ${lists.app-group-sync-settings}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 113ef5d1-b2f3-4604-81f4-5ebd0ec1de32
+      iscommand: false
+      name: Load Group Sync Settings
+      script: Set
+      type: regular
+      version: -1
+    taskid: 113ef5d1-b2f3-4604-81f4-5ebd0ec1de32
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 7d649aa8-34a4-4601-82a5-89041499f5e9
+      iscommand: true
+      name: Close Event
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 7d649aa8-34a4-4601-82a5-89041499f5e9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 65e604ea-370b-40c8-8ad6-1a56c8e49407
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: 65e604ea-370b-40c8-8ad6-1a56c8e49407
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      app_instance:
+        simple: ${incident.app}
+      group_data:
+        complex:
+          accessor: okta_groups
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GroupSyncSettings.instance_name
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: incident.app
+          root: GroupSyncSettings
+      okta_instance:
+        simple: Okta
+      retry-count:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Triggers group sync for app instance
+      id: e5ff71a7-b411-4fcd-8b42-2f4bc474d739
+      iscommand: false
+      name: Trigger group sync for each group - Stop on error
+      script: IAMAppProvisioningSyncGroup
+      type: regular
+      version: -1
+    taskid: e5ff71a7-b411-4fcd-8b42-2f4bc474d739
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: okta_groups
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: GroupSyncSettings.instance_name
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: incident.app
+                root: GroupSyncSettings
+          operator: isNotEmpty
+      label: "yes"
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Triggers group sync for app instance
+      id: 5783d409-8fe5-4db0-8eb5-d3d96a26fa71
+      iscommand: false
+      name: Are groups available for sync?
+      type: condition
+      version: -1
+    taskid: 5783d409-8fe5-4db0-8eb5-d3d96a26fa71
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: add description

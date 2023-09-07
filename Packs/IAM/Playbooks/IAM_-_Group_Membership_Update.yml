@@ -1,0 +1,677 @@
+id: IAM - Group Membership Update
+version: -1
+name: IAM - Group Membership Update
+description: Updates user permissions in apps according to their group memberships
+  in Okta.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a0105738-e378-43f4-865b-a0e03c286ed8
+    type: start
+    task:
+      id: a0105738-e378-43f4-865b-a0e03c286ed8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: e56d42b0-736e-4e5b-8470-7d4a15bcdf6b
+    type: regular
+    task:
+      id: e56d42b0-736e-4e5b-8470-7d4a15bcdf6b
+      version: -1
+      name: Clear the context
+      description: Deletes the context to ensure that if the playbook is re-run for
+        any reason, it will not be negatively affected by old data.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 797c2950-96c8-42e6-8894-a3762c04e6c9
+    type: regular
+    task:
+      id: 797c2950-96c8-42e6-8894-a3762c04e6c9
+      version: -1
+      name: Save app instance settings
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: AppInstanceSettings
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: e43fdb23-61b5-4aa3-8850-f516542fbdf3
+    type: regular
+    task:
+      id: e43fdb23-61b5-4aa3-8850-f516542fbdf3
+      version: -1
+      name: Get Okta user assignment details
+      description: Returns information about application's user assignment.
+      script: '|||okta-get-app-user-assignment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      application_id:
+        complex:
+          root: AppInstanceSettings
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AppInstanceSettings.okta_group_ids
+                iscontext: true
+              right:
+                value:
+                  simple: incident.groupid
+                iscontext: true
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: okta_app_id
+      user_id:
+        complex:
+          root: incident
+          accessor: userid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 68db22a8-ec46-4924-8c11-40da5367d29d
+    type: condition
+    task:
+      id: 68db22a8-ec46-4924-8c11-40da5367d29d
+      version: -1
+      name: Ask admins before syncing new group membership
+      description: Sends an email to the admins asking whether the change of permissions
+        to the user is approved in the app.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      Sync:
+      - "74"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.AdminEmail
+      subject:
+        complex:
+          root: incident
+          accessor: email
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' - Membership change for user: '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: AppInstanceName
+                iscontext: true
+              suffix: {}
+      body:
+        simple: |-
+          Please review and approve below sync for:
+          User Display Name: ${indicator.[0].CustomFields.displayname}
+          User Email: ${indicator.[0].CustomFields.email}
+
+          New permissions:
+          ${ExtendedUserProfile}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Sync
+      - Don't Sync
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 56875a17-6f48-4a93-8420-6bf8c57af9cb
+    type: regular
+    task:
+      id: 56875a17-6f48-4a93-8420-6bf8c57af9cb
+      version: -1
+      name: Save app instance name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: AppInstanceName
+      value:
+        complex:
+          root: AppInstanceSettings
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AppInstanceSettings.okta_app_id
+                iscontext: true
+              right:
+                value:
+                  simple: Okta.AppUserAssignment.AppID
+                iscontext: true
+          accessor: instance_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: ca74761d-5d87-4053-80c8-4b16a5d425ea
+    type: regular
+    task:
+      id: ca74761d-5d87-4053-80c8-4b16a5d425ea
+      version: -1
+      name: Get User Profile by user email
+      description: Gets the XSOAR User Profile indicator by the user email.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: type:"User Profile" email:${incident.email}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 219fb12f-f822-409b-83c3-a2706390735d
+    type: condition
+    task:
+      id: 219fb12f-f822-409b-83c3-a2706390735d
+      version: -1
+      name: Was the User Profile found?
+      description: Checks whether a User Profile indicator with the specified email
+        was found in the system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "76"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: indicator
+                accessor: CustomFields
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: d3cf9b34-3f17-48d2-80ba-efaa5148e531
+    type: regular
+    task:
+      id: d3cf9b34-3f17-48d2-80ba-efaa5148e531
+      version: -1
+      name: Combine User Profile with external fields from Okta
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      key:
+        simple: ExtendedUserProfile
+      value:
+        complex:
+          root: indicator.[0]
+          accessor: CustomFields
+          transformers:
+          - operator: b66550af-2ed3-4f67-87fc-5dc7a69b85de
+            args:
+              merge_with:
+                value:
+                  simple: Okta.AppUserAssignment.ProfileInApp
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 5fe5e6f3-22ce-4a2a-8d7b-3e360a49c6d9
+    type: regular
+    task:
+      id: 5fe5e6f3-22ce-4a2a-8d7b-3e360a49c6d9
+      version: -1
+      name: Update the user permissions in the app
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: ExtendedUserProfile
+      using:
+        complex:
+          root: AppInstanceName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 3c9603c0-4b1d-41a1-8b29-683d79be21aa
+    type: title
+    task:
+      id: 3c9603c0-4b1d-41a1-8b29-683d79be21aa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: bcd97969-aa2d-45b9-8ecc-d8c6be67a316
+    type: regular
+    task:
+      id: bcd97969-aa2d-45b9-8ecc-d8c6be67a316
+      version: -1
+      name: Initial user sync required
+      description: The User Profile indicator was not found in Cortex XSOAR. Please
+        make sure that a User Profile indicator with the same email as the user that
+        was assigned to the app exists in the system. If the user does not exist,
+        make sure you follow the User Provisioning flow, as outlined in the ILM (Identity
+        Lifecycle Management) article before running this playbook. Once the initial
+        user sync is performed, you can delete the context in this incident using
+        the “DeleteContext” command, using the “all=yes” argument. After deleting
+        the context, please re-run this playbook.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      message:
+        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please
+          make sure that a User Profile indicator with the same email as the user
+          that was assigned to the app exists in the system. If the user does not
+          exist, make sure you follow the User Provisioning flow, as outlined in the
+          ILM (Identity Lifecycle Management) article before running this playbook.
+          Once the initial user sync is performed, you can delete the context in this
+          incident using the "DeleteContext" command, using the "all=yes" argument.
+          After deleting the context, please re-run this playbook. '
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 20eaf660-b135-4046-83d9-1ea61f7d7efa
+    type: regular
+    task:
+      id: 20eaf660-b135-4046-83d9-1ea61f7d7efa
+      version: -1
+      name: Assign a user to review the incident
+      description: Assigns a user to review the incident according to the playbook
+        inputs specified, or chooses them randomly if none were specified.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      assignBy:
+        complex:
+          root: inputs.UserAssignmentMethod
+      onCall:
+        complex:
+          root: inputs.AssignOnlyOnCall
+      roles:
+        complex:
+          root: inputs.UserRoleToAssignForFailures
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: c9b6aadb-8d69-47bf-8ca4-4ee42620339f
+    type: condition
+    task:
+      id: c9b6aadb-8d69-47bf-8ca4-4ee42620339f
+      version: -1
+      name: Did the update fail?
+      description: Checks whether the app sync process failed for any reason, by checking
+        whether IAM.Vendor.success is equal to "false".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "77"
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                accessor: success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 90d303f9-4c54-4d43-85a2-f2997c6c7671
+    type: regular
+    task:
+      id: 90d303f9-4c54-4d43-85a2-f2997c6c7671
+      version: -1
+      name: Review and fix issues in the incident
+      description: Prints an error entry explaining why the app sync failed.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      message:
+        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName}\
+          \ \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the\
+          \ following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\
+          \nPlease fix the errors and proceed only once the incident can be closed."
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "67_74_Sync": 0.57,
+      "67_78_#default#": 0.49,
+      "70_72_yes": 0.55,
+      "70_76_#default#": 0.39,
+      "78_75_#default#": 0.43,
+      "78_79_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2425,
+        "width": 1570,
+        "x": -380,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: UserRoleToAssignForFailures
+  value: {}
+  required: false
+  description: The Cortex XSOAR role from which to assign users to the incident when
+    a CRUD operation fails. This can be left empty to assign users from all roles.
+  playbookInputQuery:
+- key: UserAssignmentMethod
+  value: {}
+  required: false
+  description: |-
+    Determines the way in which user assignments will be decided in Cortex XSOAR for the failed incidents.
+    Can be one of the following: "random", "machine-learning", "top-user", "less-busy-user", "online", "current".
+    If left empty, users will be assigned randomly.
+  playbookInputQuery:
+- key: AssignOnlyOnCall
+  value: {}
+  required: false
+  description: Determines whether to assign only users that are currently on a shift
+    to failed incidents. Set to "true" to assign only users that are currently working,
+    or set to "false" or leave empty to assign any user.
+  playbookInputQuery:
+- key: AdminEmail
+  value: {}
+  required: false
+  description: The email address of the admin that approves group membership changes.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

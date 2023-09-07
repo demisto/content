@@ -1,0 +1,2520 @@
+id: IAM - Sync User
+version: -1
+name: IAM - Sync User
+description: This playbook runs on fetched Workday events. The events are changes
+  to employee data, which in turn require a CRUD operation across your organization's
+  apps. The playbook examines the data received from Workday, and provisions the changes
+  in a User Profile indicator in Cortex XSOAR as well as all the supported IAM integrations
+  that are active.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b67418a7-ea60-41f3-8cc6-42718afaf35b
+    type: start
+    task:
+      id: b67418a7-ea60-41f3-8cc6-42718afaf35b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+      - "131"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 07d9d4a7-0f00-4414-8d3e-956e2aa36bcc
+    type: title
+    task:
+      id: 07d9d4a7-0f00-4414-8d3e-956e2aa36bcc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1154a2e7-4fff-426a-82cc-3b8b7bb6617d
+    type: condition
+    task:
+      id: 1154a2e7-4fff-426a-82cc-3b8b7bb6617d
+      version: -1
+      name: Was there a failure in any of the actions?
+      description: Checks whether one of the previous CRUD commands failed.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "93"
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IAM.Vendor.success
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 4fc46f01-af9c-40b7-870c-0a436d26e023
+    type: regular
+    task:
+      id: 4fc46f01-af9c-40b7-870c-0a436d26e023
+      version: -1
+      name: Search user profile in XSOAR
+      description: Searches for the User Profile indicator by the user's email or
+        the user's employee ID in Cortex XSOAR.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      fromdate: {}
+      page: {}
+      query:
+        simple: type:"User Profile" (employeeid:"${incident.employeeid}" or email:"${incident.email}")
+          and temporaryuserprofile:F
+      size: {}
+      todate: {}
+      value: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 59e1dda2-ef8b-45e3-8fa6-70095455d3c2
+    type: condition
+    task:
+      id: 59e1dda2-ef8b-45e3-8fa6-70095455d3c2
+      version: -1
+      name: Does the user profile exist?
+      description: Checks if a User Profile indicator with the same email that was
+        searched was found in Cortex XSOAR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "159"
+      "yes":
+      - "163"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: indicator.[0]
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 28cc589f-affd-4ca3-8fc9-74af358cf663
+    type: title
+    task:
+      id: 28cc589f-affd-4ca3-8fc9-74af358cf663
+      version: -1
+      name: New Hire
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "177"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": 4050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: deea6a8b-e149-4cf5-8209-c3ebad51d956
+    type: title
+    task:
+      id: deea6a8b-e149-4cf5-8209-c3ebad51d956
+      version: -1
+      name: Determine Correct Action
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "179"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 43f0558d-7c18-4bd8-85b6-5a4e9533de48
+    type: title
+    task:
+      id: 43f0558d-7c18-4bd8-85b6-5a4e9533de48
+      version: -1
+      name: Terminate User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "174"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 3aa8a5e3-8db7-4d12-8498-cb9dfc9d3061
+    type: title
+    task:
+      id: 3aa8a5e3-8db7-4d12-8498-cb9dfc9d3061
+      version: -1
+      name: Update User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 4065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: e0f0066b-a44c-4e11-8d89-b71c38ef44b9
+    type: title
+    task:
+      id: e0f0066b-a44c-4e11-8d89-b71c38ef44b9
+      version: -1
+      name: Rehire User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "175"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 4065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: c8a0d03b-7e74-4fd4-88aa-9e60ea4ce914
+    type: regular
+    task:
+      id: c8a0d03b-7e74-4fd4-88aa-9e60ea4ce914
+      version: -1
+      name: Close incident
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: dc83eec9-c993-4f65-8d3c-3fad96e3bf92
+    type: regular
+    task:
+      id: dc83eec9-c993-4f65-8d3c-3fad96e3bf92
+      version: -1
+      name: Assign a user to review the incident
+      description: Assigns an analyst to incident according to the inputs specified.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      assignBy:
+        complex:
+          root: inputs.UserAssignmentMethod
+      onCall:
+        complex:
+          root: inputs.AssignOnlyOnCall
+      roles:
+        complex:
+          root: inputs.UserRoleToAssignForFailures
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 6150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: c9cd0bc1-c164-444c-8fee-b7b6ce60b387
+    type: regular
+    task:
+      id: c9cd0bc1-c164-444c-8fee-b7b6ce60b387
+      version: -1
+      name: Review and fix issues in the incident
+      description: Shows an entry with the error details, explaining which instance
+        failed and why.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      message:
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}\
+          \ \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the\
+          \ following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\
+          \nPlease work to fix the errors and proceed only once the incident can be\
+          \ closed."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 6330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 525e9e3c-f8e3-4ec6-8446-113446ccfe64
+    type: regular
+    task:
+      id: 525e9e3c-f8e3-4ec6-8446-113446ccfe64
+      version: -1
+      name: Save failed instances
+      description: Saves instances that were unsuccessful in executing the CRUD commands
+        in a separate context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      key:
+        simple: FailedVendors
+      value:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isFalse
+              left:
+                value:
+                  simple: IAM.Vendor.success
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 5830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: c08793fc-c43f-4953-8e7c-d632d10234b2
+    type: regular
+    task:
+      id: c08793fc-c43f-4953-8e7c-d632d10234b2
+      version: -1
+      name: Display failed instances in incident layout
+      description: Displays instances that were unsuccessful in executing the CRUD
+        commands in the incident layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      columns:
+        simple: Action,Brand Name,Error Code,Error Message,Instance Name
+      context_path:
+        simple: FailedVendors
+      grid_id:
+        simple: failedprovisioning
+      keys:
+        simple: action,brand,errorCode,errorMessage,instanceName
+      overwrite:
+        simple: "true"
+      sort_by:
+        simple: Brand Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 5990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 37175154-50d1-4f1a-8273-a13177233260
+    type: condition
+    task:
+      id: 37175154-50d1-4f1a-8273-a13177233260
+      version: -1
+      name: Were any of the actions successful?
+      description: Checks whether there were successful CRUD operations that were
+        executed so that the data can be saved in the incident layout.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "93"
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SuccessfulVendors
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 5b88e15a-7e34-48b5-85ef-7d66c556e922
+    type: title
+    task:
+      id: 5b88e15a-7e34-48b5-85ef-7d66c556e922
+      version: -1
+      name: Failure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+      - "178"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 5680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: 205ed419-bc6a-4a92-8788-3871335dea8c
+    type: title
+    task:
+      id: 205ed419-bc6a-4a92-8788-3871335dea8c
+      version: -1
+      name: Display Provisioning Status
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "106"
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: ea448026-277a-4c6d-8cf9-d6588a461594
+    type: title
+    task:
+      id: ea448026-277a-4c6d-8cf9-d6588a461594
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 5680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: d76b1e17-aada-4dfe-85bf-d809f3588480
+    type: regular
+    task:
+      id: d76b1e17-aada-4dfe-85bf-d809f3588480
+      version: -1
+      name: Display successful instances in incident layout
+      description: Displays instances that were successful in executing the CRUD commands
+        in the incident layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      columns:
+        simple: Brand Name,Instance Name,Action,Skipped,Skip Reason
+      context_path:
+        simple: SuccessfulVendors
+      grid_id:
+        simple: successfulprovisioning
+      keys:
+        simple: brand,instanceName,action,skipped,reason
+      overwrite:
+        simple: "true"
+      sort_by:
+        simple: Brand Name
+      unpack_nested_elements: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: f0f7f555-6f04-486c-8940-9b0b56c0fab7
+    type: condition
+    task:
+      id: f0f7f555-6f04-486c-8940-9b0b56c0fab7
+      version: -1
+      name: Is the required data available to continue sync?
+      description: Checks whether all mandatory playbook inputs are configured.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "114"
+      "yes":
+      - "129"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ITNotificationEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.employeeid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "114":
+    id: "114"
+    taskid: 4c4adb20-d72a-494a-83bc-fa963d3ba60f
+    type: regular
+    task:
+      id: 4c4adb20-d72a-494a-83bc-fa963d3ba60f
+      version: -1
+      name: Show an error and request additional data to be filled in
+      description: Please configure the required playbook inputs. Then re-run the
+        flow.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      message:
+        simple: Please make sure that the required playbook inputs and Workday fields
+          as stated in the ILM Article documentation are mapped in the mapper. Then
+          re-run this playbook.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "121":
+    id: "121"
+    taskid: d8cdfb5d-5e8d-4776-8e4d-805e1ef0ac82
+    type: regular
+    task:
+      id: d8cdfb5d-5e8d-4776-8e4d-805e1ef0ac82
+      version: -1
+      name: Clear the context
+      description: Deletes the context to ensure that if the playbook is re-run for
+        any reason, it will not be negatively affected by old data.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: SuccessfulVendors
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "124":
+    id: "124"
+    taskid: 9d8100ee-2166-4d83-842e-6c62b1e60ffe
+    type: regular
+    task:
+      id: 9d8100ee-2166-4d83-842e-6c62b1e60ffe
+      version: -1
+      name: Find duplicate incidents
+      description: Searches for older incidents that are duplicates of this incident
+        according to the user email field.
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      filterQuery:
+        simple: type:"IAM - Sync User" or type:"IAM - New Hire" or type:"IAM - Update
+          User" or type:"IAM - Terminate User" or type:"IAM - Rehire User"
+      hoursBack:
+        simple: "48"
+      ignoreClosedIncidents:
+        simple: "yes"
+      similarIncidentFields:
+        simple: email
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "125":
+    id: "125"
+    taskid: cb7b7d36-f561-4729-8fb5-9d6e30ad32ae
+    type: condition
+    task:
+      id: cb7b7d36-f561-4729-8fb5-9d6e30ad32ae
+      version: -1
+      name: Were duplicate incidents found?
+      description: Checks whether at least one duplicate incident was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "128"
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: similarIncidentList
+                accessor: rawId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "126":
+    id: "126"
+    taskid: d33f3f9c-157d-4554-8c2a-8b8171b7b984
+    type: regular
+    task:
+      id: d33f3f9c-157d-4554-8c2a-8b8171b7b984
+      version: -1
+      name: Close duplicate incidents
+      description: Closes the duplicate incidents that were found, with a close reason
+        indicating that they are duplicates of the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "128"
+    scriptarguments:
+      closeNotes:
+        simple: Duplicate of ${incident.id}
+      id:
+        complex:
+          root: similarIncidentList
+          accessor: rawId
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "127":
+    id: "127"
+    taskid: 61c66fc5-0519-4464-88ce-a80aae89c78d
+    type: title
+    task:
+      id: 61c66fc5-0519-4464-88ce-a80aae89c78d
+      version: -1
+      name: Incident Deduplication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "128":
+    id: "128"
+    taskid: 58ce6769-b300-4034-86ab-c66a5ec07df9
+    type: title
+    task:
+      id: 58ce6769-b300-4034-86ab-c66a5ec07df9
+      version: -1
+      name: Input & Incident Data Validation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "129":
+    id: "129"
+    taskid: 5ac9e6b9-1264-4e40-8b70-8e18af663353
+    type: title
+    task:
+      id: 5ac9e6b9-1264-4e40-8b70-8e18af663353
+      version: -1
+      name: User Profile Detection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "131":
+    id: "131"
+    taskid: 0965ccd8-3ecb-4e0e-8d4e-f6b050a80694
+    type: regular
+    task:
+      id: 0965ccd8-3ecb-4e0e-8d4e-f6b050a80694
+      version: -1
+      name: Clear the layout grids
+      description: Deletes the data in the grid fields that are displayed in the incident
+        layout, to ensure that if the playbook is re-run for any reason, it will not
+        be negatively affected by old data.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      failedprovisioning:
+        simple: '[{}]'
+      successfulprovisioning:
+        simple: '[{}]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "132":
+    id: "132"
+    taskid: 1f5159cf-5ba6-4ece-8958-952f26fc3fdd
+    type: condition
+    task:
+      id: 1f5159cf-5ba6-4ece-8958-952f26fc3fdd
+      version: -1
+      name: What incident type was detected?
+      description: Checks the current incident type to determine what action to take.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Hire:
+      - "56"
+      Rehire:
+      - "79"
+      Termination:
+      - "67"
+      Update:
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: Termination
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - Terminate User
+    - label: Rehire
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - Rehire User
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - Update User
+    - label: Hire
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - New Hire
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "140":
+    id: "140"
+    taskid: 536dc79b-04af-4e43-870f-52703c907baf
+    type: condition
+    task:
+      id: 536dc79b-04af-4e43-870f-52703c907baf
+      version: -1
+      name: Was the user's email changed?
+      description: Checks whether the user's email was changed in the HR system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "142"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.email
+            iscontext: true
+          right:
+            value:
+              simple: indicator.[0].value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "141":
+    id: "141"
+    taskid: 67c734a2-ec94-4f66-88d0-4ceb0cb27a70
+    type: regular
+    task:
+      id: 67c734a2-ec94-4f66-88d0-4ceb0cb27a70
+      version: -1
+      name: Delete the old User Profile in XSOAR
+      description: |-
+        Deletes the User Profile in XSOAR, because the value of the User Profile indicator is its email, but the email was changed.
+        By deleting the indicator. we free the email for use in another hire.
+      script: Builtin|||deleteIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      doNotWhitelist:
+        simple: "true"
+      query:
+        simple: type:"User Profile" id:${indicator.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "142":
+    id: "142"
+    taskid: 64564f91-a580-4c6e-892d-a53ad816d5a4
+    type: title
+    task:
+      id: 64564f91-a580-4c6e-892d-a53ad816d5a4
+      version: -1
+      name: Email / Username Changed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "164"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "143":
+    id: "143"
+    taskid: 6ee4dd66-c537-4164-8fba-11d3b517e3b4
+    type: regular
+    task:
+      id: 6ee4dd66-c537-4164-8fba-11d3b517e3b4
+      version: -1
+      name: Delete the indicator from context
+      description: Deletes the found indicator from the context so that the IAM-command-specific
+        playbooks won't attempt to perform actions on the older, deleted indicator.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      key:
+        simple: indicator
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 3205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "144":
+    id: "144"
+    taskid: 9b0f4a5c-e014-4661-8d2f-a584f68d002c
+    type: condition
+    task:
+      id: 9b0f4a5c-e014-4661-8d2f-a584f68d002c
+      version: -1
+      name: Ask admins about partial name match
+      description: Asks the user to choose the correct action to execute on the account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create New Account:
+      - "65"
+      Do Nothing:
+      - "168"
+      Overwrite Existing Account:
+      - "160"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          Hi admins,
+          XSOAR has detected a partial name match.
+          Please review the below information and confirm:
+
+          ${incident.details}
+          Event ID:  ${incident.id}
+          Employee ID: ${incident.employeeid}
+
+          Please select the correct action that should be executed on the account.
+          Note: do NOT re-run this incident without choosing an action here.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Create New Account
+      - Overwrite Existing Account
+      - Do Nothing
+    skipunavailable: false
+    quietmode: 0
+  "146":
+    id: "146"
+    taskid: c3ceb6e0-3ad1-4385-8787-b55201d01e54
+    type: regular
+    task:
+      id: c3ceb6e0-3ad1-4385-8787-b55201d01e54
+      version: -1
+      name: Mark User Profile as not being processed & not temp
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "152"
+    scriptarguments:
+      id:
+        complex:
+          root: indicator.[0]
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: CreatedIndicator.ID
+                iscontext: true
+      isprocessed:
+        complex:
+          root: LeaveUserProfileAsProcessed
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+      temporaryuserprofile:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "147":
+    id: "147"
+    taskid: 71ee7838-0129-4a92-8a9e-d8416c8af0d1
+    type: playbook
+    task:
+      id: 71ee7838-0129-4a92-8a9e-d8416c8af0d1
+      version: -1
+      name: IAM - Custom User Sync
+      playbookName: IAM - Custom User Sync
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "180"
+    scriptarguments:
+      ITNotificationEmail:
+        complex:
+          root: inputs.ITNotificationEmail
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 4470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "152":
+    id: "152"
+    taskid: 799a6d7b-c458-4cfc-8fe3-8e2d5bb29d76
+    type: regular
+    task:
+      id: 799a6d7b-c458-4cfc-8fe3-8e2d5bb29d76
+      version: -1
+      name: Save successful applications as a separate context key
+      description: Saves vendors where provisioning was successful in a separate context
+        key which will be saved throughout playbook re-runs. This will ensure that
+        when the playbook is re-run, only failed ones will run again.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SuccessfulVendors
+      value:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IAM.Vendor.success
+                iscontext: true
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "153":
+    id: "153"
+    taskid: add7820d-2539-4448-8c4d-5f80ac174896
+    type: title
+    task:
+      id: add7820d-2539-4448-8c4d-5f80ac174896
+      version: -1
+      name: Partial Name Match
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "144"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "155":
+    id: "155"
+    taskid: 52c10d85-7330-4725-8755-2959dbeafa99
+    type: condition
+    task:
+      id: 52c10d85-7330-4725-8755-2959dbeafa99
+      version: -1
+      name: Is this a partial name match?
+      description: Checks whether the incident is a partial name match by checking
+        if there is a merged User Profile available for provisioning.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: userprofile
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: mergeduserprofile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "156":
+    id: "156"
+    taskid: 31c6edfa-d609-45f4-8649-d09b1a73b2a2
+    type: regular
+    task:
+      id: 31c6edfa-d609-45f4-8649-d09b1a73b2a2
+      version: -1
+      name: Change incident type and user data to provision
+      description: Changes the incident type to IAM - Rehire User or IAM - Update
+        User according to the status of the Active Directory account, and changes
+        the data that is provisioned to ensure that the update command knows which
+        user to update rather than create a new one.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "161"
+    scriptarguments:
+      details:
+        simple: Partial name match - overwriting existing account.
+      email:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: mergeduserprofile
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: email
+      type:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: mergeduserprofile
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: adaccountstatus
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: IAM - Update User
+              equals:
+                value:
+                  simple: Disabled
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: IAM - Rehire User
+      username:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: mergeduserprofile
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: username
+      userprofile:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: mergeduserprofile
+          - operator: Stringify
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "157":
+    id: "157"
+    taskid: 7668d91e-7d33-47b5-83c6-f34d92235d22
+    type: condition
+    task:
+      id: 7668d91e-7d33-47b5-83c6-f34d92235d22
+      version: -1
+      name: Ask admins about username change
+      description: |-
+        Choose whether to proceed with the username change or not.
+        Note: do NOT re-run this incident without choosing an action here.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Change Username:
+      - "141"
+      Do Nothing:
+      - "166"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "158":
+    id: "158"
+    taskid: 419350d9-4477-46e7-83de-b63efcc5c56a
+    type: title
+    task:
+      id: 419350d9-4477-46e7-83de-b63efcc5c56a
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "146"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 4065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "159":
+    id: "159"
+    taskid: 1c843dff-ae78-4c15-8a10-8aefe00e3d44
+    type: regular
+    task:
+      id: 1c843dff-ae78-4c15-8a10-8aefe00e3d44
+      version: -1
+      name: Create new user profile in XSOAR and set as processed
+      description: Creates a new User Profile indicator with the user's data received
+        from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the
+        User Profile to Pending.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      active:
+        simple: "true"
+      customFields:
+        complex:
+          root: incident
+          accessor: userprofile
+      isprocessed:
+        simple: "true"
+      merge:
+        simple: "true"
+      temporaryuserprofile:
+        simple: "true"
+      type:
+        simple: User Profile
+      value:
+        complex:
+          root: incident
+          accessor: email
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "160":
+    id: "160"
+    taskid: e8b3bbac-a2d6-465c-8c59-c4e175b84be3
+    type: regular
+    task:
+      id: e8b3bbac-a2d6-465c-8c59-c4e175b84be3
+      version: -1
+      name: Delete the newly-created User Profile in XSOAR
+      description: commands.local.cmd.delete.indicators
+      script: Builtin|||deleteIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      doNotWhitelist:
+        simple: "true"
+      query:
+        simple: type:"User Profile" (employeeid:"${incident.employeeid}" or email:${incident.email})
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 2765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "161":
+    id: "161"
+    taskid: 88e09b99-c655-4156-86f6-99c6a584fa9e
+    type: regular
+    task:
+      id: 88e09b99-c655-4156-86f6-99c6a584fa9e
+      version: -1
+      name: Search user profile in XSOAR with the old conflicting email
+      description: Searches for the User Profile indicator by the user's email or
+        the user's employee ID in Cortex XSOAR.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: type:"User Profile" email:${incident.email}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "162":
+    id: "162"
+    taskid: e2a310b3-fd76-49a3-8f3a-4db3388dc395
+    type: regular
+    task:
+      id: e2a310b3-fd76-49a3-8f3a-4db3388dc395
+      version: -1
+      name: Delete the indicator from context
+      description: Deletes the found indicator from the context so that the IAM-command-specific
+        playbooks won't attempt to perform actions on the older, deleted indicator.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      key:
+        simple: indicator
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "163":
+    id: "163"
+    taskid: 29d3d797-35cf-4d9c-83af-92b580f6a810
+    type: regular
+    task:
+      id: 29d3d797-35cf-4d9c-83af-92b580f6a810
+      version: -1
+      name: Mark User Profile as being processed
+      description: Marks the existing User Profile as processed. As long as there
+        are no changes in the report, new incidents for this User Profile won't be
+        created. This is also used to prevent the previous User Profile from being
+        detected as "orphan" (because its email was changed, so it doesn't appear
+        in the report with the same email anymore).
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "140"
+    scriptarguments:
+      id:
+        complex:
+          root: indicator.[0]
+          accessor: id
+      isprocessed:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "164":
+    id: "164"
+    taskid: acfd0696-1e32-43f4-8b83-98b32a5a7ad2
+    type: regular
+    task:
+      id: acfd0696-1e32-43f4-8b83-98b32a5a7ad2
+      version: -1
+      name: Create new user profile in XSOAR, set as processed & temp
+      description: Creates a new User Profile indicator with the user's data received
+        from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the
+        User Profile to Pending.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "157"
+    scriptarguments:
+      active:
+        simple: "true"
+      customFields:
+        complex:
+          root: incident
+          accessor: userprofile
+      isprocessed:
+        simple: "true"
+      temporaryuserprofile:
+        simple: "true"
+      type:
+        simple: User Profile
+      value:
+        complex:
+          root: incident
+          accessor: email
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "166":
+    id: "166"
+    taskid: 39837c28-3b88-436b-8850-7caebc29b2e7
+    type: condition
+    task:
+      id: 39837c28-3b88-436b-8850-7caebc29b2e7
+      version: -1
+      name: Waiting to free up the User Profile email
+      description: "The email ${incident.email} is now occupied and cannot be used\
+        \ for any new employee. \nYou should proceed with this incident only after\
+        \ you fix the issue in the HR system report.\nYou should revert the change\
+        \ back from the new email ${incident.email} to the old email ${indicator.[0].value}.\n\
+        After reverting the change in the report, ${incident.email} will be free to\
+        \ use by other employees again."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Proceed:
+      - "167"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 2915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "167":
+    id: "167"
+    taskid: c83e1b2b-d052-4fcd-8e8e-3cce9a9fb887
+    type: regular
+    task:
+      id: c83e1b2b-d052-4fcd-8e8e-3cce9a9fb887
+      version: -1
+      name: Delete the newly created User Profile in XSOAR
+      description: |-
+        Deletes the User Profile in XSOAR, because the value of the User Profile indicator is its email, but the email was changed.
+        By deleting the indicator. we free the email for use in another hire.
+      script: Builtin|||deleteIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      doNotWhitelist:
+        simple: "true"
+      query:
+        simple: type:"User Profile" email:"${incident.email}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "168":
+    id: "168"
+    taskid: 6e85e4fd-910a-4f9d-8fc9-d4738d3cfd57
+    type: condition
+    task:
+      id: 6e85e4fd-910a-4f9d-8fc9-d4738d3cfd57
+      version: -1
+      name: Fix the report before proceeding
+      description: Make sure that the irrelevant report entry is removed in the HR
+        system before proceeding.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Report Was Fixed:
+      - "169"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 2765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "169":
+    id: "169"
+    taskid: 0d96c35c-36b4-43f2-8b56-2358df2c6b55
+    type: regular
+    task:
+      id: 0d96c35c-36b4-43f2-8b56-2358df2c6b55
+      version: -1
+      name: Delete the newly created User Profile in XSOAR
+      description: commands.local.cmd.delete.indicators
+      script: Builtin|||deleteIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "170"
+    scriptarguments:
+      doNotWhitelist:
+        simple: "true"
+      query:
+        simple: type:"User Profile" (employeeid:"${incident.employeeid}" or email:${incident.email})
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 2975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "170":
+    id: "170"
+    taskid: 01df0dac-2d7e-471b-8da0-cecbeff5bc6c
+    type: title
+    task:
+      id: 01df0dac-2d7e-471b-8da0-cecbeff5bc6c
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "93"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 4050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "174":
+    id: "174"
+    taskid: 37a41bbf-b798-43d0-8e43-16cb24f455fd
+    type: playbook
+    task:
+      id: 37a41bbf-b798-43d0-8e43-16cb24f455fd
+      version: -1
+      name: IAM - Terminate User
+      description: This playbook sets the user status to terminated in the organization
+        by updating the incident information and User Profile indicator with values
+        indicating termination, and disabling the account in the supported apps.
+      playbookName: IAM - Terminate User
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CreatedIndicator:
+        complex:
+          root: CreatedIndicator
+      ITNotificationEmail:
+        complex:
+          root: inputs.ITNotificationEmail
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+          transformers:
+          - operator: uniq
+      indicator:
+        complex:
+          root: indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "175":
+    id: "175"
+    taskid: d5b6bf45-3ef3-444b-8ea5-0af4fced2b82
+    type: playbook
+    task:
+      id: d5b6bf45-3ef3-444b-8ea5-0af4fced2b82
+      version: -1
+      name: IAM - Rehire User
+      description: This playbook set a user's status in the organization to rehired
+        by updating the incident information and User Profile indicator with values
+        indicating a rehire, and enabling the account in the supported apps.
+      playbookName: IAM - Rehire User
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CreatedIndicator:
+        complex:
+          root: CreatedIndicator
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+          transformers:
+          - operator: uniq
+      indicator:
+        complex:
+          root: indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "176":
+    id: "176"
+    taskid: 1e1912e5-9d25-4d47-85d6-f9b4d4d871ba
+    type: playbook
+    task:
+      id: 1e1912e5-9d25-4d47-85d6-f9b4d4d871ba
+      version: -1
+      name: IAM - Update User
+      description: This playbook updates users in the organization by updating the
+        incident information and User Profile indicator with the updated values, and
+        updating the account in the supported apps. with the new information.
+      playbookName: IAM - Update User
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CreatedIndicator:
+        complex:
+          root: CreatedIndicator
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+          transformers:
+          - operator: uniq
+      indicator:
+        complex:
+          root: indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "177":
+    id: "177"
+    taskid: e91ff08c-a5ae-4c19-8000-27f51378ee89
+    type: playbook
+    task:
+      id: e91ff08c-a5ae-4c19-8000-27f51378ee89
+      version: -1
+      name: IAM - New Hire
+      description: This playbook creates users across all available organization applications
+        from new hire events fetched from Workday.
+      playbookName: IAM - New Hire
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CreatedIndicator:
+        complex:
+          root: CreatedIndicator
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+          transformers:
+          - operator: uniq
+      indicator:
+        complex:
+          root: indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "178":
+    id: "178"
+    taskid: 31dcf822-11d2-4c50-8376-3d7ffbb2948f
+    type: playbook
+    task:
+      id: 31dcf822-11d2-4c50-8376-3d7ffbb2948f
+      version: -1
+      name: IAM - Send Failed Instances Notification
+      playbookName: IAM - Send Failed Instances Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      FailedInstances:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isFalse
+              left:
+                value:
+                  simple: IAM.Vendor.success
+                iscontext: true
+      ITNotificationEmail:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 5830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "179":
+    id: "179"
+    taskid: 69b21f69-5605-4ef4-8977-e3b36f883ccc
+    type: playbook
+    task:
+      id: 69b21f69-5605-4ef4-8977-e3b36f883ccc
+      version: -1
+      name: IAM - Custom Pre-provisioning
+      playbookName: IAM - Custom Pre-provisioning
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      ITNotificationEmail:
+        complex:
+          root: inputs.ITNotificationEmail
+      user_profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "180":
+    id: "180"
+    taskid: d9a44355-8179-49a3-8308-51b73edcf064
+    type: playbook
+    task:
+      id: d9a44355-8179-49a3-8308-51b73edcf064
+      version: -1
+      name: IAM - Custom Post-provisioning
+      playbookName: IAM - Custom Post-provisioning
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      ITNotificationEmail: {}
+      SuccessfulVendors:
+        complex:
+          root: SuccessfulVendors
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "106_93_#default#": 0.21,
+      "113_129_yes": 0.38,
+      "125_126_yes": 0.61,
+      "125_128_#default#": 0.33,
+      "132_56_Hire": 0.7,
+      "132_78_Update": 0.61,
+      "132_79_Rehire": 0.53,
+      "140_142_yes": 0.39,
+      "140_65_#default#": 0.16,
+      "144_160_Overwrite Existing Account": 0.58,
+      "144_65_Create New Account": 0.12,
+      "155_153_yes": 0.49,
+      "155_65_#default#": 0.14,
+      "157_166_Do Nothing": 0.39,
+      "166_167_Proceed": 0.36,
+      "168_169_Report Was Fixed": 0.54,
+      "27_93_#default#": 0.21,
+      "55_159_#default#": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6765,
+        "width": 4740,
+        "x": -790,
+        "y": -10
+      }
+    }
+  }
+inputs:
+- key: ITNotificationEmail
+  value: {}
+  required: true
+  description: Email to notify about errors in the provisioning process.
+  playbookInputQuery:
+- key: UserRoleToAssignForFailures
+  value: {}
+  required: false
+  description: The Cortex XSOAR role from which to assign users to the incident when
+    a CRUD operation fails. This can be left empty to assign users from all roles.
+  playbookInputQuery:
+- key: UserAssignmentMethod
+  value: {}
+  required: false
+  description: |-
+    Determines the way in which user assignments will be decided in Cortex XSOAR for the failed incidents.
+    Can be one of the following: "random", "machine-learning", "top-user", "less-busy-user", "online", "current".
+    If left empty, users will be assigned randomly.
+  playbookInputQuery:
+- key: AssignOnlyOnCall
+  value: {}
+  required: false
+  description: Determines whether to assign only users that are currently on a shift
+    to failed incidents. Set to "true" to assign only users that are currently working,
+    or set to "false" or leave empty to assign any user.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

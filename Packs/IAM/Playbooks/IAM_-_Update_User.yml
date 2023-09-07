@@ -1,0 +1,518 @@
+id: IAM - Update User
+version: -1
+name: IAM - Update User
+description: This playbook updates users in the organization by updating the incident
+  information and User Profile indicator with the updated values, and updating the
+  account in the supported apps. with the new information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: af6d2d89-e8bc-46c2-80c3-344652ff8373
+    type: start
+    task:
+      id: af6d2d89-e8bc-46c2-80c3-344652ff8373
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4e3ea1da-92ca-4047-80e2-a07b429bdc56
+    type: title
+    task:
+      id: 4e3ea1da-92ca-4047-80e2-a07b429bdc56
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 900391e3-edb5-4367-820d-520cc8afbb34
+    type: regular
+    task:
+      id: 900391e3-edb5-4367-820d-520cc8afbb34
+      version: -1
+      name: Update user profile information & incident type
+      description: Updates the User Profile indicator information in Cortex XSOAR
+        with the updated information retrieved from the Workday report. Also sets
+        the event action to Update.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "92"
+      - "89"
+    scriptarguments:
+      customFields:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+      retry-count:
+        simple: "3"
+      sourceoftruth:
+        complex:
+          root: incident
+          accessor: sourceoftruth
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Event Action
+      output:
+        simple: Update
+    - incidentfield: type
+      output:
+        simple: IAM - Update User
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 6e06da3c-294c-4614-8b32-a160b62c1149
+    type: regular
+    task:
+      id: 6e06da3c-294c-4614-8b32-a160b62c1149
+      version: -1
+      name: Update user in in all apps & create if missing
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      retry-count:
+        simple: "30"
+      retry-interval:
+        simple: "60"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+      using:
+        complex:
+          root: InstancesForProvisioning
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 66c55522-8be3-463c-8401-a08bc1a6692b
+    type: regular
+    task:
+      id: 66c55522-8be3-463c-8401-a08bc1a6692b
+      version: -1
+      name: Update the user in Active Directory
+      description: Updates an existing user with the data in the User Profile indicator
+        that is passed in the user-profile argument.
+      script: Active Directory Query v2|||iam-update-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      allow-enable:
+        simple: "false"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 84c84480-2289-4ed4-80c8-d11b45210d00
+    type: regular
+    task:
+      id: 84c84480-2289-4ed4-80c8-d11b45210d00
+      version: -1
+      name: Save instances for provisioning from list
+      description: Saves the instances names were provisioning should occur according
+        to the app-provisioning-settings list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append: {}
+      key:
+        simple: AllInstances
+      stringify: {}
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: ${.=true}
+                iscontext: true
+              field:
+                value:
+                  simple: update_user_enabled
+              getField:
+                value:
+                  simple: instance_name
+              stringify:
+                value:
+                  simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: 4bd5461e-63b3-4b86-852f-e7d44125af1c
+    type: condition
+    task:
+      id: 4bd5461e-63b3-4b86-852f-e7d44125af1c
+      version: -1
+      name: Are there instances where provisioning should occur?
+      description: Checks whether there is any instance where provisioning was not
+        yet run successfully and should run.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InstancesForProvisioning
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 63b0052a-4208-4ace-8959-37c8b728ded4
+    type: condition
+    task:
+      id: 63b0052a-4208-4ace-8959-37c8b728ded4
+      version: -1
+      name: Was the user already provisioned in AD successfully?
+      description: Checks whether the user was already provisioned successfully to
+        Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SuccessfulVendors
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 0206edab-7894-4b22-8dfc-c28c7748b239
+    type: regular
+    task:
+      id: 0206edab-7894-4b22-8dfc-c28c7748b239
+      version: -1
+      name: Get all available IAM instances
+      description: Gets all currently enabled integration instances.
+      scriptName: GetEnabledInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 3d6fb4aa-5678-4476-8873-56e586225fcb
+    type: regular
+    task:
+      id: 3d6fb4aa-5678-4476-8873-56e586225fcb
+      version: -1
+      name: Get instances that require provisioning
+      description: Gets only the available IAM instances from the instance list.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      key:
+        simple: InstancesForProvisioning
+      value:
+        complex:
+          root: AllInstances
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: EnabledInstances
+                iscontext: true
+          - - operator: notIn
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.SuccessfulVendors.instanceName
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "91_20_#default#": 0.49,
+      "91_87_yes": 0.41,
+      "92_20_yes": 0.21,
+      "92_88_#default#": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 910,
+        "x": 650,
+        "y": -20
+      }
+    }
+  }
+inputs:
+- key: indicator
+  value:
+    complex:
+      root: indicator
+  required: false
+  description: The User Profile indicator, if the indicator was found on the system
+    during previous search.
+  playbookInputQuery:
+- key: CreatedIndicator
+  value:
+    complex:
+      root: CreatedIndicator
+  required: false
+  description: The created User Profile indicator, if created previously in the IAM
+    - Sync User playbook.
+  playbookInputQuery:
+- key: SuccessfulVendors
+  value:
+    complex:
+      root: IAM.Vendor
+      filters:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IAM.Vendor.success
+            iscontext: true
+  required: false
+  description: Vendors where provisioning was successful. This input is used to ensure
+    that on playbook reruns, provisioning will be retried only with vendors that previously
+    failed.
+  playbookInputQuery:
+outputs:
+- contextPath: IAM.Vendor
+  description: Command context path
+- contextPath: IAM.Vendor.active
+  description: Gives the active status of user. Can be true or false.
+- contextPath: IAM.Vendor.brand
+  description: Name of the Integration
+- contextPath: IAM.Vendor.details
+  description: Gives the detail error information
+- contextPath: IAM.Vendor.email
+  description: Value of email ID passed as argument
+- contextPath: IAM.Vendor.errorCode
+  description: HTTP error response code
+- contextPath: IAM.Vendor.errorMessage
+  description: Reason why the API is failed
+- contextPath: IAM.Vendor.id
+  description: Value of id passed as argument
+- contextPath: IAM.Vendor.instanceName
+  description: Name of the instance used for testing
+- contextPath: IAM.Vendor.success
+  description: Status of the result. Can be true or false.
+- contextPath: IAM.Vendor.username
+  description: Value of username passed as argument
+- contextPath: IAM.Vendor.action
+  description: Value of action passed as argument
+  type: unknown
+- contextPath: IAM.UserProfile
+  description: The user's profile.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

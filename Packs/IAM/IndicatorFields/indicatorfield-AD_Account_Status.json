@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "caseInsensitive": true,
+    "cliName": "adaccountstatus",
+    "closeForm": false,
+    "content": true,
+    "description": "The status of the user account in Active Directory. Can be Enabled, Disabled or Pending.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_adaccountstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "AD Account Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "Enabled",
+        "Disabled",
+        "Pending"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

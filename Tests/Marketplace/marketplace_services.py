@@ -1103,10 +1103,10 @@ class Pack:
                 task_status = True
                 return None
 
-            with open(pack_index_metadata_path) as metadata_file:
-                downloaded_metadata = json.load(metadata_file)
+            # with open(pack_index_metadata_path) as metadata_file:
+            #     downloaded_metadata = json.load(metadata_file)
 
-            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
+            previous_commit_hash = current_commit_hash
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)

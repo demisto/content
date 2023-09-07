@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#c5fe01",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "IAM - App Update",
+    "layout": "IAM - App Update",
+    "locked": false,
+    "name": "IAM - App Update",
+    "playbookId": "IAM - App Update",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}
