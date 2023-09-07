@@ -400,7 +400,7 @@ script:
     - description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: to
       required: true
-    - description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation."
+    - description: Free-text query, For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
       name: query
     - description: Paginate next set of results.
       name: query_id
