@@ -47,14 +47,14 @@ Run the specified command on the remote system with SSH.
 `ssh`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cmd | Command to run on the remote machine. | Required | 
-| additional_password | Password required to match the Additional Password parameter if it was supplied to run the command. | Optional | 
-| timeout | Timeout for command in seconds. | Optional | 
-| system | System to run the command on. | Optional | 
-| host | Host name to run the command on. | Optional | 
-| port | Port to run the command on. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| cmd | Command to run on the remote machine. You can pass concatenated commands as an argument by ';', when executing several commands simultaneously in a single SSH session. For example: 'echo1;echo2' | Required | 
+| additional_password | Password required to match the Additional Password parameter if it was supplied to run the command.                                                                                                | Optional | 
+| timeout | Timeout for command in seconds.                                                                                                                                                                    | Optional | 
+| system | System to run the command on.                                                                                                                                                                      | Optional | 
+| host | Host name to run the command on.                                                                                                                                                                   | Optional | 
+| port | Port to run the command on.                                                                                                                                                                        | Optional | 
 
 
 #### Context Output

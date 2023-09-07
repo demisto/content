@@ -196,24 +196,23 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
     Returns:
         (CommandResults).
     """
-    commands_lst: list = argToList(args.get('cmd', ''))
-    commands_for_exec = '\n'.join(commands_lst)
+    command: str = args.get('cmd', '')
     timeout: Optional[int] = arg_to_number(args.get('timeout'))
     # exec_command returns a tuple of stdin, stdout, stderr. No need to parse stdin because it does not contain data.
-    _, stdout, std_err = ssh_client.exec_command(commands_for_exec, timeout=timeout)
+    _, stdout, std_err = ssh_client.exec_command(command, timeout=timeout)
     stdout_str: str = stdout.read().decode()
     std_error_str: str = std_err.read().decode()
     if stdout_str or std_error_str:
         outputs: Optional[List[Dict]] = [{
             'output': stdout_str,
             'error': std_error_str,
-            'command': commands_for_exec,
+            'command': command,
             'success': not std_error_str
         }]
-        readable_output = tableToMarkdown(f'Commands {commands_for_exec} Outputs', outputs, removeNull=True)
+        readable_output = tableToMarkdown(f'Command {command} Outputs', outputs, removeNull=True)
     else:
         outputs = None
-        readable_output = f'### Commands {commands_for_exec} was executed successfully without any outputs.'
+        readable_output = f'### Command {command} was executed successfully without any outputs.'
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
         outputs=outputs,
