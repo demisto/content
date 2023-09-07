@@ -17,7 +17,10 @@
         "Firewall",
         "vsys",
         "SASE",
-        "Access"
+        "Access",
+        "Sinkhole",
+        "Sinkholing",
+        "DNS Sinkhole"
     ],
     "dependencies": {
         "CommonPlaybooks": {
