@@ -463,7 +463,7 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
         Entitlement components
     """
     parts = entitlement.split('@')
-    if len(parts) <= 2:
+    if len(parts) < 2:
         raise DemistoException("entitlement can't be parsed")
     guid = parts[0]
     id_and_task = parts[1].split('|')
