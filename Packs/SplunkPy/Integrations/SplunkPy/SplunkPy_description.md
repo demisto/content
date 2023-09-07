@@ -10,20 +10,14 @@ For example:
 TestUser@_basic
 
 There are two main use cases for the SplunkPy integration. 
-- Splunk Enterprise Security Users
-  - Fetching notable events
-    - How to configure
-    - Enriching Notable Events
-      - Enrichment types
-      - How to configure
-      - Troubleshooting enrichment status
-      - Resetting the enriching fetch mechanism
-      - Limitations
-    - Incident Mirroring
-    - Existing users
-- Splunk non-Enterprise Security Users
-    - Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
-    - Constraints
+- [Splunk Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-enterprise-security-users)
+  - [Fetching notable events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#fetching-notable-events)
+  - [Enriching Notable Events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#enriching-notable-events)
+  - [Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#incident-mirroring)
+  - [Existing users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#existing-users)
+- [Splunk non-Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-non-enterprise-security-users)
+  - [Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
+  - [Constraints](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#constraints)
 
 ***
 # Splunk Enterprise Security Users
