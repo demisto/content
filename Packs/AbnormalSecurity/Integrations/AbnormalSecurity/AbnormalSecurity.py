@@ -1,14 +1,35 @@
 import demistomock as demisto
+from datetime import datetime
 from CommonServerPython import *
+from typing import Dict, Any
+import logging
+import json
+
 
 import urllib3
 
 urllib3.disable_warnings()
 
 
+DEFAULT_INTERVAL = 30
+DEFAULT_TIMEOUT = 600
+FETCH_LIMIT = 200
+MAX_PAGE_SIZE = 100
+
+
+XSOAR_SEVERITY_BY_AMP_SEVERITY = {
+    "Low": IncidentSeverity.LOW,
+    "Medium": IncidentSeverity.MEDIUM,
+    "High": IncidentSeverity.HIGH,
+    "Critical": IncidentSeverity.CRITICAL,
+}
+
+ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=300)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=600)
 
     def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id, subtenant):
         params = assign_params(subtenant)
@@ -634,39 +655,93 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
         raw_response=response
     )
 
-  return command_results
+    return command_results
 
-def convert_to_incidents(events):
-    return [{'name':'', 'occurred':'', 'details':''} for event in events]
+def generate_threat_incidents(threats, current_iso_format_time):
+    incidents = []
+    for threat in threats:
+        incident = {"name": threat["threatId"], "occurred": current_iso_format_time, 'details': "Threat"}
+        incidents.append(incident)
+    return incidents
 
-def fetch_incidents(client : Client, params):
-    max_results = arg_to_number(arg=params.get('max_fetch', 20), arg_name='max_fetch', required=False)
-    first_fetch_time = arg_to_datetime(params.get('first_fetch'), "1 hour").strftime(DATE_FORMAT)
+def generate_abuse_campaign_incidents(campaigns, current_iso_format_time):
+    incidents = []
+    for campaign in campaigns:
+        incident = {"name": campaign["campaignId"], "occurred": current_iso_format_time, 'details': "Abuse Campaign"}
+        incidents.append(incident)
+    return incidents
+def generate_account_takeover_cases_incidents(cases, current_iso_format_time):
+    incidents = []
+    for case in cases:
+        incident = {"name": case["caseId"], "occurred": current_iso_format_time, 'details': case['description']}
+        incidents.append(incident)
+    return incidents
 
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get('last_fetch', first_fetch_time)
-    threats_filter_str = f"receivedTime gte {last_fetch}"
+def fetch_incidents(
+        client: Client,
+        last_run: Dict[str, Any],
+        first_fetch_time: str,
+        max_incidents_to_fetch: int = FETCH_LIMIT,
+):
+    """
+    Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
 
-    threats = client.get_a_list_of_threats_request(filter_=threats_filter_str)
-    threat_incidents = convert_to_incidents(threats)
+    Parameters:
+    - client (Client): Client object to interact with the API.
+    - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
+    - first_fetch_time (str): ISO formatted string indicating the first time from which to start fetching incidents.
+    - max_incidents_to_fetch (int, optional): Maximum number of incidents to fetch. Defaults to FETCH_LIMIT.
 
-    abusecampaigns_filter_str = f"lastReportedTime gte {last_fetch}"
-    abuse_campaigns = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_=abusecampaigns_filter_str)
-    abuse_campaign_incidents = convert_to_incidents(abuse_campaigns)
+    Returns:
+    - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
+    """
 
-    cases_filter_str = f"createdTime gte {last_fetch}"
-    cases = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_=cases_filter_str)
-    cases_incidents = convert_to_incidents(cases)
+    last_fetch = last_run.get("last_fetch", first_fetch_time)
+    last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
+    last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    all_incidents = threat_incidents + abuse_campaign_incidents + cases_incidents
+    current_datetime = datetime.utcnow().astimezone(timezone.utc)
+    current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-    if all_incidents:
-        last_fetch = ""
+    # Fetching threats
+    threats_filter = f"receivedTime gte {last_fetch}"
+    try:
+        threats_response = client.get_a_list_of_threats_request(filter_=threats_filter)
+    except Exception as e:
+        logging.error(f"Failed to fetch threats: {e}")
+        threats_response = {"threats": []}
+    threat_incidents = generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
 
-    next_run = {"last_fetch":last_fetch}
+    # Fetching abuse campaigns
+    abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
+    try:
+        abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+            filter_=abuse_campaigns_filter)
+    except Exception as e:
+        logging.error(f"Failed to fetch abuse campaigns : {e}")
+        abuse_campaigns_response = {"campaigns": []}
+    abuse_campaigns_incidents = generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
+
+    # Fetching account_takeover_cases
+    account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
+    try:
+        account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
+            filter_=account_takeover_cases_filter)
+    except Exception as e:
+        logging.error(f"Failed to fetch account takeover cases: {e}")
+        account_takeover_cases_response = {"cases": []}
+    account_takeover_cases_incidents = generate_account_takeover_cases_incidents(account_takeover_cases_response.get('cases', []), current_iso_format_time)
+
+    all_incidents = threat_incidents + abuse_campaigns_incidents + account_takeover_cases_incidents
+
+    logging.debug(f"willy log - all incidents {all_incidents}")
+
+
+    next_run = {
+        "last_fetch": current_iso_format_time
+    }
 
     return next_run, all_incidents
-
 
 
 def test_module(client):
@@ -742,10 +817,19 @@ def main():
             headers['Mock-Data'] = "True"
             test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
-        elif command == 'fetch_incidents':
-           next_run, incidents = fetch_incidents(client, params)
-           demisto.setLastRun(next_run)
-           demisto.incidents(incidents)
+        elif command == 'fetch-incidents':
+            max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
+            first_fetch_datetime = arg_to_datetime(arg=params["first_fetch"], arg_name="First fetch time", required=True)
+            logging.debug(f"Willy log - the first fetch time is {first_fetch_datetime}")
+            first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                max_incidents_to_fetch=max_incidents_to_fetch,
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore
         else:
