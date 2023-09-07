@@ -29,7 +29,7 @@ dependson:
   - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
-dockerimage: demisto/python3:3.10.13.72123
+dockerimage: demisto/python3:3.10.13.73190
 enabled: true
 name: AWSRecreateSG
 runas: DBotWeakRole
