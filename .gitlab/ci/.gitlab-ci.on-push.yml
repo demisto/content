@@ -630,6 +630,8 @@ tests_xsoar_server-test_playbooks_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends: .server_test_playbooks_report
   needs: ["tests_xsoar_server"]
+  dependencies:
+    - "tests_xsoar_server: [Server Master]"
 
 xsiam_server_ga-test_playbooks_results:
   variables:
