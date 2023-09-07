@@ -719,7 +719,7 @@ def test_check_start_time_format__wrong_format():
 
 
 def test_test_moudle__reciving_errors(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException('Invalid access token'))
@@ -729,7 +729,7 @@ def test_test_moudle__reciving_errors(mocker):
 
 
 def test_test_moudle__reciving_errors1(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("The Token's Signature resulted invalid"))
@@ -739,7 +739,7 @@ def test_test_moudle__reciving_errors1(mocker):
 
 
 def test_test_moudle__reciving_errors2(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("Invalid client_id or client_secret"))
@@ -749,7 +749,7 @@ def test_test_moudle__reciving_errors2(mocker):
 
 
 def test_test_moudle__reciving_errors3(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("mockerror"))
@@ -1783,7 +1783,7 @@ def test_zoom_send_notification_command(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient",
                     bot_client_secret="mocksecret")
-    client.botJid = 'mock_bot'
+    client.bot_jid = 'mock_bot'
 
     expected_request_payload = {
         'robot_jid': 'mock_bot',
@@ -1871,8 +1871,8 @@ def test_get_user_id_from_token(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(client, 'zoom_get_user_id_from_token', return_value={'id': 'mock_user_id'})
     # Call the function
-    from Zoom import get_user_id_from_token
-    result = get_user_id_from_token(client)
+    from Zoom import get_admin_user_id_from_token
+    result = get_admin_user_id_from_token(client)
 
     # Assert the result
     assert result == 'mock_user_id'
@@ -1888,9 +1888,9 @@ def test_mirror_investigation_create_new_channel(mocker):
     Zoom.LONG_RUNNING = True
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    client.botJid = 'mock_jid'
+    client.bot_jid = 'mock_jid'
     mocker.patch.object(client, 'zoom_send_notification')
-    mocker.patch.object(Zoom, 'get_user_id_from_token', return_value='mock_user_id')
+    mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
     mocker.patch.object(Zoom, 'zoom_create_channel_command',
                         return_value=CommandResults(outputs={"jid": "mock_jid", "id": "mock_id"}))
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'mock_server_url'})
@@ -1902,7 +1902,6 @@ def test_mirror_investigation_create_new_channel(mocker):
         'direction': 'Both',
         'channelName': 'mirror-channel',
         'autoclose': True,
-        'kickAdmin': False
     }
 
     # Call the function
@@ -2005,7 +2004,7 @@ async def test_answer_question(mocker):
     }
     Zoom.CLIENT = Client(base_url='https://test.com', account_id="mockaccount",
                          client_id="mockclient", client_secret="mocksecret")
-    Zoom.CLIENT.botJid = 'mock_bot_id'
+    Zoom.CLIENT.bot_jid = 'mock_bot_id'
     mocker.patch.object(Zoom, 'process_entitlement_reply')
 
     from Zoom import answer_question
@@ -2036,31 +2035,30 @@ async def test_process_entitlement_reply(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     # Mock the CLIENT.zoom_send_notification function
     Zoom.CLIENT = client
-    # mock_zoom_send_notification = mocker.patch(client, 'zoom_send_notification')
     mock_zoom_send_notification = mocker.AsyncMock()
-    mock_zoom_send_notification = mock_zoom_send_notification.patch('Zoom.CLIENT.zoom_send_notification')
+    mock_zoom_send_notification = mocker.patch.object(Zoom, 'zoom_send_notification_async')
 
     # Call the function with the mocked parameters
     from Zoom import process_entitlement_reply
     await process_entitlement_reply(mock_entitlement_reply, mock_account_id, mock_robot_jid, mock_to_jid)
 
     # Assert that the CLIENT.zoom_send_notification function was called with the correct arguments
-    mock_zoom_send_notification.assert_called_with(
-        '/im/chat/messages',
-        {
-            "content": {
-                "body": [
-                    {
-                        "type": "message",
-                        "text": mock_entitlement_reply
-                    }
-                ]
-            },
-            "to_jid": mock_to_jid,
-            "robot_jid": mock_robot_jid,
-            "account_id": mock_account_id
-        }
-    )
+    mock_zoom_send_notification.assert_called_with(client,
+                                                   '/im/chat/messages',
+                                                   {
+                                                       "content": {
+                                                           "body": [
+                                                               {
+                                                                   "type": "message",
+                                                                   "text": mock_entitlement_reply
+                                                               }
+                                                           ]
+                                                       },
+                                                       "to_jid": mock_to_jid,
+                                                       "robot_jid": mock_robot_jid,
+                                                       "account_id": mock_account_id
+                                                   }
+                                                   )
 
 
 # Test cases

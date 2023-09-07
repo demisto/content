@@ -39,7 +39,7 @@ class Zoom_Client(BaseClient):
         bot_client_secret: str | None = None,
         verify=True,
         proxy=False,
-        botJid: str | None = None,
+        bot_jid: str | None = None,
     ):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key
@@ -49,7 +49,7 @@ class Zoom_Client(BaseClient):
         self.client_secret = client_secret
         self.bot_client_id = bot_client_id
         self.bot_client_secret = bot_client_secret
-        self.botJid = botJid
+        self.bot_jid = bot_jid
         try:
             self.access_token, self.bot_access_token = self.get_oauth_token()
         except Exception as e:
@@ -99,8 +99,9 @@ class Zoom_Client(BaseClient):
             # new token is needed
             if self.client_id and self.client_secret:
                 oauth_token = self.generate_oauth_token()
-            if self.client_id and self.client_secret:
+            if self.bot_client_id and self.bot_client_secret:
                 client_oauth_token = self.generate_oauth_client_token()
+                demisto.debug(f"token was generate: {client_oauth_token}")
             ctx = {}
         else:
             if generation_time := dateparser.parse(
@@ -117,8 +118,9 @@ class Zoom_Client(BaseClient):
                 # new token is needed
                 if self.client_id and self.client_secret:
                     oauth_token = self.generate_oauth_token()
-                if self.client_id and self.client_secret:
+                if self.bot_client_id and self.bot_client_secret:
                     client_oauth_token = self.generate_oauth_client_token()
+                    demisto.debug(f"token was generate: {client_oauth_token}")
 
         ctx.update({'token_info': {'oauth_token': oauth_token, 'client_oauth_token': client_oauth_token,
                    'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
@@ -138,9 +140,9 @@ class Zoom_Client(BaseClient):
                                          auth=auth, json_data=json_data, params=params, files=files, data=data,
                                          return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
         except DemistoException as e:
-            if ('Invalid access token' in e.message
-                    or "Access token is expired." in e.message
-                    or "Invalid authorization token." in e.message):
+            if any(message in e.message for message in ["Invalid access token",
+                                                        "Access token is expired.",
+                                                        "Invalid authorization token"]):
                 if url_suffix == '/im/chat/messages':
                     demisto.debug('generate new bot client token')
                     self.bot_access_token = self.generate_oauth_client_token()

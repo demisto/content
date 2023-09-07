@@ -77,7 +77,7 @@ def generate_json(text, options, response_type):
         }
 
     else:
-        raise ValueError("Invalid responseType. It should be 'button' or 'dropdown'.")
+        raise ValueError("Invalid responseType. should be 'button' or 'dropdown'.")
     return json_data
 
 
@@ -125,7 +125,7 @@ def main():
         'default_response': default_response
     })
     to = demisto_args.get('user')
-    channel_name = demisto_args.get('channel')
+    channel_name = demisto_args.get('channel_name')
     channel = demisto_args.get('channel_id')
 
     if to:
@@ -135,7 +135,7 @@ def main():
     elif channel_name:
         args['channel'] = channel_name
     else:
-        return_error('Either a user or a channel must be provided.')
+        return_error('Either a user or a channel_id must be specified')
 
     args['zoom_ask'] = 'true'
     try:

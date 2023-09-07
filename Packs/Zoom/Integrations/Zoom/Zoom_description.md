@@ -17,7 +17,16 @@ Click [here](https://marketplace.zoom.us/develop/create) to create an app.
 
 For more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
 
-### For Mirroring -
+### For sending messages using ChatBot app and mirroring -
 
-to enable the integration to communicate directly with zoom for mirroring 
-This requires a dedicated zoom Team Chat app to be created for the XSOAR integration. For instructions on how to create and configure your custom Slack app, please review the documentation found [here](https://xsoar.pan.dev/docs/reference/integrations/zoom).
+to enable the integration to communicate directly with zoom for mirroring or to sending messages by Zoom chatbot
+its require a dedicated zoom Team Chat app to be created for the XSOAR integration.
+make sure you have the following params-
+- Long running instance enable
+- Listen Port
+- Bot JID
+- Bot Client ID
+- Bot Secret ID 
+- Secret Token
+- Enable Incident Mirroring
+ For instructions on how to create and configure your custom Slack app, please review the documentation found [here](https://xsoar.pan.dev/docs/reference/integrations/zoom).

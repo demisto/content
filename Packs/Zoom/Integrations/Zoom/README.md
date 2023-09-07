@@ -28,9 +28,11 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 4. Click **Test** to validate the URLs, token, and connection.
 
 
-####server configuration
+####Server configuration
 In the Server Configuration section, verify that the value for the instance.execute.external.`INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist, click + Add Server Configuration and add instance.execute.external.`INTEGRATION-INSTANCE-NAME` and set the value to true. See the following reference article for further information.
-You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`. For example, https://my.demisto.live/instance/execute/webhook. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-demisto.live/xsoar/instance/execute/zoom. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+
 
 ## Create Zoom ChatBOT app
 1. Navigate to https://marketplace.zoom.us/
@@ -39,7 +41,10 @@ You can now trigger the webhook URL: `CORTEX-XSOAR-URL`/instance/execute/`INTEGR
 ![enter image description here](doc_files/create-team-chat-app.gif)
 #### Configure App Settings:
 1. Enter your XSOAR server URL in all Redirect URLS
-2. In the Team Chat Subscription section under BOT endpoint URL add `CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME` For example, https://my.demisto.live/instance/execute/zoom-bot. Please note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+2. In the Team Chat Subscription section under BOT endpoint URL add
+- For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-demisto.live/xsoar/instance/execute/zoom. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+
 ![enter image description here](doc_files/bot_endpoint_url.gif)
 
 1. Add scope permissions:
@@ -1950,4 +1955,34 @@ There is no context output for this command.
 #### Human Readable Output
 
 > Investigation mirrored successfully, channel:example
+
+### close-channel
+
+***
+Delete a mirrored Zoom channel.
+
+#### Base Command
+
+`close-channel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The name of the channel to delete. If not provided, the mirrored investigation channel is deleted (if the channel exists). | Optional | 
+| channel_id | The ID of the channel to delete. If not provided, the mirrored investigation channel is deleted (if the channel exists). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!close-channel channel=new-zoom-channel
+```
+
+#### Human Readable Output
+
+> Channel successfully deleted.
 
