@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run demisto-sdk in devcontainer
-      uses: devcontainers/ci@v0.2
+      uses: devcontainers/ci@v0.3  # disable-secrets-detection
       with:    
         push: never
         runCmd: demisto-sdk --version
