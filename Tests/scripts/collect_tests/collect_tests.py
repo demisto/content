@@ -827,6 +827,7 @@ class BranchTestCollector(TestCollector):
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
         yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
+        logger.info(f"ENTERED _collect_yml content_item_path = {content_item_path}")
         try:
             yml = ContentItem(yml_path)
             if not yml.id_:
@@ -886,10 +887,10 @@ class BranchTestCollector(TestCollector):
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
                     if "ApiModule" in yml.id_:
-                        logger.debug(f"Found changes in ApiModule = {yml.id_}")
+                        logger.info(f"Found changes in ApiModule = {yml.id_}")
                         integration_using_apimodule = self.id_set.api_modules_to_integrations.get(yml.id_, [])
                         for integrtion in integration_using_apimodule:
-                            logger.debug(f"The integrations which using this apimodule = {integration_using_apimodule}")
+                            logger.info(f"The integrations which using this apimodule = {integration_using_apimodule}")
                             self._collect_yml(integrtion.path)
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED

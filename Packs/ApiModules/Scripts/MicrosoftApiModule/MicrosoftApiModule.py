@@ -582,12 +582,12 @@ def create_custom_azure_cloud(origin: str,
             synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
             attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
         ))
-        demisto.info("TEST")
 
 def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
     log_message_append = ""
     if is_gcc:  # Backward compatible.
+        demisto.info("YESSSSS")
         endpoint_type = "US GCC"
         log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
     elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
