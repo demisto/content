@@ -28,22 +28,22 @@ script:
     arguments:
     - name: sha256
       required: true
-      description: File hash (SHA256)
-    description: Discover variants using a file hash (SHA256)
+      description: File hash (SHA256).
+    description: Discover variants using a file hash (SHA256).
     outputs:
     - contextPath: Inception.Variants
       type: Dictionary
-      description: Variants discovered
+      description: Variants discovered.
   - name: inception-file-enrichment
     arguments:
     - name: fileHash
       required: true
-      description: File hash (MD5, SHA1, or SHA256)
-    description: Enrich files using file hash (MD5, SHA1, SHA256)
+      description: File hash (MD5, SHA1, or SHA256).
+    description: Enrich files using file hash (MD5, SHA1, SHA256).
     outputs:
     - contextPath: Inception.File_Details
       type: Dictionary
-      description: File details from enrichment
+      description: File details from enrichment.
   runonce: false
   script: '-'
   type: python
