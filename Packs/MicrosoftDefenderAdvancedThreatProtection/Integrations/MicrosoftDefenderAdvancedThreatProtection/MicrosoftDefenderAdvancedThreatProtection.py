@@ -1772,7 +1772,7 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: str | None = None, limit: int | None = 50, skip: int = 0, indicator_title:
+    def sc_list_indicators(self, indicator_id: str | None = None, limit: int = 50, skip: int = 0, indicator_title:
                            str | None = None, indicator_value: str | None = None, indicator_type: str | None = None) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
@@ -4161,8 +4161,8 @@ def sc_list_indicators_command(client: MsClient, args: dict[str, str]) -> Comman
     Returns:
         human_readable, outputs.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    skip = arg_to_number(args.get('skip', 0))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    skip = arg_to_number(args.get('skip', 0)) or 0
     raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, skip, args.get('indicator_title'),
                                              args.get('indicator_value'), args.get('indicator_type'))
     if raw_response:
