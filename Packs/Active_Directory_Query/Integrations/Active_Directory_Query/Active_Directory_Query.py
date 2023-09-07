@@ -685,7 +685,7 @@ def search_users(default_base_dn, page_size):
         'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
         # 'backward compatability' with ADGetUser script
         'Account(obj.ID == val.ID)': accounts,
-        'ActiveDirectory(true)': {'UsersPageCookie': entries['page_cookie']}
+        'ActiveDirectory(true)': {'UsersPageCookie': entries['page_cookie']} if entries['page_cookie'] else None
     }
     remove_nulls_from_dictionary(entry_context)
 
