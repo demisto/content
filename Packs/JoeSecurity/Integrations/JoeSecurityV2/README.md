@@ -912,8 +912,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | start_as_normal_user | Whether to start the analysis as a normal user. Default is false. | Optional | 
 | language_and_locale | Changes the language and locale of the analysis machine. | Optional | 
 | delete_after_days | The number of days after which the analysis will be deleted. Default is 30. | Optional | 
-| encrypt_with_password | The password to encrypt the analysis with. | Optional | 
-| export_to_jbxview | Whether to export the analysis to JBXView. Default is false. | Optional | 
+| encrypt_with_password | The password to encrypt the analysis with. | Optional |
 | email_notification | Send an email notification once the analysis completes. Default is false. | Optional | 
 
 
@@ -1096,8 +1095,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | start_as_normal_user | Whether to start the analysis as a normal user. Default is false. | Optional | 
 | language_and_locale | Changes the language and locale of the analysis machine. | Optional | 
 | delete_after_days | The number of days after which the analysis will be deleted. Default is 30. | Optional | 
-| encrypt_with_password | The password to encrypt the analysis with. | Optional | 
-| export_to_jbxview | Whether to export the analysis to JBXView. Default is false. | Optional | 
+| encrypt_with_password | The password to encrypt the analysis with. | Optional |
 | email_notification | Send an email notification once the analysis completes. Default is false. | Optional | 
 
 

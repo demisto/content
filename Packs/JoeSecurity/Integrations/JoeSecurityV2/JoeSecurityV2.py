@@ -479,6 +479,9 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
               'encrypt-with-password': args.get('encrypt_with_password'),
               'email-notification': argToBoolean(args.get('email_notification', False))}
 
+    if args.get('delete_after_days'):
+        params['delete-after-days'] = arg_to_number(args.get('delete_after_days'))
+
     return params
 
 
