@@ -8,7 +8,7 @@ import urllib3
 urllib3.disable_warnings()
 
 VENDOR = "workday"
-PRODUCT = "sign_on"
+PRODUCT = "signon"
 API_VERSION = "v40.0"
 REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
 EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
