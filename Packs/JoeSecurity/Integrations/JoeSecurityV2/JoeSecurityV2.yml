@@ -873,14 +873,8 @@ script:
       defaultValue: 'false'
     - name: language_and_locale
       description: Changes the language and locale of the analysis machine.
-    - name: delete_after_days
-      description: The number of days after which the analysis will be deleted.
-      defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
-    - name: export_to_jbxview
-      description: Whether to export the analysis to JBXView.
-      defaultValue: 'false'
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1135,14 +1129,8 @@ script:
       defaultValue: 'false'
     - name: language_and_locale
       description: Changes the language and locale of the analysis machine
-    - name: delete_after_days
-      description: The number of days after which the analysis will be deleted.
-      defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
-    - name: export_to_jbxview
-      description: Whether to export the analysis to JBXView.
-      defaultValue: 'false'
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'

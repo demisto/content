@@ -476,9 +476,7 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
               'document-password': args.get('document_password'), 'archive-password': args.get('archive_password'),
               'start-as-normal-user': argToBoolean(args.get('start_as_normal_user', False)),
               'language-and-locale': args.get('language_and_locale'),
-              'delete-after-days': arg_to_number(args.get('delete_after_days', 30)),
               'encrypt-with-password': args.get('encrypt_with_password'),
-              'export-to-jbxview': argToBoolean(args.get('export_to_jbxview', False)),
               'email-notification': argToBoolean(args.get('email_notification', False))}
 
     return params
