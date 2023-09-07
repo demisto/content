@@ -52,7 +52,7 @@ For example, Key=Owner,Value=SysAdmin.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The resource ID to be tagged.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde. | Required | 
+| resource_id | The resource ID to be tagged.(e.g., MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
 | tag_key | The name of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 | tag_value | The value of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 
@@ -86,8 +86,8 @@ Removes tag keys from the specified resource.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The ID of the resource to remove tags.(e.g. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde, for more examples see in the README). | Required | 
-| tag_key | The name of the tag which want to be remove. | Required | 
+| resource_id | The ID of the resource to remove tags.(e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
+| tag_key | The name of the tag to remove. | Required | 
 
 #### Context Output
 
@@ -104,7 +104,7 @@ There is no context output for this command.
 ### aws-ssm-inventory-get
 
 ***
-Query inventory information. This includes managed node status, such as Stopped or Terminated.
+Query inventory information. This includes the managed node status, such as Stopped or Terminated.
 
 #### Base Command
 
@@ -118,8 +118,8 @@ Query inventory information. This includes managed node status, such as Stopped 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| limit | The maximum number of items to return for this call,. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -218,8 +218,8 @@ A list of inventory items returned by the request.
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | instance_id | The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command. | Required | 
 | type_name | The type of inventory item to get information for. | Required | 
-| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -299,8 +299,8 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -310,7 +310,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 | AWS.SSM.Association.Name | String | The name of the SSM document. | 
 | AWS.SSM.Association.AssociationName | String | The association name. | 
 | AWS.SSM.Association.InstanceId | String | The managed node ID. | 
-| AWS.SSM.Association.AssociationId | String | The ID created by the system when crating an association. An association is a binding between a document and a set of targets with a schedule. | 
+| AWS.SSM.Association.AssociationId | String | The ID created by the system when creating an association. An association is a binding between a document and a set of targets with a schedule. | 
 | AWS.SSM.Association.AssociationVersion | String | The association version. | 
 | AWS.SSM.Association.DocumentVersion | String | The version of the document used in the association. | 
 | AWS.SSM.Association.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
@@ -423,7 +423,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 ### aws-ssm-association-get
 
 ***
-Describes the association for the specified target or managed node. if the association was established using the Targets parameter, the association details must be retrieved using the associated ID. this command must provide either association id or instance_id and document_name
+Describes the association for the specified target or managed node. If the association was established using the Targets parameter, the association details must be retrieved using the associated ID. This command must provide either an association ID, or instance_id and document_name.
 
 #### Base Command
 
@@ -475,7 +475,7 @@ Describes the association for the specified target or managed node. if the assoc
 | AWS.SSM.Association.AssociationDescription.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. | 
 | AWS.SSM.Association.AssociationDescription.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. | 
 | AWS.SSM.Association.AssociationDescription.ComplianceSeverity | String | The severity level that is assigned to the association. | 
-| AWS.SSM.Association.AssociationDescription.SyncCompliance | String | The mode for generating association compliance. AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by direct call to the PutComplianceItems API operation. By default, all associations use AUTO mode. | 
+| AWS.SSM.Association.AssociationDescription.SyncCompliance | String | The mode for generating association compliance - AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by a direct call to the PutComplianceItems API operation. By default, all associations use AUTO mode. | 
 | AWS.SSM.Association.AssociationDescription.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
 | AWS.SSM.Association.AssociationDescription.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations only run when that change calendar is open. | 
 | AWS.SSM.Association.AssociationDescription.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
@@ -569,8 +569,8 @@ Retrieves all versions of an association for a specific association ID.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| association_id | The association ID for which want to view all versions. | Required | 
-| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| association_id | The association ID for which to view all versions. | Required | 
+| limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
 | next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
 
 #### Context Output
@@ -595,9 +595,9 @@ Retrieves all versions of an association for a specific association ID.
 | AWS.SSM.AssociationVersion.AssociationVersions.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. Executions that are already running an association when MaxErrors is reached are allowed to complete, but some of these executions may fail as well. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. If a new managed node starts and attempts to run an association while Systems Manager is running MaxConcurrency associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for MaxConcurrency. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.ComplianceSeverity | String | The severity level that is assigned to the association. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance | String | The mode for generating association compliance. can specify AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by the direct call to the PutComplianceItems API operation. | 
+| AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance | String | The mode for generating association compliance.. Can be AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, the AssociationId must be specified as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by the direct call to the PutComplianceItems API operation. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open.  | 
+| AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
 | AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
@@ -674,7 +674,7 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | The maximum number of items to return for this call, the default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
+| limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
 | next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
 
 #### Context Output
@@ -790,15 +790,15 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.SSM.Document.Document.Sha1 | String | The SHA1 hash of the document, which you can use for verification. | 
-| AWS.SSM.Document.Document.Hash | String | The Sha256 or Sha1 hash created by the system when the document was created. | 
-| AWS.SSM.Document.Document.HashType | String | The hash type of the document. Valid values include Sha256 or Sha1. | 
+| AWS.SSM.Document.Document.Hash | String | The SHA256 or SHA1 hash created by the system when the document was created. | 
+| AWS.SSM.Document.Document.HashType | String | The hash type of the document. Valid values include SHA256 or SHA1. | 
 | AWS.SSM.Document.Document.Name | String | The name of the SSM document. | 
 | AWS.SSM.Document.Document.DisplayName | String | The friendly name of the SSM document. This value can differ for each version of the document. | 
 | AWS.SSM.Document.Document.VersionName | String | The version of the artifact associated with the document. | 
 | AWS.SSM.Document.Document.Owner | String | The Amazon Web Services user that created the document. | 
 | AWS.SSM.Document.Document.CreatedDate | String | The date when the document was created. | 
 | AWS.SSM.Document.Document.Status | String | The status of the SSM document. | 
-| AWS.SSM.Document.Document.StatusInformation | String | A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.” | 
+| AWS.SSM.Document.Document.StatusInformation | String | A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.”. | 
 | AWS.SSM.Document.Document.DocumentVersion | String | The document version. | 
 | AWS.SSM.Document.Document.Description | String | A description of the document. | 
 | AWS.SSM.Document.Document.Parameters.Name | String | The name of the parameter. | 
@@ -820,7 +820,7 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 | AWS.SSM.Document.Document.Requires.RequireType | String | The document type of the required SSM document. | 
 | AWS.SSM.Document.Document.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. | 
 | AWS.SSM.Document.Document.Author | String | The user in the organization who created the document. | 
-| AWS.SSM.Document.Document.ReviewInformation.ReviewedTime | String | The time that the reviewer took action on the document review request. | 
+| AWS.SSM.Document.Document.ReviewInformation.ReviewedTime | String | The time when the reviewer took action on the document review request. | 
 | AWS.SSM.Document.Document.ReviewInformation.Status | String | The current status of the document review request. | 
 | AWS.SSM.Document.Document.ReviewInformation.Reviewer | String | The reviewer assigned to take action on the document review request. | 
 | AWS.SSM.Document.Document.ApprovedVersion | String | The version of the document currently approved for use in the organization. | 
@@ -917,17 +917,17 @@ Initiates execution of an Automation runbook.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| document_name | The name of the SSM document to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document ARN. Note: to get the document name, use the aws-ssm-document-list command. | Required | 
+| document_name | The name of the SSM document to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document ARN. Note: To get the document name, use the aws-ssm-document-list command. | Required | 
 | client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional | 
 | document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
 | max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional | 
 | max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. If you specify 3, for example, the system stops running the automation when the fourth error is received. If you specify 0, then the system stops running the automation on additional targets after the first error result is returned. If you run an automation on 50 resources and set max-errors to 10%, then the system stops running the automation on additional targets when the sixth error is received. Executions that are already running an automation when max-errors is reached are allowed to complete, but some of these executions may fail as well. If you need to ensure that there won’t be more than max-errors failed executions, set max-concurrency to 1 so the executions proceed one at a time. | Optional | 
-| mode | The execution mode of the automation. Valid modes include the following: Auto and Interactive. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
+| mode | The execution mode of the automation. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
 | tag_key | The name of the tag. | Optional | 
 | tag_value | The value of the tag. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| parameters | A key-value map of execution parameters, which match the declared parameters in the Automation runbook. for example: InstanceId:i-dummy,Role:admin. | Optional | 
-| execution_id | This is for the polling to work. not for the user. | Optional | 
+| parameters | A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: InstanceId:i-dummy,Role:Admin,User. | Optional | 
+| execution_id | The ID of the execution. This is for the polling to work, not for the user. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
 #### Context Output
@@ -963,19 +963,18 @@ Stop an Automation execution.
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | automation_execution_id | The execution ID of the Automation to stop. | Required | 
-| type | The stop request type. Valid types include the following: Cancel and Complete. The default type is Cancel. Can get the value by running the aws-ssm-automation-list command. Possible values are: Cancel, Complete. | Optional | 
-| include_polling | Default is false. When set to true, will keep polling results until the command return that the  status of the automation execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
+| type | The stop request type. The default type is Cancel. Can get the value by running the aws-ssm-automation-list command. Possible values are: Cancel, Complete. | Optional | 
+| include_polling | When set to true, will keep polling results until the command returns that the status of the automation execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### aws-ssm-automation-execution-list
 
 ***
-If the argument execution_id is provide the command return detailed information about a particular Automation execution. if not provide the command provides details about all active and terminated Automation executions.
+If the argument execution_id is provided, the command returns detailed information about a particular Automation execution. if not provided, the command provides details about all active and terminated Automation executions.
 
 #### Base Command
 
@@ -990,8 +989,8 @@ If the argument execution_id is provide the command return detailed information 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | execution_id | The unique identifier for an existing automation execution to examine. The execution ID is returned by aws-ssm-automation-execution-run command when the execution of an Automation runbook is initiated. Note: if execution_id not provide the command return a list of executions. | Optional | 
-| limit | The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. The default value is 50. Default is 50. | Optional | 
-| next_token | The token for the next set of items to return. (received this token from a previous call.). | Optional | 
+| limit | The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. Default is 50. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
 
 #### Context Output
 
@@ -1024,10 +1023,10 @@ If the argument execution_id is provide the command return detailed information 
 | AWS.SSM.AutomationExecution.StepExecutions.OverriddenParameters | Dictionary | A user-specified list of parameters to override when running a step. | 
 | AWS.SSM.AutomationExecution.StepExecutions.IsEnd | Boolean | The flag which can be used to end automation no matter whether the step succeeds or fails. | 
 | AWS.SSM.AutomationExecution.StepExecutions.NextStep | String | The next step after the step succeeds. | 
-| AWS.SSM.AutomationExecution.StepExecutions.IsCritical | Boolean | The flag which can be used to help decide whether the failure of current step leads to the Automation failure. | 
-| AWS.SSM.AutomationExecution.StepExecutions.ValidNextSteps | String | Strategies used when step fails, support Continue and Abort. Abort will fail the automation when the step fails. Continue will ignore the failure of current step and allow automation to run the next step. With conditional branching, AWS add step:stepName to support the automation to go to another specific step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.IsCritical | Boolean | The flag which can be used to help decide whether the failure of the current step leads to the Automation failure. | 
+| AWS.SSM.AutomationExecution.StepExecutions.ValidNextSteps | String | Strategies used when a step fails. Supports Continue and Abort. Abort will fail the automation when the step fails. Continue will ignore the failure of the current step and allow automation to run the next step. With conditional branching, AWS added step:stepName to support the automation to go to another specific step. | 
 | AWS.SSM.AutomationExecution.StepExecutions.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
-| AWS.SSM.AutomationExecution.StepExecutions.Targets.Values | String | User-defined criteria that maps to Key | 
+| AWS.SSM.AutomationExecution.StepExecutions.Targets.Values | String | User-defined criteria that maps to Key. | 
 | AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
 | AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
 | AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
@@ -1204,7 +1203,7 @@ Lists the commands requested by users of the Amazon Web Services account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.CommandNextToken | String | The token for the next set of items to return. \(Received this token from a previous call.\) | 
+| AWS.SSM.CommandNextToken | String | The token for the next set of items to return. \(Received this token from a previous call.\). | 
 | AWS.SSM.Commands.CommandId | String | A unique identifier for this command. | 
 | AWS.SSM.Commands.DocumentName | String | The name of the document requested for execution. | 
 | AWS.SSM.Commands.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
@@ -1220,17 +1219,17 @@ Lists the commands requested by users of the Amazon Web Services account.
 | AWS.SSM.Commands.OutputS3Region | String | \(Deprecated\) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
 | AWS.SSM.Commands.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
 | AWS.SSM.Commands.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
-| AWS.SSM.Commands.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time.  | 
+| AWS.SSM.Commands.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
 | AWS.SSM.Commands.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
 | AWS.SSM.Commands.TargetCount | Number | The number of targets for the command. | 
 | AWS.SSM.Commands.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
 | AWS.SSM.Commands.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. | 
 | AWS.SSM.Commands.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. | 
 | AWS.SSM.Commands.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. | 
-| AWS.SSM.Commands.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic.  | 
+| AWS.SSM.Commands.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. | 
 | AWS.SSM.Commands.NotificationConfig.NotificationEvents | String | The different events for receive notifications. | 
 | AWS.SSM.Commands.NotificationConfig.NotificationType | String | The type of notification. | 
-| AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where to send command output. If don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: \`aws/ssm/SystemsManagerDocumentName\` | 
+| AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where to send command output. If a group name is not specified, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: \`aws/ssm/SystemsManagerDocumentName\`. | 
 | AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
 | AWS.SSM.Commands.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
 | AWS.SSM.Commands.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
@@ -1364,16 +1363,16 @@ Runs commands on one or more managed nodes.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required | 
-| instance_ids | The IDs of the managed nodes where the command should run. Can get from aws-ssm-inventory-get command. (Can specify up to 50 IDs.). | Required | 
+| instance_ids | The IDs of the managed nodes where the command should run. Can get from the aws-ssm-inventory-get command. (Can specify up to 50 IDs.). | Required | 
 | document_version | The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number. | Optional | 
-| max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. The default value is 50. Default is 50. | Optional | 
-| max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. The default value is 0. | Optional | 
+| max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. Default is 50. | Optional | 
+| max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. | Optional | 
 | parameters | The required and optional parameters specified in the document being run. | Optional | 
 | comment | User-specified information about the command, such as a brief description of what the command should do. | Optional | 
 | output_s3_bucket_name | The name of the S3 bucket where command execution responses should be stored. | Optional | 
 | output_s3_key_prefix | The directory structure within the S3 bucket where the responses should be stored. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| command_id | A unique identifier for this command. This is for the polling to work. not for the user. | Optional | 
+| command_id | A unique identifier for this command. This is for the polling to work, not for the user. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
 #### Context Output
@@ -1395,7 +1394,7 @@ Runs commands on one or more managed nodes.
 | AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) You can no longer specify this parameter. The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
 | AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
 | AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
-| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time.  | 
+| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
 | AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
 | AWS.SSM.Command.TargetCount | Number | The number of targets for the command. | 
 | AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
@@ -1405,7 +1404,7 @@ Runs commands on one or more managed nodes.
 | AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. | 
 | AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for which you can receive notifications. | 
 | AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. | 
-| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName. | 
 | AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
 | AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
 | AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. | 
@@ -1491,7 +1490,7 @@ Attempts to cancel the command specified by the Command ID. There is no guarante
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | command_id | The ID of the command to cancel. Can get from the aws-ssm-command-list command. | Required | 
 | instance_ids | A list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested. | Optional | 
-| include_polling | Default is false. When set to true, will keep polling results until the command return that the  status of the command execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
+| include_polling | When set to true, will keep polling results until the command return that the  status of the command execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
