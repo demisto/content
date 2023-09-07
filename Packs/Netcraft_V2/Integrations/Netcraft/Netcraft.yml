@@ -609,19 +609,13 @@ script:
         Filter to notes that were created by the user with the given username.
         Notes that were created by Netcraft can be found by filtering to "Netcraft".
       name: author_mail
-    # AWAIT TPM RESPONSE ON NO LIMIT ARG IN API
-    # - defaultValue: '50'
-    #   description: The maximum number of notes to return. The max value is 100,000.
-    #   name: limit
-    # - auto: PREDEFINED
-    #   defaultValue: 'false'
-    #   description: |
-    #     Whether to retrieve all notes that match the filters.
-    #     If true, the "limit" argument will be ignored. The maximum notes returned in one call is 100,000.
-    #   name: all_results
-    #   predefined:
-    #   - 'false'
-    #   - 'true'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all notes that match the filters. If set to false, only 50 will be returned.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
     description: Retrieve details of notes that have been added to your takedowns.
     outputs:
     - contextPath: Netcraft.TakedownNote.note_id
@@ -668,19 +662,13 @@ script:
         The name of the region to create a takedown under.
         If not provided, the region specified in the instance configuration will be used.
       name: region
-    # AWAIT TPM RESPONSE ON NO LIMIT ARG IN API
-    # - defaultValue: '50'
-    #   description: The maximum number of notes to return. The max value is 100,000.
-    #   name: limit
-    # - auto: PREDEFINED
-    #   defaultValue: 'false'
-    #   description: |
-    #     Whether to retrieve all notes that match the filters.
-    #     If true, the "limit" argument will be ignored. The maximum notes returned in one call is 100,000.
-    #   name: all_results
-    #   predefined:
-    #   - 'false'
-    #   - 'true'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all attack types that match the filters. If set to false, only 50 will be returned.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
     description: Get information on the attack types that are available under a given region.
     outputs:
     - contextPath: Netcraft.AttackType.name
@@ -722,11 +710,12 @@ script:
       name: submission_reason
     - description: Filter the submissions by submitter email.
       name: submitter_email
-    - description: The number of submissions to return. The maximum is 1000.  # TODO remove 1000 limit if pagination is implemented
+    - description: The number of submissions to return.
       name: limit
       defaultValue: '50'
-    - description: |
-        The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
+    - description: The number of submissions to return per page. The maximum is 1000.
+      name: page_size
+    - description: The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
       name: next_token
     - name: polling
       hidden: true
@@ -1006,7 +995,7 @@ script:
       description: The state the entity moved into.
       type: String
   - name: 'netcraft-file-screenshot-get'
-    description: Get a screenshot for a file associated with a submission. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: Get a screenshot for a file associated with a submission.
     arguments:
     - description: The unique identifier of the submission from which to retrieve a file screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
@@ -1156,7 +1145,7 @@ script:
     - contextPath: Netcraft.Submission.warnings.warning
       description: The warning.
       type: String
-  - name: 'netcraft-submission-mail-list'
+  - name: 'netcraft-submission-mail-get'
     description: Get basic information about a submission's mail. When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
     - description:  The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
@@ -1195,7 +1184,7 @@ script:
     - description: The unique identifier of the submission from which to retrieve a mail screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
-    description: Get a screenshot for the mail associated with a submission. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: Get a screenshot for the mail associated with a submission.
     outputs:
     - contextPath: InfoFile.Size
       description: The size of the screenshot in bytes.
@@ -1221,11 +1210,11 @@ script:
     - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
       name: reporter_email
       required: true
-    - description: A comma separated list of URLs to report. Up to 1000 URLs per submission are permitted.
+    - description: A comma separated list of URLs to report. Up to 1,000 URLs per submission are permitted.
       isArray: true
       name: urls
       required: true
-    - description: The reason the URLs are considered malicious
+    - description: The reason the URLs are considered malicious. Should be less than 10,000 characters.
       name: reason
     - auto: PREDEFINED
       description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
@@ -1427,7 +1416,7 @@ script:
       description: The UUID of the URL.
       type: String
   - name: 'netcraft-url-screenshot-get'
-    description: Downloads associated screenshots for a specified URL. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: Downloads associated screenshots for a specified URL.
     arguments:
     - description: The unique identifier of the submission from which to retrieve a URL screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid

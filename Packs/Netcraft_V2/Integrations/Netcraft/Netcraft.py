@@ -46,13 +46,49 @@ class Client(BaseClient):
     def __init__(self, verify, proxy, ok_codes, headers, **kwargs):
         super().__init__(None, verify, proxy, ok_codes, headers, **kwargs)
 
-    def _http_request(self, method, service, url_suffix='', params=None,
-                      json_data=None, resp_type='json', files=None, **kwargs) -> Any:
+    def _http_request(self, method: str, service: str, url_suffix: str,
+                      params: dict = None, json_data: dict = None,
+                      files: dict = None, resp_type: str = 'json', 
+                      ok_codes: Any = None, **kwargs) -> Any:
+        '''
+        A wrapper for BaseClient._http_request that supports Netcraft specific functions.
+
+        Args:
+            method (str): 
+                The HTTP method, for example: GET, POST, and so on.
+
+            service (str):
+                The Netcraft service URL to use. should be a key in SERVICE_TO_URL_MAP.
+
+            url_suffix (str):
+                The API endpoint.
+
+            params (dict):
+                URL parameters to specify the query.
+
+            json_data (dict):
+                The dictionary to send in a 'POST' request.
+
+            files (dict):
+                The file data to send in a 'POST' request.
+
+            resp_type (str):
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                    to return the full response object.
+            
+            ok_codes (tuple[int]):
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use self._ok_codes.
+
+        Returns:
+            dict | str | bytes | xml.etree.ElementTree.Element | requests.Response: Depends on the resp_type parameter
+        '''
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
         return super()._http_request(
             method, full_url=urljoin(SERVICE_TO_URL_MAP[service], url_suffix),
-            params=params, json_data=json_data, resp_type=resp_type, files=files, **kwargs)
+            params=params, json_data=json_data, files=files, resp_type=resp_type,
+            ok_codes=ok_codes, **kwargs)
 
     def client_error_handler(self, res: requests.Response):
         '''Error handler for Netcraft API call error'''
@@ -68,19 +104,16 @@ class Client(BaseClient):
             err_msg += res.text
         raise DemistoException(err_msg, res=res)
 
-    def test_module(self):
-        ...
-
     def get_takedowns(self, params: dict) -> list[dict]:
         '''Used by fetch-incidents and netcraft-takedown-list'''
         return self._http_request(
-            'GET', 'takedown', 'attacks/', params
+            'GET', 'takedown', 'attacks/', params,
         )
 
     def attack_report(self, body: dict, file: dict | None) -> str:
         return self._http_request(
             'POST', 'takedown', 'report/',
-            json_data=body, resp_type='text', files=file
+            json_data=body, resp_type='text', files=file,
         )
 
     def takedown_update(self, body: dict) -> dict:
@@ -110,33 +143,29 @@ class Client(BaseClient):
 
     def submission_list(self, params: dict) -> dict:
         return self._http_request(
-            'GET', 'submission', 'submission/', params=params
+            'GET', 'submission', 'submission/', params=params,
         )
 
     def get_submission(self, uuid: str) -> dict:
         return self._http_request(
-            'GET', 'submission', f'submission/{uuid}'
+            'GET', 'submission', f'submission/{uuid}',
         )
 
     def file_report_submit(self, body: dict) -> dict:
         return self._http_request(
-            'POST', 'submission', 'report/files/', json_data=body,
+            'POST', 'submission', 'report/files/', json_data=body, 
         )
 
     def submission_file_list(self, uuid: str, params: dict) -> dict:
         return self._http_request(
-            'GET', 'submission', f'submission/{uuid}/files', params=params
+            'GET', 'submission', f'submission/{uuid}/files', params=params,
         )
 
-    def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> dict:
-        return fileResult(
-            f'file_screenshot_{submission_uuid}_{file_hash}.png',
-            self._http_request(
-                'GET', 'submission',
-                f'submission/{submission_uuid}/files/{file_hash}/screenshot',
-                resp_type='content'
-            ),
-            EntryType.ENTRY_INFO_FILE
+    def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> bytes:
+        return self._http_request(
+            'GET', 'submission',
+            f'submission/{submission_uuid}/files/{file_hash}/screenshot',
+            resp_type='content',
         )
 
     def url_report_submit(self, body: dict) -> dict:
@@ -144,20 +173,16 @@ class Client(BaseClient):
             'POST', 'submission', 'report/urls/', json_data=body,
         )
 
-    def submission_mail_list(self, uuid: str) -> dict:
+    def submission_mail_get(self, uuid: str) -> dict:
         return self._http_request(
             'GET', 'submission', f'submission/{uuid}/mail',
         )
 
-    def mail_screenshot_get(self, submission_uuid: str) -> dict:
-        return fileResult(
-            f'mail_screenshot_{submission_uuid}.png',
-            self._http_request(
-                'GET', 'submission',
-                f'submission/{submission_uuid}/mail/screenshot',
-                resp_type='content'
-            ),
-            EntryType.ENTRY_INFO_FILE
+    def mail_screenshot_get(self, submission_uuid: str) -> bytes:
+        return self._http_request(
+            'GET', 'submission',
+            f'submission/{submission_uuid}/mail/screenshot',
+            resp_type='content',
         )
 
     def email_report_submit(self, body: dict) -> dict:
@@ -167,18 +192,14 @@ class Client(BaseClient):
 
     def submission_url_list(self, uuid: str, params: dict) -> dict:
         return self._http_request(
-            'GET', 'submission', f'submission/{uuid}/urls', params=params
+            'GET', 'submission', f'submission/{uuid}/urls', params=params,
         )
 
-    def url_screenshot_get(self, submission_uuid: str, url_uuid: str, screenshot_hash: str) -> dict:
-        return fileResult(
-            f'url_screenshot_{screenshot_hash}.',  # TODO determine file type
-            self._http_request(
-                'GET', 'submission',
-                f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
-                resp_type='content'
-            ),
-            EntryType.ENTRY_INFO_FILE
+    def url_screenshot_get(self, submission_uuid: str, url_uuid: str, screenshot_hash: str) -> requests.Response:
+        return self._http_request(
+            'GET', 'submission',
+            f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
+            resp_type='response',
         )
 
 
@@ -523,10 +544,11 @@ def takedown_note_list_command(client: Client, args: dict) -> CommandResults:
             }.get,
             removeNull=True
         )
-
-    response = client.takedown_note_list(
-        args | {'author': args.pop('author_mail')}
-    )
+    response = client.takedown_note_list({
+        'takedown_id': args.get('takedown_id'),
+        'author': args.get('author_mail')
+    })
+    response = response if argToBoolean(args['all_results']) else response[:50]
     return CommandResults(
         outputs_prefix='Netcraft.TakedownNote',
         outputs=response,
@@ -547,10 +569,13 @@ def attack_type_list_command(client: Client, args: dict) -> CommandResults:
             headerTransform=string_to_table_header,
             removeNull=True
         )
-
-    response = client.attack_type_list(
-        args | {'region': args.get('region') or PARAMS['region']}
-    )
+    response = client.attack_type_list({
+        'auto_escalation': args.get('auto_escalation'),
+        'auto_authorise': args.get('auto_authorise'),
+        'automated': args.get('automated'),
+        'region': args.get('region') or PARAMS['region'],
+    })
+    response = response if argToBoolean(args['all_results']) else response[:50]
     return CommandResults(
         outputs_prefix='Netcraft.AttackType',
         outputs=response,
@@ -603,6 +628,7 @@ def submission_list_command(client: Client, args: dict) -> PollResult:
             continue_to_poll=(response.get('state') == 'processing')
         )
     else:
+        # TODO pagination
         response = client.submission_list(args | {
             'marker': (marker := args.pop('next_token')),
             'page_size': args.pop('limit')
@@ -623,8 +649,9 @@ def submission_list_command(client: Client, args: dict) -> PollResult:
 
 def file_report_submit_command(client: Client, args: dict) -> CommandResults:
     response = client.file_report_submit(
-        args  # TODO 
+        args  # TODO
     )
+    requests.Response.
     return submission_list_command(client, args | {'submission_uuid': response['uuid']})
 
 
@@ -650,7 +677,11 @@ def submission_file_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def file_screenshot_get_command(client: Client, args: dict) -> dict:
-    return client.file_screenshot_get(**args)
+    return fileResult(
+        f'file_screenshot_{args["file_hash"]}.png',
+        client.file_screenshot_get(**args),
+        EntryType.ENTRY_INFO_FILE,
+    )
 
 
 def email_report_submit_command(client: Client, args: dict) -> CommandResults:
@@ -663,8 +694,8 @@ def email_report_submit_command(client: Client, args: dict) -> CommandResults:
     return submission_list_command(client, args | {'submission_uuid': response['uuid']})
 
 
-def submission_mail_list_command(client: Client, args: dict) -> CommandResults:
-    response = client.submission_mail_list(**args)
+def submission_mail_get_command(client: Client, args: dict) -> CommandResults:
+    response = client.submission_mail_get(**args)
     return CommandResults(
         outputs=response,
         outputs_prefix='Netcraft.SubmissionMail',
@@ -674,16 +705,20 @@ def submission_mail_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def mail_screenshot_get_command(client: Client, args: dict) -> dict:
-    return client.mail_screenshot_get(**args)
+    return fileResult(
+        f'mail_screenshot_{args["submission_uuid"]}.png',
+        client.mail_screenshot_get(**args),
+        EntryType.ENTRY_INFO_FILE,
+    )
 
 
 def url_report_submit_command(client: Client, args: dict) -> CommandResults:
 
     response = client.url_report_submit({
         'email': args.pop('reporter_email'),
+        'reason': args.pop('reason', None),
         'urls': [
             {'url': url} for url in argToList(args.pop('urls'))
-            # TODO find out what to do with args.pop('reason', None)
         ]
     })
     return submission_list_command(client, args | {'submission_uuid': response['uuid']})
@@ -704,8 +739,14 @@ def submission_url_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def url_screenshot_get_command(client: Client, args: dict) -> dict:
-    # TODO type of screenshot can be gif or png
-    return client.url_screenshot_get(**args)
+    response = client.url_screenshot_get(**args)
+    # type of screenshot can be gif or png, the Content-Type key returns: "image/{file_type}"
+    file_type = response.headers.get('Content-Type', '').partition('/')[2]
+    return fileResult(
+        f'url_screenshot_{args["screenshot_hash"]}.{file_type}',
+        response.content,
+        EntryType.ENTRY_INFO_FILE
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -720,7 +761,7 @@ def main() -> None:
         verify=(not PARAMS['insecure']),
         proxy=PARAMS['proxy'],
         ok_codes=(200,),
-        headers=AUTH_HEADERS
+        headers=AUTH_HEADERS,
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -750,8 +791,8 @@ def main() -> None:
                 return_results(submission_file_list_command(client, args))
             case 'netcraft-file-screenshot-get':
                 return_results(file_screenshot_get_command(client, args))
-            case 'netcraft-submission-mail-list':
-                return_results(submission_mail_list_command(client, args))
+            case 'netcraft-submission-mail-get':
+                return_results(submission_mail_get_command(client, args))
             case 'netcraft-mail-screenshot-get':
                 return_results(mail_screenshot_get_command(client, args))
             case 'netcraft-submission-url-list':
