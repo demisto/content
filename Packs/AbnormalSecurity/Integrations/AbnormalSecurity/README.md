@@ -359,30 +359,38 @@ Get details of a threat
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ThreatDetails.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. |
-| AbnormalSecurity.ThreatDetails.messages.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. |
-| AbnormalSecurity.ThreatDetails.messages.abxMessageId | Number | A unique identifier for an individual message within a threat \(i.e email campaign\). |
-| AbnormalSecurity.ThreatDetails.messages.abxPortalUrl | String | The URL at which the specific message details are viewable in Abnormal Security's Portal web interface. |
-| AbnormalSecurity.ThreatDetails.messages.subject | String | The email subject. |
-| AbnormalSecurity.ThreatDetails.messages.fromAddress | String | The email address of the sender. |
-| AbnormalSecurity.ThreatDetails.messages.fromName | String | The display name of the sender. |
-| AbnormalSecurity.ThreatDetails.messages.toAddresses | String | All the email addresses to which the message was sent, comma-se ted &amp; truncated at 255 chars. |
-| AbnormalSecurity.ThreatDetails.messages.recipientAddress | String | the email address of the user who actually received the message. |
-| AbnormalSecurity.ThreatDetails.messages.receivedTime | String | The timestamp at which this message arrived. |
-| AbnormalSecurity.ThreatDetails.messages.sentTime | String | The timestamp at which this message was sent. |
-| AbnormalSecurity.ThreatDetails.messages.internetMessageId | String | The internet message ID, per RFC 822 |
-| AbnormalSecurity.ThreatDetails.messages.autoRemediated | Boolean | Abnormal has automatically detected and remediated this message from the user's mailbox. |
-| AbnormalSecurity.ThreatDetails.messages.postRemediated | Boolean | Email campaigns that were remediated at a later time, after landing in user's mailbox. |
-| AbnormalSecurity.ThreatDetails.messages.attackType | String | The type of threat the message represents. |
-| AbnormalSecurity.ThreatDetails.messages.attackStrategy | String | The attack strategy identified to be used by a threat campaign |
-| AbnormalSecurity.ThreatDetails.messages.returnPath | String | The potential path where information is returned to the attacker |
-| AbnormalSecurity.ThreatDetails.messages.senderIpAddress | String | IP address of sender. |
-| AbnormalSecurity.ThreatDetails.messages.impersonatedParty | String | Impersonated party, if any. |
-| AbnormalSecurity.ThreatDetails.messages.attackVector | String | The attack medium. |
-| AbnormalSecurity.ThreatDetails.messages.remediationTimestamp | String | The timestamp at which this message was remediated, or empty if it has not been remediated. |
-| AbnormalSecurity.ThreatDetails.messages.isRead | Boolean | Whether an email has been read |
-| AbnormalSecurity.ThreatDetails.messages.attackedParty | String | The party that was targeted by an attack. |
-
+| AbnormalSecurity.ThreatDetails.threatId                   | String     | An id which maps to a threat campaign.                                                                            |
+| AbnormalSecurity.ThreatDetails.messages.abxMessageId      | Number     | A unique identifier for an individual message within a threat \(i.e email campaign\).                             |
+| AbnormalSecurity.ThreatDetails.messages.abxPortalUrl      | String     | The URL at which the specific message details are viewable.                                                       |
+| AbnormalSecurity.ThreatDetails.messages.attachmentCount   | Number     | The number of attachments in the email.                                                                           |
+| AbnormalSecurity.ThreatDetails.messages.attachmentNames   | Array      | List of the names of attachments in the email.                                                                    |
+| AbnormalSecurity.ThreatDetails.messages.attackStrategy    | String     | The attack strategy used in the threat.                                                                           |
+| AbnormalSecurity.ThreatDetails.messages.attackType        | String     | The type of threat the message represents.                                                                        |
+| AbnormalSecurity.ThreatDetails.messages.attackVector      | String     | The medium used for the attack.                                                                                  |
+| AbnormalSecurity.ThreatDetails.messages.attackedParty     | String     | The party that was targeted by the attack.                                                                        |
+| AbnormalSecurity.ThreatDetails.messages.autoRemediated    | Boolean    | Whether the threat was automatically remediated.                                                                   |
+| AbnormalSecurity.ThreatDetails.messages.fromAddress       | String     | The email address of the sender.                                                                                  |
+| AbnormalSecurity.ThreatDetails.messages.fromName          | String     | The display name of the sender.                                                                                   |
+| AbnormalSecurity.ThreatDetails.messages.impersonatedParty | String     | The party, if any, that was impersonated in the attack.                                                           |
+| AbnormalSecurity.ThreatDetails.messages.internetMessageId | String     | The Internet Message ID, per RFC 822.                                                                             |
+| AbnormalSecurity.ThreatDetails.messages.isRead            | Boolean    | Whether the email has been read.                                                                                  |
+| AbnormalSecurity.ThreatDetails.messages.postRemediated    | Boolean    | Whether the threat was remediated after landing in the user's mailbox.                                            |
+| AbnormalSecurity.ThreatDetails.messages.receivedTime      | String     | The timestamp at which this message arrived.                                                                      |
+| AbnormalSecurity.ThreatDetails.messages.recipientAddress  | String     | The email address of the user who actually received the message.                                                  |
+| AbnormalSecurity.ThreatDetails.messages.remediationStatus | String     | The status of remediation action.                                                                                 |
+| AbnormalSecurity.ThreatDetails.messages.remediationTimestamp | String  | The timestamp at which the message was remediated.                                                                |
+| AbnormalSecurity.ThreatDetails.messages.sentTime          | String     | The timestamp at which this message was sent.                                                                     |
+| AbnormalSecurity.ThreatDetails.messages.subject           | String     | The subject of the email.                                                                                         |
+| AbnormalSecurity.ThreatDetails.messages.threatId          | String     | An id which maps to a threat campaign.                                                                            |
+| AbnormalSecurity.ThreatDetails.messages.toAddresses       | Array      | All the email addresses to which the message was sent.                                                            |
+| AbnormalSecurity.ThreatDetails.messages.ccEmails          | Array      | All the email addresses in CC.                                                                                    |
+| AbnormalSecurity.ThreatDetails.messages.replyToEmails     | Array      | All the email addresses in the "Reply To" field.                                                                  |
+| AbnormalSecurity.ThreatDetails.messages.returnPath        | String     | The path where information is returned to the attacker.                                                           |
+| AbnormalSecurity.ThreatDetails.messages.senderDomain      | String     | The domain of the sender.                                                                                         |
+| AbnormalSecurity.ThreatDetails.messages.senderIpAddress   | String     | The IP address of the sender.                                                                                     |
+| AbnormalSecurity.ThreatDetails.messages.summaryInsights   | Array      | Summary insights into the threat's characteristics.                                                               |
+| AbnormalSecurity.ThreatDetails.messages.urlCount          | Number     | The number of URLs contained in the email.                                                                        |
+| AbnormalSecurity.ThreatDetails.messages.urls              | Array      | List of all URLs contained in the email.                                                                          |
 
 #### Command Example
 ```!abnormal-security-get-threat threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba```
@@ -447,9 +455,9 @@ Get details of a threat
 #### Human Readable Output
 
 >### Messages in Threat 184712ab-6d8b-47b3-89d3-a314efef79e2
->|subject|fromAddress|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
->|---|---|---|---|---|---|---|---|
->| Phishing Email | support@secure-reply.org | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
+>|subject|fromAddress|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|--|
+>|---|---|---|---|---|---|---|---|--|
+>| Phishing Email | support@secure-reply.org | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org | etc|
 
 
 ### abnormal-security-get-abnormal-case

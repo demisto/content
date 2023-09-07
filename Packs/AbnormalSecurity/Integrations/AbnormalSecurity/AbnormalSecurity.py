@@ -348,7 +348,29 @@ def get_details_of_a_threat_command(client, args):
         'receivedTime',
         'attackType',
         'attackStrategy',
-        'returnPath'
+        'abxMessageId',
+        'abxPortalUrl',
+        'attachmentCount',
+        'attachmentNames',
+        'attackVector',
+        'attackedParty',
+        'autoRemediated',
+        'impersonatedParty',
+        'internetMessageId',
+        'isRead',
+        'postRemediated',
+        'remediationStatus',
+        'remediationTimestamp',
+        'sentTime',
+        'threatId',
+        'ccEmails',
+        'replyToEmails',
+        'returnPath',
+        'senderDomain',
+        'senderIpAddress',
+        'summaryInsights',
+        'urlCount'
+        'urls'
     ]
     markdown = tableToMarkdown(
         f"Messages in Threat {response.get('threatId', '')}",

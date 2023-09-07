@@ -132,6 +132,33 @@ script:
     - contextPath: AbnormalSecurity.ThreatDetails.messages.attackedParty
       description: The party that was targeted by an attack.
       type: String
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attachmentCount
+      description: The number of attachments in the message.
+      type: Number
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attachmentNames
+      description: List of attachment names in the message.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.ccEmails
+      description: List of CC'd email addresses.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.replyToEmails
+      description: List of email addresses to reply to.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.senderDomain
+      description: The domain of the sender's email address.
+      type: String
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.summaryInsights
+      description: Summary insights of the message.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.urlCount
+      description: Count of URLs in the message.
+      type: Number
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.urls
+      description: List of URLs in the message.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.remediationStatus
+      description: The status of remediation for the message.
+      type: String
 
   - arguments:
     - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
