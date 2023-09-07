@@ -3,7 +3,7 @@ import os
 import pytest
 import sqlalchemy
 import pyodbc
-#import cx_Oracle
+import cx_Oracle
 
 from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
