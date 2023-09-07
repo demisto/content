@@ -1,7 +1,7 @@
 # This is a template, used and modified by the demisto-sdk pre-commit command.
 
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
-files:
+files: ''
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
