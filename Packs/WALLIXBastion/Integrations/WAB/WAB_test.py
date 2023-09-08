@@ -1,6 +1,6 @@
 from WAB import main, Client
 import demistomock as demisto
-from CommonServerPython import BaseClient
+from CommonServerPython import *
 from typing import Any
 
 
@@ -88,6 +88,18 @@ def test_commands(mocker):
 
         assert mock_result.call_count == 1
 
+    for deprecated in deprecated_names:
+        mocker.patch.object(demisto, "command", return_value=deprecated)
+
+        mock_error = mocker.patch("WAB.return_error")
+        main()
+
+        assert mock_error.call_count == 1
+
+
+deprecated_names = {
+    "wab-get-metadata-of-one-or-multiple-sessions"
+}
 
 command_names = {
     "wab-add-session-target-to-target-group",
