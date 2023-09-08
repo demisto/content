@@ -905,7 +905,7 @@ def test_mirror_investigation_new_mirror(mocker):
     assert our_mirror == new_mirror
 
 
-def test_mirror_investigation_new_mirror_with_name(mocker):
+def test_mirror_investigation_new_mirror_with_name_and_private(mocker):
     from SlackV3 import mirror_investigation
 
     # Set
@@ -924,7 +924,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
         else:
             return {}
 
-    mocker.patch.object(demisto, 'args', return_value={'channelName': 'coolname'})
+    mocker.patch.object(demisto, 'args', return_value={'channelName': 'coolname', 'private': 'true'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler', 'alexios']})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -967,6 +967,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
 
     message_args = chat_call[0][1]['json']
+    group_args = groups_call[0][1]['json']
 
     assert len(groups_call) == 1
     assert len(users_call) == 0
@@ -979,6 +980,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     assert message_args['text'] == 'This channel was created to mirror incident 999.' \
                                    ' \n View it on: https://www.eizelulz.com:8443#/WarRoom/999'
 
+    assert group_args['is_private']
     assert len(our_conversation_filter) == 1
     assert len(our_mirror_filter) == 1
     assert our_conversation == {'id': 'new_group', 'name': 'coolname'}
