@@ -321,6 +321,23 @@ script:
   - arguments:
     - name: hostname
       description: Endpoint hostname
+      required: true
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: limit
+      description: Fetch only the top N users who successfully authenticated on the host
+      defaultValue: 3
+    description: Get the top N users who successfully authenticated on the host
+    name: harfanglab-telemetry-authentication-users
+    outputs:
+    - contextPath: Harfanglab.Authentications.Users
+      description: Provides a list of users who successfully authenticated on the host with interactive logon (sorted per decreasing occurrence)
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
     - name: source_address
       description: Source IP address
     - name: success
@@ -332,6 +349,8 @@ script:
       description: Target username
     - name: logon_title
       description: Logon title
+    - name: logon_type
+      description: Logon type
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'

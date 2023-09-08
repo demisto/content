@@ -817,6 +817,50 @@ def endpoint_search(client, args):
     return data
 
 
+def get_frequent_users(client, args):
+
+    authentications = {}
+    output = []
+
+    limit = int(args.get('limit'))
+    del args['limit']
+
+    for class_name in ['TelemetryWindowsAuthentication', 'TelemetryLinuxAuthentication', 'TelemetryMacosAuthentication']:
+
+        if class_name == 'TelemetryWindowsAuthentication':
+            args['logon_type'] = 2
+
+        klass = globals()[class_name]
+        instance = klass()
+
+        data = instance.get_telemetry(client, args)
+
+        if len(data['results']) > 0:
+            for authentication in data['results']:
+                username = authentication['target_username']
+                if username not in authentications:
+                    authentications[username] = 0
+                authentications[username] += 1
+
+            sorted_authentications = dict(sorted(authentications.items(), key=lambda item: item[1], reverse = True))
+
+            for username in sorted_authentications:
+                output.append({
+                   'Username': username,
+                   'Authentication attempts': sorted_authentications[username]
+                })
+                if limit and len(output) >= limit:
+                    break
+
+            readable_output = tableToMarkdown(f'Top {args.get("limit")} authentications', output, headers=[
+                'Username', 'Authentication attempts'], removeNull=True)
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix='Harfanglab.Authentications.Users',
+                outputs=output
+            )
+
 def job_create(client, args, parameters=None, can_use_previous_job=True):
     action = args.get('action', None)
     agent_id = args.get('agent_id', None)
@@ -2179,12 +2223,16 @@ class Telemetry:
         # Global helper to construct output list
         return _construct_output(results, self.output_keys)
 
-    def telemetry(self, client, args):
+    def get_telemetry(self, client, args):
         self.params = _construct_request_parameters(
             args, self.keys, params=self.params)
 
         # Execute request with params
-        data = client.telemetry_data(self.telemetry_type, self.params)
+        return client.telemetry_data(self.telemetry_type, self.params)
+
+    def telemetry(self, client, args):
+
+        data = self.get_telemetry(client, args)
         output = self._construct_output(data['results'], client)
 
         # Determines headers for readable output
@@ -2270,7 +2318,8 @@ class TelemetryWindowsAuthentication(Telemetry):
             ('success', 'success'),
             ('source_username', 'source_username'),
             ('target_username', 'target_username'),
-            ('logon_title', 'logon_title'),
+            ('logon_title', 'windows.logon_title'),
+            ('logon_type', 'windows.logon_type'),
         ]
         self.output_keys = [
             ('timestamp', '@timestamp'),
@@ -2549,6 +2598,7 @@ def get_function_from_command_name(command):
         'harfanglab-telemetry-authentication-windows': TelemetryWindowsAuthentication().telemetry,
         'harfanglab-telemetry-authentication-linux': TelemetryLinuxAuthentication().telemetry,
         'harfanglab-telemetry-authentication-macos': TelemetryMacosAuthentication().telemetry,
+        'harfanglab-telemetry-authentication-users': get_frequent_users,
         'harfanglab-telemetry-process-graph': get_process_graph,
 
         'harfanglab-hunt-search-hash': hunt_search_hash,

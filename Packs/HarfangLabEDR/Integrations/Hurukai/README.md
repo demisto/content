@@ -3394,6 +3394,60 @@ Search Macos authentication telemetry
 | --- | --- | --- |
 | Harfanglab.TelemetryMacosAuthentications.authentications | unknown | Provides a list of Macos authentications | 
 
+### harfanglab-telemetry-authentication-users
+
+***
+Get the top N users who successfully authenticated on the host
+
+#### Base Command
+
+`harfanglab-telemetry-authentication-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Required | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Fetch only the top N users who successfully authenticated on the host. Default is 3. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Authentications.Users | unknown | Provides a list of users who successfully authenticated on the host with interactive logon \(sorted per decreasing occurrence\) | 
+
+#### Command example
+```!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Authentications": {
+            "Users": [
+                {
+                    "Authentication attempts": 4,
+                    "Username": "CL-EP2-WIN11\\hladmin"
+                },
+                {
+                    "Authentication attempts": 2,
+                    "Username": "hladmin"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Top None authentications
+>|Username|Authentication attempts|
+>|---|---|
+>| CL-EP2-WIN11\hladmin | 4 |
+>| hladmin | 2 |
+
 
 ### harfanglab-telemetry-process-graph
 ***
