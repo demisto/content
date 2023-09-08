@@ -85,3 +85,4 @@ harfanglab-whitelist-search keyword=cmd.exe
 harfanglab-whitelist-delete id=2518
 
 harfanglab-api-call api_method=GET api_endpoint=/api/version
+!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4
