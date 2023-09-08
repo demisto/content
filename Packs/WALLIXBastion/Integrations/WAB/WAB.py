@@ -40,7 +40,7 @@ class Client(BaseClient):
 
     def _raise_client_exc(self, res: Response):
         if res.status_code == 401:
-            raise AuthError()
+            raise AuthError
         self.client_error_handler(res)
 
     def _http_request(self, *args, **kwargs):
@@ -1734,7 +1734,7 @@ class Client(BaseClient):
         response = self._http_request("get", f"/targets/{target_type}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.get_target_by_type", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.getTargetByType", outputs_key_field="id", outputs=response, raw_response=response
         )
 
 
@@ -1775,9 +1775,8 @@ def get_session_token():
     token = integration_context.get("session_token")
     last_request_at = integration_context.get("last_request_at")
     time_now = int(time.time())
-    if token and last_request_at:
-        if time_now - last_request_at < 100:
-            return token
+    if token and last_request_at and time_now - last_request_at < 100:
+        return token
     return None
 
 
@@ -1792,6 +1791,10 @@ def update_session_token(token: str | None):
         "last_request_at": time_now,
     }
     set_integration_context(integration_context)
+
+
+def raise_deprecated(old_command, new_command):
+    raise DemistoException(f"{old_command} is deprecated. Use {new_command} instead")
 
 
 def main() -> None:
@@ -1940,10 +1943,16 @@ def main() -> None:
             "wab-get-target-by-type": client.get_target_by_type,
         }
 
+        deprecated = {
+            "wab-get-metadata-of-one-or-multiple-sessions": "wab-get-session-metadata",
+        }
+
         if command == "test-module":
             test_module(client)
         elif command in commands:
             return_results(commands[command](args))
+        elif command in deprecated:
+            raise_deprecated(command, deprecated[command])
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
