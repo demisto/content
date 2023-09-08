@@ -3915,7 +3915,7 @@ script:
       description: UID of the job.
     - type: String
       contextPath: WAB.scan_get.last_job.status
-      description: ''
+      description: status.
     - type: String
       contextPath: WAB.scan_get.last_job.start
       description: Timestamp of the job start.
@@ -3960,7 +3960,7 @@ script:
       description: UID of the job.
     - type: String
       contextPath: WAB.scan_get.last_job.status
-      description: ''
+      description: status.
     - type: String
       contextPath: WAB.scan_get.last_job.start
       description: Timestamp of the job start.
@@ -4910,7 +4910,7 @@ script:
       description: The email address.
       required: true
     - name: user_post_ip_source
-      description: 'The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com'
+      description: 'The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com.'
     - name: user_post_preferred_language
       description: The preferred language.
     - name: user_post_profile
