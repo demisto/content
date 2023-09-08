@@ -1,6 +1,5 @@
 import json as js
 import threading
-import io
 import pytest
 import slack_sdk
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
@@ -12,7 +11,7 @@ import datetime
 
 
 def load_test_data(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 
@@ -704,6 +703,7 @@ def test_get_user_by_name(mocker):
             return users
         elif method == 'users.lookupByEmail':
             return {'user': new_user}
+        return None
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -875,7 +875,7 @@ def test_mirror_investigation_new_mirror(mocker):
     new_conversations = js.loads(new_context['conversations'])
     our_conversation_filter = list(filter(lambda c: c['id'] == 'new_group', new_conversations))
     our_conversation = our_conversation_filter[0]
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     # Assert
@@ -953,7 +953,7 @@ def test_mirror_investigation_new_mirror_with_name_and_private(mocker):
     new_conversations = js.loads(new_context['conversations'])
     our_conversation_filter = list(filter(lambda c: c['id'] == 'new_group', new_conversations))
     our_conversation = our_conversation_filter[0]
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     # Assert
@@ -1035,7 +1035,7 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     new_conversations = js.loads(new_context['conversations'])
     our_conversation_filter = list(filter(lambda c: c['id'] == 'new_group', new_conversations))
     our_conversation = our_conversation_filter[0]
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     calls = slack_sdk.WebClient.api_call.call_args_list
@@ -1077,6 +1077,7 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'channel'})
@@ -1117,6 +1118,7 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'eyy'})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
@@ -1155,6 +1157,7 @@ def test_mirror_investigation_existing_investigation(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
@@ -1196,7 +1199,7 @@ def test_mirror_investigation_existing_investigation(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '681' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '681', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     assert len(our_mirror_filter) == 1
@@ -1211,6 +1214,7 @@ def test_mirror_investigation_existing_channel(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'group3', 'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
@@ -1255,7 +1259,7 @@ def test_mirror_investigation_existing_channel(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     assert len(our_mirror_filter) == 1
@@ -1270,6 +1274,7 @@ def test_mirror_investigation_existing_channel_remove_mirror(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mirrors = js.loads(MIRRORS)
     mirrors.append({
@@ -1330,7 +1335,7 @@ def test_mirror_investigation_existing_channel_remove_mirror(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     assert len(our_mirror_filter) == 1
@@ -1345,6 +1350,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'group2', 'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
@@ -1386,7 +1392,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     assert len(our_mirror_filter) == 1
@@ -1414,6 +1420,7 @@ def test_check_for_mirrors(mocker):
             return users
         elif method == 'users.lookupByEmail':
             return {'user': new_user}
+        return None
 
     # Set
     SlackV3.CACHE_EXPIRY = EXPIRED_TIMESTAMP
@@ -1469,9 +1476,9 @@ def test_check_for_mirrors(mocker):
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
     new_users = js.loads(new_context['users'])
-    our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '999', new_mirrors))
     our_mirror = our_mirror_filter[0]
-    our_user_filter = list(filter(lambda u: 'U012B3CUI' == u['id'], new_users))
+    our_user_filter = list(filter(lambda u: u['id'] == 'U012B3CUI', new_users))
     our_user = our_user_filter[0]
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1528,6 +1535,7 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
             return users
         elif method == 'users.lookupByEmail':
             return {'user': new_user}
+        return None
 
     # Set
     SlackV3.CACHE_EXPIRY = EXPIRED_TIMESTAMP
@@ -1658,6 +1666,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
             return users
         elif method == 'users.lookupByEmail':
             return {'user': {}}
+        return None
 
     # Set
     SlackV3.CACHE_EXPIRY = EXPIRED_TIMESTAMP
@@ -1878,7 +1887,8 @@ async def test_handle_dm_empty_message(mocker):
         elif method == 'chat.postMessage':
             text = json['text']
             if not text:
-                raise InterruptedError()
+                raise InterruptedError
+            return None
         else:
             return None
 
@@ -2115,6 +2125,7 @@ async def test_get_user_by_id_async_user_exists(mocker):
     async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
+        return None
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2142,6 +2153,7 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
+        return None
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2395,6 +2407,7 @@ def test_reset_user_session(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'admin.users.session.reset':
             return {'ok': True}
+        return None
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2497,19 +2510,17 @@ def test_send_request_caching_disabled(mocker, capfd):
                                                      channel_id='C12345')
     channel_id_file_res = SlackV3.slack_send_request(to=None, channel=None, group=None, channel_id='C12345',
                                                      file_dict={'foo': 'file'})
-    with capfd.disabled():
-        with pytest.raises(InterruptedError):
-            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, message='Hi',
-                                       channel_id=None)
+    with capfd.disabled(), pytest.raises(InterruptedError):
+        SlackV3.slack_send_request(to=None, channel='should-fail', group=None, message='Hi',
+                                   channel_id=None)
     err_msg_1 = return_error_mock.call_args[0][0]
 
     assert err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
                         " channel_id"
 
-    with capfd.disabled():
-        with pytest.raises(InterruptedError):
-            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, channel_id=None,
-                                       file_dict={'foo': 'file'})
+    with capfd.disabled(), pytest.raises(InterruptedError):
+        SlackV3.slack_send_request(to=None, channel='should-fail', group=None, channel_id=None,
+                                   file_dict={'foo': 'file'})
     err_msg_2 = return_error_mock.call_args[0][0]
 
     assert err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
@@ -3085,9 +3096,8 @@ def test_send_request_no_user(mocker, capfd):
 
     # Arrange
 
-    with capfd.disabled():
-        with pytest.raises(InterruptedError):
-            SlackV3.slack_send_request('alexios', None, None, message='Hi')
+    with capfd.disabled(), pytest.raises(InterruptedError):
+        SlackV3.slack_send_request('alexios', None, None, message='Hi')
     err_msg = return_error_mock.call_args[0][0]
 
     calls = slack_sdk.WebClient.api_call.call_args_list
@@ -3414,6 +3424,7 @@ def test_get_conversation_by_name_paging(mocker):
                 }], 'response_metadata': {
                     'next_cursor': ''
                 }}
+        return None
 
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
@@ -3548,7 +3559,7 @@ def test_set_topic_no_args_investigation(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '681' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '681', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     # Assert
@@ -3813,7 +3824,7 @@ def test_rename_no_args_investigation(mocker):
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = js.loads(new_context['mirrors'])
-    our_mirror_filter = list(filter(lambda m: '681' == m['investigation_id'], new_mirrors))
+    our_mirror_filter = list(filter(lambda m: m['investigation_id'] == '681', new_mirrors))
     our_mirror = our_mirror_filter[0]
 
     # Assert
@@ -4120,7 +4131,7 @@ def test_fail_connect_threads(mocker):
     mocker.patch.object(demisto, 'args', return_value={'to': 'test', 'message': 'test message'})
     mocker.patch.object(demisto, 'command', return_value='send-notification')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    for i in range(8):
+    for _i in range(8):
         SlackV3.main()
         time.sleep(0.5)
     assert return_error_mock.call_count == 8
