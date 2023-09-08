@@ -420,7 +420,7 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
-    def get_file_integrity_events(self, limit, hostname=None, event_id=None):
+    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None, to_date=None, search_term=None):
         """
         Get runtime file integrity audit events
 
@@ -433,9 +433,16 @@ class PrismaCloudComputeClient(BaseClient):
         endpoint = "audits/runtime/file-integrity"
 
         headers = self._headers
-        params = assign_params(hostname=hostname, id=event_id,
-                               limit=limit, sort="time", reverse=True)
-
+        params = {
+            "hostname": hostname,
+            "id": event_id,
+            "limit": limit,
+            "from": from_date,
+            "to": to_date,
+            "search": search_term,
+            "sort": "time",
+            "reverse": sort == "desc"
+        }
         return self._http_request('get', endpoint, params=params, headers=headers)
 
 
@@ -1991,16 +1998,25 @@ def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: di
     hostname = args.get('hostname')
     event_id = args.get('event_id')
     limit = args.get('limit')
-    if hostname and event_id:
-        raise DemistoException("Either event_id or hostname must be supplied, not both.")
-    elif not hostname and not event_id:
-        raise DemistoException("Either event_id or hostname is required.")
-    response = client.get_file_integrity_events(limit, hostname=hostname, event_id=event_id)
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
+    search_term = args.get('search_term')
+    sort = args.get('sort')
+
+    response = client.get_file_integrity_events(
+        limit, sort, hostname=hostname, event_id=event_id,
+        from_date=from_date, to_date=to_date, search_term=search_term
+    )
+    if not response:
+        readable_output = "No results for the given search."
+    else:
+        readable_output = None
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.FileIntegrity',
         outputs_key_field='_id',
         outputs=format_context(response),
-        raw_response=response
+        raw_response=response,
+        readable_output=readable_output
     )
 
 
@@ -2126,4 +2142,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

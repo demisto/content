@@ -1952,6 +1952,19 @@ script:
     - name: limit
       description: Limit on number of events to return. Only relevant if filtering by hostname.
       defaultValue: "10"
+    - description: 'Minimum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ'
+      name: from_date
+    - description: 'Maximum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ'
+      name: to_date
+    - description: Search term to search events for.
+      name: search_term
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Whether to sort by ascending or descending time.
+      name: sort
+      predefined:
+      - asc
+      - desc
     outputs:
     - contextPath: PrismaCloudCompute.FileIntegrity.Path
       description: The absolute path of the event.
