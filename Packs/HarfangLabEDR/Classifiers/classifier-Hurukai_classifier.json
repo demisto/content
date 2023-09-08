@@ -1,7 +1,7 @@
 {
 	"brands": null,
 	"cacheVersn": 0,
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Hurukai threat",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
