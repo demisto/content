@@ -171,6 +171,15 @@ class Client(BaseClient):
                 url_suffix=f'/api/data/endpoint/Agent/{agent_id}/',
             )
 
+    def api_call(self, api_method='GET', api_endpoint='/api/version', params={}, json_data={}):
+
+        return self._http_request(
+            method=api_method,
+            url_suffix=api_endpoint,
+            params=params,
+            json_data=json_data
+        )
+
     def endpoint_search(self, hostname=None, offset=0, threat_id=None, fields=None):
 
         fields_str = None
@@ -773,6 +782,19 @@ def get_endpoint_info(client, args):
         agent
     )
     return agent
+
+def api_call(client, args):
+    api_method = args.get('api_method', 'GET')
+    api_endpoint = args.get('api_endpoint', '/api/version')
+    params = args.get('parameters', {})
+    json_data = args.get('data', {})
+
+    result = client.api_call(api_method, api_endpoint, params, json_data)
+
+    return CommandResults(
+        outputs_prefix='Harfanglab.API',
+        outputs=result
+    )
 
 
 def endpoint_search(client, args):
@@ -2546,6 +2568,8 @@ def get_function_from_command_name(command):
         'harfanglab-whitelist-add': add_whitelist,
         'harfanglab-whitelist-add-criterion': add_criterion_to_whitelist,
         'harfanglab-whitelist-delete': delete_whitelist,
+
+        'harfanglab-api-call': api_call,
 
         'fetch-incidents': fetch_incidents,
         'get-modified-remote-data': get_modified_remote_data,

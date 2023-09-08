@@ -19,7 +19,12 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
     | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
     | Minimum severity of alerts to fetch |  | True |
     | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
-    | First fetch time | Start fetching alerts whose creation date is higher than now minus &amp;lt;first_fetch&amp;gt; days. | True |
+    | Maximum number of incidents to fetch per call | Fetch maximum &lt;max_results&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
+    | First fetch time | Start fetching alerts and/or threats whose creation date is higher than now minus &lt;first_fetch&gt; days. | True |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from HarfangLab EDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HarfangLab EDR\), or Incoming and Outgoing \(to/from HarfangLab EDR and Cortex XSOAR\). | False |
+    | Fetch types |  | True |
+    | Close Mirrored security event or threat in the XSOAR | When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR. | False |
+    | Close Mirrored security event or threat in HarfangLab EDR | When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -340,6 +345,51 @@ Search for endpoint information from a hostname
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 1.0 | 183558144.0 | x64 | 2 | 3192 | WORKGROUP | true | false | (REDACTED) | 2022-06-15T06:42:50.008015Z | 0 | DC-01 | 0fae71cf-ebde-4533-a50c-b3c0290378db | 2022/06/15 06:38:58 | (REDACTED) | (REDACTED) | false | true | 2022-07-28T07:41:32.197641Z | 2022-07-28T07:47:02.197641Z | 2022-07-28T07:43:44.197641Z | 2022-06-28T14:18:31Z | 20348 | 00454-40000-00001-AA596 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-28T14:18:47Z | online | 2133962752.0 | 0 | false | 0 | 2.15.0 |
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 0.6 | 125627596.0 | x64 | 2 | 3192 | WORKGROUP | true | false | (REDACTED) | 2022-06-14T22:23:08.393381Z | 0 | DC-01 | 706d4524-dc2d-4438-bfef-3b620646db7f | 2022/06/14 21:56:49 | (REDACTED) | (REDACTED) | false | false | 2022-06-15T06:33:46.544505Z | 2022-06-15T06:39:16.544505Z | 2022-06-15T06:35:58.544505Z | 2022-06-14T22:00:23Z | 20348 | 00454-40000-00001-AA081 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-14T22:02:32Z | offline | 2133962752.0 | 0 | false | 0 | 2.15.0 |
+
+
+### harfanglab-api-call
+
+***
+Perform a generic API call
+
+#### Base Command
+
+`harfanglab-api-call`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_method | API method (GET, POST...). | Required | 
+| api_endpoint | API endpoint (/api/version, /api/data/alert/alert/Alert/...). | Optional | 
+| parameters | URL parameters. | Optional | 
+| data | Posted data. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.API | unknown | API call result | 
+
+#### Command example
+```!harfanglab-api-call api_method=GET api_endpoint=/api/version```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "API": {
+            "version": "2.29.7"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|version|
+>|---|
+>| 2.29.7 |
 
 
 ### harfanglab-telemetry-processes

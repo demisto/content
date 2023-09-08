@@ -246,6 +246,30 @@ script:
     - contextPath: Harfanglab.status
       description: Status (DEPRECATED)
       type: string
+
+  - arguments:
+    - name: api_method
+      description: API method (GET, POST...)
+      options:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+      required: true
+      type: 15
+    - name: api_endpoint
+      description: API endpoint (/api/version, /api/data/alert/alert/Alert/...)
+    - name: parameters
+      description: URL parameters 
+    - name: data
+      description: Posted data 
+    description: Perform a generic API call
+    name: harfanglab-api-call
+    outputs:
+    - contextPath: Harfanglab.API
+      description: API call result
+      type: unknown
+
   - arguments:
     - name: hash
       description: filehash to search (md5, sha1, sha256)
