@@ -146,7 +146,7 @@
 		},
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
-                }
+		}
             }
         },
 	"Hurukai threat": {
@@ -161,6 +161,9 @@
 
 				"Critical Security Event Count": {
 					"simple": "security_event_count_by_level.critical"
+				},
+				"Description": {
+					"simple": "note.content"
 				},
 				"High Security Event Count": {
 					"simple": "security_event_count_by_level.high"
@@ -234,6 +237,10 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+           			"dbotMirrorTags": {
+     					"complex": null,
+					"simple": "mirror_tags"
 				}
 			}
 		}

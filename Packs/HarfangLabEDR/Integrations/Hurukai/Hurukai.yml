@@ -19,7 +19,7 @@ configuration:
 - display: API Key
   name: apikey
   required: false
-  type: 0
+  type: 4
 - display: Long running instance
   name: longRunning
   required: false
@@ -51,6 +51,11 @@ configuration:
   - CLOSED
   required: false
   type: 15
+- additionalinfo: Fetch maximum <max_results> security events and/or threats per call (leave empty if unlimited).
+  display: Maximum number of incidents to fetch per call
+  name: max_results
+  required: false
+  type: 0
 - additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
   defaultvalue: '10'
   display: First fetch time
