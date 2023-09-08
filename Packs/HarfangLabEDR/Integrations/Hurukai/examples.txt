@@ -84,3 +84,4 @@ harfanglab-whitelist-add-criterion id=2518 field=process.commandline operator=co
 harfanglab-whitelist-search keyword=cmd.exe
 harfanglab-whitelist-delete id=2518
 
+harfanglab-api-call api_method=GET api_endpoint=/api/version
