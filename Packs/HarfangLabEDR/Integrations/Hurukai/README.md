@@ -14,7 +14,6 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | API Key |  | False |
-    | Long running instance |  | False |
     | Incidents Fetch Interval |  | False |
     | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
     | Minimum severity of alerts to fetch |  | True |

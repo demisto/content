@@ -1051,7 +1051,7 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  longRunning: true
+  longRunning: false
   script: ''
   subtype: python3
   type: python
