@@ -1,6 +1,6 @@
 {
     "name": "HarfangLab EDR",
-    "description": "This connector allows to fetch security events from a HarfangLab EDR Manager and manage the incident response.",
+    "description": "This connector allows to fetch security events and/or threats from a HarfangLab EDR Manager and manage the incident response.",
     "support": "partner",
     "currentVersion": "1.2.0",
     "author": "HarfangLab",
