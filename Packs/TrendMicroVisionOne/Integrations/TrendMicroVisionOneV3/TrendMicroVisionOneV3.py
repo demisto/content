@@ -132,21 +132,9 @@ SUBMISSION_ID = "submission_id"
 UNIQUE_ID = "unique_id"
 
 # Error Messages
-RESPONSE_ERROR = "Error in API call: [%d] - %s"
-RETRY_ERROR = "The max tries exceeded [%d] - %s"
 COMMAND_CALLED = "Command being called is {command}"
-COMMAND_EXECUTION_ERROR = "Failed to execute {error} command. Error"
-AUTHORIZATION_ERROR = (
-    "Authorization Error: make sure URL/API Key is correctly set. Error - {error}"
-)
-PARAMETER_ISSUE = "{param} is not a valid parameter. Kindly provide valid parameter"
-FILE_NOT_FOUND = "No such file present in {filepath}"
 # General Messages:
-RAW_RESPONSE = "The raw response data - {raw_response}"
-SUCCESS_RESPONSE = "success with url {url} and response status {status}"
-EXCEPTION_MESSAGE = "Successfully {task} object to exception list with response {code}, Total items in exception list - {length}"
-SUCCESS_TEST = "Successfully connected to the vision one API."
-POLLING_MESSAGE = "The task has not completed, will check status again in 30 seconds"
+
 # Workbench Statuses
 NEW = "New"
 CLOSED = "Closed"
