@@ -589,14 +589,9 @@ def assign_policy_to_agent(client, args):
 def test_module(client, args):
     result = client.test_api()
     if 'version' in result:
-        return CommandResults(
-            readable_output='ok'
-        )
+        return 'ok'
     else:
-        return CommandResults(
-            readable_output='failed to access version endpoint'
-        )
-
+        return 'nok'
 
 def fetch_incidents(client, args):
     last_run = demisto.getLastRun()
