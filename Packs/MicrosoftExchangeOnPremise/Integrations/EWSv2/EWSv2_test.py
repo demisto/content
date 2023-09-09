@@ -520,7 +520,7 @@ def test_list_parse_item_as_dict():
 def test_parse_item_as_dict_with_empty_field():
     """
     Given -
-        a Message where effective rights is None and other fields are false\empty strings.
+        a Message where effective rights is None and other fields are false empty strings.
 
     When -
         running the parse_item_as_dict function.

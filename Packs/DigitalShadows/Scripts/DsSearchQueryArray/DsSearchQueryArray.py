@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 QUOTED_STRINGS_PATTERN = r'\"[^\"]*\"'
 KEYWORDS_PATTERN = " (AND|OR|NOT) "
-NON_WORD_PATTERN = "\W+"
+NON_WORD_PATTERN = "\\W+"
 
 
 def append_arg(terms: Set[str], arg: Union[str, List[str]], filter_fn=lambda _: True):

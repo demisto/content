@@ -107,7 +107,7 @@ def handle_values_input(values: str) -> list:
     """
     if not values:
         raise ValueError('Wrong format of values entered, please check the documentation')
-    split_by_brackets = re.findall("\[(.*?)\]", values)
+    split_by_brackets = re.findall("\\[(.*?)\\]", values)
     res_for_values_req = []
     for element in split_by_brackets:
         res_for_values_req.append(element.split(","))

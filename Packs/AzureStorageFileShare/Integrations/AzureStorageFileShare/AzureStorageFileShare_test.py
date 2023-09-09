@@ -279,8 +279,8 @@ def test_validate_characters():
     valida_string = "my-valid-test"
     invalid_string = "my-invalid|test"
 
-    assert validate_characters(valida_string, "\"\/:|<>*?")
-    assert not validate_characters(invalid_string, "\"\/:|<>*?")
+    assert validate_characters(valida_string, "\"\\/:|<>*?")
+    assert not validate_characters(invalid_string, "\"\\/:|<>*?")
 
 
 def test_create_file_command(requests_mock, mocker):

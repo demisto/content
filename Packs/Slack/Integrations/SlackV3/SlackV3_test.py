@@ -323,11 +323,11 @@ INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID = {
     "api_app_id": "A01TXQAGB2P",
     "event": {
         "type": "message",
-        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "text": "This is a bot message\nView it on: <https:\\/\\/somexsoarserver.com#\\/home>",
         "ts": "1644999987.969789",
         "username": "I'm a BOT",
         "icons": {
-            "image_48": "https:\/\/someimage.png"
+            "image_48": "https:\\/\\/someimage.png"
         },
         "bot_id": "B01UZHGMQ9G",
         "channel": "C033HLL3N81",

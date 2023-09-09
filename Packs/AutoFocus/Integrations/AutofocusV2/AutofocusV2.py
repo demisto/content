@@ -1153,7 +1153,7 @@ def convert_url_to_ascii_character(url_name):
         # converts non-ASCII chars to IDNA notation
         return str(non_ascii.group(0)).encode('idna').decode("utf-8")
 
-    return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
+    return re.sub('([^a-zA-Z\\W]+)', convert_non_ascii_chars, url_name)
 
 
 ''' COMMANDS'''

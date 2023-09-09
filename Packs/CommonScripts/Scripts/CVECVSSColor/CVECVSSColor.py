@@ -49,9 +49,9 @@ def main():
 
     if cvss == 0:
         if theme not in ('light', ''):
-            return_results(CommandResults(readable_output="# <-:->{{color:#FFFFFF}}(**N\A**)"))
+            return_results(CommandResults(readable_output="# <-:->{{color:#FFFFFF}}(**N\\A**)"))
         else:
-            return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
+            return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\\A**)"))
     else:
         color = get_color(cvss)
         return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))

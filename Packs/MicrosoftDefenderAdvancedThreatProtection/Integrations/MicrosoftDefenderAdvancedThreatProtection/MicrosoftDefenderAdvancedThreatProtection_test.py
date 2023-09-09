@@ -2540,8 +2540,8 @@ def test_list_software_version_distribution_command(mocker, args, return_value, 
      '### Microsoft Defender ATP missing kb by software: microsoft-_-.product\n'
      '|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|\n'
      '|---|---|---|---|---|---|---|\n'
-     '| 4556813 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n'
-     '| 4534271 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n',
+     '| 4556813 | some\\_name | 11111 | .product | some\\_url | 1 | 2 |\n'
+     '| 4534271 | some\\_name | 11111 | .product | some\\_url | 1 | 2 |\n',
      [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
        'productsNames': ['.product'], 'url': 'some_url',
        'machineMissedOn': 1, 'cveAddressed': 2},
@@ -2698,7 +2698,7 @@ def test_create_filter_list_vulnerabilities(id_and_severity, name_equal, name_co
       {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor', 'weaknesses': 0,
        'publicExploit': False, 'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1,
        'impactScore': 0, 'isNormalized': False, 'category': '', 'distributions': []}]},
-        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
+        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some\\_id | some\\_name | some\\_vendor | 0 | false | 0 | 1 | false |\n| some\\_id | some\\_name | some\\_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
      [{'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
        'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
        'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
@@ -2735,9 +2735,9 @@ def test_list_software_command(mocker, args, return_value_get_list_software, exp
      '### Microsoft Defender ATP vulnerability CVE-3333-33333:\n'
      '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
      '|---|---|---|---|---|---|---|\n|'
-     ' some\_id | CVE-3333-33333 |'
-     ' some\_machine\_id |'
-     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
+     ' some\\_id | CVE-3333-33333 |'
+     ' some\\_machine\\_id |'
+     ' some\\_product\\_name | some\\_vendor | 7.0.2.0 | High |\n',
      {'id': 'some_id',
       'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
       'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',

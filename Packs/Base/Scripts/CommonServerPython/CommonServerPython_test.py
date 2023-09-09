@@ -314,9 +314,9 @@ class TestTableToMarkdown:
             '### tableToMarkdown test with multiline\n'
             '|header_1|header_2|header_3|\n'
             '|---|---|---|\n'
-            '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
-            '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
-            '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
+            '| a1 | b1.1<br>b1.2 | c1\\|1 |\n'
+            '| a2 | b2.1<br>b2.2 | c2\\|1 |\n'
+            '| a3 | b3.1<br>b3.2 | c3\\|1 |\n'
         )
         assert table == expected_table
 
@@ -341,9 +341,9 @@ class TestTableToMarkdown:
             '### tableToMarkdown test with url and missing info\n'
             '|header_1|header_2|header_3|\n'
             '|---|---|---|\n'
-            '| a1 |  | [url](https:\demisto.com) |\n'
-            '| a2 |  | [url](https:\demisto.com) |\n'
-            '| a3 |  | [url](https:\demisto.com) |\n'
+            '| a1 |  | [url](https:\\demisto.com) |\n'
+            '| a2 |  | [url](https:\\demisto.com) |\n'
+            '| a3 |  | [url](https:\\demisto.com) |\n'
         )
         assert table_url_missing_info == expected_table_url_missing_info
 
