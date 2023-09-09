@@ -1,0 +1,21 @@
+{
+    "name": "Splunk_Short_ID",
+    "description": "This automation code will generate generate Short ID for Splunk Notable Event.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Farrukh Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2023-09-09T17:29:30Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "linuxpakistan"
+    ]
+}

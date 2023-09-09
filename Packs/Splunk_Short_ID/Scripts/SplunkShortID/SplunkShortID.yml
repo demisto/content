@@ -1,0 +1,25 @@
+args:
+- description: Splunk notable event id.
+  name: eventid
+  required: true
+comment: Create Splunk Notable Event Short ID.
+commonfields:
+  id: Splunk_Short_ID
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: xsoar-registry.pan.dev/demisto/python3:3.10.11.57293
+enabled: true
+name: Splunk_Short_ID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
