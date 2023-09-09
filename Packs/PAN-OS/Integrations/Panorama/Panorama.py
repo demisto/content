@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
@@ -169,7 +171,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'questionable',
     'real-estate',
     'recreation-and-hobbies',
-    'reference-and-research	',
+    'reference-and-research    ',
     'religion',
     'search-engines',
     'sex-education',
@@ -284,7 +286,7 @@ class PanosResponse():
 
 def http_request(uri: str, method: str, headers: dict = {},
                  body: dict = {}, params: dict = {}, files: dict | None = None, is_pcap: bool = False,
-                 is_xml: bool = False) -> Any:
+                 is_xml: bool = False, is_file: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -302,8 +304,8 @@ def http_request(uri: str, method: str, headers: dict = {},
         raise Exception(
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
-    # if pcap download
-    if is_pcap:
+    # if pcap download or file download
+    if is_pcap or is_file:
         return result
     if is_xml:
         return result.text
@@ -881,29 +883,81 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
-@logger
+@polling_function(
+    name=demisto.command(),
+    interval=60,
+    timeout=1200
+)
+def pan_os_command_polling(args: dict, result):
+    """
+    Polls job status until it is done
+    """
+    job_id = args.get("job-id")
+    status = result.get('response', {}).get('result', {}).get('job', {}).get('status', '')
+    if not job_id:
+        raise DemistoException("job-id is required when polling=true.")
+
+    context_output = {
+        'JobID': job_id,
+        'Status': status
+    }
+    continue_to_poll = True
+    res = {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': f'Job status: {status}',
+    }
+    return PollResult(
+        response=res,
+        continue_to_poll=status != 'FIN',  # continue polling if job isn't done
+        partial_result=CommandResults(
+            readable_output=f'Waiting for Job-ID {job_id} to finish...'
+        )
+    )
+
+
 def panorama_command(args: dict):
     """
     Executes a command
     """
     params = {}
+    is_xml = False
+    is_file = False
+    polling = False
     for arg in args.keys():
-        params[arg] = args[arg]
+        if arg == "is_xml":
+            is_xml = argToBoolean(args[arg])
+        elif arg == "is_file":
+            is_file = argToBoolean(args[arg])
+        elif arg == "polling":
+            polling = argToBoolean(args[arg])
+        elif arg == "file_name":
+            pass
+        else:
+            params[arg] = args[arg]
     params['key'] = API_KEY
-
     result = http_request(
         URL,
         'POST',
-        body=params
+        body=params,
+        is_xml=is_xml,
+        is_file=is_file,
     )
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Command was executed successfully.',
-    })
+    if polling:
+        return_results(pan_os_command_polling(args, result))
+    elif is_file:
+        return_results(fileResult(args.get("file_name"), result.content))
+    else:
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Command was executed successfully.',
+        })
 
 
 @logger
@@ -14677,3 +14731,4 @@ def main():  # pragma: no cover
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
+

@@ -3766,8 +3766,26 @@ script:
       name: device-group
     - description: Return raw XML
       name: is_xml
+    - name: is_file
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return response as file.
+      defaultValue: "false"
+    - name: file_name
+      description: Optional file name when running this command with is_file=true.
+      defaultValue: pan-os-result-file
+    - name: polling
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true when polling the status of a job command to see if it is complete.
+      defaultValue: "false"
     description: Runs any command supported in the API.
     name: pan-os
+    polling: true
   - arguments:
     - description: The firewall managed by Panorama from which to retrieve the predefined threats.
       name: target
@@ -9334,7 +9352,7 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.68955
+  dockerimage: demisto/pan-os-python:1.0.0.73711
   isfetch: true
   runonce: false
   script: ''
