@@ -1420,6 +1420,37 @@ script:
     description: Expires a password for an existing Okta user.
     execution: true
     name: okta-expire-password
+    outputs:
+    - contextPath: Okta.ExpiredPassword.Activated
+      description: ''
+      type: Date
+    - contextPath: Okta.ExpiredPassword.Created
+      description: ''
+      type: Date
+    - contextPath: Okta.ExpiredPassword.DisplayName
+      description: ''
+      type: String
+    - contextPath: Okta.ExpiredPassword.Email
+      description: ''
+      type: String
+    - contextPath: Okta.ExpiredPassword.ID
+      description: ''
+      type: String
+    - contextPath: Okta.ExpiredPassword.PasswordChanged
+      description: ''
+      type: Date
+    - contextPath: Okta.ExpiredPassword.Status
+      description: ''
+      type: String
+    - contextPath: Okta.ExpiredPassword.StatusChanged
+      description: ''
+      type: Date
+    - contextPath: Okta.ExpiredPassword.Type
+      description: ''
+      type: String
+    - contextPath: Okta.ExpiredPassword.Username
+      description: ''
+      type: String
   dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   script: ""
@@ -1427,4 +1458,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-  - OktaV2-Test
+- OktaV2-Test

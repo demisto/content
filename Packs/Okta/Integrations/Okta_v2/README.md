@@ -2405,3 +2405,65 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Group: TestGroup added to PA App successfully
+### okta-expire-password
+
+***
+Expires a password for an existing Okta user.
+
+#### Base Command
+
+`okta-expire-password`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Okta username for which to expire the password. | Required | 
+| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.ExpiredPassword.Activated | Date |  | 
+| Okta.ExpiredPassword.Created | Date |  | 
+| Okta.ExpiredPassword.DisplayName | String |  | 
+| Okta.ExpiredPassword.Email | String |  | 
+| Okta.ExpiredPassword.ID | String |  | 
+| Okta.ExpiredPassword.PasswordChanged | Date |  | 
+| Okta.ExpiredPassword.Status | String |  | 
+| Okta.ExpiredPassword.StatusChanged | Date |  | 
+| Okta.ExpiredPassword.Type | String |  | 
+| Okta.ExpiredPassword.Username | String |  | 
+
+#### Command example
+```!okta-expire-password username="4x1xh5rl@test.com" temporary_password="false"```
+#### Context Example
+```json
+{
+    "Okta": {
+        "ExpiredPassword": [
+            {
+                "Activated": "2022-06-20T04:48:04.000Z",
+                "Created": "2022-06-20T04:47:59.000Z",
+                "DisplayName": "Test 1  Test1",
+                "Email": "4x1xh5rl@test.com",
+                "ID": "00u19cr5qv91HjELI0h8",
+                "PasswordChanged": "2022-06-20T04:48:07.000Z",
+                "Status": "PASSWORD_EXPIRED",
+                "StatusChanged": "2023-09-10T12:56:04.000Z",
+                "Type": "Okta",
+                "Username": "4x1xh5rl@test.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Okta Expired Password
+>|_links|activated|created|credentials|id|lastUpdated|passwordChanged|profile|status|statusChanged|type|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| suspend: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/suspend", "method": "POST"}<br/>schema: {"href": "https://test.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br/>resetPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/reset_password", "method": "POST"}<br/>forgotPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/forgot_password", "method": "POST"}<br/>expirePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/expire_password", "method": "POST"}<br/>changeRecoveryQuestion: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_recovery_question", "method": "POST"}<br/>self: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8"}<br/>type: {"href": "https://test.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br/>changePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_password", "method": "POST"}<br/>deactivate: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/deactivate", "method": "POST"} | 2022-06-20T04:48:04.000Z | 2022-06-20T04:47:59.000Z | password: {}<br/>recovery_question: {"question": "whats the first school?"}<br/>provider: {"type": "OKTA", "name": "OKTA"} | 00u19cr5qv91HjELI0h8 | 2023-09-10T12:56:04.000Z | 2022-06-20T04:48:07.000Z | firstName: Test 1 <br/>lastName: Test1<br/>preferredLanguage: en<br/>mobilePhone: null<br/>city: Tel-Aviv<br/>displayName: Test 1 that<br/>nickName: Testush<br/>secondEmail: null<br/>login: 4x1xh5rl@test.com<br/>email: 4x1xh5rl@test.com<br/>employeeNumber: 12345 | PASSWORD_EXPIRED | 2023-09-10T12:56:04.000Z | id: oty66lckcvDyVcGzS0h7 |
+
