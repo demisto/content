@@ -2,7 +2,7 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
 
-# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. Slack notification
 .test-native-candidate-rule-always:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
@@ -36,7 +36,7 @@ test-native-candidate:run-lint-with-native-candidate:
       touch $ARTIFACTS_FOLDER/native_candidate_image.txt
       echo "$NATIVE_CANDIDATE_IMAGE" >> $ARTIFACTS_FOLDER/native_candidate_image.txt
 
-      demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image native:target --docker-image-target "$NATIVE_CANDIDATE_IMAGE"
+      demisto-sdk lint --console_log_threshold DEBUG -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image native:target --docker-image-target "$NATIVE_CANDIDATE_IMAGE"
       if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
         demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
       fi
