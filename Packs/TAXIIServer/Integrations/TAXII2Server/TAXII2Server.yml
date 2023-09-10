@@ -72,6 +72,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Add HSTS header
+  name: hsts_header
+  type: 8
+  required: false
+  additionalinfo: When set to true and certificate & private key are provided will add the HSTS header to all requests.  
 - display: TAXII2 Service URL Address
   additionalinfo: Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL.
   name: service_address
