@@ -142,7 +142,7 @@ script:
     - name: title
       description: The user job title.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}."
+      description: Sets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}".
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
   - name: ad-search
     arguments:
@@ -238,7 +238,7 @@ script:
     - name: telephone-number
       description: The contact telephone number.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}."
+      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}".
     - name: title
       description: The contact job title.
     description: Creates an Active Directory contact.
