@@ -295,7 +295,8 @@ def main():
     slack_channel = options.slack_channel
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
+    #slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
+    slack_msg_data = construct_slack_msg("tetst", "https://www.google.com", "test")
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(
         channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
