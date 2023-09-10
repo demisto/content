@@ -325,7 +325,7 @@
       - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
 
-unittests-and-lint:trigger-slack-notify:
+.unittests-and-lint:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
     - .run-unittests-and-lint
