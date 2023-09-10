@@ -259,6 +259,7 @@
   extends:
     - .unittests-and-lint-settings
   script:
+    - python3 ./Tests/scripts/gitlab_slack_notifier.py -ch "test_slack_notifier_when_master_is_broken"
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
@@ -325,7 +326,7 @@
       - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
 
-.unittests-and-lint:trigger-slack-notify:
+.slack-notify-content-master_is_broken:
   extends:
     - .trigger-slack-notification
     - .run-unittests-and-lint
