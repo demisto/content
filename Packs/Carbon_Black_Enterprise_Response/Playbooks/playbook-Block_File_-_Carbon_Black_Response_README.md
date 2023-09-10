@@ -29,7 +29,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | MD5 | The MD5 hash of the file you want to block. | File.MD5 | Optional |
-| Text | Text description of block list | Blocked by XSOAR | Optional |
+| Text | Text description of block list. | Blocked by XSOAR | Optional |
 
 ## Playbook Outputs
 
@@ -37,9 +37,9 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.BlockedHashes.LastBlock.Time | Last block time | unknown |
-| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname | unknown |
-| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID | unknown |
+| CbResponse.BlockedHashes.LastBlock.Time | Last block time. | unknown |
+| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname. | unknown |
+| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID. | unknown |
 
 ## Playbook Image
 
