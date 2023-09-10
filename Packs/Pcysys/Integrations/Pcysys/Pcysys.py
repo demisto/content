@@ -12,7 +12,8 @@ from typing import List
 from enum import Enum
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 HEADERS = {'Accept': 'application/json'}
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

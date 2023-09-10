@@ -9,7 +9,8 @@ import dateparser
 from datetime import timezone
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 
 ''' GLOBAL VARS '''
