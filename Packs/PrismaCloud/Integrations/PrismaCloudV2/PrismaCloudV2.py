@@ -1357,7 +1357,7 @@ def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_ids = argToList(args.get('alert_ids'))
     policy_id = args.get('policy_id')
     if not alert_ids and not policy_id:
@@ -1389,9 +1389,11 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Un
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
         if de.res.status_code == 405:
-            return f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.'
+            return CommandResults(
+                readable_output=f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
         elif de.res.status_code == 400:
-            return 'Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.'
+            return CommandResults(
+                readable_output='Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.')
         raise
 
     command_results = CommandResults(
@@ -1415,17 +1417,17 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
         client.alert_remediate_request(str(alert_id))
         readable_response = {'alertId': alert_id, 'successful': True}
         readable_output = f'Alert {alert_id} remediated successfully.'
-        
+
     except DemistoException as de:
         if not hasattr(de, 'res'):
             raise
-            
+
         status = json.loads(get_response_status_header(de.res))
         status = status if isinstance(status, dict) else status[0]
 
         error_value = status.get('subject', '')
         failure_reason = str(status.get('i18nKey', '')).replace('_', ' ')
-        
+
         readable_response = {'alertId': alert_id, 'successful': False, 'failureReason': failure_reason, 'errorValue': error_value}
         readable_output = tableToMarkdown(f'Remediation For Alert {alert_id}:',
                                           readable_response,
