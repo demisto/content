@@ -20,7 +20,7 @@ configuration:
   required: true
   type: 4
 description: Picus - The Complete Security Control Validation NG Platform
-display: Picus Security
+display: Picus Security NG
 name: PicusNG
 script:
   commands:
