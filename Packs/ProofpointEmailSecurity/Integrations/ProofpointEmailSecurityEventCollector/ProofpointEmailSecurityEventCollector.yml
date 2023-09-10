@@ -44,13 +44,12 @@ configuration:
 script:
   script: ""
   type: python
-  commands:
-    []
-  dockerimage: demisto/websockets:11.0.3.72333
+  commands: []
+  dockerimage: demisto/websockets:11.0.3.73691
   longRunning: true
   subtype: python3
 marketplaces:
 - marketplacev2
-fromversion: 6.8.0
+fromversion: 6.9.0
 tests:
 - No tests
