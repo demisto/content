@@ -32,6 +32,7 @@ MESSAGES: dict[str, str] = {
 
 HR_MESSAGES: dict[str, str] = {
     'DRIVE_CREATE_SUCCESS': 'A new shared drive created.',
+    'DRIVE_DELETE_SUCCESS': 'The following shared drive was deleted. Drive ID: {}',
     'NOT_FOUND': 'No {} found.',
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
     'DELETE_COMMAND_SUCCESS': 'Total Deleted {}: {}',
@@ -856,6 +857,35 @@ def drive_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
     url_suffix = URL_SUFFIX['DRIVE_DRIVES_ID'].format(args.get('drive_id'))
     response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
     return handle_response_single_drive(response, args)
+
+
+@logger
+def drive_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-drive-delete
+    Deletes a single shared drive in Google Drive.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    drive_id = args.get('drive_id')
+
+    # Specific drive
+    prepare_drives_request_res = prepare_drives_request(client, args)
+    http_request_params = prepare_drives_request_res['http_request_params']
+    http_request_params['useDomainAdminAccess'] = 'true' if argToBoolean(args.get('use_domain_admin_access')) else 'false'
+    http_request_params['allowItemDeletion'] = 'true' if argToBoolean(args.get('allow_item_deletion')) else 'false'
+    http_request_params['fields'] = '*'
+    url_suffix = URL_SUFFIX['DRIVE_DRIVES_ID'].format(drive_id)
+    response = client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
+
+    ret_value = CommandResults(
+        raw_response=response,
+        readable_output=HR_MESSAGES['DRIVE_DELETE_SUCCESS'].format(drive_id),
+    )
+    return ret_value
 
 
 def handle_response_drive_list(response: dict[str, Any]) -> CommandResults:
@@ -1814,6 +1844,7 @@ def main() -> None:
 
         'google-drive-drives-list': drives_list_command,
         'google-drive-drive-get': drive_get_command,
+        'google-drive-drive-delete': drive_delete_command,
 
         'google-drive-files-list': files_list_command,
         'google-drive-file-get': file_get_command,

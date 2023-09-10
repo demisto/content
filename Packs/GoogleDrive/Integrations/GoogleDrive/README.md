@@ -653,6 +653,27 @@ Gets a user shared drives.
 | GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
 | GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
 
+### google-drive-drive-delete
+
+***
+Deletes a shared drive.
+
+#### Base Command
+
+`google-drive-drive-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs. Possible values are: true, false. Default is false. | Optional | 
+| allow_item_deletion | Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true. Possible values are: true, false. Default is false. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Required | 
+
+#### Context Output
+There is no context output for this command.
+
 ### google-drive-files-list
 
 ***

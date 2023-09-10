@@ -1773,6 +1773,28 @@ script:
     - contextPath: GoogleDrive.Drive.Drive.restrictions.driveMembersOnly
       description: Whether access to items inside this shared drive is restricted to its members.
       type: Boolean
+  - name: google-drive-drive-delete
+    description: Deletes a shared drive.
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: "false"
+        name: use_domain_admin_access
+        description: "Issue the request as a domain administrator. If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs."
+        predefined:
+          - "true"
+          - "false"
+      - auto: PREDEFINED
+        defaultValue: "false"
+        name: allow_item_deletion
+        description: "Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true."
+        predefined:
+          - "true"
+          - "false"
+      - name: user_id
+        description: The user's primary email address.
+      - name: drive_id
+        required: true
+        description: The ID of the shared drive to delete. Can be retrieved using the `google-drive-drives-list` command.
   - name: google-drive-files-list
     description: Lists the user's shared drives.
     arguments:
@@ -1812,7 +1834,7 @@ script:
       - "Drive"
       - "All Drives"
     - name: drive_id
-      description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command. When a drive ID is specified the value of the corpora argument is automatically set to 'Drive' regardless of its selected value. 
+      description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command. When a drive ID is specified the value of the corpora argument is automatically set to 'Drive' regardless of its selected value.
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
