@@ -291,7 +291,7 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: devdemisto/vendors-sdk:1.0.0.73083
+  dockerimage: demisto/vendors-sdk:1.0.0.73916
   runonce: false
   script: '-'
   subtype: python3

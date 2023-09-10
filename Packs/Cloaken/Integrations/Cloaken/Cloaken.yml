@@ -61,5 +61,5 @@ script:
       description: Status of the screenshot.
       type: string
     description: Creates a screenshot of the specified URL.
-  dockerimage: devdemisto/vendors-sdk:1.0.0.73083
+  dockerimage: demisto/vendors-sdk:1.0.0.73916
 fromversion: 5.0.0
