@@ -729,8 +729,7 @@ def main() -> None:
             "\n".join(
                 (
                     f"Failed to execute {demisto.command()}.",
-                    "Error:",
-                    str(e),
+                    f"Error: {e!s}",
                 )
             )
         )
