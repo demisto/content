@@ -1503,16 +1503,15 @@ def handle_request_with_limit(request_command: Callable,
     Returns:
         dict: API response from AppSec API.
     """
-    if limit <= API_LIMIT:
-        return request_command(size=limit, page_token=page_token)
 
     full_response = []
-    total_data = None
+    total_data = API_LIMIT
 
-    while limit > 0 and \
-            any([total_data is not None and total_data >= limit + len(full_response), total_data is None]):
+    while limit > 0 and total_data > 0:
 
-        response = request_command(size=API_LIMIT, page_token=page_token)
+        size_to_get = min(limit, total_data, API_LIMIT)
+
+        response = request_command(size=size_to_get, page_token=page_token)
 
         page_token = dict_safe_get(response, ["metadata", "page_token"])
         obj_number = dict_safe_get(response, ["metadata", "size"])
