@@ -242,7 +242,7 @@ inputs:
   value:
     simple: Blocked by XSOAR
   required: false
-  description: Text description of block list
+  description: Text description of block list.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
