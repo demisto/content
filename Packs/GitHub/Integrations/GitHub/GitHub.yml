@@ -3652,7 +3652,7 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at.
       type: Date
-  dockerimage: devdemisto/auth-utils:1.0.0.73117
+  dockerimage: demisto/auth-utils:1.0.0.73866
   isfetch: true
   runonce: false
   script: '-'

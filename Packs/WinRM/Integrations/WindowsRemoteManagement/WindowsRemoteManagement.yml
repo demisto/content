@@ -338,7 +338,7 @@ script:
     - contextPath: WinRM.Powershell.Status
       description: Status code of the WInRM command
     description: Executes a Powershell script on the endpoint
-  dockerimage: devdemisto/auth-utils:1.0.0.73117
+  dockerimage: demisto/auth-utils:1.0.0.73866
   subtype: python3
 fromversion: 5.0.0
 tests:

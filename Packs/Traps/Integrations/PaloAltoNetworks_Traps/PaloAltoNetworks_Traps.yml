@@ -296,7 +296,7 @@ script:
     - contextPath: Traps.ScanResult.Status
       description: The status of the scan.
       type: String
-  dockerimage: devdemisto/auth-utils:1.0.0.73117
+  dockerimage: demisto/auth-utils:1.0.0.73866
   runonce: false
   script: '-'
   subtype: python3
