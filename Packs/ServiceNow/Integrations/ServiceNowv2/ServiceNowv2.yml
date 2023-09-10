@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ServiceNow v2
+  id: ServiceNow v2 - Fix
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -230,8 +230,8 @@ configuration:
   type: 0
   required: false
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2
-name: ServiceNow v2
+display: ServiceNow v2 - Fix
+name: ServiceNow v2 - Fix
 script:
   commands:
   - arguments:

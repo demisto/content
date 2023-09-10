@@ -2570,6 +2570,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     closure_case = get_closure_case(params)
     is_custom_close = False
     close_custom_state = params.get('close_custom_state', None)
+    entries = []
 
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
@@ -2585,7 +2586,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 demisto.debug(f'Closing by custom state = {close_custom_state}')
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
+        demisto.debug('I got here')
+        if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+            demisto.debug(f'Received closure case - {closure_case}')
+            demisto.debug(f'Getting parsed args state - "{parsed_args.data["state"]}"')
+            if parsed_args.data['state'] == '7 - Closed':
+                parsed_args.data['state'] = '3'
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeNotes': 'Incident is closed.'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+        demisto.debug(f'Parsed args after the changes - {parsed_args.data}')
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
+        demisto.debug(f'Fields to send for update - {fields}')
         if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
@@ -2600,8 +2617,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')
+    demisto.debug(f'Those are the Entries before - {entries}')
+    if entries:
+        entries.extend(parsed_args.entries)
+    else:
+        entries = parsed_args.entries
 
-    entries = parsed_args.entries
+    demisto.debug(f'Entries After: {entries}')
     if entries:
         demisto.debug(f'New entries {entries}')
 
