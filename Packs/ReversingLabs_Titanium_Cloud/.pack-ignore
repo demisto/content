@@ -1,6 +1,7 @@
 [known_words]
 ReversingLabs
 TitaniumCloud
+https
 
 [file:ReversingLabsTitaniumCloudv2.yml]
 ignore=IN159
