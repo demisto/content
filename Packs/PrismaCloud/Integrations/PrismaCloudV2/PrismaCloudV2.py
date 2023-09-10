@@ -243,8 +243,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', 'v1/resource_list', params=params)
 
-    def user_roles_list_request(self, user_id: str):
-        return self._http_request('GET', f'user/role/{user_id}')
+    def user_roles_list_request(self, role_id: str):
+        return self._http_request('GET', f'user/role/{role_id}')
 
     def all_user_roles_list_request(self):
         return self._http_request('GET', 'user/role')
@@ -1679,12 +1679,12 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    user_id = args.get('user_id')
+    role_id = args.get('role_id')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', 'false'))
 
-    if user_id:
-        response_items = client.user_roles_list_request(str(user_id))
+    if role_id:
+        response_items = client.user_roles_list_request(str(role_id))
         response_items = [response_items] if response_items else []
     else:
         response_items = client.all_user_roles_list_request()

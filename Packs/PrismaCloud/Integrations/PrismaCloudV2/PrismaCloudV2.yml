@@ -994,8 +994,8 @@ script:
       description: Resource list members.
       type: Unknown
   - arguments:
-    - description: The user id to get roles of.
-      name: user_id
+    - description: The role id to get details of.
+      name: role_id
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit
