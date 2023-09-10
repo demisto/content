@@ -218,6 +218,7 @@ tasks:
       next_page:
         simple: ${SaasSecurity.NextResultsPage}
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -327,6 +328,14 @@ tasks:
             value:
               simple: Closed-Business Justified
       - - operator: isEqualString
+          left:
+            value:
+              simple: SaasSecurity.Incident.state
+            iscontext: true
+          right:
+            value:
+              simple: closed
+        - operator: isEqualString
           left:
             value:
               simple: SaasSecurity.Incident.state
