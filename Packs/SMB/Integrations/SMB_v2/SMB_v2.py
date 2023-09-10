@@ -2,9 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import uuid
 
+
 ''' IMPORTS '''
 
+
 import smbclient
+
 from smbclient import (
     open_file,
     register_session,
@@ -13,6 +16,7 @@ from smbclient import (
     mkdir,
     rmdir,
 )
+
 
 
 def get_file_name(path):
@@ -48,15 +52,22 @@ class SMBClient:
         self._port = port
 
     def create_session(self, hostname: str = None, user: str = None, password: str = None, encrypt: bool = False,
-                       port: int = None):
-        register_session(
-            server=hostname or self.hostname,
-            username=user or self._user,
-            password=password or self._password,
-            port=port or self._port,
-            encrypt=encrypt or self._encrypt,
-            auth_protocol='ntlm',
-        )
+                        port: int = None, try_except_counter: int = 0):
+        try:
+            register_session(
+                server=hostname or self.hostname,
+                username=user or self._user,
+                password=password or self._password,
+                port=port or self._port,
+                encrypt=encrypt or self._encrypt,
+                auth_protocol='ntlm',
+            )
+        except Exception as e:
+            if not try_except_counter:
+                demisto.debug(f'try_except_counter: {try_except_counter} \n {str(e)}')
+                self.create_session(hostname, user, password, encrypt, port, (1 + try_except_counter))
+            else:
+                raise DemistoException(str(e)) from e
 
 
 def test_module(client: SMBClient):
