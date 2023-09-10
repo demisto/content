@@ -430,7 +430,7 @@ Get the documentation of an attack. The documentation contains the references of
             "references": {
                 "test3": "test3",
                 "test2": "test2",
-                "test": "test/"
+                "test": "test"
             }
         }
     }
@@ -442,7 +442,7 @@ Get the documentation of an attack. The documentation contains the references of
 >### Attack Documentation
 >|Module Id|Id|References|Description|Recommendation|
 >|---|---|---|---|---|
->| 1111 | 1111 | test2: https:<span>//</span>test<br/>test: https:<span>//</span>test/<br/>test3: https:<span>//</span>test | test. | test. |
+>| 1111 | 1111 | test2: test<br/>test: test<br/>test3: test | test. | test. |
 
 
 ### app-sec-scan-submit
