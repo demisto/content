@@ -24,9 +24,10 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Continuous Breach And Attack Simulation
+description: Deprecated. Use PicusAutomation instead.
 display: PICUS
 name: PICUS
+deprecated: true
 script:
   commands:
   - arguments:
