@@ -79,7 +79,7 @@ script:
   - name: 'netcraft-attack-report'
     description: |
       Report a new attack or authorise an existing attack in the Takedown service.
-      If a takedown for the attack already exists in the system it will be authorised, otherwise, a new takedown will be added and authorised.
+      If a takedown for the attack already exists in the Netcraft system it will be authorised, otherwise, a new takedown will be added and authorised.
     arguments:
     - name: attack
       required: true
@@ -278,7 +278,7 @@ script:
       name: region
     description: |
       Get a list of takedown objects.
-      There is a limit of 1,000,000 objects returned within a 24 hour period (moving time window) per email address.
+      Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (moving time window) per email address.
     outputs:
     - contextPath: Netcraft.Takedown.id
       description: The ID of the takedown.
@@ -327,7 +327,7 @@ script:
       type: Date
     - contextPath: Netcraft.Takedown.stop_monitoring_date
       description: |
-        The date and time that the takedown system stopped monitoring the attack, in UTC. 
+        The date and time that the takedown system stopped monitoring the attack, in UTC.
         If the attack is still being monitored, an empty string is given.
       type: Date
     - contextPath: Netcraft.Takedown.domain
@@ -371,7 +371,7 @@ script:
       type: Unknown
     - contextPath: Netcraft.Takedown.deceptive_domain_score
       description: |
-        The deceptive domain score of the domain. 
+        The deceptive domain score of the domain.
         e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the deceptive domain score for examp1eb4nk.com.
       type: String
     - contextPath: Netcraft.Takedown.domain_risk_rating
@@ -431,8 +431,8 @@ script:
         Whether or not the hostname used in the attack is believed to be fraudulent.
         Possible values (non exhaustive):
           "all" - All attacks.
-          "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted. 
-          "yes_low_confidence" - The hostname is likely fraudulent. 
+          "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted.
+          "yes_low_confidence" - The hostname is likely fraudulent.
           "no" - The hostname is not believed to be fraudulent, this is likely compromised site.
       type: String
     - contextPath: Netcraft.Takedown.malware_category
@@ -442,7 +442,7 @@ script:
       description: The family of malware detected. only set for malware attack types. may be empty if family cannot be determined.
       type: String
     - contextPath: Netcraft.Takedown.phishing_kit_hash
-      description: The sha1 hashes of all phishing kits available for download which are related to this takedown. 
+      description: The sha1 hashes of all phishing kits available for download which are related to this takedown.
       type: Unknown
     - contextPath: Netcraft.Takedown.report_source
       description: The method through which the takedown was submitted.
@@ -502,7 +502,7 @@ script:
     - contextPath: Netcraft.Takedown.authorisation_source
       description: |
         The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
-        Possible values: "customer" "netcraft" 
+        Possible values: "customer" "netcraft"
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
       description: |
@@ -554,7 +554,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 
+      description:
       name: suspected_fraud_hostname
       predefined:
       - 'true'
@@ -616,7 +616,7 @@ script:
       predefined:
       - 'false'
       - 'true'
-    description: Retrieve details of notes that have been added to your takedowns.
+    description: Retrieve details of notes that have been added to takedowns.
     outputs:
     - contextPath: Netcraft.TakedownNote.note_id
       description: The unique identifier for the note.
@@ -960,9 +960,11 @@ script:
       description: The warning.
       type: String
   - name: 'netcraft-submission-file-list'
-    description: Get basic information about a submission's files. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: |
+      Get basic information about a submission's files.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
-    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".        
+    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
     - name: page
@@ -1024,7 +1026,8 @@ script:
   - name: 'netcraft-email-report-submit'
     polling: true
     description: |
-      Report email messages to Netcraft for analysis. The mail will be examined for malicious attachments and URLs.
+      Report email messages to Netcraft for analysis.
+      The mail will be examined for malicious attachments and URLs.
       Optionally, mails can be encrypted before upload. If a mail is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
     arguments:
     - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
@@ -1146,7 +1149,9 @@ script:
       description: The warning.
       type: String
   - name: 'netcraft-submission-mail-get'
-    description: Get basic information about a submission's mail. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: |
+      Get basic information about a submission's mail.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
     - description:  The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
@@ -1162,13 +1167,13 @@ script:
       description: The state the entity moved into.
       type: String
     - contextPath: Netcraft.SubmissionMail.from
-      description: # TODO
+      description: The email addresses of the mail senders.
       type: String
     - contextPath: Netcraft.SubmissionMail.hash
       description: The MD5 hash of the mail associated with this submission.
       type: String
     - contextPath: Netcraft.SubmissionMail.reply_to
-      description: # TODO
+      description: The email addresses that reply messages of the mail were sent to.
       type: String
     - contextPath: Netcraft.SubmissionMail.state
       description: The classification state of the mail. One of "processing", "no threats" or "malicious".
@@ -1327,7 +1332,9 @@ script:
       description: The warning.
       type: String
   - name: 'netcraft-submission-url-list'
-    description: Get basic information about a submission's URLs. When a submission is archived this command will return an error with the message "this submission has been archived".
+    description: |
+      Get basic information about a submission's URLs.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
     - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
@@ -1416,7 +1423,7 @@ script:
       description: The UUID of the URL.
       type: String
   - name: 'netcraft-url-screenshot-get'
-    description: Downloads associated screenshots for a specified URL.
+    description: Download associated screenshots for a specified URL.
     arguments:
     - description: The unique identifier of the submission from which to retrieve a URL screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
@@ -1450,9 +1457,6 @@ script:
   dockerimage: demisto/python3:3.10.12.63474
   subtype: python3
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
 fromversion: 6.9.0
 tests:
