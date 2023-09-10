@@ -900,7 +900,7 @@ class BranchTestCollector(TestCollector):
                                     collection_result_of_apimodule += integration_collected
                                 else:
                                     collection_result_of_apimodule = integration_collected
-                            except NothingToCollectException as e:
+                            except Exception as e:
                                 logger.info(e)
                                 continue
                         logger.info(f"WE FINISHED")
