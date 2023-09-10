@@ -125,21 +125,21 @@ Query inventory information. This includes the managed node status, such as Stop
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.InventoryNextToken | String | The token for the next set of items to return. | 
-| AWS.SSM.Inventory.Entities.Id | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
-| AWS.SSM.Inventory.Entities.Data.TypeName | String | The name of the inventory result item type. | 
-| AWS.SSM.Inventory.Entities.Data.SchemaVersion | String | The schema version for the inventory result item. | 
-| AWS.SSM.Inventory.Entities.Data.CaptureTime | String | The time inventory item data was captured. | 
-| AWS.SSM.Inventory.Entities.Data.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
-| AWS.SSM.Inventory.Entities.Data.Content.AgentType | String | The type of SSM agent running on the instance. | 
-| AWS.SSM.Inventory.Entities.Data.Content.AgentVersion | String | The version of the SSM agent running on the instance. | 
-| AWS.SSM.Inventory.Entities.Data.Content.ComputerName | String | The fully qualified host name of the managed node. | 
-| AWS.SSM.Inventory.Entities.Data.Content.IpAddress | String | The IP address of the managed node. | 
-| AWS.SSM.Inventory.Entities.Data.Content.PlatformName | String | The name of the operating system platform running on the managed node. | 
-| AWS.SSM.Inventory.Entities.Data.Content.PlatformType | String | The operating system platform type. | 
-| AWS.SSM.Inventory.Entities.Data.Content.PlatformVersion | String | The version of the OS platform running on the managed node. | 
-| AWS.SSM.Inventory.Entities.Data.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
-| AWS.SSM.Inventory.Entities.Data.Content.InstanceId | String | The managed node ID. | 
+| AWS.SSM.InventoryNextToken.NextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.Inventory.Id | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.TypeName | String | The name of the inventory result item type. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.SchemaVersion | String | The schema version for the inventory result item. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.CaptureTime | String | The time inventory item data was captured. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentType | String | The type of SSM agent running on the instance. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentVersion | String | The version of the SSM agent running on the instance. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.ComputerName | String | The fully qualified host name of the managed node. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.IpAddress | String | The IP address of the managed node. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformName | String | The name of the operating system platform running on the managed node. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformType | String | The operating system platform type. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformVersion | String | The version of the OS platform running on the managed node. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
+| AWS.SSM.Inventory.AWS:InstanceInformation.Content.InstanceId | String | The managed node ID. | 
 
 #### Command example
 
@@ -154,30 +154,28 @@ Query inventory information. This includes the managed node status, such as Stop
             "Inventory": [
             {
                 "Id": "i-test_1",
-                "Data": {}
+
             },
             {
                 "Id": "i-test_2",
-                "Data": {
-                    "AWS:InstanceInformation": {
-                        "TypeName": "AWS:InstanceInformation",
-                        "SchemaVersion": "1.0",
-                        "CaptureTime": "2023-07-25T16:02:02Z",
-                        "Content": [
-                            {
-                                "AgentType": "amazon-ssm-agent",
-                                "AgentVersion": "agent_version",
-                                "ComputerName": "computer_name",
-                                "InstanceId": "i-test_2",
-                                "InstanceStatus": "Stopped",
-                                "IpAddress": "ip_address",
-                                "PlatformName": "Ubuntu",
-                                "PlatformType": "Linux",
-                                "PlatformVersion": "20.04",
-                                "ResourceType": "resource_type"
-                            }
-                        ]
-                    }
+                "AWS:InstanceInformation": {
+                    "TypeName": "AWS:InstanceInformation",
+                    "SchemaVersion": "1.0",
+                    "CaptureTime": "2023-07-25T16:02:02Z",
+                    "Content": [
+                        {
+                            "AgentType": "amazon-ssm-agent",
+                            "AgentVersion": "agent_version",
+                            "ComputerName": "computer_name",
+                            "InstanceId": "i-test_2",
+                            "InstanceStatus": "Stopped",
+                            "IpAddress": "ip_address",
+                            "PlatformName": "Ubuntu",
+                            "PlatformType": "Linux",
+                            "PlatformVersion": "20.04",
+                            "ResourceType": "resource_type"
+                        }
+                    ]
                 }
             },
             ],
@@ -225,7 +223,7 @@ A list of inventory items returned by the request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.InventoryEntryNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.InventoryEntryNextToken.NextToken | String | The token for the next set of items to return. | 
 | AWS.SSM.InventoryEntry.TypeName | String | The type of inventory item returned by the request. | 
 | AWS.SSM.InventoryEntry.InstanceId | String | The managed node ID targeted by the request to query inventory information. | 
 | AWS.SSM.InventoryEntry.SchemaVersion | String | The inventory schema version used by the managed node\(s\). | 
@@ -306,7 +304,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.AssociationNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.AssociationNextToken.NextToken | String | The token for the next set of items to return. | 
 | AWS.SSM.Association.Name | String | The name of the SSM document. | 
 | AWS.SSM.Association.AssociationName | String | The association name. | 
 | AWS.SSM.Association.InstanceId | String | The managed node ID. | 
@@ -446,51 +444,51 @@ Describes the association for the specified target or managed node. If the assoc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.Association.AssociationDescription.Name | String | The name of the SSM document. | 
-| AWS.SSM.Association.AssociationDescription.InstanceId | String | The managed node ID. | 
-| AWS.SSM.Association.AssociationDescription.AssociationVersion | String | The association version. | 
-| AWS.SSM.Association.AssociationDescription.Date | String | The date when the association was made. | 
-| AWS.SSM.Association.AssociationDescription.LastUpdateAssociationDate | String | The date when the association was last updated. | 
-| AWS.SSM.Association.AssociationDescription.Status.Date | String | The date when the status changed. | 
-| AWS.SSM.Association.AssociationDescription.Status.Name | String | The status. | 
-| AWS.SSM.Association.AssociationDescription.Status.Message | String | The reason for the status. | 
-| AWS.SSM.Association.AssociationDescription.Status.AdditionalInfo | String | A user-defined string. | 
-| AWS.SSM.Association.AssociationDescription.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. | 
-| AWS.SSM.Association.AssociationDescription.Overview.DetailedStatus | String | A detailed status of the association. | 
-| AWS.SSM.Association.AssociationDescription.Overview.AssociationStatusAggregatedCount | Number | Returns the number of targets for the association status. For example, if an association was created with two managed nodes, and one of them was successful, this would return the count of managed nodes by status. | 
-| AWS.SSM.Association.AssociationDescription.DocumentVersion | String | The document version. | 
-| AWS.SSM.Association.AssociationDescription.AutomationTargetParameterName | String | Choose the parameter that will define how the automation will branch out. This target is required for associations that use an Automation runbook and target resources by using rate controls. Automation is a capability of Amazon Web Services Systems Manager. | 
-| AWS.SSM.Association.AssociationDescription.Parameters | Dictionary | A description of the parameters for a document. | 
-| AWS.SSM.Association.AssociationDescription.AssociationId | String | The association ID. | 
-| AWS.SSM.Association.AssociationDescription.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
-| AWS.SSM.Association.AssociationDescription.Targets.Values | String | User-defined criteria that maps to Key. | 
-| AWS.SSM.Association.AssociationDescription.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. | 
-| AWS.SSM.Association.AssociationDescription.OutputLocation | unknown | An S3 bucket where to store the output details of the request. | 
-| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
-| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
-| AWS.SSM.Association.AssociationDescription.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
-| AWS.SSM.Association.AssociationDescription.LastExecutionDate | String | The date on which the association was last run. | 
-| AWS.SSM.Association.AssociationDescription.LastSuccessfulExecutionDate | String | The last date on which the association was successfully run. | 
-| AWS.SSM.Association.AssociationDescription.AssociationName | String | The association name. | 
-| AWS.SSM.Association.AssociationDescription.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. | 
-| AWS.SSM.Association.AssociationDescription.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. | 
-| AWS.SSM.Association.AssociationDescription.ComplianceSeverity | String | The severity level that is assigned to the association. | 
-| AWS.SSM.Association.AssociationDescription.SyncCompliance | String | The mode for generating association compliance - AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by a direct call to the PutComplianceItems API operation. By default, all associations use AUTO mode. | 
-| AWS.SSM.Association.AssociationDescription.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
-| AWS.SSM.Association.AssociationDescription.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations only run when that change calendar is open. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
-| AWS.SSM.Association.AssociationDescription.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
-| AWS.SSM.Association.AssociationDescription.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
-| AWS.SSM.Association.AssociationDescription.TargetMaps | List | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
-| AWS.SSM.Association.AssociationDescription.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
-| AWS.SSM.Association.AssociationDescription.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
-| AWS.SSM.Association.AssociationDescription.TriggeredAlarms.Name | String | The CloudWatch alarm that was invoked during the association. | 
-| AWS.SSM.Association.AssociationDescription.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
+| AWS.SSM.Association.Name | String | The name of the SSM document. | 
+| AWS.SSM.Association.InstanceId | String | The managed node ID. | 
+| AWS.SSM.Association.AssociationVersion | String | The association version. | 
+| AWS.SSM.Association.Date | String | The date when the association was made. | 
+| AWS.SSM.Association.LastUpdateAssociationDate | String | The date when the association was last updated. | 
+| AWS.SSM.Association.Status.Date | String | The date when the status changed. | 
+| AWS.SSM.Association.Status.Name | String | The status. | 
+| AWS.SSM.Association.Status.Message | String | The reason for the status. | 
+| AWS.SSM.Association.Status.AdditionalInfo | String | A user-defined string. | 
+| AWS.SSM.Association.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. | 
+| AWS.SSM.Association.Overview.DetailedStatus | String | A detailed status of the association. | 
+| AWS.SSM.Association.Overview.AssociationStatusAggregatedCount | Number | Returns the number of targets for the association status. For example, if an association was created with two managed nodes, and one of them was successful, this would return the count of managed nodes by status. | 
+| AWS.SSM.Association.DocumentVersion | String | The document version. | 
+| AWS.SSM.Association.AutomationTargetParameterName | String | Choose the parameter that will define how the automation will branch out. This target is required for associations that use an Automation runbook and target resources by using rate controls. Automation is a capability of Amazon Web Services Systems Manager. | 
+| AWS.SSM.Association.Parameters | Dictionary | A description of the parameters for a document. | 
+| AWS.SSM.Association.AssociationId | String | The association ID. | 
+| AWS.SSM.Association.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Association.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Association.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. | 
+| AWS.SSM.Association.OutputLocation | unknown | An S3 bucket where to store the output details of the request. | 
+| AWS.SSM.Association.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.Association.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
+| AWS.SSM.Association.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
+| AWS.SSM.Association.LastExecutionDate | String | The date on which the association was last run. | 
+| AWS.SSM.Association.LastSuccessfulExecutionDate | String | The last date on which the association was successfully run. | 
+| AWS.SSM.Association.AssociationName | String | The association name. | 
+| AWS.SSM.Association.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. | 
+| AWS.SSM.Association.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. | 
+| AWS.SSM.Association.ComplianceSeverity | String | The severity level that is assigned to the association. | 
+| AWS.SSM.Association.SyncCompliance | String | The mode for generating association compliance - AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. In MANUAL mode, must specify the AssociationId as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by a direct call to the PutComplianceItems API operation. By default, all associations use AUTO mode. | 
+| AWS.SSM.Association.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
+| AWS.SSM.Association.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations only run when that change calendar is open. | 
+| AWS.SSM.Association.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.Association.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.Association.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.Association.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.Association.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.Association.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Association.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Association.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
+| AWS.SSM.Association.TargetMaps | List | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
+| AWS.SSM.Association.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Association.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Association.TriggeredAlarms.Name | String | The CloudWatch alarm that was invoked during the association. | 
+| AWS.SSM.Association.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
 
 #### Command example
 
@@ -577,36 +575,36 @@ Retrieves all versions of an association for a specific association ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.AssociationVersionNextToken | String | The token for the next set of items to return. Use this token to get the next set of results. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.AssociationId | String | The ID created by the system when the association was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.AssociationVersion | String | The association version. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.CreatedDate | String | The date the association version was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.Name | String | The name specified when the association was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.DocumentVersion | String | The version of an Amazon Web Services Systems Manager document \(SSM document\) used when the association version was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.Parameters | Dictionary | Parameters specified when the association version was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.Targets.Values | String | User-defined criteria that maps to Key, Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.ScheduleExpression | String | The cron or rate schedule specified for the association when the association version was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location | Dictionary | An S3 bucket where to store the output details of the request. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.AssociationName | String | The name specified for the association version when the association version was created. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. Executions that are already running an association when MaxErrors is reached are allowed to complete, but some of these executions may fail as well. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. If a new managed node starts and attempts to run an association while Systems Manager is running MaxConcurrency associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for MaxConcurrency. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.ComplianceSeverity | String | The severity level that is assigned to the association. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.SyncCompliance | String | The mode for generating association compliance.. Can be AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, the AssociationId must be specified as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by the direct call to the PutComplianceItems API operation. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
-| AWS.SSM.AssociationVersion.AssociationVersions.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
+| AWS.SSM.AssociationVersionNextToken.NextToken | String | The token for the next set of items to return. Use this token to get the next set of results. | 
+| AWS.SSM.AssociationVersion.AssociationId | String | The ID created by the system when the association was created. | 
+| AWS.SSM.AssociationVersion.AssociationVersion | String | The association version. | 
+| AWS.SSM.AssociationVersion.CreatedDate | String | The date the association version was created. | 
+| AWS.SSM.AssociationVersion.Name | String | The name specified when the association was created. | 
+| AWS.SSM.AssociationVersion.DocumentVersion | String | The version of an Amazon Web Services Systems Manager document \(SSM document\) used when the association version was created. | 
+| AWS.SSM.AssociationVersion.Parameters | Dictionary | Parameters specified when the association version was created. | 
+| AWS.SSM.AssociationVersion.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.AssociationVersion.Targets.Values | String | User-defined criteria that maps to Key, Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | 
+| AWS.SSM.AssociationVersion.ScheduleExpression | String | The cron or rate schedule specified for the association when the association version was created. | 
+| AWS.SSM.AssociationVersion.OutputLocation.S3Location | Dictionary | An S3 bucket where to store the output details of the request. | 
+| AWS.SSM.AssociationVersion.OutputLocation.S3Location.OutputS3Region | String | The Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.AssociationVersion.OutputLocation.S3Location.OutputS3BucketName | String | The name of the S3 bucket. | 
+| AWS.SSM.AssociationVersion.OutputLocation.S3Location.OutputS3KeyPrefix | String | The S3 bucket subfolder. | 
+| AWS.SSM.AssociationVersion.AssociationName | String | The name specified for the association version when the association version was created. | 
+| AWS.SSM.AssociationVersion.MaxErrors | String | The number of errors that are allowed before the system stops sending requests to run the association on additional targets. Executions that are already running an association when MaxErrors is reached are allowed to complete, but some of these executions may fail as well. | 
+| AWS.SSM.AssociationVersion.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. If a new managed node starts and attempts to run an association while Systems Manager is running MaxConcurrency associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for MaxConcurrency. | 
+| AWS.SSM.AssociationVersion.ComplianceSeverity | String | The severity level that is assigned to the association. | 
+| AWS.SSM.AssociationVersion.SyncCompliance | String | The mode for generating association compliance.. Can be AUTO or MANUAL. In AUTO mode, the system uses the status of the association execution to determine the compliance status. If the association execution runs successfully, then the association is COMPLIANT. If the association execution doesn’t run successfully, the association is NON-COMPLIANT. By default, all associations use AUTO mode. In MANUAL mode, the AssociationId must be specified as a parameter for the PutComplianceItems API operation. In this case, compliance data isn’t managed by State Manager, a capability of Amazon Web Services Systems Manager. It is managed by the direct call to the PutComplianceItems API operation. | 
+| AWS.SSM.AssociationVersion.ApplyOnlyAtCronInterval | Boolean | By default, when creating a new association, the system runs it immediately after it is created and then according to the schedule that was specified. This parameter isn’t supported for rate expressions. | 
+| AWS.SSM.AssociationVersion.CalendarNames | String | The names or Amazon Resource Names \(ARNs\) of the Change Calendar type documents the associations are gated under. The associations for this version only run when that Change Calendar is open. | 
+| AWS.SSM.AssociationVersion.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.AssociationVersion.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.AssociationVersion.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.AssociationVersion.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.AssociationVersion.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.AssociationVersion.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AssociationVersion.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AssociationVersion.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
+| AWS.SSM.AssociationVersion.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. |
 
 #### Command example
 
@@ -681,26 +679,26 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.DocumentNextToken | String | The token to use when requesting the next set of items. If there are no additional items to return, the string is empty. | 
-| AWS.SSM.Document.DocumentIdentifiers.Name | String | The name of the SSM document. | 
-| AWS.SSM.Document.DocumentIdentifiers.CreatedDate | String | The date the SSM document was created. | 
-| AWS.SSM.Document.DocumentIdentifiers.DisplayName | String | An optional field allowing the specification of a user-defined, friendly name for the SSM document. This value can vary across different versions of the document. | 
-| AWS.SSM.Document.DocumentIdentifiers.Owner | String | The Amazon Web Services user that created the document. | 
-| AWS.SSM.Document.DocumentIdentifiers.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
-| AWS.SSM.Document.DocumentIdentifiers.PlatformTypes | String | The operating system platform. | 
-| AWS.SSM.Document.DocumentIdentifiers.DocumentVersion | String | The document version. | 
-| AWS.SSM.Document.DocumentIdentifiers.DocumentType | String | The document type. | 
-| AWS.SSM.Document.DocumentIdentifiers.SchemaVersion | String | The schema version. | 
-| AWS.SSM.Document.DocumentIdentifiers.DocumentFormat | String | The document format, either JSON or YAML. | 
-| AWS.SSM.Document.DocumentIdentifiers.TargetType | String | The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the \[CloudFormation User Guide\]\(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html\). | 
-| AWS.SSM.Document.DocumentIdentifiers.Tags.Key | String | The name of the tag. | 
-| AWS.SSM.Document.DocumentIdentifiers.Tags.Value | String | The value of the tag. | 
-| AWS.SSM.Document.DocumentIdentifiers.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
-| AWS.SSM.Document.DocumentIdentifiers.Requires.Version | String | The document version required by the current document. | 
-| AWS.SSM.Document.DocumentIdentifiers.Requires.RequireType | String | The document type of the required SSM document. | 
-| AWS.SSM.Document.DocumentIdentifiers.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
-| AWS.SSM.Document.DocumentIdentifiers.ReviewStatus | String | The current status of a document review. | 
-| AWS.SSM.Document.DocumentIdentifiers.Author | String | The user in the organization who created the document. | 
+| AWS.SSM.DocumentNextToken.NextToken | String | The token to use when requesting the next set of items. If there are no additional items to return, the string is empty. | 
+| AWS.SSM.Document.Name | String | The name of the SSM document. | 
+| AWS.SSM.Document.CreatedDate | String | The date the SSM document was created. | 
+| AWS.SSM.Document.DisplayName | String | An optional field allowing the specification of a user-defined, friendly name for the SSM document. This value can vary across different versions of the document. | 
+| AWS.SSM.Document.Owner | String | The Amazon Web Services user that created the document. | 
+| AWS.SSM.Document.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
+| AWS.SSM.Document.PlatformTypes | String | The operating system platform. | 
+| AWS.SSM.Document.DocumentVersion | String | The document version. | 
+| AWS.SSM.Document.DocumentType | String | The document type. | 
+| AWS.SSM.Document.SchemaVersion | String | The schema version. | 
+| AWS.SSM.Document.DocumentFormat | String | The document format, either JSON or YAML. | 
+| AWS.SSM.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the \[CloudFormation User Guide\]\(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html\). | 
+| AWS.SSM.Document.Tags.Key | String | The name of the tag. | 
+| AWS.SSM.Document.Tags.Value | String | The value of the tag. | 
+| AWS.SSM.Document.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
+| AWS.SSM.Document.Requires.Version | String | The document version required by the current document. | 
+| AWS.SSM.Document.Requires.RequireType | String | The document type of the required SSM document. | 
+| AWS.SSM.Document.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. For example, “Release 12, Update 6”. This value is unique across all versions of a document, and can’t be changed. | 
+| AWS.SSM.Document.ReviewStatus | String | The current status of a document review. | 
+| AWS.SSM.Document.Author | String | The user in the organization who created the document. | 
 
 #### Command example
 
@@ -789,45 +787,46 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.Document.Document.Sha1 | String | The SHA1 hash of the document, which you can use for verification. | 
-| AWS.SSM.Document.Document.Hash | String | The SHA256 or SHA1 hash created by the system when the document was created. | 
-| AWS.SSM.Document.Document.HashType | String | The hash type of the document. Valid values include SHA256 or SHA1. | 
-| AWS.SSM.Document.Document.Name | String | The name of the SSM document. | 
-| AWS.SSM.Document.Document.DisplayName | String | The friendly name of the SSM document. This value can differ for each version of the document. | 
-| AWS.SSM.Document.Document.VersionName | String | The version of the artifact associated with the document. | 
-| AWS.SSM.Document.Document.Owner | String | The Amazon Web Services user that created the document. | 
-| AWS.SSM.Document.Document.CreatedDate | String | The date when the document was created. | 
-| AWS.SSM.Document.Document.Status | String | The status of the SSM document. | 
-| AWS.SSM.Document.Document.StatusInformation | String | A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.”. | 
-| AWS.SSM.Document.Document.DocumentVersion | String | The document version. | 
-| AWS.SSM.Document.Document.Description | String | A description of the document. | 
-| AWS.SSM.Document.Document.Parameters.Name | String | The name of the parameter. | 
-| AWS.SSM.Document.Document.Parameters.Type | String | The type of parameter. The type can be either String or StringList. | 
-| AWS.SSM.Document.Document.Parameters.Description | String | A description of what the parameter does, how to use it, the default value, and whether or not the parameter is optional. | 
-| AWS.SSM.Document.Document.Parameters.DefaultValue | String | If specified, the default values for the parameters. Parameters without a default value are required. Parameters with a default value are optional. | 
-| AWS.SSM.Document.Document.PlatformTypes | String | The list of operating system \(OS\) platforms compatible with this SSM document. | 
-| AWS.SSM.Document.Document.DocumentType | String | The type of document. | 
-| AWS.SSM.Document.Document.SchemaVersion | String | The schema version. | 
-| AWS.SSM.Document.Document.LatestVersion | String | The latest version of the document. | 
-| AWS.SSM.Document.Document.DefaultVersion | String | The default version. | 
-| AWS.SSM.Document.Document.DocumentFormat | String | The document format, either JSON or YAML. | 
-| AWS.SSM.Document.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. | 
-| AWS.SSM.Document.Document.Tags.Key | String | The name of the tag. | 
-| AWS.SSM.Document.Document.Tags.Value | String | The value of the tag. | 
-| AWS.SSM.Document.Document.AttachmentsInformation.Name | String | The name of the attachment. | 
-| AWS.SSM.Document.Document.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
-| AWS.SSM.Document.Document.Requires.Version | String | The document version required by the current document. | 
-| AWS.SSM.Document.Document.Requires.RequireType | String | The document type of the required SSM document. | 
-| AWS.SSM.Document.Document.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. | 
-| AWS.SSM.Document.Document.Author | String | The user in the organization who created the document. | 
-| AWS.SSM.Document.Document.ReviewInformation.ReviewedTime | String | The time when the reviewer took action on the document review request. | 
-| AWS.SSM.Document.Document.ReviewInformation.Status | String | The current status of the document review request. | 
-| AWS.SSM.Document.Document.ReviewInformation.Reviewer | String | The reviewer assigned to take action on the document review request. | 
-| AWS.SSM.Document.Document.ApprovedVersion | String | The version of the document currently approved for use in the organization. | 
-| AWS.SSM.Document.Document.PendingReviewVersion | String | The version of the document that is currently under review. | 
-| AWS.SSM.Document.Document.ReviewStatus | String | The current status of the review. | 
-| AWS.SSM.Document.Document.Category | String | The classification of a document to help you identify and categorize its use. | 
-| AWS.SSM.Document.Document.CategoryEnum | String | The value that identifies a document’s category. | 
+| AWS.SSM.Document.Sha1 | String | The SHA1 hash of the document, which you can use for verification. | 
+| AWS.SSM.Document.Hash | String | The SHA256 or SHA1 hash created by the system when the document was created. | 
+| AWS.SSM.Document.HashType | String | The hash type of the document. Valid values include SHA256 or SHA1. | 
+| AWS.SSM.Document.Name | String | The name of the SSM document. | 
+| AWS.SSM.Document.DisplayName | String | The friendly name of the SSM document. This value can differ for each version of the document. | 
+| AWS.SSM.Document.VersionName | String | The version of the artifact associated with the document. | 
+| AWS.SSM.Document.Owner | String | The Amazon Web Services user that created the document. | 
+| AWS.SSM.Document.CreatedDate | String | The date when the document was created. | 
+| AWS.SSM.Document.Status | String | The status of the SSM document. | 
+| AWS.SSM.Document.StatusInformation | String | A message returned by Amazon Web Services Systems Manager that explains the Status value. For example, a Failed status might be explained by the StatusInformation message, “The specified S3 bucket doesn’t exist. Verify that the URL of the S3 bucket is correct.”. | 
+| AWS.SSM.Document.DocumentVersion | String | The document version. | 
+| AWS.SSM.Document.Description | String | A description of the document. | 
+| AWS.SSM.Document.Parameters.Name | String | The name of the parameter. | 
+| AWS.SSM.Document.Parameters.Type | String | The type of parameter. The type can be either String or StringList. | 
+| AWS.SSM.Document.Parameters.Description | String | A description of what the parameter does, how to use it, the default value, and whether or not the parameter is optional. | 
+| AWS.SSM.Document.Parameters.DefaultValue | String | If specified, the default values for the parameters. Parameters without a default value are required. Parameters with a default value are optional. | 
+| AWS.SSM.Document.PlatformTypes | String | The list of operating system \(OS\) platforms compatible with this SSM document. | 
+| AWS.SSM.Document.DocumentType | String | The type of document. | 
+| AWS.SSM.Document.SchemaVersion | String | The schema version. | 
+| AWS.SSM.Document.LatestVersion | String | The latest version of the document. | 
+| AWS.SSM.Document.DefaultVersion | String | The default version. | 
+| AWS.SSM.Document.DocumentFormat | String | The document format, either JSON or YAML. | 
+| AWS.SSM.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. | 
+| AWS.SSM.Document.Tags.Key | String | The name of the tag. | 
+| AWS.SSM.Document.Tags.Value | String | The value of the tag. | 
+| AWS.SSM.Document.AttachmentsInformation.Name | String | The name of the attachment. | 
+| AWS.SSM.Document.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 
+| AWS.SSM.Document.Requires.Version | String | The document version required by the current document. | 
+| AWS.SSM.Document.Requires.RequireType | String | The document type of the required SSM document. | 
+| AWS.SSM.Document.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. | 
+| AWS.SSM.Document.Author | String | The user in the organization who created the document. | 
+| AWS.SSM.Document.ReviewInformation.ReviewedTime | String | The time when the reviewer took action on the document review request. | 
+| AWS.SSM.Document.ReviewInformation.Status | String | The current status of the document review request. | 
+| AWS.SSM.Document.ReviewInformation.Reviewer | String | The reviewer assigned to take action on the document review request. | 
+| AWS.SSM.Document.ApprovedVersion | String | The version of the document currently approved for use in the organization. | 
+| AWS.SSM.Document.PendingReviewVersion | String | The version of the document that is currently under review. | 
+| AWS.SSM.Document.ReviewStatus | String | The current status of the review. | 
+| AWS.SSM.Document.Category | String | The classification of a document to help you identify and categorize its use. | 
+| AWS.SSM.Document.CategoryEnum | String | The value that identifies a document’s category. |
+
 
 #### Command example
 
@@ -921,7 +920,7 @@ Initiates execution of an Automation runbook.
 | client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional | 
 | document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
 | max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional | 
-| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. If you specify 3, for example, the system stops running the automation when the fourth error is received. If you specify 0, then the system stops running the automation on additional targets after the first error result is returned. If you run an automation on 50 resources and set max-errors to 10%, then the system stops running the automation on additional targets when the sixth error is received. Executions that are already running an automation when max-errors is reached are allowed to complete, but some of these executions may fail as well. If you need to ensure that there won’t be more than max-errors failed executions, set max-concurrency to 1 so the executions proceed one at a time. | Optional | 
+| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%.| Optional | 
 | mode | The execution mode of the automation. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
 | tag_key | The name of the tag. | Optional | 
 | tag_value | The value of the tag. | Optional | 
@@ -996,7 +995,7 @@ If the argument execution_id is provided, the command returns detailed informati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.AutomationExecutionNextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.AutomationExecutionNextToken.NextToken | String | The token for the next set of items to return. | 
 | AWS.SSM.AutomationExecution.AutomationExecutionId | String | The execution ID. | 
 | AWS.SSM.AutomationExecution.DocumentName | String | The name of the Automation runbook used during the execution. | 
 | AWS.SSM.AutomationExecution.DocumentVersion | String | The version of the document to use during execution. | 
@@ -1203,39 +1202,39 @@ Lists the commands requested by users of the Amazon Web Services account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.CommandNextToken | String | The token for the next set of items to return. \(Received this token from a previous call.\). | 
-| AWS.SSM.Commands.CommandId | String | A unique identifier for this command. | 
-| AWS.SSM.Commands.DocumentName | String | The name of the document requested for execution. | 
-| AWS.SSM.Commands.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
-| AWS.SSM.Commands.Comment | String | User-specified information about the command, such as a brief description of what the command should do. | 
-| AWS.SSM.Commands.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. | 
-| AWS.SSM.Commands.Parameters | String | The parameter values to be inserted in the document when running the command. | 
-| AWS.SSM.Commands.InstanceIds | String | The managed node IDs against which this command was requested. | 
-| AWS.SSM.Commands.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
-| AWS.SSM.Commands.Targets.Values | String | User-defined criteria that maps to Key. | 
-| AWS.SSM.Commands.RequestedDateTime | String | The date and time the command was requested. | 
-| AWS.SSM.Commands.Status | String | The status of the command. | 
-| AWS.SSM.Commands.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. | 
-| AWS.SSM.Commands.OutputS3Region | String | \(Deprecated\) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
-| AWS.SSM.Commands.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
-| AWS.SSM.Commands.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
-| AWS.SSM.Commands.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
-| AWS.SSM.Commands.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
-| AWS.SSM.Commands.TargetCount | Number | The number of targets for the command. | 
-| AWS.SSM.Commands.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
-| AWS.SSM.Commands.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. | 
-| AWS.SSM.Commands.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. | 
-| AWS.SSM.Commands.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. | 
-| AWS.SSM.Commands.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. | 
-| AWS.SSM.Commands.NotificationConfig.NotificationEvents | String | The different events for receive notifications. | 
-| AWS.SSM.Commands.NotificationConfig.NotificationType | String | The type of notification. | 
-| AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where to send command output. If a group name is not specified, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: \`aws/ssm/SystemsManagerDocumentName\`. | 
-| AWS.SSM.Commands.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
-| AWS.SSM.Commands.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
-| AWS.SSM.Commands.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
-| AWS.SSM.Commands.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm specified in the configuration. | 
-| AWS.SSM.Commands.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
-| AWS.SSM.Commands.TriggeredAlarms.State | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.CommandNextToken.NextToken | String | The token for the next set of items to return. \(Received this token from a previous call.\). | 
+| AWS.SSM.Command.CommandId | String | A unique identifier for this command. | 
+| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. | 
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
+| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. | 
+| AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. | 
+| AWS.SSM.Command.Parameters | String | The parameter values to be inserted in the document when running the command. | 
+| AWS.SSM.Command.InstanceIds | String | The managed node IDs against which this command was requested. | 
+| AWS.SSM.Command.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Command.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. | 
+| AWS.SSM.Command.Status | String | The status of the command. | 
+| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. | 
+| AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
+| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
+| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. | 
+| AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
+| AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. | 
+| AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. | 
+| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. | 
+| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. | 
+| AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for receive notifications. | 
+| AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where to send command output. If a group name is not specified, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: \`aws/ssm/SystemsManagerDocumentName\`. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
+| AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
+| AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Command.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm specified in the configuration. | 
+| AWS.SSM.Command.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Command.TriggeredAlarms.State | String | The name of the CloudWatch alarm. |
 
 #### Command example
 

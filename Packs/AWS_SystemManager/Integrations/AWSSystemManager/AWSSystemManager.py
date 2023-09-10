@@ -39,6 +39,7 @@ FINAL_COMMAND_STATUSES = {
     "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations \
         doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
     "Cancelled": "The command was canceled before it was completed.",
+    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
     "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. \
         The system has canceled the command before executing it on any node.",
     "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied \
@@ -82,6 +83,31 @@ def update_if_value(
     output_dictionary: Any,
     input_to_output_keys: dict[str, str],
 ) -> Any:
+    """
+    Update the output dictionary with values from the input dictionary based on specified key mappings.
+
+    This function iterates through the key-value pairs in the `input_to_output_keys` dictionary, and for each pair,
+    it checks if the corresponding key exists in the `input_dictionary`. If the key exists, it copies the value to
+    the `output_dictionary` under the specified output key.
+
+    Args:
+    ____
+        input_dictionary (dict): The input dictionary containing data to be copied.
+        output_dictionary (dict): The output dictionary where data will be copied.
+        input_to_output_keys (dict): A dictionary mapping input keys to output keys.
+
+    Returns:
+    _______
+        dict: The updated `output_dictionary` containing copied values based on the mapping.
+
+    Example:
+    _______
+        >>> input_dict = {'next_token': 'test', 'instance_id': test_id}
+        >>> output_dict = {}
+        >>> key_mapping = {'next_token': 'NextToken', 'instance_id': 'InstanceId'}
+        >>> update_if_value(input_dict, output_dict, key_mapping)
+        {'NextToken': 'test', 'InstanceId': test_id}
+    """
     for input_key, output_key in input_to_output_keys.items():
         if value := input_dictionary.get(input_key):
             output_dictionary[output_key] = value
@@ -168,9 +194,9 @@ def format_document_version(document_version: str) -> str:
 
     Example:
     -------
-        version = "latest"
-        formatted_version = format_document_version(version)
-        print(Formatted version)
+        >>> version = "latest"
+        >>> formatted_version = format_document_version(version)
+        >>> print(Formatted version)
         $LATEST
     """
     if document_version == "latest":
@@ -194,17 +220,15 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
 
     Example:
     -------
-        The following example demonstrates the usage of the function:
-        ```
-        args = {
-            'instance_id': 'i-0a00aaa000000000a', # valid instance id
-            'association_id': '0000' # invalid association id
-        }
-        try:
-            validate_args(args)
-        except DemistoException as e:  # e equals to "Invalid association id: 0000"
-            print(f"Validation error: {e}")
-        ```
+        >>> args = {
+        >>>    'instance_id': 'i-0a00aaa000000000a', # valid instance id
+        >>>    'association_id': '0000' # invalid association id
+        >>> }
+        >>> try:
+        >>>    validate_args(args)
+        >>> except DemistoException as e:  # e equals to "Invalid association id: 0000"
+        >>>     print(f"Validation error: {e}")
+            Validation error: Invalid association id: 0000
     """
     for validate in [
         ASSOCIATION_ID_VALIDATOR,
@@ -261,23 +285,20 @@ def convert_datetime_to_iso(response) -> dict[str, Any]:
 
     Example:
     -------
-        The following example demonstrates how to use the function to convert datetime objects:
-        ```
-        response = {
-            'timestamp': datetime(2023, 8, 20, 12, 30, 0),
+        >>> response = {
+        >>>    'timestamp': datetime(2023, 8, 20, 12, 30, 0),
+        >>>    'data': {
+        >>>        'created_at': datetime(2023, 8, 19, 15, 45, 0)
+        >>>    }
+        >>> }
+        >>> iso_response = convert_datetime_to_iso(response)
+        >>> print(iso_response)
+            {
+            'timestamp': '2023-08-20T12:30:00',
             'data': {
-                'created_at': datetime(2023, 8, 19, 15, 45, 0)
+                 'created_at': '2023-08-19T15:45:00'
+               }
             }
-        }
-        iso_response = convert_datetime_to_iso(response)
-        print(iso_response)
-        #   {
-        #   'timestamp': '2023-08-20T12:30:00',
-        #   'data': {
-        #        'created_at': '2023-08-19T15:45:00'
-        #      }
-        #   }
-        ```
     """
 
     def _datetime_to_string(obj: Any) -> str:
@@ -302,7 +323,7 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
 
     Example:
     -------
-        next_token_command_result("token", "InventoryNextToken")
+        >>> next_token_command_result("token", "InventoryNextToken")
         in the context output(war room):
         {
             AWS:
@@ -313,6 +334,7 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
     """
     return CommandResults(
         outputs={f"AWS.SSM.{outputs_prefix}(val.NextToken)": {"NextToken": next_token}},
+        readable_output=f"For more results, use the next token from the context path: AWS.SSM.{outputs_prefix}.NextToken",
     )
 
 
@@ -371,7 +393,7 @@ def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
         - Delivery Timed Out
         - Execution Timed Out
         - Failed
-        - Canceled
+        - Canceled or Cancelled (AWS typo, British English)
         - Undeliverable
         - Terminated
         - Access Denied
