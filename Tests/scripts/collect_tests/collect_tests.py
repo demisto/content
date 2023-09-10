@@ -897,14 +897,13 @@ class BranchTestCollector(TestCollector):
                                 logger.info(f"The integration now = {integration.object_id}")
                                 integration_collected = self._collect_yml(integration.path)
                                 if collection_result_of_apimodule:
-                                    collection_result_of_apimodule.union(tuple(integration_collected))
+                                    collection_result_of_apimodule += integration_collected
                                 else:
                                     collection_result_of_apimodule = integration_collected
                             except NothingToCollectException as e:
                                 logger.info(e)
                                 continue
-
-
+                        return collection_result_of_apimodule
 
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
