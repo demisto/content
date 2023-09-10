@@ -218,6 +218,7 @@ tasks:
       next_page:
         simple: ${SaasSecurity.NextResultsPage}
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
