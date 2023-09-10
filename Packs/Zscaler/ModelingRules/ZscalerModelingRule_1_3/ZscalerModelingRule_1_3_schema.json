@@ -253,6 +253,10 @@
       "cefSeverity": {
         "type": "string",
         "is_array": false
+      },
+      "cat": {
+        "type": "string",
+        "is_array": false
       }
   }
 }
