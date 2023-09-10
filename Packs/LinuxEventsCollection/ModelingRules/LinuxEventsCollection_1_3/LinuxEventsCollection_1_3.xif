@@ -56,7 +56,7 @@ alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})
     log_level = arrayindex(regextract(event_description, "^([a-zA-Z]+):"), 0)
 | alter event_type =  if(event_description ~= "Accepted password", "Accepted password for user",
                            event_description ~= "received for user", "Auth status received for user",
-                           event_description ~= "incorrect password attempts", "Incorrect password attempts ",
+                           event_description ~= "incorrect password attempts", "Incorrect password attempts",
                            event_description ~= "Connection closed by authenticating", "Connection closed by authenticating user",
                            event_description ~= "Connection closed by invalid", "Connection closed by invalid user",
                            event_description ~= "Connection closed", "Connection closed",
