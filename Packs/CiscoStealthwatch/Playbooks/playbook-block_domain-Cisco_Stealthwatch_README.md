@@ -1,5 +1,4 @@
 This playbook blocks domains using Cisco Stealthwatch Cloud.
-The playbook checks whether the Cisco Stealthwatch Cloud integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
 
 ## Dependencies
 
