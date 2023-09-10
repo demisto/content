@@ -305,7 +305,7 @@
 unittests-and-lint:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
-    - .test-native-candidate-rule-always
+    - .run-unittests-and-lint
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Run Unit Testing and Lint"     #not sure about these tow lines
