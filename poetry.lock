@@ -2024,13 +2024,13 @@ tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
 
 [[package]]
 name = "google-cloud-compute"
-version = "1.13.0"
+version = "1.14.0"
 description = "Google Cloud Compute API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-compute-1.13.0.tar.gz", hash = "sha256:93b72129c6443c898da5a060d2021bc2d11c2a57ef2fbb9306afbb5126a376b9"},
-    {file = "google_cloud_compute-1.13.0-py2.py3-none-any.whl", hash = "sha256:0f75d6c09cc504e43f4eceb2a466de9e9eb6fca819ca8ffdcf098ca5b21c7dc1"},
+    {file = "google-cloud-compute-1.14.0.tar.gz", hash = "sha256:02d1a3cfe82127efd623ca696af905d89e87aaaeb9a5062159bdcf3747fd8f66"},
+    {file = "google_cloud_compute-1.14.0-py2.py3-none-any.whl", hash = "sha256:601e6b9f26bae44a4551249daf933e34def4bea95a007294dacc197b3102b52d"},
 ]
 
 [package.dependencies]
@@ -7164,4 +7164,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "e7cccd592039e7c619acb27c9100e182a03ee65b173678bcc95c95994ab7dff2"
+content-hash = "9be7e6b72c3c969d4edd4fd4d5139213583721d2d6e8cfd845f9f065ef17b956"
