@@ -3628,7 +3628,7 @@ class Pack:
             with open(integration_yaml_path[0]) as pack_file:
                 integration_yaml_content = yaml.safe_load(pack_file)
 
-            image_background: list[str] = re.findall(r'_([^.]*)\.svg', dynamic_dashboard_image)
+            image_background: list[str] = re.findall(r'_([^_]+)\.svg$', dynamic_dashboard_image)
             if not image_background or image_background[0].lower() not in ['dark', 'light']:
                 raise BaseException(f"Could not find background for image in path {dynamic_dashboard_image}.\nThe svg image "
                                     "file should be named either as `<ImageName>_dark.svg` or `<ImageName>_light.svg`")
