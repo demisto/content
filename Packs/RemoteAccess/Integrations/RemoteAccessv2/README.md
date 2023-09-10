@@ -49,7 +49,7 @@ Run the specified command on the remote system with SSH.
 
 | **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| cmd | Command to run on the remote machine. You can pass concatenated commands as an argument by ';', when executing several commands simultaneously in a single SSH session. For example: 'echo1;echo2' | Required | 
+| cmd | Command to run on the remote machine. There is an option to pass concatenated commands as one command by ';', for executing several commands in a single SSH session. For example 'echo1;echo2'. | Required | 
 | additional_password | Password required to match the Additional Password parameter if it was supplied to run the command.                                                                                                | Optional | 
 | timeout | Timeout for command in seconds.                                                                                                                                                                    | Optional | 
 | system | System to run the command on.                                                                                                                                                                      | Optional | 
