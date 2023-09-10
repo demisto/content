@@ -218,6 +218,7 @@ tasks:
       next_page:
         simple: ${SaasSecurity.NextResultsPage}
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -334,6 +335,14 @@ tasks:
           right:
             value:
               simple: closed
+        - operator: isEqualString
+          left:
+            value:
+              simple: SaasSecurity.Incident.state
+            iscontext: true
+          right:
+            value:
+              simple: Closed
     view: |-
       {
         "position": {
