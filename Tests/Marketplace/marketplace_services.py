@@ -3628,12 +3628,12 @@ class Pack:
             with open(integration_yaml_path[0]) as pack_file:
                 integration_yaml_content = yaml.safe_load(pack_file)
 
-            image_background = re.findall(r'_([^.]*)\.svg', dynamic_dashboard_image)
-            if not image_background:
+            image_background: list[str] = re.findall(r'_([^.]*)\.svg', dynamic_dashboard_image)
+            if not image_background or image_background[0].lower() not in ['dark', 'light']:
                 raise f"Could not find background for image in path {dynamic_dashboard_image}.\n" \
                       "The svg image file should be named either as `<ImageName>_dark.svg` or `<ImageName>_light.svg`"
 
-            image_storage_path = os.path.join(pack_storage_root_path, image_background[0],
+            image_storage_path = os.path.join(pack_storage_root_path, image_background[0].lower(),
                                               f"{integration_yaml_content.get('commonfields', {}).get('id', '')}.svg")
             logging.debug(f"Uploading image in path '{dynamic_dashboard_image}' to bucket directory '{image_storage_path}'")
             pack_image_blob = storage_bucket.blob(image_storage_path)
