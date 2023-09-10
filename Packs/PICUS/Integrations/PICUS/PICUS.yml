@@ -25,7 +25,7 @@ configuration:
   type: 8
   required: false
 description: Deprecated. Use PicusAutomation instead.
-display: PICUS
+display: PICUS (Deprecated)
 name: PICUS
 deprecated: true
 script:
