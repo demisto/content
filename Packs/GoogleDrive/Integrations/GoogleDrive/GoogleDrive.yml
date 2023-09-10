@@ -1812,7 +1812,7 @@ script:
       - "Drive"
       - "All Drives"
     - name: drive_id
-      description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command.
+      description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command. When a drive ID is specified the value of the corpora argument is automatically set to 'Drive' regardless of its selected value. 
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
