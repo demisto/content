@@ -163,6 +163,11 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Add HSTS header
+  name: hsts_header
+  type: 8
+  required: false
+  additionalinfo: When set to true and certificate & private key are provided will add the HSTS header to all requests.  
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   defaultvalue: string
   display: "McAfee Gateway: Indicator List Type"
