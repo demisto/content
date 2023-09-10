@@ -1,8 +1,9 @@
 id: Crowdstrike Falcon - Unisolate Endpoint
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Crowdstrike Falcon - Unisolate Endpoint
-description: This playbook unisolates devices according to the device ID
- that is provided in the playbook input.
+description: This playbook unisolates devices according to the device ID that is provided in the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,11 +21,12 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 100
         }
       }
     note: false
@@ -32,6 +34,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 2ae518e9-5ce5-4579-8497-0bc6fa4b0d62
@@ -40,8 +44,7 @@ tasks:
       id: 2ae518e9-5ce5-4579-8497-0bc6fa4b0d62
       version: -1
       name: Is Crowdstrike Falcon enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -57,6 +60,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,6 +73,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 343486ae-6c5a-4d2c-8814-beb66bceb37a
@@ -82,11 +88,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1500
+          "y": 1090
         }
       }
     note: false
@@ -94,12 +101,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bbc0e932-25e7-48ae-8cdd-eac85b847407
+    taskid: 1e7796f3-4dc5-4a3c-8392-d818700687a9
     type: condition
     task:
-      id: bbc0e932-25e7-48ae-8cdd-eac85b847407
+      id: 1e7796f3-4dc5-4a3c-8392-d818700687a9
       version: -1
       name: Is there a device ID?
       type: condition
@@ -115,16 +124,18 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Endpoint_id
+              complex:
+                root: inputs.Endpoint_id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 450
+          "x": 760,
+          "y": 400
         }
       }
     note: false
@@ -132,12 +143,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d87e720f-21d2-4975-8179-49a048df4aa6
+    taskid: ce9392b3-11b2-4cbc-8876-98898beb3b5a
     type: regular
     task:
-      id: d87e720f-21d2-4975-8179-49a048df4aa6
+      id: ce9392b3-11b2-4cbc-8876-98898beb3b5a
       version: -1
       name: Get device info
       description: Searches for a device that matches the query.
@@ -149,19 +162,16 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      filter: {}
-      hostname: {}
       ids:
-        simple: ${inputs.Endpoint_id}
-      platform_name: {}
-      site_name: {}
-      status: {}
+        complex:
+          root: inputs.Endpoint_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 960,
-          "y": 660
+          "y": 570
         }
       }
     note: false
@@ -169,6 +179,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: cc0b6958-1094-4533-8705-5e04dc490607
@@ -198,11 +210,12 @@ tasks:
           right:
             value:
               simple: contained
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 960,
-          "y": 830
+          "y": 740
         }
       }
     note: false
@@ -210,16 +223,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: feb83b76-0bb2-4a6b-8470-a33026c399c0
+    taskid: 808465f5-6342-4da3-854f-f7fe613010f3
     type: regular
     task:
-      id: feb83b76-0bb2-4a6b-8470-a33026c399c0
+      id: 808465f5-6342-4da3-854f-f7fe613010f3
       version: -1
       name: Unisolate device
-      description: Lifts containment on the host, which returns its network communications
-        to normal.
+      description: Lifts containment on the host, which returns its network communications to normal.
       script: '|||cs-falcon-lift-host-containment'
       type: regular
       iscommand: true
@@ -229,13 +243,15 @@ tasks:
       - "2"
     scriptarguments:
       ids:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          root: inputs.Endpoint_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 1080
+          "x": 1150,
+          "y": 910
         }
       }
     note: false
@@ -243,19 +259,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "1_2_no": 0.52,
-      "5_2_#default#": 0.48
+      "3_2_#default#": 0.27,
+      "5_2_#default#": 0.23
     },
     "paper": {
       "dimensions": {
-        "height": 1515,
-        "width": 1120,
+        "height": 1055,
+        "width": 1080,
         "x": 450,
-        "y": 50
+        "y": 100
       }
     }
   }
@@ -263,7 +282,7 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: 'The endpoint ID/device ID that you want to unisolate.'
+  description: The endpoint ID/device ID that you want to unisolate.
   playbookInputQuery:
 outputs: []
 tests:
