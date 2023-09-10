@@ -463,6 +463,15 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 2,
+                                "fieldId": "commandlineverdict",
+                                "height": 22,
+                                "id": "3e28a740-4bcb-11ee-8f29-116427640ec6",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 4,
                                 "fieldId": "xdralertcount",
                                 "height": 22,
@@ -2322,7 +2331,7 @@
     "group": "incident",
     "id": "Cortex XDR Incident",
     "name": "Cortex XDR Incident",
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
     "description": ""
