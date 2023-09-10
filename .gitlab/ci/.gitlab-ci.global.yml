@@ -325,7 +325,7 @@
     matrix:
       - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
-.jobs-done-check:
+.unknown-job:
   stage: test-test
   script:
     - python3 ./Tests/scripts/gitlab_slack_notifier.py -ch "test_slack_notifier_when_master_is_broken"
