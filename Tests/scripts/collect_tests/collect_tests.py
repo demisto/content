@@ -787,7 +787,7 @@ class BranchTestCollector(TestCollector):
         collected = []
         for raw_path in changed_files:
             path = PATHS.content_path / raw_path
-            logger.debug(f'Collecting tests for {raw_path}')
+            logger.info(f'Collecting tests for {raw_path}')
             try:
                 collected.append(self._collect_single(path))
             except NonXsoarSupportedPackException as e:
@@ -903,6 +903,8 @@ class BranchTestCollector(TestCollector):
                             except NothingToCollectException as e:
                                 logger.info(e)
                                 continue
+                        logger.info(f"WE FINISHED")
+                        logger.info(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
                         return collection_result_of_apimodule
 
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
@@ -1040,6 +1042,7 @@ class BranchTestCollector(TestCollector):
         if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
+            logger.info("WE ARE HERE!!!!!")
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
