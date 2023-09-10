@@ -666,7 +666,7 @@ Deletes a shared drive.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| use_domain_admin_access | Issue the request as a domain administrator. If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs. Possible values are: true, false. Default is false. | Optional | 
+| use_domain_admin_access | If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs. Possible values are: true, false. Default is false. | Optional | 
 | allow_item_deletion | Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true. Possible values are: true, false. Default is false. | Optional | 
 | user_id | The user's primary email address. | Optional | 
 | drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Required | 
