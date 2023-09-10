@@ -1015,6 +1015,21 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: dict[str, Any]
     return command_results_list
 
 
+def get_incident_name(incident: dict) -> str:
+    """
+    Gets the incident name.
+    Args:
+        incident (dict): FortiSIEM client.
+    Returns:
+       str: The incident name.
+    """
+    if incident_title := incident.get('incidentTitle'):
+        return incident_title
+    elif incident_id := incident.get('incidentId'):
+        return f"FortiSIEM incident: {incident_id}"
+    return "FortiSIEM incident"
+
+
 def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, status_list: List[str],
                     fetch_with_events: bool, max_events_fetch: int, last_run: dict[str, Any]) -> tuple:
     """
@@ -1053,7 +1068,7 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
             demisto.debug(f'Get incident: {str(incident)} from the server.')
 
         incidents.append({
-            'name': incident.get('incidentTitle', f"FortiSIEM incident: {incident.get('incidentId')}"),
+            'name': get_incident_name(incident),
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
     if incidents:

@@ -9,6 +9,7 @@ default:
     when: always
 
 stages:
+  - security
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
@@ -19,6 +20,7 @@ stages:
 
 
 variables:
+  ARTIFACTORY_ENABLED: "true"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
@@ -68,3 +70,4 @@ include:
   - local: .gitlab/ci/.gitlab-ci.sdk-nightly.yml
   - local: .gitlab/ci/.gitlab-ci.miscellaneous.yml
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
+  - local: .gitlab/ci/.gitlab-ci.security-scans.yml
