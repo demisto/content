@@ -73,8 +73,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: Basic
-      description: >
-        The type of the newly created user.  Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above.
+      description: 'The type of the newly created user.  Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above .'
       name: user_type
       predefined:
       - Basic
@@ -1212,8 +1211,7 @@ script:
     description: Delete a mirrored zoom channel.
     name: close-channel
   - name: send-notification
-    description: >
-      Send a message using chatbot app.
+    description: Send a message using chatbot app.
     arguments:
     - name: message
       description: the message
@@ -1223,20 +1221,16 @@ script:
       description: The user ID, JID or email to whom to send the message. You must provide this parameter or the channel_id parameter.
       type: string
     - name: channel_id
-      description: >
-        The ID or the JID of the channel to which to send the message. You must provide this parameter or the to parameter.
+      description: The ID or the JID of the channel to which to send the message. You must provide this parameter or the to parameter.
       type: string
     - name: channel
       type: string
-      description: > 
-        The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID  .
+      description: The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID  .
     - name: visible_to_user
-      description: >
-        The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
+      description: The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
       type: string
     - name: zoom_ask
-      description: >
-        The message as a json for asking questions the user .
+      description: The message as a json for asking questions the user .
       type: boolean
     outputs: []
   - arguments:
@@ -1271,7 +1265,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:1.0.0.73144
+  dockerimage: demisto/fastapi:1.0.0.73466
   script: "-"
   subtype: python3
   type: python

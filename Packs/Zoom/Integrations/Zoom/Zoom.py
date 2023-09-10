@@ -705,7 +705,7 @@ async def handle_zoom_response(request: Request):
             robot_jid = payload['robotJid']
             to_jid = payload['toJid']
             user_name = payload['userName']
-            entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name)  # type: ignore
+            entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name)
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid, user_name, action)
                 demisto.updateModuleHealth("")
@@ -1963,7 +1963,7 @@ def zoom_get_user_name_by_email(client, user_email):
     :rtype: str
     """
     user_url_suffix = f'users/{user_email}'
-    user_name = client.zoom_list_users(page_size=50, url_suffix=user_url_suffix)
+    user_name = client.zoom_list_users(page_size=1, url_suffix=user_url_suffix)
     demisto.info(f"user_name: {user_name}")
     if not user_name:
         raise DemistoException(USER_NOT_FOUND)
