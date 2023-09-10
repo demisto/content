@@ -58,6 +58,7 @@ ATOMs
 Mappers
 mapper
 AlienVault
+outputted
 BitcoinAbuse
 BruteForceBlocker
 NetwitnessSearch
