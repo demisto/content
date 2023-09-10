@@ -1,5 +1,5 @@
 Rapid7 AppSec integration allows the management of applications vulnerabilities and scans.
-This integration was integrated and tested with version xx of rapid7appsec.
+This integration was integrated and tested with version 1 of rapid7appsec.
 
 ## Configure Rapid7AppSec on Cortex XSOAR
 
