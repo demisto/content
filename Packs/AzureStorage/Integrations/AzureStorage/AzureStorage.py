@@ -14,6 +14,7 @@ SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_imperso
 PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
+
 class ASClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  connection_type: str, tenant_id: str = None, enc_key: str = None, auth_code: str = None,
