@@ -433,7 +433,7 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
         reply: The reply to send to the user.
         expiry: The question expiration date.
         default_response: The response to send if the question times out.
-        to_jid: user_jid
+        to_jid: the user jid the message was sent to
     """
     integration_context = get_integration_context(SYNC_CONTEXT)
     messages = integration_context.get('messages', [])
@@ -2214,6 +2214,8 @@ def fetch_context(force_refresh: bool = False) -> dict:
 
 
 def mirror_investigation(client, **args) -> CommandResults:
+    if not MIRRORING_ENABLED:
+        demisto.error(" couldn't mirror investigation, Mirroring is disabled")
     if MIRRORING_ENABLED and not LONG_RUNNING:
         demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
                       ' long running must be enabled.')
@@ -2387,6 +2389,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     botJID = params.get('botJID', None)
     secret_token = params.get('secret_token', {}).get('password')
+
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT
     SECRET_TOKEN = secret_token
     LONG_RUNNING = params.get('longRunning', False)

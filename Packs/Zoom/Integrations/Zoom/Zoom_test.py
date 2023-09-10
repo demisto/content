@@ -1,10 +1,12 @@
 from fastapi import Request, status
 import json
+from unittest.mock import patch
 from Zoom import Client
 import Zoom
 import pytest
 from CommonServerPython import DemistoException, CommandResults
 import demistomock as demisto
+from freezegun import freeze_time
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -1787,7 +1789,7 @@ def test_zoom_send_notification_command(mocker):
 
     expected_request_payload = {
         'robot_jid': 'mock_bot',
-        'to_jid': 'channel1',
+        'to_jid': 'channel1@xmpp.zoom.us',
         'account_id': 'mockaccount',
         'content': {'head': {'type': 'message', 'text': 'Hello'}}
     }
@@ -1822,6 +1824,7 @@ def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expecte
     Then validate that the function returns the expected result.
     """
     # Mock integration context
+    Zoom.CACHE_EXPIRY = False
     mock_integration_context = {
         'mirrors': json.dumps([
             {'channel_name': 'Channel1', 'channel_jid': 'JID1', 'investigation_id': 'Incident123'},
@@ -1860,16 +1863,16 @@ def test_check_authentication_bot_parameters(bot_Jid, client_id, client_secret, 
         check_authentication_bot_parameters(bot_Jid, client_id, client_secret)
 
 
-def test_get_user_id_from_token(mocker):
+def test_get_admin_user_id_from_token(mocker):
     """
-    Given a mock client with a zoom_get_user_id_from_token method,
-    When calling the get_user_id_from_token function,
+    Given a mock client with a zoom_get_admin_user_id_from_token method,
+    When calling the get_admin_user_id_from_token function,
     Then validate that the function returns the expected user ID.
     """
     # Create a mock client
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    mocker.patch.object(client, 'zoom_get_user_id_from_token', return_value={'id': 'mock_user_id'})
+    mocker.patch.object(client, 'zoom_get_admin_user_id_from_token', return_value={'id': 'mock_user_id'})
     # Call the function
     from Zoom import get_admin_user_id_from_token
     result = get_admin_user_id_from_token(client)
@@ -1932,7 +1935,7 @@ async def test_check_and_handle_entitlement(mocker):
         ])
     }
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
-
+    Zoom.CACHE_EXPIRY = False
     # Define the input parameters for the function
     text = "Entitlement Text"
     message_id = "MessageID123"
@@ -2088,19 +2091,19 @@ async def test_close_channel(mocker):
     mocker.patch.object(demisto, 'mirrorInvestigation')
     mocker.patch.object(Zoom, 'get_integration_context', return_value=mock_integration_context)
     mocker.patch.object(Zoom, 'set_to_integration_context_with_retries')
-    mocker.patch.object(Zoom, 'get_user_id_from_token', return_value='mock_user_id')
+    mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
     mocker.patch.object(Zoom, 'find_mirror_by_investigation', return_value={'channel_id': 'ID1'})
 
     from Zoom import close_channel
     result = close_channel(client)
 
-    assert result == 'Channel successfully delete.'
+    assert result == 'Channel successfully deleted.'
 
 
 @pytest.mark.parametrize("event_type, expected_status", [
     ('endpoint.url_validation', status.HTTP_200_OK),
     ('interactive_message_actions', status.HTTP_200_OK),
-    ('invalid_event_type', status.HTTP_200_OK)
+    ('invalid_event_type', status.HTTP_400_BAD_REQUEST)
 ])
 @pytest.mark.asyncio
 async def test_handle_zoom_response(event_type, expected_status,
@@ -2178,10 +2181,69 @@ async def test_event_url_validation():
     }
 
 
-# handle_mirroring
-# handle_text
-# run_log_running
-# check_for_unanswered_questions
-# save_entitlement
-# zoom_get_user_id_from_token
-# zoom_send_notification
+@pytest.mark.asyncio
+async def test_handle_text(mocker):
+    # Create mock arguments
+    investigation_id = "123"
+    text = "Hello, this is a test message"
+    operator_email = "test@example.com"
+    operator_name = "Test User"
+    MESSAGE_FOOTER = '\n**From Zoom**'
+    from Zoom import handle_text
+
+    with patch('Zoom.demisto') as mock_demisto:
+        # Call the function
+        await handle_text(investigation_id, text, operator_email, operator_name)
+     # Assert that the `demisto.addEntry` method was called with the expected arguments
+        mock_demisto.addEntry.assert_called_once_with(
+            id=investigation_id,
+            entry=text,
+            username=operator_name,
+            email=operator_email,
+            footer=MESSAGE_FOOTER  # Assuming MESSAGE_FOOTER is defined in your module
+        )
+
+
+def test_save_entitlement():
+    # Define test inputs
+    entitlement = "Test Entitlement"
+    message_id = "123"
+    reply = "Test Reply"
+    expiry = "2023-09-09"
+    default_response = "Default Response"
+    to_jid = "user@example.com"
+    SYNC_CONTEXT = True
+    OBJECTS_TO_KEYS = {
+        'messages': 'entitlement',
+    }
+    # Mock the required functions (get_integration_context, set_to_integration_context_with_retries) and any other dependencies
+    with patch('Zoom.get_integration_context') as mock_get_integration_context, \
+            patch('Zoom.set_to_integration_context_with_retries') as mock_set_integration_context:
+
+        # Mock the return values of the mocked functions
+        mock_get_integration_context.return_value = {'messages': []}
+        fixed_timestamp = '2023-09-09 20:08:50'
+
+        with freeze_time(fixed_timestamp):
+            from Zoom import save_entitlement
+            # Call the function to be tested
+            save_entitlement(entitlement, message_id, reply, expiry, default_response, to_jid)
+
+        # Define the expected data to be added to integration context
+        expected_data = {
+            'messages': [
+                {
+                    'message_id': message_id,
+                    'entitlement': entitlement,
+                    'reply': reply,
+                    'expiry': expiry,
+                    'sent': fixed_timestamp,
+                    'default_response': default_response,
+                    'to_jid': to_jid
+                }
+            ]
+        }
+
+        # Assert that the mocked functions were called with the expected arguments
+        mock_get_integration_context.assert_called_once_with(SYNC_CONTEXT)
+        mock_set_integration_context.assert_called_once_with(expected_data, OBJECTS_TO_KEYS, SYNC_CONTEXT)

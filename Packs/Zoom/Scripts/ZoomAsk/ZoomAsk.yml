@@ -1,12 +1,10 @@
 args:
 - description: The Zoom user ID, JID or email to whom to send the message, You must provide this parameter or the channel_id parameter.
   name: user
-- description: >
-     the ID or the JID of the channel where you intend to send the message, You must provide this parameter or the user parameter.
+- description: The ID or the JID of the channel where you intend to send the message, You must provide this parameter or the user parameter.
   name: channel_id
 - name: channel_name
-  description: >
-    The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID.
+  description: The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID.
 - description: The message to send to the user or channel.
   name: message
   required: true
@@ -55,7 +53,7 @@ tags:
 - zoom
 timeout: '0'
 type: python
-dockerimage: devdemisto/fastapi:1.0.0.72945
+dockerimage: demisto/fastapi:1.0.0.73144
 tests:
 - no test - Untestable
 dependson:
