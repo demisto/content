@@ -1,9 +1,13 @@
 {
   "alibaba_action_trail_raw": {
-      "__time__": {
+      "_vendor": {
           "type": "string",
           "is_array": false
       },
+      "_product": {
+        "type": "string",
+        "is_array": false
+      },      
       "event_acsregion": {
           "type": "string",
           "is_array": false
@@ -47,7 +51,10 @@
       "event_useridentity_username": {
           "type": "string",
           "is_array": false
+      },
+      "event_useridentity_accesskeyid": {
+          "type": "string",
+          "is_array": false
       }
-      
   }
 }
