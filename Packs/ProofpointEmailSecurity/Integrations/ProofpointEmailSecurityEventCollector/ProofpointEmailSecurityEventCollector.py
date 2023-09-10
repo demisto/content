@@ -15,7 +15,6 @@ URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 
 FETCH_INTERVAL_IN_SECONDS = 60
-RECV_TIMEOUT = 10
 FETCH_SLEEP = 5
 
 
@@ -59,7 +58,7 @@ def websocket_connections(
         yield message_connection, maillog_connection
 
 
-def fetch_events(event_type: EventType, connection: Connection, fetch_interval: int) -> list[dict]:
+def fetch_events(event_type: EventType, connection: Connection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
     """
     This function fetches events from the websocket connection for the given event type, for the given fetch interval
 
@@ -67,6 +66,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         event_type (EventType): The event type to fetch (MAILLOG, MESSAGE)
         connection (Connection): the websocket connection to the event type
         fetch_interval (int): the interval of events to fetch, in seconds
+        recv_timeout (int): The timeout for the receive function in the socket connection
 
     Returns:
         list[dict]: A list of events
@@ -76,7 +76,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=RECV_TIMEOUT))
+            event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
@@ -103,13 +103,12 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
 
 def test_module(host: str, cluster_id: str, api_key: str):
     # set the fetch interval to 2 seconds so we don't get timeout for the test module
-    global RECV_TIMEOUT
-    RECV_TIMEOUT = 2
     fetch_interval = 2
+    recv_timeout = 2
     try:
         with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
-            fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
-            fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
+            fetch_events(EventType.MESSAGE, message_connection, fetch_interval, recv_timeout)
+            fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval, recv_timeout)
             return "ok"
     except InvalidStatus as e:
         if e.response.status_code == 401:
