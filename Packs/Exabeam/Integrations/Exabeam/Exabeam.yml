@@ -1592,7 +1592,7 @@ script:
     - description: The incident ID.
       isArray: true
       name: incident_id
-    - description: |-
+    - description: |
         The query string that will be used to filter incidents in Exabeam
         For example:
         - simple query: incidentType:generic,
