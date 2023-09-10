@@ -306,7 +306,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
+    description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-remediation-command-list
     outputs:
     - contextPath: PrismaCloud.AlertRemediation.description
@@ -327,8 +327,21 @@ script:
       name: alert_id
       required: true
     name: prisma-cloud-alert-remediate
-    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy.
+    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy. In order to check what remediation would run, use the "prisma-cloud-remediation-command-list" command first.
     execution: true
+    outputs:
+    - contextPath: PrismaCloud.AlertRemediation.alertId
+      description: The ID of the alert to which the remediation apply.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.successful
+      description: Whether the remediation was successful.
+      type: Boolean
+    - contextPath: PrismaCloud.AlertRemediation.failureReason
+      description: The failure reason for the remediation.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.errorValue
+      description: The error value for the remediation.
+      type: String
   - arguments:
     - description: Comma-separated list of alert IDs to be reopened.
       isArray: true

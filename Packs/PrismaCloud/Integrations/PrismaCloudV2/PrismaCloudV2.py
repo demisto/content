@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from copy import deepcopy
 
 import urllib3
+import json
 
 
 ''' CONSTANTS '''
@@ -1356,7 +1357,7 @@ def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     alert_ids = argToList(args.get('alert_ids'))
     policy_id = args.get('policy_id')
     if not alert_ids and not policy_id:
@@ -1388,11 +1389,9 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
         if de.res.status_code == 405:
-            raise DemistoException(
-                f'Remediation unavailable {" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.',
-                exception=de) from de
+            return f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.'
         elif de.res.status_code == 400:
-            raise DemistoException('Policy type disallowed using this remediation api.', exception=de) from de
+            return 'Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.'
         raise
 
     command_results = CommandResults(
@@ -1414,18 +1413,31 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     try:
         client.alert_remediate_request(str(alert_id))
-
+        readable_response = {'alertId': alert_id, 'successful': True}
+        readable_output = f'Alert {alert_id} remediated successfully.'
+        
     except DemistoException as de:
-        if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
+        if not hasattr(de, 'res'):
             raise
-        if de.res.status_code == 405:
-            raise DemistoException(f'Remediation unavailable for alert {alert_id}.', exception=de) from de
-        elif de.res.status_code == 404:
-            raise DemistoException(f'Alert {alert_id} is not found.', exception=de) from de
-        raise
+            
+        status = json.loads(get_response_status_header(de.res))
+        status = status if isinstance(status, dict) else status[0]
+
+        error_value = status.get('subject', '')
+        failure_reason = str(status.get('i18nKey', '')).replace('_', ' ')
+        
+        readable_response = {'alertId': alert_id, 'successful': False, 'failureReason': failure_reason, 'errorValue': error_value}
+        readable_output = tableToMarkdown(f'Remediation For Alert {alert_id}:',
+                                          readable_response,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
-        readable_output=f'Alert {alert_id} remediated successfully.',
+        outputs_prefix='PrismaCloud.AlertRemediation',
+        outputs_key_field='alertId',
+        readable_output=readable_output,
+        outputs=readable_response,
+        raw_response=readable_response
     )
     return command_results
 
@@ -1637,7 +1649,7 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     response_items = client.resource_list_request(list_type)
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
-        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
         response_items = response_items[:limit]
 
     for response_item in response_items:
@@ -1677,7 +1689,7 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
-        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
         response_items = response_items[:limit]
 
     for response_item in response_items:
@@ -1706,7 +1718,7 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response_items = client.users_list_request()
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
-        demisto.debug(f'Returning results only up to limit={limit}, from {len(response_items)} results returned.')
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
         response_items = response_items[:limit]
 
     for response_item in response_items:
