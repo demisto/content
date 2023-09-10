@@ -62,7 +62,7 @@ echo "Finished testing Modeling Rules, exit code:${exit_code}"
 
 if [ -n "${NIGHTLY}" ]; then
   if [ -n "${MODELING_RULES_RESULTS_FILE_NAME}" ]; then
-    if [ "${TEST_MODELING_RULE_JIRA_TICKETS}" == "true" ]; then
+    if [ "${TEST_MODELING_RULE_JIRA_TICKETS,,}" == "true" ]; then
       echo "This is a nightly build, converting the results to Jira issues and exiting with 0"
       echo "The current directory is ${CURRENT_DIR}"
       python3 "${CURRENT_DIR}/Tests/scripts/convert_test_result_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"

@@ -16,7 +16,7 @@ if [ "$#" -lt "1" ]; then
   [-b, --branch]                            The branch name. Default is the current branch.
   [-ch, --slack-channel]                    A slack channel to send notifications to. Default is dmst-build-test.
   [-s, --sdk-ref]                           The sdk ref to use. Default is the latest nightly.
-  [-tmr --test-modeling-rule-jira-tickets]  Whether to test modeling rule jira tickets. Default is false.
+  [-tmr --test-modeling-rule-jira-tickets]  Whether to test modeling rule jira tickets.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
