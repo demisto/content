@@ -1779,7 +1779,7 @@ script:
       - auto: PREDEFINED
         defaultValue: "false"
         name: use_domain_admin_access
-        description: "Issue the request as a domain administrator. If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs."
+        description: If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs.
         predefined:
           - "true"
           - "false"
