@@ -17,7 +17,7 @@ Supported integrations for this playbook:
 * Prisma Cloud IAM
 * Zoom IAM
 * Atlassian IAM
-* GitHub IAM.
+* GitHub IAM
 
 ## Dependencies
 

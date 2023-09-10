@@ -2334,7 +2334,7 @@ tasks:
       id: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
       version: -1
       name: Get Account IDs From SailPoint
-      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM API's.
+      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM APIs.
       script: '|||identityiq-get-accounts'
       type: regular
       iscommand: true

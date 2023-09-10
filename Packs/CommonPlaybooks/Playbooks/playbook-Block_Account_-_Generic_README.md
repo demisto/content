@@ -32,7 +32,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Username | Array of malicious usernames to block. |  | Optional |
-| Tag | PAN-OS Tag name to apply to the username that you want to block. |  | Optional |
+| Tag | PAN-OS tag name to apply to the username that you want to block. |  | Optional |
 
 ## Playbook Outputs
 
