@@ -251,15 +251,6 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-  extends:
-    - .default-job-settings
-
-
-.run-unittests-and-lint:
-  extends:
-    - .unittests-and-lint-settings
-    - .trigger-slack-notification
-  variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Run Unit Testing and Lint"     #not sure about these tow lines
     JOB_NAME: ".run-unittests-and-lint"
@@ -267,8 +258,15 @@
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: "true"
+  extends:
+    - .default-job-settings
+    - .trigger-slack-notification
+
+
+.run-unittests-and-lint:
+  extends:
+    - .unittests-and-lint-settings
   script:
-    - python3 ./Tests/scripts/gitlab_slack_notifier.py -ch "test_slack_notifier_when_master_is_broken"
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
