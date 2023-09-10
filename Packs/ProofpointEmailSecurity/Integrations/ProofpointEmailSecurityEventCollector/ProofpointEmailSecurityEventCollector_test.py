@@ -118,7 +118,7 @@ def test_connects_to_websocket(mocker):
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
     # Call the websocket_connections function without since_time and to_time
-    with websocket_connections("host", "cluster_id", "api_key") as (message_connection, maillog_connection):
+    with websocket_connections("wss://host", "cluster_id", "api_key") as (message_connection, maillog_connection):
         pass
 
     assert connect_mock.call_count == 2
@@ -137,7 +137,7 @@ def test_connects_to_websocket(mocker):
 
     # Call the websocket_connections function with since_time and to_time
     with websocket_connections(
-        "host", "cluster_id", "api_key", since_time="2023-08-14T12:24:12.147573", to_time="2023-08-16T12:24:12.147573"
+        "wss://host", "cluster_id", "api_key", since_time="2023-08-14T12:24:12.147573", to_time="2023-08-16T12:24:12.147573"
     ) as (message_connection, maillog_connection):
         pass
 
