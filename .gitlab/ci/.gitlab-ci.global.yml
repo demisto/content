@@ -327,8 +327,8 @@
 
 .unknown-job:
   stage: unittests-and-validations
-    extends:
-      .trigger-slack-notification
+  extends:
+    - .trigger-slack-notification
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Run Unit Testing and Lint"     #not sure about these tow lines
