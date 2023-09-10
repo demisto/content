@@ -257,9 +257,16 @@
 
 .run-unittests-and-lint:
   extends:
-    - .unittests-and-lint-settings
+    - .trigger-slack-notification
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'aa'
+    JOB_NAME: 'bb'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
   script:
-    - python3 ./Tests/scripts/gitlab_slack_notifier.py
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
