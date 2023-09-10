@@ -418,7 +418,7 @@ inputs:
 - key: Expiration
   value: {}
   required: false
-  description: "The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z\nProducts: \nTrend Micro Apex One\nProofpoint Threat Response"
+  description: "The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.\nProducts: \nTrend Micro Apex One\nProofpoint Threat Response"
   playbookInputQuery:
 outputs: []
 tests:

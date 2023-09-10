@@ -27,8 +27,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Domain | The Domain to block. |  | Optional |
-| Expiration | The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z |  | Optional |
+| Domain | The domain to block. |  | Optional |
+| Expiration | The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z. |  | Optional |
 
 ## Playbook Outputs
 

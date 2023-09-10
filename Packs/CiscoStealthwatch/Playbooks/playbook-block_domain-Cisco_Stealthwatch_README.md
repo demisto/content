@@ -26,7 +26,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Domain | The Domain to block. |  | Optional |
+| Domain | The domain to block. |  | Optional |
 
 ## Playbook Outputs
 

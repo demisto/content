@@ -44,7 +44,7 @@ This playbook does not use any commands.
 | Domain | The Domain to block. |  | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 | Tag | Tag to assign Domain to the External Dynamic List.<br/>sub-playbook: Block Domain - External Dynamic List |  | Optional |
-| Expiration | The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z<br/>Products: <br/>Trend Micro Apex One<br/>Proofpoint Threat Response |  | Optional |
+| Expiration | The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.<br/>Products: <br/>Trend Micro Apex One<br/>Proofpoint Threat Response |  | Optional |
 
 ## Playbook Outputs
 
