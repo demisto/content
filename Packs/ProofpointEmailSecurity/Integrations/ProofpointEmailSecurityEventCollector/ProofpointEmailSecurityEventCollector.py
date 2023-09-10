@@ -133,7 +133,6 @@ def perform_long_running_loop(message_connection: Connection, maillog_connection
     except DemistoException:
         demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
-        integration_context = demisto.getIntegrationContext()
         demisto.setIntegrationContext({"message_events": message_events, "maillog_events": maillog_events})
 
 

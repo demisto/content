@@ -152,7 +152,7 @@ def test_connects_to_websocket(mocker):
     )
 
 
-def test_handle_failures_of_send_events(mocker):
+def test_handle_failures_of_send_events(mocker, capfd):
     """
     Given:
         - A connection to the websocket, and events are fetched from the socket
@@ -173,13 +173,15 @@ def test_handle_failures_of_send_events(mocker):
 
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "fetch_events", side_effect=fetch_events_mock)
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
-    perform_long_running_loop(MockConnection(), MockConnection(), 60)
+    with capfd.disabled():
+        perform_long_running_loop(MockConnection(), MockConnection(), 60)
     context = demisto.getIntegrationContext()
     assert context["message_events"] == EVENTS[:2]
     assert context["maillog_events"] == EVENTS[2:]
 
     second_try_send_events_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam")
-    perform_long_running_loop(MockConnection(), MockConnection(), 60)
+    with capfd.disabled():
+        perform_long_running_loop(MockConnection(), MockConnection(), 60)
     context = demisto.getIntegrationContext()
     # check the the context is cleared
     assert not context
