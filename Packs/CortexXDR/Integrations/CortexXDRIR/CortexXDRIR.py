@@ -450,7 +450,7 @@ def get_headers(params: dict) -> dict:
     headers: dict = {
         "x-xdr-timestamp": timestamp,
         "x-xdr-nonce": nonce,
-        "x-xdr-auth-id": str(api_key_id),
+        "x-xdr-auth-id": api_key_id,
         "Authorization": api_key_hash,
     }
 
